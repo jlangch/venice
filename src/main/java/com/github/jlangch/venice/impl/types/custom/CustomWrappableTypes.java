@@ -34,6 +34,13 @@ import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
+import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
@@ -50,7 +57,14 @@ public class CustomWrappableTypes {
                     new VncKeyword(VncBigDecimal.TYPE),
                     new VncKeyword(VncBigInteger.TYPE),
                     new VncKeyword(VncByteBuffer.TYPE),
-                    new VncKeyword(VncJust.TYPE));
+                    new VncKeyword(VncJust.TYPE),
+                    new VncKeyword(VncList.TYPE),
+                    new VncKeyword(VncVector.TYPE),
+                    new VncKeyword(VncHashSet.TYPE),
+                    new VncKeyword(VncSortedSet.TYPE),
+                    new VncKeyword(VncHashMap.TYPE),
+                    new VncKeyword(VncOrderedMap.TYPE),
+                    new VncKeyword(VncSortedMap.TYPE));
     }
 
     public boolean isWrappable(final VncKeyword type) {

@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -42,6 +43,13 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 
     public VncSequence(VncVal meta) {
         super(meta);
+    }
+
+    public VncSequence(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
     }
 
 

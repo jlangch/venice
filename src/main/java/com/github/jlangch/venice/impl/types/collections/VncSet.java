@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -44,6 +45,12 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
         super(meta);
     }
 
+    public VncSet(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+    }
 
     @Override
     public VncVal apply(final VncList args) {
