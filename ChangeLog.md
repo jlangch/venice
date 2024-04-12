@@ -13,6 +13,12 @@ All notable changes to this project will be documented in this file.
 - ... 
 
 
+### Fixed 
+
+- the Http client to gracefully react on interrupted exceptions and close 
+  the streams
+
+
 
 ## [1.12.12] - 2024-04-11
 
