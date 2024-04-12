@@ -692,7 +692,8 @@
         rd (io/wrap-is-with-buffered-reader is :utf-8)
         id (uuid)]
     (try
-      ;; add an interrupt
+      ;; add an interrupt hook to close the stream and signal to server
+      ;; not to stream any more events
       (interrupt-hook id (fn [] (. rd :close)))
 
       (event-handler :opened nil 0)  ;; streaming opened  notification
@@ -705,7 +706,7 @@
               (recur (sse/read-event rd) (inc event-count))))))
       
       (finally 
-        ;; clear interrupt hook
+        ;; clear interrupt hook, we did not need it
         (interrupt-hook id)
         ;; streaming closed notification
         (try (event-handler :closed nil event-count) (catch :Exception e))
