@@ -664,7 +664,7 @@
                 response
                 (fn [type event event-count]
                   (case type
-                    :opened (do (println "\nStreaming started")
+                    :opened (do (println "\\nStreaming started")
                                 :ok)
                     :data   (do (println "Event: " event)
                                 ;; only process 10 events
