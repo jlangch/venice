@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -48,12 +49,33 @@ public class VncList extends VncSequence {
         this((io.vavr.collection.Seq<VncVal>)null, meta);
     }
 
+    protected VncList(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        this((io.vavr.collection.Seq<VncVal>)null, wrappingTypeDef, meta);
+    }
+
     protected VncList(final java.util.Collection<? extends VncVal> vals, final VncVal meta) {
         this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
     }
 
     public VncList(final io.vavr.collection.Seq<VncVal> vals, final VncVal meta) {
         super(meta == null ? Nil : meta);
+        if (vals == null) {
+            value = io.vavr.collection.Vector.empty();
+        }
+        else if (vals instanceof io.vavr.collection.Vector) {
+            value = (io.vavr.collection.Vector<VncVal>)vals;
+        }
+        else {
+            value = io.vavr.collection.Vector.ofAll(vals);
+        }
+    }
+
+    public VncList(
+            final io.vavr.collection.Seq<VncVal> vals,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
         if (vals == null) {
             value = io.vavr.collection.Vector.empty();
         }
@@ -129,13 +151,26 @@ public class VncList extends VncSequence {
     }
 
     @Override
+    public VncList wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncList(value, wrappingTypeDef, meta);
+    }
+
+
+    @Override
     public VncKeyword getType() {
-        return new VncKeyword(
-                        TYPE,
-                        MetaUtil.typeMeta(
-                            new VncKeyword(VncSequence.TYPE),
-                            new VncKeyword(VncCollection.TYPE),
-                            new VncKeyword(VncVal.TYPE)));
+        return isWrapped() ? new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncList.TYPE),
+                                        new VncKeyword(VncSequence.TYPE),
+                                        new VncKeyword(VncCollection.TYPE),
+                                        new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                    VncList.TYPE,
+                                    MetaUtil.typeMeta(
+                                            new VncKeyword(VncSequence.TYPE),
+                                            new VncKeyword(VncCollection.TYPE),
+                                            new VncKeyword(VncVal.TYPE)));
     }
 
     @Override

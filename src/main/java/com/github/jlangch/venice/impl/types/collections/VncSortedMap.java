@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
@@ -50,6 +51,13 @@ public class VncSortedMap extends VncMap {
         this((io.vavr.collection.TreeMap<VncVal,VncVal>)null, meta);
     }
 
+    public VncSortedMap(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        this(null, wrappingTypeDef, meta);
+    }
+
     public VncSortedMap(final java.util.Map<? extends VncVal,? extends VncVal> vals) {
         this(vals, null);
     }
@@ -59,7 +67,24 @@ public class VncSortedMap extends VncMap {
     }
 
     public VncSortedMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {
-        super(meta == null ? Constants.Nil : meta);
+        super(meta);
+        if (val == null) {
+            value = io.vavr.collection.TreeMap.empty();
+        }
+        else if (val instanceof io.vavr.collection.TreeMap) {
+            value = (io.vavr.collection.TreeMap<VncVal,VncVal>)val;
+        }
+        else {
+            value = io.vavr.collection.TreeMap.ofEntries(val);
+        }
+    }
+
+    public VncSortedMap(
+            final io.vavr.collection.Map<VncVal,VncVal> val,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
         if (val == null) {
             value = io.vavr.collection.TreeMap.empty();
         }
@@ -127,13 +152,25 @@ public class VncSortedMap extends VncMap {
     }
 
     @Override
+    public VncSortedMap wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncSortedMap(value, wrappingTypeDef, meta);
+    }
+
+    @Override
     public VncKeyword getType() {
-        return new VncKeyword(
-                        TYPE,
-                        MetaUtil.typeMeta(
-                            new VncKeyword(VncMap.TYPE),
-                            new VncKeyword(VncCollection.TYPE),
-                            new VncKeyword(VncVal.TYPE)));
+        return isWrapped() ? new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncSortedMap.TYPE),
+                                        new VncKeyword(VncMap.TYPE),
+                                        new VncKeyword(VncCollection.TYPE),
+                                        new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                    VncSortedMap.TYPE,
+                                    MetaUtil.typeMeta(
+                                            new VncKeyword(VncMap.TYPE),
+                                            new VncKeyword(VncCollection.TYPE),
+                                            new VncKeyword(VncVal.TYPE)));
     }
 
     @Override

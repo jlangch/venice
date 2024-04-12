@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
@@ -51,6 +52,13 @@ public class VncHashMap extends VncMap {
         this((io.vavr.collection.LinkedHashMap<VncVal,VncVal>)null, meta);
     }
 
+    public VncHashMap(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        this(null, wrappingTypeDef, meta);
+    }
+
     public VncHashMap(final io.vavr.collection.Map<VncVal,VncVal> val) {
         this(val, null);
     }
@@ -64,7 +72,7 @@ public class VncHashMap extends VncMap {
     }
 
     public VncHashMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {
-        super(meta == null ? Constants.Nil : meta);
+        super(meta);
         if (val == null) {
             value = io.vavr.collection.HashMap.empty();
         }
@@ -76,6 +84,22 @@ public class VncHashMap extends VncMap {
         }
     }
 
+    public VncHashMap(
+            final io.vavr.collection.Map<VncVal,VncVal> val,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+        if (val == null) {
+            value = io.vavr.collection.HashMap.empty();
+        }
+        else if (val instanceof io.vavr.collection.HashMap) {
+            value = (io.vavr.collection.HashMap<VncVal,VncVal>)val;
+        }
+        else {
+            value = io.vavr.collection.HashMap.ofEntries(val);
+        }
+    }
 
     public static VncHashMap ofAll(final VncSequence lst) {
         if (lst != null && (lst.size() % 2 != 0)) {
@@ -133,13 +157,25 @@ public class VncHashMap extends VncMap {
     }
 
     @Override
+    public VncHashMap wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncHashMap(value, wrappingTypeDef, meta);
+    }
+
+    @Override
     public VncKeyword getType() {
-        return new VncKeyword(
-                        TYPE,
-                        MetaUtil.typeMeta(
-                            new VncKeyword(VncMap.TYPE),
-                            new VncKeyword(VncCollection.TYPE),
-                            new VncKeyword(VncVal.TYPE)));
+        return isWrapped() ? new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncHashMap.TYPE),
+                                        new VncKeyword(VncMap.TYPE),
+                                        new VncKeyword(VncCollection.TYPE),
+                                        new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                   VncHashMap.TYPE,
+                                    MetaUtil.typeMeta(
+                                            new VncKeyword(VncMap.TYPE),
+                                            new VncKeyword(VncCollection.TYPE),
+                                            new VncKeyword(VncVal.TYPE)));
     }
 
     @Override

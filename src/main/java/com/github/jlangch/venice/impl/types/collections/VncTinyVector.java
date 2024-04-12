@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -79,6 +80,7 @@ public class VncTinyVector extends VncVector {
         this(null);
     }
 
+
     public VncTinyVector(final VncVal meta) {
         super(meta);
         this.len = 0;
@@ -86,6 +88,19 @@ public class VncTinyVector extends VncVector {
         this.second = Constants.Nil;
         this.third = Constants.Nil;
         this.fourth = Constants.Nil;
+    }
+
+    public VncTinyVector(
+            final VncTinyVector vec,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+        this.len = vec.len;
+        this.first = vec.first;
+        this.second = vec.second;
+        this.third = vec.third;
+        this.fourth = vec.fourth;
     }
 
 
@@ -154,6 +169,12 @@ public class VncTinyVector extends VncVector {
     @Override
     public VncVector withMeta(final VncVal meta) {
         return new VncTinyVector(len, first, second, third, fourth, meta);
+    }
+
+
+    @Override
+    public VncVector wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncTinyVector(this, wrappingTypeDef, meta);
     }
 
     @Override

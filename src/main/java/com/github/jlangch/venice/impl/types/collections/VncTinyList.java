@@ -39,6 +39,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.StreamUtil;
@@ -67,6 +68,20 @@ public class VncTinyList extends VncList {
         this.third = Nil;
         this.fourth = Nil;
     }
+
+    public VncTinyList(
+            final VncTinyList vec,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+        this.len = vec.len;
+        this.first = vec.first;
+        this.second = vec.second;
+        this.third = vec.third;
+        this.fourth = vec.fourth;
+    }
+
 
     private VncTinyList(final int len, final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
         super(meta);
@@ -121,6 +136,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncList withMeta(final VncVal meta) {
         return new VncTinyList(len, first, second, third, fourth, meta);
+    }
+
+    @Override
+    public VncList wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncTinyList(this, wrappingTypeDef, meta);
     }
 
     @Override

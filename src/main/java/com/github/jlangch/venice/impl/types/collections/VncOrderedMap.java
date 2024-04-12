@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
@@ -51,6 +52,13 @@ public class VncOrderedMap extends VncMap {
         this((io.vavr.collection.LinkedHashMap<VncVal,VncVal>)null, meta);
     }
 
+    public VncOrderedMap(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        this(null, wrappingTypeDef, meta);
+    }
+
     public VncOrderedMap(final java.util. Map<? extends VncVal,? extends VncVal> vals) {
         this(vals, null);
     }
@@ -60,7 +68,24 @@ public class VncOrderedMap extends VncMap {
     }
 
     public VncOrderedMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {
-        super(meta == null ? Constants.Nil : meta);
+        super(meta);
+        if (val == null) {
+            value = io.vavr.collection.LinkedHashMap.empty();
+        }
+        else if (val instanceof io.vavr.collection.LinkedHashMap) {
+            value = (io.vavr.collection.LinkedHashMap<VncVal,VncVal>)val;
+        }
+        else {
+            value = io.vavr.collection.LinkedHashMap.ofEntries(val);
+        }
+    }
+
+    public VncOrderedMap(
+            final io.vavr.collection.Map<VncVal,VncVal> val,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
         if (val == null) {
             value = io.vavr.collection.LinkedHashMap.empty();
         }
@@ -129,13 +154,25 @@ public class VncOrderedMap extends VncMap {
     }
 
     @Override
+    public VncOrderedMap wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncOrderedMap(value, wrappingTypeDef, meta);
+    }
+
+    @Override
     public VncKeyword getType() {
-        return new VncKeyword(
-                        TYPE,
-                        MetaUtil.typeMeta(
-                            new VncKeyword(VncMap.TYPE),
-                            new VncKeyword(VncCollection.TYPE),
-                            new VncKeyword(VncVal.TYPE)));
+        return isWrapped() ? new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncOrderedMap.TYPE),
+                                        new VncKeyword(VncMap.TYPE),
+                                        new VncKeyword(VncCollection.TYPE),
+                                        new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                    VncOrderedMap.TYPE,
+                                    MetaUtil.typeMeta(
+                                            new VncKeyword(VncMap.TYPE),
+                                            new VncKeyword(VncCollection.TYPE),
+                                            new VncKeyword(VncVal.TYPE)));
     }
 
     @Override

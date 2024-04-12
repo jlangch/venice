@@ -262,4 +262,153 @@ public class SpecialFormsTest_deftype_of {
 
         venice.eval(script);
     }
+
+
+
+    @Test
+    public void test_deftype_of_vector_large() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/vector)                      \n" +
+                "  (first (colors. [:red :green :blue :white :yellow])))  ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_vector_large_validation_OK() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/vector #(every? keyword? %)) \n" +
+                "  (first (colors. [:red :green :blue :white :yellow])))  ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_vector_large_validation_FAIL() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/vector #(every? keyword? %)) \n" +
+                "  (first (colors. [:red :green :blue 1000 :white :yellow])))  ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_vector_tiny() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                       \n" +
+                "  (deftype-of :colors :core/vector)       \n" +
+                "  (first (colors. [:red :green :blue])))  ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_vector_tiny_validation_OK() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/vector #(every? keyword? %)) \n" +
+                "  (first (colors. [:red :green :blue])))  ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_vector_tiny_validation_FAIL() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/vector #(every? keyword? %)) \n" +
+                "  (first (colors. [:red 1000 :blue])))  ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
+
+
+    @Test
+    public void test_deftype_of_list_large() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                       \n" +
+                "  (deftype-of :colors :core/list)                         \n" +
+                "  (first (colors. '(:red :green :blue :white :yellow))))  ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_list_large_validation_OK() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/list #(every? keyword? %))   \n" +
+                "  (first (colors. '(:red :green :blue :white :yellow)))) ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_list_large_validation_FAIL() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/list #(every? keyword? %))   \n" +
+                "  (first (colors. '(:red 1000 :blue :white :yellow))))   ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_list_tiny() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                       \n" +
+                "  (deftype-of :colors :core/list)         \n" +
+                "  (first (colors. '(:red :green :blue))))  ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_list_tiny_validation_OK() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/list #(every? keyword? %))   \n" +
+                "  (first (colors. '(:red :green :blue))))                ";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_list_tiny_validation_FAIL() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :colors :core/list #(every? keyword? %))   \n" +
+                "  (first (colors. '(:red 1000 :blue))))                  ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
 }

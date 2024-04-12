@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -41,11 +42,18 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 public class VncHashSet extends VncSet {
 
     public VncHashSet() {
-        this(null, null);
+        this((io.vavr.collection.Set<VncVal>)null, null);
     }
 
     public VncHashSet(final VncVal meta) {
-        this(null, meta);
+        this((io.vavr.collection.Set<VncVal>)null, meta);
+    }
+
+    public VncHashSet(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        this(null, wrappingTypeDef, meta);
     }
 
     public VncHashSet(final io.vavr.collection.Set<VncVal> val) {
@@ -58,6 +66,23 @@ public class VncHashSet extends VncSet {
             value = io.vavr.collection.HashSet.empty();
         }
         else if (val instanceof io.vavr.collection.HashSet) {
+            value = (io.vavr.collection.HashSet<VncVal>)val;
+        }
+        else {
+            value = io.vavr.collection.HashSet.ofAll(val);
+        }
+    }
+
+    public VncHashSet(
+            final io.vavr.collection.Set<VncVal> val,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+        if (val == null) {
+            value = io.vavr.collection.HashSet.empty();
+        }
+        else if (val instanceof io.vavr.collection.TreeSet) {
             value = (io.vavr.collection.HashSet<VncVal>)val;
         }
         else {
@@ -100,13 +125,25 @@ public class VncHashSet extends VncSet {
     }
 
     @Override
+    public VncHashSet wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncHashSet(value, wrappingTypeDef, meta);
+    }
+
+    @Override
     public VncKeyword getType() {
-        return new VncKeyword(
-                        TYPE,
-                        MetaUtil.typeMeta(
-                            new VncKeyword(VncSet.TYPE),
-                            new VncKeyword(VncCollection.TYPE),
-                            new VncKeyword(VncVal.TYPE)));
+        return isWrapped() ? new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncHashSet.TYPE),
+                                        new VncKeyword(VncSet.TYPE),
+                                        new VncKeyword(VncCollection.TYPE),
+                                        new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                    VncHashSet.TYPE,
+                                    MetaUtil.typeMeta(
+                                            new VncKeyword(VncSet.TYPE),
+                                            new VncKeyword(VncCollection.TYPE),
+                                            new VncKeyword(VncVal.TYPE)));
     }
 
     @Override
