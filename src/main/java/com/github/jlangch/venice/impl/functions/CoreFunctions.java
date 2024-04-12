@@ -5309,8 +5309,8 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(every? pred coll)")
                     .doc(
-                        "Returns true if the predicate is true for all collection items, " +
-                        "false otherwise.")
+                        "Returns true if coll is a collection and the predicate is " +
+                        "true for all collection items, false otherwise.")
                     .examples(
                         "(every? number? nil)",
                         "(every? number? [])",
@@ -5337,7 +5337,7 @@ public class CoreFunctions {
                     pred.sandboxFunctionCallValidation();
 
                     if (coll.isEmpty()) {
-                        return False;
+                        return True;
                     }
 
                     return VncBoolean.of(
@@ -5359,8 +5359,8 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(not-every? pred coll)")
                     .doc(
-                        "Returns false if the predicate is true for all collection items, " +
-                        "true otherwise")
+	                    "Returns true if coll is a collection and the predicate is " +
+	                    "not true for all collection items, false otherwise.")
                     .examples(
                         "(not-every? number? nil)",
                         "(not-every? number? [])",
@@ -5375,9 +5375,28 @@ public class CoreFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                return VncBoolean.of(VncBoolean.isFalse(every_Q.apply(args)));
+                if (args.second() == Nil) {
+                    return False;
+                }
+                else {
+                    final IVncFunction pred = Coerce.toIVncFunction(args.first());
+                    final VncCollection coll = Coerce.toVncCollection(args.second());
+
+                    pred.sandboxFunctionCallValidation();
+
+                    if (coll.isEmpty()) {
+                        return True;
+                    }
+
+                    return VncBoolean.of(
+                                coll.toVncList()
+                                    .stream()
+                                    .anyMatch(v -> {
+                                       final VncVal r = pred.apply(VncList.of(v));
+                                       return r == Nil || VncBoolean.isFalse(r); }));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

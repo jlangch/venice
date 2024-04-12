@@ -1554,7 +1554,7 @@ public class CoreFunctionsTest {
         final Venice venice = new Venice();
 
         assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) nil)"));
-        assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) [])"));
+        assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) [])"));
         assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) [:a])"));
         assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) [:a 1 2])"));
         assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) (set :a 1 2))"));
@@ -3605,7 +3605,7 @@ public class CoreFunctionsTest {
     public void test_not_every_Q() {
         final Venice venice = new Venice();
 
-        assertTrue((Boolean)venice.eval("(not-every? (fn [x] (number? x)) nil)"));
+        assertFalse((Boolean)venice.eval("(not-every? (fn [x] (number? x)) nil)"));
         assertTrue((Boolean)venice.eval("(not-every? (fn [x] (number? x)) [])"));
         assertTrue((Boolean)venice.eval("(not-every? (fn [x] (number? x)) [:a])"));
         assertTrue((Boolean)venice.eval("(not-every? (fn [x] (number? x)) [:a 1 2])"));
