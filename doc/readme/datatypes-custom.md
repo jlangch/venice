@@ -314,10 +314,10 @@ a string and has well defined constraints.
 
 ```clojure
 (do
-  ; the type :colors1 is a vector
+  ; the type :colors1 is a vector with values of any type
   (deftype-of :colors1 :vector)
   
-  ; the type :colors1 is a vector of keywords
+  ; the type :colors2 is a vector of keywords
   (deftype-of :colors2 :vector #(every? keyword? %))
   
   (first (colors1. [:red :green "blue"]))
@@ -330,10 +330,10 @@ a string and has well defined constraints.
 
 ```clojure
 (do
-  ; the type :units is a vector
+  ; the type :units1 is a hash-set with values of any type
   (deftype-of :units1 :hash-set)
   
-  ; the type :units2 is a vector of keywords
+  ; the type :units2 is a hash-set of keywords
   (deftype-of :units2 :hash-set #(every? keyword? %))
   
   (contains? (units1. #{:mm :cm "m"}) :mm)
