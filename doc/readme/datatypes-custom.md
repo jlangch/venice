@@ -9,9 +9,9 @@ to define custom types will make a domain model more expressive and type safe.
 
 Venice custom types are composed from 'smaller' types:
 
-- Composing types with "AND" (records)
-- Composing types with "OR" (choices)
-- Wrapping types (constraints)
+- [Composing types with "AND" (records)](#composing-types-with-and)
+- [Composing types with "OR" (choices)](#composing-types-with-or)
+- [Wrapper types (constraints)](#wrapper-types)
 
 **Validation**
 
@@ -285,6 +285,8 @@ on them. An eMail address is not just a string it's represented by
 a string and has well defined constraints.
 
 
+**Primitive types**
+
 ```clojure
 (do
   ; the type :first-name is a string (values cannot be nil)
@@ -305,6 +307,40 @@ a string and has well defined constraints.
   ;   (string? name) => true 
   (println (str/format "%s: length=%d" name (count name))))
 ```
+
+
+**List and Vectors**
+
+
+```clojure
+(do
+  ; the type :colors1 is a vector
+  (deftype-of :colors1 :vector)
+  
+  ; the type :colors1 is a vector of keywords
+  (deftype-of :colors2 :vector #(every? keyword? %))
+  
+  (first (colors1. [:red :green "blue"]))
+  
+  (first (colors2. [:red :green :blue])))
+```
+
+**Sets and Maps**
+
+
+```clojure
+(do
+  ; the type :units is a vector
+  (deftype-of :units1 :hash-set)
+  
+  ; the type :units2 is a vector of keywords
+  (deftype-of :units2 :hash-set #(every? keyword? %))
+  
+  (contains? (units1. #{:mm :cm "m"}) :mm)
+  
+  (contains? (units2. #{:mm :cm :m}) :mm))
+```
+
 
 Venice implicitly creates a builder function suffixed with a dot
  
