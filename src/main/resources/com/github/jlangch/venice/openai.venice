@@ -65,3 +65,5 @@
 (def :endpoint-gpt-new "https://api.openai.com/v1/chat/completions")
 (def :endpoint-gpt-old "https://api.openai.com/v1/completions")
 
+;; todo: define the custom datatypes for the request and the response
+
