@@ -57,6 +57,7 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.IRepl;
+import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.LicenseMgr;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.SourceCodeRenderer;
@@ -1182,7 +1183,13 @@ public class REPL implements IRepl {
 
 
     private void handleException(final Exception ex) {
-        if (ex instanceof SymbolNotFoundException) {
+        if (ex instanceof InterruptedException) {
+            printer.println("stdout", "\nRunning interrupt hooks");
+            Thread.interrupted();
+            SystemFunctions.runInterruptHooks();
+            printer.printex("error", ex);
+        }
+        else if (ex instanceof SymbolNotFoundException) {
             handleSymbolNotFoundException((SymbolNotFoundException)ex);
         }
         else {

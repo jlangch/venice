@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -349,6 +351,48 @@ public class SystemFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+        public static VncFunction interrupt_hook =
+        new VncFunction(
+                "interrupt-hook",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(interrupt-hook id)",
+                        "(interrupt-hook id f)")
+                    .doc(
+                        "Registers the function f as a Venice interrupt hook.\n\n" +
+                        "The hook is called on an interrupt exception from the " +
+                        "Venice interpreter.\n\n" +
+                        "With a single id argument removes the hook for the id. " +
+                        "With an additional function argument adds the hook function " +
+                        "for the id.")
+                    .examples(
+                        "(interrupt-hook \"ID-123\" (fn [] (println \"interrupted\")))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
+
+                sandboxFunctionCallValidation();
+
+                final VncString id = Coerce.toVncString(args.first());
+
+                if (args.size() == 1) {
+                    interruptHooks.remove(id);
+                }
+                else {
+                    final VncFunction fn = Coerce.toVncFunction(args.second());
+                    fn.sandboxFunctionCallValidation();
+
+                    interruptHooks.put(id, fn);
+                }
+
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction callstack =
         new VncFunction(
@@ -947,6 +991,24 @@ public class SystemFunctions {
     }
 
 
+    public static void runInterruptHooks() {
+        try {
+            interruptHooks.forEach((k,v) -> {
+                try {
+                    v.applyOf();
+                }
+                catch(Exception ex) { /* skip */ }
+            });
+
+            // run the hooks just once
+            interruptHooks.clear();
+        }
+        catch(Exception ex) {
+            /* skip */
+        }
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
@@ -962,6 +1024,7 @@ public class SystemFunctions {
                     .add(gc)
                     .add(cpus)
                     .add(shutdown_hook)
+                    .add(interrupt_hook)
                     .add(callstack)
                     .add(os_type)
                     .add(os_type_Q)
@@ -991,4 +1054,6 @@ public class SystemFunctions {
     public static final VncKeyword CALLSTACK_KEY_COL = new VncKeyword(":col");
 
     public static final AtomicInteger SYSTEM_EXIT_CODE = new AtomicInteger(0);
+
+    public static final Map<VncVal,IVncFunction> interruptHooks = new ConcurrentHashMap<>();
 }
