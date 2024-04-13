@@ -308,7 +308,7 @@ The Java 8 Http Client does not support HTTP/2!
 
 ### Sending Requests Examples
 
-GET (get)
+GET (get, pretty printed JSON response)
 
 ```clojure
 (do
@@ -337,6 +337,34 @@ GET (get)
   "name": "mary",
   "id": "1002"
 }]
+```
+
+
+GET (get, JSON response converted to Venice data)
+
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+  (let [response (hc/send :get 
+                          "http://localhost:8080/employees" 
+                          :headers { "Accept" "application/json, text/plain" }
+                          :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)
+    (println (slurp-response response :json-parse-mode :data :json-key-fn keyword))))
+```
+
+```clojure
+({:name mary 
+  :role team-lead 
+  :id 1002} 
+ {:name hanna 
+  :role secretary 
+  :id 1003} 
+ {:name john 
+  :role clerk 
+  :id 1001})
 ```
 
 

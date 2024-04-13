@@ -895,9 +895,11 @@
 
 (defn- format-header [name value]
   ;; hide authorization header values with "******"
-  (str/format "%s: %s" 
-              name
-              (if (str/equals-ignore-case? name "Authorization") "******" value)))
+  (if (nil? name)
+    (str/format "<nil>: %s" value)
+    (str/format "%s: %s" 
+                name
+                (if (str/equals-ignore-case? name "Authorization") "******" value))))
 
 
 (defn- parse-content-encoding [encoding]
@@ -932,8 +934,8 @@
          data     (io/slurp-stream is :binary false :encoding charset)]
      (case json-parse-mode
        :data            (if json-key-fn
-                          (json/read-str :key-fn json-key-fn)
-                          (json/read-str))
+                          (json/read-str data :key-fn json-key-fn)
+                          (json/read-str data))
        :pretty-print    (-> (json/read-str data)
                             (json/write-str)
                             (json/pretty-print))
