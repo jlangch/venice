@@ -352,7 +352,7 @@ GET (get, JSON response converted to Venice data)
                           :debug true)
         status   (:http-status response)]
     (println "Status:" status)
-    (println (slurp-response response :json-parse-mode :data :json-key-fn keyword))))
+    (prn (slurp-response response :json-parse-mode :data :json-key-fn keyword))))
 ```
 
 ```clojure
