@@ -591,7 +591,7 @@
       (println "   slurp-plain:       " slurp-plain)
       (println "   slurp-json:        " slurp-json)
       (println "   slurp-binary:      " slurp-binary)
-      (println "   json-mode:         " json-mode)
+      (println "   json-parse-mode:   " json-parse-mode)
       (println))
 
     (cond
@@ -930,13 +930,15 @@
    (let [charset  (or (str/trim-to-nil charset) :utf-8)
          is       (wrap-is-with-decompressor is encoding)
          data     (io/slurp-stream is :binary false :encoding charset)]
-     (if (= :data json-mode) 
-       (if json-key-fn
-         (json/read-str :key-fn json-key-fn)
-         (json/read-str))
-       (-> (json/read-str data)
-           (json/write-str)
-           (json/pretty-print)))))
+     (case json-parse-mode
+       :data            (if json-key-fn
+                          (json/read-str :key-fn json-key-fn)
+                          (json/read-str))
+       :pretty-print    (-> (json/read-str data)
+                            (json/write-str)
+                            (json/pretty-print))
+       ;; return the raw data
+       data)))
 
 
 (defn- slurp-as-binary [is encoding]
