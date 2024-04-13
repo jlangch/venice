@@ -252,14 +252,13 @@ Processes the server side events (SSE) sent from the server.
 
 `(process-server-side-events response handler)`
 
-Processes server side events (SSE) and calls for every the event 
-handler 'handler'.
+Calls for every received SSE event the passed handler function.
 
 Note: The response must be of the mimetype "text/event-stream" otherwise the processor throws an exception!
 
 The event handler is a three argument function:
   
-`handler [type event event-count]`
+`(defn handler [type event event-count] ...)`
 
 | Handler argument | Description |
 | :---             | :---        |
@@ -307,11 +306,210 @@ The Java 8 Http Client does not support HTTP/2!
 * [Processing server-side-events Examples](#processing-server-side-events-examples)
 
 
-
 ### Sending Requests Examples
+
+GET (get)
+
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+  (let [response (hc/send :get 
+                          "http://localhost:8080/employees" 
+                          :headers { "Accept" "application/json, text/plain" }
+                          :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)
+    (println (slurp-response response :json-parse-mode :pretty-print))))
+```
+
+POST (create)
+
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  
+  (let [response (hc/send :post 
+                          "http://localhost:8080/employees" 
+                          :headers {"Accept"       "application/json, text/plain"
+                                    "Content-Type" "application/json"}
+                          :body (json/write-str { "name" "hanna", 
+                                                  "role" "secretary" })
+                          :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)
+    (println (hc/slurp-response response :json-parse-mode :pretty-print))))
+```
+
+PUT (update)
+
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  
+  (let [response (hc/send :put 
+                          "http://localhost:8080/employees/1001" 
+                          :headers {"Accept"       "application/json, text/plain"
+                                    "Content-Type" "application/json"}
+                          :body (json/write-str { "id"   "1001", 
+                                                  "name" "john", 
+                                                  "role" "clerk" })
+                          :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)
+    (println (hc/slurp-response response :json-parse-mode :pretty-print))))
+```
+
+DELETE (delete)
+
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  
+  (let [response (hc/send :delete 
+                          "http://localhost:8080/employees/1000" 
+                          :headers { "Accept" "text/plain" }
+                          :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)
+    (println (hc/slurp-response response))))
+```
+
+GET over SSL
+
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  (load-module :java ['java :as 'j])
+
+  (import :com.github.jlangch.venice.util.ssl.CustomHostnameVerifier)
+  (import :com.github.jlangch.venice.util.ssl.Server_X509TrustManager)
+  (import :com.github.jlangch.venice.util.ssl.TrustAll_X509TrustManager)
+  (import :com.github.jlangch.venice.util.ssl.SSLSocketFactory)
+  (import :java.security.cert.X509Certificate)
+
+  (defn verify-host [hostname]
+      (case hostname
+        "localhost"  true
+        "foo.org"    true
+        false))
+
+  (defn check-trust-server  [certs auth-type]
+    (doseq [c certs] (. c :checkValidity))
+    (any? #(= "Foo" (. (. % :getIssuerDN) :getName)) certs))
+
+
+  (let [trust-manager-all     (. :TrustAll_X509TrustManager :new)
+        trust-manager-server  (. :Server_X509TrustManager :new (j/as-bipredicate check-trust-server))
+        hostname-verifier     (. :CustomHostnameVerifier :new verify-host)
+        response (hc/send :get 
+                          "https://localhost:8080/employees" 
+                          :headers { "Accept" "application/json, text/plain" }
+                          :hostname-verifier  hostname-verifier
+                          :ssl-socket-factory (. :SSLSocketFactory trust-manager-all)
+                          :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)
+    (println (hc/slurp-response response))))
+```
+
+OAuth blueprint
+
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+  (defn get-access-token [api-key api-key-secret]
+    (let [encoded-secret (-> (str api-key ":" api-key-secret)
+                              (bytebuf-from-string :utf-8)
+                              (str/encode-base64))
+          response (hc/send :post 
+                            "https://.../oauth2/token" 
+                            :headers { "Accept" "application/json, text/plain"
+                                        "Authorization" (str "Basic " encoded-secret)
+                                        "Content-Type" "application/x-www-form-urlencoded" }
+                            :body "grant_type=client_credentials")
+        status   (:http-status response)
+        mimetype (:content-type-mimetype response)
+        charset  (:content-type-charset response)]
+      (if (and (= 200 status) (= "application/json" mimetype))
+        (as-> (:data-stream response) v
+              (hc/slurp-json v charset)
+              (get v "access_token"))
+        (throw (ex VncException "Failed to get OAuth access token")))))
+  
+  (defn list-member [access-token list-id]
+    (let [response (hc/send :get 
+                            (str "https://.../1.1/lists/members.json?list_id=" list-id) 
+                            :headers { "Accept" "application/json, text/plain" 
+                                        "Authorization" (str "Bearer "  accessToken)})
+        status   (:http-status response)]
+      (println "Status:" status)
+      (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
+```
+
+
 
 ### Uploading Files Examples
 
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  
+  (let [response (hc/upload-file
+                      (io/file "/Users/foo/image.png") 
+                      "http://localhost:8080/upload" 
+                      :headers { "Accept" "text/plain" }
+                      :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)))
+```
+
+
 ### Uploading Multipart Data Examples
 
+```clojure
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  
+  (let [response (hc/upload-multipart
+                      { "image1" (io/file "/Users/foo/image1.png") 
+                        "image2" (io/file "/Users/foo/image2.png") }                                
+                      "http://localhost:8080/upload" 
+                      :headers { "Accept" "text/plain" }
+                      :debug true)
+        status   (:http-status response)]
+    (println "Status:" status)))
+```
+
+
 ### Processing server-side-events Examples
+
+```clojure       
+(do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+  (let [response (hc/send :get 
+                          "http://localhost:8080/events" 
+                          :headers { "Accept"         "text/event-stream" 
+                                      "Cache-Control"  "no-cache"
+                                      "Connection"     "keep-alive"}
+                              :conn-timeout 0
+                              :read-timeout 0
+                              :debug true)]
+        (println "Status:" (:http-status response))
+
+        ;; process the first 10 events and close the stream
+        (hc/process-server-side-events 
+          response
+          (fn [type event event-count]
+            (case type
+              :opened (do (println "\\nStreaming started")
+                          :ok)
+              :data   (do (println "Event: " event)
+                          ;; only process 10 events
+                          (if (< event-count 10) :ok :stop))
+              :closed (do (println "Streaming closed")
+                          :ok))))))
+```
+

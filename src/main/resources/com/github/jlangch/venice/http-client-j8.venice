@@ -609,7 +609,7 @@
  ^{ :arglists '(
          "(process-server-side-events response handler)")
      :doc """
-          Processes server side events (SSE) and calls for every the event 
+          Processes server side events (SSE) and calls for every event the
           handler 'handler'.
 
           Note: The response must be of the mimetype "text/event-stream"
@@ -617,7 +617,7 @@
 
           The event handler is a three argument function:
           
-          `handler [type event event-count]`
+          `(defn handler [type event event-count] ...)`
 
           | *type*        | the notification type: ¶\
                             \u00A0\u00A0 `:opened` - streaming started ¶\
