@@ -30,20 +30,20 @@ Due to its nature it only supports HTTP/1.1 and HTTP/1.2.
 
 `(send method uri & options)`
 
-Send a request given a request method, an uri and options.
+Send a request given a method, an uri and options.
 
 
-*Request argument method:*
+#### Parameter method
 
-The request name:  `:get`, `:post`,`:put`,`:delete`, ...
+The request method:  `:get`, `:post`,`:put`,`:delete`, ...
 
 
-*Request argument uri:*
+#### Parameter uri
 
 The request URI
 
 
-*Request argument options:*
+#### Parameter options
 
 | Option             |Description |
 | :---               | :---       |
@@ -59,9 +59,9 @@ The request URI
 | :debug              | Debug true/false. Defaults to false.In debug mode prints the HTTP request and response data  |
 
 
-*Returns a map with the response fields:*
+#### Return value
 
-| Option             |Description |
+| Field              |Description |
 | :---               | :---       |
 | :http-status       | The HTTP status (a long) |
 | :content-type      | The content type. E.g.: "text/plain; charset=utf8" |
@@ -83,6 +83,47 @@ Upload a file
 Upload a file given a file, an uri and options.
 
 
+#### Parameter file
+
+The file to upload
+
+
+#### Parameter uri
+
+The request URI
+
+
+#### Parameter options
+
+| Option             |Description |
+| :---               | :---       |
+| :headers           | A map of request headers. Headers can be single- or multi-value (comma separated):<br>{"X-Header-1" "value1"<br>"X-Header-2" "value1, value2, value3"} |
+| :body              | An optional body to send with the request. The body may be of type *string*, *bytebuf*, or `:java.io.InputStream` |
+| :conn-timeout      | An optional connection timeout in milliseconds |
+| :read-timeout      | An optional read timeout in milliseconds |
+| :follow-redirects  | Sets whether HTTP redirects (requests with response code 3xx) should be automatically followed. |
+| :hostname-verifier | Sets the hostname verifier. An object of type `:javax.net.ssl.HostnameVerifier`.<br> Use only for HTTPS requests |
+| :ssl-socket-factory | Sets the SSL socket factory. An object of type `:javax.net.ssl.SSLSocketFactory`.<br> Use only for HTTPS requests |
+| :use-caches         | A boolean indicating whether or not to allow caching. Defaults to false |
+| :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+| :debug              | Debug true/false. Defaults to false.In debug mode prints the HTTP request and response data  |
+
+
+#### Return value
+
+| Field              |Description |
+| :---               | :---       |
+| :http-status       | The HTTP status (a long) |
+| :content-type      | The content type. E.g.: "text/plain; charset=utf8" |
+| :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
+| :content-type-charset   | The content type's charset. E.g.: :utf-8 |
+| :content-encoding  | The content transfer encoding (a keyword), if available else nil. E.g.: "gzip" |
+| :content-length    | The content length (a long), if available else -1 |
+| :headers           | A map of headers. key: header name, value: list of header values |
+| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data. |   
+
+
+
 
 
 ### Uploading Multipart Data
@@ -91,10 +132,13 @@ Upload multipart data
 
 `(upload-multipart parts uri & options)`
 
+
+
+#### Parameter parts
+
 The upload support file parts and generic parts. Any number of parts
 can be uploaded.
 
-The parts are passed as a map of part data:
 
 ```
 { ;; a string part 
@@ -116,6 +160,40 @@ The parts are passed as a map of part data:
              :charset   :utf-8
              :data      "<user><name>foo</name></user>" }})
 ```
+
+#### Parameter uri
+
+The request URI
+
+
+#### Parameter options
+
+| Option             |Description |
+| :---               | :---       |
+| :headers           | A map of request headers. Headers can be single- or multi-value (comma separated):<br>{"X-Header-1" "value1"<br>"X-Header-2" "value1, value2, value3"} |
+| :body              | An optional body to send with the request. The body may be of type *string*, *bytebuf*, or `:java.io.InputStream` |
+| :conn-timeout      | An optional connection timeout in milliseconds |
+| :read-timeout      | An optional read timeout in milliseconds |
+| :follow-redirects  | Sets whether HTTP redirects (requests with response code 3xx) should be automatically followed. |
+| :hostname-verifier | Sets the hostname verifier. An object of type `:javax.net.ssl.HostnameVerifier`.<br> Use only for HTTPS requests |
+| :ssl-socket-factory | Sets the SSL socket factory. An object of type `:javax.net.ssl.SSLSocketFactory`.<br> Use only for HTTPS requests |
+| :use-caches         | A boolean indicating whether or not to allow caching. Defaults to false |
+| :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+| :debug              | Debug true/false. Defaults to false.In debug mode prints the HTTP request and response data  |
+
+
+#### Return value
+
+| Field              |Description |
+| :---               | :---       |
+| :http-status       | The HTTP status (a long) |
+| :content-type      | The content type. E.g.: "text/plain; charset=utf8" |
+| :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
+| :content-type-charset   | The content type's charset. E.g.: :utf-8 |
+| :content-encoding  | The content transfer encoding (a keyword), if available else nil. E.g.: "gzip" |
+| :content-length    | The content length (a long), if available else -1 |
+| :headers           | A map of headers. key: header name, value: list of header values |
+| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data. |   
 
 
 
