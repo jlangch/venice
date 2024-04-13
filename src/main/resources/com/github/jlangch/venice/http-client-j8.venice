@@ -393,8 +393,8 @@
      :doc """
           Upload multiple parts.
 
-          The upload support file parts and generic parts. Any number of parts
-          can be uploaded.
+          The upload supports string parts, file parts, and generic parts. 
+          Any number of parts can be uploaded.
 
           The parts are passed as a map of part data:
 
@@ -535,7 +535,6 @@
                                  property names. This option is only available \
                                  in `:data` parse mode ¶\
                                  E.g.: `:json-key-fn keyword` |
-
           """ 
      :examples '(
           """

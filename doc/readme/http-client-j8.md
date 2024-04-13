@@ -1,4 +1,4 @@
-# HTTP Client (Java8+)
+# HTTP Client (Java 8+)
 
 * [Overview](#overview)
 * [Api](#api)
@@ -9,7 +9,7 @@
 ## Overview
 
 A HTTP client based on the Java *HttpUrlConnection*. The client runs out-of-the-box
-and does not require any 3rd party libraries.
+and does not require any 3rd party libraries and runs on Java 8 and higher.
 
 Main  features:
 * Sending GET, POST, PUT, DELETE, ... requests
@@ -30,7 +30,7 @@ Due to its nature it only supports HTTP/1.1 and HTTP/1.2.
 
 `(send method uri & options)`
 
-Send a request given a method, an uri and options.
+Send a request given a method, an uri, and request options.
 
 
 #### Parameter method
@@ -45,8 +45,8 @@ The request URI
 
 #### Parameter options
 
-| Option             |Description |
-| :---               | :---       |
+| Option             | Description |
+| :---               | :---        |
 | :headers           | A map of request headers. Headers can be single- or multi-value (comma separated):<br>{"X-Header-1" "value1"<br>"X-Header-2" "value1, value2, value3"} |
 | :body              | An optional body to send with the request. The body may be of type *string*, *bytebuf*, or `:java.io.InputStream` |
 | :conn-timeout      | An optional connection timeout in milliseconds |
@@ -61,8 +61,10 @@ The request URI
 
 #### Return value
 
-| Field              |Description |
-| :---               | :---       |
+The send function returns a map with the HTTP response data:
+
+| Field              | Description |
+| :---               | :---        |
 | :http-status       | The HTTP status (a long) |
 | :content-type      | The content type. E.g.: "text/plain; charset=utf8" |
 | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
@@ -80,7 +82,7 @@ Upload a file
 
 `(upload-file file uri & options)`
 
-Upload a file given a file, an uri and options.
+Upload a file given an uri and options.
 
 
 #### Parameter file
@@ -95,8 +97,8 @@ The request URI
 
 #### Parameter options
 
-| Option             |Description |
-| :---               | :---       |
+| Option             | Description |
+| :---               | :---        |
 | :headers           | A map of request headers. Headers can be single- or multi-value (comma separated):<br>{"X-Header-1" "value1"<br>"X-Header-2" "value1, value2, value3"} |
 | :body              | An optional body to send with the request. The body may be of type *string*, *bytebuf*, or `:java.io.InputStream` |
 | :conn-timeout      | An optional connection timeout in milliseconds |
@@ -111,8 +113,10 @@ The request URI
 
 #### Return value
 
-| Field              |Description |
-| :---               | :---       |
+The upload function returns a map with the HTTP response data:
+
+| Field              | Description |
+| :---               | :---        |
 | :http-status       | The HTTP status (a long) |
 | :content-type      | The content type. E.g.: "text/plain; charset=utf8" |
 | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
@@ -132,12 +136,13 @@ Upload multipart data
 
 `(upload-multipart parts uri & options)`
 
+Upload multipart data given its parts, an uri, and request options
+
 
 
 #### Parameter parts
 
-The upload support file parts and generic parts. Any number of parts
-can be uploaded.
+The upload support string parts, file parts, and generic parts. Any number of parts can be uploaded.
 
 
 ```
@@ -168,8 +173,8 @@ The request URI
 
 #### Parameter options
 
-| Option             |Description |
-| :---               | :---       |
+| Option             | Description |
+| :---               | :---        |
 | :headers           | A map of request headers. Headers can be single- or multi-value (comma separated):<br>{"X-Header-1" "value1"<br>"X-Header-2" "value1, value2, value3"} |
 | :body              | An optional body to send with the request. The body may be of type *string*, *bytebuf*, or `:java.io.InputStream` |
 | :conn-timeout      | An optional connection timeout in milliseconds |
@@ -184,8 +189,10 @@ The request URI
 
 #### Return value
 
-| Field              |Description |
-| :---               | :---       |
+The upload function returns a map with the HTTP response data:
+
+| Field              | Description |
+| :---               | :---        |
 | :http-status       | The HTTP status (a long) |
 | :content-type      | The content type. E.g.: "text/plain; charset=utf8" |
 | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
@@ -199,9 +206,50 @@ The request URI
 
 ### Processing responses
 
+Slurps the response data from the response' input stream.
+
+`(slurp-response response & options)`
+
+Returns the data according to the mimetype and charset of the 'Content-Type' response header.
+
+Handles a 'Content-Encoding' transparently. Supports the encodings 'gzip' and 'deflate'. Other encodings are rejected with an exception.
+
+The functions returns the response data based on the response mimetype:
+
+| Mimetype          | Description |
+| :---              | :---        |
+| application/xml   | Returns a string according to the content type charset |
+| application/json  | Returns the parsed JSON as a map according to the content type charset |
+| text/plain        | Returns a string according to the content type charset |
+| text/html         | Returns a string according to the content type charset |
+| text/xml          | Returns a string according to the content type charset |
+| text/csv          | Returns a string according to the content type charset |
+| text/css          | Returns a string according to the content type charset |
+| text/json         | Returns the parsed JSON as a map according to the content type charset |
+| text/event-stream | Throws an exception. An event stream can not be slurped. Use the function `process-server-side-events` instead! |
+| else              | Returns a byte buffer |
+
+
+#### Parameter response
+
+A response returned from one of the HTTP send or upload functions. 
+
+
+#### Parameter options
+
+| Option             | Description |
+| :---               | :---        |
+| :json-parse-mode   | The option is used with JSON mimetypes.
+                        * `:data` - parse the response to a Venice data map
+                        * `:raw` - return the reponse as received
+                        * `:pretty-print` - return a pretty print JSON string
+                       Defaults to `:data` |
+| :json-key-fn       | A single argument function that transforms JSON property names. This option is only available in `:data` parse mode. E.g.: `:json-key-fn keyword` |
 
 
 ### Processing server-side-events
+
+
 
 
 
