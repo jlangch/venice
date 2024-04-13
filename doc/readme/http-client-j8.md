@@ -84,6 +84,8 @@ Upload a file
 
 Upload a file given an uri and options.
 
+Sets an implicit "Content-Type" header that is derived from the files's mimetype.
+
 
 #### Parameter file
 
@@ -138,6 +140,7 @@ Upload multipart data
 
 Upload multipart data given its parts, an uri, and request options
 
+Sets the "Content-Type" header to "multipart/form-data".
 
 
 #### Parameter parts
@@ -145,9 +148,9 @@ Upload multipart data given its parts, an uri, and request options
 The upload support string parts, file parts, and generic parts. Any number of parts can be uploaded.
 
 
-```
+```clojure
 { ;; a string part 
-  ;Part-1" "xxxxxxxxxxx"
+  "Part-1" "xxxxxxxxxxx"
 
   ;; a file part
   "Part-2" (io/file "/Users/juerg/Desktop/image.png")
@@ -249,6 +252,53 @@ A response returned from one of the HTTP send or upload functions.
 
 ### Processing server-side-events
 
+Processes the server side events (SSE) sent from the server.
+
+`(process-server-side-events response handler)`
+
+Processes server side events (SSE) and calls for every the event 
+handler 'handler'.
+
+Note: The response must be of the mimetype "text/event-stream" otherwise the processor throws an exception!
+
+The event handler is a three argument function:
+  
+`handler [type event event-count]`
+
+| Handler argument | Description |
+| :---             | :---        |
+| *type*           | the notification type: <br> `:opened` - streaming started <br> `:data` - streamed event<br> `:closed` - streaming closed by the server |
+| *event*          | the streamed event, available only if the notification type is `:data`, else `nil` |
+| *event-count*    | the streamed event count, starting with 1 and incremented with every event sent |
+
+If the event handler returns the value `:stop` the processer stops
+handling any further events and closes the data stream to signal
+the server not to send any further events and close the server side
+stream as well.
+
+Server side events are passed as maps to the handler. E.g. :
+
+```clojure
+{ :id    "1"
+  :event "score"
+  :data  [ "GOAL Liverpool 1 - 1 Arsenal"
+             "GOAL Manchester United 3 - 3 Manchester City" ] }
+```
+
+**Warning:**
+  
+When not used over HTTP/2, SSE suffers from a limitation to \
+the maximum number of open connections, which can be especially \
+painful when opening multiple tabs, as the limit is per browser and \
+is set to a very low number (6). The issue has been marked as \
+"Won't fix" in Chrome and Firefox. This limit is per browser + domain, \
+which means that you can open 6 SSE connections across all of the \
+tabs. 
+  
+When using HTTP/2, the maximum number of simultaneous HTTP streams \
+is negotiated between the server and the client (defaults to 100).
+
+The Java 8 Http Client does not support HTTP/2!
 
 
 

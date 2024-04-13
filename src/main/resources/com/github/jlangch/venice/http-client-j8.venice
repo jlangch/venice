@@ -313,7 +313,10 @@
 (defn 
   ^{ :arglists '("(upload-file file uri & options)")
      :doc """
-          Upload a file
+          Upload a file. 
+          
+          Sets an implicit "Content-Type" header that is derived from the 
+          files's mimetype.
 
           ¶¶*Request Options:*
 
@@ -395,6 +398,8 @@
 
           The upload supports string parts, file parts, and generic parts. 
           Any number of parts can be uploaded.
+
+          Sets the "Content-Type" header to "multipart/form-data".
 
           The parts are passed as a map of part data:
 
@@ -635,7 +640,7 @@
             :event "score"
             :data  [ "GOAL Liverpool 1 - 1 Arsenal"
                      "GOAL Manchester United 3 - 3 Manchester City" ] }
-          ``` 
+          ```
 
           **Warning:**
           
