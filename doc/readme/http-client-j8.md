@@ -242,11 +242,7 @@ A response returned from one of the HTTP send or upload functions.
 
 | Option             | Description |
 | :---               | :---        |
-| :json-parse-mode   | The option is used with JSON mimetypes.
-                        * `:data` - parse the response to a Venice data map
-                        * `:raw` - return the reponse as received
-                        * `:pretty-print` - return a pretty print JSON string
-                       Defaults to `:data` |
+| :json-parse-mode   | The option is used with JSON mimetypes.<br> `:data` - parse the response to a Venice data map<br>`:raw` - return the reponse as received<br>`:pretty-print` - return a pretty print JSON string<br>Defaults to `:data` |
 | :json-key-fn       | A single argument function that transforms JSON property names. This option is only available in `:data` parse mode. E.g.: `:json-key-fn keyword` |
 
 
