@@ -44,14 +44,16 @@ Send a request given a request method, an uri and options.
 
 *Returns a map with the response fields:*
 
-  | :http-status       | The HTTP status (a long) |
-  | :content-type      | The content type |
-  | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
-  | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
-  | :content-encoding  | The content transfer encoding (a keyword), if available else nil. E.g.: "gzip" |
-  | :content-length    | The content length (a long), if available else -1 |
-  | :headers           | A map of headers. key: header name, value: list of header values |
-  | :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data. |   
+| Option             |Description |
+| :---               | :---       |
+| :http-status       | The HTTP status (a long) |
+| :content-type      | The content type |
+| :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
+| :content-type-charset   | The content type's charset. E.g.: :utf-8 |
+| :content-encoding  | The content transfer encoding (a keyword), if available else nil. E.g.: "gzip" |
+| :content-length    | The content length (a long), if available else -1 |
+| :headers           | A map of headers. key: header name, value: list of header values |
+| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data. |   
 
 
 ### Uploading Files
