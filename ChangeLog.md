@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
   the streams
 - the HTTP client debug mode to print authorization header values as "******"
 - the `:ring` debug mode to print authorization header values as "******"
+- an edge case with function `str/equals-ignore-case?`
 
 
 

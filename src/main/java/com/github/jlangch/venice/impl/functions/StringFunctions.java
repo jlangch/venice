@@ -291,10 +291,10 @@ public class StringFunctions {
                 final VncVal v1 = args.first();
                 final VncVal v2 = args.second();
 
-                if (v1 == Nil || v2 == Nil) {
+                if (v1 == Nil && v2 == Nil) {
                     return True;
                 }
-                else if (v1 != Nil || v2 != Nil) {
+                else if (v1 != Nil && v2 != Nil) {
                     final String s1 = Coerce.toVncString(args.first()).getValue();
                     final String s2 = Coerce.toVncString(args.second()).getValue();
 

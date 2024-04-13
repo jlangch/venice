@@ -1128,7 +1128,6 @@ public class StringFunctionsTest {
     public void test_str_truncate() {
         final Venice venice = new Venice();
 
-
         assertEquals(null, venice.eval("(str/truncate nil 20 \"...\")"));
         assertEquals("", venice.eval("(str/truncate \"\" 20 \"...\")"));
         assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 20 \"...\")"));
@@ -1347,7 +1346,27 @@ public class StringFunctionsTest {
                                "    (str/normalize-utf \"test_u\\u0308.txt\" :NFC)))";
 
         assertTrue((Boolean)venice.eval(script2));
-     }
+    }
+
+
+    @Test
+    public void test_str_equals_ignore_caseQ() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(str/equals-ignore-case? nil nil)"));
+
+        assertFalse((Boolean)venice.eval("(str/equals-ignore-case? nil \"abc\")"));
+        assertFalse((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" nil)"));
+
+        assertTrue((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" \"abc\")"));
+        assertTrue((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" \"Abc\")"));
+        assertTrue((Boolean)venice.eval("(str/equals-ignore-case? \"Abc\" \"ABC\")"));
+        assertTrue((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" \"ABC\")"));
+        assertTrue((Boolean)venice.eval("(str/equals-ignore-case? \"ABC\" \"ABC\")"));
+
+        assertFalse((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" \"abcd\")"));
+        assertFalse((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" \"aBcd\")"));
+    }
 
 
     private static List<Character> toCharList(final String s) {
