@@ -429,9 +429,9 @@ OAuth blueprint
                                         "Authorization" (str "Basic " encoded-secret)
                                         "Content-Type" "application/x-www-form-urlencoded" }
                             :body "grant_type=client_credentials")
-        status   (:http-status response)
-        mimetype (:content-type-mimetype response)
-        charset  (:content-type-charset response)]
+          status   (:http-status response)
+          mimetype (:content-type-mimetype response)
+          charset  (:content-type-charset response)]
       (if (and (= 200 status) (= "application/json" mimetype))
         (as-> (:data-stream response) v
               (hc/slurp-json v charset)
@@ -443,7 +443,7 @@ OAuth blueprint
                             (str "https://.../1.1/lists/members.json?list_id=" list-id) 
                             :headers { "Accept" "application/json, text/plain" 
                                         "Authorization" (str "Bearer "  accessToken)})
-        status   (:http-status response)]
+          status   (:http-status response)]
       (println "Status:" status)
       (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
 ```
