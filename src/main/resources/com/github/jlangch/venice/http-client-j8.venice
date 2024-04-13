@@ -74,7 +74,7 @@
 
           | [![width: 20%]]    | [![width: 80%]] |
           | :http-status       | The HTTP status (a long) |
-          | :content-type      | The content type |
+          | :content-type      | The content type. E.g.: "text/plain\u003B charset=utf8" |
           | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
           | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
           | :content-encoding  | The content transfer encoding (a keyword), if \
