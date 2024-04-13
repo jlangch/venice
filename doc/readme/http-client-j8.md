@@ -356,15 +356,15 @@ GET (get, JSON response converted to Venice data)
 ```
 
 ```clojure
-({:name mary 
-  :role team-lead 
-  :id 1002} 
- {:name hanna 
-  :role secretary 
-  :id 1003} 
- {:name john 
-  :role clerk 
-  :id 1001})
+({:name "mary"
+  :role "team-lead"
+  :id "1002"}
+ {:name "hanna"
+  :role "secretary2"
+  :id "1003"}
+ {:name "john"
+  :role "clerk"
+  :id "1001"})
 ```
 
 
