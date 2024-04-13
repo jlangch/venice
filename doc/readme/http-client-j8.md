@@ -323,6 +323,23 @@ GET (get)
     (println (slurp-response response :json-parse-mode :pretty-print))))
 ```
 
+```json
+[{
+  "role": "secretary",
+  "name": "susan",
+  "id": "1000"
+},{
+  "role": "assistant",
+  "name": "john",
+  "id": "1001"
+},{
+  "role": "team-lead",
+  "name": "mary",
+  "id": "1002"
+}]
+```
+
+
 POST (create)
 
 ```clojure
@@ -340,6 +357,15 @@ POST (create)
     (println "Status:" status)
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 ```
+
+```json
+{
+  "role": "secretary",
+  "name": "hanna",
+  "id": "1003"
+}
+```
+
 
 PUT (update)
 
@@ -360,6 +386,15 @@ PUT (update)
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 ```
 
+```json
+{
+  "role": "clerk",
+  "name": "john",
+  "id": "1001"
+}
+```
+
+
 DELETE (delete)
 
 ```clojure
@@ -373,6 +408,10 @@ DELETE (delete)
         status   (:http-status response)]
     (println "Status:" status)
     (println (hc/slurp-response response))))
+```
+
+```
+Employee with the id 1000 deleted!
 ```
 
 GET over SSL
