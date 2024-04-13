@@ -178,7 +178,7 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (println (hc/slurp-response res :json :pretty-print))))
+      (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
 ;; POST (create)
@@ -198,7 +198,7 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (println (hc/slurp-response res :json :pretty-print))))
+      (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
 ;; PUT (update)
@@ -219,7 +219,7 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (println (hc/slurp-response res :json :pretty-print))))
+      (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
 ;; DELETE (delete)
@@ -236,5 +236,5 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (println (hc/slurp-response res :json :pretty-print))))
+      (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )

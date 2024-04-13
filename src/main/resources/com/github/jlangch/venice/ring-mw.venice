@@ -227,7 +227,7 @@
                           values (if (sequential? values)
                                    (str/join ", " values)
                                    values)]
-                      (str name ": " values)))]
+                      (format-header name values)))]
       (println head (format (first tuples)))
       (doseq [t (rest tuples)] (println indent (format t))))))
 
@@ -241,3 +241,9 @@
          (println     "         size:         " (:size p))
          (println-map "         headers:      " (:headers p))))
 
+
+(defn- format-header [name value]
+  ;; hide authorization header values with "******"
+  (str/format "%s: %s" 
+              name
+              (if (str/equals-ignore-case? name "Authorization") "******" value)))

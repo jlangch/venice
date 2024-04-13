@@ -11,11 +11,14 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - custom type support for Venice persistent collections
+- more options to slurp HTTP client's JSON response
 
 ### Fixed 
 
-- the Http client to gracefully react on interrupted exceptions and close 
+- the HTTP client to gracefully react on interrupted exceptions and close 
   the streams
+- the HTTP client debug mode to print authorization header values as "******"
+- the `:ring` debug mode to print authorization header values as "******"
 
 
 

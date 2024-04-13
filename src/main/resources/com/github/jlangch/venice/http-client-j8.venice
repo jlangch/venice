@@ -107,7 +107,7 @@
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
-              (println (slurp-response response :json :pretty-print))))
+              (println (slurp-response response :json-parse-mode :pretty-print))))
           """,
           """
           ;; POST (create)
@@ -123,7 +123,7 @@
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
-              (println (hc/slurp-response response :json :pretty-print))))
+              (println (hc/slurp-response response :json-parse-mode :pretty-print))))
           """,
           """
           ;; PUT (update)
@@ -140,7 +140,7 @@
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
-              (println (hc/slurp-response response :json :pretty-print))))
+              (println (hc/slurp-response response :json-parse-mode :pretty-print))))
           """,
           """
           ;; DELETE (delete)
@@ -222,7 +222,7 @@
                                                  "Authorization" (str "Bearer "  accessToken)})
                   status   (:http-status response)]
                 (println "Status:" status)
-                (println (hc/slurp-response response :json :pretty-print)))))
+                (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
           """ )
      :see-also '(
           "http-client-j8/upload-file"
@@ -526,12 +526,15 @@
           Options:
 
           | [![width: 20%]]    | [![width: 80%]] |
-          | :json              | If the response mimetype is 'text/json' or \
-                                 'application/json' parse to a Venice data map \
-                                 if the option value is `:data`. \
-                                 Return a pretty printed JSON string if the \
-                                 value is `:pretty-print`.¶\
+          | :json-parse-mode   | The option is used with JSON mimetypes.¶\
+                                `:data` - parse the response to a Venice data map ¶\
+                                `:raw` - return the reponse as received ¶\
+                                `:pretty-print` - return a pretty print JSON string ¶\
                                  Defaults to `:data` |
+          | :json-key-fn       | A single argument function that transforms JSON \
+                                 property names. This option is only available \
+                                 in `:data` parse mode ¶\
+                                 E.g.: `:json-key-fn keyword` |
 
           """ 
      :examples '(
@@ -544,7 +547,7 @@
                                     :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status response)]
               (println "Status:" status)
-              (let [data (slurp-response response :json :pretty-print)]
+              (let [data (slurp-response response :json-parse-mode :pretty-print)]
                 (println "Slurped as:" (type data)))))
           """ )
      :see-also '(
@@ -555,17 +558,18 @@
 
   (assert (some? response))
 
-  (let [opts         (apply hash-map options) 
-        json-mode    (:json opts :data)   
-        status       (:http-status response)
-        mimetype     (:content-type-mimetype response)
-        charset      (:content-type-charset response)
-        encoding     (parse-content-encoding (:content-encoding response))
-        is           (:data-stream response)
-        debug?       (true? (:debug response false))
-        slurp-plain  (is-slurp-plain-text? mimetype)
-        slurp-json   (is-slurp-json? mimetype)
-        slurp-binary (not (or slurp-plain slurp-json))]
+  (let [opts            (apply hash-map options) 
+        json-parse-mode (:json-parse-mode opts :data)  
+        json-key-fn     (:json-key-fn opts)
+        status          (:http-status response)
+        mimetype        (:content-type-mimetype response)
+        charset         (:content-type-charset response)
+        encoding        (parse-content-encoding (:content-encoding response))
+        is              (:data-stream response)
+        debug?          (true? (:debug response false))
+        slurp-plain     (is-slurp-plain-text? mimetype)
+        slurp-json      (is-slurp-json? mimetype)
+        slurp-binary    (not (or slurp-plain slurp-json))]
     (when (= "text/event-stream" mimetype)
       (throw (ex :VncException 
                  """
@@ -587,9 +591,14 @@
       (println))
 
     (cond
-      (is-slurp-plain-text? mimetype)  (slurp-as-plain-text is encoding charset)
-      (is-slurp-json? mimetype)        (slurp-as-json is encoding charset json-mode)
-      :else                            (slurp-as-binary is encoding))))
+      (is-slurp-plain-text? mimetype)  
+          (slurp-as-plain-text is encoding charset)
+
+      (is-slurp-json? mimetype) 
+          (slurp-as-json is encoding charset json-parse-mode json-key-fn)
+
+      :else                            
+          (slurp-as-binary is encoding))))
 
 
 (defn 
@@ -875,9 +884,16 @@
     (println head "-")
     (let [indent  (str/repeat " " (count head))
           tuples  (into '() data)
-          format  (fn [tuple] (str (first tuple) ": " (second tuple)))]
+          format  (fn [[n v]] (format-header n v))]
       (println head (format (first tuples)))
       (doseq [t (rest tuples)] (println indent (format t))))))
+
+
+(defn- format-header [name value]
+  ;; hide authorization header values with "******"
+  (str/format "%s: %s" 
+              name
+              (if (str/equals-ignore-case? name "Authorization") "******" value)))
 
 
 (defn- parse-content-encoding [encoding]
@@ -906,12 +922,14 @@
     (io/slurp-stream is :binary false :encoding charset)))
 
 
-(defn- slurp-as-json [is encoding charset json-mode]
+(defn- slurp-as-json [is encoding charset json-parse-mode json-key-fn]
    (let [charset  (or (str/trim-to-nil charset) :utf-8)
-        is        (wrap-is-with-decompressor is encoding)
-        data      (io/slurp-stream is :binary false :encoding charset)]
+         is       (wrap-is-with-decompressor is encoding)
+         data     (io/slurp-stream is :binary false :encoding charset)]
      (if (= :data json-mode) 
-       (json/read-str)
+       (if json-key-fn
+         (json/read-str :key-fn json-key-fn)
+         (json/read-str))
        (-> (json/read-str data)
            (json/write-str)
            (json/pretty-print)))))
