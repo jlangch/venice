@@ -561,9 +561,9 @@ OAuth blueprint
                           :headers { "Accept"         "text/event-stream" 
                                      "Cache-Control"  "no-cache"
                                      "Connection"     "keep-alive"}
-                              :conn-timeout 0
-                              :read-timeout 0
-                              :debug true)]
+                          :conn-timeout 0
+                          :read-timeout 0
+                          :debug true)]
         (println "Status:" (:http-status response))
 
         ;; process the first 10 events and close the stream
