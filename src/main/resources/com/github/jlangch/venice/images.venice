@@ -398,6 +398,10 @@
      :doc """
           Resizes an image to a new size, a square of width and height the 
           image should fit within. 
+
+          Resize modes: `:auto` (default), `:performance`, `:balanced`, `:quality`, 
+          `:high-quality`
+
           Returns a new image.
           """
      :examples '(

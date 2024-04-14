@@ -57,7 +57,6 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleWrap
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientJ8Section;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleImagesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
@@ -511,7 +510,8 @@ public class DocGenerator {
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
-                new ModuleHttpClientSection(diBuilder).section());
+                // new ModuleHttpClientSection(diBuilder).section(),
+        		new ModuleImagesSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {
@@ -536,7 +536,6 @@ public class DocGenerator {
                 new ModuleMultipartSection(diBuilder).section(),
                 new ModuleSseSection(diBuilder).section(),
                 new ModuleHttpClientJ8Section(diBuilder).section(),
-                new ModuleImagesSection(diBuilder).section(),
                 new ModuleInstallerSection(diBuilder).section());
     }
 
