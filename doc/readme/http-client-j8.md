@@ -573,7 +573,7 @@ OAuth blueprint
             (case type
               :opened (do (println "\\nStreaming started")
                           :ok)
-              :data   (do (println "Event: " event)
+              :data   (do (println "Event: " (pr-str event))
                           ;; only process 10 events
                           (if (< event-count 10) :ok :stop))
               :closed (do (println "Streaming closed")
