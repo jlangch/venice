@@ -56,7 +56,7 @@
 
 (def TYPE_INT_RGB  (. :BufferedImage :TYPE_INT_RGB))
 (def TYPE_INT_ARGB (. :BufferedImage :TYPE_INT_ARGB))
-(def OPAQUE        (. :Transparency :OPAQUE))
+
 
 
 
@@ -131,7 +131,7 @@
           """) 
      :see-also '(
           "images/load"
-          "images/list-supported-file-formats" ) }
+          "images/supported-file-formats" ) }
 
   save [img format-name f]
 
@@ -318,7 +318,7 @@
   (assert (not-empty? ops))
   (assert (every? #(instance-of :BufferedImageOp) ops))
 
-  (let [src (if (is-rgb-or-argb-image img) img (copy-to-derived-image img))]
+  (let [src (if (rgb-or-argb-image? img) img (copy-to-derived-image img))]
     (loop [src        src
            ops        (filter some? ops)
            reassigned false]
@@ -375,16 +375,14 @@
     (assert (and (long? width) (pos? width)))
     (assert (and (long? height) (pos? height)))
   
-    (let [transparency (. src :getTransparency)
-          type        (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB)]
+    (let [type  (if (opaque-transparency? src) TYPE_INT_RGB TYPE_INT_ARGB)]
       (. :BufferedImage :new width height type))))
 
 
 (defn- copy-to-derived-image [img]
   (let [width        (. img :getWidth)
         height       (. img :getHeight)
-        transparency (. img :getTransparency)
-        type         (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB)
+        type         (if (opaque-transparency? img) TYPE_INT_RGB TYPE_INT_ARGB)
         dest         (. :BufferedImage :new width height type)
         gd           (. result :getGraphics)]
  
@@ -393,5 +391,9 @@
     dest))
 
 
-(defn- is-rgb-or-argb-image [img]
+(defn- rgb-or-argb-image? [img]
   (contains? #{TYPE_INT_RGB, TYPE_INT_ARGB} (. img :getType)))
+
+
+(defn- opaque-transparency? [img]
+  (== (. img :getTransparency) (. :Transparency :OPAQUE)))
