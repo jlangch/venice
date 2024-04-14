@@ -18,8 +18,9 @@ ToDo:
 - [x] Cargo module for Qdrant vector DB docker container
 - [x] All Venice documentation resources converted to text data
 - [x] Add a HTTP client with SSE support to Venice
-- [ ] Document the HTTP client in the readme
+- [x] Document the HTTP client in the readme
 - [x] Helper to install all required LangChain4J dependencies
+- [ ] Provide an image scaler module to scale images for ChatGPT's Vision api
 - [ ] Create a simple OpenAI client
 - [ ] OpenAI console chat example
 - [ ] Chat example with HTMX GUI

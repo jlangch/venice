@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - custom type support for Venice persistent collections
-- more options to slurp HTTP client's JSON response
+- more options to slurp a HTTP client's JSON response
 
 ### Fixed 
 
