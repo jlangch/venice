@@ -76,7 +76,7 @@
   (let [response (hc/send :post 
                     endpoint-gpt-new
                     :headers { "Content-Type" "application/json"
-                               "Authorization" (auth-header) }
+                               "Authorization" "Bearer ~(openai-api-key)"}
                     :body (json/write-str { :model gpt-3.5-turbo
                                             :messages [
                                                { :role "system"
@@ -89,5 +89,5 @@
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 
 
-(defn- auth-header []
-   "Bearer ~(system-env "OPENAI_API_KEY")" )
+
+(defn- openai-api-key [] (system-env "OPENAI_API_KEY"))
