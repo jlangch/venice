@@ -51,6 +51,16 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Constants
+;; -----------------------------------------------------------------------------
+
+(def TYPE_INT_RGB  (. :BufferedImage :TYPE_INT_RGB))
+(def TYPE_INT_ARGB (. :BufferedImage :TYPE_INT_ARGB))
+(def OPAQUE        (. :Transparency :OPAQUE))
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Load / Save
 ;; -----------------------------------------------------------------------------
 
@@ -165,6 +175,110 @@
 
 
 
+;; -----------------------------------------------------------------------------
+;; Rotate / Flip
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(rotate img angle)") 
+     :doc """
+          Rotates an image by 0°, 90°, 180°, or 270°. Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/rotate img 90))
+          """ ) }
+
+  rotate [img angle]
+
+  (assert (instance-of? :Image img))
+  (assert (and (long? angle) (contains? #{0, 90, 180, 270} angle)))
+
+  (let [width   (. img :getWidth)
+        height  (. img :getHeight)
+        tx      (. :AffineTransform :new)]
+    (case angle
+      90      (let [new-width  height
+                    new-height width]
+			          (. tx :translate new-width 0)
+			          (. tx :quadrantRotate 1)
+                (transform img tx new-width new-height))
+
+      180     (let [new-width  width
+                    new-height height]
+			           (. tx :translate 0 new-height)
+			           (. tx :quadrantRotate 2)
+                (transform img tx new-width new-height))
+
+      270     (let [new-width  height
+                    new-height width]
+			          (. tx :translate new-width 0)
+			          (. tx :quadrantRotate 3)
+                (transform img tx new-width new-height))
+
+      img)))
+
+(defn 
+  ^{ :arglists '(
+          "(flip img mode)") 
+     :doc """
+          Flips an image vertically or horizontally. Returns a new image.
+
+          Mode is either :vertical or :horizontal.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/flip img :vertical))
+          """ ) }
+
+  flip [img mode]
+
+  (assert (instance-of? :Image img))
+  (assert (and (keyword? mode) (contains? #{:vertical :horizontal} mode)))
+
+  (let [width   (. img :getWidth)
+        height  (. img :getHeight)
+        tx      (. :AffineTransform :new)]
+    (case mode
+      :vertical   (do
+                    (. tx :translate 0 height)
+                    (. tx :scale -1.0 1.0)
+                    (transform img tx width height))
+
+      :horizontal (do
+                    (. tx :translate width 0)
+                    (. tx :scale 1.0 -1.0)
+                    (transform img tx width height))
+      img)))
+
+
+(defn- transform [img tx width height]
+  (assert (instance-of? :Image img))
+  (assert (and (long? width) (pos? width)))
+  (assert (and (long? height) (pos? height)))
+
+  (let [result (create-optimal-image img width height)
+        g2d    (. result :createGraphics)]
+	  (. g2d :drawImage img tx nil)
+		(. g2d :dispose)
+    result))
+
+
+(defn- create-optimal-image [src width height]
+  (assert (instance-of? :Image img))
+  (assert (and (long? width) (pos? width)))
+  (assert (and (long? height) (pos? height)))
+ 
+  (let [transparency (. src :getTransparency)]
+    (. :BufferedImage :new 
+                      width 
+                      height 
+                      (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB))))
 
 
 ;; -----------------------------------------------------------------------------

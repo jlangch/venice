@@ -53,6 +53,11 @@ public class ModuleImagesSection implements ISectionBuilder {
         all.addSection(formats);
         formats.addItem(diBuilder.getDocItem("images/list-supported-file-formats", true));
 
+        final DocSection transform = new DocSection("Transform", id());
+        all.addSection(transform);
+        transform.addItem(diBuilder.getDocItem("images/rotate", false));
+        transform.addItem(diBuilder.getDocItem("images/flip", false));
+
         return section;
     }
 
