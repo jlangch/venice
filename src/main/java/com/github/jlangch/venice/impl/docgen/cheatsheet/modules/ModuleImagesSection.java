@@ -58,6 +58,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         all.addSection(transform);
         transform.addItem(diBuilder.getDocItem("images/rotate", false));
         transform.addItem(diBuilder.getDocItem("images/flip", false));
+        transform.addItem(diBuilder.getDocItem("images/apply-ops", false));
 
         return section;
     }

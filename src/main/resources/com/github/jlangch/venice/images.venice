@@ -297,7 +297,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(apply img ops)") 
+          "(apply-ops img ops)") 
      :doc """
           Applies one or multiple operators (:java.awt.image.BufferedImageOp) to 
           the image. 
@@ -311,7 +311,7 @@
               (images/apply img [op-brighter])))
           """ ) }
 
-  apply [img ops]
+  applyy-ops [img ops]
 
   (assert (instance-of? :Image img))
   (assert (sequential? ops))
