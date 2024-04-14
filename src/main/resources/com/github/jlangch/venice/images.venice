@@ -206,7 +206,8 @@
   ^{ :arglists '(
           "(rotate img angle)") 
      :doc """
-          Rotates an image by 0°, 90°, 180°, or 270°. Returns a new image.
+          Rotates an image by 0°, 90°, 180°, or 270° clockwise. 
+          Returns a new image.
           """
      :examples '(
           """
@@ -283,7 +284,7 @@
   (assert (and (long? width) (pos? width)))
   (assert (and (long? height) (pos? height)))
 
-  (let [result (create-optimal-image img width height)
+  (let [result (create-derived-image img width height)
         g2d    (. result :createGraphics)]
 	  (. g2d :drawImage img tx nil)
 		(. g2d :dispose)
@@ -299,9 +300,8 @@
   ^{ :arglists '(
           "(apply-ops img ops)") 
      :doc """
-          Applies one or multiple operators (:java.awt.image.BufferedImageOp) to 
-          the image. 
-          Returns a new image.
+          Applies one or multiple image operators (:java.awt.image.BufferedImageOp)
+          to the image.  Returns a new image.
           """
      :examples '(
           """
@@ -311,31 +311,29 @@
               (images/apply img [op-brighter])))
           """ ) }
 
-  applyy-ops [img ops]
+  apply-ops [img ops]
 
   (assert (instance-of? :Image img))
   (assert (sequential? ops))
   (assert (not-empty? ops))
   (assert (every? #(instance-of :BufferedImageOp) ops))
 
-  (let [src (if (is-rgb-or-argb-image img) img (copy-to-optimal-image img))]
+  (let [src (if (is-rgb-or-argb-image img) img (copy-to-derived-image img))]
     (loop [src        src
            ops        (filter some? ops)
            reassigned false]
       (let [op            (first ops) 
-            result-bounds (:op :getBounds2D src)]
+            result-bounds (. :op :getBounds2D src)]
         (when (nil? result-bounds)
-           (throw (ex :VncException (str "BufferedImageOp[" op "] get bounds returned nil. "
-                                         "This indicates a problem with this type of op!"))))
-        (let [dest   (create-optimal-image src 
-                                           (long (. result-bounds :getWidth))
-                                           (long (. result-bounds :getHeight)))
+           (throw (ex :VncException (str "BufferedImageOp[" op "] get bounds returned nil."))))
+        (let [w      (long (. result-bounds :getWidth))
+              h      (long (. result-bounds :getHeight))
+              dest   (create-derived-image src w h)
               result (. op :filter src dest)]
           (when reassigned (. src :flush))
-
           (if (empty? ops)
             result
-             (recur result (rest ops) true)))))))
+            (recur result (rest ops) true)))))))
 
 
 
@@ -368,18 +366,21 @@
 ;; Internals
 ;; -----------------------------------------------------------------------------
 
+(defn-  create-derived-image 
+  ([src]
+    (create-derived-image (. img :getWidth) (. img :getHeight)))
 
-(defn- create-optimal-image [src width height]
-  (assert (instance-of? :Image src))
-  (assert (and (long? width) (pos? width)))
-  (assert (and (long? height) (pos? height)))
- 
-  (let [transparency (. src :getTransparency)
-        type        (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB)]
-    (. :BufferedImage :new width height type)))
+  ([src width height]
+    (assert (instance-of? :Image src))
+    (assert (and (long? width) (pos? width)))
+    (assert (and (long? height) (pos? height)))
+  
+    (let [transparency (. src :getTransparency)
+          type        (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB)]
+      (. :BufferedImage :new width height type))))
 
 
-(defn- copy-to-optimal-image [img]
+(defn- copy-to-derived-image [img]
   (let [width        (. img :getWidth)
         height       (. img :getHeight)
         transparency (. img :getTransparency)
