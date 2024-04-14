@@ -371,20 +371,20 @@
         img-height   (long (. img :getHeight))
         width        (+ img-width (* padding 2))
         height       (+ img-height (* padding 2))
-        color-alpha? (not (= (. color :getAlpha) 255))
+        color-alpha? (not (== (. color :getAlpha) 255))
         img-alpha?   (not (opaque? img))
         type         (if (or color-alpha? img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
         dest         (. :BufferedImage :new width height type)
         g            (. dest :getGraphics)]
 
-		;; Draw the border of the image in the color specified.
+		;; draw the padding border
 		(. g :setColor color)
 		(. g :fillRect 0 0 width padding)
 		(. g :fillRect 0 padding padding height)
 		(. g :fillRect padding (- height padding) width height)
 		(. g :fillRect (- width padding) padding width (- height padding))
 
-		; Draw the image into the center of the new padded image
+		; draw the centered image
 		(. g :drawImage img padding padding nil)
 		(. g :dispose)
 
