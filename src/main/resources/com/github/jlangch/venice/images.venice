@@ -385,7 +385,6 @@
         type         (if (opaque-transparency? img) TYPE_INT_RGB TYPE_INT_ARGB)
         dest         (. :BufferedImage :new width height type)
         gd           (. result :getGraphics)]
- 
     (. gd :drawImage img 0 0 nil)
 		(. gd :dispose)
     dest))
