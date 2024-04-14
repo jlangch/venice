@@ -83,6 +83,7 @@ public class Modules {
                         "hexdump",
                         "http-client",
                         "http-client-j8",
+                        "images",
                         "ivy",
                         "jackson",
                         "java",

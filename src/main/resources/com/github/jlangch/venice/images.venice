@@ -1,0 +1,139 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Image functions
+
+(ns images)
+
+(import :java.awt.Color
+        :java.awt.Graphics
+        :java.awt.Graphics2D
+        :java.awt.Image
+        :java.awt.RenderingHints
+        :java.awt.Transparency
+        :java.awt.color.ColorSpace
+        :java.awt.geom.AffineTransform
+        :java.awt.geom.Rectangle2D
+        :java.awt.image.AreaAveragingScaleFilter
+        :java.awt.image.BufferedImage
+        :java.awt.image.BufferedImageOp
+        :java.awt.image.ColorConvertOp
+        :java.awt.image.ColorModel
+        :java.awt.image.ConvolveOp
+        :java.awt.image.ImagingOpException
+        :java.awt.image.IndexColorModel
+        :java.awt.image.Kernel
+        :java.awt.image.RasterFormatException
+        :java.awt.image.RescaleOp)
+
+(import :javax.imageio.ImageIO
+        :javax.imageio.stream.FileImageInputStream)
+
+
+;; -----------------------------------------------------------------------------
+;; Load / Save
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(load file)") 
+     :doc """
+          Loads an image from a `:java.io.File`, a `:java.io.InputStream`, or a 
+          `:java.net.URL`.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/load (io/file \"/Users/foo/apple.png\")))
+          """) }
+
+  load [f]
+
+  (assert (or (io/file? f) 
+              (instance-of? :java.io.InputStream f)
+              (instance-of? :java.net.URL f)))
+
+  (try 
+    (. :ImageIO :read f)
+    (catch :Exception e
+      (throw (ex :VncException "Faled to load image" e)))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Image properties
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(dimension f)") 
+     :doc """
+          Returns the images dimensions as a vector [width height]. 'f' may 
+          be a `:java.io.File` or a `:java.awt.Image`.
+
+          Note: Do not load a file first to get the dimension, passing a
+                `:java.io.File` is much faster!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/dimension (io/file \"/Users/foo/apple.png\")))
+          """ ) }
+
+  dimension [f]
+
+  (assert (or (io/file? f) (instance-of? :Image f)))
+
+  (if (instance-of? :Image f)
+    [(. f :getWidth) (. f :getHeight)] ;; return dimensions
+    (let [suffix    (io/file-ext f)
+          iterators (. :ImageIO :getImageReadersBySuffix suffix)]
+      (let [dim (loop [readers (java-iterator-to-list iterators)]
+                  (if-let [reader (first readers)]
+                    (if-let [d (read-dimension reader f)]
+                      d  ;; return dimensions
+                      (recur (rest readers)))))]  ;; try with next reader
+        (if dim
+          dim
+          (throw (ex :VncException 
+                     (str "Cannot get image dimensions for unknown image " 
+                          f))))))))
+
+
+(defn- read-dimension [img-reader file]
+  (try-with [is (. :FileImageInputStream :new file)]
+    (. img-reader :setInput is)
+    ;; return dimensions
+    [(. img-reader :getWidth  (. img-reader :getMinIndex))
+     (. img-reader :getHeight (. img-reader :getMinIndex))]
+  (catch :Exception e nil)  ;; this reader does not match the image type
+  (finally (. img-reader :dispose))))
+
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Utils
+;; -----------------------------------------------------------------------------
+

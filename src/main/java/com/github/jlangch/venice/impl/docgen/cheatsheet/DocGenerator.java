@@ -58,6 +58,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientJ8Section;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleImagesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
@@ -142,7 +143,7 @@ public class DocGenerator {
                         "fonts",        "qrref",               "jsonl",            "timing",
                         "zipvault",     "gradlew",             "matrix",           "ascii-table",
                         "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
-                        "installer",    "mimetypes",           "multipart",
+                        "installer",    "mimetypes",           "multipart",        "images",
                         "tomcat",       "jetty",
                         "http-client",  "http-client-j8",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
@@ -351,6 +352,7 @@ public class DocGenerator {
         documents.addSection(new DocSection("CSV", "csv"));
         documents.addSection(new DocSection("XML", "modules.xml"));
         documents.addSection(new DocSection("Excel", "modules.excel"));
+        documents.addSection(new DocSection("Images", "modules.images"));
         content.add(documents);
 
         final DocSection extmod = new DocSection("Modules", "modules");
@@ -534,7 +536,8 @@ public class DocGenerator {
                 new ModuleMultipartSection(diBuilder).section(),
                 new ModuleSseSection(diBuilder).section(),
                 new ModuleHttpClientJ8Section(diBuilder).section(),
-        		new ModuleInstallerSection(diBuilder).section());
+                new ModuleImagesSection(diBuilder).section(),
+                new ModuleInstallerSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {
