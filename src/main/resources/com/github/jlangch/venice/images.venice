@@ -252,6 +252,7 @@
 
       img)))
 
+
 (defn 
   ^{ :arglists '(
           "(flip img mode)") 
@@ -298,6 +299,97 @@
 	  (. g2d :drawImage img tx nil)
 		(. g2d :dispose)
     result))
+
+
+;; -----------------------------------------------------------------------------
+;; Crop / Pad
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(crop img x y width height)") 
+     :doc """
+          Crops an image. Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+                (images/crop 100 100 400 200)
+                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+          """ ) }
+
+  crop [img x y width height]
+
+  (assert (instance-of? :Image img))
+  (assert (and (long? x) (long? y) (long? width) (long? height)))
+  (assert (and (>= x 0) (>= y 0) (>= width 0) (>= height 0)))
+
+  (let [img-width   (long (. img :getWidth))
+        img-height  (long (. img :getHeight))]
+    (when (> (+ x width) img-width)
+      (throw (ex :VncException 
+                 "Invalid crop bounds: x[~{x}] + width[~{width}] < img-width[~{img-width}]")))
+    (when (> (+ y height) img-height)
+      (throw (ex :VncException 
+                 "Invalid crop bounds: y[~{y}]+ height[~{height}] < img-height[~{img-height}]")))
+
+    (let [dest (create-derived-image img width height)
+          g    (. dest :getGraphics)]
+      (. g :drawImage img 
+                      0 0 width height 
+                      x y (+ x width) (+ y height)
+                      nil)
+	    (. g :dispose)
+      dest)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(pad img padding color)") 
+     :doc """
+          Pads an image. Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (import :java.awt.Color)
+            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+                (images/pad 200 (. :Color :WHITE))
+                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+          """ ) }
+
+  pad [img padding color]
+
+  (assert (instance-of? :Image img))
+  (assert (and (long? padding) (>= padding 0)))
+  (assert (instance-of? :Color color))
+
+  (let [img-width    (long (. img :getWidth))
+        img-height   (long (. img :getHeight))
+        width        (+ img-width (* padding 2))
+        height       (+ img-height (* padding 2))
+        color-alpha? (not (= (. color :getAlpha) 255))
+        img-alpha?   (not (opaque? img))
+        type         (if (or color-alpha? img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
+        dest         (. :BufferedImage :new width height type)
+        g            (. dest :getGraphics)]
+
+		;; Draw the border of the image in the color specified.
+		(. g :setColor color)
+		(. g :fillRect 0 0 width padding)
+		(. g :fillRect 0 padding padding height)
+		(. g :fillRect padding (- height padding) width height)
+		(. g :fillRect (- width padding) padding width (- height padding))
+
+		; Draw the image into the center of the new padded image
+		(. g :drawImage img padding padding nil)
+		(. g :dispose)
+
+    dest))
+
 
 
 
@@ -385,14 +477,14 @@
     (assert (and (long? width) (pos? width)))
     (assert (and (long? height) (pos? height)))
   
-    (let [type  (if (opaque-transparency? src) TYPE_INT_RGB TYPE_INT_ARGB)]
+    (let [type  (if (opaque? src) TYPE_INT_RGB TYPE_INT_ARGB)]
       (. :BufferedImage :new width height type))))
 
 
 (defn- copy-to-derived-image [img]
   (let [width        (long (. img :getWidth))
         height       (long (. img :getHeight))
-        type         (if (opaque-transparency? img) TYPE_INT_RGB TYPE_INT_ARGB)
+        type         (if (opaque? img) TYPE_INT_RGB TYPE_INT_ARGB)
         dest         (. :BufferedImage :new width height type)
         gd           (. dest :getGraphics)]
     (. gd :drawImage img 0 0 nil)
@@ -404,5 +496,5 @@
   (contains? #{TYPE_INT_RGB, TYPE_INT_ARGB} (. img :getType)))
 
 
-(defn- opaque-transparency? [img]
+(defn- opaque? [img]
   (== (. img :getTransparency) (. :Transparency :OPAQUE)))
