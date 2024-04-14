@@ -61,6 +61,29 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Imaging operators
+;; -----------------------------------------------------------------------------
+
+(def convolve-op-antialias (. :ConvolveOp 
+                                 :new 
+                                 (. :Kernel :new 3 3 [ 0.00F, 0.08F, 0.00F, 
+                                                       0.08F, 0.68F, 0.08F,
+					                                             0.00F, 0.08F, 0.00F ])
+                                 (. :ConvolveOp :EDGE_NO_OP)
+                                 nil))
+
+(def rescale-op-darker (. :RescaleOp  :new 0.9F 0 nil))
+
+(def rescale-op-brighter (. :RescaleOp  :new 1.1F 0 nil))
+
+(def color-space-gray (. :ColorSpace :getInstance (. :ColorSpace :CS_GRAY)))
+(def color-convert-op-grayscale (. :ColorConvertOp :new color-space-gray nil))
+
+
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Load / Save
 ;; -----------------------------------------------------------------------------
 
@@ -211,7 +234,7 @@
                     new-height height]
 			           (. tx :translate 0 new-height)
 			           (. tx :quadrantRotate 2)
-                (transform img tx new-width new-height))
+                 (transform img tx new-width new-height))
 
       270     (let [new-width  height
                     new-height width]
@@ -245,15 +268,13 @@
         height  (. img :getHeight)
         tx      (. :AffineTransform :new)]
     (case mode
-      :vertical   (do
-                    (. tx :translate 0 height)
-                    (. tx :scale -1.0 1.0)
-                    (transform img tx width height))
+      :vertical   (do (. tx :translate 0 height)
+                      (. tx :scale -1.0 1.0)
+                      (transform img tx width height))
 
-      :horizontal (do
-                    (. tx :translate width 0)
-                    (. tx :scale 1.0 -1.0)
-                    (transform img tx width height))
+      :horizontal (do (. tx :translate width 0)
+                      (. tx :scale 1.0 -1.0)
+                     (transform img tx width height))
       img)))
 
 
@@ -269,16 +290,53 @@
     result))
 
 
-(defn- create-optimal-image [src width height]
+
+;; -----------------------------------------------------------------------------
+;; Apply image OPs
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(apply img ops)") 
+     :doc """
+          Applies one or multiple operators (:java.awt.image.BufferedImageOp) to 
+          the image. 
+          Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (let [op-brighter (. :RescaleOp :new 1.1F 0 nil)]
+              (images/apply img [op-brighter])))
+          """ ) }
+
+  apply [img ops]
+
   (assert (instance-of? :Image img))
-  (assert (and (long? width) (pos? width)))
-  (assert (and (long? height) (pos? height)))
- 
-  (let [transparency (. src :getTransparency)]
-    (. :BufferedImage :new 
-                      width 
-                      height 
-                      (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB))))
+  (assert (sequential? ops))
+  (assert (not-empty? ops))
+  (assert (every? #(instance-of :BufferedImageOp) ops))
+
+  (let [src (if (is-rgb-or-argb-image img) img (copy-to-optimal-image img))]
+    (loop [src        src
+           ops        (filter some? ops)
+           reassigned false]
+      (let [op            (first ops) 
+            result-bounds (:op :getBounds2D src)]
+        (when (nil? result-bounds)
+           (throw (ex :VncException (str "BufferedImageOp[" op "] get bounds returned nil. "
+                                         "This indicates a problem with this type of op!"))))
+        (let [dest   (create-optimal-image src 
+                                           (long (. result-bounds :getWidth))
+                                           (long (. result-bounds :getHeight)))
+              result (. op :filter src dest)]
+          (when reassigned (. src :flush))
+
+          (if (empty? ops)
+            result
+             (recur result (rest ops) true)))))))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -304,3 +362,35 @@
     (->> (. registry :getServiceProviders (class :ImageWriterSpi) false)
          (java-iterator-to-list)
          (map #(. % :getFormatNames)))))
+
+
+;; -----------------------------------------------------------------------------
+;; Internals
+;; -----------------------------------------------------------------------------
+
+
+(defn- create-optimal-image [src width height]
+  (assert (instance-of? :Image src))
+  (assert (and (long? width) (pos? width)))
+  (assert (and (long? height) (pos? height)))
+ 
+  (let [transparency (. src :getTransparency)
+        type        (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB)]
+    (. :BufferedImage :new width height type)))
+
+
+(defn- copy-to-optimal-image [img]
+  (let [width        (. img :getWidth)
+        height       (. img :getHeight)
+        transparency (. img :getTransparency)
+        type         (if (== transparency OPAQUE) TYPE_INT_RGB TYPE_INT_ARGB)
+        dest         (. :BufferedImage :new width height type)
+        gd           (. result :getGraphics)]
+ 
+    (. gd :drawImage img 0 0 nil)
+		(. gd :dispose)
+    dest))
+
+
+(defn- is-rgb-or-argb-image [img]
+  (contains? #{TYPE_INT_RGB, TYPE_INT_ARGB} (. img :getType)))
