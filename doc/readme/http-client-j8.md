@@ -230,7 +230,7 @@ The functions returns the response data based on the response mimetype:
 | text/css          | Returns a string according to the content type charset |
 | text/json         | Returns the parsed JSON as a map according to the content type charset |
 | text/event-stream | Throws an exception. An event stream can not be slurped. Use the function `process-server-side-events` instead! |
-| else              | Returns a byte buffer |
+| *else*            | Returns a byte buffer |
 
 
 #### Parameter response
@@ -308,7 +308,7 @@ The Java 8 Http Client does not support HTTP/2!
 
 ### Sending Requests Examples
 
-GET (get, pretty printed JSON response)
+GET (get, JSON response converted to a pretty printed JSON string)
 
 ```clojure
 (do
