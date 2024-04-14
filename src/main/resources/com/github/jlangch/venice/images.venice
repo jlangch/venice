@@ -45,7 +45,9 @@
         :java.awt.image.RescaleOp)
 
 (import :javax.imageio.ImageIO
-        :javax.imageio.stream.FileImageInputStream)
+        :javax.imageio.stream.FileImageInputStream
+        :javax.imageio.spi.IIORegistry
+        :javax.imageio.spi.ImageWriterSpi)
 
 
 ;; -----------------------------------------------------------------------------
@@ -64,7 +66,9 @@
           (do
             (load-module :images)
             (images/load (io/file \"/Users/foo/apple.png\")))
-          """) }
+          """)
+     :see-also '(
+          "images/save" ) }
 
   load [f]
 
@@ -76,6 +80,36 @@
     (. :ImageIO :read f)
     (catch :Exception e
       (throw (ex :VncException "Faled to load image" e)))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(save img format-name f)") 
+     :doc """
+          Saves an image to 'java.io.File' or an ':java.io.OutputStream'.
+
+          Supported formats:  :png, :jpg, :jpeg, :gif, :bmp
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/save img :png (io/file \"/Users/foo/apple.png\")))
+          """) 
+     :see-also '(
+          "images/load"
+          "images/list-supported-file-formats" ) }
+
+  save [img format-name f]
+
+  (assert (instance-of? :Image img))
+  (assert (or (string? format-name) (keyword? format-name)))
+  (assert (or (io/file? f) (instance-of? :java.io.OutputStream f)))
+
+  (try 
+    (. :ImageIO :write img (name type) type f)
+    (catch :Exception e
+      (throw (ex :VncException "Failed to write image" e)))))
 
 
 
@@ -137,3 +171,22 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
+(defn 
+  ^{ :arglists '(
+          "(list-supported-file-formats)") 
+     :doc """
+          Returns a list of the suppported file formats of this Java VM.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/list-supported-file-formats))
+          """ ) }
+
+  list-supported-file-formats []
+
+  (let [registry (. :IIORegistry :getDefaultInstance)]
+    (->> (. registry :getServiceProviders (class :ImageWriterSpi) false)
+         (java-iterator-to-list)
+         (map #(. % :getFormatNames)))))

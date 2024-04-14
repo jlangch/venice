@@ -49,6 +49,10 @@ public class ModuleImagesSection implements ISectionBuilder {
         all.addSection(props);
         props.addItem(diBuilder.getDocItem("images/dimension", false));
 
+        final DocSection formats = new DocSection("File Formats", id());
+        all.addSection(formats);
+        formats.addItem(diBuilder.getDocItem("images/list-supported-file-formats", true));
+
         return section;
     }
 
