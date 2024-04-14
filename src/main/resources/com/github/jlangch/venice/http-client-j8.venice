@@ -88,7 +88,9 @@
                                  wrap the data stream with a gzip input \
                                  stream: ¶\
                                  \u00A0\u00A0\u00A0\u00A0\u00A0(io/wrap-is-with-gzip-input-stream (:data-stream response)) ¶\
-                                 to uncompress the data. |   
+                                 to uncompress the data. ¶\
+                                 See `http-client-j8/slurp-response` to painlessly \
+                                 process responses. |   
           """ 
      :examples '(
           """
@@ -354,7 +356,9 @@
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
-          | :data-stream       | The response data input stream |
+          | :data-stream       | The response data input stream.¶\
+                                 See `http-client-j8/slurp-response` to painlessly \
+                                 process responses. |
           """
      :examples '(
           """
@@ -460,7 +464,9 @@
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
-          | :data-stream       | The response data input stream |
+          | :data-stream       | The response data input stream.¶\
+                                 See `http-client-j8/slurp-response` to painlessly \
+                                 process responses. |
           """
      :examples '(
           """
@@ -555,8 +561,18 @@
                                     :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status response)]
               (println "Status:" status)
-              (let [data (slurp-response response :json-parse-mode :pretty-print)]
-                (println "Slurped as:" (type data)))))
+              (println (hc/slurp-response response :json-parse-mode :pretty-print))))
+          """,
+          """
+          (do
+            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+          
+            (let [response (hc/send :get 
+                                    "http://localhost:8080/employees" 
+                                    :headers {"Accept" "application/json, text/plain"})
+                  status   (:http-status response)]
+              (println "Status:" status)
+              (prn (hc/slurp-response response :json-parse-mode :data :json-key-fn keyword))))
           """ )
      :see-also '(
            "http-client-j8/process-server-side-events"

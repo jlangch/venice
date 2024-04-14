@@ -80,7 +80,7 @@ The send function returns a map with the HTTP response data:
 | :content-encoding  | The content transfer encoding (a keyword), if available else nil. E.g.: "gzip" |
 | :content-length    | The content length (a long), if available else -1 |
 | :headers           | A map of headers. key: header name, value: list of header values |
-| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data. |   
+| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data.<br><br>See [Processing responses](#processing-responses) to painlessly process responses. |   
 
 
 
@@ -134,7 +134,7 @@ The upload function returns a map with the HTTP response data:
 | :content-encoding  | The content transfer encoding (a keyword), if available else nil. E.g.: "gzip" |
 | :content-length    | The content length (a long), if available else -1 |
 | :headers           | A map of headers. key: header name, value: list of header values |
-| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data. |   
+| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data.<br><br>See [Processing responses](#processing-responses) to painlessly process responses. |   
 
 
 
@@ -211,7 +211,7 @@ The upload function returns a map with the HTTP response data:
 | :content-encoding  | The content transfer encoding (a keyword), if available else nil. E.g.: "gzip" |
 | :content-length    | The content length (a long), if available else -1 |
 | :headers           | A map of headers. key: header name, value: list of header values |
-| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data. |   
+| :data-stream       | The response data input stream.<br>If the response content encoding is 'gzip', due to a request header "Accept-Encoding: gzip" wrap the data stream with a gzip input stream: `(io/wrap-is-with-gzip-input-stream (:data-stream response))` to uncompress the data.<br><br>See [Processing responses](#processing-responses) to painlessly process responses. |   
 
 
 
@@ -328,7 +328,7 @@ GET (get, JSON response converted to a pretty printed JSON string)
                           :debug true)
         status   (:http-status response)]
     (println "Status:" status)
-    (println (slurp-response response :json-parse-mode :pretty-print))))
+    (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 ```
 
 ```json
@@ -360,7 +360,7 @@ GET (get, JSON response converted to Venice data)
                           :debug true)
         status   (:http-status response)]
     (println "Status:" status)
-    (prn (slurp-response response :json-parse-mode :data :json-key-fn keyword))))
+    (prn (hc/slurp-response response :json-parse-mode :data :json-key-fn keyword))))
 ```
 
 ```clojure
