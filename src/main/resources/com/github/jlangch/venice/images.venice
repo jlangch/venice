@@ -121,7 +121,7 @@
      :doc """
           Saves an image to 'java.io.File' or an ':java.io.OutputStream'.
 
-          Supported formats:  :png, :jpg, :jpeg, :gif, :bmp
+          Supported formats:  "png", "jpg", "jpeg", "gif", "bmp", ...
           """
      :examples '(
           """
@@ -131,7 +131,7 @@
           """) 
      :see-also '(
           "images/load"
-          "images/supported-file-formats" ) }
+          "images/format-names" ) }
 
   save [img format-name f]
 
@@ -139,11 +139,16 @@
   (assert (or (string? format-name) (keyword? format-name)))
   (assert (or (io/file? f) (instance-of? :java.io.OutputStream f)))
 
-  (try 
-    (. :ImageIO :write img (name type) type f)
-    (catch :Exception e
-      (throw (ex :VncException "Failed to write image" e)))))
-
+  (when-not (try 
+              (. :ImageIO :write img (name format-name) f)
+              (catch :Exception e
+                (throw (ex :VncException "Failed to write image" e))))
+    (throw (ex :VncException 
+               """
+               Failed to write image. No appropriate writer found for format \
+               '~{format-name}'!
+               """))))
+ 
 
 
 ;; -----------------------------------------------------------------------------
@@ -191,8 +196,8 @@
   (try-with [is (. :FileImageInputStream :new file)]
     (. img-reader :setInput is)
     ;; return dimensions
-    [(. img-reader :getWidth  (. img-reader :getMinIndex))
-     (. img-reader :getHeight (. img-reader :getMinIndex))]
+    [(long (. img-reader :getWidth  (. img-reader :getMinIndex)))
+     (long (. img-reader :getHeight (. img-reader :getMinIndex)))]
   (catch :Exception e nil)  ;; this reader does not match the image type
   (finally (. img-reader :dispose))))
 
@@ -213,7 +218,9 @@
           """
           (do
             (load-module :images)
-            (images/rotate img 90))
+            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+                (images/rotate 90)
+                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
           """ ) }
 
   rotate [img angle]
@@ -221,8 +228,8 @@
   (assert (instance-of? :Image img))
   (assert (and (long? angle) (contains? #{0, 90, 180, 270} angle)))
 
-  (let [width   (. img :getWidth)
-        height  (. img :getHeight)
+  (let [width   (long (. img :getWidth))
+        height  (long (. img :getHeight))
         tx      (. :AffineTransform :new)]
     (case angle
       90      (let [new-width  height
@@ -233,13 +240,13 @@
 
       180     (let [new-width  width
                     new-height height]
-			           (. tx :translate 0 new-height)
+			           (. tx :translate new-width new-height)
 			           (. tx :quadrantRotate 2)
                  (transform img tx new-width new-height))
 
       270     (let [new-width  height
                     new-height width]
-			          (. tx :translate new-width 0)
+			          (. tx :translate 0 new-height)
 			          (. tx :quadrantRotate 3)
                 (transform img tx new-width new-height))
 
@@ -257,7 +264,9 @@
           """
           (do
             (load-module :images)
-            (images/flip img :vertical))
+            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+                (images/flip :vertical)
+                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
           """ ) }
 
   flip [img mode]
@@ -265,17 +274,17 @@
   (assert (instance-of? :Image img))
   (assert (and (keyword? mode) (contains? #{:vertical :horizontal} mode)))
 
-  (let [width   (. img :getWidth)
-        height  (. img :getHeight)
+  (let [width   (long (. img :getWidth))
+        height  (long (. img :getHeight))
         tx      (. :AffineTransform :new)]
     (case mode
-      :vertical   (do (. tx :translate 0 height)
-                      (. tx :scale -1.0 1.0)
-                      (transform img tx width height))
-
       :horizontal (do (. tx :translate width 0)
-                      (. tx :scale 1.0 -1.0)
+                      (. tx :scale -1.0 1.0)
                      (transform img tx width height))
+
+      :vertical   (do (. tx :translate 0 height)
+                      (. tx :scale 1.0 -1.0)
+                      (transform img tx width height))
       img)))
 
 
@@ -307,8 +316,11 @@
           """
           (do
             (load-module :images)
-            (let [op-brighter (. :RescaleOp :new 1.1F 0 nil)]
-              (images/apply img [op-brighter])))
+            (import :java.awt.image.RescaleOp)
+            (let [op-brighter (. :RescaleOp :new 1.3F 0 nil)]
+              (-> (images/load (io/file "/Users/foo/winter.jpg"))
+                  (images/apply-ops [op-brighter])
+                  (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))))
           """ ) }
 
   apply-ops [img ops]
@@ -316,14 +328,14 @@
   (assert (instance-of? :Image img))
   (assert (sequential? ops))
   (assert (not-empty? ops))
-  (assert (every? #(instance-of :BufferedImageOp) ops))
+  (assert (every? #(instance-of? :BufferedImageOp %) ops))
 
   (let [src (if (rgb-or-argb-image? img) img (copy-to-derived-image img))]
     (loop [src        src
            ops        (filter some? ops)
            reassigned false]
       (let [op            (first ops) 
-            result-bounds (. :op :getBounds2D src)]
+            result-bounds (. op :getBounds2D src)]
         (when (nil? result-bounds)
            (throw (ex :VncException (str "BufferedImageOp[" op "] get bounds returned nil."))))
         (let [w      (long (. result-bounds :getWidth))
@@ -331,7 +343,7 @@
               dest   (create-derived-image src w h)
               result (. op :filter src dest)]
           (when reassigned (. src :flush))
-          (if (empty? ops)
+          (if (<= (count ops) 1)
             result
             (recur result (rest ops) true)))))))
 
@@ -343,23 +355,21 @@
 
 (defn 
   ^{ :arglists '(
-          "(supported-file-formats)") 
+          "(format-names)") 
      :doc """
-          Returns a list of the suppported file formats of this Java VM.
+          Returns a list of format that the image writer supports.
           """
      :examples '(
           """
           (do
             (load-module :images)
-            (images/supported-file-formats))
+            (images/format-names))
           """ ) }
 
-  supported-file-formats []
+  format-names []
 
-  (let [registry (. :IIORegistry :getDefaultInstance)]
-    (->> (. registry :getServiceProviders (class :ImageWriterSpi) false)
-         (java-iterator-to-list)
-         (map #(. % :getFormatNames)))))
+  (. :ImageIO :getWriterFormatNames))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -368,7 +378,7 @@
 
 (defn-  create-derived-image 
   ([src]
-    (create-derived-image (. img :getWidth) (. img :getHeight)))
+    (create-derived-image (long (. img :getWidth)) (long (. img :getHeight))))
 
   ([src width height]
     (assert (instance-of? :Image src))
@@ -380,11 +390,11 @@
 
 
 (defn- copy-to-derived-image [img]
-  (let [width        (. img :getWidth)
-        height       (. img :getHeight)
+  (let [width        (long (. img :getWidth))
+        height       (long (. img :getHeight))
         type         (if (opaque-transparency? img) TYPE_INT_RGB TYPE_INT_ARGB)
         dest         (. :BufferedImage :new width height type)
-        gd           (. result :getGraphics)]
+        gd           (. dest :getGraphics)]
     (. gd :drawImage img 0 0 nil)
 		(. gd :dispose)
     dest))
