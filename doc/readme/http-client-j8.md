@@ -242,7 +242,7 @@ A response returned from one of the HTTP send or upload functions.
 
 | Option             | Description |
 | :---               | :---        |
-| :json-parse-mode   | The option is used with JSON mimetypes.<br> `:data` - parse the response to a Venice data map<br>`:raw` - return the reponse as received<br>`:pretty-print` - return a pretty print JSON string<br>Defaults to `:data` |
+| :json-parse-mode   | The option is used with JSON mimetypes.<br> `:data` - parse the response to a Venice data map<br>`:raw` - return the reponse as received<br>`:pretty-print` - return a pretty printed JSON string<br>Defaults to `:data` |
 | :json-key-fn       | A single argument function that transforms JSON property names. This option is only available in `:data` parse mode. E.g.: `:json-key-fn keyword` |
 
 
@@ -282,15 +282,15 @@ Server side events are passed as maps to the handler. E.g. :
 
 **Warning:**
   
-When not used over HTTP/2, SSE suffers from a limitation to \
-the maximum number of open connections, which can be especially \
-painful when opening multiple tabs, as the limit is per browser and \
-is set to a very low number (6). The issue has been marked as \
-"Won't fix" in Chrome and Firefox. This limit is per browser + domain, \
-which means that you can open 6 SSE connections across all of the \
+When not used over HTTP/2, SSE suffers from a limitation to
+the maximum number of open connections, which can be especially
+painful when opening multiple tabs, as the limit is per browser and
+is set to a very low number (6). The issue has been marked as
+"Won't fix" in Chrome and Firefox. This limit is per browser + domain,
+which means that you can open 6 SSE connections across all of the
 tabs. 
   
-When using HTTP/2, the maximum number of simultaneous HTTP streams \
+When using HTTP/2, the maximum number of simultaneous HTTP streams
 is negotiated between the server and the client (defaults to 100).
 
 The Java 8 Http Client does not support HTTP/2!
