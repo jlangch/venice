@@ -22,11 +22,16 @@
 ;;;; OpenAI API
 
 
-
 (ns openai)
 
 (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
+
+;; =============================================================================
+;; =                                                                           =
+;; =                     W O R K   I N   P R O G R E S S                       =
+;; =                                                                           =
+;; =============================================================================
 
 
 ;; -----------------------------------------------------------------------------
@@ -35,22 +40,22 @@
 
 ;; see https://platform.openai.com/docs/models/continuous-model-upgrades
 
-(def :gpt-4-turbo   "gpt-4.0-turbo")    ;; GPT-4 Turbo with Vision, 128'000 tokens
-(def :gpt-4         "gpt-4")            ;; GPT-4, 8'192 tokens
-(def :gpt-4-32k     "gpt-4-32k")        ;; GPT-4, 32'768 tokens
-(def :gpt-3.5-turbo "gpt-3.5-turbo")
+(def gpt-4-turbo   "gpt-4.0-turbo")    ;; GPT-4 Turbo with Vision, 128'000 tokens
+(def gpt-4         "gpt-4")            ;; GPT-4, 8'192 tokens
+(def gpt-4-32k     "gpt-4-32k")        ;; GPT-4, 32'768 tokens
+(def gpt-3.5-turbo "gpt-3.5-turbo")    ;; GPT-3.5, 16'385 tokens
 
-(def :dall-e-3      "dall-e-3")         ;; DALL-E 3
-(def :dall-e-2      "dall-e-2")         ;; DALL-E 2
+(def dall-e-3      "dall-e-3")         ;; DALL-E 3
+(def dall-e-2      "dall-e-2")         ;; DALL-E 2
 
-(def :tts-1         "tts-1")            ;; Text-to-speech 1
-(def :tts-1-hd      "tts-1-hd")         ;; Text-to-speech 1 HD
+(def tts-1         "tts-1")            ;; Text-to-speech 1
+(def tts-1-hd      "tts-1-hd")         ;; Text-to-speech 1 HD
 
-(def :whisper-1     "whisper-1")        ;; Whisper, general-purpose speech recognition
+(def whisper-1     "whisper-1")        ;; Whisper, general-purpose speech recognition
 
-(def :text-embedding-3-large  "text-embedding-3-large")   ;; Text embedding, dimension 3'072
-(def :text-embedding-3-small  "text-embedding-3-small")   ;; Text embedding, dimension 1'536
-(def :text-embedding-ada-002  "text-embedding-ada-002")   ;; Text embedding, dimension 1'536
+(def text-embedding-3-large  "text-embedding-3-large")   ;; Text embedding, dimension 3'072
+(def text-embedding-3-small  "text-embedding-3-small")   ;; Text embedding, dimension 1'536
+(def text-embedding-ada-002  "text-embedding-ada-002")   ;; Text embedding, dimension 1'536
 
 
 
@@ -62,8 +67,27 @@
 ;; https://platform.openai.com/docs/guides/text-generation
 ;; https://platform.openai.com/docs/api-reference/chat/create
 
-(def :endpoint-gpt-new "https://api.openai.com/v1/chat/completions")
-(def :endpoint-gpt-old "https://api.openai.com/v1/completions")
+(def endpoint-gpt-new "https://api.openai.com/v1/chat/completions")
+(def endpoint-gpt-old "https://api.openai.com/v1/completions")
 
 ;; todo: define the custom datatypes for the request and the response
 
+(defn chat-completion-example []
+  (let [response (hc/send :post 
+                    endpoint-gpt-new
+                    :headers { "Content-Type" "application/json"
+                               "Authorization" (auth-header) }
+                    :body (json/write-str { :model gpt-3.5-turbo
+                                            :messages [
+                                               { :role "system"
+                                                 :content "You are a helpful assistant." }
+                                               { :role "user"
+                                                 :content "Hello!" } 
+                                            ] } )
+                    :debug true)]
+    (println "Status:" (:http-status response))
+    (println (hc/slurp-response response :json-parse-mode :pretty-print))))
+
+
+(defn- auth-header []
+   "Bearer ~(system-env "OPENAI_API_KEY")" )
