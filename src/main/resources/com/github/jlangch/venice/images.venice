@@ -421,34 +421,34 @@
     (assert (and (keyword? resize-mode) (contains? resize-modes resize-mode)))
 
     (let [img-width      (long (. img :getWidth))
-          img-widtht     (long (. img :getHeight))
-          img-ratio      (/ (double img-height) / (double img-width))
+          img-height     (long (. img :getHeight))
+          img-ratio      (/ (double img-height) (double img-width))
           img-landscape? (<= img-ratio 1.0)
           resize-mode    (if (= resize-mode :auto)
                            (scale-method width height img-landscape?)
                            resize-mode)]
 
       (case resize-mode
-        :performance    (scale-image src width height 
+        :performance    (scale-image img width height 
                                      (. :RenderingHints :VALUE_INTERPOLATION_NEAREST_NEIGHBOR))
 
-        :balanced       (scale-image src width height 
+        :balanced       (scale-image img width height 
                                      (. :RenderingHints :VALUE_INTERPOLATION_BILINEAR))
 
         :quality        (if (or (> width img-width) (> height img-height))
                           ;; scale up
-                          (scale-image src width height 
+                          (scale-image img width height 
                                        (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
                           ;; scale down             
-                          (scale-image src width height 
+                          (scale-image img width height 
                                        (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
                           
         :high-quality   (if (or (> width img-width) (> height img-height))
                           ;; scale up
-                          (scale-image src width height 
+                          (scale-image img width height 
                                        (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
                           ;; scale down             
-                          (scale-image src width height 
+                          (scale-image img width height 
                                        (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
         
         ;; else
@@ -458,12 +458,11 @@
 
 (defn- scale-image [img width height interpolation-hint]
   (let [dest (create-derived-image img width height)
-        g    (. dest :getGraphics)]
-    (g :setRenderingHint (. :RenderingHints :KEY_INTERPOLATION)
-				                 interpolation-hint)
-
-		(g :drawImage img 0 0 width height nil)
-    (. g :dispose)
+        g2d  (cast :java.awt.Graphics2D (. dest :getGraphics))
+        key  (. :RenderingHints :KEY_INTERPOLATION) ]
+    (. g2d :setRenderingHint key interpolation-hint)
+		(. g2d :drawImage img 0 0 width height nil)
+    (. g2d :dispose)
     dest))
 
 
