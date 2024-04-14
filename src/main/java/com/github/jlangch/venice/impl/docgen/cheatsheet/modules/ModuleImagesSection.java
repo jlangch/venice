@@ -44,6 +44,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         final DocSection load = new DocSection("Load/Save", id());
         all.addSection(load);
         load.addItem(diBuilder.getDocItem("images/load", false));
+        load.addItem(diBuilder.getDocItem("images/save", false));
 
         final DocSection props = new DocSection("Properties", id());
         all.addSection(props);
