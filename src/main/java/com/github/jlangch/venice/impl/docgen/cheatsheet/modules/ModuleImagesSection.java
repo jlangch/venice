@@ -60,6 +60,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         transform.addItem(diBuilder.getDocItem("images/flip", false));
         transform.addItem(diBuilder.getDocItem("images/crop", false));
         transform.addItem(diBuilder.getDocItem("images/pad", false));
+        transform.addItem(diBuilder.getDocItem("images/resize", false));
         transform.addItem(diBuilder.getDocItem("images/apply-ops", false));
 
         return section;

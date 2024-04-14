@@ -54,9 +54,10 @@
 ;; Constants
 ;; -----------------------------------------------------------------------------
 
-(def TYPE_INT_RGB  (. :BufferedImage :TYPE_INT_RGB))
-(def TYPE_INT_ARGB (. :BufferedImage :TYPE_INT_ARGB))
+(defonce TYPE_INT_RGB  (. :BufferedImage :TYPE_INT_RGB))
+(defonce TYPE_INT_ARGB (. :BufferedImage :TYPE_INT_ARGB))
 
+(defonce resize-modes #{:auto :performance :balanced :quality :high-quality})
 
 
 
@@ -302,7 +303,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Crop / Pad
+;; Crop / Pad / Resize
 ;; -----------------------------------------------------------------------------
 
 (defn 
@@ -390,6 +391,88 @@
 
     dest))
 
+(defn 
+  ^{ :arglists '(
+          "(resize img width height)"
+          "(resize img width height resize-mode)" )
+     :doc """
+          Resizes an image to a new size, a square of width and height the 
+          image should fit within. 
+          Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+                (images/resize 500 200 :balanced)
+                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+          """ ) }
+
+  resize 
+  
+  ([img width height]
+    (resize img width height :auto))
+
+  ([img width height resize-mode]
+    (assert (instance-of? :Image img))
+    (assert (and (long? width) (>= width 0)))
+    (assert (and (long? height) (>= height 0)))
+    (assert (and (keyword? resize-mode) (contains? resize-modes resize-mode)))
+
+    (let [img-width      (long (. img :getWidth))
+          img-widtht     (long (. img :getHeight))
+          img-ratio      (/ (double img-height) / (double img-width))
+          img-landscape? (<= img-ratio 1.0)
+          resize-mode    (if (= resize-mode :auto)
+                           (scale-method width height img-landscape?)
+                           resize-mode)]
+
+      (case resize-mode
+        :performance    (scale-image src width height 
+                                     (. :RenderingHints :VALUE_INTERPOLATION_NEAREST_NEIGHBOR))
+
+        :balanced       (scale-image src width height 
+                                     (. :RenderingHints :VALUE_INTERPOLATION_BILINEAR))
+
+        :quality        (if (or (> width img-width) (> height img-height))
+                          ;; scale up
+                          (scale-image src width height 
+                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
+                          ;; scale down             
+                          (scale-image src width height 
+                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
+                          
+        :high-quality   (if (or (> width img-width) (> height img-height))
+                          ;; scale up
+                          (scale-image src width height 
+                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
+                          ;; scale down             
+                          (scale-image src width height 
+                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
+        
+        ;; else
+        (throw (ex :VncException 
+                   "Internal error: unhandled resize-mode '~{resize-mode}'!"))))))
+
+
+(defn- scale-image [img width height interpolation-hint]
+  (let [dest (create-derived-image img width height)
+        g    (. dest :getGraphics)]
+    (g :setRenderingHint (. :RenderingHints :KEY_INTERPOLATION)
+				                 interpolation-hint)
+
+		(g :drawImage img 0 0 width height nil)
+    (. g :dispose)
+    dest))
+
+
+(defn- scale-method [width height img-landscape?]
+    (let [length (if img-landscape? width height)]	
+      (cond
+        (<= length 800)   :quality
+        (<= length 1600)  :balanced
+        :else             :performance)))
 
 
 
