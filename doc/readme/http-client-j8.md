@@ -559,8 +559,8 @@ OAuth blueprint
   (let [response (hc/send :get 
                           "http://localhost:8080/events" 
                           :headers { "Accept"         "text/event-stream" 
-                                      "Cache-Control"  "no-cache"
-                                      "Connection"     "keep-alive"}
+                                     "Cache-Control"  "no-cache"
+                                     "Connection"     "keep-alive"}
                               :conn-timeout 0
                               :read-timeout 0
                               :debug true)]
@@ -579,4 +579,6 @@ OAuth blueprint
               :closed (do (println "Streaming closed")
                           :ok))))))
 ```
+
+todo:  add example output
 
