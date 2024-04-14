@@ -26,6 +26,14 @@ Due to its nature it only supports HTTP/1.1 and HTTP/1.2.
 
 ## API
 
+* [Sending Requests](#sending-requests)
+* [UploadingFiles](#uploading-files)
+* [Uploading Multipart Data](#uploading-multipart-data)
+* [Processing responses](#processing-responses)
+* [Processing server-side-events](#processing-server-side-events)
+
+
+
 ### Sending Requests
 
 `(send method uri & options)`
@@ -222,15 +230,15 @@ The functions returns the response data based on the response mimetype:
 | Mimetype          | Description |
 | :---              | :---        |
 | application/xml   | Returns a string according to the content type charset |
-| application/json  | Returns the parsed JSON as a map according to the content type charset |
+| application/json  | Returns the JSON response according to the content type charset.<br>Depending on the option `:json-parse-mode` returns the JSON parsed to a Venice map, as a JSON pretty printed string, or as a raw JSON string |
 | text/plain        | Returns a string according to the content type charset |
 | text/html         | Returns a string according to the content type charset |
 | text/xml          | Returns a string according to the content type charset |
 | text/csv          | Returns a string according to the content type charset |
 | text/css          | Returns a string according to the content type charset |
-| text/json         | Returns the parsed JSON as a map according to the content type charset |
+| text/json         | Returns the JSON response according to the content type charset.<br>Depending on the option `:json-parse-mode` returns the JSON parsed to a Venice map, as a JSON pretty printed string, or as a raw JSON string |
 | text/event-stream | Throws an exception. An event stream can not be slurped. Use the function `process-server-side-events` instead! |
-| *else*            | Returns a byte buffer |
+| *else*            | eturns the response data as a byte buffer |
 
 
 #### Parameter response
@@ -580,5 +588,20 @@ OAuth blueprint
                           :ok))))))
 ```
 
-todo:  add example output
+```
+Status: 200
+
+Streaming started
+Event:  {:data ["Counter 1001"] :event "demo" :id "1001"}
+Event:  {:data ["Counter 1002"] :event "demo" :id "1002"}
+Event:  {:data ["Counter 1003"] :event "demo" :id "1003"}
+Event:  {:data ["Counter 1004"] :event "demo" :id "1004"}
+Event:  {:data ["Counter 1005"] :event "demo" :id "1005"}
+Event:  {:data ["Counter 1006"] :event "demo" :id "1006"}
+Event:  {:data ["Counter 1007"] :event "demo" :id "1007"}
+Event:  {:data ["Counter 1008"] :event "demo" :id "1008"}
+Event:  {:data ["Counter 1009"] :event "demo" :id "1009"}
+Event:  {:data ["Counter 1010"] :event "demo" :id "1010"}
+Streaming closed
+```
 
