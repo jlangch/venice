@@ -515,18 +515,22 @@
 
           | [![width: 20%]]   | [![width: 80%]] |
           | application/xml   | Returns a string according to the content type charset |
-          | application/json  | Returns the parsed JSON as a map according to the \
-                                content type charset |
+          | application/json  | Returns the JSON response according to the content type charset. ¶\
+                                Depending on the option `:json-parse-mode` returns the \
+                                JSON parsed to a Venice map, as a JSON pretty printed \
+                                string, or as a raw JSON string |
           | text/plain        | Returns a string according to the content type charset |
           | text/html         | Returns a string according to the content type charset |
           | text/xml          | Returns a string according to the content type charset |
           | text/csv          | Returns a string according to the content type charset |
           | text/css          | Returns a string according to the content type charset |
-          | text/json         | Returns the parsed JSON as a map according to the \
-                                content type charset |
+          | text/json         | Returns the JSON response according to the content type charset. ¶\
+                                Depending on the option `:json-parse-mode` returns the \
+                                JSON parsed to a Venice map, as a JSON pretty printed \
+                                string, or as a raw JSON string |
           | text/event-stream | Throws an exception. An event stream can not be slurped. \
                                 Use the function `process-server-side-events` instead! |
-          | else              | Returns a byte buffer |
+          | *else*            | Returns the response data as a byte buffer |
 
           Options:
 
@@ -722,7 +726,7 @@
         ;; clear interrupt hook, we did not need it
         (interrupt-hook id)
         ;; streaming closed notification
-        (try (event-handler :closed nil event-count) (catch :Exception e))
+        (try (event-handler :closed nil 0) (catch :Exception e))
         ;; close the stream
         (try (. rd :close) (catch :Exception e))))))
 
