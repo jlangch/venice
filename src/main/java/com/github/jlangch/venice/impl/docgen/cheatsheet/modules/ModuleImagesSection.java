@@ -52,7 +52,7 @@ public class ModuleImagesSection implements ISectionBuilder {
 
         final DocSection formats = new DocSection("File Formats", id());
         all.addSection(formats);
-        formats.addItem(diBuilder.getDocItem("images/list-supported-file-formats", true));
+        formats.addItem(diBuilder.getDocItem("images/supported-file-formats", true));
 
         final DocSection transform = new DocSection("Transform", id());
         all.addSection(transform);

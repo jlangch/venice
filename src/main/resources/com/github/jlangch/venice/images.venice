@@ -343,7 +343,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(list-supported-file-formats)") 
+          "(supported-file-formats)") 
      :doc """
           Returns a list of the suppported file formats of this Java VM.
           """
@@ -351,10 +351,10 @@
           """
           (do
             (load-module :images)
-            (images/list-supported-file-formats))
+            (images/supported-file-formats))
           """ ) }
 
-  list-supported-file-formats []
+  supported-file-formats []
 
   (let [registry (. :IIORegistry :getDefaultInstance)]
     (->> (. registry :getServiceProviders (class :ImageWriterSpi) false)
