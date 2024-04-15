@@ -128,7 +128,8 @@
           """
           (do
             (load-module :images)
-            (images/save img :png (io/file \"/Users/foo/apple.png\")))
+            (-> (images/load (io/file \"/Users/foo/apple.png\"))
+                (images/save img :jpg (io/file \"/Users/foo/apple.jpg\"))))
           """) 
      :see-also '(
           "images/load"
@@ -235,20 +236,20 @@
     (case angle
       90      (let [new-width  height
                     new-height width]
-			          (. tx :translate new-width 0)
-			          (. tx :quadrantRotate 1)
+                      (. tx :translate new-width 0)
+                      (. tx :quadrantRotate 1)
                 (transform img tx new-width new-height))
 
       180     (let [new-width  width
                     new-height height]
-			           (. tx :translate new-width new-height)
-			           (. tx :quadrantRotate 2)
+                       (. tx :translate new-width new-height)
+                       (. tx :quadrantRotate 2)
                  (transform img tx new-width new-height))
 
       270     (let [new-width  height
                     new-height width]
-			          (. tx :translate 0 new-height)
-			          (. tx :quadrantRotate 3)
+                      (. tx :translate 0 new-height)
+                      (. tx :quadrantRotate 3)
                 (transform img tx new-width new-height))
 
       img)))
@@ -297,8 +298,8 @@
 
   (let [result (create-derived-image img width height)
         g2d    (. result :createGraphics)]
-	  (. g2d :drawImage img tx nil)
-		(. g2d :dispose)
+      (. g2d :drawImage img tx nil)
+        (. g2d :dispose)
     result))
 
 
@@ -342,7 +343,7 @@
                       0 0 width height 
                       x y (+ x width) (+ y height)
                       nil)
-	    (. g :dispose)
+        (. g :dispose)
       dest)))
 
 
@@ -377,16 +378,16 @@
         dest         (. :BufferedImage :new width height type)
         g            (. dest :getGraphics)]
 
-		;; draw the padding border
-		(. g :setColor color)
-		(. g :fillRect 0 0 width padding)
-		(. g :fillRect 0 padding padding height)
-		(. g :fillRect padding (- height padding) width height)
-		(. g :fillRect (- width padding) padding width (- height padding))
+        ;; draw the padding border
+        (. g :setColor color)
+        (. g :fillRect 0 0 width padding)
+        (. g :fillRect 0 padding padding height)
+        (. g :fillRect padding (- height padding) width height)
+        (. g :fillRect (- width padding) padding width (- height padding))
 
-		; draw the centered image
-		(. g :drawImage img padding padding nil)
-		(. g :dispose)
+        ; draw the centered image
+        (. g :drawImage img padding padding nil)
+        (. g :dispose)
 
     dest))
 
@@ -464,17 +465,17 @@
         g2d  (cast :java.awt.Graphics2D (. dest :getGraphics))
         key  (. :RenderingHints :KEY_INTERPOLATION) ]
     (. g2d :setRenderingHint key interpolation-hint)
-		(. g2d :drawImage img 0 0 width height nil)
+    (. g2d :drawImage img 0 0 width height nil)
     (. g2d :dispose)
     dest))
 
 
 (defn- scale-method [width height img-landscape?]
-    (let [length (if img-landscape? width height)]	
-      (cond
-        (<= length 800)   :quality
-        (<= length 1600)  :balanced
-        :else             :performance)))
+  (let [length (if img-landscape? width height)]    
+    (cond
+      (<= length 800)   :quality
+      (<= length 1600)  :balanced
+      :else             :performance)))
 
 
 
@@ -514,7 +515,7 @@
       (let [op            (first ops) 
             result-bounds (. op :getBounds2D src)]
         (when (nil? result-bounds)
-           (throw (ex :VncException (str "BufferedImageOp[" op "] get bounds returned nil."))))
+          (throw (ex :VncException (str "BufferedImageOp[" op "] get bounds returned nil."))))
         (let [w      (long (. result-bounds :getWidth))
               h      (long (. result-bounds :getHeight))
               dest   (create-derived-image src w h)
@@ -573,7 +574,7 @@
         dest         (. :BufferedImage :new width height type)
         gd           (. dest :getGraphics)]
     (. gd :drawImage img 0 0 nil)
-		(. gd :dispose)
+    (. gd :dispose)
     dest))
 
 

@@ -511,7 +511,7 @@ public class DocGenerator {
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
                 // new ModuleHttpClientSection(diBuilder).section(),
-        		new ModuleImagesSection(diBuilder).section());
+                new ModuleImagesSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {
@@ -527,11 +527,11 @@ public class DocGenerator {
                 new ModuleAppSection(diBuilder).section(),
                 new ModuleBenchmarkSection(diBuilder).section(),
                 new ModuleTimingSection(diBuilder).section(),
-		        new ModuleGrepSection(diBuilder).section(),
-		        new ModuleQrRefSection(diBuilder).section(),
-		        new ModuleAsciiTableSection(diBuilder).section(),
-        		new ModuleMatrixSection(diBuilder).section(),
-        		new ModuleAnsiSection(diBuilder).section(),
+                new ModuleGrepSection(diBuilder).section(),
+                new ModuleQrRefSection(diBuilder).section(),
+                new ModuleAsciiTableSection(diBuilder).section(),
+                new ModuleMatrixSection(diBuilder).section(),
+                new ModuleAnsiSection(diBuilder).section(),
                 new ModuleMimetypesSection(diBuilder).section(),
                 new ModuleMultipartSection(diBuilder).section(),
                 new ModuleSseSection(diBuilder).section(),
