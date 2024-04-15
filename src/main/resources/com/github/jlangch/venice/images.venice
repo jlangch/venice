@@ -616,7 +616,8 @@
           "(apply-ops img ops)") 
      :doc """
           Applies one or multiple image operators (:java.awt.image.BufferedImageOp)
-          to the image.  Returns a new image.
+          to the image. 
+          Returns a new image.
 
           Examples for image operators:
 
@@ -759,4 +760,4 @@
 
 
 (defn- color-alpha? [color] 
-  (not (== (long (. color :getAlpha)) 255)))
+  (not= (long (. color :getAlpha)) 255))
