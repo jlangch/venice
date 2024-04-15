@@ -43,7 +43,8 @@
 ;; -----------------------------------------------------------------------------
 
 (defn events-demo [queue request]
-  (let [stop-events     (atom false)
+  (let [max-count       (get-long-parameter request "max-count" nil)
+        stop-events     (atom false)
         async_request   (:async-request request)   ;; HttpServletRequest
         async_response  (:async-response request)  ;; HttpServletResponse
         os              (. async_response :getOutputStream)
@@ -52,19 +53,25 @@
     (. async_response :setContentType       "text/event-stream")
     (. async_response :setCharacterEncoding "UTF-8")
 
+    (println "Max count: " max-count)
+
     ;; start the event producer
     (event-producer queue stop-events)
 
     (try
-      (loop []
-        (let [event       (take! queue)
-              sse-event   (sse/render event)]
-          (println "Publishing event: " (:id event))
-          (print pr sse-event)
-          (flush pr)
-          (recur)))
+      (loop [counter 0]
+        (if (or (nil? max-count) (< counter max-count))
+          (let [event       (take! queue)
+                sse-event   (sse/render event)]
+            (println "Publishing event: " (:id event))
+            (print pr sse-event)
+            (flush pr)
+            (recur (inc counter)))
+          (println "Event max count of" max-count "reached")))
+      (catch [:cause-type :java.io.IOException] e 
+         (println "Client closed connection." (ex-message e)))
       (catch :Exception e 
-        (println "Client closed connection")))
+        (println "Stopped. Error:" (ex-message e))))
             
     ;; stop the event producer
     (reset! stop-events true)
@@ -76,7 +83,13 @@
     ;; to the client!
     nil))
 
-
+(defn- get-long-parameter [request param-name default-value]
+  (try
+    (-> (:parameters request)
+        (get "max-events")
+        (first)
+        (long))
+    (catch :exception e default-value)))
 
 ;; -----------------------------------------------------------------------------
 ;; Middleware configuration
@@ -132,6 +145,39 @@
 
     (let [response  (hc/send :get 
                              "http://localhost:8080/events" 
+                             :headers { "Accept"         "text/event-stream" 
+                                        "Cache-Control"  "no-cache"
+                                        "Connection"     "keep-alive" }
+                             :conn-timeout 0
+                             :read-timeout 0
+                             :debug true)]
+      (println "Status:" (:http-status response))
+
+      (hc/process-server-side-events 
+        response
+        (fn [type event event-count]
+          (case type
+            :opened (do (println "\nStreaming started")
+                        :ok)
+            :data   (do (println "Event: " (pr-str event))
+                        ;; only process 10 events
+                        (if (< event-count 10) :ok :stop))
+            :closed (do (println "Streaming closed")
+                        :ok))))))
+)
+
+;; GET (demo)
+(comment
+  ;; run this Http client in another REPL. It kicks off server side streaming
+  ;; of events and displays the received events. The server will close the 
+  ;; connection after having sent 6 events due to the uri query parameter 
+  ;; "max-count=6". The client reacts on the closed connection by stopping
+  ;; processing events.
+  (do
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+    (let [response  (hc/send :get 
+                             "http://localhost:8080/events?max-count=6" 
                              :headers { "Accept"         "text/event-stream" 
                                         "Cache-Control"  "no-cache"
                                         "Connection"     "keep-alive" }

@@ -171,13 +171,17 @@
 
   (assert (io/reader? rd))
 
-  ;; read the resonse line by line
-  (loop [line (read-line rd) lines []]
-    (if (nil? line)
-      nil  ;; end of stream, no complete event availale
-      (if (empty? line)
-        (parse (str/join "\r\n" lines))               ;; return the event
-        (recur (read-line rd) (conj lines line))))))  ;; capture next event line
+  ;; read the response line by line
+  (try 
+    (loop [line (read-line rd) lines []]
+      (if (nil? line)
+        nil  ;; end of stream, no complete event availale
+        (if (empty? line)
+          (parse (str/join "\r\n" lines))               ;; return the event
+          (recur (read-line rd) (conj lines line)))))   ;; capture next event line
+    (catch [:cause-type :java.io.IOException] e  
+      ;; underlying stream error/closed -> return nil
+      nil)))
 
 
 (defn
