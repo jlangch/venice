@@ -239,7 +239,7 @@
             (load-module :images)
             (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/rotate 90)
-                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
           """ ) }
 
   rotate [img angle]
@@ -285,7 +285,7 @@
             (load-module :images)
             (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/flip :vertical)
-                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
           """ ) }
 
   flip [img mode]
@@ -313,8 +313,8 @@
 
   (let [result (create-derived-image img width height)
         g2d    (. result :createGraphics)]
-      (. g2d :drawImage img tx nil)
-        (. g2d :dispose)
+    (. g2d :drawImage img tx nil)
+    (. g2d :dispose)
     result))
 
 
@@ -333,8 +333,8 @@
           (do
             (load-module :images)
             (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
-                (images/crop 100 100 400 200)
-                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
+                (images/crop 1000 1000 400 200)
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
           """ ) }
 
   crop [img x y width height]
@@ -374,7 +374,7 @@
             (import :java.awt.Color)
             (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/pad 200 (. :Color :WHITE))
-                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
           """ ) }
 
   pad [img padding color]
@@ -661,7 +661,8 @@
           ;; convert the image to grayscale
           (do
             (load-module :images)
-            (import :java.awt.image.RescaleOp)
+            (import :java.awt.color.ColorSpace)
+            (import :java.awt.image.ColorConvertOp)
 
             (let [op-grayscale (as-> (. :ColorSpace :CS_GRAY) cs
                                      (. :ColorSpace :getInstance cs)
@@ -758,4 +759,4 @@
 
 
 (defn- color-alpha? [color] 
-  (not (== (long (. color :getAlpha) 255))))
+  (not (== (long (. color :getAlpha)) 255)))
