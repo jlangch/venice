@@ -116,7 +116,7 @@
           """
           (do
             (load-module :images)
-            (images/load (io/file \"/Users/foo/apple.png\")))
+            (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg")))
           """)
      :see-also '(
           "images/save" ) }
@@ -145,8 +145,8 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file \"/Users/foo/apple.png\"))
-                (images/save img :jpg (io/file \"/Users/foo/apple.jpg\"))))
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
+                (images/save img :png (io/file "/Users/foo/Desktop/Pink-Forest.png"))))
           """) 
      :see-also '(
           "images/load"
@@ -188,7 +188,7 @@
           """
           (do
             (load-module :images)
-            (images/dimension (io/file \"/Users/foo/apple.png\")))
+            (images/dimension (io/file "/Users/foo/Desktop/Pink-Forest.jpg")))
           """ ) }
 
   dimension [f]
@@ -237,9 +237,9 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/rotate 90)
-                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
           """ ) }
 
   rotate [img angle]
@@ -283,9 +283,9 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/flip :vertical)
-                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
           """ ) }
 
   flip [img mode]
@@ -332,9 +332,9 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/crop 100 100 400 200)
-                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
           """ ) }
 
   crop [img x y width height]
@@ -372,9 +372,9 @@
           (do
             (load-module :images)
             (import :java.awt.Color)
-            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/pad 200 (. :Color :WHITE))
-                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
           """ ) }
 
   pad [img padding color]
@@ -437,9 +437,9 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/resize-fit 500 :fit-auto :balanced)
-                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
           """ )
      :see-also '(
           "images/resize" ) }
@@ -513,9 +513,9 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                 (images/resize 500 200 :resize-balanced)
-                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
           """ )
      :see-also '(
           "images/resize-fit" ) }
@@ -642,9 +642,9 @@
             (import :java.awt.image.RescaleOp)
             
             (let [op-brighter (. :RescaleOp :new 1.3F 0 nil)]
-              (-> (images/load (io/file "/Users/foo/winter.jpg"))
+              (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                   (images/apply-ops [op-brighter])
-                  (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))))
+                  (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))))
           """ ) }
 
   apply-ops [img ops]
