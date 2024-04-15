@@ -140,6 +140,7 @@
   ;; run this Http client in another REPL. It kicks off server side streaming
   ;; of events and displays the received events. Stops the connection after
   ;; having received 10 events.
+  ;; Connection close is initated by client
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
@@ -173,6 +174,7 @@
   ;; connection after having sent 6 events due to the uri query parameter 
   ;; "max-count=6". The client reacts on the closed connection by stopping
   ;; processing events.
+  ;; Connection close is initated by server
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
