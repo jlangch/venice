@@ -372,9 +372,8 @@
         img-height   (long (. img :getHeight))
         width        (+ img-width (* padding 2))
         height       (+ img-height (* padding 2))
-        color-alpha? (not (== (. color :getAlpha) 255))
         img-alpha?   (not (opaque? img))
-        type         (if (or color-alpha? img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
+        type         (if (or (color-alpha? color) img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
         dest         (. :BufferedImage :new width height type)
         g            (. dest :getGraphics)]
 
@@ -584,3 +583,7 @@
 
 (defn- opaque? [img]
   (== (. img :getTransparency) (. :Transparency :OPAQUE)))
+
+
+(defn- color-alpha? [color] 
+  (not (== (long (. color :getAlpha) 255))))
