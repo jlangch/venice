@@ -284,7 +284,7 @@ Server side events are passed as maps to the handler. E.g. :
 { :id    "1"
   :event "score"
   :data  [ "GOAL Liverpool 1 - 1 Arsenal"
-             "GOAL Manchester United 3 - 3 Manchester City" ] }
+           "GOAL Manchester United 3 - 3 Manchester City" ] }
 ```
 
 **Warning:**
@@ -500,8 +500,8 @@ OAuth blueprint
           response (hc/send :post 
                             "https://.../oauth2/token" 
                             :headers { "Accept" "application/json, text/plain"
-                                        "Authorization" (str "Basic " encoded-secret)
-                                        "Content-Type" "application/x-www-form-urlencoded" }
+                                       "Authorization" (str "Basic " encoded-secret)
+                                       "Content-Type" "application/x-www-form-urlencoded" }
                             :body "grant_type=client_credentials")
           status   (:http-status response)
           mimetype (:content-type-mimetype response)
