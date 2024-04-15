@@ -63,7 +63,17 @@
 (defonce TYPE_INT_RGB  (. :BufferedImage :TYPE_INT_RGB))
 (defonce TYPE_INT_ARGB (. :BufferedImage :TYPE_INT_ARGB))
 
-(defonce resize-modes #{:auto :performance :balanced :quality :high-quality})
+(defonce resize-modes #{ :resize-auto 
+                         :resize-performance 
+                         :resize-balanced 
+                         :resize-quality 
+                         :resize-high-quality })
+
+(defonce fit-modes #{ :fit-auto 
+                      :fit-exact 
+                      :fit-width 
+                      :fit-height })
+
 
 
 
@@ -186,7 +196,7 @@
   (assert (or (io/file? f) (instance-of? :Image f)))
 
   (if (instance-of? :Image f)
-    [(. f :getWidth) (. f :getHeight)] ;; return dimensions
+    [(long (. f :getWidth)) (long (. f :getHeight))] ;; return dimensions
     (let [suffix    (io/file-ext f)
           iterators (. :ImageIO :getImageReadersBySuffix suffix)]
       (let [dim (loop [readers (java-iterator-to-list iterators)]
@@ -237,9 +247,8 @@
   (assert (instance-of? :Image img))
   (assert (and (long? angle) (contains? #{0, 90, 180, 270} angle)))
 
-  (let [width   (long (. img :getWidth))
-        height  (long (. img :getHeight))
-        tx      (. :AffineTransform :new)]
+  (let [[width height] (dimension img)
+        tx             (. :AffineTransform :new)]
     (case angle
       90      (let [new-width  height
                     new-height width]
@@ -284,9 +293,8 @@
   (assert (instance-of? :Image img))
   (assert (and (keyword? mode) (contains? #{:vertical :horizontal} mode)))
 
-  (let [width   (long (. img :getWidth))
-        height  (long (. img :getHeight))
-        tx      (. :AffineTransform :new)]
+  (let [[width height] (dimension img)
+        tx             (. :AffineTransform :new)]
     (case mode
       :horizontal (do (. tx :translate width 0)
                       (. tx :scale -1.0 1.0)
@@ -335,8 +343,7 @@
   (assert (and (long? x) (long? y) (long? width) (long? height)))
   (assert (and (>= x 0) (>= y 0) (>= width 0) (>= height 0)))
 
-  (let [img-width   (long (. img :getWidth))
-        img-height  (long (. img :getHeight))]
+  (let [[img-width img-height] (dimension img)]
     (when (> (+ x width) img-width)
       (throw (ex :VncException 
                  "Invalid crop bounds: x[~{x}] + width[~{width}] < img-width[~{img-width}]")))
@@ -376,11 +383,10 @@
   (assert (and (long? padding) (>= padding 0)))
   (assert (instance-of? :Color color))
 
-  (let [img-width    (long (. img :getWidth))
-        img-height   (long (. img :getHeight))
+  (let [[img-width img-height] (dimension img)
+        img-alpha?   (not (opaque? img))
         width        (+ img-width (* padding 2))
         height       (+ img-height (* padding 2))
-        img-alpha?   (not (opaque? img))
         type         (if (or (color-alpha? color) img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
         dest         (. :BufferedImage :new width height type)
         g            (. dest :getGraphics)]
@@ -400,14 +406,30 @@
 
 (defn 
   ^{ :arglists '(
-          "(resize img width height)"
-          "(resize img width height resize-mode)" )
+          "(resize-fit img size fit-mode)"
+          "(resize img size fit-mode resize-mode)" )
      :doc """
           Resizes an image to a new size, a square of width and height the 
-          image should fit within. 
+          image should fit within the size. 
 
-          Resize modes: `:auto` (default), `:performance`, `:balanced`, `:quality`, 
-          `:high-quality`
+          Resize modes: 
+          
+          | [![width: 15%]] | [![width: 85%]] |
+          | `:fit-best`     | (default), fit within a square box of size 'size', \
+                              keeps width / height ratio  |
+          | `:fit-exact`    | fit exactly to a square of size 'size', \
+                              causes distortions  |
+          | `:fit-width`    | fit to width, keeps width / height ratio |
+          | `:fit-height`   | fit to height, keeps width / height ratio |
+
+          Resize modes: 
+          
+          | [![width: 15%]]        | [![width: 85%]]                         |
+          | `:resize-auto`         | (default) chooses best mode             |
+          | `:resize-performance`  | resize for best performance             |
+          | `:resize-balanced`     | balance between performance and quality |
+          | `:resize-quality`      | resize for quality                      |
+          | `:resize-high-quality` | resize for high quality                 |
 
           Returns a new image.
           """
@@ -416,9 +438,87 @@
           (do
             (load-module :images)
             (-> (images/load (io/file "/Users/foo/winter.jpg"))
-                (images/resize 500 200 :balanced)
+                (images/resize-fit 500 :fit-auto :balanced)
                 (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
-          """ ) }
+          """ )
+     :see-also '(
+          "images/resize" ) }
+
+  resize-fit
+
+  ([img size fit-mode]
+    (resize-fit img size fit-mode :resize-auto))
+
+  ([img size fit-mode resize-mode]
+    (assert (instance-of? :Image img))
+    (assert (and (long? size) (> size 0)))
+    (assert (and (keyword? fit-mode) (contains? fit-modes fit-mode)))
+    (assert (and (keyword? resize-mode) (contains? resize-modes resize-mode)))
+ 
+    (let [[img-width img-height] (dimension img)]
+      (case fit-mode
+        :fit-exact
+              (resize img size size resize-mode)
+
+        :fit-width
+              (let [factor (/ (double size) (double img-width))]
+                (resize img size (scale img-height factor) resize-mode))
+
+        :fit-height
+              (let [factor (/ (double size) (double img-height))]
+                (resize img (scale img-width factor) size resize-mode))
+
+        :fit-best
+              (let [factor-w (/ (double size) (double img-width))
+                    factor-h (/ (double size) (double img-height))
+                    factor   (cond
+                               (and (>= factor-w 1.0) (>= factor-h 1.0)) 
+                                 (min factor-w factor-h) ;; upscale
+                               (and (>= factor-w 1.0) (< factor-h 1.0))
+                                 factor-h ;; downscale
+                               (and (< factor-w 1.0) (>= factor-h 1.0))
+                                 factor-w ;; downscale
+                               (and (< factor-w 1.0) (< factor-h 1.0))
+                                 (max factor-w factor-h))] ;; downscale
+                               :else 1.0
+                    (resize img 
+                      (scale img-width factor) 
+                      (scale img-height factor)
+                      resize-mode))
+           
+        ;; else
+        (throw (ex :VncException 
+                    "Internal error: unhandled fit-mode '~{fit-mode}'!"))))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(resize img width height)"
+          "(resize img width height resize-mode)" )
+     :doc """
+          Resizes an image to a new width and height. 
+
+          Resize modes: 
+          
+          | [![width: 15%]]        | [![width: 85%]].                        |
+          | `:resize-auto`         | (default) chooses best mode             |
+          | `:resize-performance`  | resize for best performance             |
+          | `:resize-balanced`     | balance between performance and quality |
+          | `:resize-quality`      | resize for quality                      |
+          | `:resize-high-quality` | resize for high quality                 |
+
+          Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (-> (images/load (io/file "/Users/foo/winter.jpg"))
+                (images/resize 500 200 :resize-balanced)
+                (images/save "jpg" (io/file "/Users/foo/winter-1.jpg")))
+          """ )
+     :see-also '(
+          "images/resize-fit" ) }
 
   resize 
   
@@ -427,44 +527,51 @@
 
   ([img width height resize-mode]
     (assert (instance-of? :Image img))
-    (assert (and (long? width) (>= width 0)))
-    (assert (and (long? height) (>= height 0)))
+    (assert (and (long? width) (> width 0)))
+    (assert (and (long? height) (> height 0)))
     (assert (and (keyword? resize-mode) (contains? resize-modes resize-mode)))
 
-    (let [img-width      (long (. img :getWidth))
-          img-height     (long (. img :getHeight))
+    (let [[img-width img-height] (dimension img)
           img-ratio      (/ (double img-height) (double img-width))
           img-landscape? (<= img-ratio 1.0)
-          resize-mode    (if (= resize-mode :auto)
+          resize-mode    (if (= resize-mode :resize-auto)
                            (scale-method width height img-landscape?)
                            resize-mode)]
 
-      (case resize-mode
-        :performance    (scale-image img width height 
-                                     (. :RenderingHints :VALUE_INTERPOLATION_NEAREST_NEIGHBOR))
+      (if (== (img-width width) (img-height height))
+        img ;; no change in size return original image
+        (do
+          ;; resize the image
+          (case resize-mode
+            :resize-performance    
+                    (scale-image img width height 
+                      (. :RenderingHints :VALUE_INTERPOLATION_NEAREST_NEIGHBOR))
 
-        :balanced       (scale-image img width height 
-                                     (. :RenderingHints :VALUE_INTERPOLATION_BILINEAR))
+            :resize-balanced
+                    (scale-image img width height 
+                      (. :RenderingHints :VALUE_INTERPOLATION_BILINEAR))
 
-        :quality        (if (or (> width img-width) (> height img-height))
-                          ;; scale up
-                          (scale-image img width height 
-                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
-                          ;; scale down             
-                          (scale-image img width height 
-                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
-                          
-        :high-quality   (if (or (> width img-width) (> height img-height))
-                          ;; scale up
-                          (scale-image img width height 
-                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
-                          ;; scale down             
-                          (scale-image img width height 
-                                       (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
-        
-        ;; else
-        (throw (ex :VncException 
-                   "Internal error: unhandled resize-mode '~{resize-mode}'!"))))))
+            :resize-quality        
+                    (if (or (> width img-width) (> height img-height))
+                      ;; scale up
+                      (scale-image img width height 
+                                    (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
+                      ;; scale down             
+                      (scale-image img width height 
+                                    (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
+                              
+            :resize-high-quality   
+                    (if (or (> width img-width) (> height img-height))
+                      ;; scale up
+                      (scale-image img width height 
+                                    (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC))
+                      ;; scale down             
+                      (scale-image img width height 
+                                    (. :RenderingHints :VALUE_INTERPOLATION_BICUBIC)))
+            
+            ;; else
+            (throw (ex :VncException 
+                      "Internal error: unhandled resize-mode '~{resize-mode}'!"))))))))
 
 
 (defn- scale-image [img width height interpolation-hint]
@@ -483,6 +590,10 @@
       (<= length 800)   :quality
       (<= length 1600)  :balanced
       :else             :performance)))
+
+
+(defn scale [size factor]
+  (long (* (double size) (double factor))))
 
 
 

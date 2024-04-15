@@ -35,8 +35,8 @@ public class ModuleImagesSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"Images",
-        								"modules.images");
+                                        "Images",
+                                        "modules.images");
 
         final DocSection all = new DocSection("(load-module :images)", id());
         section.addSection(all);
@@ -60,6 +60,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         transform.addItem(diBuilder.getDocItem("images/flip", false));
         transform.addItem(diBuilder.getDocItem("images/crop", false));
         transform.addItem(diBuilder.getDocItem("images/pad", false));
+        transform.addItem(diBuilder.getDocItem("images/resize-fit", false));
         transform.addItem(diBuilder.getDocItem("images/resize", false));
         transform.addItem(diBuilder.getDocItem("images/apply-ops", false));
 
