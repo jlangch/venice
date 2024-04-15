@@ -19,7 +19,6 @@ Main  features:
 
 *HttpUrlConnection* has the reputation of being outdated and clumsy but nevertheless
 it runs on Java 8 and higher and it provides everything required for an HTTP client.
-
 Due to its nature it only supports HTTP/1.1 and HTTP/1.2.
 
 
@@ -41,17 +40,17 @@ Due to its nature it only supports HTTP/1.1 and HTTP/1.2.
 Send a request given a method, an uri, and request options.
 
 
-#### Parameter method
+#### Parameter «method»
 
 The request method:  `:get`, `:post`,`:put`,`:delete`, ...
 
 
-#### Parameter uri
+#### Parameter «uri»
 
 The request URI
 
 
-#### Parameter options
+#### Parameter «options»
 
 | Option             | Description |
 | :---               | :---        |
@@ -95,12 +94,12 @@ Upload a file given an uri and options.
 Sets an implicit "Content-Type" header that is derived from the files's mimetype.
 
 
-#### Parameter file
+#### Parameter «file»
 
 The file to upload
 
 
-#### Parameter uri
+#### Parameter «uri»
 
 The request URI
 
@@ -151,7 +150,7 @@ Upload multipart data given its parts, an uri, and request options
 Sets the "Content-Type" header to "multipart/form-data".
 
 
-#### Parameter parts
+#### Parameter «parts»
 
 The upload support string parts, file parts, and generic parts. Any number of parts can be uploaded.
 
@@ -177,7 +176,7 @@ The upload support string parts, file parts, and generic parts. Any number of pa
              :data      "<user><name>foo</name></user>" }})
 ```
 
-#### Parameter uri
+#### Parameter «uri»
 
 The request URI
 
@@ -241,12 +240,12 @@ The functions returns the response data based on the response mimetype:
 | *else*            | eturns the response data as a byte buffer |
 
 
-#### Parameter response
+#### Parameter «response»
 
 A response returned from one of the HTTP send or upload functions. 
 
 
-#### Parameter options
+#### Parameter «options»
 
 | Option             | Description |
 | :---               | :---        |
