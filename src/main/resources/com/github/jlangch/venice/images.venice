@@ -21,6 +21,12 @@
 
 ;;;; Image functions
 
+;;;; Thanks to Riyad Kalla and his 'imgscalr' Java project (Apache-2.0 license).
+;;;; https://github.com/rkalla/imgscalr/
+;;;;
+;;;; This is a Venice rewrite of the 'imgscalr'.
+
+
 (ns images)
 
 (import :java.awt.Color
@@ -77,8 +83,9 @@
 
 (def rescale-op-brighter (. :RescaleOp  :new 1.1F 0 nil))
 
-(def color-space-gray (. :ColorSpace :getInstance (. :ColorSpace :CS_GRAY)))
-(def color-convert-op-grayscale (. :ColorConvertOp :new color-space-gray nil))
+(def color-convert-op-grayscale (as-> (. :ColorSpace :CS_GRAY) cs
+                                      (. :ColorSpace :getInstance cs)
+                                      (. :ColorConvertOp :new cs nil)))
 
 
 
@@ -489,6 +496,33 @@
      :doc """
           Applies one or multiple image operators (:java.awt.image.BufferedImageOp)
           to the image.  Returns a new image.
+
+          Examples for image operators:
+
+          ```
+          (import :java.awt.color.ColorSpace
+                  :java.awt.image.ColorConvertOp
+                  :java.awt.image.ConvolveOp
+                  :java.awt.image.Kernel
+                  :java.awt.image.RescaleOp)
+
+          (def convolve-op-antialias (. :ConvolveOp 
+                                        :new 
+                                        (. :Kernel :new 3 3 
+                                                        [ 0.00F, 0.08F, 0.00F, 
+                                                          0.08F, 0.68F, 0.08F,
+                                                          0.00F, 0.08F, 0.00F ])
+                                        (. :ConvolveOp :EDGE_NO_OP)
+                                        nil))
+
+          (def rescale-op-darker (. :RescaleOp  :new 0.9F 0 nil))
+
+          (def rescale-op-brighter (. :RescaleOp  :new 1.1F 0 nil))
+
+          (def color-convert-op-grayscale (as-> (. :ColorSpace :CS_GRAY) cs
+                                                (. :ColorSpace :getInstance cs)
+                                                (. :ColorConvertOp :new cs nil)))
+          ```
           """
      :examples '(
           """
