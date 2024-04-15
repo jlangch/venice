@@ -515,9 +515,9 @@
                                         (. :ConvolveOp :EDGE_NO_OP)
                                         nil))
 
-          (def rescale-op-darker (. :RescaleOp  :new 0.9F 0 nil))
+          (def rescale-op-darker (. :RescaleOp :new 0.9F 0 nil))
 
-          (def rescale-op-brighter (. :RescaleOp  :new 1.1F 0 nil))
+          (def rescale-op-brighter (. :RescaleOp :new 1.1F 0 nil))
 
           (def color-convert-op-grayscale (as-> (. :ColorSpace :CS_GRAY) cs
                                                 (. :ColorSpace :getInstance cs)
@@ -529,6 +529,7 @@
           (do
             (load-module :images)
             (import :java.awt.image.RescaleOp)
+            
             (let [op-brighter (. :RescaleOp :new 1.3F 0 nil)]
               (-> (images/load (io/file "/Users/foo/winter.jpg"))
                   (images/apply-ops [op-brighter])
