@@ -69,7 +69,7 @@
                          :resize-quality 
                          :resize-high-quality })
 
-(defonce fit-modes #{ :fit-auto 
+(defonce fit-modes #{ :fit-best 
                       :fit-exact 
                       :fit-width 
                       :fit-height })
@@ -437,9 +437,14 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
-                (images/resize-fit 500 :fit-auto :balanced)
-                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
+            (let [src (io/file "/Users/foo/Desktop/Pink-Forest.jpg")
+                  dst (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")]
+              (-> (images/load src)
+                  (images/resize-fit 500 :fit-best :resize-balanced)
+                  (images/save "jpg" dst))
+                  
+              (println (io/file-name src) ":" (images/dimension src))
+              (println (io/file-name dst) ":" (images/dimension dst))))
           """ )
      :see-also '(
           "images/resize" ) }
@@ -513,9 +518,14 @@
           """
           (do
             (load-module :images)
-            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
-                (images/resize 500 200 :resize-balanced)
-                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))
+            (let [src (io/file "/Users/foo/Desktop/Pink-Forest.jpg")
+                  dst (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")]
+              (-> (images/load src)
+                  (images/resize 500 200 :resize-balanced)
+                  (images/save "jpg" dst))
+                  
+              (println (io/file-name src) ":" (images/dimension src))
+              (println (io/file-name dst) ":" (images/dimension dst))))
           """ )
      :see-also '(
           "images/resize-fit" ) }
@@ -538,7 +548,7 @@
                            (scale-method width height img-landscape?)
                            resize-mode)]
 
-      (if (== (img-width width) (img-height height))
+      (if (and (== img-width width) (== img-height height))
         img ;; no change in size return original image
         (do
           ;; resize the image
@@ -637,6 +647,7 @@
           """
      :examples '(
           """
+          ;; make the image brighter
           (do
             (load-module :images)
             (import :java.awt.image.RescaleOp)
@@ -645,7 +656,21 @@
               (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
                   (images/apply-ops [op-brighter])
                   (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))))
-          """ ) }
+          """,
+          """
+          ;; convert the image to grayscale
+          (do
+            (load-module :images)
+            (import :java.awt.image.RescaleOp)
+
+            (let [op-grayscale (as-> (. :ColorSpace :CS_GRAY) cs
+                                     (. :ColorSpace :getInstance cs)
+                                     (. :ColorConvertOp :new cs nil))]
+              (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
+                  (images/apply-ops [op-grayscale])
+                  (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg")))))
+          """,
+           ) }
 
   apply-ops [img ops]
 
