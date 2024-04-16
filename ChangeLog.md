@@ -6,13 +6,21 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [1.12.15] - 2024-04-xx
+
+### Added
+
+- ... 
+
+
+
 ## [1.12.14] - 2024-04-16
 
 ### Added
 
 - functions `get-request-parameter`, and `get-request-long-parameter` to 
   :ring-util module
-- more HTTP status codes
+- more HTTP status codes with short names and short description
   
 ### Improved 
 
