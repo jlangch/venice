@@ -70,20 +70,22 @@
 (def endpoint-gpt-new "https://api.openai.com/v1/chat/completions")
 (def endpoint-gpt-old "https://api.openai.com/v1/completions")
 
+
+
 ;; a very first test, to test credentials and API credits
 (defn chat-completion-test []
   (let [body      { :model "gpt-3.5-turbo"
                     :messages [ { :role "user"
                                   :content """
-                                           Count to 10, with a comma between each number and no \
-                                           newlines. E.g., 1, 2, 3, ...
+                                           Count to 10, with a comma between each number \
+                                           and no newlines. E.g., 1, 2, 3, ...
                                            """ } ] } 
         response  (hc/send :post 
                     "https://api.openai.com/v1/chat/completions"
                     :headers { "Content-Type" "application/json"
                                "Authorization" "Bearer ~(openai-api-key)"}
-                    :body (json/write-str body )
-                    :debug true)]
+                    :body (json/write-str body)
+                    :debug false)]
     (println "Status:" (:http-status response))
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 
@@ -91,16 +93,6 @@
     ;; response from OpenAI
 
     """
-    Slurp response:
-      status:             200
-      mimetype:           application/json
-      charset:            :utf-8
-      encoding:           :none
-      slurp-plain:        false
-      slurp-json:         true
-      slurp-binary:       false
-      json-parse-mode:    :pretty-print
-
     {
       "created": 1713302066,
       "usage": {
