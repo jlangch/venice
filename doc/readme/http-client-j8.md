@@ -3,6 +3,7 @@
 * [Overview](#overview)
 * [API](#api)
 * [Examples](#examples)
+* [OpenAI Examples](#openai-examples)
 
 
 
@@ -604,3 +605,56 @@ Event:  {:data ["Counter 1010"] :event "demo" :id "1010"}
 Streaming closed
 ```
 
+
+## OpenAI Examples
+
+### Chat Completion
+
+```clojure
+do
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  
+  ;; get the OpenAI API Key from the environemnt var "OPENAI_API_KEY"
+  (defn- openai-api-key [] (system-env "OPENAI_API_KEY"))
+
+  (let [body      { :model "gpt-3.5-turbo"
+                  :messages [ { :role "user"
+                                :content """
+                                        Count to 10, with a comma between each number and no \
+                                        newlines. E.g., 1, 2, 3, ...
+                                        """ } ] } 
+      response  (hc/send :post 
+                  "https://api.openai.com/v1/chat/completions"
+                  :headers { "Content-Type" "application/json"
+                            "Authorization" "Bearer ~(openai-api-key)"}
+                  :body (json/write-str body )
+                  :debug false)]
+  (println "Status:" (:http-status response))
+  (println (hc/slurp-response response :json-parse-mode :pretty-print))))
+```
+
+Returns the response:
+
+```
+{
+  "created": 1713302066,
+  "usage": {
+    "completion_tokens": 28,
+    "prompt_tokens": 37,
+    "total_tokens": 65
+  },
+  "model": "gpt-3.5-turbo-0125",
+  "id": "chatcmpl-9EkQE6O4khw25Fi8MLUvRsu36lfrn",
+  "choices": [{
+    "finish_reason": "stop",
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
+    },
+    "logprobs": null
+  }],
+  "system_fingerprint": "fp_c2295e73ad",
+  "object": "chat.completion"
+}
+```
