@@ -129,8 +129,8 @@
   (assert (or (nil? s) (string? s)))
 
   (let [valid-field-names #{"id" "event" "data" "retry"}
-        lines            (filter #(not (str/starts-with? % ":")) 
-                                 (str/split-lines s))]
+        lines             (->> (str/split-lines s)
+                               (filter #(not (str/starts-with? % ":"))))]
     (loop [lines lines, data {}]
       (if (empty? lines)
         data
