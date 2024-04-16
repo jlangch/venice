@@ -279,6 +279,97 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Request utils
+;; -----------------------------------------------------------------------------
+
+
+(defn 
+  ^{ :arglists '(
+          "(ring/get-header request name)")
+     :doc """
+          Returns the multi-value header named 'name'. 
+
+          Returns `nil` if the header does not exist.
+          """ }
+
+  get-header [request name]
+
+  (assert (map? request))
+  (assert (string? name))
+  (assert (not-empty? name))
+  (->> (:headers request)
+        (seq)
+        (filter #(str/equals-ignore-case? name (first %)))
+        (first)
+        (second)))
+  
+
+(defn 
+  ^{ :arglists '(
+          "(ring/get-parameter request name)"
+          "(ring/get-parameter request name value)")
+     :doc """
+          Returns the first parameter of the multi value request parameter
+          with the name 'name'. Accepts an optional default value. 
+
+          Returns `nil` if the parameter does not exist and the default value
+          is ommitted.
+          """ }
+
+  get-parameter 
+
+  ([request name]
+    (get-parameter request name nil))
+
+  ([request name value]
+    (assert (map? request))
+    (assert (string? name))
+    (assert (not-empty? name))
+    (let [v (-> (:parameters request)
+                (get name)
+                (first))]
+      (if (some? v)
+        v
+        (if (some? value) (string value) nil)))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(ring/get-long parameter request name)"
+          "(ring/get-long parameter request name value)")
+     :doc """
+          Returns the first parameter of the multi value request parameter
+          with the name 'name'. Accepts an optional default value.
+
+          Converts the parameter value to long. Returns the default value if
+          the parameter is not of type long.
+
+          Returns `nil` if the parameter does not exist and the default value
+          is ommitted.
+          """ }
+
+  get-long-parameter 
+
+  ([request name]
+    (get-long-parameter request name nil))
+
+  ([request name value]
+    (assert (map? request))
+    (assert (string? name))
+    (assert (not-empty? name))
+    (assert (or (nil? value) (long? value)))
+    (let [v (get-parameter request name)]
+      (if (nil? v)
+        value
+        (if (match? v "[0-9]+") 
+          (long v) 
+          (throw (ex :VncException 
+                     (str/format "The request parameter '%s' on the url '%s' is not of type long!"
+                                 name (:uri request)))))))))
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Request/Response utils (internal)
 ;; -----------------------------------------------------------------------------
 
