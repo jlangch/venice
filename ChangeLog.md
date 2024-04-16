@@ -10,7 +10,6 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- *OpenAI* client (work in progress)
 - functions `get-request-parameter`, and `get-request-long-parameter` to 
   :ring-util module
   
@@ -20,6 +19,9 @@ All notable changes to this project will be documented in this file.
   side
 - REST WebApp example to demonstrate the use of query parameters
 
+### Fixed 
+
+- HTTP client SSL requests, added more status codes 
 
 
 

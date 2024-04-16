@@ -27,11 +27,20 @@ package com.github.jlangch.venice.util.servlet;
  */
 public enum HttpStatus {
 
+    /* 1XX:  */
+
+    HTTP_CONTINUE(100, "Continue"),
+
+    HTTP_SWITCHING_PROTOCOLS(101, "Switching Protocols"),
+
+    HTTP_PROCESSING(102, "Processing"),
+
+
     /* 2XX: generally "OK" */
 
     HTTP_OK(200, "OK"),
 
-    HTTP_CREATED(201,"Created"),
+    HTTP_CREATED(201, "Created"),
 
     HTTP_ACCEPTED(202, "Accepted"),
 
@@ -42,6 +51,12 @@ public enum HttpStatus {
     HTTP_RESET(205, "Reset Content"),
 
     HTTP_PARTIAL(206, "Partial Content"),
+
+    HTTP_MULTI_STATUSL(207, "Multi-Status"),
+
+    HTTP_ALREADY_REPORTED(208, "Already Reported"),
+
+    HTTP_IM_USED(226, "IM Used"),
 
 
     /* 3XX: relocation/redirect */
@@ -57,6 +72,8 @@ public enum HttpStatus {
     HTTP_NOT_MODIFIED(304, "Not Modified"),
 
     HTTP_USE_PROXY(305, "Use Proxy"),
+
+    HTTP_TEMPORARY_REDIRECT(307, "Temporary Redirect"),
 
 
     /* 4XX: client error */
@@ -93,6 +110,32 @@ public enum HttpStatus {
 
     HTTP_UNSUPPORTED_TYPE(415, "Unsupported Media Type"),
 
+    HTTP_REQUESTED_RANGE_NOT_SATISFIABLE(416, "Requested Range Not Satisfiable"),
+
+    HTTP_EXPECTATION_FAILED(417, "Expectation Failed"),
+
+    HTTP_I_AM_A_TEAPOT(418, "I'm a teapot"),
+
+    HTTP_INSUFFICIENT_SPACE_ON_RESOURCE(419, "Insufficient Space on Resource"),
+
+    HTTP_METHOD_FAILURE(420, "Method Failure"),
+
+    HTTP_DESTINATION_LOCKED(421, "Destination Locked"),
+
+    HTTP_UNPROCESSABLE_ENTITY(422, "Unprocessable Entity"),
+
+    HTTP_LOCKED(423, "Locked"),
+
+    HTTP_FAILED_DEPENDENCY(424, "Failed Dependency"),
+
+    HTTP_UPGRADE_REQUIRED(426, "Upgrade Required"),
+
+    HTTP_PRECONDITION_REQUIRED(428, "Precondition Required"),
+
+    HTTP_TOO_MANY_REQUESTS(429, "Too Many Requests"),
+
+    HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE(431, "Request Header Fields Too Large"),
+
 
     /* 5XX: server error */
 
@@ -106,7 +149,15 @@ public enum HttpStatus {
 
     HTTP_GATEWAY_TIMEOUT(504, "Gateway Timeout"),
 
-    HTTP_VERSION(505, "HTTP Version Not Supported");
+    HTTP_VERSION(505, "HTTP Version Not Supported"),
+
+	HTTP_VARIANT_ALSO_NEGOTIATES(506, "Variant Also Negotiates"),
+
+    HTTP_INSUFFICIENT_STORAGE(507, "Insufficient Storage"),
+
+    HTTP_LOOP_DETECTED(508, "Loop Detected"),
+
+    HTTP_NOT_EXTENDED(510, "Not Extended");
 
 
 

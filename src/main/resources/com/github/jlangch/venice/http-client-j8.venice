@@ -30,7 +30,7 @@
 
 (import :java.net.URL)
 (import :java.net.HttpURLConnection)
-(import :java.net.HttpsURLConnection)
+(import :javax.net.ssl.HttpsURLConnection)
 
 (import :com.github.jlangch.venice.util.servlet.HttpStatus)
 
@@ -836,7 +836,7 @@
         effective-url       (. con :getURL)]  ;; the url after a possible redirect
     (ordered-map
       :http-status            status 
-      :http-status-name       (str (. :HttpStatus :of status)) 
+      :http-status-name       (status-name status)
       :content-type           content-type
       :content-type-mimetype  mimetype
       :content-type-charset   charset
@@ -976,4 +976,10 @@
     :deflate  (io/wrap-is-with-inflater-input-stream is)
     (throw (ex :VncException (str/format "Unsupported 'Content-Encoding' -> '%s'")
                                           encoding))))
+
+                                        
+(defn- status-name [status-code]
+  (try 
+    (str (. :HttpStatus :of status-code)) 
+    (catch :Exception ex (str status-code))))
 
