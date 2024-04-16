@@ -1,7 +1,7 @@
 # HTTP Client (Java 8+)
 
 * [Overview](#overview)
-* [Api](#api)
+* [API](#api)
 * [Examples](#examples)
 
 
