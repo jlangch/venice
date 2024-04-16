@@ -27,7 +27,7 @@ package com.github.jlangch.venice.util.servlet;
  */
 public enum HttpStatus {
 
-    /* 1XX:  */
+    /* 1XX: informational - the request was received, continuing process */
 
     HTTP_CONTINUE(100, "Continue"),
 
@@ -36,7 +36,7 @@ public enum HttpStatus {
     HTTP_PROCESSING(102, "Processing"),
 
 
-    /* 2XX: generally "OK" */
+    /* 2XX: processed – the request was successfully received, understood, and accepted */
 
     HTTP_OK(200, "OK"),
 
@@ -59,7 +59,7 @@ public enum HttpStatus {
     HTTP_IM_USED(226, "IM Used"),
 
 
-    /* 3XX: relocation/redirect */
+    /* 3XX: relocation/redirection – further action needs to be taken in order to complete the request */
 
     HTTP_MULT_CHOICE(300, "Multiple Choices"),
 
@@ -76,7 +76,7 @@ public enum HttpStatus {
     HTTP_TEMPORARY_REDIRECT(307, "Temporary Redirect"),
 
 
-    /* 4XX: client error */
+    /* 4XX: client error – the request contains bad syntax or cannot be fulfilled */
 
     HTTP_BAD_REQUEST(400, "Bad Request"),
 
@@ -128,6 +128,8 @@ public enum HttpStatus {
 
     HTTP_FAILED_DEPENDENCY(424, "Failed Dependency"),
 
+    HTTP_TOO_EARLY(425, "Too Early"),
+
     HTTP_UPGRADE_REQUIRED(426, "Upgrade Required"),
 
     HTTP_PRECONDITION_REQUIRED(428, "Precondition Required"),
@@ -136,8 +138,10 @@ public enum HttpStatus {
 
     HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE(431, "Request Header Fields Too Large"),
 
+    HTTP_UNAVAILABLE_FOR_LEGAL_REASON(451, "Unavailable For Legal Reasons "),
 
-    /* 5XX: server error */
+
+    /* 5XX: erver error – the server failed to fulfil an apparently valid request */
 
     HTTP_INTERNAL_ERROR(500, "Internal Server Error"),
 
@@ -157,7 +161,9 @@ public enum HttpStatus {
 
     HTTP_LOOP_DETECTED(508, "Loop Detected"),
 
-    HTTP_NOT_EXTENDED(510, "Not Extended");
+    HTTP_NOT_EXTENDED(510, "Not Extended"),
+
+    HTTP_NETWORK_AUTH_REQUIRED(511, "Network Authentication Required");
 
 
 
