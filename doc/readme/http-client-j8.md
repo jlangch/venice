@@ -620,8 +620,8 @@ Streaming closed
   (let [body      { :model "gpt-3.5-turbo"
                     :messages [ { :role "user"
                                   :content """
-                                           Count to 10, with a comma between each number and no \
-                                           newlines. E.g., 1, 2, 3, ...
+                                           Count to 10, with a comma between each number \
+                                           and no newlines. E.g., 1, 2, 3, ...
                                            """ } ] } 
         response  (hc/send :post 
                     "https://api.openai.com/v1/chat/completions"
