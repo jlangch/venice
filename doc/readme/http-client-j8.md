@@ -237,7 +237,7 @@ The functions returns the response data based on the response mimetype:
 | text/css          | Returns a string according to the content type charset |
 | text/json         | Returns the JSON response according to the content type charset.<br>Depending on the option `:json-parse-mode` returns the JSON parsed to a Venice map, as a JSON pretty printed string, or as a raw JSON string |
 | text/event-stream | Throws an exception. An event stream can not be slurped. Use the function `process-server-side-events` instead! |
-| *else*            | eturns the response data as a byte buffer |
+| *else*            | Returns the response data as a byte buffer |
 
 
 #### Parameter «response»
