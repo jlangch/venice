@@ -141,7 +141,7 @@
               (let [items (conj (:data data []) value)]
                     (recur (rest lines)  (assoc data :data items)))
               (recur (rest lines) 
-                    (assoc data (keyword name) value)))
+                     (assoc data (keyword name) value)))
             (recur (rest lines)  data)))))))
         
 
