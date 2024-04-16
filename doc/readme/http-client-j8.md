@@ -42,7 +42,7 @@ Send a request given a method, an uri, and request options.
 
 #### Parameter «method»
 
-The request method:  `:get`, `:post`,`:put`,`:delete`, ...
+The request method:  `:get`, `:post`, `:put`, `:delete`, ...
 
 
 #### Parameter «uri»
