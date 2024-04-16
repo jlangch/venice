@@ -9022,9 +9022,10 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(seq coll)")
                     .doc(
-                        "Returns a seq on the collection. If the collection is " +
-                        "empty, returns nil. `(seq nil)` returns nil. seq also works on " +
-                        "Strings and converts Java streams to lists.")
+                        "Returns a sequence on the collection. \n\n" +
+                        "If the collection is empty, returns nil!! \n " +
+                        "`(seq nil)` returns nil. \n\n" +
+                        "seq also works on strings and converts Java streams to lists.")
                     .examples(
                         "(seq nil)",
                         "(seq [])",
