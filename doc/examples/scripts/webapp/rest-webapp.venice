@@ -177,7 +177,7 @@
 ;; Venice HTTP Client examples
 ;; -----------------------------------------------------------------------------
 
-;; GET (find all)
+;; GET (find all employees)
 (comment
   ;; run this Http client in another REPL.
   (do
@@ -194,7 +194,7 @@
       (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
-; GET (get by id)
+; GET (find employee by id)
 (comment
   ;; run this Http client in another REPL.
   (do
@@ -228,7 +228,7 @@
       (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
-;; POST (create)
+;; POST (create employee)
 (comment
   ;; run this Http client in another REPL.
   (do
@@ -248,7 +248,7 @@
       (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
-;; PUT (update)
+;; PUT (update employee)
 (comment 
   ;; run this Http client in another REPL.
   (do
@@ -269,7 +269,7 @@
       (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
-;; DELETE (delete)
+;; DELETE (delete employee)
 (comment 
   ;; run this Http client in another REPL.
   (do
