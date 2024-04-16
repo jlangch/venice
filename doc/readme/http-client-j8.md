@@ -617,18 +617,18 @@ do
   ;; get the OpenAI API Key from the environemnt var "OPENAI_API_KEY"
   (defn- openai-api-key [] (system-env "OPENAI_API_KEY"))
 
-  (let [body      { :model "gpt-3.5-turbo"
+  (let [body    { :model "gpt-3.5-turbo"
                   :messages [ { :role "user"
                                 :content """
-                                        Count to 10, with a comma between each number and no \
-                                        newlines. E.g., 1, 2, 3, ...
-                                        """ } ] } 
-      response  (hc/send :post 
-                  "https://api.openai.com/v1/chat/completions"
-                  :headers { "Content-Type" "application/json"
-                            "Authorization" "Bearer ~(openai-api-key)"}
-                  :body (json/write-str body )
-                  :debug false)]
+                                         Count to 10, with a comma between each number and no \
+                                         newlines. E.g., 1, 2, 3, ...
+                                         """ } ] } 
+        response  (hc/send :post 
+                    "https://api.openai.com/v1/chat/completions"
+                    :headers { "Content-Type" "application/json"
+                               "Authorization" "Bearer ~(openai-api-key)"}
+                    :body (json/write-str body )
+                    :debug false)]
   (println "Status:" (:http-status response))
   (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 ```
