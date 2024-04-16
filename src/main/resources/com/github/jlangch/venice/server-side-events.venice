@@ -21,10 +21,13 @@
 
 ;;;; Venice server side events (SSE)
 
+;;;; see https://html.spec.whatwg.org/multipage/server-sent-events.html
+
 
 (ns server-side-events)
 
 (import :java.io.BufferedReader)
+
 
 
 (defn
@@ -125,21 +128,21 @@
 
   (assert (or (nil? s) (string? s)))
 
-  (loop [lines (str/split-lines s), data {}]
-    (if (empty? lines)
-      data
-      (let [line (first lines)]
-        (if (str/starts-with? line "id:") 
-          (recur (rest lines) 
-                 (assoc data :id (str/trim (str/strip-start line "id:"))))
-          (if (str/starts-with? line "event:") 
-            (recur (rest lines) 
-                   (assoc data :event (str/trim (str/strip-start line "event:"))))
-            (if (str/starts-with? line "data:") 
-              (let [item  (str/trim (str/strip-start line "data:"))
-                    items (conj (:data data []) item)]
-                (recur (rest lines)  (assoc data :data items)))
-              (recur (rest lines)  data))))))))
+  (let [valid-field-names #{"id" "event" "data" "retry"}
+        lines            (filter #(not (str/starts-with? % ":")) 
+                                 (str/split-lines s))]
+    (loop [lines lines, data {}]
+      (if (empty? lines)
+        data
+        (let [line          (first lines)
+              [name value]  (map str/trim (str/split line ":" 2))]
+          (if (contains? valid-field-names name)
+            (if (= name "data")
+              (let [items (conj (:data data []) value)]
+                    (recur (rest lines)  (assoc data :data items)))
+              (recur (rest lines) 
+                    (assoc data (keyword name) value)))
+            (recur (rest lines)  data)))))))
         
 
 (defn

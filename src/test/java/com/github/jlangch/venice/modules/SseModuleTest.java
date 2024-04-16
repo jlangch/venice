@@ -231,6 +231,79 @@ public class SseModuleTest {
         assertEquals("data: 100\r\ndata: 200\r\n\r\n", venice.eval(script));
     }
 
+    @Test
+    public void test_parse_0a() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (-> \"id: 100\r\nevent: scores\r\ndata: 100\"                    \n" +
+        		"      (sse/parse)                                                  \n" +
+        		"      (pr-str)))";
+
+        assertEquals("{:data [\"100\"] :event \"scores\" :id \"100\"}", venice.eval(script));
+    }
+
+    @Test
+    public void test_parse_0b() {
+        final Venice venice = new Venice();
+
+        // two data elements
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (-> \"id: 100\r\nevent: scores\r\ndata: 100\r\ndata: 200\"       \n" +
+        		"      (sse/parse)                                                  \n" +
+        		"      (pr-str)))";
+
+        assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
+    }
+
+    @Test
+    public void test_parse_0c() {
+        final Venice venice = new Venice();
+
+        // with comment
+        final String script =
+                "(do                                                                        \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse])         \n" +
+                "  (-> \"id: 100\r\nevent: scores\r\n: comment\r\ndata: 100\r\ndata: 200\"  \n" +
+        		"      (sse/parse)                                                          \n" +
+        		"      (pr-str)))";
+
+        assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
+    }
+
+    @Test
+    public void test_parse_0d() {
+        final Venice venice = new Venice();
+
+        // with comment
+        final String script =
+                "(do                                                                        \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse])         \n" +
+                "  (-> \": comment\r\nid: 100\r\nevent: scores\r\ndata: 100\r\ndata: 200\"  \n" +
+        		"      (sse/parse)                                                          \n" +
+        		"      (pr-str)))";
+
+        assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
+    }
+
+    @Test
+    public void test_parse_0e() {
+        final Venice venice = new Venice();
+
+        // with comment
+        final String script =
+                "(do                                                                        \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse])         \n" +
+                "  (-> \"id: 100\r\nevent: scores\r\ndata: 100\r\ndata: 200\r\n: comment\"  \n" +
+        		"      (sse/parse)                                                          \n" +
+        		"      (pr-str)))";
+
+        assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
+    }
 
     @Test
     public void test_parse_1() {
