@@ -611,7 +611,7 @@ Streaming closed
 ### Chat Completion
 
 ```clojure
-do
+(do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   
   ;; get the OpenAI API Key from the environemnt var "OPENAI_API_KEY"
@@ -631,6 +631,7 @@ do
                     :debug false)]
   (println "Status:" (:http-status response))
   (println (hc/slurp-response response :json-parse-mode :pretty-print))))
+
 ```
 
 Returns the response:
