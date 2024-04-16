@@ -627,11 +627,10 @@ Streaming closed
                     "https://api.openai.com/v1/chat/completions"
                     :headers { "Content-Type" "application/json"
                                "Authorization" "Bearer ~(openai-api-key)"}
-                    :body (json/write-str body )
+                    :body (json/write-str body)
                     :debug false)]
     (println "Status:" (:http-status response))
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
-
 ```
 
 Returns the response:
