@@ -33,6 +33,9 @@
 (defn find-employee-by-id [id]
   (first (filter #(= id (:id %)) @employees)))
 
+(defn query-employees-by-name [name-like]
+  (filter #(match? (:name %) name-like) @employees))
+
 (defn delete-employee-by-id [id]
   (swap! employees #(filter (fn [e] (not (= id (:id e)))) %)))
 
@@ -64,6 +67,15 @@
       { :status 404
         :headers { "Content-Type" "text/plain; charset=utf-8" }
         :body "Employee with the id ~{id} not found!" })))
+
+
+(defn query-employees [request]
+  (let [name-like  (ring-util/get-request-parameter request "name")
+        regex      (str/replace-all name-like "*" ".*")
+        employees  (query-employees-by-name regex)]
+    { :status 200
+        :headers { "Content-Type" "application/json; charset=utf-8" }
+        :body (json/write-str employees) }))
 
 
 (defn create-employee [request]
@@ -114,11 +126,12 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
-(def routes [[:get    "/employees"      get-all-employees]
-             [:get    "/employees/:id"  get-employee]
-             [:post   "/employees"      create-employee]
-             [:put    "/employees/:id"  update-employee]
-             [:delete "/employees/:id"  delete-employee]])
+(def routes [[:get    "/employees"        get-all-employees]
+             [:get    "/employees/:id"    get-employee]
+             [:get    "/employees/query"  query-employees]
+             [:post   "/employees"        create-employee]
+             [:put    "/employees/:id"    update-employee]
+             [:delete "/employees/:id"    delete-employee]])
 
 (defn rest-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
@@ -164,7 +177,7 @@
 ;; Venice HTTP Client examples
 ;; -----------------------------------------------------------------------------
 
-;; GET (get)
+;; GET (find all)
 (comment
   ;; run this Http client in another REPL.
   (do
@@ -172,6 +185,40 @@
 
     (let [res      (hc/send :get 
                             "http://localhost:8080/employees" 
+                            :headers { "Accept" "application/json, text/plain" }
+                            :debug true)
+          status   (:http-status res)
+          mimetype (:content-type-mimetype res)
+          charset  (:content-type-charset res)]
+      (println "Status:" status)
+      (println (hc/slurp-response res :json-parse-mode :pretty-print))))
+)
+
+; GET (get by id)
+(comment
+  ;; run this Http client in another REPL.
+  (do
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+    (let [res      (hc/send :get 
+                            "http://localhost:8080/employees/1001" 
+                            :headers { "Accept" "application/json, text/plain" }
+                            :debug true)
+          status   (:http-status res)
+          mimetype (:content-type-mimetype res)
+          charset  (:content-type-charset res)]
+      (println "Status:" status)
+      (println (hc/slurp-response res :json-parse-mode :pretty-print))))
+)
+
+;; GET (query employees with name matching "*a*")
+(comment
+  ;; run this Http client in another REPL.
+  (do
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+    (let [res      (hc/send :get 
+                            "http://localhost:8080/employees/query?name=*a*" 
                             :headers { "Accept" "application/json, text/plain" }
                             :debug true)
           status   (:http-status res)
