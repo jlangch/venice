@@ -47,22 +47,15 @@ public class ModuleRingSection implements ISectionBuilder {
         all.addSection(routing);
         routing.addItem(diBuilder.getDocItem("ring/match-routes", false));
 
-        final DocSection header = new DocSection("Headers", id());
-        all.addSection(header);
-        header.addItem(diBuilder.getDocItem("ring/get-header", false));
-
-        final DocSection params = new DocSection("Parameters", id());
-        all.addSection(params);
-        params.addItem(diBuilder.getDocItem("ring/get-parameter", false));
-        params.addItem(diBuilder.getDocItem("ring/get-long-parameter", false));
-
         final DocSection util = new DocSection("Utils", id());
         all.addSection(util);
         util.addItem(diBuilder.getDocItem("ring-util/redirect", false));
         util.addItem(diBuilder.getDocItem("ring-util/not-found-response", false));
-        util.addItem(diBuilder.getDocItem("ring-util/get-request-parameters ", false));
         util.addItem(diBuilder.getDocItem("ring-util/get-request-header", false));
         util.addItem(diBuilder.getDocItem("ring-util/get-request-header-accept-mimetypes", false));
+        util.addItem(diBuilder.getDocItem("ring-util/get-request-parameters ", false));
+        util.addItem(diBuilder.getDocItem("ring-util/get-request-parameter", false));
+        util.addItem(diBuilder.getDocItem("ring-util/get-request-long-parameter", false));
         util.addItem(diBuilder.getDocItem("ring-util/html-request?", false));
         util.addItem(diBuilder.getDocItem("ring-util/json-request?", false));
         util.addItem(diBuilder.getDocItem("ring-util/parse-charset", false));

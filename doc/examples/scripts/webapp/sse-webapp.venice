@@ -43,7 +43,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn events-demo [queue request]
-  (let [max-count       (ring/get-long-parameter request "max-count" nil)
+  (let [max-count       (ring-util/get-request-long-parameter request "max-count" nil)
         stop-events     (atom false)
         async_request   (:async-request request)   ;; HttpServletRequest
         async_response  (:async-response request)  ;; HttpServletResponse

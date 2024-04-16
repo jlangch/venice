@@ -100,6 +100,19 @@
 
 
 (defn
+  ^{ :arglists '("(ring-util/get-request-parameters req name)")
+     :doc "Returns all the values of the specified request parameter as a list" }
+
+  get-request-parameters [req name]
+  
+  (assert (map? req))
+  (assert (string? name))
+  (assert (not-empty? name))
+
+  (get (:parameters req) name))
+
+
+(defn
   ^{ :arglists '("(ring-util/get-request-parameter req name)")
      :doc """
           Returns the value of the specified request parameter. If the request
@@ -109,17 +122,47 @@
           """ }
 
   get-request-parameter [req name]
+  
+  (assert (map? req))
+  (assert (string? name))
+  (assert (not-empty? name))
 
   (first (get (:parameters req) name)))
 
 
-(defn
-  ^{ :arglists '("(ring-util/get-request-parameters req name)")
-     :doc "Returns all the values of the specified request parameter as a list" }
+(defn 
+  ^{ :arglists '(
+          "(ring-util/get-request-long-parameter request name)"
+          "(ring-util/get-request-long-parameter request name value)")
+     :doc """
+          Returns the first parameter a the multi value request parameter
+          with the name 'name'. Accepts an optional default value.
 
-  get-request-parameters [req name]
+          Converts the parameter value to long. Returns the default value if
+          the parameter is not of type long.
 
-  (get (:parameters req) name))
+          Returns `nil` if the parameter does not exist and the default value
+          is ommitted.
+          """ }
+
+  get-request-long-parameter 
+
+  ([request name]
+    (get-request-long-parameter req name nil))
+
+  ([req name value]
+    (assert (map? req))
+    (assert (string? name))
+    (assert (not-empty? name))
+    (assert (or (nil? value) (long? value)))
+    (let [v (get-request-parameter req name)]
+      (if (nil? v)
+        value
+        (if (match? v "[0-9]+") 
+          (long v) 
+          (throw (ex :VncException 
+                     (str/format "The request parameter '%s' on the url '%s' is not of type long!"
+                                 name (:uri request)))))))))
 
 
 (defn
@@ -127,13 +170,21 @@
      :doc """
           Returns the value of the specified request header. If the request
           did not include a header of the specified name, this method returns
-          nil. If there are multiple header with the same name, this method
+          nil. If there are multiple headers with the same name, this method
           returns the first header in the request.
           """  }
 
   get-request-header [req name]
 
-  (first (get (:headers req) name)))
+  (assert (map? req))
+  (assert (string? name))
+  (assert (not-empty? name))
+
+  (->> (:headers req)
+        (seq)
+        (filter #(str/equals-ignore-case? name (first %)))
+        (first)
+        (second)))
 
 
 (defn
@@ -141,6 +192,10 @@
      :doc "Returns all the values of the specified request header as a list." }
 
   get-request-headers [req name]
+
+  (assert (map? req))
+  (assert (string? name))
+  (assert (not-empty? name))
 
   (get (:headers req) name))
 
@@ -154,8 +209,10 @@
 
   get-request-header-accept-mimetypes [req]
 
+  (assert (map? req))
+
   (into #{} (map #(first (str/split % " *; *"))
-                 (get (:headers req) "Accept"))))
+                 (get-request-header req "Accept"))))
 
 
 
@@ -164,6 +221,8 @@
      :doc "Returns true if the request has content type 'text/html'" }
 
   html-request? [req]
+
+  (assert (map? req))
 
   (match? (:content-type req) #"text/html(;.*)?"))
 
@@ -174,6 +233,8 @@
 
   json-request? [req]
 
+  (assert (map? req))
+
   (match? (:content-type req) #"application/json(;.*)?"))
 
 
@@ -181,13 +242,16 @@
   ^{ :arglists '("(ring-util/debug? req)")
      :doc "Returns true if debugging is turned on else false" }
 
-  debug? [req] (:debug req false))
-
+  debug? [req] 
+ 
+  (assert (map? req))
+ 
+  (:debug req false))
 
 
 (defn
   ^{ :arglists '("(ring-util/get-headers request)")
-     :doc "Creates a name/value map of all the request headers." }
+     :doc "Creates a name/value map of all the HttpServletRequest headers." }
 
   get-headers [request]
 
@@ -203,7 +267,7 @@
 
 (defn
   ^{ :arglists '("(ring-util/get-parameters request)")
-     :doc "Creates a name/value map of the request parameters." }
+     :doc "Creates a name/value map of the HttpServletRequest parameters." }
 
   get-parameters [request]
 
@@ -222,7 +286,7 @@
 
 (defn
   ^{ :arglists '("(ring-util/get-client-cert request)")
-     :doc "Returns the SSL client certificate of the request, if one exists." }
+     :doc "Returns the SSL client certificate of the HttpServletRequest, if one exists." }
 
   get-client-cert [request]
 
