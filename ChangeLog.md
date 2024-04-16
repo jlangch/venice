@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - *OpenAI* client (work in progress)
+- functions `get-header`, `get-parameter`, and `get-long-parameter` to :ring module
 
 
 
