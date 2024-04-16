@@ -16,8 +16,8 @@ All notable changes to this project will be documented in this file.
   
 ### Improved 
 
-- SSE WebApp example to demonstrate explicit connection closing on the server 
-  side
+- SSE WebApp example to demonstrate explicit connection closing on the 
+  server side
 - REST WebApp example to demonstrate the use of query parameters
 
 ### Fixed 
