@@ -84,7 +84,7 @@
   render [event]
 
   (assert (map? event))
-  (assert (or (nil? (:id event)) (string? (:id event))))
+  (assert (or (nil? (:id event)) (string? (:id event)) (long? (:id event))))
   (assert (or (nil? (:event event)) (string? (:event event))))
   (assert (or (nil? (:data event)) 
               (and (sequential? (:data event)) (every? string? (:data event)))))
@@ -92,7 +92,7 @@
   (validate event)
 
   (try-with [sw (io/string-writer)]
-    (when-let [s (str/trim-to-nil (:id event))]
+    (when-let [s (str/trim-to-nil (str (:id event)))]
       (print sw (str "id: " s "\r\n")))
     (when-let [s (str/trim-to-nil (:event event))]
       (print sw (str "event: " s "\r\n")))

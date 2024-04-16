@@ -101,48 +101,53 @@
 
 (defn
   ^{ :arglists '("(ring-util/get-request-parameters req name)")
-     :doc "Returns all the values of the specified request parameter as a list" }
+     :doc """
+          Returns all values of the specified case independent request parameter
+          name as a list.
+          """ }
 
   get-request-parameters [req name]
-  
+
   (assert (map? req))
   (assert (string? name))
   (assert (not-empty? name))
 
-  (get (:parameters req) name))
+  (let [params (or (:parameters req) {})]
+    (->> (or (seq params) [])
+         (filter #(str/equals-ignore-case? name (first %)))
+         (first) ;; first item of the filtered items
+         (second))))
 
 
 (defn
   ^{ :arglists '("(ring-util/get-request-parameter req name)")
      :doc """
-          Returns the value of the specified request parameter. If the request
-          did not include a parameter of the specified name, this method returns
-          nil. If there are multiple parameters with the same name, this method
-          returns the first parameter in the request.
+          Returns the first value of the specified case independent request 
+          parameter name. 
+          
+          If the request did not include a parameter of the specified name, this 
+          method returns `nil`. If there are multiple headers with the same name, 
+          this method returns the first parameter in the request.
           """ }
 
   get-request-parameter [req name]
   
-  (assert (map? req))
-  (assert (string? name))
-  (assert (not-empty? name))
-
-  (first (get (:parameters req) name)))
+  (first (get-request-parameters req name)))
 
 
 (defn 
   ^{ :arglists '(
           "(ring-util/get-request-long-parameter request name)"
           "(ring-util/get-request-long-parameter request name value)")
-     :doc """
+     :doc """          
           Returns the first parameter a the multi value request parameter
-          with the name 'name'. Accepts an optional default value.
+          with the name 'name'.  Accepts an optional default value.
 
           Converts the parameter value to long. Returns the default value if
           the parameter is not of type long.
 
-          Returns `nil` if the parameter does not exist and the default value
-          is ommitted.
+          Returns `nil` if the parameter does not exist and a default value
+          is not passed.
           """ }
 
   get-request-long-parameter 
@@ -151,14 +156,11 @@
     (get-request-long-parameter req name nil))
 
   ([req name value]
-    (assert (map? req))
-    (assert (string? name))
-    (assert (not-empty? name))
     (assert (or (nil? value) (long? value)))
     (let [v (get-request-parameter req name)]
       (if (nil? v)
         value
-        (if (match? v "[0-9]+") 
+        (if (match? v "[1-9][0-9]*") 
           (long v) 
           (throw (ex :VncException 
                      (str/format "The request parameter '%s' on the url '%s' is not of type long!"
@@ -166,30 +168,11 @@
 
 
 (defn
-  ^{ :arglists '("(ring-util/get-request-header req name)")
-     :doc """
-          Returns the value of the specified request header. If the request
-          did not include a header of the specified name, this method returns
-          nil. If there are multiple headers with the same name, this method
-          returns the first header in the request.
-          """  }
-
-  get-request-header [req name]
-
-  (assert (map? req))
-  (assert (string? name))
-  (assert (not-empty? name))
-
-  (->> (:headers req)
-        (seq)
-        (filter #(str/equals-ignore-case? name (first %)))
-        (first)
-        (second)))
-
-
-(defn
   ^{ :arglists '("(ring-util/get-request-headers req name)")
-     :doc "Returns all the values of the specified request header as a list." }
+     :doc """
+          Returns all values of the specified case independent request header
+          name as a list.
+          """ }
 
   get-request-headers [req name]
 
@@ -197,7 +180,27 @@
   (assert (string? name))
   (assert (not-empty? name))
 
-  (get (:headers req) name))
+  (let [headers (or (:headers req) {})]
+    (->> (or (seq headers) [])
+         (filter #(str/equals-ignore-case? name (first %)))
+         (first) ;; first item of the filtered items
+         (second))))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-request-header req name)")
+     :doc """
+          Returns the first value of the specified case independent request 
+          header name. 
+          
+          If the request did not include a header of the specified name, this 
+          method returns `nil`. If there are multiple headers with the same name, 
+          this method returns the first header in the request.
+          """  }
+
+  get-request-header [req name]
+
+  (first (get-request-headers req name)))
 
 
 (defn

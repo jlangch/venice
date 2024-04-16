@@ -19,13 +19,18 @@
 ;; Event Producer
 ;; -----------------------------------------------------------------------------
 
-(defn event-producer [queue stop]
-  (let [id-counter (atom 1000)]
-    (println "Event producer running.")
+(defn event-producer [queue stop last-event-id]
+  (let [start-id   (if (and (some? last-event-id) 
+                            (match? last-event-id "[1-9][0-9]*"))
+                     (long last-event-id) 
+                     1000)
+        id-counter (atom start-id)]
+    (println "Event producer running, starting at" start-id)
     (thread #(try
-               (loop []
+              (loop []
                 (when-not @stop 
-                   (let [id (str (swap! id-counter inc))]
+                  (let [id (str @id-counter)]
+                    (swap! id-counter inc) ;; next id
                     (sleep 2000)
                     (when-not @stop
                       (println "Adding event " id)
@@ -33,8 +38,8 @@
                                     :event "demo" 
                                     :data  ["Counter ~{id}"] })
                       (recur)))))
-               (finally 
-                 (println "Event producer stopped."))))))
+              (finally 
+                (println "Event producer stopped."))))))
 
 
 
@@ -43,7 +48,11 @@
 ;; -----------------------------------------------------------------------------
 
 (defn events-demo [queue request]
-  (let [max-count       (ring-util/get-request-long-parameter request "max-count" nil)
+  ;; If a connection drops, the client can send a "Last-Event-ID" HTTP header  
+  ;; with its last received id value to the server upon reconnecting, allowing  
+  ;; the server to determine where to resume the event stream.
+  (let [last-event-id   (ring-util/get-request-header request "Last-Event-ID")
+        max-count       (ring-util/get-request-long-parameter request "max-count" nil)
         stop-events     (atom false)
         async_request   (:async-request request)   ;; HttpServletRequest
         async_response  (:async-response request)  ;; HttpServletResponse
@@ -53,10 +62,11 @@
     (. async_response :setContentType       "text/event-stream")
     (. async_response :setCharacterEncoding "UTF-8")
 
+    (println "Last-Event-ID: " last-event-id)
     (println "Max count: " max-count)
 
     ;; start the event producer
-    (event-producer queue stop-events)
+    (event-producer queue stop-events last-event-id)
 
     (try
       (loop [counter 0]
@@ -177,6 +187,39 @@
                              :headers { "Accept"         "text/event-stream" 
                                         "Cache-Control"  "no-cache"
                                         "Connection"     "keep-alive" }
+                             :conn-timeout 0
+                             :read-timeout 0
+                             :debug true)]
+      (println "Status:" (:http-status response))
+
+      (hc/process-server-side-events 
+        response
+        (fn [type event event-count]
+          (case type
+            :opened (do (println "\nStreaming started")
+                        :ok)
+            :data   (do (println "Event: " (pr-str event))
+                        ;; only process 10 events
+                        (if (< event-count 10) :ok :stop))
+            :closed (do (println "Streaming closed")
+                        :ok))))))
+)
+
+;; GET (demo)
+(comment
+  ;; run this Http client in another REPL. It kicks off server side streaming
+  ;; of events at the "Last-Event-Id" 5000 and displays the received events. 
+  ;; Stops the connection after having received 10 events.
+  ;; Connection close is initated by client
+  (do
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+    (let [response  (hc/send :get 
+                             "http://localhost:8080/events" 
+                             :headers { "Accept"         "text/event-stream" 
+                                        "Cache-Control"  "no-cache"
+                                        "Connection"     "keep-alive"
+                                        "Last-Event-ID"  "5000"}
                              :conn-timeout 0
                              :read-timeout 0
                              :debug true)]
