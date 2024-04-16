@@ -33,8 +33,9 @@
 (defn find-employee-by-id [id]
   (first (filter #(= id (:id %)) @employees)))
 
-(defn query-employees-by-name [name-like]
-  (filter #(match? (:name %) name-like) @employees))
+(defn query-employees-by-name [name-glob-pattern]
+  (let [regex (str/replace-all name-glob-pattern "*" ".*")]
+    (filter #(match? (:name %) regex) @employees)))
 
 (defn delete-employee-by-id [id]
   (swap! employees #(filter (fn [e] (not (= id (:id e)))) %)))
@@ -51,10 +52,12 @@
 ;; Ring handler
 ;; -----------------------------------------------------------------------------
 
-(defn get-all-employees [request]
-  { :status 200
-    :headers { "Content-Type" "application/json; charset=utf-8" }
-    :body (json/write-str  @employees)})
+(defn find-employees [request]
+  (let [query  (ring-util/get-request-parameter request "name")
+        items  (if query (query-employees-by-name query) @employees)]
+    { :status 200
+      :headers { "Content-Type" "application/json; charset=utf-8" }
+      :body (json/write-str items) }))
 
 
 (defn get-employee [request]
@@ -67,15 +70,6 @@
       { :status 404
         :headers { "Content-Type" "text/plain; charset=utf-8" }
         :body "Employee with the id ~{id} not found!" })))
-
-
-(defn query-employees [request]
-  (let [name-like  (ring-util/get-request-parameter request "name")
-        regex      (str/replace-all name-like "*" ".*")
-        employees  (query-employees-by-name regex)]
-    { :status 200
-        :headers { "Content-Type" "application/json; charset=utf-8" }
-        :body (json/write-str employees) }))
 
 
 (defn create-employee [request]
@@ -126,9 +120,8 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
-(def routes [[:get    "/employees"        get-all-employees]
+(def routes [[:get    "/employees"        find-employees]
              [:get    "/employees/:id"    get-employee]
-             [:get    "/employees/query"  query-employees]
              [:post   "/employees"        create-employee]
              [:put    "/employees/:id"    update-employee]
              [:delete "/employees/:id"    delete-employee]])
@@ -194,14 +187,14 @@
       (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
-; GET (find employee by id)
+;; GET (query employees with name matching "*a*")
 (comment
   ;; run this Http client in another REPL.
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
     (let [res      (hc/send :get 
-                            "http://localhost:8080/employees/1001" 
+                            "http://localhost:8080/employees?name=*a*" 
                             :headers { "Accept" "application/json, text/plain" }
                             :debug true)
           status   (:http-status res)
@@ -211,14 +204,14 @@
       (println (hc/slurp-response res :json-parse-mode :pretty-print))))
 )
 
-;; GET (query employees with name matching "*a*")
+; GET (find employee by id)
 (comment
   ;; run this Http client in another REPL.
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
     (let [res      (hc/send :get 
-                            "http://localhost:8080/employees/query?name=*a*" 
+                            "http://localhost:8080/employees/1001" 
                             :headers { "Accept" "application/json, text/plain" }
                             :debug true)
           status   (:http-status res)
