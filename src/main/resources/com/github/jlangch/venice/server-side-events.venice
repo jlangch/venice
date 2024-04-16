@@ -139,7 +139,7 @@
           (if (contains? valid-field-names name)
             (if (= name "data")
               (let [items (conj (:data data []) value)]
-                    (recur (rest lines)  (assoc data :data items)))
+                (recur (rest lines)  (assoc data :data items)))
               (recur (rest lines) 
                      (assoc data (keyword name) value)))
             (recur (rest lines)  data)))))))
