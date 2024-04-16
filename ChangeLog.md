@@ -13,6 +13,12 @@ All notable changes to this project will be documented in this file.
 - *OpenAI* client (work in progress)
 - functions `get-request-parameter`, and `get-request-long-parameter` to 
   :ring-util module
+  
+### Improved 
+
+- SSE WebApp example to demonstrate explicit connection closing on the server 
+  side
+
 
 
 
