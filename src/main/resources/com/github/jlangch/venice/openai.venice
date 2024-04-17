@@ -82,19 +82,19 @@
           To run the request asynchronously just wrap it in a `future` and
           deref it, when the result is required.
 
-          Parameter messages: See [Message API](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)
+          Parameter messages: See [OpenAI Message API](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)
 
-          ¶¶*Request Options:*
+          ¶*Request Options:*
 
           | [![width: 15%]]    | [![width: 85%]] |
           | :uri               | An OpenAI chat completion uri. E.g.: \
-                                 "https://api.openai.com/v1/chat/completions". \
+                                 "https://api.openai.com/v1/chat/completions". ¶\
                                  Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
                                  to "gpt-3.5-turbo" |
           | :request-body      | An optional map of OpenAI chat request body fields ¶\
-                                 E.g. {"temperature" 0.2}
-                                 See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+                                 E.g. {"temperature" 0.2} ¶\
+                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
                                  from the environment variable "OPENAI_API_KEY". |
           | :debug             | An optional debug flag (true/false). Defaults \
@@ -118,8 +118,8 @@
                               formatted as plain or JSON string |
 
           ¶
-          See: [Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
-          See: [API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          See: [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
+          See: [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
           """ 
      :examples '(
           """
@@ -127,7 +127,8 @@
           (do
             (load-module :openai)
 
-            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
+            (let [message   (str "Count to 10, with a comma between each number "
+                                 "and no newlines. E.g., 1, 2, 3, ...")
                   response  (openai/chat-completion message)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
@@ -140,7 +141,8 @@
           (do
             (load-module :openai)
 
-            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
+            (let [message   (str "Count to 10, with a comma between each number "
+                                 "and no newlines. E.g., 1, 2, 3, ...")
                   response  (openai/chat-completion message)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
@@ -195,7 +197,7 @@
           Processes OpenAI server side events (SSE) and calls for every event the
           handler 'handler'.
         
-          The event handler is a three argument function:
+          ¶The event handler is a three argument function:
           
           `(defn handler [delta accumulated status] ...)`
 
@@ -206,11 +208,11 @@
                             \u00A0\u00A0 `:data` - streamed event ¶\
                             \u00A0\u00A0 `:done` - streaming done by the server |
 
-          ¶¶*Request Options:*
+          ¶*Request Options:*
 
           | [![width: 15%]]    | [![width: 85%]] |
           | :uri               | An OpenAI chat completion uri. E.g.: \
-                                 "https://api.openai.com/v1/chat/completions". \
+                                 "https://api.openai.com/v1/chat/completions". ¶\
                                  Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
                                  to "gpt-3.5-turbo" |
@@ -223,8 +225,8 @@
                                  message. ¶\
                                  Defaults to *true* |
           | :request-body      | An optional map of OpenAI chat request body fields ¶\
-                                 E.g. {"temperature" 0.2}
-                                 See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+                                 E.g. {"temperature" 0.2} ¶\
+                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
                                  from the environment variable "OPENAI_API_KEY". |
           | :debug             | An optional debug flag (true/false). Defaults \
@@ -249,8 +251,8 @@
           
           ¶*Note: The streaming mode does not support functions!*
  
-          See: [Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
-          See: [API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          See: [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
+          See: [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
           """ 
      :examples '(
           """
@@ -258,7 +260,8 @@
           (do
             (load-module :openai)
           
-            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
+            (let [message   (str "Count to 10, with a comma between each number "
+                                 "and no newlines. E.g., 1, 2, 3, ...")
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
@@ -276,7 +279,8 @@
           (do
             (load-module :openai)
           
-            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
+            (let [message   (str "Count to 10, with a comma between each number "
+                                 "and no newlines. E.g., 1, 2, 3, ...")
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
@@ -339,16 +343,16 @@
  ^{ :arglists '(
           "(process-streaming-events response handler)")
      :doc """
-          Processes OpenAI server side events (SSE) and calls for every event the
-          handler 'handler'.
+          Processes OpenAI server side events (SSE) and calls for every event 
+          the passed handler function.
           
-          Returns a future. This gives the caller the choice to synchronously
+          Returns a `future`. This gives the caller the choice to synchronously
           or asynchronously process the events from the OpenAI server.
           
-          Note: The response must be of the mimetype "text/event-stream"
-                otherwise the processor throws an exception!
+          Note: The response from the server must be of the mimetype 
+                "text/event-stream" otherwise the processor throws an exception!
           
-          The event handler is a three argument function:
+          ¶The event handler is a three argument function:
           
           `(defn handler [delta accumulated status] ...)`
           
@@ -366,10 +370,10 @@
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
           
             (let [api-key   (system-env "OPENAI_API_KEY")
+                  content   (str "Count to 10, with a comma between each number "
+                                 "and no newlines. E.g., 1, 2, 3, ...")
                   body      { :model "gpt-3.5-turbo"
-                              :messages [ { :role "user"
-                                            :content "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
-                                          } ]
+                              :messages [ { :role "user"  :content content  } ]
                               :stream true } 
                   response  (hc/send :post 
                               "https://api.openai.com/v1/chat/completions"
