@@ -116,31 +116,241 @@
     }
     """ )
 
-(defn chat-completion-streaming-test []
-  (let [body      { :model "gpt-3.5-turbo"
-                    :messages [ { :role "user"
-                                  :content """
-                                          Count to 10, with a comma between each number \
-                                          and no newlines. E.g., 1, 2, 3, ...
-                                          """ } ]
-                    :stream true } 
-        response  (hc/send :post 
-                    "https://api.openai.com/v1/chat/completions"
-                    :headers { "Content-Type" "application/json"
-                                "Authorization" "Bearer ~(openai-api-key)"}
-                    :body (json/write-str body)
-                    :debug false)]
-    (println "Status:" (:http-status response))
-    (if (= "text/event-stream" (:content-type-mimetype response))
-      (let [text @(openai/process-streaming-events 
-                      response
-                      (fn [delta accumulated status]
-                        (case status
-                          :opened  (println "Started...")
-                          :data    (println "Delta:" (pr-str delta))
-                          :done    (println "Completed."))))]
-        (println "Message:" (pr-str text)))
-      (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
+(defn 
+ ^{ :arglists '(
+          "(chat-completion messages & options)")
+     :doc """
+          Runs a chat completion.
+
+          *Note: Function support is coming soon!*
+
+          To run the request asynchronously just wrap it in a `future` and
+          deref it, when the result is required.
+
+          Parameter messages: See [Message API](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)
+
+          ¶¶*Request Options:*
+
+          | [![width: 15%]]    | [![width: 85%]] |
+          | :uri               | An OpenAI chat completion uri. E.g.: \
+                                 "https://api.openai.com/v1/chat/completions". \
+                                 Defaults  to "https://api.openai.com/v1/chat/completions" |
+          | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
+                                 to "gpt-3.5-turbo" |
+          | :request-body      | A map of OpenAI chat request body fields ¶\
+                                 E.g. {"temperature" 0.2}
+                                 See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+          | :debug              | Debug true/false. Defaults to false. ¶\
+                                  In debug mode prints the HTTP request (multipart \
+                                  data included) and the response data |
+ 
+          *Returns a map with the response data:*
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :message        | The final chat completion message if the OpenAI \
+                              server returned the HTTP status OK, else `nil` |
+          | :data           | If the response' HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message ¶\
+                              If the response' HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string |
+
+          ¶
+          See: [Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
+          See: [API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [message   """
+                            Count to 10, with a comma between each number \
+                            and no newlines. E.g., 1, 2, 3, ...
+                            """
+                  response  (openai/chat-completion messsage)]
+              (println "Status:  " (:status response))
+              (println "Mimetype:" (:mimetype response))
+              (if (=  (:status response) 200)
+                (println "Message:" (pr-str (:data reponse)))
+                (println "Error:"   (:data reponse)))))
+          """ ) }
+
+  chat-completion [messages & options]
+
+  (validate-message-or-messages messages)
+
+  (let [opts         (apply hash-map options)
+        uri          (:uri opts "https://api.openai.com/v1/chat/completions")
+        model        (:model opts "gpt-3.5-turbo")
+        request-body (:request-body opts {})
+        _            (assert (map? request-body))
+        body         (merge
+                       { :model model
+                         :messages  (if (string? messages)
+                                      [{:role "user" :content messages}]
+                                      messages) }
+                       request-body
+                       {:stream true }) 
+        response     (hc/send :post 
+                       uri
+                       :headers { "Content-Type" "application/json"
+                                  "Authorization" "Bearer ~(openai-api-key)"}
+                       :body (json/write-str body)
+                       :debug (:debug opts false))
+        result       { :status   (:http-status response)
+                       :mimetype (:content-type-mimetype response)
+                       :headers  (:headers response) } ]
+   (assoc result :data (hc/slurp-response response :json-parse-mode :data))))
+
+
+(defn 
+ ^{ :arglists '(
+          "(chat-completion-streaming messages handler & options)")
+     :doc """
+          Runs a chat completion in streaming mode.
+
+          Processes OpenAI server side events (SSE) and calls for every event the
+          handler 'handler'.
+        
+          The event handler is a three argument function:
+          
+          `(defn handler [delta accumulated status] ...)`
+
+          | *delta*       | the delta message sent with the event |
+          | *accumulated* | the accumulated message|
+          | *type*        | the notification type: ¶\
+                            \u00A0\u00A0 `:opened` - streaming started ¶\
+                            \u00A0\u00A0 `:data` - streamed event ¶\
+                            \u00A0\u00A0 `:done` - streaming done by the server |
+
+          ¶¶*Request Options:*
+
+          | [![width: 15%]]    | [![width: 85%]] |
+          | :uri               | An OpenAI chat completion uri. E.g.: \
+                                 "https://api.openai.com/v1/chat/completions". \
+                                 Defaults  to "https://api.openai.com/v1/chat/completions" |
+          | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
+                                 to "gpt-3.5-turbo" |
+          | :sync              | if *true* runs the request syncronously and waits \
+                                 until the full message response is available. ¶\
+                                 if *false* runs the request asyncronously and \
+                                 returns immediately with the response :data \
+                                 field holding a `future` that can be derefed  \
+                                 (with an optional timeout) to get the full \
+                                 message. ¶\
+                                 Defaults to *true* |
+          | :request-body      | A map of OpenAI chat request body fields ¶\
+                                 E.g. {"temperature" 0.2}
+                                 See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+          | :debug              | Debug true/false. Defaults to false. ¶\
+                                  In debug mode prints the HTTP request (multipart \
+                                  data included) and the response data |
+ 
+          *Returns a map with the response data:*
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :message        | The final chat completion message if the OpenAI \
+                              server returned the HTTP status OK, else `nil` |
+          | :data           | If the response' HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message  ¶\
+                              If the response' HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string |
+
+          ¶*Note: The streaming mode does not support functions!*
+ 
+          See: [Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
+          See: [API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          """ 
+     :examples '(
+          """
+          ;; synchronous
+          (do
+            (load-module :openai)
+
+            (let [message   """
+                            Count to 10, with a comma between each number \
+                            and no newlines. E.g., 1, 2, 3, ...
+                            """
+                  handler   (fn [delta accumulated status]
+                              (case status
+                                :opened  (println "Started...")
+                                :data    (println "Delta:" (pr-str delta))
+                                :done    (println "Completed.")))
+                  response  (openai/chat-completion-streaming messsage handler)]
+              (println "Status:  " (:status response))
+              (println "Mimetype:" (:mimetype response))
+              (if (=  (:status response) 200)
+                (println "Message:" (pr-str (:data reponse)))
+                (println "Error:"   (:data reponse)))))
+          """,
+          """
+          ;; asynchronous
+          (do
+            (load-module :openai)
+
+            (let [message   """
+                            Count to 10, with a comma between each number \
+                            and no newlines. E.g., 1, 2, 3, ...
+                            """
+                  handler   (fn [delta accumulated status]
+                              (case status
+                                :opened  (println "Started...")
+                                :data    (println "Delta:" (pr-str delta))
+                                :done    (println "Completed.")))
+                  response  (openai/chat-completion-streaming messsage handler :sync false)]
+              (println "Status:  " (:status response))
+              (println "Mimetype:" (:mimetype response))
+              (if (=  (:status response) 200)
+                (println "Message:" (pr-str @(:data reponse)))
+                (println "Error:"   (:data reponse)))))
+          """ ) }
+
+  chat-completion-streaming [messages handler & options]
+
+  (assert (fn? handler))
+
+  (validate-message-or-messages messages)
+
+  (let [opts         (apply hash-map options)
+        uri          (:uri opts "https://api.openai.com/v1/chat/completions")
+        model        (:model opts "gpt-3.5-turbo")
+        sync?        (:sync opts true)
+        request-body (:request-body opts {})
+        _            (assert (map? request-body))
+        body         (merge
+                       { :model model
+                         :messages  (if (string? messages)
+                                      [{:role "user" :content messages}]
+                                      messages) }
+                       request-body
+                       {:stream true }) 
+        response     (hc/send :post 
+                       uri
+                       :headers { "Content-Type" "application/json"
+                                  "Authorization" "Bearer ~(openai-api-key)"}
+                       :body (json/write-str body)
+                       :debug (:debug opts false))
+        result       { :status   (:http-status response)
+                       :mimetype (:content-type-mimetype response)
+                       :headers  (:headers response) } ]
+    (if (and (= "text/event-stream" (:content-type-mimetype response))
+             (= (:http-status response) 200))
+     
+      (let [fr (openai/process-streaming-events response handler)]
+        (assoc result :data (if sync? @fr fr)))
+      (assoc result :data (hc/slurp-response response :json-parse-mode :pretty-print)))))
 
 
 
@@ -241,7 +451,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Private utils
+;; Util functions
 ;; -----------------------------------------------------------------------------
 
 (defn- extract-streaming-delta-content [payload]
@@ -253,3 +463,40 @@
 
 
 (defn- openai-api-key [] (system-env "OPENAI_API_KEY"))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Validator functions
+;; -----------------------------------------------------------------------------
+
+(defn- validate-message-or-messages [messages]
+  (cond 
+    (string? messages)     true
+    (sequential? messages) (validate-message-list messages)
+    :else                  (throw (ex :VncException (get-invalid-message-error)))))
+
+
+(defn- validate-message-list [messages]
+  (doseq [m messages]
+         (if (map? m)
+           (validate-message-map messages)
+           (throw (ex :VncException (get-invalid-message-error))))))
+
+
+(defn- validate-message-map [message]
+  (let [valid-keys #{:role :content}] 
+    ;; all keys must be :role or :conten keywords
+    (when-not (every? #(some? (get valid-keys %)) (keys message))
+      (throw (ex :VncException (get-invalid-message-error))))
+    ;; all values must be strings
+    (when-not (every? string? (vals message))
+      (throw (ex :VncException (get-invalid-message-error))))))
+
+
+(defn get-invalid-message-error []
+  """
+  Invalid message/messages!
+  Must be a string or list/vector of role/content maps \
+  { :role "role" :content "content" }
+  """ )
