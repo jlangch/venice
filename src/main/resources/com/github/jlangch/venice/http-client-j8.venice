@@ -34,6 +34,7 @@
 
 (import :com.github.jlangch.venice.util.servlet.HttpStatus)
 
+
 (defonce ^:private hc-user-agent (str/format "Venice HTTP client %s (legacy)" (version)))
 
 
@@ -653,6 +654,13 @@
           the server not to send any further events and close the server side
           stream as well.
 
+          If the event handler throws an exception while processing a data
+          event the event processing will be stopped.
+
+          The handler blocks until the stream is either closed by the server
+          or by the client. The timeout can be controlled via the connections'
+          `:read-timeout` parameter.
+
           Server side events are passed as maps to the handler. E.g. :
 
           ```
@@ -721,20 +729,26 @@
                 mimetype 'text/event-stream'!
                 """)))
 
-  (let [is (:data-stream response)
-        rd (io/wrap-is-with-buffered-reader is :utf-8)
-        id (uuid)]
+  ;; this code blocks until the stream is closed either by the client or
+  ;; server side
+  (let [is       (:data-stream response)
+        rd       (io/wrap-is-with-buffered-reader is :utf-8)
+        id       (uuid)
+        close-fn (fn [] (try (. rd :close)  (catch :Exception e)))]
     (try
       ;; add an interrupt hook to close the stream and signal to server
       ;; not to stream any more events
-      (interrupt-hook id (fn [] (. rd :close)))
+      (interrupt-hook id close-fn)
 
-      (event-handler :opened nil 0)  ;; streaming opened  notification
+      ;; streaming opened  notification
+      (try (event-handler :opened nil 0) (catch :Exception e))
 
       ;; read the streamed events from the response
       (loop [event (sse/read-event rd) event-count 1]
         (when event
-          (let [action (event-handler :data event event-count)]  
+          (let [action (try 
+                         (event-handler :data event event-count)
+                         (catch :Exception e :stop))]  ;; ex -> stop processing 
             (when-not (= :stop action)
               (recur (sse/read-event rd) (inc event-count))))))
       
@@ -744,7 +758,7 @@
         ;; streaming closed notification
         (try (event-handler :closed nil 0) (catch :Exception e))
         ;; close the stream
-        (try (. rd :close) (catch :Exception e))))))
+        (close-fn)))))
 
 
 (defn 
@@ -833,7 +847,9 @@
         content-type        (get headers "Content-Type")
         [mimetype charset]  (parse-content-type content-type)
         content-encoding    (get headers "Content-Encoding")
-        effective-url       (. con :getURL)]  ;; the url after a possible redirect
+        effective-url       (. con :getURL)
+        data-stream         (if ok? (. con :getInputStream) 
+                                    (. con :getErrorStream))]
     (ordered-map
       :http-status            status 
       :http-status-name       (status-name status)
@@ -844,8 +860,7 @@
       :content-length         (. con :getContentLengthLong)
       :effective-url          effective-url
       :headers                headers 
-      :data-stream            (if ok? (. con :getInputStream) 
-                                      (. con :getErrorStream)))))
+      :data-stream            data-stream)))
 
 
 (defn- parse-content-type [content-type]
