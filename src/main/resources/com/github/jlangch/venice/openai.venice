@@ -120,26 +120,26 @@
   (let [body      { :model "gpt-3.5-turbo"
                     :messages [ { :role "user"
                                   :content """
-                                           Count to 10, with a comma between each number \
-                                           and no newlines. E.g., 1, 2, 3, ...
-                                           """ } ]
+                                          Count to 10, with a comma between each number \
+                                          and no newlines. E.g., 1, 2, 3, ...
+                                          """ } ]
                     :stream true } 
         response  (hc/send :post 
                     "https://api.openai.com/v1/chat/completions"
                     :headers { "Content-Type" "application/json"
-                               "Authorization" "Bearer ~(openai-api-key)"}
+                                "Authorization" "Bearer ~(openai-api-key)"}
                     :body (json/write-str body)
                     :debug false)]
     (println "Status:" (:http-status response))
     (if (= "text/event-stream" (:content-type-mimetype response))
-      (let [text @(process-streaming-events 
+      (let [text @(openai/process-streaming-events 
                       response
                       (fn [delta accumulated status]
                         (case status
                           :opened  (println "Started...")
                           :data    (println "Delta:" (pr-str delta))
-                          :done    nil)))]
-       (println "Message:" (pr-str text)))
+                          :done    (println "Completed."))))]
+        (println "Message:" (pr-str text)))
       (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
 
 
@@ -155,7 +155,8 @@
           Processes OpenAI server side events (SSE) and calls for every event the
           handler 'handler'.
 
-          Returns a future.
+          Returns a future. This gives the caller the choice to synchronously
+          or asynchronously process the events from the OpenAI server.
 
           Note: The response must be of the mimetype "text/event-stream"
                 otherwise the processor throws an exception!
@@ -169,13 +170,13 @@
           | *type*        | the notification type: ¶\
                             \u00A0\u00A0 `:opened` - streaming started ¶\
                             \u00A0\u00A0 `:data` - streamed event ¶\
-                            \u00A0\u00A0 `:done` - streaming done by the server ¶\
-                            \u00A0\u00A0 `:timeout` - streaming timeout |
+                            \u00A0\u00A0 `:done` - streaming done by the server |
           """ 
      :examples '(
           """
           (do
             (load-module :openai)
+            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
             (let [body      { :model "gpt-3.5-turbo"
                               :messages [ { :role "user"
@@ -187,18 +188,18 @@
                   response  (hc/send :post 
                               "https://api.openai.com/v1/chat/completions"
                               :headers { "Content-Type" "application/json"
-                                        "Authorization" "Bearer ~(openai-api-key)"}
+                                         "Authorization" "Bearer ~(system-env \"OPENAI_API_KEY\")"}
                               :body (json/write-str body)
                               :debug false)]
               (println "Status:" (:http-status response))
               (if (= "text/event-stream" (:content-type-mimetype response))
-                (let [text @(process-streaming-events 
+                (let [text @(openai/process-streaming-events 
                                 response
                                 (fn [delta accumulated status]
                                   (case status
                                     :opened  (println "Started...")
-                                    :data    (println "Message delta:" (pr-str delta))
-                                    :done    nil)))]
+                                    :data    (println "Delta:" (pr-str delta))
+                                    :done    (println "Completed."))))]
                   (println "Message:" (pr-str text)))
                 (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
           """ ) }
@@ -216,7 +217,7 @@
                 """)))
 
   ;; return a future
-  (future #(
+  (future #(do
       (let [accumulator (atom "")]
         ;; process the events
         (hc/process-server-side-events 
@@ -233,9 +234,9 @@
                                 (handler delta @accumulator :data)
                                 :ok)))
                   :closed (do (handler "" @accumulator :done)
-                              :ok)))))
-      ;; the future returns the accumulated response text
-      @accumulator)))
+                              :ok))))
+        ;; the future returns the accumulated response text
+        @accumulator))))
 
 
 
