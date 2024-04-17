@@ -95,9 +95,11 @@
           | :request-body      | A map of OpenAI chat request body fields ¶\
                                  E.g. {"temperature" 0.2}
                                  See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
-          | :debug              | Debug true/false. Defaults to false. ¶\
-                                  In debug mode prints the HTTP request (multipart \
-                                  data included) and the response data |
+          | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
+                                 from the environment variable "OPENAI_API_KEY". |
+          | :debug             | Debug true/false. Defaults to false. ¶\
+                                 In debug mode prints the HTTP request (multipart \
+                                 data included) and the response data |
  
           *Returns a map with the response data:*
 
@@ -153,36 +155,41 @@
                                         (openai/extract-response-message-content)
                                         (pr-str)))
                 (println "Error:"   (:data response)))))
-          """ ) }
+          """ )
+     :see-also '( 
+          "openai/chat-completion-streaming"
+          "openai/extract-response-message-content"
+          "openai/pretty-print-json" ) }
 
   chat-completion [messages & options]
 
   (validate-message-or-messages messages)
 
-  (let [opts         (apply hash-map options)
-        uri          (:uri opts "https://api.openai.com/v1/chat/completions")
-        model        (:model opts "gpt-3.5-turbo")
-        request-body (:request-body opts {})
-        _            (assert (map? request-body))
-        body         (merge
-                       { :model model
-                         :messages  (if (string? messages)
-                                      [{:role "user" :content messages}]
-                                      messages) }
-                       request-body
-                       {:stream false}) 
-        response     (hc/send :post 
-                       uri
-                       :headers { "Content-Type" "application/json"
-                                  "Authorization" "Bearer ~(openai-api-key)"}
-                       :body (json/write-str body)
-                       :debug (:debug opts false))
-        result       { :status   (:http-status response)
-                       :mimetype (:content-type-mimetype response)
-                       :headers  (:headers response) } ]
-   (assoc result :data (hc/slurp-response response 
-                                          :json-parse-mode :data 
-                                          :json-key-fn keyword))))
+  (let [opts           (apply hash-map options)
+        uri            (:uri opts "https://api.openai.com/v1/chat/completions")
+        model          (:model opts "gpt-3.5-turbo")
+        openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
+        request-body   (:request-body opts {})
+        _              (assert (map? request-body))
+        body           (merge
+                         { :model model
+                           :messages  (if (string? messages)
+                                        [{:role "user" :content messages}]
+                                        messages) }
+                         request-body
+                         {:stream false}) 
+        response       (hc/send :post 
+                         uri
+                         :headers { "Content-Type" "application/json"
+                                    "Authorization" "Bearer ~{openai-api-key}"}
+                         :body (json/write-str body)
+                         :debug (:debug opts false))
+        result         { :status   (:http-status response)
+                         :mimetype (:content-type-mimetype response)
+                         :headers  (:headers response) } ]
+   (assoc result :data   (hc/slurp-response response 
+                                            :json-parse-mode :data 
+                                            :json-key-fn keyword))))
 
 
 (defn 
@@ -224,9 +231,11 @@
           | :request-body      | A map of OpenAI chat request body fields ¶\
                                  E.g. {"temperature" 0.2}
                                  See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
-          | :debug              | Debug true/false. Defaults to false. ¶\
-                                  In debug mode prints the HTTP request (multipart \
-                                  data included) and the response data |
+          | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
+                                 from the environment variable "OPENAI_API_KEY". |
+          | :debug             | Debug true/false. Defaults to false. ¶\
+                                 In debug mode prints the HTTP request (multipart \
+                                 data included) and the response data |
  
           *Returns a map with the response data:*
 
@@ -291,7 +300,10 @@
               (if (=  (:status response) 200)
                 (println "Message:" (pr-str @(:data response)))
                 (println "Error:"   (:data response)))))
-          """ ) }
+          """ )
+     :see-also '( 
+          "openai/chat-completion"
+          "openai/process-streaming-events" ) }
 
   chat-completion-streaming [messages handler & options]
 
@@ -299,28 +311,29 @@
 
   (validate-message-or-messages messages)
 
-  (let [opts         (apply hash-map options)
-        uri          (:uri opts "https://api.openai.com/v1/chat/completions")
-        model        (:model opts "gpt-3.5-turbo")
-        sync?        (:sync opts true)
-        request-body (:request-body opts {})
-        _            (assert (map? request-body))
-        body         (merge
-                       { :model model
-                         :messages  (if (string? messages)
-                                      [{:role "user" :content messages}]
-                                      messages) }
-                       request-body
-                       {:stream true}) 
-        response     (hc/send :post 
-                       uri
-                       :headers { "Content-Type" "application/json"
-                                  "Authorization" "Bearer ~(openai-api-key)"}
-                       :body (json/write-str body)
-                       :debug (:debug opts false))
-        result       { :status   (:http-status response)
-                       :mimetype (:content-type-mimetype response)
-                       :headers  (:headers response) } ]
+  (let [opts           (apply hash-map options)
+        uri            (:uri opts "https://api.openai.com/v1/chat/completions")
+        model          (:model opts "gpt-3.5-turbo")
+        openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
+        sync?          (:sync opts true)
+        request-body   (:request-body opts {})
+        _              (assert (map? request-body))
+        body           (merge
+                         { :model model
+                           :messages  (if (string? messages)
+                                        [{:role "user" :content messages}]
+                                        messages) }
+                         request-body
+                         {:stream true}) 
+        response       (hc/send :post 
+                         uri
+                         :headers { "Content-Type" "application/json"
+                                    "Authorization" "Bearer ~{openai-api-key}"}
+                         :body (json/write-str body)
+                         :debug (:debug opts false))
+        result         { :status   (:http-status response)
+                         :mimetype (:content-type-mimetype response)
+                         :headers  (:headers response) } ]
     (if (and (= "text/event-stream" (:content-type-mimetype response))
              (= (:http-status response) 200))
      
@@ -388,7 +401,9 @@
                                     :done    (println "Completed."))))]
                   (println "Message:" (pr-str text)))
                 (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
-          """ ) }
+          """ )
+     :see-also '( 
+          "hc/slurp-response" ) }
 
   process-streaming-events [response handler]
 
@@ -425,11 +440,33 @@
         @accumulator))))
 
 
-(defn pretty-print-json [data]
+(defn 
+  ^{ :arglists '(
+          "(pretty-print-json data)")
+     :doc """
+          Returns a pretty printed Venice JSON data value.
+          """
+     :see-also '( 
+          "openai/extract-response-message-content" ) }
+
+  pretty-print-json [data]
+
   (if (coll? data) (json/pretty-print (json/write-str data)) data))
 
 
-(defn extract-response-message-content [message]
+(defn 
+  ^{ :arglists '(
+          "(extract-response-message-content message)")
+     :doc """
+          Returns the message content of an OpenAI JSON response message.
+          """
+     :see-also '( 
+          "openai/pretty-print-json" ) }
+
+  extract-response-message-content [message]
+
+  (assert (coll? messsage))
+
   (-> (:choices message)
       (first)
       (:message)
@@ -449,7 +486,7 @@
       (:content)))
 
 
-(defn- openai-api-key [] (system-env "OPENAI_API_KEY"))
+(defn- openai-api-key-from-env [] (system-env "OPENAI_API_KEY"))
 
 
 
