@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 
 - functions `get-request-parameter`, and `get-request-long-parameter` to 
   :ring-util module
-- more HTTP status codes with short names and short description
+- more HTTP status codes with short names and descriptions
   
 ### Improved 
 
