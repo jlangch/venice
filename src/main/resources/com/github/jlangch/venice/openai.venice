@@ -486,7 +486,8 @@
       (:content)))
 
 
-(defn- openai-api-key-from-env [] (system-env "OPENAI_API_KEY"))
+(defn- openai-api-key-from-env [] 
+  (system-env "OPENAI_API_KEY"))
 
 
 
