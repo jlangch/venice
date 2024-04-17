@@ -132,13 +132,14 @@
                     :debug false)]
     (println "Status:" (:http-status response))
     (if (= "text/event-stream" (:content-type-mimetype response))
-      (process-streaming-events 
-                  response
-                  (fn [delta accumulated status]
-                    (case status
-                      :opened (println "Started...")
-                      :data   (println "Message delta:" (pr-str delta))
-                      :done   (println "Message:" (pr-str accumulated)))))
+      (let [text @(process-streaming-events 
+                      response
+                      (fn [delta accumulated status]
+                        (case status
+                          :opened  (println "Started...")
+                          :data    (println "Delta:" (pr-str delta))
+                          :done    nil)))]
+       (println "Message:" (pr-str text)))
       (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
 
 
@@ -149,25 +150,16 @@
 
 (defn 
  ^{ :arglists '(
-          "(process-streaming-events response mode timeout handler)")
+          "(process-streaming-events response handler)")
      :doc """
           Processes OpenAI server side events (SSE) and calls for every event the
           handler 'handler'.
 
+          Returns a future.
+
           Note: The response must be of the mimetype "text/event-stream"
                 otherwise the processor throws an exception!
-
-          The mode is either :sync or :async. In async mode the handler function 
-          returns immediately and asynchronously processes the events received.
-          In sync mode the handler blocks, processed the events received and 
-          returns the accumulated message when all events have been received.
- 
-          The timout is given in seconds. A zero or negative value means an
-          infinite timeout.
          
-          The event handler throws a :com.github.jlangch.venice.TimeoutException 
-          if the server times out sending events.
-
           The event handler is a three argument function:
           
           `(defn handler [delta accumulated status] ...)`
@@ -177,7 +169,8 @@
           | *type*        | the notification type: ¶\
                             \u00A0\u00A0 `:opened` - streaming started ¶\
                             \u00A0\u00A0 `:data` - streamed event ¶\
-                            \u00A0\u00A0 `:done` - streaming done by the server |
+                            \u00A0\u00A0 `:done` - streaming done by the server ¶\
+                            \u00A0\u00A0 `:timeout` - streaming timeout |
           """ 
      :examples '(
           """
@@ -199,23 +192,20 @@
                               :debug false)]
               (println "Status:" (:http-status response))
               (if (= "text/event-stream" (:content-type-mimetype response))
-                (process-streaming-events 
-                            response
-                            :async
-                            -1
-                            (fn [delta accumulated status]
-                              (case status
-                                :opened (println "Started...")
-                                :data   (println "Message delta:" (pr-str delta))
-                                :done   (println "Message:" (pr-str accumulated)))))
+                (let [text @(process-streaming-events 
+                                response
+                                (fn [delta accumulated status]
+                                  (case status
+                                    :opened  (println "Started...")
+                                    :data    (println "Message delta:" (pr-str delta))
+                                    :done    nil)))]
+                  (println "Message:" (pr-str text)))
                 (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
           """ ) }
 
-  process-streaming-events [response mode timeout handler]
+  process-streaming-events [response handler]
 
   (assert (some? response))
-  (assert (and (keyword? mode) (contains #{:sync :async} mode)))
-  (assert (long? tiemout))
   (assert (fn? handler))
 
   (when-not (= "text/event-stream" (:content-type-mimetype response))
@@ -225,31 +215,27 @@
                 with mimetype 'text/event-stream'!
                 """)))
 
-  (when (= mode :sync)
-    (throw (ex :VncException "Sync mode is not yet implemented!")))
-
-  (when (pos? timeout)
-    (throw (ex :VncException "Timeouts are not yet implemented!")))
-
-  ;; process the events
-  (hc/process-server-side-events 
-        response
-        (let [accumulator (atom "")]
-          (fn [type event event-count]
-            (case type
-              :opened (do 
-                        (handler "" "" :opened)
-                        :ok)
-              :data   (let [payload (first (:data event))]
-                        (if (= payload "[DONE]")
-                          :stop
-                          (let [delta (extract-streaming-delta-content payload)]
-                            (swap! accumulator str delta)
-                            (handler delta @accumulator :data)
-                            :ok)))
-              :closed (do
-                        (handler "" @accumulator :done)
-                        :ok))))))
+  ;; return a future
+  (future #(
+      (let [accumulator (atom "")]
+        ;; process the events
+        (hc/process-server-side-events 
+              response
+              (fn [type event event-count]
+                (case type
+                  :opened (do (handler "" "" :opened)
+                              :ok)
+                  :data   (let [payload (first (:data event))]
+                            (if (= payload "[DONE]")
+                              :stop
+                              (let [delta (extract-streaming-delta-content payload)]
+                                (swap! accumulator str delta)
+                                (handler delta @accumulator :data)
+                                :ok)))
+                  :closed (do (handler "" @accumulator :done)
+                              :ok)))))
+      ;; the future returns the accumulated response text
+      @accumulator)))
 
 
 
