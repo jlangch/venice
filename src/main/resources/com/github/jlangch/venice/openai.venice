@@ -73,7 +73,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(chat-completion messages & options)")
+          "(chat-completion messages & options)" )
      :doc """
           Runs a chat completion.
 
@@ -127,10 +127,7 @@
           (do
             (load-module :openai)
 
-            (let [message   """
-                            Count to 10, with a comma between each number \
-                            and no newlines. E.g., 1, 2, 3, ...
-                            """
+            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
                   response  (openai/chat-completion message)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
@@ -143,10 +140,7 @@
           (do
             (load-module :openai)
 
-            (let [message   """
-                            Count to 10, with a comma between each number \
-                            and no newlines. E.g., 1, 2, 3, ...
-                            """
+            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
                   response  (openai/chat-completion message)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
@@ -181,7 +175,7 @@
         response       (hc/send :post 
                          uri
                          :headers { "Content-Type" "application/json"
-                                    "Authorization" "Bearer ~{openai-api-key}"}
+                                    "Authorization" (str "Bearer " openai-api-key)}
                          :body (json/write-str body)
                          :debug (:debug opts false))
         result         { :status   (:http-status response)
@@ -194,7 +188,7 @@
 
 (defn 
  ^{ :arglists '(
-          "(chat-completion-streaming messages handler & options)")
+          "(chat-completion-streaming messages handler & options)" )
      :doc """
           Runs a chat completion in streaming mode.
 
@@ -252,7 +246,7 @@
                               If the response' HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
                               formatted as plain or JSON string |
-
+          
           ¶*Note: The streaming mode does not support functions!*
  
           See: [Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
@@ -263,11 +257,8 @@
           ;; synchronous
           (do
             (load-module :openai)
-
-            (let [message   """
-                            Count to 10, with a comma between each number \
-                            and no newlines. E.g., 1, 2, 3, ...
-                            """
+          
+            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
@@ -284,11 +275,8 @@
           ;; asynchronous
           (do
             (load-module :openai)
-
-            (let [message   """
-                            Count to 10, with a comma between each number \
-                            and no newlines. E.g., 1, 2, 3, ...
-                            """
+          
+            (let [message   "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
@@ -328,7 +316,7 @@
         response       (hc/send :post 
                          uri
                          :headers { "Content-Type" "application/json"
-                                    "Authorization" "Bearer ~{openai-api-key}"}
+                                    "Authorization" (str "Bearer " openai-api-key)}
                          :body (json/write-str body)
                          :debug (:debug opts false))
         result         { :status   (:http-status response)
@@ -353,41 +341,40 @@
      :doc """
           Processes OpenAI server side events (SSE) and calls for every event the
           handler 'handler'.
-
+          
           Returns a future. This gives the caller the choice to synchronously
           or asynchronously process the events from the OpenAI server.
-
+          
           Note: The response must be of the mimetype "text/event-stream"
                 otherwise the processor throws an exception!
-         
+          
           The event handler is a three argument function:
           
           `(defn handler [delta accumulated status] ...)`
-
+          
           | *delta*       | the delta message sent with the event |
-          | *accumulated* | the accumulated message|
+          | *accumulated* | the accumulated message |
           | *type*        | the notification type: ¶\
                             \u00A0\u00A0 `:opened` - streaming started ¶\
                             \u00A0\u00A0 `:data` - streamed event ¶\
                             \u00A0\u00A0 `:done` - streaming done by the server |
-          """ 
+          """
      :examples '(
           """
           (do
             (load-module :openai)
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
-
-            (let [body      { :model "gpt-3.5-turbo"
+          
+            (let [api-key   (system-env "OPENAI_API_KEY")
+                  body      { :model "gpt-3.5-turbo"
                               :messages [ { :role "user"
-                                            :content """
-                                                    Count to 10, with a comma between each number \
-                                                    and no newlines. E.g., 1, 2, 3, ...
-                                                    """ } ]
+                                            :content "Count to 10, with a comma between each number and no newlines. E.g., 1, 2, 3, ..."
+                                          } ]
                               :stream true } 
                   response  (hc/send :post 
                               "https://api.openai.com/v1/chat/completions"
                               :headers { "Content-Type" "application/json"
-                                         "Authorization" "Bearer ~(system-env \"OPENAI_API_KEY\")"}
+                                         "Authorization" (str "Bearer " api-key)}
                               :body (json/write-str body)
                               :debug false)]
               (println "Status:" (:http-status response))
@@ -403,7 +390,7 @@
                 (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
           """ )
      :see-also '( 
-          "hc/slurp-response" ) }
+          "http-client-j8/slurp-response" ) }
 
   process-streaming-events [response handler]
 

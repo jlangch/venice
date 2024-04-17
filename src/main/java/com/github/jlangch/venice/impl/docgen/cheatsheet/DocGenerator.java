@@ -66,6 +66,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMimetypesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMultipartSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleOpenAiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
@@ -144,9 +145,9 @@ public class DocGenerator {
                         "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "installer",    "mimetypes",           "multipart",        "images",
                         "tomcat",       "jetty",
-                        "http-client",  "http-client-j8",
+                        "http-client",  "http-client-j8",      "openai",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
-                        "ring-util",    "server-side-events"));
+                        "ring-util",    "server-side-events" ));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -399,6 +400,10 @@ public class DocGenerator {
         web.addSection(new DocSection("SSE", "modules.sse"));
         content.add(web);
 
+        final DocSection llm = new DocSection("LLM", "llm");
+        llm.addSection(new DocSection("OpenAI", "modules.openai"));
+        content.add(llm);
+
         final DocSection docker = new DocSection("Docker", "docker");
         docker.addSection(new DocSection("Docker", "modules.docker"));
         docker.addSection(new DocSection("Cargo", "modules.cargo"));
@@ -536,6 +541,7 @@ public class DocGenerator {
                 new ModuleMultipartSection(diBuilder).section(),
                 new ModuleSseSection(diBuilder).section(),
                 new ModuleHttpClientJ8Section(diBuilder).section(),
+                new ModuleOpenAiSection(diBuilder).section(),
                 new ModuleInstallerSection(diBuilder).section());
     }
 
