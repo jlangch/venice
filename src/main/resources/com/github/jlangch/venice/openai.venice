@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; OpenAI client
+;;;; OpenAI client without any dependencies on 3rd party libraries
 
 
 (ns openai)
@@ -92,14 +92,14 @@
                                  Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
                                  to "gpt-3.5-turbo" |
-          | :request-body      | A map of OpenAI chat request body fields ¶\
+          | :request-body      | An optional map of OpenAI chat request body fields ¶\
                                  E.g. {"temperature" 0.2}
                                  See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
                                  from the environment variable "OPENAI_API_KEY". |
-          | :debug             | Debug true/false. Defaults to false. ¶\
-                                 In debug mode prints the HTTP request (multipart \
-                                 data included) and the response data |
+          | :debug             | An optional debug flag (true/false). Defaults \
+                                 to false. ¶\
+                                 In debug mode prints the HTTP request and response data |
  
           *Returns a map with the response data:*
 
@@ -228,14 +228,14 @@
                                  (with an optional timeout) to get the full \
                                  message. ¶\
                                  Defaults to *true* |
-          | :request-body      | A map of OpenAI chat request body fields ¶\
+          | :request-body      | An optional map of OpenAI chat request body fields ¶\
                                  E.g. {"temperature" 0.2}
                                  See: [Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
                                  from the environment variable "OPENAI_API_KEY". |
-          | :debug             | Debug true/false. Defaults to false. ¶\
-                                 In debug mode prints the HTTP request (multipart \
-                                 data included) and the response data |
+          | :debug             | An optional debug flag (true/false). Defaults \
+                                 to false. ¶\
+                                 In debug mode prints the HTTP request and response data |
  
           *Returns a map with the response data:*
 
