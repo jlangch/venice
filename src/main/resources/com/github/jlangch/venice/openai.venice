@@ -71,53 +71,8 @@
 (def endpoint-gpt-old "https://api.openai.com/v1/completions")
 
 
-
-;; a very first test, to test credentials and API credits
-(defn chat-completion-test []
-  (let [body      { :model "gpt-3.5-turbo"
-                    :messages [ { :role "user"
-                                  :content """
-                                           Count to 10, with a comma between each number \
-                                           and no newlines. E.g., 1, 2, 3, ...
-                                           """ } ] } 
-        response  (hc/send :post 
-                    "https://api.openai.com/v1/chat/completions"
-                    :headers { "Content-Type" "application/json"
-                               "Authorization" "Bearer ~(openai-api-key)"}
-                    :body (json/write-str body)
-                    :debug false)]
-    (println "Status:" (:http-status response))
-    (println (hc/slurp-response response :json-parse-mode :pretty-print))))
-
-(comment
-    ;; response from OpenAI
-
-    """
-    {
-      "created": 1713302066,
-      "usage": {
-        "completion_tokens": 28,
-        "prompt_tokens": 37,
-        "total_tokens": 65
-      },
-      "model": "gpt-3.5-turbo-0125",
-      "id": "chatcmpl-9EkQE6O4khw25Fi8MLUvRsu36lfrn",
-      "choices": [{
-        "finish_reason": "stop",
-        "index": 0,
-        "message": {
-          "role": "assistant",
-          "content": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
-        },
-        "logprobs": null
-      }],
-      "system_fingerprint": "fp_c2295e73ad",
-      "object": "chat.completion"
-    }
-    """ )
-
 (defn 
- ^{ :arglists '(
+  ^{ :arglists '(
           "(chat-completion messages & options)")
      :doc """
           Runs a chat completion.
@@ -166,6 +121,7 @@
           """ 
      :examples '(
           """
+          ;; print the full OpenAI response message
           (do
             (load-module :openai)
 
@@ -173,12 +129,30 @@
                             Count to 10, with a comma between each number \
                             and no newlines. E.g., 1, 2, 3, ...
                             """
-                  response  (openai/chat-completion messsage)]
+                  response  (openai/chat-completion message)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
-                (println "Message:" (pr-str (:data reponse)))
-                (println "Error:"   (:data reponse)))))
+                (println "Message:" (openai/pretty-print-json (:data response)))
+                (println "Error:"   (:data response)))))
+          """,
+          """
+          ;; print only the OpenAI response message content
+          (do
+            (load-module :openai)
+
+            (let [message   """
+                            Count to 10, with a comma between each number \
+                            and no newlines. E.g., 1, 2, 3, ...
+                            """
+                  response  (openai/chat-completion message)]
+              (println "Status:  " (:status response))
+              (println "Mimetype:" (:mimetype response))
+              (if (=  (:status response) 200)
+                (println "Message:" (-> (:data response)
+                                        (openai/extract-response-message-content)
+                                        (pr-str)))
+                (println "Error:"   (:data response)))))
           """ ) }
 
   chat-completion [messages & options]
@@ -196,7 +170,7 @@
                                       [{:role "user" :content messages}]
                                       messages) }
                        request-body
-                       {:stream true }) 
+                       {:stream false}) 
         response     (hc/send :post 
                        uri
                        :headers { "Content-Type" "application/json"
@@ -206,7 +180,9 @@
         result       { :status   (:http-status response)
                        :mimetype (:content-type-mimetype response)
                        :headers  (:headers response) } ]
-   (assoc result :data (hc/slurp-response response :json-parse-mode :data))))
+   (assoc result :data (hc/slurp-response response 
+                                          :json-parse-mode :data 
+                                          :json-key-fn keyword))))
 
 
 (defn 
@@ -288,12 +264,12 @@
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming messsage handler)]
+                  response  (openai/chat-completion-streaming message handler)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
-                (println "Message:" (pr-str (:data reponse)))
-                (println "Error:"   (:data reponse)))))
+                (println "Message:" (pr-str (:data response)))
+                (println "Error:"   (:data response)))))
           """,
           """
           ;; asynchronous
@@ -309,12 +285,12 @@
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming messsage handler :sync false)]
+                  response  (openai/chat-completion-streaming message handler :sync false)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
-                (println "Message:" (pr-str @(:data reponse)))
-                (println "Error:"   (:data reponse)))))
+                (println "Message:" (pr-str @(:data response)))
+                (println "Error:"   (:data response)))))
           """ ) }
 
   chat-completion-streaming [messages handler & options]
@@ -335,7 +311,7 @@
                                       [{:role "user" :content messages}]
                                       messages) }
                        request-body
-                       {:stream true }) 
+                       {:stream true}) 
         response     (hc/send :post 
                        uri
                        :headers { "Content-Type" "application/json"
@@ -447,6 +423,17 @@
                               :ok))))
         ;; the future returns the accumulated response text
         @accumulator))))
+
+
+(defn pretty-print-json [data]
+  (if (coll? data) (json/pretty-print (json/write-str data)) data))
+
+
+(defn extract-response-message-content [message]
+  (-> (:choices message)
+      (first)
+      (:message)
+      (:content)))
 
 
 
