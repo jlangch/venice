@@ -149,7 +149,7 @@
 
 (defn 
  ^{ :arglists '(
-          "(process-streaming-events response mode handler timeout)")
+          "(process-streaming-events response mode timeout handler)")
      :doc """
           Processes OpenAI server side events (SSE) and calls for every event the
           handler 'handler'.
@@ -161,7 +161,10 @@
           returns immediately and asynchronously processes the events received.
           In sync mode the handler blocks, processed the events received and 
           returns the accumulated message when all events have been received.
-          
+ 
+          The timout is given in seconds. A zero or negative value means an
+          infinite timeout.
+         
           The event handler throws a :com.github.jlangch.venice.TimeoutException 
           if the server times out sending events.
 
@@ -175,9 +178,6 @@
                             \u00A0\u00A0 `:opened` - streaming started ¶\
                             \u00A0\u00A0 `:data` - streamed event ¶\
                             \u00A0\u00A0 `:done` - streaming done by the server |
-
-          The timout is given in seconds. A zero or negative value means an
-          infinite timeout.
           """ 
      :examples '(
           """
@@ -202,21 +202,21 @@
                 (process-streaming-events 
                             response
                             :async
+                            -1
                             (fn [delta accumulated status]
                               (case status
                                 :opened (println "Started...")
                                 :data   (println "Message delta:" (pr-str delta))
-                                :done   (println "Message:" (pr-str accumulated))))
-                            -1)
+                                :done   (println "Message:" (pr-str accumulated)))))
                 (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
           """ ) }
 
-  process-streaming-events [response mode handler timeout]
+  process-streaming-events [response mode timeout handler]
 
   (assert (some? response))
   (assert (and (keyword? mode) (contains #{:sync :async} mode)))
-  (assert (fn? handler))
   (assert (long? tiemout))
+  (assert (fn? handler))
 
   (when-not (= "text/event-stream" (:content-type-mimetype response))
     (throw (ex :VncException 
