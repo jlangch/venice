@@ -281,8 +281,8 @@
      :examples '(
           """
           ;; synchronous
-          ;; prints the arriving events asynchronously, the retrieval of the final
-          ;; message `(:data response)` blocks until it is available
+          ;; prints the arriving events asynchronously, the response is only
+          ;; returned when the final message is available or the request is bad
           (do
             (load-module :openai)
           
@@ -302,8 +302,9 @@
           """,
           """
           ;; asynchronous
-          ;; prints the arriving events asynchronously, `(:data response)` returns
-          ;; a future that can be deref'd to retrieve the final message.
+          ;; prints the arriving events asynchronously, returns the response
+          ;; immediately with the data  `(:data response)` as a future that can 
+          ;; be deref'd to get the final message.
           (do
             (load-module :openai)
           
