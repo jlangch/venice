@@ -85,6 +85,32 @@ See:
       (println "Error:"   (:data response)))))
 ```
 
+```
+Status:   200
+Mimetype: application/json
+Message: {
+  "created": 1713455434,
+  "usage": {
+    "completion_tokens": 28,
+    "prompt_tokens": 36,
+    "total_tokens": 64
+  },
+  "model": "gpt-3.5-turbo-0125",
+  "id": "chatcmpl-9FOJu9tbkFRFKXZLjjIlQ6jnGDMr2",
+  "choices": [{
+    "finish_reason": "stop",
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
+    },
+    "logprobs": null
+  }],
+  "system_fingerprint": "fp_d9767fc5b9",
+  "object": "chat.completion"
+}
+```
+
 #### Example 2
 
 ```clojure
@@ -102,6 +128,12 @@ See:
                               (openai/extract-response-message-content)
                               (pr-str)))
       (println "Error:"   (:data response)))))
+```
+
+```
+Status:   200
+Mimetype: application/json
+Message: "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
 ```
 
 #### Example 3
@@ -130,7 +162,11 @@ See:
       (println "Error:"   (:data response)))))
 ```
 
-
+```
+Status:   200
+Mimetype: application/json
+Message: She did not go to the market.
+```
 
 ### Chat Completion Streaming
 
@@ -189,7 +225,7 @@ See:
 (do
   (load-module :openai)
 
-  (let [prompt    (str "Count to 10, with a comma between each number "
+  (let [prompt    (str "Count to 5, with a comma between each number "
                         "and no newlines. E.g., 1, 2, 3, ...")
         handler   (fn [delta accumulated status]
                     (case status
@@ -204,6 +240,29 @@ See:
       (println "Error:"   (:data response)))))
 ```
 
+```
+Started...
+Delta: ""
+Delta: "1"
+Delta: ","
+Delta: " "
+Delta: "2"
+Delta: ","
+Delta: " "
+Delta: "3"
+Delta: ","
+Delta: " "
+Delta: "4"
+Delta: ","
+Delta: " "
+Delta: "5"
+Delta: nil
+Completed.
+Status:   200
+Mimetype: text/event-stream
+Message: "1, 2, 3, 4, 5"
+``
+
 #### Example 2
 
 ```clojure
@@ -213,7 +272,7 @@ See:
 (do
   (load-module :openai)
 
-  (let [prompt    (str "Count to 10, with a comma between each number "
+  (let [prompt    (str "Count to 5, with a comma between each number "
                         "and no newlines. E.g., 1, 2, 3, ...")
         handler   (fn [delta accumulated status]
                     (case status
@@ -226,6 +285,29 @@ See:
     (if (=  (:status response) 200)
       (println "Message:" (pr-str @(:data response)))
       (println "Error:"   (:data response)))))
+```
+
+```
+Status:   200
+Mimetype: text/event-stream
+Started...
+Delta: ""
+Delta: "1"
+Delta: ","
+Delta: " "
+Delta: "2"
+Delta: ","
+Delta: " "
+Delta: "3"
+Delta: ","
+Delta: " "
+Delta: "4"
+Delta: ","
+Delta: " "
+Delta: "5"
+Delta: nil
+Completed.
+Message: "1, 2, 3, 4, 5"
 ```
 
 
