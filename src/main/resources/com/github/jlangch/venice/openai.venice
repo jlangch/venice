@@ -119,10 +119,11 @@
                               formatted as plain or JSON string. |
 
           ¶
-          See: [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
-          See: [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
-          See: [OpenAI API Examples](https://platform.openai.com/examples)
-          See: [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
+          See:
+          * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
+          * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          * [OpenAI API Examples](https://platform.openai.com/examples)
+          * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
           """ 
      :examples '(
           """
@@ -270,8 +271,11 @@
           
           ¶*Note: The streaming mode does not support functions!*
  
-          See: [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
-          See: [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          See:
+          * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
+          * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          * [OpenAI API Examples](https://platform.openai.com/examples)
+          * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
           """ 
      :examples '(
           """
