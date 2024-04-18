@@ -88,7 +88,7 @@
           ¶*Request Options:*
 
           | [![width: 15%]]    | [![width: 85%]] |
-          | :uri               | An OpenAI chat completion uri. E.g.: \
+          | :uri               | An OpenAI chat completion URI. E.g.: \
                                  "https://api.openai.com/v1/chat/completions". ¶\
                                  Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
@@ -110,7 +110,7 @@
           | :headers        | A map of headers. key: header name, value: list \
                               of header values |
           | :message        | The final chat completion message if the OpenAI \
-                              server returned the HTTP status OK, else `nil` |
+                              server returned the HTTP status `HTTP_OK`, else `nil` |
           | :data           | If the response' HTTP status is `HTTP_OK` \
                               the data fields contains the chat completion \
                               message. ¶\
@@ -157,7 +157,7 @@
                 (println "Error:"   (:data response)))))
           """,
           """
-          ;; Grammar correction
+          ;; Dealing with Prompt options
           (do
             (load-module :openai)
 
@@ -231,7 +231,7 @@
           ¶*Request Options:*
 
           | [![width: 15%]]    | [![width: 85%]] |
-          | :uri               | An OpenAI chat completion uri. E.g.: \
+          | :uri               | An OpenAI chat completion URI. E.g.: \
                                  "https://api.openai.com/v1/chat/completions". ¶\
                                  Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
@@ -261,7 +261,7 @@
           | :headers        | A map of headers. key: header name, value: list \
                               of header values |
           | :message        | The final chat completion message if the OpenAI \
-                              server returned the HTTP status OK, else `nil` |
+                              server returned the HTTP status `HTTP_OK`, else `nil` |
           | :data           | If the response' HTTP status is `HTTP_OK` \
                               the data fields contains the chat completion \
                               message.  ¶\
