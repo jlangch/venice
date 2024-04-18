@@ -100,20 +100,20 @@ See:
 #### Example 3
 
 ```clojure
-;; Dealing with Prompt options
+;; Dealing with prompt options
 (do
   (load-module :openai)
 
-  (let [prompt   [ { :role     "system"
-                     :content  "You will be provided with statements, and your task is to convert them to standard English." }
-                    { :role     "user"
-                      :content  "She no went to the market." } ]
+  (let [prompt      [ { :role     "system"
+                        :content  "You will be provided with statements, and your task is to convert them to standard English." }
+                      { :role     "user"
+                        :content  "She no went to the market." } ]
         prompt-opts { :temperature 0.7
                       :max_tokens 64
                       :top_p 1 }
-        response  (openai/chat-completion prompt 
-                                          :model "gpt-3.5-turbo" 
-                                          :prompt-opts prompt-opts)]
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-3.5-turbo" 
+                                            :prompt-opts prompt-opts)]
     (println "Status:  " (:status response))
     (println "Mimetype:" (:mimetype response))
     (if (=  (:status response) 200)

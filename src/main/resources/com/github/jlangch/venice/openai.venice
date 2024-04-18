@@ -157,7 +157,7 @@
                 (println "Error:"   (:data response)))))
           """,
           """
-          ;; Dealing with Prompt options
+          ;; Dealing with prompt options
           (do
             (load-module :openai)
 
@@ -191,6 +191,7 @@
         uri            (:uri opts "https://api.openai.com/v1/chat/completions")
         model          (:model opts default-model)
         openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
+        _              (validate-openai-api-key openai-api-key)
         body           (build-prompt model prompt (:prompt-opts opts) {:stream false})
         debug?         (:debug opts false)
         _              (when debug? (dump-prompt body))
@@ -329,6 +330,7 @@
         uri            (:uri opts "https://api.openai.com/v1/chat/completions")
         model          (:model opts default-model)
         openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
+        _              (validate-openai-api-key openai-api-key)
         sync?          (:sync opts true)
         body           (build-prompt model prompt (:prompt-opts opts) {:stream true})
         debug?         (:debug opts false)
@@ -513,3 +515,14 @@
 (defn- dump-prompt [prompt]
   (println "\nPrompt:")
   (println (json/pretty-print (json/write-str prompt))))
+
+
+(defn- validate-openai-api-key [key]
+  (when (nil? key)
+    (throw (ex :VncException 
+               """
+               Missing OpenAI api key!
+               Pleased define an environment variable with the name \
+               "OPENAI_API_KEY" or pass the key as an option \
+               `:openai-api-key "sk-xxxxxxxxxxxxx"`
+               """))))
