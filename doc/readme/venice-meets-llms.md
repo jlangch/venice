@@ -14,6 +14,11 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 
 * [Chat Completion](#chat-completion)
 * [Chat Completion Streaming](#chat-completion-streaming)
+* Functions
+* Audio
+* Images
+* Embeddings
+* Assistants
 
 
 ### Chat Completion
@@ -30,6 +35,9 @@ deref it, when the result is required.
 `(chat-completion prompt & options)`
 
 Send a chat completion request given a prompt and options.
+
+The OpenAI api key can be provided in an environment variable "OPENAI_API_KEY" or
+explicitly passed as an option `:openai-api-key "sk-xxxxxxxxxxxxx"`.
 
 
 #### Parameter «options»

@@ -522,7 +522,7 @@
     (throw (ex :VncException 
                """
                Missing OpenAI api key!
-               Pleased define an environment variable with the name \
+               Please define an environment variable with the name \
                "OPENAI_API_KEY" or pass the key as an option \
-               `:openai-api-key "sk-xxxxxxxxxxxxx"`
+               `:openai-api-key "sk-xxxxxxxxxxxxx"`.
                """))))
