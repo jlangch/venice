@@ -57,6 +57,7 @@
 (def text-embedding-3-small  "text-embedding-3-small")   ;; Text embedding, dimension 1'536
 (def text-embedding-ada-002  "text-embedding-ada-002")   ;; Text embedding, dimension 1'536
 
+(def default-model "gpt-3.5-turbo")
 
 
 
@@ -73,7 +74,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(chat-completion messages & options)" )
+          "(chat-completion prompt & options)" )
      :doc """
           Runs a chat completion.
 
@@ -92,8 +93,8 @@
                                  Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
                                  to "gpt-3.5-turbo" |
-          | :request-body      | An optional map of OpenAI chat request body fields ¶\
-                                 E.g. {"temperature" 0.2} ¶\
+          | :prompt-opts       | An optional map of OpenAI chat request prompt options ¶\
+                                 E.g. {:temperature 0.2} ¶\
                                  See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
                                  from the environment variable "OPENAI_API_KEY". |
@@ -112,14 +113,16 @@
                               server returned the HTTP status OK, else `nil` |
           | :data           | If the response' HTTP status is `HTTP_OK` \
                               the data fields contains the chat completion \
-                              message ¶\
+                              message. ¶\
                               If the response' HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
-                              formatted as plain or JSON string |
+                              formatted as plain or JSON string. |
 
           ¶
           See: [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
           See: [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+          See: [OpenAI API Examples](https://platform.openai.com/examples)
+          See: [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
           """ 
      :examples '(
           """
@@ -127,9 +130,9 @@
           (do
             (load-module :openai)
 
-            (let [message   (str "Count to 10, with a comma between each number "
+            (let [prompt    (str "Count to 10, with a comma between each number "
                                  "and no newlines. E.g., 1, 2, 3, ...")
-                  response  (openai/chat-completion message)]
+                  response  (openai/chat-completion prompt)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -141,9 +144,9 @@
           (do
             (load-module :openai)
 
-            (let [message   (str "Count to 10, with a comma between each number "
+            (let [prompt    (str "Count to 10, with a comma between each number "
                                  "and no newlines. E.g., 1, 2, 3, ...")
-                  response  (openai/chat-completion message)]
+                  response  (openai/chat-completion prompt)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -151,35 +154,49 @@
                                         (openai/extract-response-message-content)
                                         (pr-str)))
                 (println "Error:"   (:data response)))))
-          """ )
+          """,
+          """
+          ;; Grammar correction
+          (do
+            (load-module :openai)
+
+            (let [prompt   [ { :role     "system"
+                               :content  "You will be provided with statements, and your task is to convert them to standard English." }
+                             { :role     "user"
+                               :content  "She no went to the market." } ]
+                  prompt-opts { :temperature 0.7
+                                 :max_tokens 64
+                                 :top_p 1 }
+                  response  (openai/chat-completion prompt :model "gpt-3.5-turbo" :prompt-opts prompt-opts)]
+              (println "Status:  " (:status response))
+              (println "Mimetype:" (:mimetype response))
+              (if (=  (:status response) 200)
+                (println "Message:" (-> (:data response)
+                                        (openai/extract-response-message-content)
+                                        (openai/pretty-print-json)))
+                (println "Error:"   (:data response)))))
+            """ )
      :see-also '( 
           "openai/chat-completion-streaming"
           "openai/extract-response-message-content"
           "openai/pretty-print-json" ) }
 
-  chat-completion [messages & options]
-
-  (validate-message-or-messages messages)
+  chat-completion [prompt & options]
 
   (let [opts           (apply hash-map options)
+        _              (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri            (:uri opts "https://api.openai.com/v1/chat/completions")
-        model          (:model opts "gpt-3.5-turbo")
+        model          (:model opts default-model)
         openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
-        request-body   (:request-body opts {})
-        _              (assert (map? request-body))
-        body           (merge
-                         { :model model
-                           :messages  (if (string? messages)
-                                        [{:role "user" :content messages}]
-                                        messages) }
-                         request-body
-                         {:stream false}) 
+        body           (build-prompt model prompt (:prompt-opts opts) {:stream false})
+        debug?         (:debug opts false)
+        _              (when debug? (dump-prompt body))
         response       (hc/send :post 
                          uri
                          :headers { "Content-Type" "application/json"
                                     "Authorization" (str "Bearer " openai-api-key)}
                          :body (json/write-str body)
-                         :debug (:debug opts false))
+                         :debug  debug?)
         result         { :status   (:http-status response)
                          :mimetype (:content-type-mimetype response)
                          :headers  (:headers response) } ]
@@ -190,7 +207,7 @@
 
 (defn 
  ^{ :arglists '(
-          "(chat-completion-streaming messages handler & options)" )
+          "(chat-completion-streaming prompt handler & options)" )
      :doc """
           Runs a chat completion in streaming mode.
 
@@ -224,8 +241,8 @@
                                  (with an optional timeout) to get the full \
                                  message. ¶\
                                  Defaults to *true* |
-          | :request-body      | An optional map of OpenAI chat request body fields ¶\
-                                 E.g. {"temperature" 0.2} ¶\
+          | :prompt-opts       | An optional map of OpenAI chat request prompt options ¶\
+                                 E.g. {:temperature 0.2} ¶\
                                  See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
                                  from the environment variable "OPENAI_API_KEY". |
@@ -244,10 +261,10 @@
                               server returned the HTTP status OK, else `nil` |
           | :data           | If the response' HTTP status is `HTTP_OK` \
                               the data fields contains the chat completion \
-                              message  ¶\
+                              message.  ¶\
                               If the response' HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
-                              formatted as plain or JSON string |
+                              formatted as plain or JSON string. |
           
           ¶*Note: The streaming mode does not support functions!*
  
@@ -260,14 +277,14 @@
           (do
             (load-module :openai)
           
-            (let [message   (str "Count to 10, with a comma between each number "
+            (let [prompt    (str "Count to 10, with a comma between each number "
                                  "and no newlines. E.g., 1, 2, 3, ...")
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming message handler)]
+                  response  (openai/chat-completion-streaming prompt handler)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -279,14 +296,14 @@
           (do
             (load-module :openai)
           
-            (let [message   (str "Count to 10, with a comma between each number "
+            (let [prompt    (str "Count to 10, with a comma between each number "
                                  "and no newlines. E.g., 1, 2, 3, ...")
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming message handler :sync false)]
+                  response  (openai/chat-completion-streaming prompt handler :sync false)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -297,32 +314,25 @@
           "openai/chat-completion"
           "openai/process-streaming-events" ) }
 
-  chat-completion-streaming [messages handler & options]
+  chat-completion-streaming [prompt handler & options]
 
   (assert (fn? handler))
 
-  (validate-message-or-messages messages)
-
   (let [opts           (apply hash-map options)
+        _              (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri            (:uri opts "https://api.openai.com/v1/chat/completions")
-        model          (:model opts "gpt-3.5-turbo")
+        model          (:model opts default-model)
         openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
         sync?          (:sync opts true)
-        request-body   (:request-body opts {})
-        _              (assert (map? request-body))
-        body           (merge
-                         { :model model
-                           :messages  (if (string? messages)
-                                        [{:role "user" :content messages}]
-                                        messages) }
-                         request-body
-                         {:stream true}) 
+        body           (build-prompt model prompt (:prompt-opts opts) {:stream true})
+        debug?         (:debug opts false)
+        _              (when debug? (dump-prompt body))
         response       (hc/send :post 
                          uri
                          :headers { "Content-Type" "application/json"
                                     "Authorization" (str "Bearer " openai-api-key)}
                          :body (json/write-str body)
-                         :debug (:debug opts false))
+                         :debug debug?)
         result         { :status   (:http-status response)
                          :mimetype (:content-type-mimetype response)
                          :headers  (:headers response) } ]
@@ -456,7 +466,7 @@
 
   extract-response-message-content [message]
 
-  (assert (coll? messsage))
+  (assert (coll? message))
 
   (-> (:choices message)
       (first)
@@ -481,38 +491,19 @@
   (system-env "OPENAI_API_KEY"))
 
 
+(defn- build-prompt [model prompt prompt-opts overrule-opts]
+  (let [p (cond 
+            (nil? prompt)        {}
+            (string? prompt)     {:messages [{:role "user" :content prompt}]}
+            (sequential? prompt) {:messages prompt}
+            (map? prompt)        prompt
+            :else                {} )]
+    (merge {:model (or model default-model)} 
+           p 
+           (or prompt-opts {})
+           (or overrule-opts {}))))
 
-;; -----------------------------------------------------------------------------
-;; Validator functions
-;; -----------------------------------------------------------------------------
-
-(defn- validate-message-or-messages [messages]
-  (cond 
-    (string? messages)     true
-    (sequential? messages) (validate-message-list messages)
-    :else                  (throw (ex :VncException (get-invalid-message-error)))))
-
-
-(defn- validate-message-list [messages]
-  (doseq [m messages]
-         (if (map? m)
-           (validate-message-map messages)
-           (throw (ex :VncException (get-invalid-message-error))))))
-
-
-(defn- validate-message-map [message]
-  (let [valid-keys #{:role :content}] 
-    ;; all keys must be :role or :conten keywords
-    (when-not (every? #(some? (get valid-keys %)) (keys message))
-      (throw (ex :VncException (get-invalid-message-error))))
-    ;; all values must be strings
-    (when-not (every? string? (vals message))
-      (throw (ex :VncException (get-invalid-message-error))))))
-
-
-(defn get-invalid-message-error []
-  """
-  Invalid message/messages!
-  Must be a string or list/vector of role/content maps \
-  { :role "role" :content "content" }
-  """ )
+  
+(defn- dump-prompt [prompt]
+  (println "\nPrompt:")
+  (println (json/pretty-print (json/write-str prompt))))
