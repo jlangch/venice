@@ -322,8 +322,8 @@ Message: "1, 2, 3, 4, 5"
 ## Qdrant Vector DB
 
 Qdrant is a Vector Database and Vector Search Engine that empowers
-LLM applications with Retrieval Augmented Generation (RAG) to retrieve 
-data from outside the LLM data world.
+LLM applications with Retrieval Augmented Generation (RAG) to access 
+data outside the LLM data world.
 
 
 ### Start Qdrant
@@ -358,5 +358,5 @@ Parameters:
    
   ;; Stop the Qdrant container labeled as "qdrant"
   (qdrant/stop "qdrant"))
-``
+```
 
