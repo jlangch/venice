@@ -25,10 +25,6 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 
 Runs a chat completion.
 
-To run the request asynchronously just wrap it in a `future` and
-deref it, when the result is required.
-
-
 
 #### Sending Requests
 
@@ -38,6 +34,9 @@ Send a chat completion request given a prompt and options.
 
 The OpenAI api key can be provided in an environment variable "OPENAI_API_KEY" or
 explicitly passed as an option `:openai-api-key "sk-xxxxxxxxxxxxx"`.
+
+To run the request asynchronously just wrap it in a `future` and
+deref it, when the result is required.
 
 
 #### Parameter «options»
@@ -52,7 +51,7 @@ explicitly passed as an option `:openai-api-key "sk-xxxxxxxxxxxxx"`.
  
 #### Return value
 
-*Returns a map with the response data:*
+*The return value is a map with the response data:*
 
 | Field      | Description |
 | :---       | :---        |
@@ -135,7 +134,99 @@ See:
 
 ### Chat Completion Streaming
 
+Runs a chat completion in streaming mode. Upon initiating the request the OpenAI 
+server send asynchronously *Server-Side-Events* back to the client. These events 
+are then handled by a handler function.
 
+
+#### Sending Requests
+
+`(chat-completion-streaming prompt handler & options)`
+
+The OpenAI api key can be provided in an environment variable "OPENAI_API_KEY" or
+explicitly passed as an option `:openai-api-key "sk-xxxxxxxxxxxxx"`.
+
+
+
+#### Parameter «options»
+
+| Option             | Description |
+| :---               | :---        |
+| :uri               | An OpenAI chat completion URI. E.g.: <br>"https://api.openai.com/v1/chat/completions".<br>Defaults to "https://api.openai.com/v1/chat/completions" |
+| :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults to "gpt-3.5-turbo" |
+| :sync              | if *true* runs the request syncronously and waits until the full message response is available.<br>if *false* runs the request asyncronously and returns immediately with the response :data field holding a `future` that can be deref'd (with an optional timeout) to get the full message.<br>Defaults to *true* |
+| :prompt-opts       | An optional map of OpenAI chat request prompt options<br>E.g. {:temperature 0.2} <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+| :openai-api-key    | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
+| :debug             | An optional debug flag (true/false). Defaults to false. <br>In debug mode prints the HTTP request and response data |
+ 
+#### Return value
+
+*The return value is a map with the response data:*
+
+| Field      | Description |
+| :---       | :---        |
+| :status    | The HTTP status (a long)         |
+| :mimetype  | The content type's mimetype      |
+| :headers   | A map of headers. key: header name, value: list of header values |
+| :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
+| :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
+
+*Note: The streaming mode does not support functions!*
+
+See:
+ * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
+ * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+ * [OpenAI API Examples](https://platform.openai.com/examples)
+ * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
+
+
+#### Example 1
+
+```clojure
+;; synchronous
+;; prints the arriving events asynchronously, the retrieval of the final
+;; message `(:data response)` blocks until it is available
+(do
+  (load-module :openai)
+
+  (let [prompt    (str "Count to 10, with a comma between each number "
+                        "and no newlines. E.g., 1, 2, 3, ...")
+        handler   (fn [delta accumulated status]
+                    (case status
+                      :opened  (println "Started...")
+                      :data    (println "Delta:" (pr-str delta))
+                      :done    (println "Completed.")))
+        response  (openai/chat-completion-streaming prompt handler)]
+    (println "Status:  " (:status response))
+    (println "Mimetype:" (:mimetype response))
+    (if (=  (:status response) 200)
+      (println "Message:" (pr-str (:data response)))
+      (println "Error:"   (:data response)))))
+```
+
+#### Example 2
+
+```clojure
+;; asynchronous
+;; prints the arriving events asynchronously, `(:data response)` returns
+;; a future that can be deref'd to retrieve the final message.
+(do
+  (load-module :openai)
+
+  (let [prompt    (str "Count to 10, with a comma between each number "
+                        "and no newlines. E.g., 1, 2, 3, ...")
+        handler   (fn [delta accumulated status]
+                    (case status
+                      :opened  (println "Started...")
+                      :data    (println "Delta:" (pr-str delta))
+                      :done    (println "Completed.")))
+        response  (openai/chat-completion-streaming prompt handler :sync false)]
+    (println "Status:  " (:status response))
+    (println "Mimetype:" (:mimetype response))
+    (if (=  (:status response) 200)
+      (println "Message:" (pr-str @(:data response)))
+      (println "Error:"   (:data response)))))
+```
 
 
 ## LangChain4J]

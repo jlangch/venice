@@ -241,7 +241,7 @@
                                  until the full message response is available. ¶\
                                  if *false* runs the request asyncronously and \
                                  returns immediately with the response :data \
-                                 field holding a `future` that can be derefed  \
+                                 field holding a `future` that can be deref'd  \
                                  (with an optional timeout) to get the full \
                                  message. ¶\
                                  Defaults to *true* |
@@ -281,6 +281,8 @@
      :examples '(
           """
           ;; synchronous
+          ;; prints the arriving events asynchronously, the retrieval of the final
+          ;; message `(:data response)` blocks until it is available
           (do
             (load-module :openai)
           
@@ -300,6 +302,8 @@
           """,
           """
           ;; asynchronous
+          ;; prints the arriving events asynchronously, `(:data response)` returns
+          ;; a future that can be deref'd to retrieve the final message.
           (do
             (load-module :openai)
           
