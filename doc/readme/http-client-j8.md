@@ -59,10 +59,10 @@ The request URI
 | :body              | An optional body to send with the request. The body may be of type *string*, *bytebuf*, or `:java.io.InputStream` |
 | :conn-timeout      | An optional connection timeout in milliseconds |
 | :read-timeout      | An optional read timeout in milliseconds |
-| :follow-redirects  | Sets whether HTTP redirects (requests with response code 3xx) should be automatically followed. |
+| :follow-redirects  | Sets wether HTTP redirects (requests with response code 3xx) should be automatically followed. |
 | :hostname-verifier | Sets the hostname verifier. An object of type `:javax.net.ssl.HostnameVerifier`.<br> Use only for HTTPS requests |
 | :ssl-socket-factory | Sets the SSL socket factory. An object of type `:javax.net.ssl.SSLSocketFactory`.<br> Use only for HTTPS requests |
-| :use-caches         | A boolean indicating whether or not to allow caching. Defaults to false |
+| :use-caches         | A boolean indicating wether or not to allow caching. Defaults to false |
 | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
 | :debug              | Debug true/false. Defaults to false.In debug mode prints the HTTP request and response data  |
 
