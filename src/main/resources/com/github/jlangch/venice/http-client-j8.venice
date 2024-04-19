@@ -55,7 +55,7 @@
                                  `:java.io.InputStream` |
           | :conn-timeout      | An optional connection timeout in milliseconds |
           | :read-timeout      | An optional read timeout in milliseconds |
-          | :follow-redirects  | Sets whether HTTP redirects (requests with \
+          | :follow-redirects  | Sets wether HTTP redirects (requests with \
                                  response code 3xx) should be automatically \
                                  followed. |
           | :hostname-verifier | Sets the hostname verifier. An object of type \
@@ -64,7 +64,7 @@
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
                                  `:javax.net.ssl.SSLSocketFactory`. ¶\
                                  Use only for HTTPS requests |
-          | :use-caches         | A boolean indicating whether or not to allow \
+          | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
           | :debug              | Debug true/false. Defaults to false. ¶\
@@ -330,7 +330,7 @@
                                   "X-Header-2" "value1, value2, value3"} |
           | :conn-timeout      | An optional connection timeout in milliseconds |
           | :read-timeout      | An optional read timeout in milliseconds |
-          | :follow-redirects  | Sets whether HTTP redirects (requests with \
+          | :follow-redirects  | Sets wether HTTP redirects (requests with \
                                  response code 3xx) should be automatically \
                                  followed. |
           | :hostname-verifier | Sets the hostname verifier. An object of type \
@@ -339,7 +339,7 @@
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
                                  `:javax.net.ssl.SSLSocketFactory`. ¶\
                                  Use only for HTTPS requests |
-          | :use-caches         | A boolean indicating whether or not to allow \
+          | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
           | :debug              | Debug true/false. Defaults to false. ¶\
@@ -438,7 +438,7 @@
                                   "X-Header-2" "value1, value2, value3"} |
           | :conn-timeout      | An optional connection timeout in milliseconds |
           | :read-timeout      | An optional read timeout in milliseconds |
-          | :follow-redirects  | Sets whether HTTP redirects (requests with \
+          | :follow-redirects  | Sets wether HTTP redirects (requests with \
                                  response code 3xx) should be automatically \
                                  followed. |
           | :hostname-verifier | Sets the hostname verifier. An object of type \
@@ -447,7 +447,7 @@
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
                                  `:javax.net.ssl.SSLSocketFactory`. ¶\
                                  Use only for HTTPS requests |
-          | :use-caches         | A boolean indicating whether or not to allow \
+          | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
           | :debug              | Debug true/false. Defaults to false. ¶\
