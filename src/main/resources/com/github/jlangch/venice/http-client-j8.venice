@@ -79,7 +79,7 @@
           | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
           | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
           | :content-encoding  | The content transfer encoding (a keyword), if \
-                                 available else nil. E.g.: "gzip" |
+                                 available else nil. E.g.: `:gzip` or `:deflate` |
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
@@ -353,7 +353,7 @@
           | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
           | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
           | :content-encoding  | The content transfer encoding (a keyword), if \
-                                 available else nil. E.g.: "gzip" |
+                                 available else nil. E.g.: `:gzip` or `:deflate` |
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
@@ -461,7 +461,7 @@
           | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
           | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
           | :content-encoding  | The content transfer encoding (a keyword), if \
-                                 available else nil. E.g.: "gzip" |
+                                 available else nil. E.g.: `:gzip` or `:deflate` |
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
