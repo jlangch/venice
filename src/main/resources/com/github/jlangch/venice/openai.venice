@@ -78,12 +78,27 @@
      :doc """
           Runs a chat completion.
 
-          *Note: Function support is coming soon!*
-
           To run the request asynchronously just wrap it in a `future` and
           deref it, when the result is required.
 
-          ¶*Request Options:*
+          ¶*Parameter «prompt»*
+
+          A prompt is either a simple string like:
+
+          ```
+          "Who won the world series in 2020?"
+          ```
+
+          or a list of prompt messages:
+
+          ```
+          [ {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Who won the world series in 2020?"},
+            {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+            {"role": "user", "content": "Where was it played?"} ]
+          ```
+
+          ¶*Parameter request «options»*
 
           | [![width: 15%]]    | [![width: 85%]] |
           | :uri               | An OpenAI chat completion URI. E.g.: \
@@ -100,7 +115,9 @@
                                  to false. ¶\
                                  In debug mode prints the HTTP request and response data |
  
-          *Returns a map with the response data:*
+          ¶*Return value*
+
+          Returns a map with the response data:*
 
           | [![width: 15%]] | [![width: 85%]]                  |
           | :status         | The HTTP status (a long)         |
@@ -115,10 +132,11 @@
                               If the response' HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
                               formatted as plain or JSON string. |
-          Using prompt roles:
+
+          *Using prompt roles:*
 
           | [![width: 15%]] | [![width: 85%]]                  |
-          | *system*    | Allows you to specify the way the model answers questions. \
+          | *system*    | Allows to specify the way the model answers questions. \
                           Classic example: "You are a helpful assistant." |
           | *user*      | Equivalent to the queries made by the user. |
           | *assistant* | Assistent roles are the model’s responses, based on the user messages |
@@ -223,11 +241,35 @@
 
           Processes OpenAI server side events (SSE) and calls for every event the
           handler 'handler'.
-        
-          ¶The event handler is a three argument function:
-          
-          `(defn handler [delta accumulated status] ...)`
 
+
+          ¶*Parameter «prompt»*
+
+          A prompt is either a simple string like:
+
+          ```
+          "Who won the world series in 2020?"
+          ```
+
+          or a list of prompt messages:
+
+          ```
+          [ {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Who won the world series in 2020?"},
+            {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+            {"role": "user", "content": "Where was it played?"} ]
+          ```
+
+          ¶*Parameter «handler»*
+       
+          The event handler is a three argument function:
+          
+          ```
+          (defn handler [delta accumulated status] ...)
+          ```
+         
+          Handler arguments:
+          
           | *delta*       | the delta message sent with the event |
           | *accumulated* | the accumulated message|
           | *type*        | the notification type: ¶\
@@ -235,8 +277,8 @@
                             \u00A0\u00A0 `:data` - streamed event ¶\
                             \u00A0\u00A0 `:done` - streaming done by the server |
 
-          ¶*Request Options:*
-
+          ¶*Parameter request «options»*
+ 
           | [![width: 15%]]    | [![width: 85%]] |
           | :uri               | An OpenAI chat completion URI. E.g.: \
                                  "https://api.openai.com/v1/chat/completions". ¶\
@@ -260,7 +302,9 @@
                                  to false. ¶\
                                  In debug mode prints the HTTP request and response data |
  
-          *Returns a map with the response data:*
+          ¶*Return value*
+
+          Returns a map with the response data:
 
           | [![width: 15%]] | [![width: 85%]]                  |
           | :status         | The HTTP status (a long)         |
@@ -366,7 +410,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(chat-completion-function prompt & options)" )
+          "(chat-completion-function prompt functions & options)" )
      :doc """
           Runs a chat completion with functions
 

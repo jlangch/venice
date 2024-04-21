@@ -39,6 +39,24 @@ To run the request asynchronously just wrap it in a `future` and
 deref it, when the result is required.
 
 
+#### Parameter «prompt»
+
+A prompt is either a simple string like
+
+```
+"Who won the world series in 2020?"
+```
+
+or a list of prompt messages
+
+```
+[ {"role": "system", "content": "You are a helpful assistant."},
+  {"role": "user", "content": "Who won the world series in 2020?"},
+  {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+  {"role": "user", "content": "Where was it played?"} ]
+```
+
+
 #### Parameter «options»
 
 | Option             | Description |
@@ -48,6 +66,7 @@ deref it, when the result is required.
 | :prompt-opts       | An optional map of OpenAI chat request prompt options<br>E.g. {:temperature 0.2} <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
 | :openai-api-key    | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
 | :debug             | An optional debug flag (true/false). Defaults to false. <br>In debug mode prints the HTTP request and response data |
+ 
  
 #### Return value
 
@@ -60,6 +79,7 @@ deref it, when the result is required.
 | :headers   | A map of headers. key: header name, value: list of header values |
 | :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
 | :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
+
 
 #### Using prompt roles
 
@@ -177,6 +197,7 @@ Mimetype: application/json
 Message: She did not go to the market.
 ```
 
+
 ### Chat Completion Streaming
 
 Runs a chat completion in streaming mode. Upon initiating the request the OpenAI 
@@ -192,6 +213,23 @@ The OpenAI api key can be provided in an environment variable "OPENAI_API_KEY" o
 explicitly passed as an option `:openai-api-key "sk-xxxxxxxxxxxxx"`.
 
 
+
+#### Parameter «prompt»
+
+A prompt is either a simple string like
+
+```
+"Who won the world series in 2020?"
+```
+
+or a list of prompt message 
+
+```
+[ {"role": "system", "content": "You are a helpful assistant."},
+  {"role": "user", "content": "Who won the world series in 2020?"},
+  {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+  {"role": "user", "content": "Where was it played?"} ]
+```
 
 #### Parameter «options»
 
