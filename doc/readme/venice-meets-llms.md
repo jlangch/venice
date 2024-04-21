@@ -308,7 +308,7 @@ Completed.
 Status:   200
 Mimetype: text/event-stream
 Message: "1, 2, 3, 4, 5"
-``
+```
 
 #### Example 2
 
