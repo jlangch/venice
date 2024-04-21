@@ -64,6 +64,7 @@ deref it, when the result is required.
 See:
  * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
  * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
+ * [OpenAI API Messages](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)
  * [OpenAI API Examples](https://platform.openai.com/examples)
  * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
 
