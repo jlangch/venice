@@ -61,7 +61,7 @@ deref it, when the result is required.
 | :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
 | :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
-### Using prompt roles:
+#### Using prompt roles
 
 | Role       | Description |
 | :---       | :---        |
