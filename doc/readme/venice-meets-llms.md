@@ -61,6 +61,14 @@ deref it, when the result is required.
 | :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
 | :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
+### Using prompt roles:
+
+| Role       | Description |
+| :---       | :---        |
+| *system*    | Allows you to specify the way the model answers questions. <br>Classic example: "You are a helpful assistant." |
+| *user*      | Equivalent to the queries made by the user. |
+| *assistant* | Assistent roles are the model’s responses, based on the user messages |
+          
 See:
  * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
  * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
