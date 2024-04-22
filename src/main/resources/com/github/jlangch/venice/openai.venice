@@ -98,23 +98,61 @@
             {"role": "user", "content": "Where was it played?"} ]
           ```
 
+          Using prompt roles:
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | *system*    | Allows to specify the way the model answers questions. ¶\
+                          Classic example: "You are a helpful assistant." |
+          | *user*      | Equivalent to the queries made by the user. |
+          | *assistant* | Assistent roles are the model’s responses, based on the user messages. |
+
+
           ¶*Parameter request «options»*
 
-          | [![width: 15%]]    | [![width: 85%]] |
-          | :uri               | An OpenAI chat completion URI. E.g.: \
-                                 "https://api.openai.com/v1/chat/completions". ¶\
-                                 Defaults  to "https://api.openai.com/v1/chat/completions" |
-          | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
-                                 to "gpt-3.5-turbo" |
-          | :prompt-opts       | An optional map of OpenAI chat request prompt options ¶\
-                                 E.g. {:temperature 0.2} ¶\
-                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
-          | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
-                                 from the environment variable "OPENAI_API_KEY". |
-          | :debug             | An optional debug flag (true/false). Defaults \
-                                 to false. ¶\
-                                 In debug mode prints the HTTP request and response data |
- 
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/chat/completions". ¶\
+                                Defaults  to "https://api.openai.com/v1/chat/completions" |
+          | :model            | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
+                                to "gpt-3.5-turbo" |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :prompt-opts      | An optional map of OpenAI chat request prompt options ¶\
+                                E.g. {:temperature 0.2} ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+          | :tools            | a list of tools. e.g.: function definitions (see OpenAI api for details) |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          Tools options for passing a function:
+
+          ```
+          [ 
+            { :type "function" 
+              :function {
+                  :name "get_current_weather"
+                  :description "Get the current weather"
+                  :parameters {
+                      :type "object"
+                      :properties {
+                          :location {
+                              :type "string"
+                              :description "The city and state, e.g. San Francisco, CA"
+                          }
+                          :format {
+                              :type "string"
+                              :enum ["celsius", "fahrenheit"]
+                              :description "The temperature unit to use. Infer this from the users location."
+                          }
+                      }
+                      :required ["location", "format"]
+                  } 
+              } 
+            }
+          ]
+          ```
+
           ¶*Return value*
 
           Returns a map with the response data:*
@@ -132,20 +170,13 @@
                               If the response' HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
                               formatted as plain or JSON string. |
-
-          *Using prompt roles:*
-
-          | [![width: 15%]] | [![width: 85%]]                  |
-          | *system*    | Allows to specify the way the model answers questions. \
-                          Classic example: "You are a helpful assistant." |
-          | *user*      | Equivalent to the queries made by the user. |
-          | *assistant* | Assistent roles are the model’s responses, based on the user messages |
           
           ¶
           See:
           * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
           * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
           * [OpenAI API Messages](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)
+          * [OpenAI API Functions](https://platform.openai.com/docs/guides/function-calling)
           * [OpenAI API Examples](https://platform.openai.com/examples)
           * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
           """ 
@@ -216,7 +247,9 @@
         model          (:model opts default-model)
         openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
         _              (validate-openai-api-key openai-api-key)
-        body           (build-prompt model prompt (:prompt-opts opts) nil {:stream false})
+        tools          (:tools opts)
+        _              (validate-tools tools)
+        body           (build-prompt model prompt (:prompt-opts opts) tools {:stream false})
         debug?         (:debug opts false)
         _              (when debug? (dump-prompt body))
         response       (hc/send :post 
@@ -269,7 +302,7 @@
           ```
          
           Handler arguments:
-          
+
           | *delta*       | the delta message sent with the event |
           | *accumulated* | the accumulated message|
           | *type*        | the notification type: ¶\
@@ -279,28 +312,28 @@
 
           ¶*Parameter request «options»*
  
-          | [![width: 15%]]    | [![width: 85%]] |
-          | :uri               | An OpenAI chat completion URI. E.g.: \
-                                 "https://api.openai.com/v1/chat/completions". ¶\
-                                 Defaults  to "https://api.openai.com/v1/chat/completions" |
-          | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
-                                 to "gpt-3.5-turbo" |
-          | :sync              | if *true* runs the request syncronously and waits \
-                                 until the full message response is available. ¶\
-                                 if *false* runs the request asyncronously and \
-                                 returns immediately with the response :data \
-                                 field holding a `future` that can be deref'd  \
-                                 (with an optional timeout) to get the full \
-                                 message. ¶\
-                                 Defaults to *true* |
-          | :prompt-opts       | An optional map of OpenAI chat request prompt options ¶\
-                                 E.g. {:temperature 0.2} ¶\
-                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
-          | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
-                                 from the environment variable "OPENAI_API_KEY". |
-          | :debug             | An optional debug flag (true/false). Defaults \
-                                 to false. ¶\
-                                 In debug mode prints the HTTP request and response data |
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/chat/completions". ¶\
+                                Defaults  to "https://api.openai.com/v1/chat/completions" |
+          | :model            | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
+                                to "gpt-3.5-turbo" |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :sync             | if *true* runs the request syncronously and waits \
+                                until the full message response is available. ¶\
+                                if *false* runs the request asyncronously and \
+                                returns immediately with the response :data \
+                                field holding a `future` that can be deref'd  \
+                                (with an optional timeout) to get the full \
+                                message. ¶\
+                                Defaults to *true* |
+          | :prompt-opts      | An optional map of OpenAI chat request prompt options ¶\
+                                E.g. {:temperature 0.2} ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
  
           ¶*Return value*
 
@@ -344,7 +377,7 @@
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming prompt handler)]
+                  response  (openai/chat-completion-streaming prompt handler :sync true)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -406,106 +439,6 @@
       (let [fr (openai/process-streaming-events response handler)]
         (assoc result :data (if sync? @fr fr)))
       (assoc result :data (hc/slurp-response response :json-parse-mode :pretty-print)))))
-
-
-(defn 
-  ^{ :arglists '(
-          "(chat-completion-function prompt functions & options)" )
-     :doc """
-          Runs a chat completion with functions
-
-          ¶*Request Options:*
-
-          | [![width: 15%]]    | [![width: 85%]] |
-          | :uri               | An OpenAI chat completion URI. E.g.: \
-                                 "https://api.openai.com/v1/chat/completions". ¶\
-                                 Defaults  to "https://api.openai.com/v1/chat/completions" |
-          | :model             | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
-                                 to "gpt-3.5-turbo" |
-          | :prompt-opts       | An optional map of OpenAI chat request prompt options ¶\
-                                 E.g. {:temperature 0.2} ¶\
-                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
-          | :openai-api-key    | An optional OpenAI API Key. As default the key is read \
-                                 from the environment variable "OPENAI_API_KEY". |
-          | :debug             | An optional debug flag (true/false). Defaults \
-                                 to false. ¶\
-                                 In debug mode prints the HTTP request and response data |
- 
-          *Returns a map with the response data:*
-
-          | [![width: 15%]] | [![width: 85%]]                  |
-          | :status         | The HTTP status (a long)         |
-          | :mimetype       | The content type's mimetype      |
-          | :headers        | A map of headers. key: header name, value: list \
-                              of header values |
-          | :message        | The final chat completion message if the OpenAI \
-                              server returned the HTTP status `HTTP_OK`, else `nil` |
-          | :data           | If the response' HTTP status is `HTTP_OK` \
-                              the data fields contains the chat completion \
-                              message. ¶\
-                              If the response' HTTP status is not `HTTP_OK` \
-                              the data fields contains an error message \
-                              formatted as plain or JSON string. |
-
-          ¶
-          See:
-          * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)¶
-          * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
-          * [OpenAI API Messages](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)
-          * [OpenAI API Examples](https://platform.openai.com/examples)
-          * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
-          """ 
-     :examples '(
-          """
-          ;; https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models
-          (do
-            (load-module :openai)
-
-            (let [prompt   [ { :role     "system"
-                               :content  "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous." }
-                             { :role     "user"
-                               :content  "What's the weather like today" } ]
-                  response  (openai/chat-completion-functions 
-                                    prompt 
-                                    :model "gpt-3.5-turbo" 
-                                    :prompt-opts prompt-opts)]
-              (println "Status:  " (:status response))
-              (println "Mimetype:" (:mimetype response))
-              (if (=  (:status response) 200)
-                (println "Message:" (-> (:data response)
-                                        (openai/extract-response-message-content)
-                                        (openai/pretty-print-json)))
-                (println "Error:"   (:data response)))))
-          """ )
-     :see-also '( 
-          "openai/chat-completion-streaming"
-          "openai/extract-response-message-content"
-          "openai/pretty-print-json" ) }
-
-  chat-completion-function [prompt functions & options]
-
-  (let [opts           (apply hash-map options)
-        _              (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
-        uri            (:uri opts "https://api.openai.com/v1/chat/completions")
-        model          (:model opts default-model)
-        openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
-        _              (validate-openai-api-key openai-api-key)
-        tools-opts     (build-tools-functions functions)
-        body           (build-prompt model prompt (:prompt-opts opts) tools-opts {:stream false})
-        debug?         (:debug opts false)
-        _              (when debug? (dump-prompt body))
-        response       (hc/send :post 
-                         uri
-                         :headers { "Content-Type" "application/json"
-                                    "Authorization" (str "Bearer " openai-api-key)}
-                         :body (json/write-str body)
-                         :debug  debug?)
-        result         { :status   (:http-status response)
-                         :mimetype (:content-type-mimetype response)
-                         :headers  (:headers response) } ]
-   (assoc result :data   (hc/slurp-response response 
-                                            :json-parse-mode :data 
-                                            :json-key-fn keyword))))
 
 
 
@@ -655,16 +588,17 @@
   (system-env "OPENAI_API_KEY"))
 
 
-(defn- build-prompt [model prompt prompt-opts tools-opts overrule-opts]
+(defn- build-prompt [model prompt prompt-opts tools overrule-opts]
   (let [p (cond 
             (nil? prompt)        {}
             (string? prompt)     {:messages [{:role "user" :content prompt}]}
             (sequential? prompt) {:messages prompt}
             (map? prompt)        prompt
-            :else                {} )]
+            :else                {} )
+        t (if (nil? tools) {} {:tools tools})]
     (merge {:model (or model default-model)} 
            p 
-           (or tools-opts {})
+           t
            (or prompt-opts {})
            (or overrule-opts {}))))
 
@@ -673,14 +607,6 @@
   (println "\nPrompt:")
   (println (json/pretty-print (json/write-str prompt))))
 
-
-(defn- build-tools-functions [functions]
-  (cond
-    (nil? functions)        {}
-    (map? functions)        { :tools [ functions ] } 
-    (sequential? functions) (if (empty? functions) {} { :tools functions } )
-    :else                   (throw (ex :VncException 
-                                       "Functions: required either a map or list of maps"))))
 
 (defn- demo-functions []
   [ 
@@ -738,3 +664,22 @@
                "OPENAI_API_KEY" or pass the key as an option \
                `:openai-api-key "sk-xxxxxxxxxxxxx"`.
                """))))
+
+
+(defn- validate-tools [tools]
+  (when (some? tools)
+    (when-not (sequential? tools)
+      (throw (ex :VncException 
+                  """
+                  OpenAI Tools options must be `nil` or a sequence of maps!
+
+                  E.g.:
+
+                  [ { :type "function" 
+                      :function {
+                          :name "get_current_weather"
+                          :description "Get the current weather"
+                          :parameters { ... }
+                      } } ]
+
+                 """)))))
