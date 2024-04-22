@@ -106,7 +106,7 @@ See:
   (load-module :openai)
 
   (let [prompt    (str "Count to 10, with a comma between each number "
-                        "and no newlines. E.g., 1, 2, 3, ...")
+                       "and no newlines. E.g., 1, 2, 3, ...")
         response  (openai/chat-completion prompt)]
     (println "Status:  " (:status response))
     (println "Mimetype:" (:mimetype response))
@@ -149,7 +149,7 @@ Message: {
   (load-module :openai)
 
   (let [prompt    (str "Count to 10, with a comma between each number "
-                        "and no newlines. E.g., 1, 2, 3, ...")
+                       "and no newlines. E.g., 1, 2, 3, ...")
         response  (openai/chat-completion prompt)]
     (println "Status:  " (:status response))
     (println "Mimetype:" (:mimetype response))
