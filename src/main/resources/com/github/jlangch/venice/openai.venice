@@ -177,6 +177,7 @@
           * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/chat/create)
           * [OpenAI API Messages](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)
           * [OpenAI API Functions](https://platform.openai.com/docs/guides/function-calling)
+          * [OpenAI API Functions Cookbook](https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models)
           * [OpenAI API Examples](https://platform.openai.com/examples)
           * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
           """ 
@@ -241,29 +242,29 @@
 
   chat-completion [prompt & options]
 
-  (let [opts           (apply hash-map options)
-        _              (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
-        uri            (:uri opts "https://api.openai.com/v1/chat/completions")
-        model          (:model opts default-model)
-        openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
-        _              (validate-openai-api-key openai-api-key)
-        tools          (:tools opts)
-        _              (validate-tools tools)
-        body           (build-prompt model prompt (:prompt-opts opts) tools {:stream false})
-        debug?         (:debug opts false)
-        _              (when debug? (dump-prompt body))
-        response       (hc/send :post 
-                         uri
-                         :headers { "Content-Type" "application/json"
-                                    "Authorization" (str "Bearer " openai-api-key)}
-                         :body (json/write-str body)
-                         :debug  debug?)
-        result         { :status   (:http-status response)
-                         :mimetype (:content-type-mimetype response)
-                         :headers  (:headers response) } ]
-   (assoc result :data   (hc/slurp-response response 
-                                            :json-parse-mode :data 
-                                            :json-key-fn keyword))))
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             (:uri opts "https://api.openai.com/v1/chat/completions")
+        model           (:model opts default-model)
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        tools           (:tools opts)
+        _               (validate-tools tools)
+        body            (build-prompt model prompt (:prompt-opts opts) tools {:stream false})
+        debug?          (:debug opts false)
+        _               (when debug? (dump-prompt body))
+        response        (hc/send :post 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body (json/write-str body)
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+   (assoc result :data  (hc/slurp-response response 
+                                           :json-parse-mode :data 
+                                           :json-key-fn keyword))))
 
 
 (defn 
@@ -414,25 +415,25 @@
 
   (assert (fn? handler))
 
-  (let [opts           (apply hash-map options)
-        _              (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
-        uri            (:uri opts "https://api.openai.com/v1/chat/completions")
-        model          (:model opts default-model)
-        openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
-        _              (validate-openai-api-key openai-api-key)
-        sync?          (:sync opts true)
-        body           (build-prompt model prompt (:prompt-opts opts) nil {:stream true})
-        debug?         (:debug opts false)
-        _              (when debug? (dump-prompt body))
-        response       (hc/send :post 
-                         uri
-                         :headers { "Content-Type" "application/json"
-                                    "Authorization" (str "Bearer " openai-api-key)}
-                         :body (json/write-str body)
-                         :debug debug?)
-        result         { :status   (:http-status response)
-                         :mimetype (:content-type-mimetype response)
-                         :headers  (:headers response) } ]
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             (:uri opts "https://api.openai.com/v1/chat/completions")
+        model           (:model opts default-model)
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        sync?           (:sync opts true)
+        body            (build-prompt model prompt (:prompt-opts opts) nil {:stream true})
+        debug?          (:debug opts false)
+        _               (when debug? (dump-prompt body))
+        response        (hc/send :post 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body (json/write-str body)
+                          :debug debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
     (if (and (= "text/event-stream" (:content-type-mimetype response))
              (= (:http-status response) 200))
      

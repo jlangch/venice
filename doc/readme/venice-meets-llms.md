@@ -1,6 +1,7 @@
 # Venice meets LLMs
 
 * [OpenAI Client](#openai-client)
+* [OpenAI Functions Cookbook](#openai-functions-cookbook)
 * [LangChain4J](#langchain4j)
 * [Qdrant Vector DB](#qdrant-vector-db)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
@@ -360,7 +361,14 @@ Message: "1, 2, 3, 4, 5"
 ```
 
 
-## LangChain4J]
+## OpenAI Functions Cookbook
+
+The example is adapted from the [OpenAI API Functions Cookbook](https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models)
+
+
+
+
+## LangChain4J
 
 
 *coming soon...*
