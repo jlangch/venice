@@ -3,6 +3,7 @@
 * [OpenAI Client](#openai-client)
 * [LangChain4J](#langchain4j)
 * [Qdrant Vector DB](#qdrant-vector-db)
+* [Configuring OpenAI API keys](#configuring-openai-api-keys)
 
 
 
@@ -56,6 +57,14 @@ or a list of prompt messages
   {"role": "user", "content": "Where was it played?"} ]
 ```
 
+Using prompt roles:
+
+| Role       | Description |
+| :---       | :---        |
+| *system*    | Allows you to specify the way the model answers questions. <br>Classic example: "You are a helpful assistant." |
+| *user*      | Equivalent to the queries made by the user. |
+| *assistant* | Assistent roles are the model’s responses, based on the user messages |
+
 
 #### Parameter «options»
 
@@ -80,14 +89,6 @@ or a list of prompt messages
 | :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
 | :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
-
-#### Using prompt roles
-
-| Role       | Description |
-| :---       | :---        |
-| *system*    | Allows you to specify the way the model answers questions. <br>Classic example: "You are a helpful assistant." |
-| *user*      | Equivalent to the queries made by the user. |
-| *assistant* | Assistent roles are the model’s responses, based on the user messages |
           
 See:
  * [OpenAI Chat Completions API](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
@@ -405,5 +406,45 @@ Parameters:
    
   ;; Stop the Qdrant container labeled as "qdrant"
   (qdrant/stop "qdrant"))
+```
+
+
+## Configuring OpenAI API keys
+
+### Possibility 1
+
+Define an environment variable at the OS or Shell level:
+
+```
+OPENAI_API_KEY=sk-***********
+```
+
+
+### Possibility 2
+
+On Unix / Linux operating system simply patch the 'repl.env' file in the REPL home
+directory. 
+
+`repl.env` is supported with *Venice* V1.12.15 and newer when the REPL has been setup
+with:
+
+```
+foo>  java -jar venice-1.12.15.jar -setup -colors
+```
+
+The setup will create a `repl.sh` that *sources* a `repl.env` at REPL startup time.
+
+
+
+```
+# ------------------------------------------------------------------------------
+# Environment variables for unix /linux operating systems
+#
+# This file will be 'sourced' by 'repl.sh' at REPL startup time. You can add
+# as many environment variables you like.
+# ------------------------------------------------------------------------------
+
+# OpenAI api key
+export OPENAI_API_KEY=sk-***********
 ```
 
