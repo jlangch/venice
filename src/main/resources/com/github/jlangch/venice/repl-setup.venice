@@ -133,6 +133,12 @@
 
 
 (defn- setup-repl-launcher-unix [color-mode]
+  (when-not (io/exists-file? "repl.env")
+    (println "Setting up 'repl.env'...")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.unix.env")
+         (bytebuf-to-string <> :utf-8)
+         (repl-setup/cr-lf <>)
+         (io/spit "repl.env" <> :encoding (charset-default-encoding))))
   (when-not (io/exists-file? "repl.sh")
     (println "Setting up 'repl.sh'...")
     (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
