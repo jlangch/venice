@@ -21,8 +21,11 @@
 
 ;;;; H2 database
 ;;;;
-;;;; See: https://www.h2database.com/html/main.html
-;;;; See: https://www.h2database.com/javadoc/
+;;;; See: 
+;;;; https://www.h2database.com/html/main.html
+;;;; http://www.h2database.com/html/cheatSheet.html
+;;;; https://www.h2database.com/javadoc/
+;;;; https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
 
 
 (ns h2)
@@ -135,8 +138,10 @@
                             opts)]
     (create-connection url user (or password ""))))
 
+
 (defn create-connection-filesystem [dir db-name user password options]
   (let [port (db-server-port)
+        dir  (str/strip-end dir "/")
         opts (-> (str/trim-to-empty options)
                  (str/strip-start ";")
                  (str/trim-to-nil))
@@ -155,7 +160,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Simple JDBC helpers
+;; Simple JDBC helpers (Venice does not have a JDBC yet)
 ;; -----------------------------------------------------------------------------
 
 (defn create-statement [conn]
@@ -250,9 +255,5 @@
     (. server :start)
     (println "Started H2 web console.")
     server))
-
-
-
-;; https://stackoverflow.com/questions/7309359/view-content-of-h2-or-hsqldb-in-memory-database
 
 
