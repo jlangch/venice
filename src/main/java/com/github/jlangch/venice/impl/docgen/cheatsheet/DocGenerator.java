@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGeoipSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleWrapperSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleH2Section;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientJ8Section;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleImagesSection;
@@ -145,7 +146,7 @@ public class DocGenerator {
                         "zipvault",     "gradlew",             "matrix",           "ascii-table",
                         "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "installer",    "mimetypes",           "multipart",        "images",
-                        "tomcat",       "jetty",
+                        "tomcat",       "jetty",               "h2",
                         "http-client",  "http-client-j8",      "openai",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",    "server-side-events",  "jtokkit"));
@@ -370,6 +371,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
+        extmod.addSection(new DocSection("H2\u00A0DB", "modules.h2"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
@@ -517,6 +519,7 @@ public class DocGenerator {
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
+                new ModuleH2Section(diBuilder).section(),
                 // new ModuleHttpClientSection(diBuilder).section(),
                 new ModuleImagesSection(diBuilder).section());
     }

@@ -1,0 +1,93 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; H2 database
+;;;;
+;;;; See: https://www.h2database.com/html/main.html
+;;;; See: https://www.h2database.com/javadoc/
+
+
+(ns h2)
+
+
+(import :org.h2.tools.Server)
+(import :org.h2.tools.RunScript)
+
+;; https://stackoverflow.com/questions/7309359/view-content-of-h2-or-hsqldb-in-memory-database
+(defn create []
+  (. :Server :createTcpServer))
+
+
+(defn start [server]
+  (when server (. server :start)))
+
+
+(defn stop [server]
+  (when server (. server :stop)))
+
+(defn running? [server]
+  (and (some? server) (. server :isRunning false)))
+
+
+(defn status [server]
+  (if (nil? server) "NO SERVER" (. server :getStatus)))
+
+
+(defn start-web-console [server]
+  Server.createWebServer("-trace").start();
+  (open (. server :getURL)))
+
+
+(defn run-sql [sql]
+  )
+
+
+;; start server on localhost port 9092.
+;; server = Server.createTcpServer().start();
+
+;; org.h2.tools.Server tcp = org.h2.tools.Server.createTcpServer("-tcpPort", "9999", …);
+;; tcp.start();
+;;
+;; ....
+;; 
+;; tcp.stop();
+
+
+;; establish a DB connection on the following JDBC URL:
+;; jdbc:h2:tcp://localhost:9092/mem:test;DB_CLOSE_DELAY=-1;MODE=MySQL
+
+;; org.h2.tools.Console
+;; This will start a web server with an app on 8082, launch a browser on localhost:8082
+
+
+;; run script
+;;
+;; You can use the RUNSCRIPT SQL statement:
+;; RUNSCRIPT FROM 'test.sql'
+;;
+;; or you can use the RunScript standalone / command line tool:
+;;
+;; java -cp h2*.jar org.h2.tools.RunScript -url jdbc:h2:~/test -script test.sql
+;;
+;; You can also use the RunScript tool within an application:
+;;
+;; RunScript.execute(conn, new FileReader("test.sql"));
+
