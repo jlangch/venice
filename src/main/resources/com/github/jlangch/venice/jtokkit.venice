@@ -1,0 +1,185 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; JTokkit: Wraps the Java JTokkit library
+;;;;
+;;;; See: hhttps://jtokkit.knuddels.de/
+;;;; See: https://github.com/knuddelsgmbh/jtokkit/
+
+
+(ns jtokkit)
+
+(import :com.knuddels.jtokkit.Encodings)
+(import :com.knuddels.jtokkit.api.EncodingRegistry)
+(import :com.knuddels.jtokkit.api.Encoding)
+(import :com.knuddels.jtokkit.api.EncodingType)
+(import :com.knuddels.jtokkit.api.ModelType)
+
+
+
+(defonce ^:private encoding-type-map
+  (delay (->> (. :EncodingType :values)
+              (reduce (fn [m v] (assoc m (keyword (name v)) v)) {}))))
+
+
+(defonce ^:private model-type-map
+  (delay (->> (. :ModelType :values)
+              (reduce (fn [m v] (assoc m (keyword (name v)) v)) {}))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(encoding type)")
+     :doc """
+          Returns the encoding with the given encoding or model type
+          returns `nil`
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            ;; for a list of encoding types see `(jtokkit/encoding-types)`
+            (jt/encoding :CL100K_BASE))
+          """,
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            ;; for a list of model types see `(jtokkit/model-types)`
+            (jt/encoding :GPT_3_5_TURBO))
+          """ )
+     :see-also '( 
+          "jtokkit/encode"
+          "jtokkit/encoding-types"
+          "jtokkit/model-types"
+          "jtokkit/count-tokens" ) }
+ 
+  encoding [type]
+
+  (assert (keyword? type))
+
+  (let [e (. :Encodings :newDefaultEncodingRegistry)]
+    (if-let [t (get (deref encoding-type-map) type)]
+      (. e :getEncoding t)
+      (if-let [m (get (deref model-type-map) type)]
+        (. e :getEncodingForModel m)
+        nil))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(encoding-types)")
+     :doc """
+          Returns the defined encoding types. Actually from the enum type
+          :com.knuddels.jtokkit.api.EncodingType.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            (jt/encoding-types))
+          """ )
+     :see-also '( 
+          "jtokkit/encode"
+          "jtokkit/model-types" ) }
+
+  encoding-types []
+
+  (sort (keys (deref encoding-type-map))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(model-types)")
+     :doc """
+          Returns the defined model types. Actually from the enum type
+          :com.knuddels.jtokkit.api.ModelType.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            (jt/model-types))
+          """ )
+     :see-also '( 
+          "jtokkit/encode"
+          "jtokkit/encoding-types" ) }
+
+
+  model-types []
+
+  (sort (keys (deref model-type-map))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(encode encoding text)")
+     :doc """
+          Encodes the given text into a list of token ids.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            (-> (jt/encoding :GPT_3_5_TURBO)
+                (jt/encode "hello world")))
+          """ )
+     :see-also '( 
+          "jtokkit/encoding" 
+          "jtokkit/encoding-types"
+          "jtokkit/model-types" 
+          "jtokkit/count-tokens") }
+
+  encode [encoding text]
+
+  (assert (instance-of? :Encoding encoding))
+  (assert (string? text))
+
+  (-> (. encoding :encode text)
+      (. :toArray)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(count-tokens encoding text)" )
+     :doc """
+          Encodes the given text into a list of token ids and returns the 
+          number of tokens.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            (-> (jt/encoding :GPT_3_5_TURBO)
+                (jt/count-tokens "hello world")))
+          """ )
+     :see-also '( 
+          "jtokkit/encoding" 
+          "jtokkit/encoding-types"
+          "jtokkit/model-types"
+          "jtokkit/encode" ) }
+
+  count-tokens [encoding text]
+
+  (assert (instance-of? :Encoding encoding))
+  (assert (string? text))
+
+  (. encoding :countTokens text))
+

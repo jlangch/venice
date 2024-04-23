@@ -20,32 +20,30 @@
 ;;;; limitations under the License.
 
 
-;;;; Install LangChain4J 3rd party libraries:
+;;;; Install JTokkit 3rd party libraries:
 ;;;;
-;;;;   (load-module :langchain-install)
-;;;;   (langchain-install/install :dir (repl/libs-dir) :silent false)
+;;;;   (load-module : jtokkit-install)
+;;;;   (jtokkit-install/install :dir (repl/libs-dir) :silent false)
 ;;;;
 ;;;; Note: This not a package manager. The module provides functions to
 ;;;;       download Java libraries to a directory. 
 
 
-(ns langchain-install)
+(ns jtokkit-install)
 
 (load-module :installer)
 
 
+
 (defn libraries []
-  [ "dev.langchain4j:langchain4j:0.28.0" 
-    "dev.langchain4j:langchain4j-open-ai:0.28.0"
-    "dev.langchain4j:langchain4j-hugging-face:0.28.0"
-    "dev.langchain4j:langchain4j-qdrant:0.28.0" ]  )
+  [ "com.knuddels:jtokkit:1.0.0" ] )
 
 
 (defn
   ^{ :arglists '("(install options*)")
      :doc
        """
-       Install the Java 3rd party libraries for the BouncyCastle module.
+       Install the Java 3rd party libraries for the JTokkit module.
 
        Options:
 
@@ -56,8 +54,8 @@
      :examples '(
        """
        (do
-         (load-module :langchain-install)
-         (langchain-install/install :dir (repl/libs-dir) :silent false))
+         (load-module :jtokkit-install)
+         (jtokkit-install/install :dir (repl/libs-dir) :silent false))
        """) }
 
   install [ & options]

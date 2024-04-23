@@ -59,6 +59,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSec
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientJ8Section;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleImagesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJTokkitSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
@@ -147,7 +148,7 @@ public class DocGenerator {
                         "tomcat",       "jetty",
                         "http-client",  "http-client-j8",      "openai",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
-                        "ring-util",    "server-side-events" ));
+                        "ring-util",    "server-side-events",  "jtokkit"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -402,6 +403,7 @@ public class DocGenerator {
 
         final DocSection llm = new DocSection("LLM", "llm");
         llm.addSection(new DocSection("OpenAI", "modules.openai"));
+        llm.addSection(new DocSection("JTokkit", "modules.jtokkit"));
         content.add(llm);
 
         final DocSection docker = new DocSection("Docker", "docker");
@@ -542,6 +544,7 @@ public class DocGenerator {
                 new ModuleSseSection(diBuilder).section(),
                 new ModuleHttpClientJ8Section(diBuilder).section(),
                 new ModuleOpenAiSection(diBuilder).section(),
+                new ModuleJTokkitSection(diBuilder).section(),
                 new ModuleInstallerSection(diBuilder).section());
     }
 
