@@ -28,66 +28,231 @@
 (ns h2)
 
 
+(import :java.sql.DriverManager)
+(import :java.sql.Statement)
+
 (import :org.h2.tools.Server)
 (import :org.h2.tools.RunScript)
 
+
+
+
+(defonce ^:private web-server (atom nil))
+(defonce ^:private db-server (atom nil))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Lifecycle
+;; -----------------------------------------------------------------------------
+
+(defn start-db-server []
+  (swap! db-server (fn [s] (if (nil? s) (start-db-server* 9092) s)))
+  nil)
+
+
+(defn start-web-console []
+  (swap! web-server (fn [s] (if (nil? s) (start-web-console* 8082) s)))
+  nil)
+
+
+(defn db-server-running? []
+  (if-let [server @db-server]
+    (. server :isRunning false)
+    false))
+
+
+(defn web-console-running? []
+  (if-let [server @web-server]
+    (. server :isRunning false)
+    false))
+
+
+(defn db-server-status []
+  (if-let [server @db-server]
+    (. server :getStatus)
+    "NO SERVER"))
+
+
+(defn web-console-status []
+  (if-let [server @web-server]
+    (. server :getStatus)
+    "NO SERVER"))
+
+
+(defn stop-db-server []
+  (when-let [server @db-server]
+    (println "Stopping H2 DB server...")
+    (. server :stop)
+    nil))
+
+
+(defn stop-web-console []
+  (when-let [server @web-server]
+    (println "Stopping H2 web console...")
+    (. server :stop)
+    nil))
+
+
+(defn web-console-url []
+  (if-let [server @web-server]
+    (. server :getURL)
+    nil))
+
+
+(defn db-server-port []
+  (if-let [server @db-server]
+    (. server :getPort)
+    nil))
+
+
+(defn web-console-port []
+  (if-let [server @web-server]
+    (. server :getPort)
+    nil))
+
+
+(defn shutdown []
+  (stop-db-server)
+  (top-web-console))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Connections
+;; -----------------------------------------------------------------------------
+
+(defn create-connection-memory [db-name user password options]
+  ;; Options:  DB_CLOSE_DELAY=-1
+  (let [port (db-server-port)
+        opts (-> (str/trim-to-empty options)
+                 (str/strip-start ";")
+                 (str/trim-to-nil))
+        opts (if (nil? opts) "" (str ";" opts))
+        url  (str/format "jdbc:h2:tcp://localhost:%s/mem:%s%s"
+                            port
+                            db-name
+                            opts)]
+    (create-connection url user (or password ""))))
+
+(defn create-connection-filesystem [dir db-name user password options]
+  (let [port (db-server-port)
+        opts (-> (str/trim-to-empty options)
+                 (str/strip-start ";")
+                 (str/trim-to-nil))
+        opts (if (nil? opts) "" (str ";" opts))
+        url  (str/format "jdbc:h2:tcp://localhost:%s/%s/%s%s"
+                            port
+                            dir
+                            db-name
+                            opts)]
+    (create-connection url user (or password ""))))
+
+
+(defn create-connection [url user password] 
+    (. :DriverManager :getConnection url user (or password "")))
+ 
+
+
+;; -----------------------------------------------------------------------------
+;; Simple JDBC helpers
+;; -----------------------------------------------------------------------------
+
+(defn create-statement [conn]
+   (. conn :createStatement))
+
+
+(defn execute [stmt sql]
+  (. stmt :execute sql))
+
+
+(defn execute-query [stmt sql]
+  (let [rs         (. stmt :executeQuery sql)
+        meta-data  (. rs :getMetaData)
+        col-count  (. meta-data :getColumnCount)]
+    (loop [rs rs, rows []]
+      (if (. rs :next)
+        (recur rs (conj rows (row-names rs col-count)))
+        { :names row-names, :rows rows}))))
+ 
+
+(defn execute-update [stmt sql]
+  (. stmt :execute sql))
+
+
+(defn row-names [rs]
+  (let [rs         (. stmt :executeQuery sql)
+        meta-data  (. rs :getMetaData)
+        col-count  (. meta-data :getColumnCount)]
+  (loop [names [], col 0]
+    (if (< count col-count)
+      (let [name (. meta-data :getColumnName col)]
+        (recur (conj names name) (inc col)))
+        names))))
+
+
+(defn row-values [rs col-count]
+  (loop [row [], col 0]
+    (if (< count col-count)
+      (let [val (map-value (. rs :getObject col))]  
+        (recur (conj row val) (inc col)))
+        row)))
+
+
+(defn- map-value [val]
+  (cond 
+     (sql-date? val)  (. val :toLocalDateTime)
+     :else            val))
+
+
+(defn- sql-date? [val]
+  (instance-of? :java.sql.Date val))
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Test
+;; -----------------------------------------------------------------------------
+
+(defn test []
+  (try [conn (create-connection-memory "test" "sa" "" "DB_CLOSE_DELAY=-1")
+        stmt (create-statement conn)]
+    (println "Opened database connection.")
+    (execute stmt "CREATE TABLE IF NOT EXISTS TEST(ID INT PRIMARY KEY, NAME VARCHAR(255))")
+    (execute stmt "INSERT INTO TEST VALUES(1, 'Hello')")
+    (println "Data inserted.")))
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Utils
+;; -----------------------------------------------------------------------------
+
+(defn- start-db-server* [port]
+  (println "Starting H2 DB server...")
+  (let [server (. :Server :createTcpServer [ "-tcp" 
+                                             "-tcpAllowOthers"
+                                             "-tcpPort"
+                                             (str port) ])]
+    (. server :start)
+    (println "Started H2 DB server.")
+    server))
+
+
+(defn- start-web-console* [port]
+  (println "Starting H2 web console...")
+  (let [server (. :Server :createWebServer [ "-web" 
+                                             "-webAllowOthers" 
+                                             "-webPort"
+                                             (str port) ])]
+    (. server :start)
+    (println "Started H2 web console.")
+    server))
+
+
+
 ;; https://stackoverflow.com/questions/7309359/view-content-of-h2-or-hsqldb-in-memory-database
-(defn create []
-  (. :Server :createTcpServer))
 
-
-(defn start [server]
-  (when server (. server :start)))
-
-
-(defn stop [server]
-  (when server (. server :stop)))
-
-(defn running? [server]
-  (and (some? server) (. server :isRunning false)))
-
-
-(defn status [server]
-  (if (nil? server) "NO SERVER" (. server :getStatus)))
-
-
-(defn start-web-console [server]
-  Server.createWebServer("-trace").start();
-  (open (. server :getURL)))
-
-
-(defn run-sql [sql]
-  )
-
-
-;; start server on localhost port 9092.
-;; server = Server.createTcpServer().start();
-
-;; org.h2.tools.Server tcp = org.h2.tools.Server.createTcpServer("-tcpPort", "9999", …);
-;; tcp.start();
-;;
-;; ....
-;; 
-;; tcp.stop();
-
-
-;; establish a DB connection on the following JDBC URL:
-;; jdbc:h2:tcp://localhost:9092/mem:test;DB_CLOSE_DELAY=-1;MODE=MySQL
-
-;; org.h2.tools.Console
-;; This will start a web server with an app on 8082, launch a browser on localhost:8082
-
-
-;; run script
-;;
-;; You can use the RUNSCRIPT SQL statement:
-;; RUNSCRIPT FROM 'test.sql'
-;;
-;; or you can use the RunScript standalone / command line tool:
-;;
-;; java -cp h2*.jar org.h2.tools.RunScript -url jdbc:h2:~/test -script test.sql
-;;
-;; You can also use the RunScript tool within an application:
-;;
-;; RunScript.execute(conn, new FileReader("test.sql"));
 
