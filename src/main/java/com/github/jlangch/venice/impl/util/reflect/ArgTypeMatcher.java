@@ -43,7 +43,12 @@ public class ArgTypeMatcher {
 
                 if (ReflectionTypes.isEnumType(paramType)) {
                     if (arg != null) {
-                        if (arg instanceof String) {
+                    	if (arg.getClass().isEnum()) {
+                    		if (paramType.getClass().isAssignableFrom(arg.getClass())) {
+                    			return true;
+                    		}
+                    	}
+                    	else if (arg instanceof String) {
                             final ScopedEnumValue scopedEnum = new ScopedEnumValue((String)arg);
                             if (scopedEnum.isScoped()) {
                                 if (!scopedEnum.isCompatible(paramType)) {
