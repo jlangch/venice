@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - :openai module with chat completion support (incubation status).
   The openai module runs out-of-the-box with Venice, it does not
   require any 3rd party libraries.
+- :jtokkit module, providing the Java JTokkit functionality to Venice
 
 
 
