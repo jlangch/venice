@@ -69,9 +69,9 @@
             * If the container already runs - use it
             * If the container is available but does not run - start it `(docker/start ...)`
             * If the container is not available - run it `(docker/run ...)`
-            * Finally check for a successful startup. The container log must
-              contain the string ".*PostgreSQL init process complete.*" on the
-              last few line.
+            * Finally check for a successful startup. The container error log must
+              contain the string ".*database system is ready to accept connections.*" on the
+              last few lines.
 
           Args:
 
@@ -88,7 +88,7 @@
      :examples '(
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
+            (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
            
             ;; Run a PostgreSQL container labeled as "postgres"
             (pg/start "postgres" "16.2" "./postgres-storage"))
@@ -157,10 +157,10 @@
      :examples '(
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
+            (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
            
-            ;; Stop the PostgreSQL container labeled as "postgresql"
-            (pg/stop "postgresql"))
+            ;; Stop the PostgreSQL container labeled as "postgres"
+            (pg/stop "postgres"))
           """)
      :see-also '(
           "cargo-postgresql/start" 
@@ -190,7 +190,7 @@
           """
           ;; Test if PostgreSQL container is running
           (do
-            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
+            (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
             (pg/running? "postgres"))
           """)
      :see-also '(    
@@ -220,13 +220,13 @@
      :examples '(
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
-            (pg/logs "postgresql"))
+            (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
+            (pg/logs "postgres"))
           """,
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
-            (pg/logs "postgresql" 100))
+            (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
+            (pg/logs "postgres" 100))
           """)
      :see-also '(
           "cargo-postgresql/start" 
@@ -240,8 +240,8 @@
   ([cname lines]
     { :pre [(string? cname)  (or (nil? lines) (long? lines))] }
     (if (nil? lines)
-      (println (docker/container-logs cname))
-      (println (docker/container-logs cname :tail lines)))))
+      (println (docker/container-logs cname :stream :err))
+      (println (docker/container-logs cname :tail lines :stream :err)))))
 
 
 
@@ -254,10 +254,13 @@
 
 
 (defn postgres-ready? [cname]
-  (->> (docker/container-logs cname :tail 10)
+  ;; for whatever reasons the postgres docker 'logs' command returns the log
+  ;; entries on stdout and stderr stream, with the important information in 
+  ;; stderr!!
+  (->> (docker/container-logs cname :tail 6 :stream :err)
        (str/split-lines)
        (map str/trim)
-       (filter #(match? % #".*PostgreSQL init process complete; ready for start up.*"))
+       (filter #(match? % #".*database system is ready to accept connections.*"))
        (count)
        (pos?)))
  
