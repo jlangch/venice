@@ -20,7 +20,7 @@
 ;;;; limitations under the License.
 
 ;;;; JDBC Utilities
-;;;;
+
 ;;;; See: 
 ;;;; https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
 
@@ -50,14 +50,14 @@
         
           Arguments:
 
-          | [![width: 15%]] | [![width: 85%]] |
-          | user        | A mandatory ser name |
-          | password    | A mandatory password |
-          | host        | An optional host. Defaults to "localhost" |
-          | port        | An optional port. Defaults to 5432 |
-          | database    | A mandatory database name |
-          | properties  | Optional properties (a map). ¶\
-                          E.g.: { "ssl" "true", "options" "-c statement_timeout=90000" } |
+          | [![width: 20%]] | [![width: 80%]] |
+          | *user*        | A mandatory ser name |
+          | *password*    | A mandatory password |
+          | *host*        | An optional host. Defaults to "localhost" |
+          | *port*        | An optional port. Defaults to 5432 |
+          | *database*    | A mandatory database name |
+          | *properties*  | Optional properties (a map). ¶\
+                            E.g.: { "ssl" "true", "options" "-c statement_timeout=90000" } |
           """
      :examples '(
           """
