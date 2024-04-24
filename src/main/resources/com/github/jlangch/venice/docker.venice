@@ -911,14 +911,14 @@
           | :timestamps {true, false} | Show timestamps |
           | :follow {true, false} | Follow log output |
           | :details {true, false} | Show extra details provided to logs |
-          | :stream {:out, :err} | Return the :out or :err stream from the logs. Defaults to :out |
+          | :stream {:out, :err, :out+err} | Return the :out and/or :err stream from the logs. Defaults to :out |
           """
      :examples '(
           """
           (docker/logs "74789744g489")
           """,
           """
-          (docker/logs "74789744g489" :tail 100)
+          (docker/logs "74789744g489" :tail 100 :timestamps true :stream :out+err)
           """,
           """
           (docker/logs "74789744g489" :since "60m" :until "30m")
@@ -933,7 +933,7 @@
                         :follow     [:optional #{true, false}]
                         :details    [:optional #{true, false}]
                         :timestamps [:optional #{true, false}]
-                        :stream     [:optional #{:out, :err}] } } }
+                        :stream     [:optional #{:out, :err, :out+err}] } } }
 
   logs [container & options]
 
@@ -956,9 +956,19 @@
         cmdargs*   (if details (conj cmdargs* "--details") cmdargs*)
         cmdargs*   (if timestamps (conj cmdargs* "--timestamps") cmdargs*)
         cmdargs*   (into cmdargs* [container])]
-    (if (= stream :err)
-      (:err (apply docker/cmd cmdargs*))
-      (:out (apply docker/cmd cmdargs*)))))
+    (let [result (apply docker/cmd cmdargs*)]
+      (case stream
+        :out      (:out result)
+        :err      (:err result)
+        :out+err  (let [out+err (str (:out result) "\n" (:err result))]
+                    (if timestamps 
+                      (->> (str/split-lines out+err)
+                           (filter #(some? (str/trim-to-nil %)))
+                           (sort)
+                           (str/join "\n"))
+                      out+err))
+        (:out result)))))
+
 
 
 ;; -----------------------------------------------------------------------------

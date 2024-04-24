@@ -240,8 +240,8 @@
   ([cname lines]
     { :pre [(string? cname)  (or (nil? lines) (long? lines))] }
     (if (nil? lines)
-      (println (docker/container-logs cname :stream :err))
-      (println (docker/container-logs cname :tail lines :stream :err)))))
+      (println (docker/container-logs cname :timestamps true :stream :out+err))
+      (println (docker/container-logs cname :tail lines :timestamps true :stream :out+err)))))
 
 
 
@@ -257,7 +257,7 @@
   ;; for whatever reasons the postgres docker 'logs' command returns the log
   ;; entries on stdout and stderr stream, with the important information in 
   ;; stderr!!
-  (->> (docker/container-logs cname :tail 6 :stream :err)
+  (->> (docker/container-logs cname :tail 6 :timestamps true  :stream :both)
        (str/split-lines)
        (map str/trim)
        (filter #(match? % #".*database system is ready to accept connections.*"))
