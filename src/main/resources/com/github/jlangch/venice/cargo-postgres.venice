@@ -64,20 +64,20 @@
             * If the container is available but does not run - start it `(docker/start ...)`
             * If the container is not available - run it `(docker/run ...)`
             * Finally check for a successful startup. The container log must
-              contain the string ".*is ready for business. Have fun.*" on the
-              last line.
+              contain the string ".*PostgreSQL init process complete.*" on the
+              last few line.
 
           Args:
 
           | [![width: 20%]]  | [![width: 80%]] |
           | cname            | A unique container name |
           | version          | The PostgreSQL version to use. E.g.: "16.2", "16" |
-          | mapped-port      | The published (mapped) port on the host. \
+          | mapped-port      | The published (mapped) port on the host. Defaults to 5432 |
           | storage-dir      | Directory where PostgreSQL persists all the data. |
           | user             | A user. Defaults to "postgres" |
           | password         | A password. Defaults to "postgres" |
           | log              | A log function, may be *nil*. \
-                               E.g: `(fn [s] (println "Qdrant:" s))`|
+                               E.g: `(fn [s] (println "PostgresSQL:" s))`|
           """
      :examples '(
           """
@@ -185,7 +185,7 @@
           ;; Test if PostgreSQL container is running
           (do
             (load-module :cargo-postgres ['cargo-postgres :as 'pg])
-            (pg/running? "qdrant"))
+            (pg/running? "postgres"))
           """)
      :see-also '(    
           "cargo-postgres/logs"
