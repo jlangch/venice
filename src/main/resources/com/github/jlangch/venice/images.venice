@@ -298,7 +298,7 @@
     (case mode
       :horizontal (do (. tx :translate width 0)
                       (. tx :scale -1.0 1.0)
-                     (transform img tx width height))
+                      (transform img tx width height))
 
       :vertical   (do (. tx :translate 0 height)
                       (. tx :scale 1.0 -1.0)
