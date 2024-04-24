@@ -24,6 +24,11 @@
 ;;;; See: hhttps://jtokkit.knuddels.de/
 ;;;; See: https://github.com/knuddelsgmbh/jtokkit/
 
+;;;; Install JTokkit 3rd party libraries:
+;;;;
+;;;;   (load-module :jtokkit-install)
+;;;;   (jtokkit-install/install :dir (repl/libs-dir) :silent false)
+
 
 (ns jtokkit)
 
