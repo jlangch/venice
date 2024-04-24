@@ -1,0 +1,132 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; JDBC Utilities
+;;;;
+;;;; See: 
+;;;; https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
+
+
+(ns jdbc-utils)
+
+
+(import :java.sql.DriverManager)
+(import :java.sql.Statement)
+
+
+
+;; -----------------------------------------------------------------------------
+;; Connections
+;; -----------------------------------------------------------------------------
+
+(defn create-connection 
+  ([url user password] 
+    (. :DriverManager :getConnection url user (or password "")))
+
+  ([dir db-name user password options]
+    (let [port (db-server-port)
+          dir  (str/strip-end dir "/")
+          opts (-> (str/trim-to-empty options)
+                  (str/strip-start ";")
+                  (str/trim-to-nil))
+          opts (if (nil? opts) "" (str ";" opts))
+          url  (str/format "jdbc:h2:tcp://localhost:%s/%s/%s%s"
+                              port
+                              dir
+                              db-name
+                              opts)]
+      (. :DriverManager :getConnection  url user (or password "")))))
+ 
+
+
+
+;; -----------------------------------------------------------------------------
+;; Simple JDBC helpers (Venice does not have a JDBC yet)
+;; -----------------------------------------------------------------------------
+
+(defn create-statement [conn]
+   (. conn :createStatement))
+
+
+(defn execute [stmt sql]
+  (. stmt :execute sql))
+
+
+(defn execute-query [stmt sql]
+  (let [rs         (. stmt :executeQuery sql)
+        meta-data  (. rs :getMetaData)
+        col-count  (. meta-data :getColumnCount)]
+    (loop [rs rs, rows []]
+      (if (. rs :next)
+        (recur rs (conj rows (row-names rs col-count)))
+        { :names row-names, :rows rows}))))
+ 
+
+(defn execute-update [stmt sql]
+  (. stmt :execute sql))
+
+
+(defn row-names [rs]
+  (let [rs         (. stmt :executeQuery sql)
+        meta-data  (. rs :getMetaData)
+        col-count  (. meta-data :getColumnCount)]
+  (loop [names [], col 0]
+    (if (< count col-count)
+      (let [name (. meta-data :getColumnName col)]
+        (recur (conj names name) (inc col)))
+        names))))
+
+
+(defn row-values [rs col-count]
+  (loop [row [], col 0]
+    (if (< count col-count)
+      (let [val (map-value (. rs :getObject col))]  
+        (recur (conj row val) (inc col)))
+        row)))
+
+
+(defn- map-value [val]
+  (cond 
+     (sql-date? val)  (. val :toLocalDateTime)
+     :else            val))
+
+
+(defn- sql-date? [val]
+  (instance-of? :java.sql.Date val))
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Test
+;; -----------------------------------------------------------------------------
+
+(defn test []
+  (let [url "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"]
+    (println "Testing: " url)
+    (try-with [conn (create-connection url "sa" "")
+              stmt (create-statement conn)]
+      (println "Opened database connection.")
+      (execute stmt "CREATE TABLE IF NOT EXISTS TEST(ID INT PRIMARY KEY, NAME VARCHAR(255))")
+      (execute stmt "INSERT INTO TEST VALUES(1, 'Hello')")
+      (println "Data inserted."))))
+
+

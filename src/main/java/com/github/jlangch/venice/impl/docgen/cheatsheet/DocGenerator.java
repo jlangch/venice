@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArangoDBSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoPostgresqlDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoQdrantDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleComponentSection;
@@ -55,7 +56,6 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGeoipSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleWrapperSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleH2Section;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientJ8Section;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleImagesSection;
@@ -146,7 +146,7 @@ public class DocGenerator {
                         "zipvault",     "gradlew",             "matrix",           "ascii-table",
                         "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "installer",    "mimetypes",           "multipart",        "images",
-                        "tomcat",       "jetty",               "h2",
+                        "tomcat",       "jetty",               "cargo-postgres",
                         "http-client",  "http-client-j8",      "openai",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",    "server-side-events",  "jtokkit"));
@@ -371,7 +371,6 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
-        extmod.addSection(new DocSection("H2\u00A0DB", "modules.h2"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
@@ -413,6 +412,7 @@ public class DocGenerator {
         docker.addSection(new DocSection("Cargo", "modules.cargo"));
         docker.addSection(new DocSection("Cargo/ArangoDB", "modules.cargo-arangodb"));
         docker.addSection(new DocSection("Cargo/Qdrant", "modules.cargo-qdrant"));
+        docker.addSection(new DocSection("Cargo/PostgreSQL", "modules.cargo-postgres"));
         content.add(docker);
 
         final DocSection license = new DocSection("License", "license");
@@ -515,11 +515,11 @@ public class DocGenerator {
                 new ModuleCargoSection(diBuilder).section(),
                 new ModuleCargoArangoDBSection(diBuilder).section(),
                 new ModuleCargoQdrantDBSection(diBuilder).section(),
+                new ModuleCargoPostgresqlDBSection(diBuilder).section(),
                 new ModuleTomcatSection(diBuilder).section(),
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
-                new ModuleH2Section(diBuilder).section(),
                 // new ModuleHttpClientSection(diBuilder).section(),
                 new ModuleImagesSection(diBuilder).section());
     }

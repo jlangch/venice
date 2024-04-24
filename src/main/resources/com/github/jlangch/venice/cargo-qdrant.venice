@@ -69,14 +69,14 @@
             * If the container is available but does not run - start it `(docker/start ...)`
             * If the container is not available - run it `(docker/run ...)`
             * Finally check for a successful startup. The container log must
-              contain the string ".*is ready for business. Have fun.*" on the
+              contain the string ".*Qdrant HTTP listening on.*" on the
               last line.
 
           Args:
 
           | [![width: 20%]]  | [![width: 80%]] |
           | cname            | A unique container name |
-          | version          | The Qdrant version to use. E.g.: 1.8.3 |
+          | version          | The Qdrant version to use. E.g.: "1.8.3" |
           | mapped-rest-port | The published (mapped) Qdrant REST port on the \
                                host. Defaults to 6333 |
           | mapped-grpc-port | The published (mapped) Qdrant GRPC port on the \

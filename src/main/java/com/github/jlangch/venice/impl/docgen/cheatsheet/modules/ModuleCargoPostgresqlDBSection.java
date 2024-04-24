@@ -26,29 +26,28 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleH2Section implements ISectionBuilder {
+public class ModuleCargoPostgresqlDBSection implements ISectionBuilder {
 
-    public ModuleH2Section(final DocItemBuilder diBuilder) {
+    public ModuleCargoPostgresqlDBSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
-        final String footer = "Install H2 3rd party libraries:\n\n" +
-                "```                                             \n" +
-                "(do                                             \n" +
-                "  (load-module :h2-install)                     \n" +
-                "  (h2-install/install :dir (repl/libs-dir)      \n" +
-                "                           :silent false))     \n" +
-                "```\n";
+        final DocSection section = new DocSection(
+                                        "PostgreSQL DB",
+                                        "PostgreSQL Testcontainers",
+                                        "modules.cargo-postgres");
 
-        final DocSection section = new DocSection("H2", "H2 database", "modules.h2", null, footer);
-
-        final DocSection all = new DocSection("(load-module :h2)", id());
+        final DocSection all = new DocSection("(load-module :cargo-postgres)", id());
         section.addSection(all);
 
-        final DocSection db = new DocSection("DB", id());
-        all.addSection(db);
+        final DocSection docker = new DocSection("Lifecycle", id());
+        all.addSection(docker);
+        docker.addItem(diBuilder.getDocItem("cargo-postgres/start", false));
+        docker.addItem(diBuilder.getDocItem("cargo-postgres/stop", false));
+        docker.addItem(diBuilder.getDocItem("cargo-postgres/running?", false));
+        docker.addItem(diBuilder.getDocItem("cargo-postgres/logs", false));
 
         return section;
     }
