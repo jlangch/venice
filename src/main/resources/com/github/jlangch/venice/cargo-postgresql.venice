@@ -32,7 +32,7 @@
 ;;;; - https://www.pgadmin.org/
 ;;;; - https://www.dbvis.com/
 
-(ns cargo-postgres)
+(ns cargo-postgresql)
 
 (load-module :docker)
 (load-module :cargo)
@@ -54,10 +54,10 @@
 
 (defn
   ^{ :arglists '(
-          "(cargo-postgres/start cname version storage-dir)"
-          "(cargo-postgres/start cname version storage-dir user password)"
-          "(cargo-postgres/start cname version storage-dir user password log)"
-          "(cargo-postgres/start cname version mapped-port storage-dir user password log)")
+          "(cargo-postgresql/start cname version storage-dir)"
+          "(cargo-postgresql/start cname version storage-dir user password)"
+          "(cargo-postgresql/start cname version storage-dir user password log)"
+          "(cargo-postgresql/start cname version mapped-port storage-dir user password log)")
      :doc """
           Starts a PostgreSQL container. 
           
@@ -88,15 +88,15 @@
      :examples '(
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgres :as 'pg])
+            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
            
             ;; Run a PostgreSQL container labeled as "postgres"
             (pg/start "postgres" "16.2" "./postgres-storage"))
           """)
      :see-also '(
-          "cargo-postgres/stop"
-          "cargo-postgres/running?"
-          "cargo-postgres/logs") }
+          "cargo-postgresql/stop"
+          "cargo-postgresql/running?"
+          "cargo-postgresql/logs") }
 
   start 
 
@@ -145,8 +145,8 @@
 
 (defn
   ^{ :arglists '(
-          "(cargo-postgres/stop cname)"
-          "(cargo-postgres/stop cname log)")
+          "(cargo-postgresql/stop cname)"
+          "(cargo-postgresql/stop cname log)")
      :doc """
           Stops a PostgreSQL container
 
@@ -157,14 +157,14 @@
      :examples '(
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgres :as 'pg])
+            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
            
             ;; Stop the PostgreSQL container labeled as "postgresql"
             (pg/stop "postgresql"))
           """)
      :see-also '(
-          "cargo-postgres/start" 
-          "cargo-postgres/running?") }
+          "cargo-postgresql/start" 
+          "cargo-postgresql/running?") }
 
   stop 
   
@@ -178,7 +178,7 @@
 
 
 (defn
-  ^{ :arglists '("(cargo-postgres/running? cname)")
+  ^{ :arglists '("(cargo-postgresql/running? cname)")
      :doc """
           Returns true if a container with the specified name is running.
 
@@ -190,13 +190,13 @@
           """
           ;; Test if PostgreSQL container is running
           (do
-            (load-module :cargo-postgres ['cargo-postgres :as 'pg])
+            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
             (pg/running? "postgres"))
           """)
      :see-also '(    
-          "cargo-postgres/logs"
-          "cargo-postgres/start", 
-          "cargo-postgres/stop") }
+          "cargo-postgresql/logs"
+          "cargo-postgresql/start", 
+          "cargo-postgresql/stop") }
 
   running? [cname]
 
@@ -207,8 +207,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(cargo-postgres/logs cname)"
-          "(cargo-postgres/logs cname lines)")
+          "(cargo-postgresql/logs cname)"
+          "(cargo-postgresql/logs cname lines)")
      :doc """
           Prints the PostgreSQL docker container logs
 
@@ -220,17 +220,17 @@
      :examples '(
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgres :as 'pg])
+            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
             (pg/logs "postgresql"))
           """,
           """
           (do
-            (load-module :cargo-postgres ['cargo-postgres :as 'pg])
+            (load-module :cargo-postgres ['cargo-postgresql :as 'pg])
             (pg/logs "postgresql" 100))
           """)
      :see-also '(
-          "cargo-postgres/start" 
-          "cargo-postgres/running?") }
+          "cargo-postgresql/start" 
+          "cargo-postgresql/running?") }
 
   logs 
 

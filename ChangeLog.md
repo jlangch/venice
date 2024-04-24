@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
   The openai module runs out-of-the-box with Venice, it does not
   require any 3rd party libraries.
 - :jtokkit module, providing the Java JTokkit functionality to Venice
+- `:cargo-postgresql` module to install/start/stop PostgreSQL DB docker 
+  containers 
+- `:cargo-postgresql` module to install/start/stop PostgreSQL DB docker 
+  containers 
 
 
 

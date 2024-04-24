@@ -147,7 +147,7 @@ public class DocGenerator {
                         "zipvault",     "gradlew",             "matrix",           "ascii-table",
                         "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "installer",    "mimetypes",           "multipart",        "images",
-                        "tomcat",       "jetty",               "cargo-postgres",
+                        "tomcat",       "jetty",               "cargo-postgresql",
                         "http-client",  "http-client-j8",      "openai",           "jdbc-utils",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",    "server-side-events",  "jtokkit"));
@@ -414,7 +414,7 @@ public class DocGenerator {
         docker.addSection(new DocSection("Cargo", "modules.cargo"));
         docker.addSection(new DocSection("Cargo/ArangoDB", "modules.cargo-arangodb"));
         docker.addSection(new DocSection("Cargo/Qdrant", "modules.cargo-qdrant"));
-        docker.addSection(new DocSection("Cargo/PostgreSQL", "modules.cargo-postgres"));
+        docker.addSection(new DocSection("Cargo/PostgreSQL", "modules.cargo-postgresql"));
         content.add(docker);
 
         final DocSection license = new DocSection("License", "license");

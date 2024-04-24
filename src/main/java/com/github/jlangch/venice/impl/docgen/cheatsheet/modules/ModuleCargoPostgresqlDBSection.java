@@ -37,17 +37,17 @@ public class ModuleCargoPostgresqlDBSection implements ISectionBuilder {
         final DocSection section = new DocSection(
                                         "PostgreSQL DB",
                                         "PostgreSQL Testcontainers",
-                                        "modules.cargo-postgres");
+                                        "modules.cargo-postgresql");
 
-        final DocSection all = new DocSection("(load-module :cargo-postgres)", id());
+        final DocSection all = new DocSection("(load-module :cargo-postgresql)", id());
         section.addSection(all);
 
         final DocSection docker = new DocSection("Lifecycle", id());
         all.addSection(docker);
-        docker.addItem(diBuilder.getDocItem("cargo-postgres/start", false));
-        docker.addItem(diBuilder.getDocItem("cargo-postgres/stop", false));
-        docker.addItem(diBuilder.getDocItem("cargo-postgres/running?", false));
-        docker.addItem(diBuilder.getDocItem("cargo-postgres/logs", false));
+        docker.addItem(diBuilder.getDocItem("cargo-postgresql/start", false));
+        docker.addItem(diBuilder.getDocItem("cargo-postgresql/stop", false));
+        docker.addItem(diBuilder.getDocItem("cargo-postgresql/running?", false));
+        docker.addItem(diBuilder.getDocItem("cargo-postgresql/logs", false));
 
         return section;
     }

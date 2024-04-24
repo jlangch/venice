@@ -22,14 +22,14 @@
 
 ;;;; Install PostgreSQL JDBC driver:
 ;;;;
-;;;;   (load-module :postgres-jdbc-install)
-;;;;   (postgres-jdbc-install/install :dir (repl/libs-dir) :silent false)
+;;;;   (load-module :postgresql-jdbc-install)
+;;;;   (postgresql-jdbc-install/install :dir (repl/libs-dir) :silent false)
 ;;;;
 ;;;; Note: This not a package manager. The module provides functions to
 ;;;;       download Java libraries to a directory. 
 
 
-(ns postgres-jdbc-install)
+(ns postgresql-jdbc-install)
 
 (load-module :installer)
 
@@ -53,8 +53,8 @@
      :examples '(
        """
        (do
-         (load-module :postgres-jdbc-install)
-         (postgres-jdbc-install/install :dir (repl/libs-dir) :silent false))
+         (load-module :postgresql-jdbc-install)
+         (postgresql-jdbc-install/install :dir (repl/libs-dir) :silent false))
        """) }
 
   install [ & options]
@@ -72,8 +72,8 @@
      :examples '(
        """
        (do
-         (load-module :postgres-jdbc-install)
-         (postgres-jdbc-install/installed?))
+         (load-module :postgresql-jdbc-install)
+         (postgresql-jdbc-install/installed?))
        """) }
 
   installed? []
