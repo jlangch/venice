@@ -20,7 +20,7 @@
 ;;;; limitations under the License.
 
 
-;;;; Install PostgreSQL JDBC library:
+;;;; Install PostgreSQL JDBC driver:
 ;;;;
 ;;;;   (load-module :postgres-jdbc-install)
 ;;;;   (postgres-jdbc-install/install :dir (repl/libs-dir) :silent false)
@@ -42,7 +42,7 @@
   ^{ :arglists '("(install options*)")
      :doc
        """
-       Install the PostgreSQL JDBC libraries.
+       Install the PostgreSQL JDBC driver.
 
        Options:
 
@@ -60,3 +60,22 @@
   install [ & options]
 
   (apply installer/install-libs (libraries) options))
+
+
+(defn 
+  ^{ :arglists '("(installed?)")
+     :doc
+       """
+       Returns true if the PostgreSQL JDBC driver is on the classpath else
+       false.
+       """
+     :examples '(
+       """
+       (do
+         (load-module :postgres-jdbc-install)
+         (postgres-jdbc-install/installed?))
+       """) }
+
+  installed? []
+
+  (exists-class? :org.postgresql.PGConnection))
