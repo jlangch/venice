@@ -146,7 +146,7 @@
  
 
 (defn execute-update [stmt sql]
-  (. stmt :execute sql))
+  (. stmt :executeUpdate sql))
 
 
 (defn row-names [rs]
