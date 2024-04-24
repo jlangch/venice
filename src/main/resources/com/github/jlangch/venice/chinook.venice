@@ -34,12 +34,22 @@
 
 
 (defn download-postgresql-data []
-  (io/download data-postgresql :binary false :encoding :utf-8))
+  (-> (io/download chinook/data-postgresql :binary false :encoding :utf-8)
+      ;; split the file in two parts
+      (str/split ".c chinook_auto_increment;.*")))
 
 
 (defn load-data-to-postgresql [host port user password]
-  (let [sql (download-postgresql-data)]
-    (try-with [conn (ju/create-postgresql-connection host port user password)
-               st   (. conn :createStatement)
-               rs   (. st :execute sql)]
+  (let [[sql1 sql2] (download-postgresql-data)]
+    (try-with [conn (ju/create-postgresql-connection host port user password)]
+      (execute-sql-postgresql sql1)
+      (println "Created new PostgreSQL database")
+      (execute-sql-postgresql sql2)
       (println "Data loaded into PostgreSQL."))))
+
+
+(defn execute-sql-postgresql [conn sql]
+  (try-with [st  (. conn :createStatement)
+             rs  (. st :execute sql)]))
+
+
