@@ -24,7 +24,13 @@
 ;;;; This is just a configuration wrapper on top of the :cargo module to
 ;;;; simplify using PostgreSQL testcontainers
 
-;;;; See: https://hub.docker.com/_/postgres
+;;;; See: 
+;;;; https://www.postgresql.org/
+;;;; https://hub.docker.com/_/postgres
+
+;;;; DB Clients:
+;;;; - https://www.pgadmin.org/
+;;;; - https://www.dbvis.com/
 
 (ns cargo-postgres)
 

@@ -53,6 +53,7 @@ public class Modules {
                         "jtokkit-install",
                         "langchain-install",
                         "pdf-install",
+                        "postgres-jdbc-install",
                         "qrbill-install",
                         "tomcat-install",
                         "xchart-install",
