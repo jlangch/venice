@@ -257,7 +257,7 @@
   ;; for whatever reasons the postgres docker 'logs' command returns the log
   ;; entries on stdout and stderr stream, with the important information in 
   ;; stderr!!
-  (->> (docker/container-logs cname :tail 6 :timestamps true  :stream :both)
+  (->> (docker/container-logs cname :tail 6 :timestamps true  :stream :out+err)
        (str/split-lines)
        (map str/trim)
        (filter #(match? % #".*database system is ready to accept connections.*"))
