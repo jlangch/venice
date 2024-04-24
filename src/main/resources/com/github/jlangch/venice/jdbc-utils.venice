@@ -31,29 +31,87 @@
 (import :java.sql.DriverManager)
 (import :java.sql.Statement)
 
+(import :java.util.Properties)
+
 
 
 ;; -----------------------------------------------------------------------------
-;; Connections
+;; PostgreSQL connections
 ;; -----------------------------------------------------------------------------
 
-(defn create-connection 
-  ([url user password] 
-    (. :DriverManager :getConnection url user (or password "")))
+(defn 
+  ^{ :arglists '(
+          "(jdbc-utils/create-postgresql-connection user password)"
+          "(jdbc-utils/create-postgresql-connection host port user password)"
+          "(jdbc-utils/create-postgresql-connection host port database user password)"
+          "(jdbc-utils/create-postgresql-connection host port database user password properties)" )
+     :doc """
+          Creates a PostgreSQL connection. 
+        
+          Arguments:
 
-  ([dir db-name user password options]
-    (let [port (db-server-port)
-          dir  (str/strip-end dir "/")
-          opts (-> (str/trim-to-empty options)
-                  (str/strip-start ";")
-                  (str/trim-to-nil))
-          opts (if (nil? opts) "" (str ";" opts))
-          url  (str/format "jdbc:h2:tcp://localhost:%s/%s/%s%s"
-                              port
-                              dir
-                              db-name
-                              opts)]
-      (. :DriverManager :getConnection  url user (or password "")))))
+          | [![width: 15%]] | [![width: 85%]] |
+          | user        | A mandatory ser name |
+          | password    | A mandatory password |
+          | host        | An optional host. Defaults to "localhost" |
+          | port        | An optional port. Defaults to 5432 |
+          | database    | A mandatory database name |
+          | properties  | Optional properties (a map). ¶\
+                          E.g.: { "ssl" "true", "options" "-c statement_timeout=90000" } |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-utils ['jdbc-utils :as 'ju])
+           
+            (try-with [conn (ju/create-postgresql-connection "pg" "pg" "test")
+                       st   (. conn :createStatement)
+                       rs   (. st :executeQuery "SELECT * FROM mytable WHERE columnfoo = 500")]
+              (loop []
+                (when (. rs :next) (println (. rs :getString 1))))))
+          """) }
+
+  create-postgresql-connection 
+
+  ([user password]
+    (assert (string? user))
+    (assert (string? password))
+    (let [url "jdbc:postgresql:/"]
+      (. :DriverManager :getConnection url user (or password ""))))
+
+  ([host port user password]
+    (assert (string? host))
+    (assert (or (int? port) (long? port)))
+    (assert (string? user))
+    (assert (string? password))
+    (let [url "jdbc:postgresql://~{host}:~(long port)/"]
+      (. :DriverManager :getConnection url user (or password ""))))
+
+  ([host port database user password]
+    (assert (string? host))
+    (assert (or (int? port) (long? port)))
+    (assert (string? database))
+    (assert (string? user))
+    (assert (string? password))
+    (let [url "jdbc:postgresql://~{host}:~(long port)/~{database}"]
+      (. :DriverManager :getConnection url user (or password ""))))
+
+  ([host port database user password properties]
+    (assert (string? host))
+    (assert (or (int? port) (long? port)))
+    (assert (string? database))
+    (assert (string? user))
+    (assert (string? password))
+    (assert (map? properties))
+    (assert (every? string? (keys properties)))
+    (assert (every? string? (vals properties)))
+    (let [url "jdbc:postgresql://~{host}:~(long port)/~{database}"
+          props  (. :Properties :new)]
+      (. props :setProperty "user" user)
+      (. props :setProperty "password" (or password ""))
+      (doseq [[n v] (seq properties)] (. props :setProperty n v))
+      (. :DriverManager :getConnection url props))))
+
  
 
 
