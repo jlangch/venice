@@ -105,14 +105,17 @@
     (assert (map? properties))
     (assert (every? string? (keys properties)))
     (assert (every? string? (vals properties)))
-    (let [url "jdbc:postgresql://~{host}:~(long port)/~{database}"
-          props  (. :Properties :new)]
-      (. props :setProperty "user" user)
-      (. props :setProperty "password" (or password ""))
-      (doseq [[n v] (seq properties)] (. props :setProperty n v))
+    (let [url   "jdbc:postgresql://~{host}:~(long port)/~{database}"
+          props (to-java-properties user password properties)]
       (. :DriverManager :getConnection url props))))
 
  
+(defn- to-java-properties [user password properties]
+  (let [props  (. :Properties :new)]
+    (. props :setProperty "user" user)
+    (. props :setProperty "password" (or password ""))
+    (doseq [[n v] (seq properties)] (. props :setProperty n v))))
+
 
 
 
