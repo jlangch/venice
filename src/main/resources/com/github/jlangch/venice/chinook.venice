@@ -27,5 +27,19 @@
 
 (ns chinook)
 
+(load-module :jdbc-utils ['jdbc-utils :as 'ju])
+
 
 (defonce data-postgresql "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql")
+
+
+(defn download-postgresql-data []
+  (io/download data-postgresql :binary false :encoding :utf-8))
+
+
+(defn load-data-to-postgresql [host port user password]
+  (let [sql (download-postgresql-data)]
+    (try-with [conn (ju/create-postgresql-connection host port user password)
+               st   (. conn :createStatement)
+               rs   (. st :execute sql)]
+      (println "Data loaded into PostgreSQL."))))

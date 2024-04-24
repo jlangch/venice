@@ -35,9 +35,13 @@
 
 
 
+
 ;; -----------------------------------------------------------------------------
 ;; PostgreSQL connections
 ;; -----------------------------------------------------------------------------
+
+(defonce postgresql-default-host "localhost")
+(defonce postgresql-default-port 5432)
 
 (defn 
   ^{ :arglists '(
@@ -120,7 +124,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Simple JDBC helpers (Venice does not have a JDBC yet)
+;; Simple JDBC helpers (Venice does not have a JDBC abstraction yet)
 ;; -----------------------------------------------------------------------------
 
 (defn create-statement [conn]
@@ -149,16 +153,16 @@
   (let [rs         (. stmt :executeQuery sql)
         meta-data  (. rs :getMetaData)
         col-count  (. meta-data :getColumnCount)]
-  (loop [names [], col 0]
-    (if (< count col-count)
+  (loop [names [], col 1]
+    (if (<= count col-count)
       (let [name (. meta-data :getColumnName col)]
         (recur (conj names name) (inc col)))
         names))))
 
 
 (defn row-values [rs col-count]
-  (loop [row [], col 0]
-    (if (< count col-count)
+  (loop [row [], col 1]
+    (if (<= count col-count)
       (let [val (map-value (. rs :getObject col))]  
         (recur (conj row val) (inc col)))
         row)))
@@ -166,28 +170,19 @@
 
 (defn- map-value [val]
   (cond 
-     (sql-date? val)  (. val :toLocalDateTime)
-     :else            val))
+    (sql-date? val)  (convert-sql-date-to-local-date-time val)
+    :else            val))
 
 
 (defn- sql-date? [val]
   (instance-of? :java.sql.Date val))
 
 
+(defn- convert-sql-date-to-local-date-time [d]
+  (if (nil? d) nil (time/local-date-time d)))
 
 
-;; -----------------------------------------------------------------------------
-;; Test
-;; -----------------------------------------------------------------------------
-
-(defn test []
-  (let [url "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"]
-    (println "Testing: " url)
-    (try-with [conn (create-connection url "sa" "")
-              stmt (create-statement conn)]
-      (println "Opened database connection.")
-      (execute stmt "CREATE TABLE IF NOT EXISTS TEST(ID INT PRIMARY KEY, NAME VARCHAR(255))")
-      (execute stmt "INSERT INTO TEST VALUES(1, 'Hello')")
-      (println "Data inserted."))))
+(defn- convert-sql-date-to-local-date [d]
+  (if (nil? d) nil (time/local-date d)))
 
 
