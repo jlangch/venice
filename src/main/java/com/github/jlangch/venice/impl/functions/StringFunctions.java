@@ -394,7 +394,7 @@ public class StringFunctions {
                     .arglists("(str/trim s)")
                     .doc("Trims leading and trailing whitespaces from s.")
                     .examples("(str/trim \" abc  \")")
-                    .seeAlso("str/trim-to-nil", "str/trim-left", "str/trim-right")
+                    .seeAlso("str/trim-to-empty", "str/trim-to-nil", "str/trim-left", "str/trim-right")
                     .build()
         ) {
             @Override
@@ -465,6 +465,38 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction str_trim_to_empty =
+        new VncFunction(
+                "str/trim-to-empty",
+                VncFunction
+                    .meta()
+                    .arglists("(str/trim-to-empty s)")
+                    .doc(
+                        "Trims leading and trailing whitespaces from s. " +
+                        "Returns an empty string if s is nil.")
+                    .examples(
+                        "(str/trim-to-empty \"\")",
+                        "(str/trim-to-empty \"    \")",
+                        "(str/trim-to-empty nil)",
+                        "(str/trim-to-empty \" abc   \")")
+                    .seeAlso("str/trim", "str/trim-left", "str/trim-right")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                if (args.first() == Nil) {
+                    return VncString.EMPTY;
+                }
+
+                final String str = Coerce.toVncString(args.first()).getValue().trim();
+                return new VncString(str);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction str_trim_to_nil =
         new VncFunction(
                 "str/trim-to-nil",
@@ -479,7 +511,7 @@ public class StringFunctions {
                         "(str/trim-to-nil \"    \")",
                         "(str/trim-to-nil nil)",
                         "(str/trim-to-nil \" abc   \")")
-                    .seeAlso("str/trim", "str/trim-left", "str/trim-right")
+                    .seeAlso("str/trim-to-empty", "str/trim", "str/trim-left", "str/trim-right")
                     .build()
         ) {
             @Override
@@ -3033,6 +3065,7 @@ public class StringFunctions {
                     .add(str_trim)
                     .add(str_trim_left)
                     .add(str_trim_right)
+                    .add(str_trim_to_empty)
                     .add(str_trim_to_nil)
                     .add(str_crlf_to_lf)
                     .add(str_align)

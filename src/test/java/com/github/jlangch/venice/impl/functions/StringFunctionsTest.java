@@ -869,6 +869,19 @@ public class StringFunctionsTest {
         assertEquals("abcdef", venice.eval("(str/trim \"  abcdef\")"));
         assertEquals("abcdef", venice.eval("(str/trim \"abcdef  \")"));
         assertEquals("", venice.eval("(str/trim \"  \")"));
+        assertEquals(null, venice.eval("(str/trim nil)"));
+    }
+
+    @Test
+    public void test_str_trim_to_empty() {
+        final Venice venice = new Venice();
+
+        assertEquals("abcdef", venice.eval("(str/trim-to-empty \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/trim-to-empty \"  abcdef  \")"));
+        assertEquals("abcdef", venice.eval("(str/trim-to-empty \"  abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/trim-to-empty \"abcdef  \")"));
+        assertEquals("", venice.eval("(str/trim-to-empty nil)"));
+        assertEquals("", venice.eval("(str/trim-to-empty \"  \")"));
     }
 
     @Test
@@ -880,6 +893,7 @@ public class StringFunctionsTest {
         assertEquals("abcdef", venice.eval("(str/trim-to-nil \"  abcdef\")"));
         assertEquals("abcdef", venice.eval("(str/trim-to-nil \"abcdef  \")"));
         assertEquals(null, venice.eval("(str/trim-to-nil \"  \")"));
+        assertEquals(null, venice.eval("(str/trim-to-nil nil)"));
     }
 
     @Test

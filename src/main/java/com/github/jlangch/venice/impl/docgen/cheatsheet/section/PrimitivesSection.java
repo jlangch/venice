@@ -190,6 +190,7 @@ public class PrimitivesSection implements ISectionBuilder {
         final DocSection trim = new DocSection("Trim", "primitives.strings.trim");
         strings.addSection(trim);
         trim.addItem(diBuilder.getDocItem("str/trim"));
+        trim.addItem(diBuilder.getDocItem("str/trim-to-empty"));
         trim.addItem(diBuilder.getDocItem("str/trim-to-nil"));
         trim.addItem(diBuilder.getDocItem("str/trim-left"));
         trim.addItem(diBuilder.getDocItem("str/trim-right"));
