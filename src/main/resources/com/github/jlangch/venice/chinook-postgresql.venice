@@ -77,7 +77,15 @@
   ^{ :arglists '(
           "(load-data)" )
      :doc """
-          Load the Chinook dataset to PostgreSQL database. 
+          Load the Chinook dataset to a PostgreSQL database. 
+
+          Start the PostgreSQL docker container:
+
+          ```
+          (do
+            (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
+            (pg/start "postgres" "16.2" 5432 "./postgres-storage" "postgres" "postgres"))
+          ```
           """
      :examples '(
           """
