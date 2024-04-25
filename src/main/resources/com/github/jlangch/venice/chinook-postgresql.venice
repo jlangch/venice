@@ -25,9 +25,9 @@
 
 
 
-(ns chinook-postgres)
+(ns chinook-postgresql)
 
-(load-module :jdbc-postgres ['jdbc-postgres :as 'jdbc])
+(load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
 
 
 (defonce data "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql")
@@ -35,22 +35,51 @@
 (defonce database "chinook_auto_increment")
 
 
-(defn download-data []
+(defn 
+  ^{ :arglists '(
+          "(download-data)" )
+     :doc """
+          Download the Chinook dataset for PostgreSQL. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :chinook-postgresql ['chinook-postgresql :as 'ch])
+            (ch/download-data))
+          """) }
+
+  download-data []
+
   (-> (io/download data :binary false :encoding :utf-8)
       ;; split the file in two parts
       (str/split ".c chinook_auto_increment;")))
 
 
-(defn load-data [host port user password]
+(defn 
+  ^{ :arglists '(
+          "(load-data)" )
+     :doc """
+          Load the Chinook dataset to PostgreSQL database. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :chinook-postgresql ['chinook-postgresql :as 'ch])
+            (ch/load-data "localhost" 5432 "postgres" "postgres"))
+          """) }
+
+  load-data [host port user password]
+
   (let [[sql1 sql2] (download-data)]
-    ;; drop and create the database
+    ;; drop and create the database (instead of sql1 we run run directly)
     (try-with [conn (jdbc/create-connection host port user password)]
       (jdbc/create-database conn database true) 
       (println "Created new database."))
-      
+
     ;; load the data
-    (try-with [conn (ju/create-connection host port database user password)]
-      (jdbc/execute conn sql2)
+    (try-with [conn (jdbc/create-connection host port database user password)
+               st   (jdbc/create-statement conn)]
+      (jdbc/execute st sql2)
       (println "Data loaded into new database."))))
 
 
