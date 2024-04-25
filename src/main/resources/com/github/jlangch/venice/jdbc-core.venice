@@ -27,6 +27,8 @@
 
 (ns jdbc-core)
 
+(load-module :ascii-table)
+
 
 (import :java.sql.DriverManager)
 (import :java.sql.Connection)
@@ -316,11 +318,35 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Data Renderer
+;; ResultSet Data Renderer
 ;; -----------------------------------------------------------------------------
 
 (defn render-query-result [data]
-  )
+  (let [col-names (:col-names data)
+        rows      (:rows data)
+        widths    (col-widths col-names rows 3 50)
+        headers   (map (fn [v] (hash-map :header {:text (first v)
+                                                  :align :left
+                                                  :overflow :newline }
+                                         :width (second v)))
+                       (map vector col-names widths)) ]
+    (ascii-table/render headers rows :standard-database 0)))
+
+
+(defn print-query-result [data]
+  (println (render-query-result data)))
+
+
+(defn- col-widths [col-names rows min-with max-width]
+  (let [matrix (conj rows col-names)]
+    (->> (map (fn [r] (map (fn [v] (if (nil? v) 0 (count (str v)))) r)) matrix)
+         (transpose)
+         (map #(apply max %))
+         (map #(clamp % min-with max-width)))))
+
+
+(defn- transpose [matrix]
+  (apply map vector matrix))
 
 
 
