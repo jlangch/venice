@@ -217,7 +217,7 @@
       (loop [rows []]
         (if (rs-next? rs)
           (recur (conj rows (row-names rs col-count)))
-          { :names row-names, :rows rows})))))
+          { :names row-names, :rows rows}))))
 
   ([stmt sql]
     (let [rs         (. stmt :executeQuery sql)
@@ -225,8 +225,8 @@
           col-count  (. meta-data :getColumnCount)]
       (loop [rows []]
         (if (rs-next? rs)
-          (recur (conj rows (row-names rs col-count)))
-          { :names row-names, :rows rows})))))
+          (recur (conj rows (row-values rs col-count)))
+          { :col-names (col-names meta-data), :rows rows})))))
  
 
 (defn execute-update 
@@ -237,23 +237,21 @@
     (. stmt :executeUpdate sql)))
 
 
-(defn row-names [rs]
-  (let [rs         (. stmt :executeQuery sql)
-        meta-data  (. rs :getMetaData)
-        col-count  (. meta-data :getColumnCount)]
+(defn col-names [rs-meta-data]
+  (let [count  (. rs-meta-data :getColumnCount)]
   (loop [names [], col 1]
-    (if (<= col col-count)
-      (let [name (. meta-data :getColumnName col)]
+    (if (<= col count)
+      (let [name (. rs-meta-data :getColumnName col)]
         (recur (conj names name) (inc col)))
         names))))
 
 
 (defn row-values [rs col-count]
-  (loop [row [], col 1]
+  (loop [values [], col 1]
     (if (<= col col-count)
       (let [val (map-value (. rs :getObject col))]  
-        (recur (conj row val) (inc col)))
-        row)))
+        (recur (conj values val) (inc col)))
+        values)))
 
 
 (defn- map-value [val]
@@ -318,12 +316,17 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Metadata
+;; Data Renderer
 ;; -----------------------------------------------------------------------------
 
-;; https://www.sqlitetutorial.net/sqlite-commands/
-;; https://www.baeldung.com/jdbc-database-metadata
+(defn render-query-result [data]
+  )
 
+
+
+;; -----------------------------------------------------------------------------
+;; Metadata
+;; -----------------------------------------------------------------------------
 
 (defn 
   ^{ :arglists '(
@@ -347,6 +350,30 @@
       :product-version  (. md :getDatabaseProductVersion)
       :driver-name      (. md :getDriverName)
       :driver-version   (. md :getDriverVersion) } ))
+
+
+(defn 
+  ^{ :arglists '(
+          "(db-features conn)" )
+     :doc """
+          List the database' features
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg")]
+              (jdbc/db-features conn)))
+          """) }
+
+  db-meta-data [conn]
+
+  (try-with [md  (. conn :getMetaData)]
+    { :supports-full-outer-joins   (. md :supportsFullOuterJoins)
+      :supports-stored-procedures  (. md :supportsStoredProcedures)
+      :supports-transactions       (. md :supportsTransactions)
+      :supports-batch-updates      (. md :supportsBatchUpdates) } ))
 
 
 (defn 
