@@ -338,17 +338,22 @@
 ;; ResultSet Data Renderer
 ;; -----------------------------------------------------------------------------
 
-(defn render-query-result [data]
-  (let [col-names (:col-names data)
-        rows      (:rows data)
-        rows      (map (fn [r] (map (fn [v] (render-cell v)) r)) rows)
-        widths    (col-widths col-names rows 3 80)
-        headers   (map (fn [v] (hash-map :header {:text     (first v)
-                                                  :align    :left
-                                                  :overflow :newline }
-                                         :width (second v)))
-                       (map vector col-names widths)) ]
-    (ascii-table/render headers rows :standard-database 0)))
+(defn render-query-result  
+  ([data]
+    (render-query-result data 80))
+
+  ([data max-col-width]
+    (let [min-col-width 3
+          col-names     (:col-names data)
+          rows          (:rows data)
+          rows          (map (fn [r] (map (fn [v] (render-cell v)) r)) rows)
+          widths        (col-widths col-names rows min-col-width max-col-width)
+          headers       (map (fn [v] (hash-map :header {:text     (first v)
+                                                        :align    :left
+                                                        :overflow :newline }
+                                              :width (second v)))
+                            (map vector col-names widths)) ]
+      (ascii-table/render headers rows :standard-database 0))))
 
 
 (defn print-query-result [data]
@@ -357,12 +362,12 @@
 
 (defn- render-cell [v]
   (cond 
-    (nil? v)                   "<nil>"
+    (nil? v)                   "<null>"
     (string? v)                (str/truncate v 100 "...")
     (boolean? v)               (if v "true" "false")
     (char? v)                  (str v)
     (long? v)                  (str v)
-    (int? v)                   (str v)
+    (int? v)                   (str (long v))
     (double? v)                (str v)
     (time/date? v)             (str (time/local-date-time v))
     (time/local-date? v)       (str v)
