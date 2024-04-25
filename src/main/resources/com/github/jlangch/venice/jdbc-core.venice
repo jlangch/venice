@@ -140,9 +140,9 @@
   (let [rs         (. stmt :executeQuery sql)
         meta-data  (. rs :getMetaData)
         col-count  (. meta-data :getColumnCount)]
-    (loop [rs rs, rows []]
-      (if (. rs :next)
-        (recur rs (conj rows (row-names rs col-count)))
+    (loop [rows []]
+      (if (rs-next? rs)
+        (recur (conj rows (row-names rs col-count)))
         { :names row-names, :rows rows}))))
  
 
@@ -206,6 +206,14 @@
 
 (defn rs-int [rs name-or-index]
   (. rs :getInt name-or-index))
+
+
+(defn rs-first? [rs]
+  (. rs :first))
+
+
+(defn rs-next? [rs]
+  (. rs :next))
 
 
 
@@ -274,7 +282,7 @@
   (try-with [md  (. conn :getMetaData)
              rs  (. md :getSchemas)]
     (loop [schemas []]
-      (if (. rs :next)
+      (if (rs-next? rs)
         (recur (conj schemas { :schem   (rs-string rs "TABLE_SCHEM")
                                :catalog (rs-string rs "TABLE_CATALOG") }))
         schemas))))
@@ -300,7 +308,7 @@
   (try-with [md  (. conn :getMetaData)
              rs  (. md :getTables nil nil "%" ["TABLE"])]
     (loop [tables []]
-      (if (. rs :next)
+      (if (rs-next? rs)
         (recur (conj tables (rs-string rs "TABLE_NAME")))
         tables))))
 
@@ -325,7 +333,7 @@
   (try-with [md  (. conn :getMetaData)
              rs  (. md :getColumns nil nil table nil)]
     (loop [columns []]
-      (if (. rs :next)
+      (if (rs-next? rs)
         (recur (conj columns { :name      (rs-string rs "COLUMN_NAME")
                                :size      (rs-string rs "COLUMN_SIZE")
                                :type      (type-map (rs-int rs "DATA_TYPE") :unknown)
