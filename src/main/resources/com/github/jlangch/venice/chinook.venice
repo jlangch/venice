@@ -32,6 +32,8 @@
 
 (defonce data-postgresql "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql")
 
+(defonce database "chinook_auto_increment")
+
 
 (defn download-postgresql-data []
   (-> (io/download chinook/data-postgresql :binary false :encoding :utf-8)
@@ -42,9 +44,11 @@
 (defn load-data-to-postgresql [host port user password]
   (let [[sql1 sql2] (download-postgresql-data)]
     (try-with [conn (ju/create-postgresql-connection host port user password)]
-      (execute-sql-postgresql sql1)
-      (println "Created new database.")
-      (execute-sql-postgresql sql2)
+      (execute-sql-postgresql conn "DROP DATABASE IF EXISTS chinook_auto_increment")
+      (execute-sql-postgresql conn "CREATE DATABASE chinook_auto_increment")
+      (println "Created new database."))
+    (try-with [conn (ju/create-postgresql-connection host port database user password)]
+      (execute-sql-postgresql conn sql2)
       (println "Data loaded into new database."))))
 
 
