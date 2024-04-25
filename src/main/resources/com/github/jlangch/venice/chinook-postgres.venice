@@ -19,42 +19,38 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Chinook database data set
+;;;; Chinook database data set for PostgreSQL
 
 ;;;; See:  https://github.com/lerocha/chinook-database
 
 
 
-(ns chinook)
+(ns chinook-postgres)
 
-(load-module :jdbc-utils ['jdbc-utils :as 'ju])
-
-
-(defonce data-postgresql "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql")
-
-(defonce database-postgresql "chinook_auto_increment")
+(load-module :jdbc-postgres ['jdbc-postgres :as 'jdbc])
 
 
-(defn download-postgresql-data []
-  (-> (io/download chinook/data-postgresql :binary false :encoding :utf-8)
+(defonce data "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql")
+
+(defonce database "chinook_auto_increment")
+
+
+(defn download-data []
+  (-> (io/download data :binary false :encoding :utf-8)
       ;; split the file in two parts
       (str/split ".c chinook_auto_increment;")))
 
 
-(defn load-data-to-postgresql [host port user password]
-  (let [database    database-postgresql
-        [sql1 sql2] (download-postgresql-data)]
-    (try-with [conn (ju/create-postgresql-connection host port user password)]
-      (execute-sql conn (str "DROP DATABASE IF EXISTS " database))
-      (execute-sql conn (str "CREATE DATABASE " database))
+(defn load-data [host port user password]
+  (let [[sql1 sql2] (download-data)]
+    ;; drop and create the database
+    (try-with [conn (jdbc/create-connection host port user password)]
+      (jdbc/create-database conn database true) 
       (println "Created new database."))
-    (try-with [conn (ju/create-postgresql-connection host port database user password)]
-      (execute-sql conn sql2)
+      
+    ;; load the data
+    (try-with [conn (ju/create-connection host port database user password)]
+      (jdbc/execute conn sql2)
       (println "Data loaded into new database."))))
-
-
-(defn execute-sql [conn sql]
-  (try-with [st  (. conn :createStatement)
-             rs  (. st :execute sql)]))
 
 

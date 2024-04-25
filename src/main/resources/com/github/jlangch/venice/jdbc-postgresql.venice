@@ -19,36 +19,32 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; JDBC Utilities
+;;;; JDBC PostgreSQL utils
 
 ;;;; See: 
 ;;;; https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
 
 
-(ns jdbc-utils)
+(ns jdbc-postgresql)
 
 
 (import :java.sql.DriverManager)
+(import :java.sql.Connection)
 (import :java.sql.Statement)
 
 (import :java.util.Properties)
 
 
 
-
-;; -----------------------------------------------------------------------------
-;; PostgreSQL connections
-;; -----------------------------------------------------------------------------
-
-(defonce postgresql-default-host "localhost")
-(defonce postgresql-default-port 5432)
+(defonce default-host "localhost")
+(defonce default-port 5432)
 
 (defn 
   ^{ :arglists '(
-          "(jdbc-utils/create-postgresql-connection user password)"
-          "(jdbc-utils/create-postgresql-connection host port user password)"
-          "(jdbc-utils/create-postgresql-connection host port database user password)"
-          "(jdbc-utils/create-postgresql-connection host port database user password properties)" )
+          "(create-connection user password)"
+          "(create-connection host port user password)"
+          "(create-connection host port database user password)"
+          "(create-connection host port database user password properties)" )
      :doc """
           Creates a PostgreSQL connection. 
         
@@ -66,16 +62,19 @@
      :examples '(
           """
           (do
-            (load-module :jdbc-utils ['jdbc-utils :as 'ju])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
            
-            (try-with [conn (ju/create-postgresql-connection "pg" "pg" "test")
-                       st   (. conn :createStatement)
-                       rs   (. st :executeQuery "SELECT * FROM mytable WHERE columnfoo = 500")]
+            (try-with [conn (jdbc/create-connection "pg" "pg" "test")
+                       st   (create-statement conn)
+                       rs   (execute-query st "SELECT * FROM mytable WHERE columnfoo = 500")]
               (loop []
                 (when (. rs :next) (println (. rs :getString 1))))))
-          """) }
+          """) 
+     :see-also '(
+          "jdbc-postgresql/create-database"
+          "jdbc-postgresql/drop-database" ) }
 
-  create-postgresql-connection 
+  create-connection 
 
   ([user password]
     (assert (string? user))
@@ -122,9 +121,90 @@
 
 
 
+;; -----------------------------------------------------------------------------
+;; Create / Drop database
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(create-database conn database)"
+          "(create-database conn database force)" )
+     :doc """
+          Creates a new database. If force flag is true drops the database first
+          if it exists. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
+            (try-with [conn (jdbc/create-connection "pg" "pg")]
+              (jdbc/create-database conn "test")))
+          """,
+          """
+          (do
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
+            (try-with [conn (jdbc/create-connection "pg" "pg")]
+              (jdbc/create-database conn "test" true)))
+          """) 
+     :see-also '(
+          "jdbc-postgresql/create-connection"
+          "jdbc-postgresql/drop-database" ) }
+
+  create-database 
+
+  ([conn database]
+    (create-database conn database false))
+
+  ([conn database force]
+    (assert (instance-of? :Connection conn))
+    (assert (string? database))
+    (assert (boolean? force))
+    (when force
+      (drop-database conn database))
+    (try-with [st (create-statement conn)]
+      (execute st (str "CREATE DATABASE " database)))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(drop-database conn database)"
+          "(drop-database conn database force)" )
+     :doc """
+          Drops a database if it exists. 
+
+          The force option will attempt to terminate all existing connections 
+          to the database.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
+            (try-with [conn (jdbc/create-connection "pg" "pg")]
+              (jdbc/drop-database conn "test")))
+          """) 
+     :see-also '(
+          "jdbc-postgresql/create-connection"
+          "jdbc-postgresql/create-database" ) }
+
+  drop-database
+
+  ([conn database]
+    (drop-database conn database false))
+      
+  ([conn database force]
+    (assert (instance-of? :Connection conn))
+    (assert (string? database))
+    (assert (boolean? force))
+    
+    (try-with [st (create-statement conn)]
+      (execute st (str/format "DROP DATABASE IF EXISTS %s%s"
+                              database
+                              (if force " FORCE" ""))))))
+
+
 
 ;; -----------------------------------------------------------------------------
-;; Simple JDBC helpers (Venice does not have a JDBC abstraction yet)
+;; Helpers 
 ;; -----------------------------------------------------------------------------
 
 (defn create-statement [conn]

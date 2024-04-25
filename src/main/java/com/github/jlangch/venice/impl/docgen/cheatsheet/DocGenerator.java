@@ -62,7 +62,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleImagesSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJTokkitSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJdbcUtilsSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJdbcPostgreSQLSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSection;
@@ -148,7 +148,7 @@ public class DocGenerator {
                         "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "installer",    "mimetypes",           "multipart",        "images",
                         "tomcat",       "jetty",               "cargo-postgresql",
-                        "http-client",  "http-client-j8",      "openai",           "jdbc-utils",
+                        "http-client",  "http-client-j8",      "openai",           "jdbc-postgresql",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",    "server-side-events",  "jtokkit"));
 
@@ -376,7 +376,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
-        extmod.addSection(new DocSection("JDBC\u00A0Utils", "modules.jdbc-utils"));
+        extmod.addSection(new DocSection("JDBC\u00A0PostgreSQL", "modules.jdbc-postgresql"));
         content.add(extmod);
 
         final DocSection build = new DocSection("Build\u00A0Tools", "build");
@@ -522,7 +522,7 @@ public class DocGenerator {
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
-                new ModuleJdbcUtilsSection(diBuilder).section(),
+                new ModuleJdbcPostgreSQLSection(diBuilder).section(),
                 // new ModuleHttpClientSection(diBuilder).section(),
                 new ModuleImagesSection(diBuilder).section());
     }

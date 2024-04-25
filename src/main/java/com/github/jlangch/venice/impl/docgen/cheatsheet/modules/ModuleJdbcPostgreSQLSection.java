@@ -26,24 +26,29 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleJdbcUtilsSection implements ISectionBuilder {
+public class ModuleJdbcPostgreSQLSection implements ISectionBuilder {
 
-    public ModuleJdbcUtilsSection(final DocItemBuilder diBuilder) {
+    public ModuleJdbcPostgreSQLSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                        "JDBC Utils",
-                                        "modules.jdbc-utils");
+                                        "JDBC PostgreSQL",
+                                        "modules.jdbc-postgresql");
 
-        final DocSection all = new DocSection("(load-module :jdbc-utils)", id());
+        final DocSection all = new DocSection("(load-module :jdbc-postgresql)", id());
         section.addSection(all);
 
         final DocSection conn = new DocSection("Connection", id());
         all.addSection(conn);
-        conn.addItem(diBuilder.getDocItem("jdbc-utils/create-postgresql-connection", false));
+        conn.addItem(diBuilder.getDocItem("jdbc-postgresql/create-connection", false));
+
+        final DocSection db = new DocSection("Create/Drop", id());
+        all.addSection(db);
+        db.addItem(diBuilder.getDocItem("jdbc-postgresql/create-database", false));
+        db.addItem(diBuilder.getDocItem("jdbc-postgresql/drop-database", false));
 
         return section;
     }
