@@ -46,8 +46,8 @@
      :examples '(
           """
           (do
-            (load-module :chinook-postgresql)
-            (chinook-postgresql/show-data-model))
+            (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
+            (chinook/show-data-model))
           """) }
 
   show-data-model []
@@ -65,8 +65,8 @@
      :examples '(
           """
           (do
-            (load-module :chinook-postgresql ['chinook-postgresql :as 'ch])
-            (ch/download-data))
+            (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
+            (chinook/download-data))
           """) }
 
   download-data []
@@ -120,21 +120,22 @@
      :examples '(
           """
           (do
-            (load-module :chinook-postgresql ['chinook-postgresql :as 'ch])
-            (ch/load-data "localhost" 5432 "postgres" "postgres"))
+            (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
+            (chinook/load-data "localhost" 5432 "postgres" "postgres"))
           """,
           """
           (do
+            (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
            
             (try-with [conn (jdbp/create-connection "localhost" 
                                                     5432 
-                                                    "chinook_auto_increment" 
+                                                    chinook/database 
                                                     "postgres" 
                                                     "postgres")]
-              (-> (jdbc/execute-query conn "SELECT * FROM album WHERE columnfoo = 500")
-                  (print-query-result))))
+              (-> (jdbc/execute-query conn "SELECT * FROM album WHERE title LIKE '%Mozart%'")
+                  (jdbc/print-query-result))))
           """) }
 
   load-data [host port user password]
