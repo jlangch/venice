@@ -38,7 +38,6 @@
 
 
 
-
 ;; -----------------------------------------------------------------------------
 ;; Create / Drop database
 ;; -----------------------------------------------------------------------------
@@ -149,9 +148,15 @@
 ;; Transactions 
 ;; -----------------------------------------------------------------------------
 
-(defn tx-isolation[conn]
+(defn tx-isolation [conn]
   (assert (instance-of? :Connection conn))
   (. conn :getTransactionIsolation))
+
+
+(defn tx-isolation! [conn level]
+  (assert (instance-of? :Connection conn))
+  (assert (long? level))
+  (. conn :setTransactionIsolation level))
 
 
 (defn auto-commit? [conn]
@@ -348,9 +353,9 @@
           rows          (:rows data)
           rows          (map (fn [r] (map (fn [v] (render-cell v)) r)) rows)
           widths        (col-widths col-names rows min-col-width max-col-width)
-          headers       (map (fn [v] (hash-map :header {:text     (first v)
-                                                        :align    :left
-                                                        :overflow :newline }
+          headers       (map (fn [v] (hash-map :header { :text     (first v)
+                                                         :align    :left
+                                                         :overflow :newline }
                                               :width (second v)))
                             (map vector col-names widths)) ]
       (ascii-table/render headers rows :standard-database 0))))
@@ -445,6 +450,7 @@
     { :supports-full-outer-joins   (. md :supportsFullOuterJoins)
       :supports-stored-procedures  (. md :supportsStoredProcedures)
       :supports-transactions       (. md :supportsTransactions)
+      :supports-savepoints         (. md :supportsSavepoints)
       :supports-batch-updates      (. md :supportsBatchUpdates) } ))
 
 
@@ -567,3 +573,26 @@
     (.  :Types :TINYINT)                  :TINYINT
     (.  :Types :VARBINARY)                :VARBINARY
     (.  :Types :VARCHAR)                  :VARCHAR } )
+
+
+
+(defonce tx-isolation-level {
+  ;; A constant indicating that transactions are not supported.
+  :tx-none             (. :Connection :TRANSACTION_NONE)
+
+  ;; A constant indicating that dirty reads are prevented; non-repeatable reads 
+  ;; and phantom reads can occur.
+  :tx-read-commited    (. :Connection :TRANSACTION_READ_COMMITTED)
+
+  ;; A constant indicating that dirty reads, non-repeatable reads and phantom 
+  ;; reads can occur.
+  :tx-read-uncommited  (. :Connection :TRANSACTION_READ_UNCOMMITTED)
+
+  ;; A constant indicating that dirty reads and non-repeatable reads are 
+  ;; prevented; phantom reads can occur.
+  :tx-repeatable-read  (. :Connection :TRANSACTION_REPEATABLE_READ)
+
+  ;; A constant indicating that dirty reads, non-repeatable reads and phantom 
+  ;; reads are prevented.
+  :tx-serializable     (. :Connection :TRANSACTION_SERIALIZABLE) })
+
