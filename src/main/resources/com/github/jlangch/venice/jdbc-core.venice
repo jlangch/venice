@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; JDBC PostgreSQL utils
+;;;; JDBC core utils
 
 ;;;; See: 
 ;;;; https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
@@ -535,44 +535,44 @@
 
 
 (defonce type-map {
-    (.  :Types :ARRAY)                    :ARRAY
-    (.  :Types :BIGINT)                   :BIGINT
-    (.  :Types :BINARY)                   :BINARY
-    (.  :Types :BIT)                      :BIT
-    (.  :Types :BLOB)                     :BLOB
-    (.  :Types :BOOLEAN)                  :BOOLEAN
-    (.  :Types :CHAR)                     :CHAR
-    (.  :Types :CLOB)                     :CLOB
-    (.  :Types :DATALINK)                 :DATALINK
-    (.  :Types :DATE)                     :DATE
-    (.  :Types :DECIMAL)                  :DECIMAL
-    (.  :Types :DISTINCT)                 :DISTINCT
-    (.  :Types :DOUBLE)                   :DOUBLE
-    (.  :Types :FLOAT)                    :FLOAT
-    (.  :Types :INTEGER)                  :INTEGER
-    (.  :Types :JAVA_OBJECT)              :JAVA_OBJECT
-    (.  :Types :LONGNVARCHAR)             :LONGNVARCHAR
-    (.  :Types :LONGVARBINARY)            :LONGVARBINARY
-    (.  :Types :LONGVARCHAR)              :LONGVARCHAR
-    (.  :Types :NCHAR)                    :NCHAR
-    (.  :Types :NCLOB)                    :NCLOB
-    (.  :Types :NULL)                     :NULL
-    (.  :Types :NUMERIC)                  :NUMERIC
-    (.  :Types :NVARCHAR)                 :NVARCHAR
-    (.  :Types :OTHER)                    :AROTHERRAY
-    (.  :Types :REAL)                     :REAL
-    (.  :Types :REF)                      :REF
-    (.  :Types :REF_CURSOR)               :REF_CURSOR
-    (.  :Types :ROWID)                    :ROWID
-    (.  :Types :SMALLINT)                 :SMALLINT
-    (.  :Types :SQLXML)                   :SQLXML
-    (.  :Types :STRUCT)                   :STRUCT
-    (.  :Types :TIME_WITH_TIMEZONE)       :TIME_WITH_TIMEZONE
-    (.  :Types :TIMESTAMP)                :TIMESTAMP
-    (.  :Types :TIMESTAMP_WITH_TIMEZONE)  :TIMESTAMP_WITH_TIMEZONERAY
-    (.  :Types :TINYINT)                  :TINYINT
-    (.  :Types :VARBINARY)                :VARBINARY
-    (.  :Types :VARCHAR)                  :VARCHAR } )
+    (. :Types :ARRAY)                    :ARRAY
+    (. :Types :BIGINT)                   :BIGINT
+    (. :Types :BINARY)                   :BINARY
+    (. :Types :BIT)                      :BIT
+    (. :Types :BLOB)                     :BLOB
+    (. :Types :BOOLEAN)                  :BOOLEAN
+    (. :Types :CHAR)                     :CHAR
+    (. :Types :CLOB)                     :CLOB
+    (. :Types :DATALINK)                 :DATALINK
+    (. :Types :DATE)                     :DATE
+    (. :Types :DECIMAL)                  :DECIMAL
+    (. :Types :DISTINCT)                 :DISTINCT
+    (. :Types :DOUBLE)                   :DOUBLE
+    (. :Types :FLOAT)                    :FLOAT
+    (. :Types :INTEGER)                  :INTEGER
+    (. :Types :JAVA_OBJECT)              :JAVA_OBJECT
+    (. :Types :LONGNVARCHAR)             :LONGNVARCHAR
+    (. :Types :LONGVARBINARY)            :LONGVARBINARY
+    (. :Types :LONGVARCHAR)              :LONGVARCHAR
+    (. :Types :NCHAR)                    :NCHAR
+    (. :Types :NCLOB)                    :NCLOB
+    (. :Types :NULL)                     :NULL
+    (. :Types :NUMERIC)                  :NUMERIC
+    (. :Types :NVARCHAR)                 :NVARCHAR
+    (. :Types :OTHER)                    :AROTHERRAY
+    (. :Types :REAL)                     :REAL
+    (. :Types :REF)                      :REF
+    (. :Types :REF_CURSOR)               :REF_CURSOR
+    (. :Types :ROWID)                    :ROWID
+    (. :Types :SMALLINT)                 :SMALLINT
+    (. :Types :SQLXML)                   :SQLXML
+    (. :Types :STRUCT)                   :STRUCT
+    (. :Types :TIME_WITH_TIMEZONE)       :TIME_WITH_TIMEZONE
+    (. :Types :TIMESTAMP)                :TIMESTAMP
+    (. :Types :TIMESTAMP_WITH_TIMEZONE)  :TIMESTAMP_WITH_TIMEZONERAY
+    (. :Types :TINYINT)                  :TINYINT
+    (. :Types :VARBINARY)                :VARBINARY
+    (. :Types :VARCHAR)                  :VARCHAR } )
 
 
 

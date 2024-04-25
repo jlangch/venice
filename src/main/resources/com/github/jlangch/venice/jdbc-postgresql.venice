@@ -168,7 +168,7 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
            
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-              (jdbp/foreign-key-constraints conn "album")))
+              (jdbp/foreign-key-constraints conn)))
           """) 
      :see-also '(
           "jdbc-postgresql/describe-table") }
@@ -177,13 +177,19 @@
 
   (-> (jdbc/execute-query conn
                           """
-                          SELECT conrelid::regclass AS table_name, 
-                                conname AS foreign_key, 
-                                pg_get_constraintdef(oid) 
-                          FROM   pg_constraint 
-                          WHERE  contype = 'f' 
-                          AND    connamespace = 'public'::regnamespace   
-                          ORDER  BY conrelid::regclass::text, contype DESC;
+                          SELECT 
+                            conrelid::regclass AS table_name, 
+                            conname AS foreign_key, 
+                            pg_get_constraintdef(oid) 
+                          FROM
+                            pg_constraint 
+                          WHERE
+                            contype = 'f' 
+                          AND
+                            connamespace = 'public'::regnamespace   
+                          ORDER BY 
+                            conrelid::regclass::text, 
+                            contype DESC;
                           """)
       (jdbc/print-query-result)))
 
