@@ -341,7 +341,7 @@
 (defn- render-cell [v]
   (cond 
     (nil? v)                   "<nil>"
-    (string? v)                (str v)
+    (string? v)                (str/truncate v 100 "...")
     (boolean? v)               (if v "true" "false")
     (char? v)                  (str v)
     (long? v)                  (str v)
