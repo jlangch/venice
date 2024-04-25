@@ -324,9 +324,10 @@
 (defn render-query-result [data]
   (let [col-names (:col-names data)
         rows      (:rows data)
+        rows      (map (fn [r] (map (fn [v] (render-cell v)) r)) rows)
         widths    (col-widths col-names rows 3 50)
-        headers   (map (fn [v] (hash-map :header {:text (first v)
-                                                  :align :left
+        headers   (map (fn [v] (hash-map :header {:text     (first v)
+                                                  :align    :left
                                                   :overflow :newline }
                                          :width (second v)))
                        (map vector col-names widths)) ]
@@ -335,6 +336,23 @@
 
 (defn print-query-result [data]
   (println (render-query-result data)))
+
+
+(defn- render-cell [v]
+  (cond 
+    (nil? v)                   "<nil>"
+    (string? v)                (str v)
+    (boolean? v)               (if v "true" "false")
+    (char? v)                  (str v)
+    (long? v)                  (str v)
+    (int? v)                   (str v)
+    (float? v)                 (str v)
+    (double? v)                (str v)
+    (time/date? v)             (str (time/local-date-time v))
+    (time/local-date? v)       (str v)
+    (time/local-date-time? v)  (str v)
+    (java-obj? v)              (str "[" (class-name (class-of v)) "]")
+    :else                      (str "[" (type v) "]")))
 
 
 (defn- col-widths [col-names rows min-with max-width]
