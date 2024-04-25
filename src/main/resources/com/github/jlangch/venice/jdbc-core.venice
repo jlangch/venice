@@ -184,28 +184,28 @@
 ;; Result Set
 ;; -----------------------------------------------------------------------------
 
-(defn rs-string [rs name]
-  (. rs :getString name))
+(defn rs-string [rs name-or-index]
+  (. rs :getString name-or-index))
 
 
-(defn rs-boolean [rs name]
-  (. rs :getBoolean name))
+(defn rs-boolean [rs name-or-index]
+  (. rs :getBoolean name-or-index))
 
 
-(defn rs-date [rs name]
-  (. rs :getDate name))
+(defn rs-date [rs name-or-index]
+  (. rs :getDate name-or-index))
 
 
-(defn rs-double [rs name]
-  (. rs :getDouble name))
+(defn rs-double [rs name-or-index]
+  (. rs :getDouble name-or-index))
 
 
-(defn rs-long [rs name]
-  (. rs :getLong name))
+(defn rs-long [rs name-or-index]
+  (. rs :getLong name-or-index))
 
 
-(defn rs-int [rs name]
-  (. rs :getInt name))
+(defn rs-int [rs name-or-index]
+  (. rs :getInt name-or-index))
 
 
 
