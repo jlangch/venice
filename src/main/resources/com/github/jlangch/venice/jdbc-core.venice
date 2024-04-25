@@ -113,9 +113,21 @@
     (assert (boolean? force))
     
     (try-with [st (create-statement conn)]
-      (execute st (str/format "DROP DATABASE IF EXISTS %s%s"
-                              database
-                              (if force " FORCE" ""))))))
+      (if (postgresql? conn)
+        (execute st (str/format "DROP DATABASE IF EXISTS %s%s"
+                                database
+                                (if force " FORCE" "")))
+        (if force
+          (throw (ex :VncException """
+                                   Dropping a database with force flag true is \
+                                   only supported for PostgreSQL yet!
+                                   """))
+          (execute st (str/format "DROP DATABASE IF EXISTS %s" database)))))))
+
+
+(defn postgresql? [conn]
+  (let [db-meta (jdbc/db-meta-data conn)]
+    (str/equals-ignore-case? "PostgreSQL" (:product-name db-meta))))
 
 
 
@@ -249,7 +261,7 @@
           (do
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg")]
               (jdbc/db-meta-data conn)))
           """) }
 
@@ -273,7 +285,7 @@
           (do
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg")]
               (jdbc/schemas conn)))
           """) }
 
@@ -299,7 +311,7 @@
           (do
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
               (jdbc/tables conn)))
           """) }
 
@@ -324,8 +336,8 @@
           (do
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
-              (jdbc/columns "users")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+              (jdbc/columns conn "users")))
           """) }
 
   columns [conn table]
