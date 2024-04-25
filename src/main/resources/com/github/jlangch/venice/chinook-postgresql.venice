@@ -37,6 +37,24 @@
 
 (defn 
   ^{ :arglists '(
+          "(show-data-model)" )
+     :doc """
+          Show the Chinook data model. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :chinook-postgresql)
+            (chinook-postgresql/show-data-model))
+          """) }
+
+  show-data-model []
+
+  (sh/open "https://github.com/lerocha/chinook-database/tree/master#data-model"))
+
+
+(defn 
+  ^{ :arglists '(
           "(download-data)" )
      :doc """
           Download the Chinook dataset for PostgreSQL. 
