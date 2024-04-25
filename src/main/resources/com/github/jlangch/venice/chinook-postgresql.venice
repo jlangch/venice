@@ -27,7 +27,9 @@
 
 (ns chinook-postgresql)
 
-(load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
+(load-module :jdbc-core ['jdbc-core :as 'jdbc])
+(load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
 
 
 (defonce data "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql")
@@ -111,8 +113,8 @@
 
           ```
           (do
-            (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
-            (pg/start "postgres" "16.2" 5432 "./postgres-storage" "postgres" "postgres"))
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (jdbp/start "postgres" "16.2" 5432 "./postgres-storage" "postgres" "postgres"))
           ```
           """
      :examples '(
@@ -120,6 +122,19 @@
           (do
             (load-module :chinook-postgresql ['chinook-postgresql :as 'ch])
             (ch/load-data "localhost" 5432 "postgres" "postgres"))
+          """,
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+           
+            (try-with [conn (jdbp/create-connection "localhost" 
+                                                    5432 
+                                                    "chinook_auto_increment" 
+                                                    "postgres" 
+                                                    "postgres")]
+              (-> (jdbc/execute-query conn "SELECT * FROM album WHERE columnfoo = 500")
+                  (print-query-result))))
           """) }
 
   load-data [host port user password]

@@ -206,40 +206,57 @@
   ([stmt]
     (assert (instance-of? :PreparedStatement stmt))
     (. stmt :execute)) 
-  ([stmt sql]
-    (. stmt :execute sql)))
+
+  ([conn-or-stmt sql]
+    (assert (or (instance-of? :Connection conn-or-stmt)
+                (instance-of? :Statement conn-or-stmt)))
+    (if (instance-of? :Connection conn-or-stmt)
+      (try-with [stmt (create-statement conn-or-stmt)]
+        (. stmt :execute sql))
+      (. conn-or-stmt :execute sql))))
 
 
 (defn execute-query 
   ([stmt]
     (assert (instance-of? :PreparedStatement stmt))
-    (let [rs         (. stmt :executeQuery)
-          meta-data  (. rs :getMetaData)
-          col-count  (. meta-data :getColumnCount)]
-      (loop [rows []]
-        (if (rs-next? rs)
-          (recur (conj rows (row-names rs col-count)))
-          { :names row-names, :rows rows}))))
+    (try-with [rs (. stmt :executeQuery)]
+      (collect-result-set)))
 
-  ([stmt sql]
-    (let [rs         (. stmt :executeQuery sql)
-          meta-data  (. rs :getMetaData)
-          col-count  (. meta-data :getColumnCount)]
-      (loop [rows []]
-        (if (rs-next? rs)
-          (recur (conj rows (row-values rs col-count)))
-          { :col-names (col-names meta-data), :rows rows})))))
+  ([conn-or-stmt sql]
+    (assert (or (instance-of? :Connection conn-or-stmt)
+                (instance-of? :Statement conn-or-stmt)))
+    (if (instance-of? :Connection conn-or-stmt)
+      (try-with [stmt (create-statement conn-or-stmt)
+                 rs   (. stmt :executeQuery sql)]
+        (collect-result-set rs))
+      (try-with [rs  (. conn-or-stmt :executeQuery sql)]
+        (collect-result-set rs)))))
  
 
 (defn execute-update 
   ([stmt]
     (assert (instance-of? :PreparedStatement stmt))
     (. stmt :executeUpdate))
-  ([stmt sql]
-    (. stmt :executeUpdate sql)))
+
+  ([conn-or-stmt sql]
+    (assert (or (instance-of? :Connection conn-or-stmt)
+                (instance-of? :Statement conn-or-stmt)))
+    (if (instance-of? :Connection conn-or-stmt)
+      (try-with [stmt (create-statement conn-or-stmt)]
+        (. stmt :executeUpdate sql))
+      (. conn-or-stmt :executeUpdate sql))))
 
 
-(defn col-names [rs-meta-data]
+(defn- collect-result-set [rs]
+  (let [meta-data  (. rs :getMetaData)
+        col-count  (. meta-data :getColumnCount)]
+    (loop [rows []]
+      (if (rs-next? rs)
+        (recur (conj rows (row-values rs col-count)))
+        { :col-names (col-names meta-data), :rows rows}))))
+
+
+(defn- col-names [rs-meta-data]
   (let [count  (. rs-meta-data :getColumnCount)]
   (loop [names [], col 1]
     (if (<= col count)
@@ -248,7 +265,7 @@
         names))))
 
 
-(defn row-values [rs col-count]
+(defn- row-values [rs col-count]
   (loop [values [], col 1]
     (if (<= col col-count)
       (let [val (map-value (. rs :getObject col))]  
@@ -325,7 +342,7 @@
   (let [col-names (:col-names data)
         rows      (:rows data)
         rows      (map (fn [r] (map (fn [v] (render-cell v)) r)) rows)
-        widths    (col-widths col-names rows 3 50)
+        widths    (col-widths col-names rows 3 80)
         headers   (map (fn [v] (hash-map :header {:text     (first v)
                                                   :align    :left
                                                   :overflow :newline }
@@ -346,12 +363,14 @@
     (char? v)                  (str v)
     (long? v)                  (str v)
     (int? v)                   (str v)
-    (float? v)                 (str v)
     (double? v)                (str v)
     (time/date? v)             (str (time/local-date-time v))
     (time/local-date? v)       (str v)
     (time/local-date-time? v)  (str v)
-    (java-obj? v)              (str "[" (class-name (class-of v)) "]")
+    (java-obj? v)              (let [clazz (class-name (class-of v))]
+                                  (case clazz
+                                    "org.postgresql.util.PGobject"  (str v)
+                                    (str "[" clazz "]")))
     :else                      (str "[" (type v) "]")))
 
 
@@ -365,6 +384,10 @@
 
 (defn- transpose [matrix]
   (apply map vector matrix))
+
+
+(defn- PGobject? [v]
+  (= "org.postgresql.util.PGobject" (class-name (class-of v))))
 
 
 

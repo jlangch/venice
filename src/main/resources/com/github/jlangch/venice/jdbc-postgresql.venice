@@ -27,6 +27,8 @@
 
 (ns jdbc-postgresql)
 
+(load-module :jdbc-core ['jdbc-core :as 'jdbc])
+
 
 (import :java.sql.DriverManager)
 (import :java.sql.Connection)
@@ -66,9 +68,11 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
            
-            (try-with [conn (jdbp/create-connection "pg" "pg" "test")
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (-> (jdbc/create-statement conn)
+                  (jdbc/execute-query
                        st   (jdbc/create-statement conn)
-                       rs   (jdbc/execute-query st "SELECT * FROM mytable WHERE columnfoo = 500")]
+                       rs   (jdbc/execute-query st "SELECT * FROM mytable WHERE foo = 500")]
               (loop []
                 (when (. rs :next) 
                   (println (. rs :getString 1))
@@ -117,6 +121,73 @@
       (. :DriverManager :getConnection url props))))
 
  
+(defn 
+  ^{ :arglists '(
+          "(describe-table conn table)" )
+     :doc """
+          Describe the schema of a table. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+           
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (jdbp/describe-table conn "album")))
+          """) 
+     :see-also '(
+          "jdbc-postgresql/foreign-key-constraints") }
+
+  describe-table [conn table]
+
+  (-> (jdbc/execute-query conn
+                          """
+                          SELECT 
+                            column_name, 
+                            data_type, 
+                            character_maximum_length, 
+                            is_nullable, 
+                            column_default 
+                          FROM 
+                            information_schema.columns 
+                          WHERE 
+                            table_name = '~{table}';
+                          """)
+      (jdbc/print-query-result)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(foreign-key-constraints conn)" )
+     :doc """
+          List the foreign key constraints in a database
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+           
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (jdbp/foreign-key-constraints conn "album")))
+          """) 
+     :see-also '(
+          "jdbc-postgresql/describe-table") }
+
+  foreign-key-constraints [conn]
+
+  (-> (jdbc/execute-query conn
+                          """
+                          SELECT conrelid::regclass AS table_name, 
+                                conname AS foreign_key, 
+                                pg_get_constraintdef(oid) 
+                          FROM   pg_constraint 
+                          WHERE  contype = 'f' 
+                          AND    connamespace = 'public'::regnamespace   
+                          ORDER  BY conrelid::regclass::text, contype DESC;
+                          """)
+      (jdbc/print-query-result)))
+
+
 (defn- as-properties [user password properties]
   (let [props  (. :Properties :new)]
     (. props :setProperty "user" user)
