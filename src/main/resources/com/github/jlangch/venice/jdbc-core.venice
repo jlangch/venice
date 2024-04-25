@@ -1,0 +1,375 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; JDBC PostgreSQL utils
+
+;;;; See: 
+;;;; https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
+
+
+(ns jdbc-core)
+
+
+(import :java.sql.DriverManager)
+(import :java.sql.Connection)
+(import :java.sql.Statement)
+(import :java.sql.Types)
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Create / Drop database
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(create-database conn database)"
+          "(create-database conn database force)" )
+     :doc """
+          Creates a new database. If force flag is true drops the database first
+          if it exists. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "pg" "pg")]
+              (jdbc/create-database conn "test")))
+          """,
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "pg" "pg")]
+              (jdbc/create-database conn "test" true)))
+          """) 
+     :see-also '(
+          "jdbc-core/drop-database" ) }
+
+  create-database 
+
+  ([conn database]
+    (create-database conn database false))
+
+  ([conn database force]
+    (assert (instance-of? :Connection conn))
+    (assert (string? database))
+    (assert (boolean? force))
+    (when force
+      (drop-database conn database))
+    (try-with [st (create-statement conn)]
+      (execute st (str "CREATE DATABASE " database)))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(drop-database conn database)"
+          "(drop-database conn database force)" )
+     :doc """
+          Drops a database if it exists. 
+
+          The force option will attempt to terminate all existing connections 
+          to the database.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "pg" "pg")]
+              (jdbc/drop-database conn "test")))
+          """) 
+     :see-also '(
+          "jdbc-core/create-database" ) }
+
+  drop-database
+
+  ([conn database]
+    (drop-database conn database false))
+      
+  ([conn database force]
+    (assert (instance-of? :Connection conn))
+    (assert (string? database))
+    (assert (boolean? force))
+    
+    (try-with [st (create-statement conn)]
+      (execute st (str/format "DROP DATABASE IF EXISTS %s%s"
+                              database
+                              (if force " FORCE" ""))))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Statement 
+;; -----------------------------------------------------------------------------
+
+(defn create-statement [conn]
+   (. conn :createStatement))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Execute queries 
+;; -----------------------------------------------------------------------------
+
+(defn execute [stmt sql]
+  (. stmt :execute sql))
+
+
+(defn execute-query [stmt sql]
+  (let [rs         (. stmt :executeQuery sql)
+        meta-data  (. rs :getMetaData)
+        col-count  (. meta-data :getColumnCount)]
+    (loop [rs rs, rows []]
+      (if (. rs :next)
+        (recur rs (conj rows (row-names rs col-count)))
+        { :names row-names, :rows rows}))))
+ 
+
+(defn execute-update [stmt sql]
+  (. stmt :executeUpdate sql))
+
+
+(defn row-names [rs]
+  (let [rs         (. stmt :executeQuery sql)
+        meta-data  (. rs :getMetaData)
+        col-count  (. meta-data :getColumnCount)]
+  (loop [names [], col 1]
+    (if (<= col col-count)
+      (let [name (. meta-data :getColumnName col)]
+        (recur (conj names name) (inc col)))
+        names))))
+
+
+(defn row-values [rs col-count]
+  (loop [row [], col 1]
+    (if (<= col col-count)
+      (let [val (map-value (. rs :getObject col))]  
+        (recur (conj row val) (inc col)))
+        row)))
+
+
+(defn- map-value [val]
+  (cond 
+    (sql-date? val)  (convert-sql-date-to-local-date-time val)
+    :else            val))
+
+
+(defn- sql-date? [val]
+  (instance-of? :java.sql.Date val))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Result Set
+;; -----------------------------------------------------------------------------
+
+(defn rs-string [rs name]
+  (. rs :getString name))
+
+
+(defn rs-boolean [rs name]
+  (. rs :getBoolean name))
+
+
+(defn rs-date [rs name]
+  (. rs :getDate name))
+
+
+(defn rs-double [rs name]
+  (. rs :getDouble name))
+
+
+(defn rs-long [rs name]
+  (. rs :getLong name))
+
+
+(defn rs-int [rs name]
+  (. rs :getInt name))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Data Converter
+;; -----------------------------------------------------------------------------
+
+(defn convert-sql-date-to-local-date-time [d]
+  (if (nil? d) nil (time/local-date-time d)))
+
+
+(defn convert-sql-date-to-local-date [d]
+  (if (nil? d) nil (time/local-date d)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Metadata
+;; -----------------------------------------------------------------------------
+
+;; https://www.sqlitetutorial.net/sqlite-commands/
+;; https://www.baeldung.com/jdbc-database-metadata
+
+
+(defn 
+  ^{ :arglists '(
+          "(db-meta-data conn)" )
+     :doc """
+          List the meta data of a database
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
+              (jdbc/db-meta-data conn)))
+          """) }
+
+  db-meta-data [conn]
+
+  (try-with [md  (. conn :getMetaData)]
+    { :product-name     (. md :getDatabaseProductName)
+      :product-version  (. md :getDatabaseProductVersion)
+      :driver-name      (. md :getDriverName)
+      :driver-version   (. md :getDriverVersion) } ))
+
+
+(defn 
+  ^{ :arglists '(
+          "(schemas conn)" )
+     :doc """
+          List the schemas of a database
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
+              (jdbc/schemas conn)))
+          """) }
+
+  schemas [conn]
+
+  (try-with [md  (. conn :getMetaData)
+             rs  (. md :getSchemas)]
+    (loop [schemas []]
+      (if (. rs :next)
+        (recur (conj schemas { :schem   (rs-string rs "TABLE_SCHEM")
+                               :catalog (rs-string rs "TABLE_CATALOG") }))
+        schemas))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(tables conn)" )
+     :doc """
+          List the tables of a database
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
+              (jdbc/tables conn)))
+          """) }
+
+  tables [conn]
+
+  (try-with [md  (. conn :getMetaData)
+             rs  (. md :getTables nil nil "%" ["TABLE"])]
+    (loop [tables []]
+      (if (. rs :next)
+        (recur (conj tables (rs-string rs "TABLE_NAME")))
+        tables))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(columns conn table)" )
+     :doc """
+          List the columns of a database table
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg" "test")
+              (jdbc/columns "users")))
+          """) }
+
+  columns [conn table]
+
+  (try-with [md  (. conn :getMetaData)
+             rs  (. md :getColumns nil nil table nil)]
+    (loop [columns []]
+      (if (. rs :next)
+        (recur (conj columns { :name      (rs-string rs "COLUMN_NAME")
+                               :size      (rs-string rs "COLUMN_SIZE")
+                               :type      (type-map (rs-int rs "DATA_TYPE") :unknown)
+                               :nullable? (rs-string rs "IS_NULLABLE")
+                               :auto-inc? (rs-string rs "IS_AUTOINCREMENT") }))
+        columns))))
+
+
+(defonce type-map {
+    (.  :Types :ARRAY)                    :ARRAY
+    (.  :Types :BIGINT)                   :BIGINT
+    (.  :Types :BINARY)                   :BINARY
+    (.  :Types :BIT)                      :BIT
+    (.  :Types :BLOB)                     :BLOB
+    (.  :Types :BOOLEAN)                  :BOOLEAN
+    (.  :Types :CHAR)                     :CHAR
+    (.  :Types :CLOB)                     :CLOB
+    (.  :Types :DATALINK)                 :DATALINK
+    (.  :Types :DATE)                     :DATE
+    (.  :Types :DECIMAL)                  :DECIMAL
+    (.  :Types :DISTINCT)                 :DISTINCT
+    (.  :Types :DOUBLE)                   :DOUBLE
+    (.  :Types :FLOAT)                    :FLOAT
+    (.  :Types :INTEGER)                  :INTEGER
+    (.  :Types :JAVA_OBJECT)              :JAVA_OBJECT
+    (.  :Types :LONGNVARCHAR)             :LONGNVARCHAR
+    (.  :Types :LONGVARBINARY)            :LONGVARBINARY
+    (.  :Types :LONGVARCHAR)              :LONGVARCHAR
+    (.  :Types :NCHAR)                    :NCHAR
+    (.  :Types :NCLOB)                    :NCLOB
+    (.  :Types :NULL)                     :NULL
+    (.  :Types :NUMERIC)                  :NUMERIC
+    (.  :Types :NVARCHAR)                 :NVARCHAR
+    (.  :Types :OTHER)                    :AROTHERRAY
+    (.  :Types :REAL)                     :REAL
+    (.  :Types :REF)                      :REF
+    (.  :Types :REF_CURSOR)               :REF_CURSOR
+    (.  :Types :ROWID)                    :ROWID
+    (.  :Types :SMALLINT)                 :SMALLINT
+    (.  :Types :SQLXML)                   :SQLXML
+    (.  :Types :STRUCT)                   :STRUCT
+    (.  :Types :TIME_WITH_TIMEZONE)       :TIME_WITH_TIMEZONE
+    (.  :Types :TIMESTAMP)                :TIMESTAMP
+    (.  :Types :TIMESTAMP_WITH_TIMEZONE)  :TIMESTAMP_WITH_TIMEZONERAY
+    (.  :Types :TINYINT)                  :TINYINT
+    (.  :Types :VARBINARY)                :VARBINARY
+    (.  :Types :VARCHAR)                  :VARCHAR } )

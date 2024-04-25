@@ -148,7 +148,8 @@ public class DocGenerator {
                         "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "installer",    "mimetypes",           "multipart",        "images",
                         "tomcat",       "jetty",               "cargo-postgresql",
-                        "http-client",  "http-client-j8",      "openai",           "jdbc-postgresql",
+                        "http-client",  "http-client-j8",      "openai",
+                        "jdbc-core",    "jdbc-postgresql",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",    "server-side-events",  "jtokkit"));
 

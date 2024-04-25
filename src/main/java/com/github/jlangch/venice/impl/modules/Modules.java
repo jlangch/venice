@@ -90,6 +90,7 @@ public class Modules {
                         "images",
                         "ivy",
                         "jdbc",
+                        "jdbc-core",
                         "jdbc-postgresql",
                         "jackson",
                         "java",

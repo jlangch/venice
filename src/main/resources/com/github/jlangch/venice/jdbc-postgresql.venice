@@ -31,6 +31,7 @@
 (import :java.sql.DriverManager)
 (import :java.sql.Connection)
 (import :java.sql.Statement)
+(import :java.sql.Types)
 
 (import :java.util.Properties)
 
@@ -62,17 +63,20 @@
      :examples '(
           """
           (do
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
            
-            (try-with [conn (jdbc/create-connection "pg" "pg" "test")
-                       st   (create-statement conn)
-                       rs   (execute-query st "SELECT * FROM mytable WHERE columnfoo = 500")]
+            (try-with [conn (jdbp/create-connection "pg" "pg" "test")
+                       st   (jdbc/create-statement conn)
+                       rs   (jdbc/execute-query st "SELECT * FROM mytable WHERE columnfoo = 500")]
               (loop []
-                (when (. rs :next) (println (. rs :getString 1))))))
+                (when (. rs :next) 
+                  (println (. rs :getString 1))
+                  (recur)))))
           """) 
      :see-also '(
-          "jdbc-postgresql/create-database"
-          "jdbc-postgresql/drop-database" ) }
+          "jdbc-core/create-database"
+          "jdbc-core/drop-database" ) }
 
   create-connection 
 
@@ -118,151 +122,4 @@
     (. props :setProperty "user" user)
     (. props :setProperty "password" (or password ""))
     (doseq [[n v] (seq properties)] (. props :setProperty n v))))
-
-
-
-;; -----------------------------------------------------------------------------
-;; Create / Drop database
-;; -----------------------------------------------------------------------------
-
-(defn 
-  ^{ :arglists '(
-          "(create-database conn database)"
-          "(create-database conn database force)" )
-     :doc """
-          Creates a new database. If force flag is true drops the database first
-          if it exists. 
-          """
-     :examples '(
-          """
-          (do
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
-            (try-with [conn (jdbc/create-connection "pg" "pg")]
-              (jdbc/create-database conn "test")))
-          """,
-          """
-          (do
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
-            (try-with [conn (jdbc/create-connection "pg" "pg")]
-              (jdbc/create-database conn "test" true)))
-          """) 
-     :see-also '(
-          "jdbc-postgresql/create-connection"
-          "jdbc-postgresql/drop-database" ) }
-
-  create-database 
-
-  ([conn database]
-    (create-database conn database false))
-
-  ([conn database force]
-    (assert (instance-of? :Connection conn))
-    (assert (string? database))
-    (assert (boolean? force))
-    (when force
-      (drop-database conn database))
-    (try-with [st (create-statement conn)]
-      (execute st (str "CREATE DATABASE " database)))))
-
-
-(defn 
-  ^{ :arglists '(
-          "(drop-database conn database)"
-          "(drop-database conn database force)" )
-     :doc """
-          Drops a database if it exists. 
-
-          The force option will attempt to terminate all existing connections 
-          to the database.
-          """
-     :examples '(
-          """
-          (do
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbc])
-            (try-with [conn (jdbc/create-connection "pg" "pg")]
-              (jdbc/drop-database conn "test")))
-          """) 
-     :see-also '(
-          "jdbc-postgresql/create-connection"
-          "jdbc-postgresql/create-database" ) }
-
-  drop-database
-
-  ([conn database]
-    (drop-database conn database false))
-      
-  ([conn database force]
-    (assert (instance-of? :Connection conn))
-    (assert (string? database))
-    (assert (boolean? force))
-    
-    (try-with [st (create-statement conn)]
-      (execute st (str/format "DROP DATABASE IF EXISTS %s%s"
-                              database
-                              (if force " FORCE" ""))))))
-
-
-
-;; -----------------------------------------------------------------------------
-;; Helpers 
-;; -----------------------------------------------------------------------------
-
-(defn create-statement [conn]
-   (. conn :createStatement))
-
-
-(defn execute [stmt sql]
-  (. stmt :execute sql))
-
-
-(defn execute-query [stmt sql]
-  (let [rs         (. stmt :executeQuery sql)
-        meta-data  (. rs :getMetaData)
-        col-count  (. meta-data :getColumnCount)]
-    (loop [rs rs, rows []]
-      (if (. rs :next)
-        (recur rs (conj rows (row-names rs col-count)))
-        { :names row-names, :rows rows}))))
- 
-
-(defn execute-update [stmt sql]
-  (. stmt :executeUpdate sql))
-
-
-(defn row-names [rs]
-  (let [rs         (. stmt :executeQuery sql)
-        meta-data  (. rs :getMetaData)
-        col-count  (. meta-data :getColumnCount)]
-  (loop [names [], col 1]
-    (if (<= count col-count)
-      (let [name (. meta-data :getColumnName col)]
-        (recur (conj names name) (inc col)))
-        names))))
-
-
-(defn row-values [rs col-count]
-  (loop [row [], col 1]
-    (if (<= count col-count)
-      (let [val (map-value (. rs :getObject col))]  
-        (recur (conj row val) (inc col)))
-        row)))
-
-
-(defn- map-value [val]
-  (cond 
-    (sql-date? val)  (convert-sql-date-to-local-date-time val)
-    :else            val))
-
-
-(defn- sql-date? [val]
-  (instance-of? :java.sql.Date val))
-
-
-(defn- convert-sql-date-to-local-date-time [d]
-  (if (nil? d) nil (time/local-date-time d)))
-
-
-(defn- convert-sql-date-to-local-date [d]
-  (if (nil? d) nil (time/local-date d)))
-
 
