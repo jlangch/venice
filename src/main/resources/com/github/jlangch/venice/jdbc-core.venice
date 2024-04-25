@@ -31,6 +31,7 @@
 (import :java.sql.DriverManager)
 (import :java.sql.Connection)
 (import :java.sql.Statement)
+(import :java.sql.PreparedStatement)
 (import :java.sql.Types)
 
 
@@ -131,12 +132,67 @@
 
 
 
+
+;; -----------------------------------------------------------------------------
+;; Connection 
+;; -----------------------------------------------------------------------------
+
+(defn closed? [conn]
+  (assert (instance-of? :Connection conn))
+  (. conn :isClosed))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Transactions 
+;; -----------------------------------------------------------------------------
+
+(defn tx-isolation[conn]
+  (assert (instance-of? :Connection conn))
+  (. conn :getTransactionIsolation))
+
+
+(defn auto-commit? [conn]
+  (assert (instance-of? :Connection conn))
+  (. conn :getAutoCommit))
+
+
+(defn auto-commit! [conn on]
+  (assert (instance-of? :Connection conn))
+  (assert (boolean? on))
+  (. conn :setAutoCommit on))
+
+
+(defn commit! [conn]
+  (assert (instance-of? :Connection conn))
+  (. conn :commit))
+
+
+(defn rollback! [conn]
+  (assert (instance-of? :Connection conn))
+  (. conn :rollback))
+
+
+
+
 ;; -----------------------------------------------------------------------------
 ;; Statement 
 ;; -----------------------------------------------------------------------------
 
 (defn create-statement [conn]
-   (. conn :createStatement))
+  (assert (instance-of? :Connection conn))
+  (. conn :createStatement))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Prepared statements 
+;; -----------------------------------------------------------------------------
+
+(defn create-prepared-statement [conn sql]
+   (assert (instance-of? :Connection conn))
+   (assert (string? sql))
+   (. conn :prepareStatement sql))
 
 
 
@@ -144,22 +200,41 @@
 ;; Execute queries 
 ;; -----------------------------------------------------------------------------
 
-(defn execute [stmt sql]
-  (. stmt :execute sql))
+(defn execute 
+  ([stmt]
+    (assert (instance-of? :PreparedStatement stmt))
+    (. stmt :execute)) 
+  ([stmt sql]
+    (. stmt :execute sql)))
 
 
-(defn execute-query [stmt sql]
-  (let [rs         (. stmt :executeQuery sql)
-        meta-data  (. rs :getMetaData)
-        col-count  (. meta-data :getColumnCount)]
-    (loop [rows []]
-      (if (rs-next? rs)
-        (recur (conj rows (row-names rs col-count)))
-        { :names row-names, :rows rows}))))
+(defn execute-query 
+  ([stmt]
+    (assert (instance-of? :PreparedStatement stmt))
+    (let [rs         (. stmt :executeQuery)
+          meta-data  (. rs :getMetaData)
+          col-count  (. meta-data :getColumnCount)]
+      (loop [rows []]
+        (if (rs-next? rs)
+          (recur (conj rows (row-names rs col-count)))
+          { :names row-names, :rows rows})))))
+
+  ([stmt sql]
+    (let [rs         (. stmt :executeQuery sql)
+          meta-data  (. rs :getMetaData)
+          col-count  (. meta-data :getColumnCount)]
+      (loop [rows []]
+        (if (rs-next? rs)
+          (recur (conj rows (row-names rs col-count)))
+          { :names row-names, :rows rows})))))
  
 
-(defn execute-update [stmt sql]
-  (. stmt :executeUpdate sql))
+(defn execute-update 
+  ([stmt]
+    (assert (instance-of? :PreparedStatement stmt))
+    (. stmt :executeUpdate))
+  ([stmt sql]
+    (. stmt :executeUpdate sql)))
 
 
 (defn row-names [rs]
