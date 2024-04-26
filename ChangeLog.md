@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
   require any 3rd party libraries.
 - :jtokkit module, providing the Java JTokkit library functionality to 
   Venice
+- JDBC support trough the modules `:jdbc-core` and `:jdbc-postgresql`
 - `:cargo-postgresql` module to install/start/stop PostgreSQL DB docker 
   containers 
 - `:postgresql-jdbc-install` module to install the PostgreSQL JDBC driver
