@@ -92,6 +92,9 @@
 
           The force option will attempt to terminate all existing connections 
           to the database.
+
+          *Note: The force option is supported for PostgreSQL only and disconnects
+          all connections prior to dropping the database!*
           """
      :examples '(
           """
@@ -127,7 +130,17 @@
           (execute st (str/format "DROP DATABASE IF EXISTS %s" database)))))))
 
 
-(defn postgresql? [conn]
+(defn 
+  ^{ :arglists '(
+          "(postgresql? conn)" )
+     :doc """
+          Returns true if 'conn' is a PostgreSQL connection else false.
+          """ }
+
+  postgresql? [conn]
+
+  (assert (instance-of? :Connection conn))
+
   (let [db-meta (jdbc/db-meta-data conn)]
     (str/equals-ignore-case? "PostgreSQL" (:product-name db-meta))))
 
@@ -138,7 +151,15 @@
 ;; Connection 
 ;; -----------------------------------------------------------------------------
 
-(defn closed? [conn]
+(defn 
+  ^{ :arglists '(
+          "(closed? conn)" )
+     :doc """
+          Returns true the connections is closed else false.
+          """ }
+
+  closed? [conn]
+
   (assert (instance-of? :Connection conn))
   (. conn :isClosed))
 
@@ -148,34 +169,164 @@
 ;; Transactions 
 ;; -----------------------------------------------------------------------------
 
-(defn tx-isolation [conn]
+(defn 
+  ^{ :arglists '(
+          "(tx-isolation conn)" )
+     :doc """
+          Returns transaction isolation level of the connection
+
+          Levels:
+
+            * `:tx-none`
+            * `:tx-read-commited`
+            * `:tx-read-uncommited`
+            * `:tx-repeatable-read`
+            * `:tx-serializable`
+          """
+     :examples '(
+          """
+          (jdbc-core/tx-isolation conn)
+          """) 
+     :see-also '(
+          "jdbc-core/tx-isolation!"
+          "jdbc-core/auto-commit?"
+          "jdbc-core/auto-commit!"
+          "jdbc-core/commit!"
+          "jdbc-core/rollback!" ) }
+
+  tx-isolation [conn]
+
   (assert (instance-of? :Connection conn))
-  (. conn :getTransactionIsolation))
+
+  (let [level  (. conn :getTransactionIsolation)]
+    (get (map-invert tx-isolation-levels) level level)))
 
 
-(defn tx-isolation! [conn level]
+(defn 
+  ^{ :arglists '(
+          "(tx-isolation! conn level)" )
+     :doc """
+          Set the transaction isolation level for the connection
+
+          Levels:
+          
+            * `:tx-none`
+            * `:tx-read-commited`
+            * `:tx-read-uncommited`
+            * `:tx-repeatable-read`
+            * `:tx-serializable`
+          """
+     :examples '(
+          """
+          (jdbc-core/tx-isolation! conn :tx-repeatable-read)
+          """) 
+     :see-also '(
+          "jdbc-core/tx-isolation"
+          "jdbc-core/auto-commit?"
+          "jdbc-core/auto-commit!"
+          "jdbc-core/commit!"
+          "jdbc-core/rollback!" ) }
+
+  tx-isolation! [conn level]
+
   (assert (instance-of? :Connection conn))
-  (assert (long? level))
-  (. conn :setTransactionIsolation level))
+  (assert (or (long? level) (keyword? level)))
+  (if (long? level)
+    (. conn :setTransactionIsolation level)
+    (if-let [l (get tx-isolation-levels level)]
+      (. conn :setTransactionIsolation l)
+      (throw (ex :VncException "Invalid Tx isolation level '~{level}'")))))
 
 
-(defn auto-commit? [conn]
+(defn 
+  ^{ :arglists '(
+          "(auto-commit? conn)" )
+     :doc """
+          Returns true if auto commit is enabled on the connection else false
+          """
+     :examples '(
+          """
+          (jdbc-core/auto-commit? conn)
+          """) 
+     :see-also '(
+          "jdbc-core/tx-isolation"
+          "jdbc-core/tx-isolation!"
+          "jdbc-core/auto-commit!"
+          "jdbc-core/commit!"
+          "jdbc-core/rollback!" ) }
+
+  auto-commit? [conn]
+  
   (assert (instance-of? :Connection conn))
   (. conn :getAutoCommit))
 
 
-(defn auto-commit! [conn on]
+(defn 
+  ^{ :arglists '(
+          "(auto-commit! conn on)" )
+     :doc """
+          Activate/Deactivate auto commit on a connection
+          """
+     :examples '(
+          """
+          (jdbc-core/auto-commit! conn false)
+          """) 
+     :see-also '(
+          "jdbc-core/tx-isolation"
+          "jdbc-core/tx-isolation!"
+          "jdbc-core/auto-commit?"
+          "jdbc-core/commit!"
+          "jdbc-core/rollback!" ) }
+
+  auto-commit! [conn on]
+  
   (assert (instance-of? :Connection conn))
   (assert (boolean? on))
   (. conn :setAutoCommit on))
 
 
-(defn commit! [conn]
+(defn 
+    ^{ :arglists '(
+          "(commit! conn)" )
+     :doc """
+          Commit the current transaction on the connection
+          """
+     :examples '(
+          """
+          (jdbc-core/auto-commit! conn false)
+          """) 
+     :see-also '(
+          "jdbc-core/tx-isolation"
+          "jdbc-core/tx-isolation!"
+          "jdbc-core/auto-commit?"
+          "jdbc-core/auto-commit!"
+          "jdbc-core/rollback!" ) }
+
+  commit! [conn]
+  
   (assert (instance-of? :Connection conn))
   (. conn :commit))
 
 
-(defn rollback! [conn]
+(defn 
+    ^{ :arglists '(
+          "(rollback! conn)" )
+     :doc """
+          Rollback the current transaction on the connection
+          """
+     :examples '(
+          """
+          (jdbc-core/rollback! conn)
+          """) 
+     :see-also '(
+          "jdbc-core/tx-isolation"
+          "jdbc-core/tx-isolation!"
+          "jdbc-core/auto-commit?"
+          "jdbc-core/auto-commit!"
+          "jdbc-core/commit!" ) }
+
+  rollback! [conn]
+  
   (assert (instance-of? :Connection conn))
   (. conn :rollback))
 
@@ -183,20 +334,51 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Statement 
+;; Statements 
 ;; -----------------------------------------------------------------------------
 
-(defn create-statement [conn]
+(defn 
+  ^{ :arglists '(
+          "(create-statement conn)" )
+     :doc """
+          Create a statement
+          """
+     :examples '(
+          """
+          (jdbc-core/create-statement conn)
+          """) 
+     :see-also '(
+          "jdbc-core/prepare-statement" ) }
+
+  create-statement [conn]
+  
   (assert (instance-of? :Connection conn))
   (. conn :createStatement))
 
 
+(defn 
+  ^{ :arglists '(
+          "(prepare-statement conn sql)" )
+     :doc """
+          Create a prepared statement
+          """
+     :examples '(
+          """
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-;; -----------------------------------------------------------------------------
-;; Prepared statements 
-;; -----------------------------------------------------------------------------
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(?,?)")]
+               (jdbc/ps-int 1 1I)
+               (jdbc/ps-string 2 "Harry Potter")
+               (jdbc/execute ps)))
+          """) 
+     :see-also '(
+          "jdbc-core/create-statement" ) }
 
-(defn create-prepared-statement [conn sql]
+   prepare-statement [conn sql]
+   
    (assert (instance-of? :Connection conn))
    (assert (string? sql))
    (. conn :prepareStatement sql))
@@ -286,6 +468,82 @@
 
 (defn- sql-date? [val]
   (instance-of? :java.sql.Date val))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Prepared statement
+;; -----------------------------------------------------------------------------
+
+(defn rs-clear-parameters [ps]
+  (assert (instance-of? :PreparedStatement ps))
+  (. ps :clearParameters))
+
+(defn rs-decimal [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (decimal? val)))
+  (. ps :setBigDecimal (int idx) val))
+
+(defn rs-boolean [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (boolean? val)))
+  (. ps :setBoolean (int idx) val))
+
+(defn rs-double [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (double? val)))
+  (. ps :setDouble (int idx) val))
+
+(defn rs-float [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (double? val)))
+  (. ps :setFloat (int idx) val))
+
+(defn rs-int [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (int? val) (long? val)))
+  (. ps :setInt (int idx) (int val)))
+
+(defn rs-long [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (int? val) (long? val)))
+  (. ps :setLong (int idx) (long val)))
+
+(defn rs-string [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (string? val)))
+  (. ps :setString (int idx) val))
+
+(defn rs-date [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (time/date? val) 
+              (time/local-date-time? val)  (time/zoned-date-time? val)))
+  (if (nil?)
+    (. ps :setDate (int idx) nil)
+    (->> (time/format val "yyyy-mm-dd")
+         (. :java.sql.Date :valueOf)
+         (. ps :setDate (int idx)))))
+
+(defn rs-timestamp [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil?) (time/date? val) 
+              (time/local-date-time? val)  (time/zoned-date-time? val)))
+  (cond 
+    (nil?)        (. ps :setTimestamp (int idx) nil)
+    (time/date?)  (->> (time/local-date-time val)
+                       (. :java.sql.Timestamp :from)
+                       (. ps :setTimestamp (int idx)))
+    :else         (->> (. :java.sql.Timestamp :from val)
+                       (. ps :setTimestamp (int idx)))))
 
 
 
@@ -576,7 +834,7 @@
 
 
 
-(defonce tx-isolation-level {
+(defonce tx-isolation-levels {
   ;; A constant indicating that transactions are not supported.
   :tx-none             (. :Connection :TRANSACTION_NONE)
 

@@ -53,7 +53,7 @@
         
           Arguments:
 
-          | [![width: 20%]] | [![width: 80%]] |
+          | [![width: 15%]] | [![width: 85%]] |
           | *user*        | A mandatory ser name |
           | *password*    | A mandatory password |
           | *host*        | An optional host. Defaults to "localhost" |
@@ -69,14 +69,8 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
            
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-              (-> (jdbc/create-statement conn)
-                  (jdbc/execute-query
-                       st   (jdbc/create-statement conn)
-                       rs   (jdbc/execute-query st "SELECT * FROM mytable WHERE foo = 500")]
-              (loop []
-                (when (. rs :next) 
-                  (println (. rs :getString 1))
-                  (recur)))))
+              (-> (jdbc/execute-query conn "SELECT * FROM mytable WHERE foo = 500")
+                  (jdbc/print-query-result))))
           """) 
      :see-also '(
           "jdbc-core/create-database"
@@ -123,9 +117,16 @@
  
 (defn 
   ^{ :arglists '(
-          "(describe-table conn table)" )
+          "(describe-table conn table & options)" )
      :doc """
           Describe the schema of a table. 
+
+          ¶¶*Options:*
+
+          | [![width: 10%]] | [![width: 90%]] |
+          | :mode           | In `:print` mode prints the table description, \
+                              in `:data` mode returns the description as a data \
+                              structure. Defaults to `:print`.|
           """
      :examples '(
           """
@@ -138,29 +139,40 @@
      :see-also '(
           "jdbc-postgresql/foreign-key-constraints") }
 
-  describe-table [conn table]
+  describe-table [conn table & options]
 
-  (-> (jdbc/execute-query conn
-                          """
-                          SELECT 
-                            column_name, 
-                            data_type, 
-                            character_maximum_length, 
-                            is_nullable, 
-                            column_default 
-                          FROM 
-                            information_schema.columns 
-                          WHERE 
-                            table_name = '~{table}';
-                          """)
-      (jdbc/print-query-result)))
+    (let [opts (apply hash-map options)
+          mode (:mode opts)
+          data (jdbc/execute-query conn
+                                    """
+                                    SELECT 
+                                      column_name, 
+                                      data_type, 
+                                      character_maximum_length, 
+                                      is_nullable, 
+                                      column_default 
+                                    FROM 
+                                      information_schema.columns 
+                                    WHERE 
+                                      table_name = '~{table}';
+                                    """)]
+      (if (= mode :data) 
+        data
+        (jdbc/print-query-result data))))
 
 
 (defn 
   ^{ :arglists '(
-          "(foreign-key-constraints conn)" )
+          "(foreign-key-constraints conn & options)" )
      :doc """
           List the foreign key constraints in a database
+
+          ¶¶*Options:*
+
+          | [![width: 10%]] | [![width: 90%]] |
+          | :mode           | In `:print` mode prints the foreign key \
+                              constraints, in `:data` mode returns the constraints \
+                              as a data structure. Defaults to `:print`.|
           """
      :examples '(
           """
@@ -173,25 +185,29 @@
      :see-also '(
           "jdbc-postgresql/describe-table") }
 
-  foreign-key-constraints [conn]
+  foreign-key-constraints [conn & options]
 
-  (-> (jdbc/execute-query conn
-                          """
-                          SELECT 
-                            conrelid::regclass AS table_name, 
-                            conname AS foreign_key, 
-                            pg_get_constraintdef(oid) 
-                          FROM
-                            pg_constraint 
-                          WHERE
-                            contype = 'f' 
-                          AND
-                            connamespace = 'public'::regnamespace   
-                          ORDER BY 
-                            conrelid::regclass::text, 
-                            contype DESC;
-                          """)
-      (jdbc/print-query-result)))
+  (let [opts (apply hash-map options)
+        mode (:mode opts)
+        data (jdbc/execute-query conn
+                                  """
+                                  SELECT 
+                                    conrelid::regclass AS table_name, 
+                                    conname AS foreign_key, 
+                                    pg_get_constraintdef(oid) 
+                                  FROM
+                                    pg_constraint 
+                                  WHERE
+                                    contype = 'f' 
+                                  AND
+                                    connamespace = 'public'::regnamespace   
+                                  ORDER BY 
+                                    conrelid::regclass::text, 
+                                    contype DESC;
+                                  """)]
+      (if (= mode :data) 
+        data
+        (jdbc/print-query-result data))))
 
 
 (defn- as-properties [user password properties]

@@ -41,7 +41,8 @@
   ^{ :arglists '(
           "(show-data-model)" )
      :doc """
-          Show the Chinook data model. 
+          Open a browser to show the 
+          [Chinook data model](https://github.com/lerocha/chinook-database/tree/master#data-model) 
           """
      :examples '(
           """
@@ -88,7 +89,7 @@
           | employees       | stores employee data such as id, last name, first name, \
                               etc. It also has a field named ReportsTo to specify who \
                               reports to whom |
-          | customers       | table stores customer data |
+          | customers       | stores customer data |
           | invoices        | stores invoice header data |
           | invoice_items   | stores the invoice line items data |
           | artists         | stores artist data. It is a simple table that contains \
@@ -100,7 +101,7 @@
                               audio files |
           | genres          | stores music types such as rock, jazz, metal, etc. |
           | tracks          | stores the data of songs. Each track belongs to one \
-                              album. |
+                              album |
           | playlists       | stores data about playlists. Each playlist contains \
                               a list of tracks. Each track may belong to multiple \
                               playlists. The relationship between the playlists and \
@@ -116,6 +117,8 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
             (jdbp/start "postgres" "16.2" 5432 "./postgres-storage" "postgres" "postgres"))
           ```
+
+          *Note: The storage directory (e.g. "./postgres-storage") must exist!*
           """
      :examples '(
           """

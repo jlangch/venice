@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleImagesSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJTokkitSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJdbcCoreSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJdbcPostgreSQLSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
@@ -377,6 +378,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
+        extmod.addSection(new DocSection("JDBC\u00A0Core", "modules.jdbc-core"));
         extmod.addSection(new DocSection("JDBC\u00A0PostgreSQL", "modules.jdbc-postgresql"));
         content.add(extmod);
 
@@ -523,6 +525,7 @@ public class DocGenerator {
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
+                new ModuleJdbcCoreSection(diBuilder).section(),
                 new ModuleJdbcPostgreSQLSection(diBuilder).section(),
                 // new ModuleHttpClientSection(diBuilder).section(),
                 new ModuleImagesSection(diBuilder).section());

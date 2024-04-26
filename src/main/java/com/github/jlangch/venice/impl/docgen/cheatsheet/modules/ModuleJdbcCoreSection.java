@@ -26,29 +26,42 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleJdbcPostgreSQLSection implements ISectionBuilder {
+public class ModuleJdbcCoreSection implements ISectionBuilder {
 
-    public ModuleJdbcPostgreSQLSection(final DocItemBuilder diBuilder) {
+    public ModuleJdbcCoreSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                        "JDBC PostgreSQL",
-                                        "modules.jdbc-postgresql");
+                                        "JDBC Core",
+                                        "modules.jdbc-core");
 
-        final DocSection all = new DocSection("(load-module :jdbc-postgresql)", id());
+        final DocSection all = new DocSection("(load-module :jdbc-core)", id());
         section.addSection(all);
+
+        final DocSection db = new DocSection("Create/Drop", id());
+        all.addSection(db);
+        db.addItem(diBuilder.getDocItem("jdbc-core/create-database", false));
+        db.addItem(diBuilder.getDocItem("jdbc-core/drop-database", false));
+
+        final DocSection provider = new DocSection("Provider", id());
+        all.addSection(provider);
+        provider.addItem(diBuilder.getDocItem("jdbc-core/postgresql?", false));
 
         final DocSection conn = new DocSection("Connection", id());
         all.addSection(conn);
-        conn.addItem(diBuilder.getDocItem("jdbc-postgresql/create-connection", false));
+        conn.addItem(diBuilder.getDocItem("jdbc-core/closed?", false));
 
-        final DocSection meta = new DocSection("Meta Data", id());
-        all.addSection(meta);
-        meta.addItem(diBuilder.getDocItem("jdbc-postgresql/describe-table", false));
-        meta.addItem(diBuilder.getDocItem("jdbc-postgresql/foreign-key-constraints", false));
+        final DocSection tx = new DocSection("TX", id());
+        all.addSection(tx);
+        tx.addItem(diBuilder.getDocItem("jdbc-core/auto-commit?", false));
+        tx.addItem(diBuilder.getDocItem("jdbc-core/auto-commit!", false));
+        tx.addItem(diBuilder.getDocItem("jdbc-core/commit!", false));
+        tx.addItem(diBuilder.getDocItem("jdbc-core/rollback!", false));
+        tx.addItem(diBuilder.getDocItem("jdbc-core/tx-isolation", false));
+        tx.addItem(diBuilder.getDocItem("jdbc-core/tx-isolation!", false));
 
         return section;
     }
