@@ -27,74 +27,11 @@ The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice i
 Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.14/jar)
 
 
-### 3. Start a Venice REPL (Read-Eval-Print Loop)
+### 3. Setup the Venice REPL
 
-#### 3.1 Linux and MacOSX
-
-Open a terminal, move to the directory the Venice JAR is located, and start 
-a REPL:
-
-```text
-foo> java -jar venice-1.12.14.jar -colors
-```
-
-The REPL prompts for input:
-
-```text
-Venice REPL: V1.12.14
-Loading REPL config from repl.json...
-Type '!' for help.
-venice>
-```
-
-Type an expression like `(+ 1 1)` followed by a `<CR>`
-
-```text
-venice> (+ 1 1)
-=> 2
-venice>
-```
-
-
-#### 3.2 Windows
-
-On Windows the 'jansi' 2.4.1 library is required to run the REPL. Download the library from
-Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/2.4.1/jar)
-
-Open a terminal, move to the directory the Venice and the 'jansi' JAR is located, 
-and start a REPL:
-
-```text
-foo> java -cp venice-1.12.14.jar;jansi-2.4.1.jar com.github.jlangch.venice.Launcher -colors-darkmode
-```
-
-The REPL prompts for input:
-
-```text
-Venice REPL: V1.12.14
-Loading REPL config from repl.json...
-Type '!' for help.
-venice>
-```
-
-Type an expression like `(+ 1 1)` followed by a `<CR>`
-
-```text
-venice> (+ 1 1)
-=> 2
-venice>
-```
-
-#### 3.3 Automated setup for all operating systems
-
-This is by far the easiest way to setup a local Venice REPL environment 
-regardless of the operating system (Windows, MacOSX, or Linux).
-
-You just need a Java JRE/JDK and the Venice JAR as prerequisite.
-
-The automated setup will create a REPL launcher script with the Java classpath 
+This automated setup will create a REPL launcher script with the Java classpath 
 correctly setup, will download the Jansi library from Maven, and add some example 
-Venice scripts.
+Venice scripts. The setups works on MacOS, Linux, and Windows.
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 the REPL in setup mode:
@@ -128,6 +65,30 @@ foo> repl.bat
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png" width="500">
+
+
+The REPL is started and prompts for input:
+
+```text
+Venice REPL: V1.12.14
+Java: 1.8.0_392
+Loading configuration from file 'repl.json'
+Using Ansi terminal (light color mode turned on)
+Use the commands !lightmode or !darkmode to adapt to the terminal's colors
+Type '!' for help.
+venice>
+```
+
+### 4. Run expressions in the REPL
+
+Type an expression like `(+ 1 1)` followed by a `<CR>`
+
+```text
+venice> (+ 1 1)
+=> 2
+venice>
+```
+
 
 
 ## Venice Gitpod workspace 
