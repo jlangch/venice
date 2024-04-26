@@ -378,8 +378,6 @@ public class DocGenerator {
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
-        extmod.addSection(new DocSection("JDBC\u00A0Core", "modules.jdbc-core"));
-        extmod.addSection(new DocSection("JDBC\u00A0PostgreSQL", "modules.jdbc-postgresql"));
         content.add(extmod);
 
         final DocSection build = new DocSection("Build\u00A0Tools", "build");
@@ -397,6 +395,11 @@ public class DocGenerator {
         debug.addSection(new DocSection("Timing", "modules.timing"));
         debug.addSection(new DocSection("Benchmark", "modules.benchmark"));
         content.add(debug);
+
+        final DocSection db = new DocSection("Database", "database");
+        db.addSection(new DocSection("JDBC\u00A0Core", "modules.jdbc-core"));
+        db.addSection(new DocSection("JDBC\u00A0PostgreSQL", "modules.jdbc-postgresql"));
+        content.add(db);
 
         final DocSection web = new DocSection("Web", "web");
         //web.addSection(new DocSection("Http\u00A0Client", "modules.http-client"));
@@ -525,10 +528,9 @@ public class DocGenerator {
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
-                new ModuleJdbcCoreSection(diBuilder).section(),
-                new ModuleJdbcPostgreSQLSection(diBuilder).section(),
+                new ModuleJdbcCoreSection(diBuilder).section()
                 // new ModuleHttpClientSection(diBuilder).section(),
-                new ModuleImagesSection(diBuilder).section());
+         );
     }
 
     private List<DocSection> getModulesRightSections() {
@@ -555,7 +557,10 @@ public class DocGenerator {
                 new ModuleHttpClientJ8Section(diBuilder).section(),
                 new ModuleOpenAiSection(diBuilder).section(),
                 new ModuleJTokkitSection(diBuilder).section(),
-                new ModuleInstallerSection(diBuilder).section());
+                new ModuleInstallerSection(diBuilder).section(),
+                new ModuleJdbcPostgreSQLSection(diBuilder).section(),
+                new ModuleImagesSection(diBuilder).section()
+        );
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {

@@ -35,6 +35,8 @@
 (import :java.sql.Statement)
 (import :java.sql.PreparedStatement)
 (import :java.sql.Types)
+(import :java.sql.Clob)
+(import :java.sql.Blob)
 
 
 
@@ -457,7 +459,18 @@
           statement on a JDBC statement or connection.
 
           Returns a parsed ResultSet as map with the column names and a vector
-          of row values.
+          of row values. 
+
+          Row values may be of type:
+
+          * string
+          * boolean
+          * int
+          * long
+          * double
+          * decimal
+          * :java.sql.Clob
+          * :java.sql.Blob
 
           ```
           { :col-names ["name" "age"]
@@ -583,7 +596,7 @@
   (let [meta-data  (. rs :getMetaData)
         col-count  (. meta-data :getColumnCount)]
     (loop [rows []]
-      (if (rs-next? rs)
+      (if (rs-next! rs)
         (recur (conj rows (row-values rs col-count)))
         { :col-names (col-names meta-data), :rows rows}))))
 
@@ -620,74 +633,335 @@
 ;; Prepared statement
 ;; -----------------------------------------------------------------------------
 
-(defn rs-clear-parameters [ps]
+(defn 
+  ^{ :arglists '(
+          "(ps-clear-parameters ps)" )
+     :doc """
+          Clears the prepared statment parameter.
+          """
+     :examples '(
+          "(jdbc-core/ps-clear-parameters ps)") 
+     :see-also '(
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-clear-parameters [ps]
+
   (assert (instance-of? :PreparedStatement ps))
   (. ps :clearParameters))
 
-(defn rs-blob [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-blob ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given blob value.
+
+          The value may be a `bytebuf` or a `:java.io.InputStream`.
+          """
+     :examples '(
+          "(jdbc-core/ps-decimal ps 1 (bytebuf [1 2 3]))"
+          "(jdbc-core/ps-decimal ps 1 (io/bytebuf-in-stream (bytebuf [1 2 3])))") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-blob [ps idx val]
+
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (bytebuf? val) (io/in-stream? val)))
   (cond 
     (nil? val)          (. ps :setBlob (int idx) nil)
     (bytebuf? val)      (. ps :setBlob (int idx) (io/bytebuf-in-stream val))
     (io/in-stream? val) (. ps :setBlob (int idx) val)))
 
-(defn rs-clob [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-clob ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given clob value.
+
+          The value may be a `string` or a `:java.io.Reader`.
+          """
+     :examples '(
+          "(jdbc-core/ps-decimal ps 1 \"123456\")"
+          "(jdbc-core/ps-decimal ps 1 (io/string-reader \"123456\"))" ) 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-clob [ps idx val]
+
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (string? val) (io/reader? val)))
   (cond 
     (nil? val)        (. ps :setClob (int idx) nil)
     (string? val)     (. ps :setClob (int idx) (io/string-reader val))
     (io/reader? val)  (. ps :setClob (int idx) val)))
 
-(defn rs-decimal [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-decimal ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given decimal value.
+          """
+     :examples '(
+          "(jdbc-core/ps-decimal ps 1 3.1415M)") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-decimal [ps idx val]
+
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (decimal? val)))
   (. ps :setBigDecimal (int idx) val))
 
-(defn rs-boolean [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-boolean ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given boolean value.
+          """
+     :examples '(
+          "(jdbc-core/ps-boolean ps 1 true)") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+  
+  ps-boolean [ps idx val]
+  
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (boolean? val)))
   (. ps :setBoolean (int idx) val))
 
-(defn rs-double [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-double ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given double value.
+          """
+     :examples '(
+          "(jdbc-core/ps-double ps 1 1.24)") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+  
+  ps-double [ps idx val]
+  
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (double? val)))
   (. ps :setDouble (int idx) val))
 
-(defn rs-float [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-float ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given double value.
+          """
+     :examples '(
+          "(jdbc-core/ps-float ps 1 1.24)") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+  
+  ps-float [ps idx val]
+  
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (double? val)))
   (. ps :setFloat (int idx) val))
 
-(defn rs-int [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-int ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given int value.
+          """
+     :examples '(
+          "(jdbc-core/ps-int ps 1 10I)") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-int [ps idx val]
+  
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (int? val) (long? val)))
   (. ps :setInt (int idx) (int val)))
 
-(defn rs-long [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-long ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given long value.
+          """
+     :examples '(
+          "(jdbc-core/ps-long ps 1 10)") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-long [ps idx val]
+  
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (int? val) (long? val)))
   (. ps :setLong (int idx) (long val)))
 
-(defn rs-string [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-string ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given string value.
+          """
+     :examples '(
+          "(jdbc-core/ps-string ps 1 \"abcdef\")") 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-date"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-string [ps idx val]
+  
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (string? val)))
   (. ps :setString (int idx) val))
 
-(defn rs-date [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-date ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given date value.
+          """
+     :examples '(
+          "(jdbc-core/ps-date ps 1 (time/date))"
+          "(jdbc-core/ps-date ps 1 (time/local-date 2020 1 1))"
+          "(jdbc-core/ps-date ps 1 (time/local-date-time 2020 1 1 14 0 0))"
+          "(jdbc-core/ps-date ps 1 (time/zoned-date-time \"UTC\" 2020 1 1 14 0 0))" ) 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-timestamp" ) }
+
+  ps-date [ps idx val]
+
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil? val) (time/date? val) 
+  (assert (pos? idx))
+  (assert (or (nil? val) (time/date? val)  (time/local-date? val)
               (time/local-date-time? val)  (time/zoned-date-time? val)))
   (if (nil? val)
     (. ps :setDate (int idx) nil)
@@ -695,9 +969,35 @@
          (. :java.sql.Date :valueOf)
          (. ps :setDate (int idx)))))
 
-(defn rs-timestamp [ps idx val]
+(defn 
+  ^{ :arglists '(
+          "(ps-timestamp ps idx val)" )
+     :doc """
+          Sets the prepared statment parameter to the given timestamp value.
+          """
+     :examples '(
+          "(jdbc-core/ps-timestamp ps 1 (time/date))"
+          "(jdbc-core/ps-timestamp ps 1 (time/local-date 2020 1 1))"
+          "(jdbc-core/ps-timestamp ps 1 (time/local-date-time 2020 1 1 14 0 0))"
+          "(jdbc-core/ps-timestamp ps 1 (time/zoned-date-time \"UTC\" 2020 1 1 14 0 0))" ) 
+     :see-also '(
+          "jdbc-core/ps-clear-parameters"
+          "jdbc-core/ps-blob"
+          "jdbc-core/ps-clob"
+          "jdbc-core/ps-decimal"
+          "jdbc-core/ps-boolean"
+          "jdbc-core/ps-double"
+          "jdbc-core/ps-float"
+          "jdbc-core/ps-int"
+          "jdbc-core/ps-long"
+          "jdbc-core/ps-string"
+          "jdbc-core/ps-date" ) }
+  
+  ps-timestamp [ps idx val]
+  
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
+  (assert (pos? idx))
   (assert (or (nil? val) (time/date? val) 
               (time/local-date-time? val)  (time/zoned-date-time? val)))
   (cond 
@@ -714,6 +1014,69 @@
 ;; Result Set
 ;; -----------------------------------------------------------------------------
 
+(defn 
+  ^{ :arglists '(
+          "(rs-first! rs)" )
+     :doc """
+          Moves the cursor to the first row in this ResultSet object.
+
+          Returns true if the cursor is on a valid row; false if there are no \
+          rows in the result set
+          """
+     :examples '(
+          "(jdbc-core/rs-first! rs)" ) 
+     :see-also '(
+          "jdbc-core/rs-next!"
+          "jdbc-core/rs-last!" ) }
+
+  rs-first! [rs]
+
+  (. rs :first))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-next! rs)" )
+     :doc """
+          Moves the cursor forward one row from its current position. \
+          A ResultSet cursor is initially positioned before the first row; \
+          the first call to the method next makes the first row the current \
+          row; the second call makes the second row the current row, and so on. 
+
+          Returns true if the new current row is valid; false if there are no \
+          more rows
+          """
+     :examples '(
+          "(jdbc-core/rs-next! rs)" ) 
+     :see-also '(
+          "jdbc-core/rs-first!"
+          "jdbc-core/rs-last!" ) }
+
+  rs-next! [rs]
+  
+  (. rs :next))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-last! rs)" )
+     :doc """
+          Moves the cursor to the last row in this ResultSet object.
+
+          Returns true if the cursor is on a valid row; false if there are no \
+          rows in the result set
+          """
+     :examples '(
+          "(jdbc-core/rs-last! rs)" ) 
+     :see-also '(
+          "jdbc-core/rs-first!"
+          "jdbc-core/rs-next!" ) }
+
+  rs-last! [rs]
+  
+  (. rs :last))
+
+
 (defn rs-string [rs name-or-index]
   (. rs :getString name-or-index))
 
@@ -724,6 +1087,10 @@
 
 (defn rs-date [rs name-or-index]
   (. rs :getDate name-or-index))
+
+
+(defn rs-timestamp [rs name-or-index]
+  (. rs :getTimestamp name-or-index))
 
 
 (defn rs-double [rs name-or-index]
@@ -738,12 +1105,190 @@
   (. rs :getInt name-or-index))
 
 
-(defn rs-first? [rs]
-  (. rs :first))
+
+;; -----------------------------------------------------------------------------
+;; CLOB
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(clob? val)" )
+     :doc """
+          Returns true if val is a:java.sql.Clob
+          """
+     :examples '(
+          "(jdbc-core/clob? v)" ) 
+     :see-also '(
+          "jdbc-core/clob-length"
+          "jdbc-core/clob-reader" 
+          "jdbc-core/clob-free") }
+
+  clob? [val]
+
+  (instance-of? :Clob val))
 
 
-(defn rs-next? [rs]
-  (. rs :next))
+(defn 
+  ^{ :arglists '(
+          "(clob-length clob)" )
+     :doc """
+          Returns the length of a clob
+          """
+     :examples '(
+          "(jdbc-core/clob-length vc" ) 
+     :see-also '(
+          "jdbc-core/clob?"
+          "jdbc-core/clob-reader"
+          "jdbc-core/clob-free" ) }
+
+  clob-length [clob]
+
+  (assert (instance-of? :Clob clob))
+  (. clob :length))
+
+
+(defn 
+  ^{ :arglists '(
+          "(clob-reader clob)" )
+     :doc """
+          Returns a :java.io.Reader to read the clob data
+          """
+     :examples '(
+          "(jdbc-core/clob-reader c)" ) 
+     :see-also '(
+          "jdbc-core/clob?"
+          "jdbc-core/clob-length"
+          "jdbc-core/clob-free" ) }
+
+  clob-reader [clob]
+
+  (assert (instance-of? :Clob clob))
+  (. clob :getCharacterStream))
+
+
+(defn 
+  ^{ :arglists '(
+          "(clob-free clob)" )
+     :doc """
+          Frees the Clob object and releases the resources the resources that \
+          it holds.
+          """
+     :examples '(
+          "(jdbc-core/clob-free c)" ) 
+     :see-also '(
+          "jdbc-core/clob?"
+          "jdbc-core/clob-length"
+          "jdbc-core/clob-reader" ) }
+
+  clob-free [clob]
+
+  (assert (instance-of? :Clob clob))
+  (. clob :free))
+
+
+
+;; -----------------------------------------------------------------------------
+;; BLOB
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(blob? val)" )
+     :doc """
+          Returns true if val is a:java.sql.Blob
+          """
+     :examples '(
+          "(jdbc-core/blob? v)" ) 
+     :see-also '(
+          "jdbc-core/blob-length"
+          "jdbc-core/blob-in-stream"
+          "jdbc-core/blob-bytebuf"
+          "jdbc-core/blob-free" ) }
+
+  blob? [val]
+
+  (instance-of? :Blob val))
+
+
+(defn 
+  ^{ :arglists '(
+          "(blob-length blob)" )
+     :doc """
+          Returns the length of a blob
+          """
+     :examples '(
+          "(jdbc-core/blob-length b)" ) 
+     :see-also '(
+          "jdbc-core/blob?"
+          "jdbc-core/blob-in-stream"
+          "jdbc-core/blob-bytebuf"
+          "jdbc-core/blob-free" ) }
+
+  blob-length [blob]
+
+  (assert (instance-of? :Blob blob))
+  (. blob :length))
+
+
+(defn 
+  ^{ :arglists '(
+          "(blob-in-stream blob)" )
+     :doc """
+          Returns a :java.io.InputStream to read the blob data
+          """
+     :examples '(
+          "(jdbc-core/blob-in-stream b)" ) 
+     :see-also '(
+          "jdbc-core/blob?"
+          "jdbc-core/blob-length"
+          "jdbc-core/blob-bytebuf"
+          "jdbc-core/blob-free" ) }
+
+  blob-in-stream [blob]
+
+  (assert (instance-of? :Blob blob))
+  (. blob :getBinaryStream))
+
+
+(defn 
+  ^{ :arglists '(
+          "(blob-bytebuf blob)" )
+     :doc """
+          Returns the blob data as a bytebuf
+          """
+     :examples '(
+          "(jdbc-core/blob-bytebuf b)" ) 
+     :see-also '(
+          "jdbc-core/blob?"
+          "jdbc-core/blob-length"
+          "jdbc-core/blob-in-stream"
+          "jdbc-core/blob-free" ) }
+
+  blob-bytebuf [blob]
+
+  (assert (instance-of? :Blob blob))
+  (. blob :getBytes 0 (. blob :length)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(blob-free blob)" )
+     :doc """
+          Frees the Blob object and releases the resources the resources that \
+          it holds.
+          """
+     :examples '(
+          "(jdbc-core/blob-free b)" ) 
+     :see-also '(
+          "jdbc-core/blob?"
+          "jdbc-core/blob-length"
+          "jdbc-core/blob-in-stream"
+          "jdbc-core/blob-bytebuf" ) }
+
+  blob-free [blob]
+
+  (assert (instance-of? :Blob blob))
+  (. blob :free))
 
 
 
@@ -828,7 +1373,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(db-meta-data conn)" )
+          "(meta-data conn)" )
      :doc """
           List the meta data of a database
           """
@@ -838,10 +1383,10 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
             (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg")]
-              (jdbc/db-meta-data conn)))
+              (jdbc/meta-data conn)))
           """) }
 
-  db-meta-data [conn]
+  meta-data [conn]
 
   (try-with [md  (. conn :getMetaData)]
     { :product-name     (. md :getDatabaseProductName)
@@ -852,7 +1397,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(db-features conn)" )
+          "(features conn)" )
      :doc """
           List the database' features
           """
@@ -862,10 +1407,10 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
             (try-with [conn (jdbp/create-connection "localhost" 5432 "pg" "pg")]
-              (jdbc/db-features conn)))
+              (jdbc/features conn)))
           """) }
 
-  db-meta-data [conn]
+  features [conn]
 
   (try-with [md  (. conn :getMetaData)]
     { :supports-full-outer-joins   (. md :supportsFullOuterJoins)
@@ -895,7 +1440,7 @@
   (try-with [md  (. conn :getMetaData)
              rs  (. md :getSchemas)]
     (loop [schemas []]
-      (if (rs-next? rs)
+      (if (rs-next! rs)
         (recur (conj schemas { :schem   (rs-string rs "TABLE_SCHEM")
                                :catalog (rs-string rs "TABLE_CATALOG") }))
         schemas))))
@@ -921,7 +1466,7 @@
   (try-with [md  (. conn :getMetaData)
              rs  (. md :getTables nil nil "%" ["TABLE"])]
     (loop [tables []]
-      (if (rs-next? rs)
+      (if (rs-next! rs)
         (recur (conj tables (rs-string rs "TABLE_NAME")))
         tables))))
 
@@ -946,7 +1491,7 @@
   (try-with [md  (. conn :getMetaData)
              rs  (. md :getColumns nil nil table nil)]
     (loop [columns []]
-      (if (rs-next? rs)
+      (if (rs-next! rs)
         (recur (conj columns { :name      (rs-string rs "COLUMN_NAME")
                                :size      (rs-string rs "COLUMN_SIZE")
                                :type      (type-map (rs-int rs "DATA_TYPE") :unknown)
