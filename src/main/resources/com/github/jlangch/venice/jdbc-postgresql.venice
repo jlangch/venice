@@ -127,6 +127,16 @@
           | :mode           | In `:print` mode prints the table description, \
                               in `:data` mode returns the description as a data \
                               structure. Defaults to `:print`.|
+
+          ¶¶Example PostgreSQL Chinook database "album" table:
+
+          ```
+          column_name data_type         character_maximum_length is_nullable column_default
+          ----------- ----------------- ------------------------ ----------- --------------
+          album_id    integer           <null>                   NO          <null>        
+          artist_id   integer           <null>                   NO          <null>        
+          title       character varying 160                      NO          <null>        
+          ```
           """
      :examples '(
           """
@@ -173,6 +183,26 @@
           | :mode           | In `:print` mode prints the foreign key \
                               constraints, in `:data` mode returns the constraints \
                               as a data structure. Defaults to `:print`.|
+
+
+          ¶¶Example PostgreSQL Chinook database foreign key constraints:
+
+          ```
+          table_name     foreign_key                     pg_get_constraintdef
+          -------------- ------------------------------- -------------------------------------------------------------
+          album          album_artist_id_fkey            FOREIGN KEY (artist_id) REFERENCES artist(artist_id)            
+          customer       customer_support_rep_id_fkey    FOREIGN KEY (support_rep_id) REFERENCES employee(employee_id)   
+          employee       employee_reports_to_fkey        FOREIGN KEY (reports_to) REFERENCES employee(employee_id)       
+          invoice        invoice_customer_id_fkey        FOREIGN KEY (customer_id) REFERENCES customer(customer_id)      
+          invoice_line   invoice_line_invoice_id_fkey    FOREIGN KEY (invoice_id) REFERENCES invoice(invoice_id)         
+          invoice_line   invoice_line_track_id_fkey      FOREIGN KEY (track_id) REFERENCES track(track_id)               
+          playlist_track playlist_track_playlist_id_fkey FOREIGN KEY (playlist_id) REFERENCES playlist(playlist_id)      
+          playlist_track playlist_track_track_id_fkey    FOREIGN KEY (track_id) REFERENCES track(track_id)               
+          track          track_album_id_fkey             FOREIGN KEY (album_id) REFERENCES album(album_id)               
+          track          track_genre_id_fkey             FOREIGN KEY (genre_id) REFERENCES genre(genre_id)               
+          track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFERENCES 
+                                                                                            media_type(media_type_id)
+          ```
           """
      :examples '(
           """

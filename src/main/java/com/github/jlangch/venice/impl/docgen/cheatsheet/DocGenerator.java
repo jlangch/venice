@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArang
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoPostgresqlDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoQdrantDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleChinookPostgreSQLSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleComponentSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleConfigSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCryptographySection;
@@ -150,7 +151,7 @@ public class DocGenerator {
                         "installer",    "mimetypes",           "multipart",        "images",
                         "tomcat",       "jetty",               "cargo-postgresql",
                         "http-client",  "http-client-j8",      "openai",
-                        "jdbc-core",    "jdbc-postgresql",
+                        "jdbc-core",    "jdbc-postgresql",     "chinook-postgresql",
                         "ring",         "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",    "server-side-events",  "jtokkit"));
 
@@ -399,6 +400,7 @@ public class DocGenerator {
         final DocSection db = new DocSection("Database", "database");
         db.addSection(new DocSection("JDBC\u00A0Core", "modules.jdbc-core"));
         db.addSection(new DocSection("JDBC\u00A0PostgreSQL", "modules.jdbc-postgresql"));
+        db.addSection(new DocSection("Chinook\u00A0Dataset", "modules.chinook-postgresql"));
         content.add(db);
 
         final DocSection web = new DocSection("Web", "web");
@@ -559,6 +561,7 @@ public class DocGenerator {
                 new ModuleJTokkitSection(diBuilder).section(),
                 new ModuleInstallerSection(diBuilder).section(),
                 new ModuleJdbcPostgreSQLSection(diBuilder).section(),
+                new ModuleChinookPostgreSQLSection(diBuilder).section(),
                 new ModuleImagesSection(diBuilder).section()
         );
     }

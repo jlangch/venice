@@ -61,7 +61,8 @@
           "(download-data)" )
      :doc """
           Download the Chinook dataset for PostgreSQL. 
-          
+
+          The data set is downloaded from [Github/lerocha](https://github.com/lerocha/chinook-database)          
           """
      :examples '(
           """
@@ -82,6 +83,8 @@
           "(load-data)" )
      :doc """
           Load the Chinook dataset to a PostgreSQL database. 
+
+          The data set is loaded from [Github/lerocha](https://github.com/lerocha/chinook-database)
 
           The Chinook sample database has 11 tables as follows:
 
@@ -143,7 +146,9 @@
 
   load-data [host port user password]
 
+  (println "Downloading data from \"https://github.com/lerocha/chinook-database\"...")
   (let [[sql1 sql2] (download-data)]
+    (println "Download finished.")
     ;; drop and create the database (instead of sql1 we run run directly)
     (try-with [conn (jdbc/create-connection host port user password)]
       (jdbc/create-database conn database true) 

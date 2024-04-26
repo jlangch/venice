@@ -1376,6 +1376,15 @@
           "(meta-data conn)" )
      :doc """
           List the meta data of a database
+
+          Example PostgreSQL meta data:
+
+          ```
+          { :product-name "PostgreSQL" 
+            :driver-name "PostgreSQL JDBC Driver"
+            :driver-version "42.7.3" 
+            :product-version "16.2 (Debian 16.2-1.pgdg120+2)" }
+          ```
           """
      :examples '(
           """
@@ -1400,6 +1409,16 @@
           "(features conn)" )
      :doc """
           List the database' features
+
+          Example PostgreSQL features:
+          
+          ```
+          { :supports-stored-procedures true 
+            :supports-full-outer-joins true 
+            :supports-savepoints true 
+            :supports-batch-updates true 
+            :supports-transactions true }
+          ```
           """
      :examples '(
           """
@@ -1425,6 +1444,20 @@
           "(schemas conn)" )
      :doc """
           List the schemas of a database
+
+          Example PostgreSQL schemas:
+          
+          ```
+          [ { :schem "information_schema" 
+              :catalog nil
+            } 
+            { :schem "pg_catalog" 
+              :catalog nil
+            }
+            { :schem "public" 
+              :catalog nil 
+            } ]
+          ```
           """
      :examples '(
           """
@@ -1451,13 +1484,29 @@
           "(tables conn)" )
      :doc """
           List the tables of a database
+
+          Example PostgreSQL Chinook database:
+          
+          ```
+          [ "album" 
+            "artist" 
+            "customer" 
+            "employee" 
+            "genre" 
+            "invoice" 
+            "invoice_line" 
+            "media_type" 
+            "playlist" 
+            "playlist_track" 
+            "track" ]
+            ```
           """
      :examples '(
           """
           (do
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "chinook" "pg" "pg")]
               (jdbc/tables conn)))
           """) }
 
@@ -1476,14 +1525,29 @@
           "(columns conn table)" )
      :doc """
           List the columns of a database table
+
+          Example PostgreSQL Chinook database "genre" table:
+          
+          ```
+          [ { :name "genre_id" 
+              :type :INTEGER 
+              :size "10" 
+              :nullable? "NO" 
+              :auto-inc? "YES" } 
+            { :name "name" 
+              :type :VARCHAR 
+              :size "120"
+              :nullable? "YES" 
+              :auto-inc? "NO" } ]
+          ```
           """
      :examples '(
           """
           (do
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-              (jdbc/columns conn "users")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "chinook" "pg" "pg")
+              (jdbc/columns conn "genre")))
           """) }
 
   columns [conn table]
