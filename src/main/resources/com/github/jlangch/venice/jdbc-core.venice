@@ -1020,7 +1020,7 @@
      :doc """
           Moves the cursor to the first row in this ResultSet object.
 
-          Returns true if the cursor is on a valid row; false if there are no \
+          Returns true if the cursor is on a valid row; false if there are no
           rows in the result set
           """
      :examples '(
@@ -1038,12 +1038,12 @@
   ^{ :arglists '(
           "(rs-next! rs)" )
      :doc """
-          Moves the cursor forward one row from its current position. \
-          A ResultSet cursor is initially positioned before the first row; \
-          the first call to the method next makes the first row the current \
+          Moves the cursor forward one row from its current position.
+          A ResultSet cursor is initially positioned before the first row;
+          the first call to the method next makes the first row the current
           row; the second call makes the second row the current row, and so on. 
 
-          Returns true if the new current row is valid; false if there are no \
+          Returns true if the new current row is valid; false if there are no
           more rows
           """
      :examples '(
@@ -1063,7 +1063,7 @@
      :doc """
           Moves the cursor to the last row in this ResultSet object.
 
-          Returns true if the cursor is on a valid row; false if there are no \
+          Returns true if the cursor is on a valid row; false if there are no
           rows in the result set
           """
      :examples '(
@@ -1170,7 +1170,7 @@
   ^{ :arglists '(
           "(clob-free clob)" )
      :doc """
-          Frees the Clob object and releases the resources the resources that \
+          Frees the Clob object and releases the resources the resources that
           it holds.
           """
      :examples '(
@@ -1274,7 +1274,7 @@
   ^{ :arglists '(
           "(blob-free blob)" )
      :doc """
-          Frees the Blob object and releases the resources the resources that \
+          Frees the Blob object and releases the resources the resources that
           it holds.
           """
      :examples '(
