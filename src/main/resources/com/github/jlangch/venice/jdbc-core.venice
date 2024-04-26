@@ -389,10 +389,55 @@
 ;; Execute queries 
 ;; -----------------------------------------------------------------------------
 
-(defn execute 
-  ([stmt]
-    (assert (instance-of? :PreparedStatement stmt))
-    (. stmt :execute)) 
+(defn 
+  ^{ :arglists '(
+          "(execute pstmt)"
+          "(execute conn-or-stmt sql)" )
+     :doc """
+          Executes the SQL statement in prepared statement or executes an SQL
+          statement on a JDBC statement or connection.
+          """
+     :examples '(
+          """
+          ;; using a prepared statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+               (jdbc/ps-int 1 1I)
+               (jdbc/ps-string 2 "Harry Potter")
+               (jdbc/execute ps)))
+          """,
+          """
+          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+               (jdbc/execute conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+          """,
+          """
+          ;; running an SQL statement on a JDBC statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        stmt (jdbc/create-statement conn)]
+               (jdbc/execute stmt "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+          """) 
+     :see-also '(
+          "jdbc-core/execute-query"
+          "jdbc-core/execute-update" ) }
+
+  execute 
+
+  ([pstmt]
+    (assert (instance-of? :PreparedStatement pstmt))
+    (. pstmt :execute)) 
 
   ([conn-or-stmt sql]
     (assert (or (instance-of? :Connection conn-or-stmt)
@@ -403,10 +448,62 @@
       (. conn-or-stmt :execute sql))))
 
 
-(defn execute-query 
-  ([stmt]
-    (assert (instance-of? :PreparedStatement stmt))
-    (try-with [rs (. stmt :executeQuery)]
+(defn 
+  ^{ :arglists '(
+          "(execute-query pstmt)"
+          "(execute-query conn-or-stmt sql)" )
+     :doc """
+          Executes the SQL statement in prepared statement or executes an SQL
+          statement on a JDBC statement or connection.
+
+          Returns a parsed ResultSet as map with the column names and a vector
+          of row values.
+
+          ```
+          { :col-names ["name" "age"]
+            :rows [ ["john" 29] 
+                    ["mary" 32] ] }
+          ```
+          """
+     :examples '(
+          """
+          ;; using a prepared statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        ps   (jdbc/prepare-statement conn "SELECT * FROM foo")]
+                (jdbc/execute-query ps)))
+          """,
+          """
+          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+               (jdbc/execute conn "SELECT * FROM foo")))
+          """,
+          """
+          ;; running an SQL statement on a JDBC statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        stmt (jdbc/create-statement conn)]
+               (jdbc/execute stmt "SELECT * FROM foo")))
+          """) 
+     :see-also '(
+          "jdbc-core/execute"
+          "jdbc-core/execute-update" ) }
+
+  execute-query 
+
+  ([pstmt]
+    (assert (instance-of? :PreparedStatement pstmt))
+    (try-with [rs (. pstmt :executeQuery)]
       (collect-result-set)))
 
   ([conn-or-stmt sql]
@@ -420,10 +517,58 @@
         (collect-result-set rs)))))
  
 
-(defn execute-update 
-  ([stmt]
-    (assert (instance-of? :PreparedStatement stmt))
-    (. stmt :executeUpdate))
+(defn 
+  ^{ :arglists '(
+          "(execute-update pstmt)"
+          "(execute-update conn-or-stmt sql)" )
+     :doc """
+          Executes the SQL statement in prepared statement or executes an SQL
+          statement on a JDBC statement or connection.
+
+          Returns an integer value that reports the number of rows affected by 
+          the SQL statement
+          """
+     :examples '(
+          """
+          ;; using a prepared statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+               (jdbc/ps-int 1 1I)
+               (jdbc/ps-string 2 "Harry Potter")
+               (jdbc/execute-update ps)))
+          """,
+          """
+          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+               (jdbc/execute-update conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+          """,
+          """
+          ;; running an SQL statement on a JDBC statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        stmt (jdbc/create-statement conn)]
+               (jdbc/execute-update stmt "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+          """) 
+     :see-also '(
+          "jdbc-core/execute"
+          "jdbc-core/execute-query" ) }
+  
+  execute-update 
+
+  ([pstmt]
+    (assert (instance-of? :PreparedStatement pstmt))
+    (. pstmt :executeUpdate))
 
   ([conn-or-stmt sql]
     (assert (or (instance-of? :Connection conn-or-stmt)
@@ -479,54 +624,72 @@
   (assert (instance-of? :PreparedStatement ps))
   (. ps :clearParameters))
 
+(defn rs-blob [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil? val) (bytebuf? val) (io/in-stream? val)))
+  (cond 
+    (nil? val)          (. ps :setBlob (int idx) nil)
+    (bytebuf? val)      (. ps :setBlob (int idx) (io/bytebuf-in-stream val))
+    (io/in-stream? val) (. ps :setBlob (int idx) val)))
+
+(defn rs-clob [ps idx val]
+  (assert (instance-of? :PreparedStatement ps))
+  (assert (or (int? idx) (long? idx)))
+  (assert (or (nil? val) (string? val) (io/reader? val)))
+  (cond 
+    (nil? val)        (. ps :setClob (int idx) nil)
+    (string? val)     (. ps :setClob (int idx) (io/string-reader val))
+    (io/reader? val)  (. ps :setClob (int idx) val)))
+
 (defn rs-decimal [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (decimal? val)))
+  (assert (or (nil? val) (decimal? val)))
   (. ps :setBigDecimal (int idx) val))
 
 (defn rs-boolean [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (boolean? val)))
+  (assert (or (nil? val) (boolean? val)))
   (. ps :setBoolean (int idx) val))
 
 (defn rs-double [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (double? val)))
+  (assert (or (nil? val) (double? val)))
   (. ps :setDouble (int idx) val))
 
 (defn rs-float [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (double? val)))
+  (assert (or (nil? val) (double? val)))
   (. ps :setFloat (int idx) val))
 
 (defn rs-int [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (int? val) (long? val)))
+  (assert (or (nil? val) (int? val) (long? val)))
   (. ps :setInt (int idx) (int val)))
 
 (defn rs-long [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (int? val) (long? val)))
+  (assert (or (nil? val) (int? val) (long? val)))
   (. ps :setLong (int idx) (long val)))
 
 (defn rs-string [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (string? val)))
+  (assert (or (nil? val) (string? val)))
   (. ps :setString (int idx) val))
 
 (defn rs-date [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (time/date? val) 
+  (assert (or (nil? val) (time/date? val) 
               (time/local-date-time? val)  (time/zoned-date-time? val)))
-  (if (nil?)
+  (if (nil? val)
     (. ps :setDate (int idx) nil)
     (->> (time/format val "yyyy-mm-dd")
          (. :java.sql.Date :valueOf)
@@ -535,15 +698,15 @@
 (defn rs-timestamp [ps idx val]
   (assert (instance-of? :PreparedStatement ps))
   (assert (or (int? idx) (long? idx)))
-  (assert (or (nil?) (time/date? val) 
+  (assert (or (nil? val) (time/date? val) 
               (time/local-date-time? val)  (time/zoned-date-time? val)))
   (cond 
-    (nil?)        (. ps :setTimestamp (int idx) nil)
-    (time/date?)  (->> (time/local-date-time val)
-                       (. :java.sql.Timestamp :from)
-                       (. ps :setTimestamp (int idx)))
-    :else         (->> (. :java.sql.Timestamp :from val)
-                       (. ps :setTimestamp (int idx)))))
+    (nil? val)        (. ps :setTimestamp (int idx) nil)
+    (time/date? val)  (->> (time/local-date-time val)
+                           (. :java.sql.Timestamp :from)
+                           (. ps :setTimestamp (int idx)))
+    :else             (->> (. :java.sql.Timestamp :from val)
+                           (. ps :setTimestamp (int idx)))))
 
 
 

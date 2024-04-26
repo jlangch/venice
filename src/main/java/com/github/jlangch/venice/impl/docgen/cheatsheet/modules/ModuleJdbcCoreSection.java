@@ -63,6 +63,12 @@ public class ModuleJdbcCoreSection implements ISectionBuilder {
         tx.addItem(diBuilder.getDocItem("jdbc-core/tx-isolation", false));
         tx.addItem(diBuilder.getDocItem("jdbc-core/tx-isolation!", false));
 
+        final DocSection exec = new DocSection("Execute", id());
+        all.addSection(exec);
+        exec.addItem(diBuilder.getDocItem("jdbc-core/execute", false));
+        exec.addItem(diBuilder.getDocItem("jdbc-core/execute-query", false));
+        exec.addItem(diBuilder.getDocItem("jdbc-core/execute-update", false));
+
         return section;
     }
 
