@@ -41,7 +41,7 @@
   ^{ :arglists '(
           "(show-data-model)" )
      :doc """
-          Open a browser to show the 
+          Opens a browser to show the 
           [Chinook data model](https://github.com/lerocha/chinook-database/tree/master#data-model) 
           """
      :examples '(
@@ -49,7 +49,10 @@
           (do
             (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
             (chinook/show-data-model))
-          """) }
+          """)
+     :see-also '(
+          "chinook-postgresql/download-data"
+          "chinook-postgresql/load-data" ) }
 
   show-data-model []
 
@@ -69,7 +72,10 @@
           (do
             (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
             (chinook/download-data))
-          """) }
+          """)
+     :see-also '(
+          "chinook-postgresql/show-data-model"
+          "chinook-postgresql/load-data" ) }
 
   download-data []
 
@@ -84,7 +90,9 @@
      :doc """
           Load the Chinook dataset to a PostgreSQL database. 
 
-          The data set is loaded from [Github/lerocha](https://github.com/lerocha/chinook-database)
+          The data set is loaded from [GitHub/lerocha](https://github.com/lerocha/chinook-database)
+
+          [Data Model](https://github.com/lerocha/chinook-database/tree/master#data-model)
 
           The Chinook sample database has 11 tables as follows:
 
@@ -142,7 +150,10 @@
                                                     "postgres")]
               (-> (jdbc/execute-query conn "SELECT * FROM album WHERE title LIKE '%Mozart%'")
                   (jdbc/print-query-result))))
-          """) }
+          """)
+     :see-also '(
+          "chinook-postgresql/show-data-model"
+          "chinook-postgresql/download-data" ) }
 
   load-data [host port user password]
 
