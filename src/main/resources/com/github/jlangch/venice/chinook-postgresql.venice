@@ -92,7 +92,9 @@
 
           The data set is loaded from [GitHub/lerocha](https://github.com/lerocha/chinook-database)
 
-          [Data Model](https://github.com/lerocha/chinook-database/tree/master#data-model)
+          [Data Model](https://github.com/lerocha/chinook-database/tree/master#data-model) 
+          under the 
+          [License](https://github.com/lerocha/chinook-database/blob/master/LICENSE.md)
 
           The Chinook sample database has 11 tables as follows:
 
