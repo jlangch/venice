@@ -83,6 +83,7 @@
   (let [name    (installer-module-name name)
         opts    (apply hash-map options)
         silent  (:silent opts true)]
+    (validate-install-dir opts)
     (when-not silent (println "\n[Module ~{name}]"))
     (load-module name)
     ;; install (apply :pdf-install/install options)
@@ -130,6 +131,7 @@
   (let [options  (default-options options)
         opts     (apply hash-map options)
         silent   (:silent opts true)]
+    (validate-install-dir opts)
     (when-not silent
       (println "Resolving dependencies ..."))
     (let [deps (maven/dependencies artifacts :print false :format :list)
@@ -181,7 +183,9 @@
     (throw (ex :VncException 
                "Internet is not available, cannot install libraries!")))
 
-  (let [options  (default-options options)]
+  (let [options  (default-options options)
+        opts     (apply hash-map options)]
+    (validate-install-dir opts)
     (doseq [lib libs] (apply maven/download lib options))))
 
 
@@ -271,6 +275,8 @@
   
   (let [options  (default-options options)
         opts     (apply hash-map options)]
+    (validate-install-dir opts)
+
     ;; install the modules
     (doseq [name installable-modules] (apply install-module name options))
     
@@ -338,6 +344,8 @@
         opts     (apply hash-map options)
         silent   (:silent opts true)
         dir      (:dir opts ".")]
+    (validate-install-dir opts)
+
     (when-not silent (println "\n[Fonts]"))
     (load-module :fonts)
     (fonts/download-demo-fonts dir silent)))
@@ -365,4 +373,29 @@
     :core/string  (jansi-lib? (io/file f))
     :java.io.File (match? (io/file-name f) #"jansi-[0-9]+[.][0-9]+[.][0-9]+[.]jar")
     false))
+
+
+(defn- validate-install-dir [opts]
+  (assert map? opts)
+  
+  (when (and (repl?) (contains? opts :dir) (nil? (:dir opts)))
+    ;; (repl-dir) is nil -> warn the user to properly install the REPL
+    (let [repl-start-script  (if (os-type? :windows) "repl.bat" "./repl.sh")
+          venice-setup-cmd   "java -jar venice-~(version).jar -setup -colors"]
+      (throw (ex :VncException
+                  """
+                  Error:
+                  
+                  =============================================================
+                  Your are running a thumb Venice REPL that is not eligible for
+                  installing libraries and fonts!
+                  
+                  To get a standard Venice REPL run the Venice setup:
+                  
+                      ~{venice-setup-cmd}
+                  
+                  and start the REPL afterwards with the created ~{repl-start-script} 
+                  script.
+                  =============================================================
+                  """)))))
 
