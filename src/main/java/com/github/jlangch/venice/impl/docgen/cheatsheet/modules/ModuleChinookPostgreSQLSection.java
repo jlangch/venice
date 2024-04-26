@@ -48,11 +48,11 @@ public class ModuleChinookPostgreSQLSection implements ISectionBuilder {
 
         final DocSection load = new DocSection("Load Data", id());
         all.addSection(load);
-        load.addItem(diBuilder.getDocItem("chinook-postgresql/load-data)", false));
+        load.addItem(diBuilder.getDocItem("chinook-postgresql/load-data", false));
 
         final DocSection download = new DocSection("Download Data", id());
         all.addSection(download);
-        download.addItem(diBuilder.getDocItem("chinook-postgresql/download-data)", false));
+        download.addItem(diBuilder.getDocItem("chinook-postgresql/download-data", false));
 
         return section;
     }
