@@ -65,7 +65,10 @@
      :doc """
           Download the Chinook dataset for PostgreSQL. 
 
-          The data set is downloaded from [Github/lerocha](https://github.com/lerocha/chinook-database)          
+          The data set is downloaded from [GitHub/lerocha](https://github.com/lerocha/chinook-database)  
+
+          The data set is published under the 
+          [License](https://github.com/lerocha/chinook-database/blob/master/LICENSE.md)        
           """
      :examples '(
           """
@@ -93,7 +96,7 @@
           The data set is loaded from [GitHub/lerocha](https://github.com/lerocha/chinook-database)
 
           [Data Model](https://github.com/lerocha/chinook-database/tree/master#data-model) 
-          under the 
+          published under the 
           [License](https://github.com/lerocha/chinook-database/blob/master/LICENSE.md)
 
           The Chinook sample database has 11 tables as follows:
