@@ -27,17 +27,10 @@
 (load-module :installer)
 (load-module :jansi-install)
 (load-module :maven)
-(load-module :fonts)
 (load-module :ansi)
 
 
-(def modules-min [ :jansi-install ])
-
-(def modules-ext [ :jansi-install
-                   :xchart-install
-                   :tomcat-install
-                   :excel-install
-                   :pdf-install ])
+(def initial-modules [ :jansi-install ])
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -67,20 +60,20 @@
   (str/cr-lf text (if (os-type? :windows) :cr-lf :lf)))
 
 
+(defn install-maven []
+  (println "Installing Maven ~{maven/maven-version} locally in the REPL/tools ...")
+  (if (io/internet-avail?)
+    (maven/install maven/maven-version "./tools")
+    (println *err* "Internet is not available!"))
+  (println))
+
+
 (defn download-modules-libs [dir modules_ silent]
   (when-not (empty? modules_)
     (println "Downloading modules Java 3rdparty libraries...")
     (if (io/internet-avail?)
        (docoll #(installer/install-module % :dir dir :silent silent) modules_)
        (println *err* "Internet is not available!")))
-  (println))
-
-
-(defn download-fonts [dir silent]
-  (println (str "Downloading fonts..."))
-  (if (io/internet-avail?)
-    (installer/install-demo-fonts :dir dir :silent silent)
-    (println *err* "Internet is not available!"))
   (println))
 
 
@@ -210,10 +203,8 @@
 
 (defn setup [& options]
   (let [options       (apply hash-map options)
-        setup-mode    (:setup-mode options :minimal)   ;; {:minimal :extended}
         color-mode    (:color-mode options :none)      ;; {:none :light :dark}
         silent        (not (:ansi-terminal options false))   ;; {true false}
-        modules_      (if (= setup-mode :extended) modules-ext modules-min)
         charset       (name (charset-default-encoding))]
     (when-not (io/exists-dir? "./libs")
       (io/mkdirs "./libs"))
@@ -230,6 +221,9 @@
     (when-not (io/exists-dir? "./tmp")
       (io/mkdirs "./tmp"))
 
+    (when-not (io/exists-dir? "./tools")
+      (io/mkdirs "./tools"))
+
     (println)
     (println (str "Setting up the REPL on '" (os-name) "' " (os-version)))
     (println "Using the platforms's default charset" charset)
@@ -239,8 +233,8 @@
       (println))
 
     (repl-setup/copy-venice-jar "libs")
-    (repl-setup/download-modules-libs "libs" modules_ silent)
-    (when (= setup-mode :extended) (repl-setup/download-fonts "libs" silent))
+    (repl-setup/install-maven)
+    (repl-setup/download-modules-libs "libs" initial-modules silent)
     (repl-setup/setup-repl-config "libs" )
     (repl-setup/setup-repl-launcher color-mode)
     (repl-setup/setup-scripts "scripts")

@@ -29,7 +29,7 @@ Manual download from Maven: [Venice JAR](https://search.maven.org/artifact/com.g
 Download with `curl`:
 
 ```
-curl "https://search.maven.org/remotecontent?filepath=com/github/jlangch/venice/1.12.14/venice-1.12.14.jar" --output ./venice-1.12.14.jar
+curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.14/venice-1.12.14.jar" --output ./venice-1.12.14.jar
 ```
 
 

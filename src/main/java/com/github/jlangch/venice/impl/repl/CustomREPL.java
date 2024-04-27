@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import static com.github.jlangch.venice.impl.repl.REPL.SetupMode.Extended;
-import static com.github.jlangch.venice.impl.repl.REPL.SetupMode.Minimal;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
@@ -52,7 +49,6 @@ import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
-import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -283,7 +279,6 @@ public class CustomREPL implements IRepl {
     private void handleSetupCommand(
             final IVeniceInterpreter venice,
             final Env env,
-            final SetupMode setupMode,
             final TerminalPrinter printer
     ) {
         try {
@@ -292,17 +287,14 @@ public class CustomREPL implements IRepl {
                                             ? ColorMode.Dark
                                             : config.getColorMode();
 
-            final String sSetupMode = ":" + setupMode.name().toLowerCase();
             final String sColorMode = ":" + colorMode.name().toLowerCase();
 
             final String script =
                 String.format(
                     "(do                                     \n" +
                     "  (load-module :repl-setup)             \n" +
-                    "  (repl-setup/setup :setup-mode %s      \n" +
-                    "                    :color-mode %s      \n" +
+                    "  (repl-setup/setup :color-mode %s      \n" +
                     "                    :ansi-terminal %s))   ",
-                    sSetupMode,
                     sColorMode,
                     ansiTerminal ? "true" : "false");
 
@@ -383,12 +375,8 @@ public class CustomREPL implements IRepl {
             final Env env,
             final TerminalPrinter printer
     ) {
-        if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
-            handleSetupCommand(venice, env, Extended, printer);
-            return; // we stop here
-        }
-        else if (cli.switchPresent("-setup")) {
-            handleSetupCommand(venice, env, Minimal, printer);
+        if (cli.switchPresent("-setup")) {
+            handleSetupCommand(venice, env, printer);
             return; // we stop here
         }
     }

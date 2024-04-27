@@ -618,8 +618,7 @@ public class REPL implements IRepl {
                     case "light":         handleColorModeCommand(ColorMode.Light); break;
                     case "lightmode":     handleColorModeCommand(ColorMode.Light); break;
                     case "restartable":   handleRestartableCommand(); break;
-                    case "setup":         handleSetupCommand(venice, env, Minimal, printer); break;
-                    case "setup-ext":     handleSetupCommand(venice, env, Extended, printer); break;
+                    case "setup":         handleSetupCommand(venice, env, printer); break;
                     case "classpath":     handleReplClasspathCommand(); break;
                     case "cp":            handleReplClasspathCommand(); break;
                     case "loadpath":      handleLoadPathsCommand(interceptor.getLoadPaths()); break;
@@ -676,7 +675,6 @@ public class REPL implements IRepl {
     private void handleSetupCommand(
             final IVeniceInterpreter venice,
             final Env env,
-            final SetupMode setupMode,
             final TerminalPrinter printer
     ) {
         try {
@@ -685,17 +683,14 @@ public class REPL implements IRepl {
                                             ? ColorMode.Dark
                                             : config.getColorMode();
 
-            final String sSetupMode = ":" + setupMode.name().toLowerCase();
             final String sColorMode = ":" + colorMode.name().toLowerCase();
 
             final String script =
                 String.format(
                     "(do                                     \n" +
                     "  (load-module :repl-setup)             \n" +
-                    "  (repl-setup/setup :setup-mode %s      \n" +
-                    "                    :color-mode %s      \n" +
+                    "  (repl-setup/setup :color-mode %s      \n" +
                     "                    :ansi-terminal %s))   ",
-                    sSetupMode,
                     sColorMode,
                     ansiTerminal ? "true" : "false");
 
@@ -1323,15 +1318,8 @@ public class REPL implements IRepl {
             final Env env,
             final TerminalPrinter printer
     ) {
-        if (cli.switchPresent("-setup-ex")
-            || cli.switchPresent("-setup-ext")
-            || cli.switchPresent("-setup-extended")
-        ) {
-            handleSetupCommand(venice, env, Extended, printer);
-            return; // we stop here
-        }
-        else if (cli.switchPresent("-setup")) {
-            handleSetupCommand(venice, env, Minimal, printer);
+        if (cli.switchPresent("-setup")) {
+            handleSetupCommand(venice, env, printer);
             return; // we stop here
         }
     }
@@ -1353,10 +1341,7 @@ public class REPL implements IRepl {
     }
 
     private boolean isSetupMode(final CommandLineArgs cli) {
-        return cli.switchPresent("-setup")
-                || cli.switchPresent("-setup-ex")
-                || cli.switchPresent("-setup-ext")
-                || cli.switchPresent("-setup-extended");
+        return cli.switchPresent("-setup");
     }
 
     private boolean isRestartable(final CommandLineArgs cli) {
@@ -1498,10 +1483,6 @@ public class REPL implements IRepl {
     }
 
 
-    public static enum SetupMode { Minimal, Extended };
-
-    private static final SetupMode Minimal = SetupMode.Minimal;
-    private static final SetupMode Extended = SetupMode.Extended;
 
     private final static String HISTORY_FILE = ".repl.history";
 
