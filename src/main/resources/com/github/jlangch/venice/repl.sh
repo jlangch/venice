@@ -30,7 +30,7 @@ fi
 [ ! -d ${REPL_HOME}/tmp ] && mkdir ${REPL_HOME}/tmp
 [ ! -d ${REPL_HOME}/scripts ] && mkdir ${REPL_HOME}/scripts
 
-# load environment variables
+# load environment variables (note: source command is available in bash only!)
 [ -f ${REPL_HOME}/repl.env ] && source ${REPL_HOME}/repl.env
 
 # DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"

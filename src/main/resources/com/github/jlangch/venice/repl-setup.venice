@@ -30,7 +30,7 @@
 (load-module :ansi)
 
 
-(def initial-modules [ :jansi-install ])
+(def modules [ :jansi-install ])
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -112,6 +112,12 @@
 
 
 (defn- setup-repl-launcher-windows [color-mode]
+  (when-not (io/exists-file? "repl.env.bat")
+    (println "Setting up 'repl.env.bat'...")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.win.env")
+         (bytebuf-to-string <> :utf-8)
+         (repl-setup/cr-lf <>)
+         (io/spit "repl.env.bat" <> :encoding (charset-default-encoding))))
   (when-not (io/exists-file? "repl.bat")
     (println "Setting up 'repl.bat'...")
     (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
