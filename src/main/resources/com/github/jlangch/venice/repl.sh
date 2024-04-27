@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ------------------------------------------------------------------------------
 # Starts a Venice REPL
 # ------------------------------------------------------------------------------
@@ -31,9 +31,7 @@ fi
 [ ! -d ${REPL_HOME}/scripts ] && mkdir ${REPL_HOME}/scripts
 
 # load environment variables
-if [ -f ${REPL_HOME}/repl.env ]; then
-  source ${REPL_HOME}/repl.env
-fi
+[ -f ${REPL_HOME}/repl.env ] && source ${REPL_HOME}/repl.env
 
 # DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 
