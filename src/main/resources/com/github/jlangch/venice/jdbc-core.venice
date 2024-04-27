@@ -367,14 +367,14 @@
      :examples '(
           """
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(?,?)")]
-               (jdbc/ps-int 1 1I)
-               (jdbc/ps-string 2 "Harry Potter")
-               (jdbc/execute ps)))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(?,?)")]
+              (jdbc/ps-int 1 1I)
+              (jdbc/ps-string 2 "Harry Potter")
+              (jdbc/execute ps)))
           """) 
      :see-also '(
           "jdbc-core/create-statement" ) }
@@ -403,33 +403,33 @@
           """
           ;; using a prepared statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
-               (jdbc/ps-int 1 1I)
-               (jdbc/ps-string 2 "Harry Potter")
-               (jdbc/execute ps)))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+              (jdbc/ps-int 1 1I)
+              (jdbc/ps-string 2 "Harry Potter")
+              (jdbc/execute ps)))
           """,
           """
           ;; running an SQL statement on a connection (creates an implicit JDBC statement)
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-               (jdbc/execute conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (jdbc/execute conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
           """,
           """
           ;; running an SQL statement on a JDBC statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        stmt (jdbc/create-statement conn)]
-               (jdbc/execute stmt "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       stmt (jdbc/create-statement conn)]
+              (jdbc/execute stmt "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
           """) 
      :see-also '(
           "jdbc-core/execute-query"
@@ -483,31 +483,31 @@
           """
           ;; using a prepared statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        ps   (jdbc/prepare-statement conn "SELECT * FROM foo")]
-                (jdbc/execute-query ps)))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       ps   (jdbc/prepare-statement conn "SELECT * FROM foo")]
+              (jdbc/execute-query ps)))
           """,
           """
           ;; running an SQL statement on a connection (creates an implicit JDBC statement)
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-               (jdbc/execute conn "SELECT * FROM foo")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (jdbc/execute-query conn "SELECT * FROM foo")))
           """,
           """
           ;; running an SQL statement on a JDBC statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        stmt (jdbc/create-statement conn)]
-               (jdbc/execute stmt "SELECT * FROM foo")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       stmt (jdbc/create-statement conn)]
+              (jdbc/execute-query stmt "SELECT * FROM foo")))
           """) 
      :see-also '(
           "jdbc-core/execute"
@@ -543,31 +543,37 @@
           """
           ;; using a prepared statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        ps   (jdbc/prepare-statement conn "SELECT * FROM foo")]
-                (jdbc/execute-query* ps)))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       ps   (jdbc/prepare-statement conn "SELECT * FROM foo")
+                       rs   (jdbc/execute-query* ps)]
+              (while (jdbc/rs-next? rs)
+                (println (jdbc/rs-string rs 1)))))
           """,
           """
           ;; running an SQL statement on a connection (creates an implicit JDBC statement)
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-               (jdbc/execute* conn "SELECT * FROM foo")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
+              (while (jdbc/rs-next? rs)
+                (println (jdbc/rs-string rs 1)))))
           """,
           """
           ;; running an SQL statement on a JDBC statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        stmt (jdbc/create-statement conn)]
-               (jdbc/execute* stmt "SELECT * FROM foo")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       stmt (jdbc/create-statement conn)
+                       rs   (jdbc/execute-query* stmt "SELECT * FROM foo")]
+              (while (jdbc/rs-next? rs)
+                (println (jdbc/rs-string rs 1)))))
           """) 
      :see-also '(
           "jdbc-core/execute"
@@ -605,33 +611,33 @@
           """
           ;; using a prepared statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
-               (jdbc/ps-int 1 1I)
-               (jdbc/ps-string 2 "Harry Potter")
-               (jdbc/execute-update ps)))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+              (jdbc/ps-int 1 1I)
+              (jdbc/ps-string 2 "Harry Potter")
+              (jdbc/execute-update ps)))
           """,
           """
           ;; running an SQL statement on a connection (creates an implicit JDBC statement)
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-               (jdbc/execute-update conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (jdbc/execute-update conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
           """,
           """
           ;; running an SQL statement on a JDBC statement
           (do
-             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                        stmt (jdbc/create-statement conn)]
-               (jdbc/execute-update stmt "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                      stmt (jdbc/create-statement conn)]
+              (jdbc/execute-update stmt "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
           """) 
      :see-also '(
           "jdbc-core/execute"
@@ -653,7 +659,7 @@
       (. conn-or-stmt :executeUpdate sql))))
 
 
-(defn- collect-result-set [rs]
+(defn collect-result-set [rs]
   (let [meta-data  (. rs :getMetaData)
         col-count  (. meta-data :getColumnCount)]
     (loop [rows []]
