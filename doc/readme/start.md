@@ -24,7 +24,13 @@ The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice i
 
 ### 2. Get the Venice JAR file
 
-Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.14/jar)
+Manual download from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.14/jar)
+
+Download with `curl`:
+
+```
+curl "https://search.maven.org/remotecontent?filepath=com/github/jlangch/venice/1.12.14/venice-1.12.14.jar" --output ./venice-1.12.14.jar
+```
 
 
 ### 3. Setup the Venice REPL
