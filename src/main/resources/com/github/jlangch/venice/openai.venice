@@ -25,6 +25,7 @@
 (ns openai)
 
 (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+(load-module :ansi)
 
 
 ;; =============================================================================
@@ -58,6 +59,7 @@
 (def text-embedding-ada-002  "text-embedding-ada-002")   ;; Text embedding, dimension 1'536
 
 (def default-model "gpt-3.5-turbo")
+
 
 
 
@@ -572,6 +574,19 @@
       (:content)))
 
 
+(defn pretty-print-conversation [messages]
+  (doseq [m messages]
+    (let [{:keys [role content]}  m]
+      (case role
+        :system     (println (ansi/style (str "system: " content) 
+                                         (:bright-red ansi/ANSI-CODES)))
+        :user       (println (ansi/style (str "user: " content) 
+                                         (:bright-green ansi/ANSI-CODES)))
+        :assistant  (println (ansi/style (str "assistant: " content) 
+                                         (:bright-blue ansi/ANSI-CODES)))
+        :function   (println (ansi/style (str "function: " content) 
+                                         (:bright-magenta ansi/ANSI-CODES)))))))
+                                         
 
 ;; -----------------------------------------------------------------------------
 ;; Util functions

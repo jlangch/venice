@@ -1,7 +1,6 @@
 # Venice meets LLMs
 
 * [OpenAI Client](#openai-client)
-* [OpenAI Functions Cookbook](#openai-functions-cookbook)
 * [LangChain4J](#langchain4j)
 * [Qdrant Vector DB](#qdrant-vector-db)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
@@ -16,7 +15,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 
 * [Chat Completion](#chat-completion)
 * [Chat Completion Streaming](#chat-completion-streaming)
-* Functions
+* [OpenAI Functions Cookbook](#openai-functions-cookbook)
 * Audio
 * Images
 * Embeddings
@@ -382,7 +381,8 @@ LLM applications with Retrieval Augmented Generation (RAG) to access
 data outside the LLM data world.
 
 
-### Start Qdrant
+
+### Start Qdrant Docker Container
 
 Parameters:
 
@@ -401,18 +401,18 @@ Parameters:
 (do
   (load-module :cargo-qdrant ['cargo-qdrant :as 'qdrant])
    
-  ;; Run a Qdrant container labeled as "qdrant"
+  ;; Run a Qdrant docker container labeled as "qdrant"
   (qdrant/start "qdrant" "1.8.3" "./qdrant-storage"))
 ```
 
 
-### Stop Qdrant
+### Stop Qdrant Docker Container
 
 ```clojure
 (do
   (load-module :cargo-qdrant ['cargo-qdrant :as 'qdrant])
    
-  ;; Stop the Qdrant container labeled as "qdrant"
+  ;; Stop the Qdrant docker container labeled as "qdrant"
   (qdrant/stop "qdrant"))
 ```
 
