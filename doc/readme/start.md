@@ -51,8 +51,9 @@ of `-colors`. This can also be changed later on by modifying the generated launc
 shell script.
 
 The `-setup` option will cause the Venice setup to:
-  - create a `libs`, `tmp`, and `scripts` directory
+  - create a `libs`, `tmp`, `tools`, and `scripts` directory
   - download the Jansi library from the Maven repository
+  - install Maven locally to the REPL in the `tools` dir
   - extract some example Venice scripts
   - create a launcher shell script `repl.bat` for Windows and `repl.sh` for all other OS
   

@@ -20,6 +20,10 @@ All notable changes to this project will be documented in this file.
   containers 
 - `:postgresql-jdbc-install` module to install the PostgreSQL JDBC driver
 
+### Improved 
+
+- the REPL setup 
+
 
 
 ## [1.12.14] - 2024-04-16
