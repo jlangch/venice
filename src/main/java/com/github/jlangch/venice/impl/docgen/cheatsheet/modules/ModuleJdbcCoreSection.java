@@ -80,6 +80,7 @@ public class ModuleJdbcCoreSection implements ISectionBuilder {
         all.addSection(exec);
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute", false));
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute-query", false));
+        exec.addItem(diBuilder.getDocItem("jdbc-core/execute-query*", false));
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute-update", false));
 
         final DocSection ps = new DocSection("Prepared Stmt", id());

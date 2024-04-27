@@ -433,6 +433,7 @@
           """) 
      :see-also '(
           "jdbc-core/execute-query"
+          "jdbc-core/execute-query*"
           "jdbc-core/execute-update" ) }
 
   execute 
@@ -458,8 +459,8 @@
           Executes the SQL statement in prepared statement or executes an SQL
           statement on a JDBC statement or connection.
 
-          Returns a parsed ResultSet as map with the column names and a vector
-          of row values. 
+          Returns the JDBC `:java.sql.ResultSet` parsed as map with the column 
+          names and a vector of row values. 
 
           Row values may be of type:
 
@@ -516,19 +517,78 @@
 
   ([pstmt]
     (assert (instance-of? :PreparedStatement pstmt))
-    (try-with [rs (. pstmt :executeQuery)]
-      (collect-result-set)))
+    (try-with [rs (executeQuery* pstmt)]
+      (collect-result-set rs)))
+
+  ([conn-or-stmt sql]
+    (assert (or (instance-of? :Connection conn-or-stmt)
+                (instance-of? :Statement conn-or-stmt)))
+    (try-with [rs (executeQuery* conn-or-stmt sql)]
+      (collect-result-set rs))))
+ 
+
+(defn 
+  ^{ :arglists '(
+          "(execute-query* pstmt)"
+          "(execute-query* conn-or-stmt sql)" )
+     :doc """
+          Executes the SQL statement in prepared statement or executes an SQL
+          statement on a JDBC statement or connection.
+
+          Returns a JDBC `:java.sql.ResultSet`. 
+
+          *Note: The returned ResultSet has to be closed after use!*
+          """
+     :examples '(
+          """
+          ;; using a prepared statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        ps   (jdbc/prepare-statement conn "SELECT * FROM foo")]
+                (jdbc/execute-query* ps)))
+          """,
+          """
+          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+               (jdbc/execute* conn "SELECT * FROM foo")))
+          """,
+          """
+          ;; running an SQL statement on a JDBC statement
+          (do
+             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                        stmt (jdbc/create-statement conn)]
+               (jdbc/execute* stmt "SELECT * FROM foo")))
+          """) 
+     :see-also '(
+          "jdbc-core/execute"
+          "jdbc-core/execute-query"
+          "jdbc-core/execute-update" ) }
+
+  execute-query*
+
+  ([pstmt]
+    (assert (instance-of? :PreparedStatement pstmt))
+    (. pstmt :executeQuery))
 
   ([conn-or-stmt sql]
     (assert (or (instance-of? :Connection conn-or-stmt)
                 (instance-of? :Statement conn-or-stmt)))
     (if (instance-of? :Connection conn-or-stmt)
-      (try-with [stmt (create-statement conn-or-stmt)
-                 rs   (. stmt :executeQuery sql)]
+      (try-with [stmt (create-statement conn-or-stmt)]
+         (. stmt :executeQuery sql))
         (collect-result-set rs))
-      (try-with [rs  (. conn-or-stmt :executeQuery sql)]
-        (collect-result-set rs)))))
- 
+      (. conn-or-stmt :executeQuery sql))) 
+
 
 (defn 
   ^{ :arglists '(
@@ -575,7 +635,8 @@
           """) 
      :see-also '(
           "jdbc-core/execute"
-          "jdbc-core/execute-query" ) }
+          "jdbc-core/execute-query"
+          "jdbc-core/execute-query*" ) }
   
   execute-update 
 
