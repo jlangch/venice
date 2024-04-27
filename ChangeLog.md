@@ -26,7 +26,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- the REPL setup in Gitpod.io instance regarding sourcing environment vars from repl.env
+- the REPL setup for *Gitpod.io* instances regarding sourcing environment vars from *repl.env*.
 
 
 
