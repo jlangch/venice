@@ -30,7 +30,7 @@
 (load-module :ansi)
 
 
-(def modules [ :jansi-install ])
+(def initial-modules [ :jansi-install ])
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
