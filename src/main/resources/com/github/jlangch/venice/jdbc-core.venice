@@ -576,6 +576,7 @@
                 (println (jdbc/rs-string rs 1)))))
           """) 
      :see-also '(
+          "jdbc-core/collect-result-set"
           "jdbc-core/execute"
           "jdbc-core/execute-query"
           "jdbc-core/execute-update" ) }
@@ -659,7 +660,47 @@
       (. conn-or-stmt :executeUpdate sql))))
 
 
-(defn collect-result-set [rs]
+(defn 
+  ^{ :arglists '(
+          "(collect-result-set rs)" )
+     :doc """
+          Collects data form a JDBC `:java.sql.ResultSet` parsed as map with 
+          the column names and a vector of row values. 
+
+          Row values may be of type:
+
+          * string
+          * boolean
+          * int
+          * long
+          * double
+          * decimal
+          * :java.sql.Clob
+          * :java.sql.Blob
+
+          ```
+          { :col-names ["name" "age"]
+            :rows [ ["john" 29] 
+                    ["mary" 32] ] }
+          ```
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
+              (jdbc/collect-result-set rs)))
+          """) 
+     :see-also '(
+          "jdbc-core/execute"
+          "jdbc-core/execute-query"
+          "jdbc-core/execute-update" ) }
+
+  collect-result-set [rs]
+
   (let [meta-data  (. rs :getMetaData)
         col-count  (. meta-data :getColumnCount)]
     (loop [rows []]
