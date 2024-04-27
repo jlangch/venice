@@ -15,6 +15,7 @@ and does not require any 3rd party libraries and runs on Java 8 and higher.
 Main  features:
 * Sending GET, POST, PUT, DELETE, ... requests
 * Uploading files and multipart data
+* Parser for multipart data responses
 * Handling Server-Side-Event data streams
 * First class support for JSON
 
