@@ -31,7 +31,9 @@ fi
 [ ! -d ${REPL_HOME}/scripts ] && mkdir ${REPL_HOME}/scripts
 
 # load environment variables
-[ -f ${REPL_HOME}/repl.env ] && source ${REPL_HOME}/repl.env
+if [ -f ${REPL_HOME}/repl.env ]; then
+  source ${REPL_HOME}/repl.env
+fi
 
 # DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 
