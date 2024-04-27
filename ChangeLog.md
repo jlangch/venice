@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improved 
 
-- the REPL setup. Maven will now be installed locally to the REPL to allow the seamless on demand installation of modules like Tomact, LangChain4J, ... with their dependencies.
+- the REPL setup. Maven will now be installed locally to the REPL to allow the seamless on demand installation of modules like Tomact, LangChain4J, ... with its dependencies.
 
 ### Fixed
 
