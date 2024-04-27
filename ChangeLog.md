@@ -20,18 +20,9 @@ All notable changes to this project will be documented in this file.
   containers 
 - `:postgresql-jdbc-install` module to install the PostgreSQL JDBC driver
 
-### Improved 
-
-- the REPL setup. Maven will now be installed locally to the REPL to allow the seamless on demand installation of modules like Tomact, LangChain4J, ... with its dependencies.
-
-### Fixed
-
-- the REPL setup for *Gitpod.io* instances regarding sourcing environment vars from *repl.env*.
-
 
 
 ## [1.12.15] - 2024-04-27
-
 
 ### Improved 
 
