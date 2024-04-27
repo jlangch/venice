@@ -56,7 +56,11 @@ The `-setup` option will cause the Venice setup to:
   - install Maven locally to the REPL in the `tools` dir
   - extract some example Venice scripts
   - create a launcher shell script `repl.bat` for Windows and `repl.sh` for all other OS
-  
+ 
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png" width="500">
+
+ 
 Now the Venice REPL can be started simply by executing the launcher.
 
 on MacOSX and Linux:
@@ -70,8 +74,6 @@ on Windows:
 ```text
 foo> repl.bat
 ```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png" width="500">
 
 
 The REPL is started and prompts for input:
