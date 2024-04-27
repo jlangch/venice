@@ -24,9 +24,9 @@ The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice i
 
 ### 2. Get the Venice JAR file
 
-Manual download from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.14/jar)
+Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.14/jar)
 
-Download with `curl`:
+or download it with `curl`:
 
 ```
 curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.14/venice-1.12.14.jar" --output ./venice-1.12.14.jar
@@ -35,8 +35,8 @@ curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.14/venice-1.
 
 ### 3. Setup the Venice REPL
 
-This automated setup will create a REPL launcher script with the Java classpath 
-correctly setup, will download the Jansi library from Maven, and add some example 
+This automated setup will create a REPL launcher script with the Java *classpath*
+correctly setup, will download the JAnsi library from Maven, and add some example 
 Venice scripts. The setups works on MacOS, Linux, and Windows.
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
