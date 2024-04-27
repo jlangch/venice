@@ -22,7 +22,11 @@ All notable changes to this project will be documented in this file.
 
 ### Improved 
 
-- the REPL setup 
+- the REPL setup. Maven will now be installed locally to the REPL to allow the seamless installation of modules like Tomact, LangChain4J, ... with their dependencies.
+
+### Fixed
+
+- the REPL setup in Gitpod.io instance regarding sourcing environment vars from repl.env
 
 
 
