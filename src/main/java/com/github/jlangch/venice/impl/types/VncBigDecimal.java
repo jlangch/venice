@@ -347,7 +347,12 @@ public class VncBigDecimal extends VncNumber {
 
     @Override
     public String toString() {
-        return value.toString() + "M";
+        return value.toString();
+    }
+
+    @Override
+	public String toString(final boolean print_machine_readably) {
+        return print_machine_readably ? value.toString() + "M" : value.toString();
     }
 
     public static RoundingMode toRoundingMode(final VncString val) {

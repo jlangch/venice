@@ -769,23 +769,23 @@ public class MathFunctionsTest {
         assertEquals("(7.0 13.0 15.0)", venice.eval("(str (math/quartiles '(3.0 7.0 8.0 5.0 12.0 14.0 21.0 15.0 18.0 14.0)))"));
 
         // Decimal
-        assertEquals("(6.0M 12.0M 16.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (math/quartiles '(3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 13.0M 18.0M))))"));
-        assertEquals("(7.0M 13.0M 15.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (math/quartiles '(3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 15.0M 18.0M 14.0M))))"));
+        assertEquals("(6.0M 12.0M 16.0M)", venice.eval("(pr-str (map #(dec/scale %1 1 :HALF_UP) (math/quartiles '(3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 13.0M 18.0M))))"));
+        assertEquals("(7.0M 13.0M 15.0M)", venice.eval("(pr-str (map #(dec/scale %1 1 :HALF_UP) (math/quartiles '(3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 15.0M 18.0M 14.0M))))"));
 
         // BigInteger
-        assertEquals("(6.0M 12.0M 16.0M)", venice.eval("(str (map #(dec/scale (decimal %1) 1 :HALF_UP) (math/quartiles '(3N 7N 8N 5N 12N 14N 21N 13N 18N))))"));
-        assertEquals("(7.0M 13.0M 15.0M)", venice.eval("(str (map #(dec/scale (decimal %1) 1 :HALF_UP) (math/quartiles '(3N 7N 8N 5N 12N 14N 21N 15N 18N 14N))))"));
+        assertEquals("(6.0M 12.0M 16.0M)", venice.eval("(pr-str (map #(dec/scale (decimal %1) 1 :HALF_UP) (math/quartiles '(3N 7N 8N 5N 12N 14N 21N 13N 18N))))"));
+        assertEquals("(7.0M 13.0M 15.0M)", venice.eval("(pr-str (map #(dec/scale (decimal %1) 1 :HALF_UP) (math/quartiles '(3N 7N 8N 5N 12N 14N 21N 15N 18N 14N))))"));
     }
 
     @Test
     public void test_sqrt() {
         final Venice venice = new Venice();
 
-        assertEquals("3.1623M", venice.eval("(str (dec/scale (decimal (sqrt 10)) 4 :HALF_UP))"));
-        assertEquals("3.1623M", venice.eval("(str (dec/scale (decimal (sqrt 10I)) 4 :HALF_UP))"));
-        assertEquals("3.1623M", venice.eval("(str (dec/scale (decimal (sqrt 10.0)) 4 :HALF_UP))"));
-        assertEquals("3.1623M", venice.eval("(str (dec/scale (decimal (sqrt 10.0M)) 4 :HALF_UP))"));
-        assertEquals("3.1623M", venice.eval("(str (dec/scale (decimal (sqrt 10N)) 4 :HALF_UP))"));
+        assertEquals("3.1623M", venice.eval("(pr-str (dec/scale (decimal (sqrt 10)) 4 :HALF_UP))"));
+        assertEquals("3.1623M", venice.eval("(pr-str (dec/scale (decimal (sqrt 10I)) 4 :HALF_UP))"));
+        assertEquals("3.1623M", venice.eval("(pr-str (dec/scale (decimal (sqrt 10.0)) 4 :HALF_UP))"));
+        assertEquals("3.1623M", venice.eval("(pr-str (dec/scale (decimal (sqrt 10.0M)) 4 :HALF_UP))"));
+        assertEquals("3.1623M", venice.eval("(pr-str (dec/scale (decimal (sqrt 10N)) 4 :HALF_UP))"));
     }
 
     @Test
@@ -945,8 +945,8 @@ public class MathFunctionsTest {
         assertEquals("1.0", venice.eval("(str (floor 1.23))"));
         assertEquals("-2.0", venice.eval("(str (floor -1.23))"));
 
-        assertEquals("1.00M", venice.eval("(str (floor 1.23M))"));
-        assertEquals("-2.00M", venice.eval("(str (floor -1.23M))"));
+        assertEquals("1.00M", venice.eval("(pr-str (floor 1.23M))"));
+        assertEquals("-2.00M", venice.eval("(pr-str (floor -1.23M))"));
     }
 
     @Test
@@ -956,8 +956,8 @@ public class MathFunctionsTest {
         assertEquals("2.0", venice.eval("(str (ceil 1.23))"));
         assertEquals("-1.0", venice.eval("(str (ceil -1.23))"));
 
-        assertEquals("2.00M", venice.eval("(str (ceil 1.23M))"));
-        assertEquals("-1.00M", venice.eval("(str (ceil -1.23M))"));
+        assertEquals("2.00M", venice.eval("(pr-str (ceil 1.23M))"));
+        assertEquals("-1.00M", venice.eval("(pr-str (ceil -1.23M))"));
     }
 
     @Test
@@ -1068,15 +1068,15 @@ public class MathFunctionsTest {
         assertEquals("(1.0 1.5 2.0 2.5 3.0)", venice.eval("(str (range 1.0 3.1 0.5))"));
 
         // Decimal
-        assertEquals("()", venice.eval("(str (range 6.0M 6.0M))"));
-        assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(str (range 1.0M 6.0M))"));
-        assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(str (range 1.0M 6.0M 1.0M))"));
-        assertEquals("(1.0M 1.5M 2.0M 2.5M 3.0M)", venice.eval("(str (range 1.0M 3.1M 0.5M))"));
+        assertEquals("()", venice.eval("(pr-str (range 6.0M 6.0M))"));
+        assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(pr-str (range 1.0M 6.0M))"));
+        assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(pr-str (range 1.0M 6.0M 1.0M))"));
+        assertEquals("(1.0M 1.5M 2.0M 2.5M 3.0M)", venice.eval("(pr-str (range 1.0M 3.1M 0.5M))"));
 
         // BigInteger
-        assertEquals("()", venice.eval("(str (range 6N 6N))"));
-        assertEquals("(1N 2N 3N 4N 5N)", venice.eval("(str (range 1N 6N))"));
-        assertEquals("(1N 4N 7N 10N)", venice.eval("(str (range 1N 12N 3N))"));
+        assertEquals("()", venice.eval("(pr-str (range 6N 6N))"));
+        assertEquals("(1N 2N 3N 4N 5N)", venice.eval("(pr-str (range 1N 6N))"));
+        assertEquals("(1N 4N 7N 10N)", venice.eval("(pr-str (range 1N 12N 3N))"));
 
         // Mixed
         assertEquals("(1 2 3 4 5)", venice.eval("(str (range 1 6.0))"));

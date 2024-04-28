@@ -4336,7 +4336,7 @@ public class CoreFunctionsTest {
 
         // Decimal
         assertEquals("()", venice.eval("(str (repeat 0 1.0M))"));
-        assertEquals("(1.0M 1.0M 1.0M 1.0M)", venice.eval("(str (repeat 4 1.0M))"));
+        assertEquals("(1.0M 1.0M 1.0M 1.0M)", venice.eval("(pr-str (repeat 4 1.0M))"));
 
         // Vector
         assertEquals("()", venice.eval("(str (repeat 0 [5]))"));
@@ -4744,8 +4744,8 @@ public class CoreFunctionsTest {
         assertEquals("true", venice.eval("(str true)"));
         assertEquals("1", venice.eval("(str 1)"));
         assertEquals("-3.0", venice.eval("(str -3.0)"));
-        assertEquals("-3.0123M", venice.eval("(str -3.0123M)"));
-        assertEquals("-3N", venice.eval("(str -3N)"));
+        assertEquals("-3.0123", venice.eval("(str -3.0123M)"));
+        assertEquals("-3", venice.eval("(str -3N)"));
         assertEquals(":a", venice.eval("(str :a)"));
         assertEquals("a", venice.eval("(str (symbol :a))"));
         assertEquals("()", venice.eval("(str '())"));
@@ -4756,6 +4756,26 @@ public class CoreFunctionsTest {
         assertEquals("[1 2]", venice.eval("(str [1 2])"));
         assertEquals("{:a 1 :b 2}", venice.eval("(str (ordered-map :a 1 :b 2 ))"));
         assertEquals("1234567890", venice.eval("(apply str (seq \"1234567890\"))"));
+
+        assertEquals("", venice.eval("(pr-str )"));
+        assertEquals("nil", venice.eval("(pr-str nil)"));
+        assertEquals("\"abc\"", venice.eval("(pr-str \"abc\")"));
+        assertEquals("\"abc\" \"def\"", venice.eval("(pr-str \"abc\" \"def\")"));
+        assertEquals("true", venice.eval("(pr-str true)"));
+        assertEquals("1", venice.eval("(pr-str 1)"));
+        assertEquals("-3.0", venice.eval("(pr-str -3.0)"));
+        assertEquals("-3.0123M", venice.eval("(pr-str -3.0123M)"));
+        assertEquals("-3N", venice.eval("(pr-str -3N)"));
+        assertEquals(":a", venice.eval("(pr-str :a)"));
+        assertEquals("a", venice.eval("(pr-str (symbol :a))"));
+        assertEquals("()", venice.eval("(pr-str '())"));
+        assertEquals("(1)", venice.eval("(pr-str '(1))"));
+        assertEquals("(1 2)", venice.eval("(pr-str '(1 2))"));
+        assertEquals("[]", venice.eval("(pr-str [])"));
+        assertEquals("[1]", venice.eval("(pr-str [1])"));
+        assertEquals("[1 2]", venice.eval("(pr-str [1 2])"));
+        assertEquals("{:a 1 :b 2}", venice.eval("(pr-str (ordered-map :a 1 :b 2 ))"));
+        assertEquals("#\\1 #\\2 #\\3 #\\4 #\\5 #\\6 #\\7 #\\8 #\\9 #\\0", venice.eval("(apply pr-str (seq \"1234567890\"))"));
     }
 
     @Test
