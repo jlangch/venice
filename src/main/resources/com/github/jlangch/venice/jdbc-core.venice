@@ -35,6 +35,7 @@
 (import :java.sql.Statement)
 (import :java.sql.PreparedStatement)
 (import :java.sql.ResultSet)
+(import :java.sql.ResultSetMetaData)
 (import :java.sql.Types)
 (import :java.sql.Clob)
 (import :java.sql.Blob)
@@ -518,20 +519,24 @@
 
   ([pstmt]
     (assert (instance-of? :PreparedStatement pstmt))
-    (try-with [rs (executeQuery* pstmt)]
+    (try-with [rs (execute-query* pstmt)]
       (collect-result-set rs)))
 
   ([conn-or-stmt sql]
     (assert (or (instance-of? :Connection conn-or-stmt)
                 (instance-of? :Statement conn-or-stmt)))
-    (try-with [rs (executeQuery* conn-or-stmt sql)]
-      (collect-result-set rs))))
+    (if (instance-of? :Connection conn-or-stmt)
+      (try-with [stmt (create-statement conn-or-stmt)
+                 rs   (. stmt :executeQuery sql)]
+        (collect-result-set rs))
+      (try-with [rs (. stmt :executeQuery sql)]
+        (collect-result-set rs)))))
  
 
 (defn 
   ^{ :arglists '(
           "(execute-query* pstmt)"
-          "(execute-query* conn-or-stmt sql)" )
+          "(execute-query* stmt sql)" )
      :doc """
           Executes the SQL statement in prepared statement or executes an SQL
           statement on a JDBC statement or connection.
@@ -550,17 +555,6 @@
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
                        ps   (jdbc/prepare-statement conn "SELECT * FROM foo")
                        rs   (jdbc/execute-query* ps)]
-              (while (jdbc/rs-next? rs)
-                (println (jdbc/rs-string rs 1)))))
-          """,
-          """
-          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
-          (do
-            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
               (while (jdbc/rs-next? rs)
                 (println (jdbc/rs-string rs 1)))))
           """,
@@ -588,14 +582,9 @@
     (assert (instance-of? :PreparedStatement pstmt))
     (. pstmt :executeQuery))
 
-  ([conn-or-stmt sql]
-    (assert (or (instance-of? :Connection conn-or-stmt)
-                (instance-of? :Statement conn-or-stmt)))
-    (if (instance-of? :Connection conn-or-stmt)
-      (try-with [stmt (create-statement conn-or-stmt)]
-         (. stmt :executeQuery sql))
-        (collect-result-set rs))
-      (. conn-or-stmt :executeQuery sql))) 
+  ([stmt sql]
+    (assert (instance-of? :Statement conn-or-stmt))
+    (. stmt :executeQuery sql)))
 
 
 (defn 
@@ -704,16 +693,19 @@
 
   collect-result-set [rs]
 
-  (let [meta-data  (. rs :getMetaData)
-        col-count  (. meta-data :getColumnCount)]
+  (assert (instance-of? :ResultSet rs))
+
+  (let [rs-meta-data  (. rs :getMetaData)
+        col-count     (. rs-meta-data :getColumnCount)]
     (loop [rows []]
       (if (rs-next! rs)
         (recur (conj rows (row-values rs col-count)))
-        { :col-names (col-names meta-data), :rows rows}))))
+        { :col-names (col-names rs-meta-data), :rows rows}))))
 
 
 (defn- col-names [rs-meta-data]
-  (let [count  (. rs-meta-data :getColumnCount)]
+ (assert (instance-of? :ResultSetMetaData rs-meta-data))
+ (let [count  (. rs-meta-data :getColumnCount)]
   (loop [names [], col 1]
     (if (<= col count)
       (let [name (. rs-meta-data :getColumnName col)]
@@ -722,6 +714,7 @@
 
 
 (defn- row-values [rs col-count]
+  (assert (instance-of? :ResultSet rs))
   (loop [values [], col 1]
     (if (<= col col-count)
       (let [val (map-sql-value (. rs :getObject col))]  
@@ -1808,7 +1801,7 @@
 
   ([data max-col-width]
     (let [min-col-width 5
-          max-col-width (clamp 20 200)
+          max-col-width (clamp max-col-width 20 200)
           data          (if (instance-of? :ResultSet data)
                           (collect-result-set data) 
                           data)
