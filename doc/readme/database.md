@@ -95,6 +95,10 @@ List all tables:
      (jdbc/tables conn)))
 ```
 
+```
+["album" "artist" "customer" "employee" "genre"  "invoice" "invoice_line" 
+ "media_type" "playlist" "playlist_track" "track"]
+```
 
 
 Describe the 'album' table:
