@@ -22,6 +22,10 @@ All notable changes to this project will be documented in this file.
   containers 
 - `:postgresql-jdbc-install` module to install the PostgreSQL JDBC driver
 
+### Fixed
+
+- Fixed a problem with starting an already running docker container
+
 
 
 ## [1.12.15] - 2024-04-27
