@@ -144,7 +144,7 @@
 
   (assert (instance-of? :Connection conn))
 
-  (let [db-meta (jdbc/db-meta-data conn)]
+  (let [db-meta (meta-data conn)]
     (str/equals-ignore-case? "PostgreSQL" (:product-name db-meta))))
 
 

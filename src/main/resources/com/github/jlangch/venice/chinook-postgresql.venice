@@ -192,12 +192,12 @@
   (let [[sql1 sql2] (download-data)]
     (println "Download finished.")
     ;; drop and create the database (instead of sql1 we run run directly)
-    (try-with [conn (jdbc/create-connection host port user password)]
+    (try-with [conn (jdbp/create-connection host port user password)]
       (jdbc/create-database conn database true) 
       (println "Created new database."))
 
     ;; load the data
-    (try-with [conn (jdbc/create-connection host port database user password)
+    (try-with [conn (jdbp/create-connection host port database user password)
                st   (jdbc/create-statement conn)]
       (jdbc/execute st sql2)
       (println "Data loaded into new database."))))
