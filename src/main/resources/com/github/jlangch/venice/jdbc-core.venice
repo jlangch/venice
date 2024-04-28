@@ -499,7 +499,8 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-              (jdbc/execute-query conn "SELECT * FROM foo")))
+              (-> (jdbc/execute-query conn "SELECT * FROM foo")
+                  (jdbc-core/print-query-result))))
           """,
           """
           ;; running an SQL statement on a JDBC statement
@@ -509,9 +510,12 @@
 
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
                        stmt (jdbc/create-statement conn)]
-              (jdbc/execute-query stmt "SELECT * FROM foo")))
+              (->  (jdbc/execute-query stmt "SELECT * FROM foo")
+                   (jdbc-core/print-query-result))))
           """) 
      :see-also '(
+          "jdbc-core/render-query-result"
+          "jdbc-core/print-query-result"
           "jdbc-core/execute"
           "jdbc-core/execute-update" ) }
 
@@ -569,9 +573,22 @@
                        rs   (jdbc/execute-query* stmt "SELECT * FROM foo")]
               (while (jdbc/rs-next? rs)
                 (println (jdbc/rs-string rs 1)))))
+          """,
+          """
+          ;; running an SQL statement on a JDBC statement
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       stmt (jdbc/create-statement conn)
+                       rs   (jdbc/execute-query* stmt "SELECT * FROM foo")]
+              (jdbc/print-query-result rs)))
           """) 
      :see-also '(
           "jdbc-core/collect-result-set"
+          "jdbc-core/render-query-result"
+          "jdbc-core/print-query-result"
           "jdbc-core/execute"
           "jdbc-core/execute-query"
           "jdbc-core/execute-update" ) }
@@ -1865,6 +1882,7 @@
       (long? v)                  (str v)
       (int? v)                   (str (long v))
       (double? v)                (str v)
+      (decimal? v)               (str v)
       (time/date? v)             (str (time/local-date-time v))
       (time/local-date? v)       (str v)
       (time/local-date-time? v)  (str v)
