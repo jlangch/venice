@@ -34,6 +34,8 @@
 
 (defonce data "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql")
 
+(defonce data-model "https://github.com/lerocha/chinook-database/tree/master#data-model")
+
 (defonce database "chinook_auto_increment")
 
 
@@ -51,12 +53,36 @@
             (chinook/show-data-model))
           """)
      :see-also '(
+          "chinook-postgresql/show-data"
           "chinook-postgresql/download-data"
           "chinook-postgresql/load-data" ) }
 
   show-data-model []
 
-  (sh/open "https://github.com/lerocha/chinook-database/tree/master#data-model"))
+  (sh/open data-model))
+
+
+(defn 
+  ^{ :arglists '(
+          "(show-data)" )
+     :doc """
+          Opens a browser to show the 
+          [Chinook data](https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql_AutoIncrementPKs.sql) 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
+            (chinook/show-data))
+          """)
+     :see-also '(
+          "chinook-postgresql/show-data-model"
+          "chinook-postgresql/download-data"
+          "chinook-postgresql/load-data" ) }
+
+  show-data []
+
+  (sh/open data))
 
 
 (defn 

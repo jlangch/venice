@@ -34,6 +34,7 @@
 (import :java.sql.Connection)
 (import :java.sql.Statement)
 (import :java.sql.PreparedStatement)
+(import :java.sql.ResultSet)
 (import :java.sql.Types)
 (import :java.sql.Clob)
 (import :java.sql.Blob)
@@ -664,7 +665,7 @@
   ^{ :arglists '(
           "(collect-result-set rs)" )
      :doc """
-          Collects data form a JDBC `:java.sql.ResultSet` parsed as map with 
+          Collects data form a JDBC `:java.sql.ResultSet` returns it as map with 
           the column names and a vector of row values. 
 
           Row values may be of type:
@@ -1773,15 +1774,49 @@
 ;; ResultSet Data Renderer
 ;; -----------------------------------------------------------------------------
 
-(defn render-query-result  
+(defn 
+  ^{ :arglists '(
+          "(render-query-result data)"
+          "(render-query-result data max-col-width)" )
+     :doc """
+          Renders the result from an `execute-query` in an ascii table format.
+          Returns an ascii table formatted string.
+
+          The functions accepts a JDBC ':java.sql.ResultSet' or a collected
+          result set as returned from `jdbc-core/collect-result-set`.
+
+          *max-col-width* is limited to the range [30..200]
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
+              (jdbc/render-query-result rs)))
+          """) 
+     :see-also '(
+          "jdbc-core/collect-result-set"
+          "jdbc-core/print-query-result" ) }
+
+  render-query-result  
+
   ([data]
     (render-query-result data 80))
 
   ([data max-col-width]
-    (let [min-col-width 3
+    (let [min-col-width 5
+          max-col-width (clamp 20 200)
+          data          (if (instance-of? :ResultSet data)
+                          (collect-result-set data) 
+                          data)
           col-names     (:col-names data)
           rows          (:rows data)
-          rows          (map (fn [r] (map (fn [v] (render-cell v)) r)) rows)
+          rows          (map (fn [r] 
+                               (map (fn [v] (render-cell v max-col-width)) r)) 
+                             rows)
           widths        (col-widths col-names rows min-col-width max-col-width)
           headers       (map (fn [v] (hash-map :header { :text     (first v)
                                                          :align    :left
@@ -1791,27 +1826,60 @@
       (ascii-table/render headers rows :standard-database 0))))
 
 
-(defn print-query-result [data]
-  (println (render-query-result data)))
+(defn 
+  ^{ :arglists '(
+          "(print-query-result data)"
+          "(print-query-result data max-col-width)" )
+     :doc """
+          Prints the result from a `execute-query` in an ascii table format.
+          Returns `nil`.
+
+          The functions accepts a JDBC ':java.sql.ResultSet' or a collected
+          result set as returned from `jdbc-core/collect-result-set`.
+
+          *max-col-width* is limited to the range [5..200]
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
+              (jdbc/print-query-result rs)))
+          """) 
+     :see-also '(
+          "jdbc-core/collect-result-set"
+          "jdbc-core/render-query-result" ) }
+
+  print-query-result 
+  
+  ([data]
+    (println (render-query-result data)))
+
+  ([data max-col-width]
+    (println (render-query-result data max-col-width))))
 
 
-(defn- render-cell [v]
-  (cond 
-    (nil? v)                   "<null>"
-    (string? v)                (str/truncate v 100 "...")
-    (boolean? v)               (if v "true" "false")
-    (char? v)                  (str v)
-    (long? v)                  (str v)
-    (int? v)                   (str (long v))
-    (double? v)                (str v)
-    (time/date? v)             (str (time/local-date-time v))
-    (time/local-date? v)       (str v)
-    (time/local-date-time? v)  (str v)
-    (java-obj? v)              (let [clazz (class-name (class-of v))]
-                                  (case clazz
-                                    "org.postgresql.util.PGobject"  (str v)
-                                    (str "[" clazz "]")))
-    :else                      (str "[" (type v) "]")))
+(defn- render-cell [v max-col-width]
+  (let [max-len (* 3 max-col-width)]  ;; a cell is limited to max 3 lines
+    (cond 
+      (nil? v)                   "<null>"
+      (string? v)                (str/truncate v max-len "...")
+      (boolean? v)               (if v "true" "false")
+      (char? v)                  (str v)
+      (long? v)                  (str v)
+      (int? v)                   (str (long v))
+      (double? v)                (str v)
+      (time/date? v)             (str (time/local-date-time v))
+      (time/local-date? v)       (str v)
+      (time/local-date-time? v)  (str v)
+      (java-obj? v)              (let [clazz (class-name (class-of v))]
+                                    (case clazz
+                                      "org.postgresql.util.PGobject"  (str v)
+                                      (str "[" clazz "]")))
+      :else                      (str "[" (type v) "]"))))
 
 
 (defn- col-widths [col-names rows min-with max-width]
