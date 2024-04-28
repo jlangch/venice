@@ -58,7 +58,7 @@ The Chinook data set is provided by [Luis Rocha](https://github.com/lerocha/chin
 ## Chinook dataset overview
 
 
-Show the database model
+Show the database model (opens a browser):
 
 ```clojure
 (do
@@ -67,7 +67,22 @@ Show the database model
   (chinook/show-data-model))
 ```
 
-Describe the 'album' table
+List all tables:
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+   
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+     (jdbc/tables conn)))
+```
+
+
+
+Describe the 'album' table:
 
 ```clojure
 (do
@@ -88,7 +103,7 @@ title       character varying 160                      NO          <null>
 ```
 
 
-List the foreign key constraints in the database
+List the foreign key constraints in the database:
 
 ```clojure
 (do
@@ -116,4 +131,40 @@ track          track_genre_id_fkey             FOREIGN KEY (genre_id) REFERENCES
 track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFERENCES media_type(media_type_id)
 
 ```
+   
+## Queries
+ 
+Top 3 best selling artists.
+ 
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
            
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (-> (jdbc/execute-query 
+            conn 
+            """
+            SELECT a.Name "Artist", sum(li.Unit_Price) "Total Sold" 
+            FROM Invoice_Line li, Track t, Album al, Artist a
+            WHERE li.Track_Id = t.Track_Id 
+	          and al.Album_Id = t.Album_Id 
+	          and a.Artist_Id = al.Artist_Id
+            GROUP BY a.Name
+            ORDER BY COUNT(a.Artist_Id) DESC
+            LIMIT 3;
+            """)
+        (jdbc-core/print-query-result))))
+```
+
+```
+Artist      Total Sold
+----------- ----------
+Iron Maiden 138.60    
+U2          105.93    
+Metallica   90.09     
+```
+
+       
