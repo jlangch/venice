@@ -92,7 +92,7 @@ List all tables:
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
                                           "postgres" "postgres")]
-     (jdbc/tables conn)))
+    (jdbc/tables conn)))
 ```
 
 ```
@@ -110,7 +110,7 @@ Describe the 'album' table:
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
                                           "postgres" "postgres")]
-     (jdbp/describe-table conn "album")))
+    (jdbp/describe-table conn "album")))
 ```
 
 ```
@@ -153,7 +153,7 @@ track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFER
    
 ## Queries
  
-Top 3 best selling artists.
+Top 3 best selling artists:
  
 ```clojure
 (do
