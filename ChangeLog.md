@@ -26,6 +26,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.15] - 2024-04-27
 
+### Added
+
+- support for sourcing environment vars in the Windows REPL start script
+
 ### Improved 
 
 - the REPL setup. Maven will now be installed locally to the REPL to allow 
