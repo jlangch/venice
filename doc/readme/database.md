@@ -1,7 +1,7 @@
 # Database Tutorial (PostgreSQL)
 
 
-## Install PostgreSQL JDBC driver
+## Install the PostgreSQL JDBC driver
 
 
 ```clojure
