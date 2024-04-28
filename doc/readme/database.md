@@ -36,7 +36,7 @@ Download and start the PostgreSQL container:
     (pg/start "postgres" "16.2" storage-dir "postgres" "postgres")))
 ```
 
-*If the Docker image for PostgreSQL 16.2 is already downloaded `pg/start` will just start the conatiner otherwise it will download the image first.*
+*If the Docker image for PostgreSQL 16.2 is already downloaded `pg/start` will just start the container otherwise it will download the image first.*
 
 
 To stop the PostgreSQL container:
@@ -53,6 +53,8 @@ To stop the PostgreSQL container:
 ## Load the Chinook dataset 
 
 Loads the Chinook data into the PostgreSQL database "chinook_auto_increment".
+
+*Chinook is sample database for a digital media store that can be used to explore and learn database commands.*
 
 If the database exists already it will be dropped, then recreated and the data 
 loaded.
