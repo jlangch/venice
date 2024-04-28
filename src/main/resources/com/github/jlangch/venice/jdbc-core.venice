@@ -695,6 +695,8 @@
               (jdbc/collect-result-set rs)))
           """) 
      :see-also '(
+          "jdbc-core/render-query-result"
+          "jdbc-core/print-query-result"
           "jdbc-core/execute"
           "jdbc-core/execute-query"
           "jdbc-core/execute-update" ) }
@@ -721,19 +723,27 @@
 (defn- row-values [rs col-count]
   (loop [values [], col 1]
     (if (<= col col-count)
-      (let [val (map-value (. rs :getObject col))]  
+      (let [val (map-sql-value (. rs :getObject col))]  
         (recur (conj values val) (inc col)))
         values)))
 
 
-(defn- map-value [val]
+(defn- map-sql-value [val]
   (cond 
-    (sql-date? val)  (convert-sql-date-to-local-date-time val)
-    :else            val))
+    (sql-date? val)       (. val :toLocalDate)
+    (sql-timestamp? val)  (. val :toLocalDateTime)
+    (sql-time? val)       (. val :toLocalTime)
+    :else                 val))
 
 
 (defn- sql-date? [val]
   (instance-of? :java.sql.Date val))
+
+(defn- sql-timestamp? [val]
+  (instance-of? :java.sql.Timestamp val))
+
+(defn- sql-time? [val]
+  (instance-of? :java.sql.Time val))
 
 
 
@@ -1185,32 +1195,390 @@
   (. rs :last))
 
 
-(defn rs-string [rs name-or-index]
+(defn 
+  ^{ :arglists '(
+          "(rs-string rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `string`.
+          """
+     :examples '(
+          "(jdbc-core/rs-string rs 1)",
+          "(jdbc-core/rs-string rs \"firstName\")") 
+     :see-also '(
+         "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-string [rs name-or-index]
+
   (. rs :getString name-or-index))
 
 
-(defn rs-boolean [rs name-or-index]
+(defn 
+  ^{ :arglists '(
+          "(rs-boolean rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `boolean`.
+          """
+     :examples '(
+          "(jdbc-core/rs-boolean rs 1)",
+          "(jdbc-core/rs-boolean rs \"openBill\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-boolean [rs name-or-index]
+
   (. rs :getBoolean name-or-index))
 
 
-(defn rs-date [rs name-or-index]
-  (. rs :getDate name-or-index))
+(defn 
+  ^{ :arglists '(
+          "(rs-int rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `int`.
+          """
+     :examples '(
+          "(jdbc-core/rs-int rs 1)",
+          "(jdbc-core/rs-int rs \"age\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-int [rs name-or-index]
+
+  (. rs :getInt name-or-index))
 
 
-(defn rs-timestamp [rs name-or-index]
-  (. rs :getTimestamp name-or-index))
+(defn 
+  ^{ :arglists '(
+          "(rs-long rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `long`.
+          """
+     :examples '(
+          "(jdbc-core/rs-long rs 1)",
+          "(jdbc-core/rs-long rs \"age\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
 
+  rs-long [rs name-or-index]
 
-(defn rs-double [rs name-or-index]
-  (. rs :getDouble name-or-index))
-
-
-(defn rs-long [rs name-or-index]
   (. rs :getLong name-or-index))
 
 
-(defn rs-int [rs name-or-index]
-  (. rs :getInt name-or-index))
+(defn 
+  ^{ :arglists '(
+          "(rs-float rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `double`.
+          """
+     :examples '(
+          "(jdbc-core/rs-float rs 1)",
+          "(jdbc-core/rs-float rs \"weight\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-float[rs name-or-index]
+  
+  (. rs :getFloat name-or-index))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-double rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `double`.
+          """
+     :examples '(
+          "(jdbc-core/rs-double rs 1)",
+          "(jdbc-core/rs-double rs \"weight\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-double [rs name-or-index]
+
+  (. rs :getDouble name-or-index))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-decimal rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `decimal`.
+          """
+     :examples '(
+          "(jdbc-core/rs-decimal rs 1)",
+          "(jdbc-core/rs-decimal rs \"billAmount\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-decimal[rs name-or-index]
+  
+  (. rs :getBigDecimal name-or-index))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-date rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `:java.time.LocalDate`.
+          """
+     :examples '(
+          "(jdbc-core/rs-date rs 1)",
+          "(jdbc-core/rs-date rs \"birthDate\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-date [rs name-or-index]
+
+  (map-sql-val (. rs :getDate name-or-index)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-timestamp rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `:java.time.LocalDateTime`.
+          """
+     :examples '(
+          "(jdbc-core/rs-timestamp rs 1)",
+          "(jdbc-core/rs-timestamp rs \"createdAt\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-timestamp [rs name-or-index]
+
+  (map-sql-val (. rs :getTimestamp name-or-index)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-time rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `:java.time.LocalTime`.
+          """
+     :examples '(
+          "(jdbc-core/rs-time rs 1)",
+          "(jdbc-core/rs-time rs \"time\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-time [rs name-or-index]
+
+  (map-sql-val (. rs :getTime name-or-index)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-clob rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `:java.sql.Clob`.
+          """
+     :examples '(
+          "(jdbc-core/rs-clob rs 1)",
+          "(jdbc-core/rs-clob rs \"remarks\")") 
+     :see-also '(
+          "jdbc-core/clob-length"
+          "jdbc-core/clob-reader" 
+          "jdbc-core/clob-free"
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-blob"
+          "jdbc-core/rs-object" ) }
+
+  rs-clob [rs name-or-index]
+
+  (. rs :getClob name-or-index))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-blob rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object as a `:java.sql.Blob`.
+          """
+     :examples '(
+          "(jdbc-core/rs-blob rs 1)",
+          "(jdbc-core/rs-blob rs \"data\")") 
+     :see-also '(
+          "jdbc-core/blob-length"
+          "jdbc-core/blob-in-stream"
+          "jdbc-core/blob-bytebuf"
+          "jdbc-core/blob-free"
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-object" ) }
+
+  rs-blob [rs name-or-index]
+
+  (. rs :getBlob name-or-index))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rs-object rs name-or-index)" )
+     :doc """
+          Retrieves the value of the designated column in the current row of 
+          the ResultSet object converted to`string`, `boolean`, `int`, `long`, 
+          `double`, `decimal`, `:java.time.LocalDate`, `:java.time.LocalDateTime`,
+          `:java.time.LocalTime`, `:java.sql.Clob`, or `:java.sql.Blob`.
+          """
+     :examples '(
+          "(jdbc-core/rs-object rs 1)",
+          "(jdbc-core/rs-object rs \"name\")") 
+     :see-also '(
+          "jdbc-core/rs-string"
+          "jdbc-core/rs-boolean"
+          "jdbc-core/rs-int"
+          "jdbc-core/rs-long"
+          "jdbc-core/rs-float"
+          "jdbc-core/rs-double"
+          "jdbc-core/rs-decimal"
+          "jdbc-core/rs-date"
+          "jdbc-core/rs-time"
+          "jdbc-core/rs-timestamp"
+          "jdbc-core/rs-clob"
+          "jdbc-core/rs-blob" ) }
+
+  rs-object [rs name-or-index]
+
+  (map-sql-val (. rs :getObjext name-or-index)))
 
 
 
@@ -1398,18 +1766,6 @@
   (assert (instance-of? :Blob blob))
   (. blob :free))
 
-
-
-;; -----------------------------------------------------------------------------
-;; Data Converter
-;; -----------------------------------------------------------------------------
-
-(defn convert-sql-date-to-local-date-time [d]
-  (if (nil? d) nil (time/local-date-time d)))
-
-
-(defn convert-sql-date-to-local-date [d]
-  (if (nil? d) nil (time/local-date d)))
 
 
 

@@ -82,42 +82,59 @@ public class ModuleJdbcCoreSection implements ISectionBuilder {
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute-query", false));
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute-query*", false));
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute-update", false));
-        exec.addItem(diBuilder.getDocItem("jdbc-core/collect-result-set", false));
 
         final DocSection ps = new DocSection("Prepared Stmt", id());
         all.addSection(ps);
         ps.addItem(diBuilder.getDocItem("jdbc-core/ps-clear-parameters", false));
-        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-blob", false));
-        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-clob", false));
-        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-decimal", false));
+        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-string", false));
         ps.addItem(diBuilder.getDocItem("jdbc-core/ps-boolean", false));
-        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-double", false));
-        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-float", false));
         ps.addItem(diBuilder.getDocItem("jdbc-core/ps-int", false));
         ps.addItem(diBuilder.getDocItem("jdbc-core/ps-long", false));
-        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-string", false));
+        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-float", false));
+        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-double", false));
+        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-decimal", false));
         ps.addItem(diBuilder.getDocItem("jdbc-core/ps-date", false));
         ps.addItem(diBuilder.getDocItem("jdbc-core/ps-timestamp", false));
+        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-clob", false));
+        ps.addItem(diBuilder.getDocItem("jdbc-core/ps-blob", false));
 
         final DocSection rs = new DocSection("Result Set", id());
         all.addSection(rs);
         rs.addItem(diBuilder.getDocItem("jdbc-core/rs-first!", false));
         rs.addItem(diBuilder.getDocItem("jdbc-core/rs-next!", false));
         rs.addItem(diBuilder.getDocItem("jdbc-core/rs-last!", false));
+        rs.addItem(diBuilder.getDocItem("jdbc-core/collect-result-set", false));
         rs.addItem(diBuilder.getDocItem("jdbc-core/render-query-result", false));
         rs.addItem(diBuilder.getDocItem("jdbc-core/print-query-result", false));
 
-        final DocSection lob = new DocSection("Clob/Blob", id());
-        all.addSection(lob);
-        lob.addItem(diBuilder.getDocItem("jdbc-core/clob?", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/clob-length", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/clob-reader", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/clob-free", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/blob?", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/blob-length", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/blob-in-stream", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/blob-bytebuf", false));
-        lob.addItem(diBuilder.getDocItem("jdbc-core/blob-free", false));
+        final DocSection rsv = new DocSection("Result Set Data", id());
+        all.addSection(rsv);
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-string", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-boolean", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-int", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-long", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-float", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-double", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-decimal", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-date", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-timestamp", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-clob", false));
+        rsv.addItem(diBuilder.getDocItem("jdbc-core/rs-blob", false));
+
+        final DocSection clob = new DocSection("Clob", id());
+        all.addSection(clob);
+        clob.addItem(diBuilder.getDocItem("jdbc-core/clob?", false));
+        clob.addItem(diBuilder.getDocItem("jdbc-core/clob-length", false));
+        clob.addItem(diBuilder.getDocItem("jdbc-core/clob-reader", false));
+        clob.addItem(diBuilder.getDocItem("jdbc-core/clob-free", false));
+
+        final DocSection blob = new DocSection("Blob", id());
+        all.addSection(blob);
+        blob.addItem(diBuilder.getDocItem("jdbc-core/blob?", false));
+        blob.addItem(diBuilder.getDocItem("jdbc-core/blob-length", false));
+        blob.addItem(diBuilder.getDocItem("jdbc-core/blob-in-stream", false));
+        blob.addItem(diBuilder.getDocItem("jdbc-core/blob-bytebuf", false));
+        blob.addItem(diBuilder.getDocItem("jdbc-core/blob-free", false));
 
         return section;
     }
