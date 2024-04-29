@@ -362,7 +362,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(prepare-statement conn sql & options)" )
+          "(prepare-statement conn sql)"
+          "(prepare-statement conn gen-key-columns)" )
      :doc """
           Create a prepared statement
           """
@@ -381,15 +382,25 @@
      :see-also '(
           "jdbc-core/create-statement" ) }
 
-  prepare-statement [conn sql & options]
-   
-  (assert (instance-of? :Connection conn))
-  (assert (string? sql))
+  prepare-statement 
+  
+  ([conn sql]
+    (assert (instance-of? :Connection conn))
+    (assert (string? sql))
+    (. conn :prepareStatement sql))
 
-  (let [opts (apply hash-map options)]
-    (if (:return-generated-keys opts false)
-      (. conn :prepareStatement sql (. :Statement :RETURN_GENERATED_KEYS))
-      (. conn :prepareStatement sql))))
+  ([conn sql gen-key-columns]
+    (assert (instance-of? :Connection conn))
+    (assert (string? sql))
+    (assert (sequential? gen-key-columns))
+    (case (type (first gen-key-columns))
+      :core/string (. conn :prepareStatement sql (string-array gen-key-columns))
+      :core/int    (. conn :prepareStatement sql (int-array gen-key-columns))
+      :core/long   (->> (map int cols)
+                        (int-array)
+                        (. conn :prepareStatement sql))
+      (throw (ex :VncException 
+                 "Invalid gen-key-columns value. Must a string, int, or long!")))))
 
 
 (defn 
@@ -413,8 +424,8 @@
 
   (try-with [rs (. stmt :getGeneratedKeys)]
     (loop [keys []]
-      (if (rs-next? rs)
-        (recur (conj keys (rs :getObject 1)))
+      (if (rs-next! rs)
+        (recur (conj keys (map-sql-value (rs :getObject 1))))
         keys))))
 
 
@@ -561,7 +572,7 @@
             (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
                        pstmt (jdbc/prepare-statement conn "SELECT * FROM foo")
                        rs    (jdbc/execute-query* pstmt)]
-              (while (jdbc/rs-next? rs)
+              (while (jdbc/rs-next! rs)
                 (println (jdbc/rs-string rs 1)))))
           """,
           """
@@ -573,7 +584,7 @@
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
                        stmt (jdbc/create-statement conn)
                        rs   (jdbc/execute-query* stmt "SELECT * FROM foo")]
-              (while (jdbc/rs-next? rs)
+              (while (jdbc/rs-next! rs)
                 (println (jdbc/rs-string rs 1)))))
           """,
           """
@@ -653,7 +664,21 @@
 
   ([stmt sql]
     (assert (instance-of? :Statement stmt))
-    (. stmt :executeUpdate sql)))
+    (assert (not (instance-of? :PreparedStatement stmt)))
+    (. stmt :executeUpdate sql))
+
+  ([stmt sql gen-key-columns]
+    (assert (instance-of? :Statement stmt))
+    (assert (not (instance-of? :PreparedStatement stmt)))
+    (assert (sequential? gen-key-columns))
+    (case (type (first gen-key-columns))
+      :core/string (. stmt :executeUpdate sql (string-array gen-key-columns))
+      :core/int    (. stmt :executeUpdate sql (int-array gen-key-columns))
+      :core/long   (->> (map int cols)
+                        (int-array)
+                        (. stmt :executeUpdate sql))
+      (throw (ex :VncException 
+                 "Invalid gen-key-columns value. Must a string, int, or long!")))))
 
 
 (defn 

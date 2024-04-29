@@ -213,7 +213,7 @@ public class BytebufFunctionsTest {
                 "(let [buf (bytebuf-allocate 4)]            \n" +
                 "  (bytebuf-byte-order! buf :big-endian)    \n" +
                 "  (bytebuf-put-int! buf 10203040I)         \n" +
-                "  (str (doall (bytebuf-to-list buf 0))))   "));
+                "  (pr-str (doall (bytebuf-to-list buf 0))))   "));
 
         assertEquals(
             "(160I 175I 155I 0I)",
@@ -221,7 +221,7 @@ public class BytebufFunctionsTest {
                 "(let [buf (bytebuf-allocate 4)]            \n" +
                 "  (bytebuf-byte-order! buf :little-endian) \n" +
                 "  (bytebuf-put-int! buf 10203040I)         \n" +
-                "  (str (doall (bytebuf-to-list buf 0))))   "));
+                "  (pr-str (doall (bytebuf-to-list buf 0))))   "));
     }
 
     @Test

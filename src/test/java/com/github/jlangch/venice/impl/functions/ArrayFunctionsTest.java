@@ -372,8 +372,8 @@ public class ArrayFunctionsTest {
         final Venice venice = new Venice();
 
         assertEquals("[]", venice.eval("(str (int-array '()))"));
-        assertEquals("[1I]", venice.eval("(str (int-array '(1I)))"));
-        assertEquals("[1I, 2I, 3I, 4I, 5I]", venice.eval("(str (int-array '(1I 2I 3I 4I 5I)))"));
+        assertEquals("[1]", venice.eval("(str (int-array '(1I)))"));
+        assertEquals("[1, 2, 3, 4, 5]", venice.eval("(str (int-array '(1I 2I 3I 4I 5I)))"));
 
         assertEquals("[]", venice.eval("(str (long-array '()))"));
         assertEquals("[1]", venice.eval("(str (long-array '(1)))"));

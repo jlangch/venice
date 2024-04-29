@@ -156,6 +156,39 @@ track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFER
    
 ## Queries
 
+**Show first 10 albums from the album table:**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")
+             stmt (jdbc/create-statement conn)]
+    (-> (jdbc/execute-query 
+            stmt 
+            "SELECT * FROM Album LIMIT 10")
+        (jdbc-core/print-query-result))))
+```
+
+```
+album_id title                                 artist_id
+-------- ------------------------------------- ---------
+1        For Those About To Rock We Salute You 1        
+2        Balls to the Wall                     2        
+3        Restless and Wild                     2        
+4        Let There Be Rock                     1        
+5        Big Ones                              3        
+6        Jagged Little Pill                    4        
+7        Facelift                              5        
+8        Warner 25 Anos                        6        
+9        Plays Metallica By Four Cellos        7        
+10       Audioslave                            8        
+```
+
+
 
 **Top 5 artists by number of tracks:**
 
@@ -227,6 +260,53 @@ Led Zeppelin 130.86
 Metallica    110.88    
 ```
 
+   
+## Updates
+
+**Add new album for artist"Led Zeppelin":**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))
+  
+  (defn list-led-zeppelin-albums [conn]
+    (try-with [sql  """
+                    SELECT a.Name "Artist", al.Title "Title"	   
+                    FROM Artist a
+                    JOIN Album al ON al.Artist_Id = a.Artist_Id
+                    WHERE a.Name = 'Led Zeppelin' 
+                    """ 
+               stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt sql)
+          (jdbc-core/print-query-result))))
+  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (let [led-zeppelin (find-led-zeppelin conn)
+          artist-id    (first led-zeppelin)
+          sql          "INSERT INTO Album (Title,Artist_Id) VALUES('How the West Was Won',~(str artist-id))"]
+      (try-with [stmt (jdbc/create-statement conn)]
+        (jdbc/execute-update stmt sql ["album_id"])
+        
+        ;; generated keys
+        (println "Generated keys:" (jdbc/generated-keys stmt)))
+        
+       
+      ;; list Led Zeppelin albums
+      (list-led-zeppelin-albums conn))))
+```
+
+
+
 
 ## Prepared Statements
 
@@ -285,15 +365,15 @@ Led Zeppelin The Song Remains The Same (Disc 2)
           (:rows)
           (first))))
   
-  (defn list-led-zeppelin-albums[conn]
+  (defn list-led-zeppelin-albums [conn]
     (try-with [sql  """
                     SELECT a.Name "Artist", al.Title "Title"	   
                     FROM Artist a
                     JOIN Album al ON al.Artist_Id = a.Artist_Id
                     WHERE a.Name = 'Led Zeppelin' 
                     """ 
-               stmt (jdbc/create-statement conn sql)]
-      (-> (jdbc/execute-query  stmt)
+               stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt sql)
           (jdbc-core/print-query-result))))
   
            
@@ -302,14 +382,18 @@ Led Zeppelin The Song Remains The Same (Disc 2)
                                           "postgres" "postgres")]
     (let [led-zeppelin (find-led-zeppelin conn)
           artist-id    (first led-zeppelin)
-          sql          "INSERT INTO Album VALUES(?,?)"]
-      (try-with [stmt (jdbc/prepare-statement conn sql)]
+          sql          "INSERT INTO Album (Title,Artist_Id) VALUES(?,?)"]
+      (try-with [stmt (jdbc/prepare-statement conn sql ["Album_Id"])]
         (jdbc/ps-string stmt 1 "How the West Was Won")
         (jdbc/ps-int stmt 2 artist-id)
-        (jdbc/execute-update stmt))
+        (jdbc/execute-update stmt)
         
+        ;; generated keys
+        (println "Generated keys:" (jdbc/generated-keys stmt)))
+        
+       
       ;; list Led Zeppelin albums
-      (list-led-zeppelin-albums))))
+      (list-led-zeppelin-albums conn))))
 ```
 
 
