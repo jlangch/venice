@@ -1037,7 +1037,13 @@ public class CoreFunctions {
                         "of the str values of the args with delimiter ' '.")
                     .examples(
                         "(pr-str)",
-                        "(pr-str 1 2 3)")
+                        "(pr-str 1 2 3)",
+                        "(pr-str 1I)",
+                        "(pr-str 3.1415927M)",
+                        "(pr-str +)",
+                        "(pr-str [1 2 3])",
+                        "(pr-str \"total \" 100)",
+                        "(pr-str #\\h #\\i)")
                     .seeAlso("str")
                     .build()
         ) {
@@ -1067,6 +1073,8 @@ public class CoreFunctions {
                     .examples(
                         "(str)",
                         "(str 1 2 3)",
+                        "(str 1I)",
+                        "(str 3.1415927M)",
                         "(str +)",
                         "(str [1 2 3])",
                         "(str \"total \" 100)",

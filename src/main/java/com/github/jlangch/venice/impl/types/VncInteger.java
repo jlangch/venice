@@ -351,10 +351,17 @@ public class VncInteger extends VncNumber {
         }
     }
 
+
     @Override
     public String toString() {
-        return String.valueOf(value) + "I";
+        return String.valueOf(value);
     }
+
+    @Override
+	public String toString(final boolean print_machine_readably) {
+        return print_machine_readably ? String.valueOf(value) + "I" : String.valueOf(value);
+    }
+
 
 
     public static final String TYPE = ":core/integer";
