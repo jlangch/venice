@@ -482,6 +482,74 @@ Led Zeppelin The Song Remains The Same (Disc 2)
       (list-led-zeppelin-albums conn))))
 ```
 
+## Create / Drop Table
+
+**Create**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")                                         
+             stmt (jdbc/create-statement conn)]
+    (jdbc/execute stmt 
+                  """
+                  CREATE TABLE IF NOT EXISTS Accounts (
+                    User_Id SERIAL PRIMARY KEY, 
+                    Username VARCHAR (50) UNIQUE NOT NULL, 
+                    Password VARCHAR (50) NOT NULL, 
+                    Email VARCHAR (255) UNIQUE NOT NULL, 
+                    Created_At TIMESTAMP NOT NULL, 
+                    Last_Login TIMESTAMP); 
+                  """ )))
+```
+
+Add a new account:
+
+```
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+ 
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]     
+    (let [sql  """
+               INSERT INTO Accounts (Username, Password, Email, Created_At, Last_Login) 
+               VALUES(?,?,?,?,?)
+               RETURNING User_Id;
+               """]
+      (try-with [stmt (jdbc/prepare-statement conn sql)]
+        (jdbc/ps-string stmt 1 "John Doe")
+        (jdbc/ps-string stmt 2 "42")
+        (jdbc/ps-string stmt 3 "john.doe@foo.org")
+        (jdbc/ps-timestamp stmt 4 (time/local-date-time))
+        (jdbc/ps-timestamp stmt 5 (time/local-date-time))
+        
+        (jdbc/execute-update stmt)))))     
+```
+
+
+**Drop**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")                                         
+             stmt (jdbc/create-statement conn)]
+    (jdbc/execute stmt 
+                  """
+                  DROP TABLE IF EXISTS Accounts; 
+                  """ )))
+```
+
 
 ## Transactions
 
