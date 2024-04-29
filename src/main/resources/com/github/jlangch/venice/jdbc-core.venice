@@ -370,13 +370,13 @@
           ¶If the driver does not support specifying a list of auto-generated 
           keys to return
 
-          ````
-          (prepare-statement conn "INSERT ..." ['id'])
+          ```
+          (prepare-statement conn "INSERT ..." ["id"])
           ```
 
           try with 
 
-          ````
+          ```
           (prepare-statement conn "INSERT ..." true)
           ```
 
@@ -655,13 +655,13 @@
           ¶If the driver does not support specifying a list of auto-generated 
           keys to return
 
-          ````
-          (execute-update stmt "INSERT ..." ['id'])
+          ```
+          (execute-update stmt "INSERT ..." ["id"])
           ```
 
           try with 
 
-          ````
+          ```
           (execute-update stmt "INSERT ..." true)
           ```
 
