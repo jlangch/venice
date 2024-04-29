@@ -392,15 +392,19 @@
   ([conn sql gen-key-columns]
     (assert (instance-of? :Connection conn))
     (assert (string? sql))
-    (assert (sequential? gen-key-columns))
-    (case (type (first gen-key-columns))
-      :core/string (. conn :prepareStatement sql (string-array gen-key-columns))
-      :core/int    (. conn :prepareStatement sql (int-array gen-key-columns))
-      :core/long   (->> (map int cols)
-                        (int-array)
-                        (. conn :prepareStatement sql))
-      (throw (ex :VncException 
-                 "Invalid gen-key-columns value. Must a string, int, or long!")))))
+    (assert (or (boolean? gen-key-columns) (sequential? gen-key-columns)))
+    (if (boolean? gen-key-columns)
+      (if (true? gen-key-columns)
+        (. conn :prepareStatement sql (. :Statement :RETURN_GENERATED_KEYS))
+        (. conn :prepareStatement sql))
+      (case (type (first gen-key-columns))
+        :core/string (. conn :prepareStatement sql (string-array gen-key-columns))
+        :core/int    (. conn :prepareStatement sql (int-array gen-key-columns))
+        :core/long   (->> (map int cols)
+                          (int-array)
+                          (. conn :prepareStatement sql))
+        (throw (ex :VncException 
+                  "Invalid gen-key-columns value. Must a string, int, or long!"))))))
 
 
 (defn 
@@ -670,15 +674,19 @@
   ([stmt sql gen-key-columns]
     (assert (instance-of? :Statement stmt))
     (assert (not (instance-of? :PreparedStatement stmt)))
-    (assert (sequential? gen-key-columns))
-    (case (type (first gen-key-columns))
-      :core/string (. stmt :executeUpdate sql (string-array gen-key-columns))
-      :core/int    (. stmt :executeUpdate sql (int-array gen-key-columns))
-      :core/long   (->> (map int cols)
-                        (int-array)
-                        (. stmt :executeUpdate sql))
-      (throw (ex :VncException 
-                 "Invalid gen-key-columns value. Must a string, int, or long!")))))
+    (assert (or (boolean? gen-key-columns) (sequential? gen-key-columns)))
+    (if (boolean? gen-key-columns)
+      (if (true? gen-key-columns)
+        (. stmt :executeUpdate sql (. :Statement :RETURN_GENERATED_KEYS))
+        (. stmt :executeUpdate sql))
+      (case (type (first gen-key-columns))
+        :core/string (. stmt :executeUpdate sql (string-array gen-key-columns))
+        :core/int    (. stmt :executeUpdate sql (int-array gen-key-columns))
+        :core/long   (->> (map int cols)
+                          (int-array)
+                          (. stmt :executeUpdate sql))
+        (throw (ex :VncException 
+                  "Invalid gen-key-columns value. Must a string, int, or long!"))))))
 
 
 (defn 
@@ -803,6 +811,7 @@
   (assert (instance-of? :PreparedStatement ps))
   (. ps :clearParameters))
 
+
 (defn 
   ^{ :arglists '(
           "(ps-blob ps idx val)" )
@@ -837,6 +846,7 @@
     (nil? val)          (. ps :setBlob (int idx) nil)
     (bytebuf? val)      (. ps :setBlob (int idx) (io/bytebuf-in-stream val))
     (io/in-stream? val) (. ps :setBlob (int idx) val)))
+
 
 (defn 
   ^{ :arglists '(
@@ -873,6 +883,7 @@
     (string? val)     (. ps :setClob (int idx) (io/string-reader val))
     (io/reader? val)  (. ps :setClob (int idx) val)))
 
+
 (defn 
   ^{ :arglists '(
           "(ps-decimal ps idx val)" )
@@ -901,6 +912,7 @@
   (assert (pos? idx))
   (assert (or (nil? val) (decimal? val)))
   (. ps :setBigDecimal (int idx) val))
+
 
 (defn 
   ^{ :arglists '(
@@ -931,6 +943,7 @@
   (assert (or (nil? val) (boolean? val)))
   (. ps :setBoolean (int idx) val))
 
+
 (defn 
   ^{ :arglists '(
           "(ps-double ps idx val)" )
@@ -959,6 +972,7 @@
   (assert (pos? idx))
   (assert (or (nil? val) (double? val)))
   (. ps :setDouble (int idx) val))
+
 
 (defn 
   ^{ :arglists '(
@@ -989,6 +1003,7 @@
   (assert (or (nil? val) (double? val)))
   (. ps :setFloat (int idx) val))
 
+
 (defn 
   ^{ :arglists '(
           "(ps-int ps idx val)" )
@@ -1017,6 +1032,7 @@
   (assert (pos? idx))
   (assert (or (nil? val) (int? val) (long? val)))
   (. ps :setInt (int idx) (int val)))
+
 
 (defn 
   ^{ :arglists '(
@@ -1047,6 +1063,7 @@
   (assert (or (nil? val) (int? val) (long? val)))
   (. ps :setLong (int idx) (long val)))
 
+
 (defn 
   ^{ :arglists '(
           "(ps-string ps idx val)" )
@@ -1075,6 +1092,7 @@
   (assert (pos? idx))
   (assert (or (nil? val) (string? val)))
   (. ps :setString (int idx) val))
+
 
 (defn 
   ^{ :arglists '(
@@ -1112,6 +1130,7 @@
     (->> (time/format val "yyyy-mm-dd")
          (. :java.sql.Date :valueOf)
          (. ps :setDate (int idx)))))
+
 
 (defn 
   ^{ :arglists '(
@@ -1996,7 +2015,8 @@
       :supports-stored-procedures  (. md :supportsStoredProcedures)
       :supports-transactions       (. md :supportsTransactions)
       :supports-savepoints         (. md :supportsSavepoints)
-      :supports-batch-updates      (. md :supportsBatchUpdates) } ))
+      :supports-batch-updates      (. md :supportsBatchUpdates) 
+      :supports-get-generated-keys (. md :supportsGetGeneratedKeys) } ))
 
 
 (defn 

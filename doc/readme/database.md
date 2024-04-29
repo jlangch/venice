@@ -263,7 +263,7 @@ Metallica    110.88
    
 ## Updates
 
-**Add new album for artist"Led Zeppelin":**
+**Add new album for artist "Led Zeppelin":**
 
 ```clojure
 (do
@@ -293,7 +293,53 @@ Metallica    110.88
                                           "postgres" "postgres")]
     (let [led-zeppelin (find-led-zeppelin conn)
           artist-id    (first led-zeppelin)
-          sql          "INSERT INTO Album (Title,Artist_Id) VALUES('How the West Was Won',~(str artist-id))"]
+          sql          """
+                       INSERT INTO Album (Title,Artist_Id) 
+                       VALUES('How the West Was Won',~(str artist-id))
+                       """]
+      (try-with [stmt (jdbc/create-statement conn)]
+        (jdbc/execute-update stmt sql))
+        
+       
+      ;; list Led Zeppelin albums
+      (list-led-zeppelin-albums conn))))
+```
+
+
+**Return generated keys:**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))
+  
+  (defn list-led-zeppelin-albums [conn]
+    (try-with [sql  """
+                    SELECT a.Name "Artist", al.Title "Title"	   
+                    FROM Artist a
+                    JOIN Album al ON al.Artist_Id = a.Artist_Id
+                    WHERE a.Name = 'Led Zeppelin' 
+                    """ 
+               stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt sql)
+          (jdbc-core/print-query-result))))
+  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (let [led-zeppelin (find-led-zeppelin conn)
+          artist-id    (first led-zeppelin)
+          sql          """
+                       INSERT INTO Album (Title,Artist_Id) 
+                       VALUES('How the West Was Won',~(str artist-id))
+                       """]
       (try-with [stmt (jdbc/create-statement conn)]
         (jdbc/execute-update stmt sql ["album_id"])
         
@@ -304,7 +350,6 @@ Metallica    110.88
       ;; list Led Zeppelin albums
       (list-led-zeppelin-albums conn))))
 ```
-
 
 
 
@@ -352,7 +397,48 @@ Led Zeppelin The Song Remains The Same (Disc 1)
 Led Zeppelin The Song Remains The Same (Disc 2)
 ```
 
-**Add new album for artist"Led Zeppelin":**
+**Add new album for artist "Led Zeppelin":**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))
+  
+  (defn list-led-zeppelin-albums [conn]
+    (try-with [sql  """
+                    SELECT a.Name "Artist", al.Title "Title"	   
+                    FROM Artist a
+                    JOIN Album al ON al.Artist_Id = a.Artist_Id
+                    WHERE a.Name = 'Led Zeppelin' 
+                    """ 
+               stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt sql)
+          (jdbc-core/print-query-result))))
+  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (let [led-zeppelin (find-led-zeppelin conn)
+          artist-id    (first led-zeppelin)
+          sql          "INSERT INTO Album (Title,Artist_Id) VALUES(?,?)"]
+      (try-with [stmt (jdbc/prepare-statement conn sql)]
+        (jdbc/ps-string stmt 1 "How the West Was Won")
+        (jdbc/ps-int stmt 2 artist-id)
+        (jdbc/execute-update stmt))
+        
+       
+      ;; list Led Zeppelin albums
+      (list-led-zeppelin-albums conn))))
+```
+
+**Return the generated keys:**
 
 ```clojure
 (do
