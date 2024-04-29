@@ -363,9 +363,28 @@
 (defn 
   ^{ :arglists '(
           "(prepare-statement conn sql)"
-          "(prepare-statement conn gen-key-columns)" )
+          "(prepare-statement conn sql gen-key-columns)" )
      :doc """
           Create a prepared statement
+
+          ¶If the driver does not support specifying a list of auto-generated 
+          keys to return
+
+          ````
+          (prepare-statement conn "INSERT ..." ['id'])
+          ```
+
+          try with 
+
+          ````
+          (prepare-statement conn "INSERT ..." true)
+          ```
+
+          this will pass the value RETURN_GENERATED_KEYS and is be equivalent to:
+
+          ```
+          (. conn :prepareStatement "INSERT ..." (. :Statement :RETURN_GENERATED_KEYS)
+          ```
           """
      :examples '(
           """
@@ -624,13 +643,33 @@
 (defn 
   ^{ :arglists '(
           "(execute-update pstmt)"
-          "(execute-update stmt sql)" )
+          "(execute-update stmt sql)"
+          "(execute-update stmt sql gen-key-columns)" )
      :doc """
           Executes the SQL statement in prepared statement or executes an SQL
           statement on a JDBC statement.
 
           Returns an integer value that reports the number of rows affected by 
-          the SQL statement
+          the SQL statement.
+
+          ¶If the driver does not support specifying a list of auto-generated 
+          keys to return
+
+          ````
+          (execute-update stmt "INSERT ..." ['id'])
+          ```
+
+          try with 
+
+          ````
+          (execute-update stmt "INSERT ..." true)
+          ```
+
+          this will pass the value RETURN_GENERATED_KEYS and is be equivalent to:
+
+          ```
+          (. stmt :executeUpdate "INSERT ..." (. :Statement :RETURN_GENERATED_KEYS)
+          ```
           """
      :examples '(
           """
