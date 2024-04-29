@@ -609,7 +609,7 @@
 (defn 
   ^{ :arglists '(
           "(execute-update pstmt)"
-          "(execute-update stmt sql )" )
+          "(execute-update stmt sql)" )
      :doc """
           Executes the SQL statement in prepared statement or executes an SQL
           statement on a JDBC statement.
@@ -1785,7 +1785,7 @@
           The functions accepts a JDBC ':java.sql.ResultSet' or a collected
           result set as returned from `jdbc-core/collect-result-set`.
 
-          *max-col-width* is limited to the range [30..200]
+          *max-col-width* is limited to the range [15..200]
           """
      :examples '(
           """
@@ -1809,7 +1809,7 @@
 
   ([data max-col-width]
     (let [min-col-width 5
-          max-col-width (clamp max-col-width 20 200)
+          max-col-width (clamp max-col-width 15 200)
           data          (if (instance-of? :ResultSet data)
                           (collect-result-set data) 
                           data)

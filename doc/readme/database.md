@@ -167,11 +167,11 @@ Top 3 best selling artists:
     (-> (jdbc/execute-query 
             stmt 
             """
-            SELECT a.Name "Artist", sum(li.Unit_Price) "Total Sold" 
-            FROM Invoice_Line li, Track t, Album al, Artist a
-            WHERE li.Track_Id = t.Track_Id 
-	          and al.Album_Id = t.Album_Id 
-	          and a.Artist_Id = al.Artist_Id
+            SELECT a.Name "Artist", sum(il.Unit_Price) "Total Sold" 	   
+            FROM Artist a
+            JOIN Album al ON al.Artist_Id = a.Artist_Id
+            JOIN Track t ON t.Album_Id = al.Album_Id
+            JOIN Invoice_Line il ON t.track_Id = il.Invoice_Line_Id 	       
             GROUP BY a.Name
             ORDER BY COUNT(a.Artist_Id) DESC
             LIMIT 3;
