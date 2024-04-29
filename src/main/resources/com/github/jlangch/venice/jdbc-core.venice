@@ -448,7 +448,7 @@
   (try-with [rs (. stmt :getGeneratedKeys)]
     (loop [keys []]
       (if (rs-next! rs)
-        (recur (conj keys (map-sql-value (rs :getObject 1))))
+        (recur (conj keys (map-sql-value (. rs :getObject 1))))
         keys))))
 
 

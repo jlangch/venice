@@ -469,13 +469,14 @@ Led Zeppelin The Song Remains The Same (Disc 2)
     (let [led-zeppelin (find-led-zeppelin conn)
           artist-id    (first led-zeppelin)
           sql          "INSERT INTO Album (Title,Artist_Id) VALUES(?,?)"]
-      (try-with [stmt (jdbc/prepare-statement conn sql ["Album_Id"])]
+      (try-with [stmt (jdbc/prepare-statement conn sql ["album_id"])]
         (jdbc/ps-string stmt 1 "How the West Was Won")
         (jdbc/ps-int stmt 2 artist-id)
         (jdbc/execute-update stmt)
         
         ;; generated keys
-        (println "Generated keys:" (jdbc/generated-keys stmt)))
+        (println "Generated keys:" (jdbc/generated-keys stmt))
+        (println))
         
        
       ;; list Led Zeppelin albums
