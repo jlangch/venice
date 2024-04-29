@@ -151,24 +151,25 @@
 
   describe-table [conn table & options]
 
-    (let [opts (apply hash-map options)
-          mode (:mode opts)
-          data (jdbc/execute-query conn
-                                    """
-                                    SELECT 
-                                      column_name, 
-                                      data_type, 
-                                      character_maximum_length, 
-                                      is_nullable, 
-                                      column_default 
-                                    FROM 
-                                      information_schema.columns 
-                                    WHERE 
-                                      table_name = '~{table}';
-                                    """)]
-      (if (= mode :data) 
-        data
-        (jdbc/print-query-result data))))
+  (let [opts (apply hash-map options)
+        mode (:mode opts)]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (let [data (jdbc/execute-query stmt
+                                     """
+                                     SELECT 
+                                       column_name, 
+                                       data_type, 
+                                       character_maximum_length, 
+                                       is_nullable, 
+                                       column_default 
+                                     FROM 
+                                       information_schema.columns 
+                                     WHERE 
+                                       table_name = '~{table}';
+                                     """)]
+        (if (= mode :data) 
+          data
+          (jdbc/print-query-result data))))))
 
 
 (defn 
@@ -218,26 +219,27 @@
   foreign-key-constraints [conn & options]
 
   (let [opts (apply hash-map options)
-        mode (:mode opts)
-        data (jdbc/execute-query conn
-                                  """
-                                  SELECT 
-                                    conrelid::regclass AS table_name, 
-                                    conname AS foreign_key, 
-                                    pg_get_constraintdef(oid) 
-                                  FROM
-                                    pg_constraint 
-                                  WHERE
-                                    contype = 'f' 
-                                  AND
-                                    connamespace = 'public'::regnamespace   
-                                  ORDER BY 
-                                    conrelid::regclass::text, 
-                                    contype DESC;
-                                  """)]
-      (if (= mode :data) 
-        data
-        (jdbc/print-query-result data))))
+        mode (:mode opts)]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (let [data (jdbc/execute-query stmt
+                                     """
+                                     SELECT 
+                                       conrelid::regclass AS table_name, 
+                                       conname AS foreign_key, 
+                                       pg_get_constraintdef(oid) 
+                                     FROM
+                                       pg_constraint 
+                                     WHERE
+                                       contype = 'f' 
+                                     AND
+                                       connamespace = 'public'::regnamespace   
+                                     ORDER BY 
+                                       conrelid::regclass::text, 
+                                       contype DESC;
+                                     """)]
+        (if (= mode :data) 
+          data
+          (jdbc/print-query-result data))))))
 
 
 (defn- as-properties [user password properties]

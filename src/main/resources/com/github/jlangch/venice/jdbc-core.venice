@@ -362,7 +362,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(prepare-statement conn sql)" )
+          "(prepare-statement conn sql & options)" )
      :doc """
           Create a prepared statement
           """
@@ -372,20 +372,50 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(?,?)")]
-              (jdbc/ps-int 1 1I)
-              (jdbc/ps-string 2 "Harry Potter")
-              (jdbc/execute ps)))
+            (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       pstmt (jdbc/prepare-statement conn "INSERT INTO foo VALUES(?,?)")]
+              (jdbc/ps-int pstmt 1 1I)
+              (jdbc/ps-string pstmt 2 "Harry Potter")
+              (jdbc/execute pstmt)))
           """) 
      :see-also '(
           "jdbc-core/create-statement" ) }
 
-   prepare-statement [conn sql]
+  prepare-statement [conn sql & options]
    
-   (assert (instance-of? :Connection conn))
-   (assert (string? sql))
-   (. conn :prepareStatement sql))
+  (assert (instance-of? :Connection conn))
+  (assert (string? sql))
+
+  (let [opts (apply hash-map options)]
+    (if (:return-generated-keys opts false)
+      (. conn :prepareStatement sql (. :Statement :RETURN_GENERATED_KEYS))
+      (. conn :prepareStatement sql))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(generated-keys stmt)" )
+     :doc """
+          Return a vector with generated keys.
+          """
+     :examples '(
+          """
+          (jdbc-core/generated-keys stmt)
+          """) 
+     :see-also '(
+          "jdbc-core/create-statement"
+          "jdbc-core/prepare-statement" ) }
+
+  generated-keys [stmt]
+  
+  (assert (or (instance-of? :Statement stmt)
+              (instance-of? :PreparedStatement stmt)))
+
+  (try-with [rs (. stmt :getGeneratedKeys)]
+    (loop [keys []]
+      (if (rs-next? rs)
+        (recur (conj keys (rs :getObject 1)))
+        keys))))
 
 
 
@@ -396,10 +426,10 @@
 (defn 
   ^{ :arglists '(
           "(execute pstmt)"
-          "(execute conn-or-stmt sql)" )
+          "(execute stmt sql)" )
      :doc """
           Executes the SQL statement in prepared statement or executes an SQL
-          statement on a JDBC statement or connection.
+          statement on a JDBC statement.
           """
      :examples '(
           """
@@ -408,20 +438,11 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
-              (jdbc/ps-int 1 1I)
-              (jdbc/ps-string 2 "Harry Potter")
-              (jdbc/execute ps)))
-          """,
-          """
-          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
-          (do
-            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-              (jdbc/execute conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+            (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       pstmt (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+              (jdbc/ps-int pstmt 1 1I)
+              (jdbc/ps-string pstmt 2 "Harry Potter")
+              (jdbc/execute pstmt)))
           """,
           """
           ;; running an SQL statement on a JDBC statement
@@ -444,19 +465,15 @@
     (assert (instance-of? :PreparedStatement pstmt))
     (. pstmt :execute)) 
 
-  ([conn-or-stmt sql]
-    (assert (or (instance-of? :Connection conn-or-stmt)
-                (instance-of? :Statement conn-or-stmt)))
-    (if (instance-of? :Connection conn-or-stmt)
-      (try-with [stmt (create-statement conn-or-stmt)]
-        (. stmt :execute sql))
-      (. conn-or-stmt :execute sql))))
+  ([stmt sql]
+    (assert (instance-of? :Statement stmt))
+    (. stmt :execute sql)))
 
 
 (defn 
   ^{ :arglists '(
           "(execute-query pstmt)"
-          "(execute-query conn-or-stmt sql)" )
+          "(execute-query stmt sql)" )
      :doc """
           Executes the SQL statement in prepared statement or executes an SQL
           statement on a JDBC statement or connection.
@@ -488,19 +505,9 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       ps   (jdbc/prepare-statement conn "SELECT * FROM foo")]
-              (jdbc/execute-query ps)))
-          """,
-          """
-          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
-          (do
-            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-              (-> (jdbc/execute-query conn "SELECT * FROM foo")
-                  (jdbc-core/print-query-result))))
+            (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       pstmt (jdbc/prepare-statement conn "SELECT * FROM foo")]
+              (jdbc/execute-query pstmt)))
           """,
           """
           ;; running an SQL statement on a JDBC statement
@@ -523,18 +530,13 @@
 
   ([pstmt]
     (assert (instance-of? :PreparedStatement pstmt))
-    (try-with [rs (execute-query* pstmt)]
+    (try-with [rs (. pstmt :executeQuery)]
       (collect-result-set rs)))
 
-  ([conn-or-stmt sql]
-    (assert (or (instance-of? :Connection conn-or-stmt)
-                (instance-of? :Statement conn-or-stmt)))
-    (if (instance-of? :Connection conn-or-stmt)
-      (try-with [stmt (create-statement conn-or-stmt)
-                 rs   (. stmt :executeQuery sql)]
-        (collect-result-set rs))
-      (try-with [rs (. stmt :executeQuery sql)]
-        (collect-result-set rs)))))
+  ([stmt sql]
+    (assert (instance-of? :Statement stmt))
+    (try-with [rs (. stmt :executeQuery sql)]
+      (collect-result-set rs))))
  
 
 (defn 
@@ -543,7 +545,7 @@
           "(execute-query* stmt sql)" )
      :doc """
           Executes the SQL statement in prepared statement or executes an SQL
-          statement on a JDBC statement or connection.
+          statement on a JDBC statement.
 
           Returns a JDBC `:java.sql.ResultSet`. 
 
@@ -556,9 +558,9 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       ps   (jdbc/prepare-statement conn "SELECT * FROM foo")
-                       rs   (jdbc/execute-query* ps)]
+            (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       pstmt (jdbc/prepare-statement conn "SELECT * FROM foo")
+                       rs    (jdbc/execute-query* pstmt)]
               (while (jdbc/rs-next? rs)
                 (println (jdbc/rs-string rs 1)))))
           """,
@@ -600,17 +602,17 @@
     (. pstmt :executeQuery))
 
   ([stmt sql]
-    (assert (instance-of? :Statement conn-or-stmt))
+    (assert (instance-of? :Statement stmt))
     (. stmt :executeQuery sql)))
 
 
 (defn 
   ^{ :arglists '(
           "(execute-update pstmt)"
-          "(execute-update conn-or-stmt sql)" )
+          "(execute-update stmt sql )" )
      :doc """
           Executes the SQL statement in prepared statement or executes an SQL
-          statement on a JDBC statement or connection.
+          statement on a JDBC statement.
 
           Returns an integer value that reports the number of rows affected by 
           the SQL statement
@@ -622,20 +624,11 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       ps   (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
-              (jdbc/ps-int 1 1I)
-              (jdbc/ps-string 2 "Harry Potter")
-              (jdbc/execute-update ps)))
-          """,
-          """
-          ;; running an SQL statement on a connection (creates an implicit JDBC statement)
-          (do
-            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
-              (jdbc/execute-update conn "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
+            (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
+                       pstmt (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+              (jdbc/ps-int pstmt 1 1I)
+              (jdbc/ps-string pstmt 2 "Harry Potter")
+              (jdbc/execute-update pstmt)))
           """,
           """
           ;; running an SQL statement on a JDBC statement
@@ -644,7 +637,7 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                      stmt (jdbc/create-statement conn)]
+                       stmt (jdbc/create-statement conn)]
               (jdbc/execute-update stmt "INSERT INTO foo VALUES(1, \"Harry Potter\")")))
           """) 
      :see-also '(
@@ -658,13 +651,9 @@
     (assert (instance-of? :PreparedStatement pstmt))
     (. pstmt :executeUpdate))
 
-  ([conn-or-stmt sql]
-    (assert (or (instance-of? :Connection conn-or-stmt)
-                (instance-of? :Statement conn-or-stmt)))
-    (if (instance-of? :Connection conn-or-stmt)
-      (try-with [stmt (create-statement conn-or-stmt)]
-        (. stmt :executeUpdate sql))
-      (. conn-or-stmt :executeUpdate sql))))
+  ([stmt sql]
+    (assert (instance-of? :Statement stmt))
+    (. stmt :executeUpdate sql)))
 
 
 (defn 
@@ -698,7 +687,8 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
+                       stmt (jdbc/create-statement conn)
+                       rs   (jdbc/execute-query* stmt "SELECT * FROM foo")]
               (jdbc/collect-result-set rs)))
           """) 
      :see-also '(
@@ -1804,7 +1794,8 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
+                       stmt (jdbc/create-statement conn)
+                       rs   (jdbc/execute-query* stmt "SELECT * FROM foo")]
               (jdbc/render-query-result rs)))
           """) 
      :see-also '(
@@ -1856,7 +1847,8 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       rs   (jdbc/execute-query* conn "SELECT * FROM foo")]
+                       stmt (jdbc/create-statement conn)
+                       rs   (jdbc/execute-query* stmt "SELECT * FROM foo")]
               (jdbc/print-query-result rs)))
           """) 
      :see-also '(

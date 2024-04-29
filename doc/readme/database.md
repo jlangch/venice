@@ -162,9 +162,10 @@ Top 3 best selling artists:
            
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
-                                          "postgres" "postgres")]
+                                          "postgres" "postgres")
+             stmt (jdbc/create-statement conn)]
     (-> (jdbc/execute-query 
-            conn 
+            stmt 
             """
             SELECT a.Name "Artist", sum(li.Unit_Price) "Total Sold" 
             FROM Invoice_Line li, Track t, Album al, Artist a

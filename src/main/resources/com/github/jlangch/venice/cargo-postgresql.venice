@@ -104,7 +104,7 @@
     (start cname version default-external-port storage-dir default-user default-password nil))
  
   ([cname version storage-dir user password]
-    (start cname version external-port storage-dir user password nil))
+    (start cname version default-external-port storage-dir user password nil))
  
   ([cname version storage-dir user password log]
     (start cname version default-external-port storage-dir user password log))
