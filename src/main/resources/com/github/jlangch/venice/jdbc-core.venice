@@ -439,7 +439,7 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
             (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       pstmt (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+                       pstmt (jdbc/prepare-statement conn "INSERT INTO foo VALUES(?,?)")]
               (jdbc/ps-int pstmt 1 1I)
               (jdbc/ps-string pstmt 2 "Harry Potter")
               (jdbc/execute pstmt)))
@@ -625,7 +625,7 @@
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
             (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")
-                       pstmt (jdbc/prepare-statement conn "INSERT INTO foo VALUES(1,?)")]
+                       pstmt (jdbc/prepare-statement conn "INSERT INTO foo VALUES(?,?)")]
               (jdbc/ps-int pstmt 1 1I)
               (jdbc/ps-string pstmt 2 "Harry Potter")
               (jdbc/execute-update pstmt)))

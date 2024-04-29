@@ -1,5 +1,7 @@
 # Database Tutorial (PostgreSQL)
 
+The Venice database modules are based on the [Java Database Connectivity (JDBC) API](https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/). 
+
 
 ## Install the PostgreSQL JDBC driver
 
@@ -73,7 +75,7 @@ The Chinook data set is provided by [Luis Rocha](https://github.com/lerocha/chin
 ## Chinook dataset overview
 
 
-Show the database model (opens a browser):
+**Show the database model (opens a browser):**
 
 ```clojure
 (do
@@ -82,7 +84,7 @@ Show the database model (opens a browser):
   (chinook/show-data-model))
 ```
 
-List all tables:
+**List all tables:**
 
 ```clojure
 (do
@@ -101,7 +103,7 @@ List all tables:
 ```
 
 
-Describe the 'album' table:
+**Describe the 'album' table:**
 
 ```clojure
 (do
@@ -122,7 +124,7 @@ title       character varying 160                      NO          <null>
 ```
 
 
-List the foreign key constraints in the database:
+**List the foreign key constraints in the database:**
 
 ```clojure
 (do
@@ -148,12 +150,50 @@ playlist_track playlist_track_track_id_fkey    FOREIGN KEY (track_id) REFERENCES
 track          track_album_id_fkey             FOREIGN KEY (album_id) REFERENCES album(album_id)               
 track          track_genre_id_fkey             FOREIGN KEY (genre_id) REFERENCES genre(genre_id)               
 track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFERENCES media_type(media_type_id)
-
 ```
+
+
    
 ## Queries
+
+
+**Top 5 artists by number of tracks:**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")
+             stmt (jdbc/create-statement conn)]
+    (-> (jdbc/execute-query 
+            stmt 
+            """
+            SELECT Artist.Name, COUNT(Track.Track_Id) AS TrackCount 
+            FROM Artist 
+            JOIN Album ON Artist.Artist_Id = Album.Artist_Id 
+            JOIN Track ON Album.Album_Id = Track.Album_Id 
+            GROUP BY Artist.Artist_Id 
+            ORDER BY TrackCount DESC LIMIT 5;
+            """)
+        (jdbc-core/print-query-result))))
+```
+
+```
+name         trackcount
+------------ ----------
+Iron Maiden  213       
+U2           135       
+Led Zeppelin 114       
+Metallica    112       
+Lost         92        
+```
+
+
  
-Top 3 best selling artists:
+**Top 3 best selling artists:**
  
 ```clojure
 (do
@@ -180,17 +220,97 @@ Top 3 best selling artists:
 ```
 
 ```
-Artist      Total Sold
------------ ----------
-Iron Maiden 138.60    
-U2          105.93    
-Metallica   90.09     
+Artist       Total Sold
+------------ ----------
+Iron Maiden  210.87    
+Led Zeppelin 130.86    
+Metallica    110.88    
 ```
 
 
 ## Prepared Statements
 
-*work in progress...*
+
+**Find albums by artist "Led Zeppelin":**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")
+             sql  """
+                  SELECT a.Name "Artist", al.Title "Title"	   
+                  FROM Artist a
+                  JOIN Album al ON al.Artist_Id = a.Artist_Id
+                  WHERE a.Name = ? 
+                  """ 
+             stmt (jdbc/prepare-statement conn sql)]
+    (jdbc/ps-string stmt 1 "Led Zeppelin")
+    (-> (jdbc/execute-query  stmt)
+        (jdbc-core/print-query-result))))
+```
+
+```
+Artist       Title                             
+------------ ----------------------------------
+Led Zeppelin BBC Sessions [Disc 1] [Live]      
+Led Zeppelin Physical Graffiti [Disc 1]        
+Led Zeppelin BBC Sessions [Disc 2] [Live]      
+Led Zeppelin Coda                              
+Led Zeppelin Houses Of The Holy                
+Led Zeppelin In Through The Out Door           
+Led Zeppelin IV                                
+Led Zeppelin Led Zeppelin I                    
+Led Zeppelin Led Zeppelin II                   
+Led Zeppelin Led Zeppelin III                  
+Led Zeppelin Physical Graffiti [Disc 2]        
+Led Zeppelin Presence                          
+Led Zeppelin The Song Remains The Same (Disc 1)
+Led Zeppelin The Song Remains The Same (Disc 2)
+```
+
+**Add new album for artist"Led Zeppelin":**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))
+  
+  (defn list-led-zeppelin-albums[conn]
+    (try-with [sql  """
+                    SELECT a.Name "Artist", al.Title "Title"	   
+                    FROM Artist a
+                    JOIN Album al ON al.Artist_Id = a.Artist_Id
+                    WHERE a.Name = 'Led Zeppelin' 
+                    """ 
+               stmt (jdbc/create-statement conn sql)]
+      (-> (jdbc/execute-query  stmt)
+          (jdbc-core/print-query-result))))
+  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (let [led-zeppelin (find-led-zeppelin conn)
+          artist-id    (first led-zeppelin)
+          sql          "INSERT INTO Album VALUES(?,?)"]
+      (try-with [stmt (jdbc/prepare-statement conn sql)]
+        (jdbc/ps-string stmt 1 "How the West Was Won")
+        (jdbc/ps-int stmt 2 artist-id)
+        (jdbc/execute-update stmt))
+        
+      ;; list Led Zeppelin albums
+      (list-led-zeppelin-albums))))
+```
 
 
 ## Transactions
