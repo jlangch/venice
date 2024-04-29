@@ -187,4 +187,14 @@ U2          105.93
 Metallica   90.09     
 ```
 
+
+## Prepared Statements
+
+*work in progress...*
+
+
+## Transactions
+
+*work in progress...*
+
        
