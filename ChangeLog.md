@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.16] - 2024-04-xx
+
+## [1.12.17] - 2024-04-xx
 
 ### Added
 
@@ -17,6 +18,13 @@ All notable changes to this project will be documented in this file.
   follow soon.
 - :jtokkit module, bringing the Java JTokkit library functionality to 
   Venice
+
+
+
+## [1.12.16] - 2024-04-30
+
+### Added
+
 - JDBC support through the modules `:jdbc-core` and `:jdbc-postgresql`
 - `:cargo-postgresql` module to install/start/stop PostgreSQL DB docker 
   containers 
