@@ -367,7 +367,7 @@
      :doc """
           Create a prepared statement
 
-          ¶¶*Options:*
+          ¶*Options:*
 
           | [![width: 10%]] | [![width: 90%]] |
           | :gen-key  | Provide access to the generated keys. ¶\
@@ -619,7 +619,7 @@
           Returns an integer value that reports the number of rows affected by 
           the SQL statement.
 
-          ¶¶*Options:*
+          ¶*Options:*
 
           | [![width: 10%]] | [![width: 90%]] |
           | :gen-key  | Provide access to the generated keys. ¶\
