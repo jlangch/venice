@@ -722,14 +722,13 @@
   (assert (instance-of? :Connection conn))
   (assert (string? table))
 
-  (try-with [stmt (prepare-statement conn "SELECT COUNT(*) AS count FROM ?")]
-    (ps-string stmt 1 table)
-    (try-with [rs (execute-query* stmt)]
+  (try-with [stmt (create-statement conn)]
+    (try-with [rs (execute-query* stmt "SELECT COUNT(*) FROM ~{table}")]
       (if (rs-next! rs)
         (rs-int rs 1)
         (throw (ex :VncException 
                     """
-                    Missing result from SELECT COUNT(*) FROM ?
+                    Missing result from SELECT COUNT(*) FROM <table>
                     """))))))
 
 
