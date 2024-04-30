@@ -374,7 +374,7 @@
                         The generated keys can be retrieved by a call \
                         to `(jdbc-core/generated-keys stmt)`. ¶¶\
                         Values: ¶\
-                        `true` Return all generated keys ¶\
+                        `true` \u00A0\u00A0\u00A0\u00A0Return all generated keys ¶\
                         `["id"]` Return only the generated keys in the specified \
                         list|
           """
@@ -626,7 +626,7 @@
                         The generated keys can be retrieved by a call \
                         to `(jdbc-core/generated-keys stmt)`. ¶¶\
                         Values: ¶\
-                        `true` Return all generated keys ¶\
+                        `true` \u00A0\u00A0\u00A0\u00A0Return all generated keys ¶\
                         `["id"]` Return only the generated keys in the specified \
                         list|
           """
