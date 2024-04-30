@@ -2,6 +2,8 @@
 
 The Venice database modules are based on the [Java Database Connectivity (JDBC) API](https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/). 
 
+Basically Venice can handle any SQL database for which a JDBC driver is available.
+
 * [Install the PostgreSQL JDBC driver](#install-the-postgresql-jdbc-driver)
 * [Start a PostgreSQL Docker Instance](#start-a-postgresql-docker-instance)
 * [Load the Chinook Dataset](#load-the-chinook-dataset)
