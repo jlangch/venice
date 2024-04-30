@@ -3,7 +3,7 @@
 The Venice database modules are based on the [Java Database Connectivity (JDBC) API](https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/). 
 
 * [Install the PostgreSQL JDBC driver](#install-the-postgresql-jdbc-driver)
-* [Start a PostgreSQL 16.2 Docker instance](#start-a-postgresql-16-2-docker-instance)
+* [Start a PostgreSQL Docker Instance](#start-a-postgresql-docker-instance)
 * [Load the Chinook Dataset](#load-the-chinook-dataset)
 * [Chinook Dataset Overview](#chinook-dataset-overview)
 * [Queries](#queries)
@@ -30,7 +30,7 @@ venice> !restart
 ```
 
 
-## Start a PostgreSQL 16.2 Docker instance
+## Start a PostgreSQL Docker Instance
 
 Download and start the PostgreSQL container:
 
