@@ -634,7 +634,7 @@ album_id title                artist_id
 
 Add a new account:
 
-```
+```clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -676,7 +676,7 @@ Add a new account:
 
 Check TX isolation level:
 
-```
+```clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -690,7 +690,7 @@ Check TX isolation level:
 
 Set TX isolation level to `:tx-repeatable-read`
 
-```
+```clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -705,7 +705,7 @@ Set TX isolation level to `:tx-repeatable-read`
        
 Commit/Rollback:
 
-```
+```clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
