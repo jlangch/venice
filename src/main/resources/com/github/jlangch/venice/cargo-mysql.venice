@@ -1,0 +1,273 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Docker MySQL cargo testcontainer
+
+;;;; This is just a configuration wrapper on top of the :cargo module to
+;;;; simplify using MySQL testcontainers
+
+;;;; See: 
+;;;; https://www.mysql.com/
+;;;; https://hub.docker.com/_/mysql
+
+;;;; DB Clients:
+;;;; - https://www.dbvis.com/
+
+(ns cargo-mysql)
+
+(load-module :docker)
+(load-module :cargo)
+
+(import :com.github.jlangch.venice.ShellException)
+
+;; MySQL docker defaults
+(defonce internal-port 3306)
+(defonce default-external-port 3306)
+(defonce default-user "mysql")
+(defonce default-password "mysql")
+(defonce default-root-password "mysql")
+
+
+
+
+;; ---------------------------------------------------------------------------
+;; MySQL start & stop container
+;; ---------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(cargo-mysql/start cname version storage-dir)"
+          "(cargo-mysql/start cname version storage-dir user password)"
+          "(cargo-mysql/start cname version storage-dir user password log)"
+          "(cargo-mysql/start cname version mapped-port storage-dir user password log)")
+     :doc """
+          Starts a MySQL container. 
+          
+          Start rules:
+
+            * If a container with another version exists for the container
+              name remove the container and the image
+            * Pull the image if not yet locally available
+            * If the container already runs - use it
+            * If the container is available but does not run - start it `(docker/start ...)`
+            * If the container is not available - run it `(docker/run ...)`
+            * Finally check for a successful startup. The container error log must
+              contain the string ".*database system is ready to accept connections.*" on the
+              last few lines.
+
+          Args:
+
+          | [![width: 20%]]  | [![width: 80%]] |
+          | cname            | A unique container name |
+          | version          | The MySQL version to use. E.g.: "8.3.0", "8" |
+          | mapped-port      | The published (mapped) port on the host. Defaults to 5432 |
+          | storage-dir      | Directory where MySQL persists all the data. |
+          | user             | A user. Defaults to "mysql" |
+          | password         | A password. Defaults to "mysql" |
+          | root-password    | A root password. Defaults to "mysql" |
+          | log              | A log function, may be *nil*. \
+                               E.g: `(fn [s] (println "MySQL:" s))`|
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-mysql ['cargo-mysql :as 'cm])
+           
+            ;; Run a MySQL container labeled as "mysql"
+            (cm/start "mysql" "16.2" "./mysql-storage"))
+          """)
+     :see-also '(
+          "cargo-mysql/stop"
+          "cargo-mysql/running?"
+          "cargo-mysql/logs") }
+
+  start 
+
+  ([cname version storage-dir]
+    (start cname version default-external-port storage-dir 
+           default-root-password default-user default-password nil))
+ 
+  ([cname version storage-dir root-password user password]
+    (start cname version default-external-port storage-dir 
+           root-password user password nil))
+ 
+  ([cname version storage-dir root-password user password log]
+    (start cname version default-external-port storage-dir 
+           root-password user password log))
+
+  ([cname version mapped-port storage-dir root-password user password log]
+    { :pre [(string? cname)
+            (string? version)
+            (or (int? mapped-port) (long? mapped-port))
+            (< 0 mapped-port 65536)
+            (or (string? storage-dir) 
+                (io/file? storage-dir))
+            (or (nil? user) (string? user))
+            (or (nil? password) (string? password))
+            (or (nil? root-password) (string? root-password))] }
+    (when-not (io/exists-dir? storage-dir)
+      (throw (ex :VncException 
+                 "The MySQL storage directory \"~(io/file-canonical storage-dir)\" does not exist!")))
+    (let [user          (or user default-user)
+          password      (or password default-password)
+          root-password (or root-password default-root-password)
+          publish       ["~{mapped-port}:~{internal-port}"]
+          envs          ["MYSQL_USER=~{user}"
+                         "MYSQL_PASSWORD=~{password}"
+                         "MYSQL_ROOT_PASSWORD=~{password}"]
+          volumes       ["~{storage-dir}:/var/lib/mysql"]
+          args          []
+          log           (or log default-log)
+          wait-after-start-secs 3
+          ready-check-max-secs  30]
+      (log "starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
+      (cargo/start cname "mysql" version 
+                   publish
+                   envs 
+                   volumes
+                   args
+                   mysql-ready?
+                   log
+                   wait-after-start-secs
+                   ready-check-max-secs))))
+
+
+(defn
+  ^{ :arglists '(
+          "(cargo-mysql/stop cname)"
+          "(cargo-mysql/stop cname log)")
+     :doc """
+          Stops a MySQL container
+
+          Args:
+
+          | cname   | A unique container name  |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-mysql ['cargo-mysql :as 'cm])
+           
+            ;; Stop the MySQL container labeled as "mysql"
+            (cm/stop "mysql"))
+          """)
+     :see-also '(
+          "cargo-mysql/start" 
+          "cargo-mysql/running?") }
+
+  stop 
+  
+  ([cname]
+     (stop cname nil))
+
+  ([cname log]
+    { :pre [(string? cname)] }
+    (let [log (or log default-log)]
+      (cargo/stop cname log))))
+
+
+(defn
+  ^{ :arglists '("(cargo-mysql/running? cname)")
+     :doc """
+          Returns true if a container with the specified name is running.
+
+          Args:
+
+          | cname   | A unique container name    |
+          """
+     :examples '(
+          """
+          ;; Test if MySQL container is running
+          (do
+            (load-module :cargo-mysql ['cargo-mysql :as 'cm])
+            (cm/running? "mysql"))
+          """)
+     :see-also '(    
+          "cargo-mysql/logs"
+          "cargo-mysql/start", 
+          "cargo-mysql/stop") }
+
+  running? [cname]
+
+  { :pre [(string? cname)] }
+
+  (docker/container-running-with-name? cname))
+
+
+(defn 
+  ^{ :arglists '(
+          "(cargo-mysql/logs cname)"
+          "(cargo-mysql/logs cname lines)")
+     :doc """
+          Prints the MySQL docker container logs
+
+          Args:
+
+          | cname   | A unique container name  |
+          | lines   | The number of tail lines |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-mysql ['cargo-mysql :as 'cm])
+            (cm/logs "mysql"))
+          """,
+          """
+          (do
+            (load-module :cargo-mysql ['cargo-mysql :as 'cm])
+            (cm/logs "mysql" 100))
+          """)
+     :see-also '(
+          "cargo-mysql/start" 
+          "cargo-mysql/running?") }
+
+  logs 
+
+  ([cname] 
+    (logs cname nil))
+
+  ([cname lines]
+    { :pre [(string? cname)  (or (nil? lines) (long? lines))] }
+    (if (nil? lines)
+      (println (docker/container-logs cname :timestamps true :stream :out+err))
+      (println (docker/container-logs cname :tail lines :timestamps true :stream :out+err)))))
+
+
+
+;; ---------------------------------------------------------------------------
+;; utils
+;; ---------------------------------------------------------------------------
+
+(defn default-log [s]
+  (println "MySQL:" s))
+
+
+(defn mysql-ready? [cname]
+  ;; for whatever reasons the mysql docker 'logs' command returns the log
+  ;; entries on stdout and stderr stream, with the important information in 
+  ;; stderr!!
+  (->> (docker/container-logs cname :tail 6 :timestamps true :stream :out+err)
+       (str/split-lines)
+       (map str/trim)
+       (filter #(match? % #".*ready for connections.*"))
+       (count)
+       (pos?)))
+ 

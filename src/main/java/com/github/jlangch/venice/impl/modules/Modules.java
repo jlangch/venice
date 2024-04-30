@@ -65,6 +65,7 @@ public class Modules {
                         "cargo",
                         "cargo-arangodb",
                         "cargo-qdrant",
+                        "cargo-mysql",
                         "cargo-postgresql",
                         "chinook-postgresql",
                         "cli",
