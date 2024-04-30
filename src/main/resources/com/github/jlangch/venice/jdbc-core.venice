@@ -372,7 +372,7 @@
             (jdbc/with-conn [conn (jdbp/create-connection "localhost" 5432 
                                                           "test" "pg" "pg")]
               (try-with [stmt (jdbc/create-statement *conn*)])
-                (-> (jdbc/execute-update stmt "INSERT INTO foo VALUES(100,\"Hello\")")
+                (-> (jdbc/execute-update stmt "INSERT INTO foo VALUES(100,3.1456)")
                     (jdbc-core/print-query-result)))))
          """) 
      :see-also '(
@@ -409,7 +409,7 @@
             (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
               (jdbc/with-tx conn
                 (try-with [stmt (jdbc/create-statement conn)])
-                  (->  (jdbc/execute-update stmt "INSERT INTO foo VALUES(100,\"Hello\")")
+                  (->  (jdbc/execute-update stmt "INSERT INTO foo VALUES(100,3.1415)")
                        (jdbc-core/print-query-result))))))
           """) 
      :see-also '(
