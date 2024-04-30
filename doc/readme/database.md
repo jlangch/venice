@@ -8,7 +8,7 @@ The Venice database modules are based on the [Java Database Connectivity (JDBC) 
 * [Chinook Dataset Overview](#chinook-dataset-overview)
 * [Queries](#queries)
 * [Updates](#updates)
-* [Create / Drop Tables](#create-drop-tables)
+* [Create / Drop Tables](#create-and-drop-tables)
 * [Transactions](#transactions)
 
 
@@ -617,7 +617,7 @@ album_id title                artist_id
 ```
 
 
-## Create / Drop Tables
+## Create and Drop Tables
 
 **Create**
 
