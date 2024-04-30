@@ -32,7 +32,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Fixed a problem with starting an already running docker container
+- Fixed a problem with starting an already running docker container.
+  Venice is doing nothing if the container version is ok, otherwise
+  it stops the conatiner and runs a new one with the desired version.
 
 
 
