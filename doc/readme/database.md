@@ -2,6 +2,16 @@
 
 The Venice database modules are based on the [Java Database Connectivity (JDBC) API](https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/). 
 
+* [Install the PostgreSQL JDBC driver](#install-the-postgresql-jdbc-driver)
+* [Start a PostgreSQL 16.2 Docker instance](#start-a-postgresql-16-2-docker-instance)
+* [Load the Chinook Dataset](#load-the-chinook-dataset)
+* [Chinook Dataset Overview](#chinook-dataset-overview)
+* [Queries](#queries)
+* [Updates](#updates)
+* [Create / Drop Tables](#create-drop-tables)
+* [Transactions](#transactions)
+
+
 
 ## Install the PostgreSQL JDBC driver
 
@@ -607,7 +617,7 @@ album_id title                artist_id
 ```
 
 
-## Create / Drop Table
+## Create / Drop Tables
 
 **Create**
 
