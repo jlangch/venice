@@ -358,11 +358,23 @@
 
           The forms have access to the connection via the *conn* thread local 
           var.
+
+          While thread local vars may work fine (most ORMs like *Hibernate* or
+          *JPA* rely on thread local vars), using Venice *Components* for 
+          connection management give a cleaner and more functional architecture.
           """
      :examples '(
           """
-          (jdbc-core/rollback! conn)
-          """) 
+           (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+            (jdbc/with-conn [conn (jdbp/create-connection "localhost" 5432 
+                                                          "test" "pg" "pg")]
+              (try-with [stmt (jdbc/create-statement *conn*)])
+                (-> (jdbc/execute-update stmt "INSERT INTO foo VALUES(100,\"Hello\")")
+                    (jdbc-core/print-query-result)))))
+         """) 
      :see-also '(
           "jdbc-core/with-tx" ) }
 
@@ -390,7 +402,15 @@
           """
      :examples '(
           """
-          (jdbc-core/rollback! conn)
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (jdbc/with-tx conn
+                (try-with [stmt (jdbc/create-statement conn)])
+                  (->  (jdbc/execute-update stmt "INSERT INTO foo VALUES(100,\"Hello\")")
+                       (jdbc-core/print-query-result))))))
           """) 
      :see-also '(
           "jdbc-core/with-conn" ) }

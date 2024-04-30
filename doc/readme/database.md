@@ -684,7 +684,7 @@ Add a new account:
 
 ## Transactions
 
-Check TX isolation level:
+**Check TX isolation level:**
 
 ```clojure
 (do
@@ -698,7 +698,7 @@ Check TX isolation level:
     (println "TX isolation level:" (jdbc/tx-isolation conn))))
 ```
 
-Set TX isolation level to `:tx-repeatable-read`
+**Set TX isolation level to `:tx-repeatable-read`**
 
 ```clojure
 (do
@@ -713,7 +713,7 @@ Set TX isolation level to `:tx-repeatable-read`
     (println "TX isolation level:" (jdbc/tx-isolation conn))))
 ```
        
-Commit/Rollback:
+**Commit/Rollback (the hard way):**
 
 ```clojure
 (do
@@ -729,10 +729,11 @@ Commit/Rollback:
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
                                           "postgres" "postgres")]
+      
+    (println "Albums:" (jdbc/count-rows conn "Album"))
+
     (try
       (jdbc/auto-commit! conn :off)
-      
-      (println "Albums:" (jdbc/count-rows conn "Album"))
       
       (let [led-zeppelin (find-led-zeppelin conn)
             artist-id    (first led-zeppelin)
@@ -744,16 +745,19 @@ Commit/Rollback:
           (jdbc/execute-update stmt sql)))
           
         (jdbc/commit! conn)
-        (println "Albums:" (jdbc/count-rows conn "Album"))
       (catch :Exception e
          (jdbc/rollback! conn)
          (throw e))
       (finally
-        (jdbc/auto-commit! conn :on)))))
+        (jdbc/auto-commit! conn :on)))
+        
+    (println "Albums:" (jdbc/count-rows conn "Album"))))
 ```
    
-Commit/Rollback with TX template:
-    
+**Commit/Rollback with a TX template:**
+
+The TX template greatly reduces the boiler plate code with JDBC transaction handling.
+
 ```clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])

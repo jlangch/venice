@@ -62,6 +62,11 @@ public class ModuleJdbcCoreSection implements ISectionBuilder {
         all.addSection(conn);
         conn.addItem(diBuilder.getDocItem("jdbc-core/closed?", false));
 
+        final DocSection tpl = new DocSection("Templates", id());
+        all.addSection(tpl);
+        tpl.addItem(diBuilder.getDocItem("jdbc-core/with-conn", false));
+        tpl.addItem(diBuilder.getDocItem("jdbc-core/with-tx", false));
+
         final DocSection tx = new DocSection("TX", id());
         all.addSection(tx);
         tx.addItem(diBuilder.getDocItem("jdbc-core/auto-commit?", false));
@@ -83,6 +88,7 @@ public class ModuleJdbcCoreSection implements ISectionBuilder {
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute-query*", false));
         exec.addItem(diBuilder.getDocItem("jdbc-core/execute-update", false));
         exec.addItem(diBuilder.getDocItem("jdbc-core/generated-keys", false));
+        exec.addItem(diBuilder.getDocItem("jdbc-core/count-rows", false));
 
         final DocSection ps = new DocSection("Prepared Stmt", id());
         all.addSection(ps);
