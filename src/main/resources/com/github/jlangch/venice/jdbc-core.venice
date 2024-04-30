@@ -403,21 +403,20 @@
   ([conn sql & options]
     (assert (instance-of? :Connection conn))
     (assert (string? sql))
-    (assert (or (boolean? gen-key-columns) (sequential? gen-key-columns)))
     (let [opts    (apply hash-map options)
           gen-key (:gen-key opts false)]
       (if (boolean? gen-key)
         (if (true? gen-key)
           (. conn :prepareStatement sql (. :Statement :RETURN_GENERATED_KEYS))
           (. conn :prepareStatement sql))
-        (case (type (first gen-key-columns))
+        (case (type (first gen-key))
           :core/string (. conn :prepareStatement sql (string-array gen-key))
           :core/int    (. conn :prepareStatement sql (int-array gen-key))
           :core/long   (->> (map int cols)
                             (int-array)
                             (. conn :prepareStatement sql))
           (throw (ex :VncException 
-                    "Invalid gen-key-columns value. Must a string, int, or long!")))))))
+                    "Invalid gen-key value. Must a string, int, or long!")))))))
 
 
 
@@ -672,7 +671,6 @@
   ([stmt sql & options]
     (assert (instance-of? :Statement stmt))
     (assert (not (instance-of? :PreparedStatement stmt)))
-    (assert (or (boolean? gen-key-columns) (sequential? gen-key-columns)))
     (let [opts    (apply hash-map options)
           gen-key (:gen-key opts false)]
       (if (boolean? gen-key)

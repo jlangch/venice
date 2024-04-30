@@ -167,9 +167,7 @@ track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFER
                                           "chinook_auto_increment" 
                                           "postgres" "postgres")
              stmt (jdbc/create-statement conn)]
-    (-> (jdbc/execute-query 
-            stmt 
-            "SELECT * FROM Album LIMIT 10")
+    (-> (jdbc/execute-query stmt "SELECT * FROM Album LIMIT 10")
         (jdbc-core/print-query-result))))
 ```
 
@@ -628,8 +626,7 @@ Add a new account:
                                           "postgres" "postgres")]     
     (let [sql  """
                INSERT INTO Accounts (Username, Password, Email, Created_At, Last_Login) 
-               VALUES(?,?,?,?,?)
-               RETURNING User_Id;
+               VALUES(?,?,?,?,?);
                """]
       (try-with [stmt (jdbc/prepare-statement conn sql)]
         (jdbc/ps-string stmt 1 "John Doe")
@@ -653,10 +650,7 @@ Add a new account:
                                           "chinook_auto_increment" 
                                           "postgres" "postgres")                                         
              stmt (jdbc/create-statement conn)]
-    (jdbc/execute stmt 
-                  """
-                  DROP TABLE IF EXISTS Accounts; 
-                  """ )))
+    (jdbc/execute stmt "DROP TABLE IF EXISTS Accounts;")))
 ```
 
 
