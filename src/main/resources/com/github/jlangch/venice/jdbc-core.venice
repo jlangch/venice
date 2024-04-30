@@ -426,32 +426,6 @@
                   "Invalid gen-key-columns value. Must a string, int, or long!"))))))
 
 
-(defn 
-  ^{ :arglists '(
-          "(generated-keys stmt)" )
-     :doc """
-          Return a vector with generated keys.
-          """
-     :examples '(
-          """
-          (jdbc-core/generated-keys stmt)
-          """) 
-     :see-also '(
-          "jdbc-core/create-statement"
-          "jdbc-core/prepare-statement" ) }
-
-  generated-keys [stmt]
-  
-  (assert (or (instance-of? :Statement stmt)
-              (instance-of? :PreparedStatement stmt)))
-
-  (try-with [rs (. stmt :getGeneratedKeys)]
-    (loop [keys []]
-      (if (rs-next! rs)
-        (recur (conj keys (map-sql-value (. rs :getObject 1))))
-        keys))))
-
-
 
 ;; -----------------------------------------------------------------------------
 ;; Execute queries 
@@ -817,6 +791,38 @@
 
 (defn- sql-time? [val]
   (instance-of? :java.sql.Time val))
+
+
+;; -----------------------------------------------------------------------------
+;; Generated Keys
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(generated-keys stmt)" )
+     :doc """
+          Return a vector with generated keys.
+          """
+     :examples '(
+          """
+          (jdbc-core/generated-keys stmt)
+          """) 
+     :see-also '(
+          "jdbc-core/create-statement"
+          "jdbc-core/prepare-statement" ) }
+
+  generated-keys [stmt]
+  
+  (assert (or (instance-of? :Statement stmt)
+              (instance-of? :PreparedStatement stmt)))
+
+  (try-with [rs (. stmt :getGeneratedKeys)]
+    (collect-result-set rs)))
+
+;;    (loop [keys []]
+;;      (if (rs-next! rs)
+;;        (recur (conj keys (map-sql-value (. rs :getObject 1))))
+;;        keys))))
 
 
 

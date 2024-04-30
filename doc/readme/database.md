@@ -189,6 +189,55 @@ album_id title                                 artist_id
 ```
 
 
+**List the Led Zeppelin albums:**
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))
+  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")
+             sql  """
+                  SELECT a.Name "Artist", al.Title "Title"	   
+                  FROM Artist a
+                  JOIN Album al ON al.Artist_Id = a.Artist_Id
+                  WHERE a.Name = 'Led Zeppelin' 
+                  """ 
+             stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt sql)
+          (jdbc-core/print-query-result))))
+```
+
+```
+Artist       Title                             
+------------ ----------------------------------
+Led Zeppelin BBC Sessions [Disc 1] [Live]      
+Led Zeppelin Physical Graffiti [Disc 1]        
+Led Zeppelin BBC Sessions [Disc 2] [Live]      
+Led Zeppelin Coda                              
+Led Zeppelin Houses Of The Holy                
+Led Zeppelin In Through The Out Door           
+Led Zeppelin IV                                
+Led Zeppelin Led Zeppelin I                    
+Led Zeppelin Led Zeppelin II                   
+Led Zeppelin Led Zeppelin III                  
+Led Zeppelin Physical Graffiti [Disc 2]        
+Led Zeppelin Presence                          
+Led Zeppelin The Song Remains The Same (Disc 1)
+Led Zeppelin The Song Remains The Same (Disc 2)
+Led Zeppelin How the West Was Won              
+```
+
+
 
 **Top 5 artists by number of tracks:**
 
@@ -274,19 +323,7 @@ Metallica    110.88
     (try-with [stmt (jdbc/create-statement conn)]
       (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
           (:rows)
-          (first))))
-  
-  (defn list-led-zeppelin-albums [conn]
-    (try-with [sql  """
-                    SELECT a.Name "Artist", al.Title "Title"	   
-                    FROM Artist a
-                    JOIN Album al ON al.Artist_Id = a.Artist_Id
-                    WHERE a.Name = 'Led Zeppelin' 
-                    """ 
-               stmt (jdbc/create-statement conn)]
-      (-> (jdbc/execute-query stmt sql)
-          (jdbc-core/print-query-result))))
-  
+          (first))))  
            
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
@@ -298,15 +335,14 @@ Metallica    110.88
                        VALUES('How the West Was Won',~(str artist-id))
                        """]
       (try-with [stmt (jdbc/create-statement conn)]
-        (jdbc/execute-update stmt sql))
-        
-       
-      ;; list Led Zeppelin albums
-      (list-led-zeppelin-albums conn))))
+        (jdbc/execute-update stmt sql)))))
 ```
 
 
-**Return generated keys:**
+**Return generated keys (variant 1):**
+
+Using: `(jdbc/execute-update stmt sql ["album_id"])`
+
 
 ```clojure
 (do
@@ -317,19 +353,7 @@ Metallica    110.88
     (try-with [stmt (jdbc/create-statement conn)]
       (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
           (:rows)
-          (first))))
-  
-  (defn list-led-zeppelin-albums [conn]
-    (try-with [sql  """
-                    SELECT a.Name "Artist", al.Title "Title"	   
-                    FROM Artist a
-                    JOIN Album al ON al.Artist_Id = a.Artist_Id
-                    WHERE a.Name = 'Led Zeppelin' 
-                    """ 
-               stmt (jdbc/create-statement conn)]
-      (-> (jdbc/execute-query stmt sql)
-          (jdbc-core/print-query-result))))
-  
+          (first))))  
            
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
@@ -344,13 +368,60 @@ Metallica    110.88
         (jdbc/execute-update stmt sql ["album_id"])
         
         ;; generated keys
-        (println "Generated keys:" (jdbc/generated-keys stmt)))
-        
-       
-      ;; list Led Zeppelin albums
-      (list-led-zeppelin-albums conn))))
+        (println "Generated keys: \n")
+        (->> (jdbc/generated-keys stmt)
+             (jdbc-core/print-query-result))))))
 ```
 
+```
+Generated keys: 
+
+album_id
+--------
+364     
+```
+
+**Return generated keys (variant 2):**
+
+Using: `(jdbc/execute-update stmt sql true)`
+
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (let [led-zeppelin (find-led-zeppelin conn)
+          artist-id    (first led-zeppelin)
+          sql          """
+                       INSERT INTO Album (Title,Artist_Id) 
+                       VALUES('How the West Was Won',~(str artist-id))
+                       """]
+      (try-with [stmt (jdbc/create-statement conn)]
+        (jdbc/execute-update stmt sql true) 
+        
+        ;; generated keys
+        (println "Generated keys: \n")
+        (->> (jdbc/generated-keys stmt)
+             (jdbc-core/print-query-result))))))
+```
+
+```
+Generated keys: 
+
+album_id title                artist_id
+-------- -------------------- ---------
+365      How the West Was Won 22       
+```
 
 
 ## Prepared Statements
@@ -438,7 +509,10 @@ Led Zeppelin The Song Remains The Same (Disc 2)
       (list-led-zeppelin-albums conn))))
 ```
 
-**Return the generated keys:**
+**Return the generated keys (variant 1):**
+
+Using: `(jdbc/prepare-statement conn sql ["album_id"])`
+
 
 ```clojure
 (do
@@ -449,19 +523,7 @@ Led Zeppelin The Song Remains The Same (Disc 2)
     (try-with [stmt (jdbc/create-statement conn)]
       (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
           (:rows)
-          (first))))
-  
-  (defn list-led-zeppelin-albums [conn]
-    (try-with [sql  """
-                    SELECT a.Name "Artist", al.Title "Title"	   
-                    FROM Artist a
-                    JOIN Album al ON al.Artist_Id = a.Artist_Id
-                    WHERE a.Name = 'Led Zeppelin' 
-                    """ 
-               stmt (jdbc/create-statement conn)]
-      (-> (jdbc/execute-query stmt sql)
-          (jdbc-core/print-query-result))))
-  
+          (first))))  
            
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
@@ -475,13 +537,61 @@ Led Zeppelin The Song Remains The Same (Disc 2)
         (jdbc/execute-update stmt)
         
         ;; generated keys
-        (println "Generated keys:" (jdbc/generated-keys stmt))
-        (println))
-        
-       
-      ;; list Led Zeppelin albums
-      (list-led-zeppelin-albums conn))))
+        (println "Generated keys: \n")
+        (->> (jdbc/generated-keys stmt)
+             (jdbc-core/print-query-result))))))
 ```
+
+```
+Generated keys: 
+
+album_id
+--------
+366     
+```
+
+
+**Return the generated keys (variant 2):**
+
+Using: `(jdbc/prepare-statement conn sql true)`
+
+
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (let [led-zeppelin (find-led-zeppelin conn)
+          artist-id    (first led-zeppelin)
+          sql          "INSERT INTO Album (Title,Artist_Id) VALUES(?,?)"]
+      (try-with [stmt (jdbc/prepare-statement conn sql true)]
+        (jdbc/ps-string stmt 1 "How the West Was Won")
+        (jdbc/ps-int stmt 2 artist-id)
+        (jdbc/execute-update stmt)
+        
+        ;; generated keys
+        (println "Generated keys: \n")
+        (->> (jdbc/generated-keys stmt)
+             (jdbc-core/print-query-result))))))
+```
+
+```
+Generated keys: 
+
+album_id title                artist_id
+-------- -------------------- ---------
+367      How the West Was Won 22       
+```
+
 
 ## Create / Drop Table
 
