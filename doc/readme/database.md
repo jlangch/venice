@@ -769,7 +769,7 @@ TX isolation level: :tx-repeatable-read
 
 The TX template greatly reduces the boiler plate code with JDBC transaction handling.
 
-The work sequence of a tx template:
+The work sequence of a TX template:
   * Switches to the commit mode to explicit transactions
   * Runs the forms within a JDBC transaction
   * Commits the transaction at the end of the forms 
