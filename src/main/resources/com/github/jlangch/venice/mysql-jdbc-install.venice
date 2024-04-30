@@ -1,0 +1,81 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+
+;;;; Install MySQL JDBC driver:
+;;;;
+;;;;   (load-module :mysql-jdbc-install)
+;;;;   (mysql-jdbc-install/install :dir (repl/libs-dir) :silent false)
+;;;;
+;;;; Note: This not a package manager. The module provides functions to
+;;;;       download Java libraries to a directory. 
+
+
+(ns mysql-jdbc-install)
+
+(load-module :installer)
+
+
+(defn libraries []
+  [ "com.mysql:mysql-connector-j:8.0.33" ] )
+
+
+(defn
+  ^{ :arglists '("(install options*)")
+     :doc
+       """
+       Install the MySQL JDBC driver.
+
+       Options:
+
+       | :dir path             | download dir, defaults to "." |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
+       """
+     :examples '(
+       """
+       (do
+         (load-module :mysql-jdbc-install)
+         (mysql-jdbc-install/install :dir (repl/libs-dir) :silent false))
+       """) }
+
+  install [ & options]
+
+  (apply installer/install-libs (libraries) options))
+
+
+(defn 
+  ^{ :arglists '("(installed?)")
+     :doc
+       """
+       Returns true if the MySQL JDBC driver is on the classpath else
+       false.
+       """
+     :examples '(
+       """
+       (do
+         (load-module :mysql-jdbc-install)
+         (mysql-jdbc-install/installed?))
+       """) }
+
+  installed? []
+
+  (exists-class? :com.mysql.cj.MysqlConnection))
