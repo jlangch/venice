@@ -168,7 +168,7 @@ track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFER
                                           "postgres" "postgres")
              stmt (jdbc/create-statement conn)]
     (-> (jdbc/execute-query stmt "SELECT * FROM Album LIMIT 10")
-        (jdbc-core/print-query-result))))
+        (jdbc/print-query-result))))
 ```
 
 ```
@@ -184,6 +184,24 @@ album_id title                                 artist_id
 8        Warner 25 Anos                        6        
 9        Plays Metallica By Four Cellos        7        
 10       Audioslave                            8        
+```
+
+
+**List the number of albums**
+
+```
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+   (println "Albums:" (jdbc/count-rows conn "Album"))))
+```
+
+```
+Albums: 356
 ```
 
 
@@ -656,6 +674,97 @@ Add a new account:
 
 ## Transactions
 
-*work in progress...*
+Check TX isolation level:
 
+```
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")                                         
+             stmt (jdbc/create-statement conn)]
+    (println "TX isolation level:" (jdbc/tx-isolation conn))))
+```
+
+Set TX isolation level to `:tx-repeatable-read`
+
+```
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")                                         
+             stmt (jdbc/create-statement conn)]
+    (jdbc/tx-isolation! conn :tx-repeatable-read)
+    (println "TX isolation level:" (jdbc/tx-isolation conn))))
+```
        
+Commit:
+
+```
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (try
+      (jdbc/auto-commit! conn :off)
+      
+      (let [led-zeppelin (find-led-zeppelin conn)
+            artist-id    (first led-zeppelin)
+            sql          """
+                         INSERT INTO Album (Title,Artist_Id) 
+                         VALUES('How the West Was Won',~(str artist-id))
+                         """]
+        (try-with [stmt (jdbc/create-statement conn)]
+          (jdbc/execute-update stmt sql)))
+          
+        (jdbc/commit! conn)
+      (finally
+        (jdbc/auto-commit! conn :on)))))
+```
+       
+Rollback:
+
+```
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (try
+      (jdbc/auto-commit! conn :off)
+      
+      (let [led-zeppelin (find-led-zeppelin conn)
+            artist-id    (first led-zeppelin)
+            sql          """
+                         INSERT INTO Album (Title,Artist_Id) 
+                         VALUES('How the West Was Won',~(str artist-id))
+                         """]
+        (try-with [stmt (jdbc/create-statement conn)]
+          (jdbc/execute-update stmt sql)))
+          
+        (jdbc/rollback! conn)
+      (finally
+        (jdbc/auto-commit! conn :on)))))
+```

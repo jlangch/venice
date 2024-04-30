@@ -273,7 +273,10 @@
           """
      :examples '(
           """
+          (jdbc-core/auto-commit! conn true)
           (jdbc-core/auto-commit! conn false)
+          (jdbc-core/auto-commit! conn :on)
+          (jdbc-core/auto-commit! conn :off)
           """) 
      :see-also '(
           "jdbc-core/tx-isolation"
@@ -285,8 +288,13 @@
   auto-commit! [conn on]
   
   (assert (instance-of? :Connection conn))
-  (assert (boolean? on))
-  (. conn :setAutoCommit on))
+  (assert (or (boolean? on) (keyword? on)))
+  (case on
+    true    (. conn :setAutoCommit true)
+    false   (. conn :setAutoCommit false)
+    :on     (. conn :setAutoCommit true)
+    :off    (. conn :setAutoCommit false)
+    (throw (ex :VncException "auto-commit! values are {true, false, :on, :off}"))))
 
 
 (defn 
@@ -688,6 +696,41 @@
                      Invalid gen-key column values. Must a collection \
                      of string, int, or long!
                      """)))))))
+
+
+(defn
+  ^{ :arglists '(
+          "(count-rows conn table)" )
+     :doc """
+          Returns the row count of a table.
+          """
+     :examples '(
+          """
+          ;; using a prepared statement
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+            (try-with [conn  (jdbp/create-connection "localhost" 5432 "test" "pg" "pg")]
+              (jdbc/count-rows conn "Albums")))
+          """) 
+     :see-also '(
+          "jdbc-core/execute-query") }
+
+  count-rows [conn table]
+
+  (assert (instance-of? :Connection conn))
+  (assert (string? table))
+
+  (try-with [stmt (prepare-statement conn "SELECT COUNT(*) AS count FROM ?")]
+    (ps-string stmt 1 table)
+    (try-with [rs (execute-query* stmt)]
+      (if (rs-next! rs)
+        (rs-int rs 1)
+        (throw (ex :VncException 
+                    """
+                    Missing result from SELECT COUNT(*) FROM ?
+                    """))))))
 
 
 (defn 
