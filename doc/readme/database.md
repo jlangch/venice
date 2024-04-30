@@ -341,7 +341,7 @@ Metallica    110.88
 
 **Return generated keys (variant 1):**
 
-Using: `(jdbc/execute-update stmt sql ["album_id"])`
+Using: `(jdbc/execute-update stmt sql :gen-key ["album_id"])`
 
 
 ```clojure
@@ -365,7 +365,7 @@ Using: `(jdbc/execute-update stmt sql ["album_id"])`
                        VALUES('How the West Was Won',~(str artist-id))
                        """]
       (try-with [stmt (jdbc/create-statement conn)]
-        (jdbc/execute-update stmt sql ["album_id"])
+        (jdbc/execute-update stmt sql :gen-key ["album_id"])
         
         ;; generated keys
         (println "Generated keys: \n")
@@ -383,7 +383,7 @@ album_id
 
 **Return generated keys (variant 2):**
 
-Using: `(jdbc/execute-update stmt sql true)`
+Using: `(jdbc/execute-update stmt sql :gen-key true)`
 
 
 ```clojure
@@ -407,7 +407,7 @@ Using: `(jdbc/execute-update stmt sql true)`
                        VALUES('How the West Was Won',~(str artist-id))
                        """]
       (try-with [stmt (jdbc/create-statement conn)]
-        (jdbc/execute-update stmt sql true) 
+        (jdbc/execute-update stmt sql :gen-key true) 
         
         ;; generated keys
         (println "Generated keys: \n")
@@ -492,7 +492,6 @@ Led Zeppelin The Song Remains The Same (Disc 2)
       (-> (jdbc/execute-query stmt sql)
           (jdbc-core/print-query-result))))
   
-           
   (try-with [conn (jdbp/create-connection "localhost" 5432 
                                           "chinook_auto_increment" 
                                           "postgres" "postgres")]
@@ -503,7 +502,6 @@ Led Zeppelin The Song Remains The Same (Disc 2)
         (jdbc/ps-string stmt 1 "How the West Was Won")
         (jdbc/ps-int stmt 2 artist-id)
         (jdbc/execute-update stmt))
-        
        
       ;; list Led Zeppelin albums
       (list-led-zeppelin-albums conn))))
@@ -511,7 +509,7 @@ Led Zeppelin The Song Remains The Same (Disc 2)
 
 **Return the generated keys (variant 1):**
 
-Using: `(jdbc/prepare-statement conn sql ["album_id"])`
+Using: `(jdbc/prepare-statement conn sql :gen-key ["album_id"])`
 
 
 ```clojure
@@ -531,7 +529,7 @@ Using: `(jdbc/prepare-statement conn sql ["album_id"])`
     (let [led-zeppelin (find-led-zeppelin conn)
           artist-id    (first led-zeppelin)
           sql          "INSERT INTO Album (Title,Artist_Id) VALUES(?,?)"]
-      (try-with [stmt (jdbc/prepare-statement conn sql ["album_id"])]
+      (try-with [stmt (jdbc/prepare-statement conn sql :gen-key ["album_id"])]
         (jdbc/ps-string stmt 1 "How the West Was Won")
         (jdbc/ps-int stmt 2 artist-id)
         (jdbc/execute-update stmt)
@@ -553,7 +551,7 @@ album_id
 
 **Return the generated keys (variant 2):**
 
-Using: `(jdbc/prepare-statement conn sql true)`
+Using: `(jdbc/prepare-statement conn sql :gen-key true)`
 
 
 ```clojure
@@ -573,7 +571,7 @@ Using: `(jdbc/prepare-statement conn sql true)`
     (let [led-zeppelin (find-led-zeppelin conn)
           artist-id    (first led-zeppelin)
           sql          "INSERT INTO Album (Title,Artist_Id) VALUES(?,?)"]
-      (try-with [stmt (jdbc/prepare-statement conn sql true)]
+      (try-with [stmt (jdbc/prepare-statement conn sql :gen-key true)]
         (jdbc/ps-string stmt 1 "How the West Was Won")
         (jdbc/ps-int stmt 2 artist-id)
         (jdbc/execute-update stmt)
