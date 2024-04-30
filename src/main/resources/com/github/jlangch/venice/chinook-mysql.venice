@@ -28,11 +28,11 @@
 (ns chinook-mysql)
 
 (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-(load-module :jdbc-mysql ['jdbc-mysql :as 'jdbp])
+(load-module :jdbc-mysql ['jdbc-mysql :as 'jdbm])
 
 
 
-(defonce data "https://github.com/lerocha/chinook-database/blob/master/ChinookDatabase/DataSources/Chinook_MySql_AutoIncrementPKs.sql")
+(defonce data "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_MySql_AutoIncrementPKs.sql")
 
 (defonce data-model "https://github.com/lerocha/chinook-database/tree/master#data-model")
 
@@ -164,7 +164,7 @@
           """
           (do
             (load-module :chinook-mysql ['chinook-mysql :as 'chinook])
-            (chinook/load-data "localhost" 3306 "mysql" "mysql"))
+            (chinook/load-data "localhost" 3306 "root" "mysql"))
           """,
           """
           (do
@@ -175,7 +175,7 @@
             (try-with [conn (jdbm/create-connection "localhost" 
                                                     3306 
                                                     chinook/database 
-                                                    "mysql" 
+                                                    "root" 
                                                     "mysql")]
               (-> (jdbc/execute-query conn "SELECT * FROM album WHERE title LIKE '%Mozart%'")
                   (jdbc/print-query-result))))
