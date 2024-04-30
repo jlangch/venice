@@ -29,6 +29,7 @@
 
 (load-module :ascii-table)
 
+(import :com.github.jlangch.venice.TransactionException)
 
 (import :java.sql.DriverManager)
 (import :java.sql.Connection)
@@ -342,6 +343,74 @@
   (assert (instance-of? :Connection conn))
   (. conn :rollback))
 
+
+;; -----------------------------------------------------------------------------
+;; Templates 
+;; -----------------------------------------------------------------------------
+
+(defmacro
+  ^{ :arglists '(
+          "(with-conn conn & forms)")
+     :doc """
+          Sets the thread local var *conn* to the passed connection,
+          wraps the connection in a `try-with` form to close the connection 
+          automatically at the end of the template and runs the forms.
+
+          The forms have access to the connection via the *conn* thread local 
+          var.
+          """
+     :examples '(
+          """
+          (jdbc-core/rollback! conn)
+          """) 
+     :see-also '(
+          "jdbc-core/with-tx" ) }
+
+  with-conn [conn & forms]
+
+  `(binding [*conn* conn] 
+     (assert (core/instance-of? :java.sql.Connection *conn*))
+     (try-with [conn# *conn*]  
+       (do ~@forms))))
+
+
+(defmacro
+  ^{ :arglists '(
+          "(with-tx conn & forms)")
+     :doc """
+          Runs the forms within a JDBC transaction, commits the transaction
+          at the end or rolls the transaction back if the forms throw an 
+          exception. 
+
+          Restores the auto-commit mode on the connection at the end of the
+          successful or failed transaction.
+
+          Throws a `:com.github.jlangch.venice.TransactionException` after 
+          rolling back.
+          """
+     :examples '(
+          """
+          (jdbc-core/rollback! conn)
+          """) 
+     :see-also '(
+          "jdbc-core/with-conn" ) }
+
+  with-tx [conn & forms]
+
+  `(binding [conn# ~conn] 
+     (assert (core/instance-of? :java.sql.Connection conn#))
+     (let [auto-commit# (jdbc-core/auto-commit? conn#)]
+       (try
+         (jdbc-core/auto-commit! conn# :off)
+         (do ~@forms)
+         (jdbc-core/commit! conn#)
+         (catch :Exception e
+           (try (jdbc-core/rollback! conn#) (catch :Exception _))
+           (throw (ex :TransactionException 
+                      "JDBC Transaction failed => rolled back!" 
+                      e)))
+         (finally 
+           (jdbc-core/auto-commit! conn# auto-commit#))))))
 
 
 

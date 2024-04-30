@@ -751,4 +751,35 @@ Commit/Rollback:
       (finally
         (jdbc/auto-commit! conn :on)))))
 ```
-       
+   
+Commit/Rollback with TX template:
+    
+```clojure
+(do
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+  
+  (defn find-led-zeppelin [conn]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
+          (:rows)
+          (first))))  
+           
+  (try-with [conn (jdbp/create-connection "localhost" 5432 
+                                          "chinook_auto_increment" 
+                                          "postgres" "postgres")]
+    (println "Albums:" (jdbc/count-rows conn "Album"))
+      
+    (jdbc/with-tx conn
+      (let [led-zeppelin (find-led-zeppelin conn)
+            artist-id    (first led-zeppelin)
+            sql          """
+                         INSERT INTO Album (Title,Artist_Id) 
+                         VALUES('How the West Was Won',~(str artist-id))
+                         """]
+        (try-with [stmt (jdbc/create-statement conn)]
+          (jdbc/execute-update stmt sql))))
+          
+    (println "Albums:" (jdbc/count-rows conn "Album"))))
+```
+    
