@@ -69,6 +69,7 @@ public class Modules {
                         "cargo-mysql",
                         "cargo-postgresql",
                         "chinook-postgresql",
+                        "chinook-mysql",
                         "cli",
                         "clipboard",
                         "config",

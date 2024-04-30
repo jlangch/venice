@@ -92,7 +92,7 @@
             (load-module :cargo-mysql ['cargo-mysql :as 'cm])
            
             ;; Run a MySQL container labeled as "mysql"
-            (cm/start "mysql" "16.2" "./mysql-storage"))
+            (cm/start "mysql" "8.3.0" "./mysql-storage"))
           """)
      :see-also '(
           "cargo-mysql/stop"

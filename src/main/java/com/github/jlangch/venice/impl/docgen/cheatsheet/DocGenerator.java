@@ -141,21 +141,22 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",          "xml",                 "crypt",            "gradle",
-                        "trace",        "ansi",                "maven",            "kira",
-                        "java",         "semver",              "excel",            "hexdump",
-                        "shell",        "geoip",               "benchmark",        "component",
-                        "config",       "parsifal",            "grep",             "test",
-                        "fonts",        "qrref",               "jsonl",            "timing",
-                        "zipvault",     "gradlew",             "matrix",           "ascii-table",
-                        "docker",       "cargo",               "cargo-arangodb",   "cargo-qdrant",
-                        "cargo-mysql",  "cargo-postgresql",
-                        "installer",    "mimetypes",           "multipart",        "images",
-                        "tomcat",       "jetty",
-                        "http-client",  "http-client-j8",      "openai",
-                        "jdbc-core",    "jdbc-postgresql",     "chinook-postgresql",
-                        "ring",         "ring-multipart",      "ring-session",     "ring-mw",
-                        "ring-util",    "server-side-events",  "jtokkit"));
+                        "app",           "xml",                 "crypt",            "gradle",
+                        "trace",         "ansi",                "maven",            "kira",
+                        "java",          "semver",              "excel",            "hexdump",
+                        "shell",         "geoip",               "benchmark",        "component",
+                        "config",        "parsifal",            "grep",             "test",
+                        "fonts",         "qrref",               "jsonl",            "timing",
+                        "zipvault",      "gradlew",             "matrix",           "ascii-table",
+                        "docker",        "cargo",               "cargo-arangodb",   "cargo-qdrant",
+                        "cargo-mysql",   "cargo-postgresql",
+                        "installer",     "mimetypes",           "multipart",        "images",
+                        "tomcat",        "jetty",               "http-client",       "http-client-j8",
+                        "openai",        "jtokkit",
+                        "jdbc-core",     "jdbc-postgresql",     "jdbc-mysql",
+                        "chinook-mysql", "chinook-postgresql",
+                        "ring",          "ring-multipart",      "ring-session",     "ring-mw",
+                        "ring-util",     "server-side-events"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 

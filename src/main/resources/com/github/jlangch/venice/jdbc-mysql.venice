@@ -1,0 +1,162 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; JDBC MySQL utils
+
+;;;; See: 
+;;;; https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
+
+
+(ns jdbc-mysql)
+
+(load-module :jdbc-core ['jdbc-core :as 'jdbc])
+
+
+(import :java.sql.DriverManager)
+(import :java.sql.Connection)
+(import :java.sql.Statement)
+(import :java.sql.Types)
+
+(import :java.util.Properties)
+
+
+
+(defonce default-host "localhost")
+(defonce default-port 3306)
+
+(defn 
+  ^{ :arglists '(
+          "(create-connection user password)"
+          "(create-connection host port user password)"
+          "(create-connection host port database user password)"
+          "(create-connection host port database user password properties)" )
+     :doc """
+          Creates a MySQL connection. 
+        
+          Arguments:
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | *user*        | A mandatory ser name |
+          | *password*    | A mandatory password |
+          | *host*        | An optional host. Defaults to "localhost" |
+          | *port*        | An optional port. Defaults to 5432 |
+          | *database*    | A mandatory database name |
+          | *properties*  | Optional properties (a map). ¶\
+                            E.g.: { "ssl" "true", "options" "-c statement_timeout=90000" } |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbm-mysql ['jdbc-mysql :as 'jdbm])
+           
+            (try-with [conn (jdbp/create-connection "localhost" 3306 "test" "mysql" "mysql")]
+              (-> (jdbc/execute-query conn "SELECT * FROM mytable WHERE foo = 500")
+                  (jdbc/print-query-result))))
+          """) 
+     :see-also '(
+          "jdbc-core/create-database"
+          "jdbc-core/drop-database" ) }
+
+  create-connection 
+
+  ([user password]
+    (assert (string? user))
+    (assert (string? password))
+    (let [url "jdbc:mysql:/"]
+      (. :DriverManager :getConnection url user (or password ""))))
+
+  ([host port user password]
+    (assert (string? host))
+    (assert (or (int? port) (long? port)))
+    (assert (string? user))
+    (assert (string? password))
+    (let [url "jdbc:mysql://~{host}:~(long port)/"]
+      (. :DriverManager :getConnection url user (or password ""))))
+
+  ([host port database user password]
+    (assert (string? host))
+    (assert (or (int? port) (long? port)))
+    (assert (string? database))
+    (assert (string? user))
+    (assert (string? password))
+    (let [url "jdbc:mysql://~{host}:~(long port)/~{database}"]
+      (. :DriverManager :getConnection url user (or password ""))))
+
+  ([host port database user password properties]
+    (assert (string? host))
+    (assert (or (int? port) (long? port)))
+    (assert (string? database))
+    (assert (string? user))
+    (assert (string? password))
+    (assert (map? properties))
+    (assert (every? string? (keys properties)))
+    (assert (every? string? (vals properties)))
+    (let [url   "jdbc:mysql://~{host}:~(long port)/~{database}"
+          props (as-properties user password properties)]
+      (. :DriverManager :getConnection url props))))
+
+ 
+(defn 
+  ^{ :arglists '(
+          "(describe-table conn table & options)" )
+     :doc """
+          Describe the schema of a table. 
+
+          ¶¶*Options:*
+
+          | [![width: 10%]] | [![width: 90%]] |
+          | :mode           | In `:print` mode prints the table description, \
+                              in `:data` mode returns the description as a data \
+                              structure. Defaults to `:print`.|
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-mysql ['jdbc-mysql :as 'jdbm])
+           
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "test" "msql" "msql")]
+              (jdbmysql/describe-table conn "album")))
+          """) 
+     :see-also '(
+          "jdbc-postgresql/foreign-key-constraints") }
+
+  describe-table [conn table & options]
+
+  (let [opts (apply hash-map options)
+        mode (:mode opts)]
+    (try-with [stmt (jdbc/create-statement conn)]
+      (let [data (jdbc/execute-query stmt
+                                     """
+                                     DESCRIBE ~{table};
+                                     """)]
+        (if (= mode :data) 
+          data
+          (jdbc/print-query-result data))))))
+
+
+
+(defn- as-properties [user password properties]
+  (let [props  (. :Properties :new)]
+    (. props :setProperty "user" user)
+    (. props :setProperty "password" (or password ""))
+    (doseq [[n v] (seq properties)] (. props :setProperty n v))))
+
