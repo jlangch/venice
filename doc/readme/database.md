@@ -703,7 +703,7 @@ Set TX isolation level to `:tx-repeatable-read`
     (println "TX isolation level:" (jdbc/tx-isolation conn))))
 ```
        
-Commit:
+Commit/Rollback:
 
 ```
 (do
@@ -721,6 +721,8 @@ Commit:
                                           "postgres" "postgres")]
     (try
       (jdbc/auto-commit! conn :off)
+      
+      (println "Albums:" (jdbc/count-rows conn "Album"))
       
       (let [led-zeppelin (find-led-zeppelin conn)
             artist-id    (first led-zeppelin)
@@ -732,39 +734,11 @@ Commit:
           (jdbc/execute-update stmt sql)))
           
         (jdbc/commit! conn)
+        (println "Albums:" (jdbc/count-rows conn "Album"))
+      (catch :Exception e
+         (jdbc/rollback! conn)
+         (throw e))
       (finally
         (jdbc/auto-commit! conn :on)))))
 ```
        
-Rollback:
-
-```
-(do
-  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
-  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-  
-  (defn find-led-zeppelin [conn]
-    (try-with [stmt (jdbc/create-statement conn)]
-      (-> (jdbc/execute-query stmt "SELECT * FROM Artist a WHERE a.Name = 'Led Zeppelin'")
-          (:rows)
-          (first))))  
-           
-  (try-with [conn (jdbp/create-connection "localhost" 5432 
-                                          "chinook_auto_increment" 
-                                          "postgres" "postgres")]
-    (try
-      (jdbc/auto-commit! conn :off)
-      
-      (let [led-zeppelin (find-led-zeppelin conn)
-            artist-id    (first led-zeppelin)
-            sql          """
-                         INSERT INTO Album (Title,Artist_Id) 
-                         VALUES('How the West Was Won',~(str artist-id))
-                         """]
-        (try-with [stmt (jdbc/create-statement conn)]
-          (jdbc/execute-update stmt sql)))
-          
-        (jdbc/rollback! conn)
-      (finally
-        (jdbc/auto-commit! conn :on)))))
-```
