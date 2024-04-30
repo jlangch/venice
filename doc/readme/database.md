@@ -260,7 +260,6 @@ Led Zeppelin Physical Graffiti [Disc 2]
 Led Zeppelin Presence                          
 Led Zeppelin The Song Remains The Same (Disc 1)
 Led Zeppelin The Song Remains The Same (Disc 2)
-Led Zeppelin How the West Was Won              
 ```
 
 
@@ -619,7 +618,7 @@ album_id title                artist_id
 
 ## Create and Drop Tables
 
-**Create**
+**Create "Accounts" Table**
 
 ```clojure
 (do
@@ -698,6 +697,10 @@ Add a new account:
     (println "TX isolation level:" (jdbc/tx-isolation conn))))
 ```
 
+```
+TX isolation level: :tx-read-commited
+```
+
 **Set TX isolation level to `:tx-repeatable-read`**
 
 ```clojure
@@ -712,6 +715,11 @@ Add a new account:
     (jdbc/tx-isolation! conn :tx-repeatable-read)
     (println "TX isolation level:" (jdbc/tx-isolation conn))))
 ```
+
+```
+TX isolation level: :tx-repeatable-read
+```
+
        
 **Commit/Rollback (the hard way):**
 
@@ -732,8 +740,9 @@ Add a new account:
       
     (println "Albums:" (jdbc/count-rows conn "Album"))
 
+    ;; - transactional ----------------------------------------------------
     (try
-      (jdbc/auto-commit! conn :off)
+      (jdbc/auto-commit! conn :off)       ;; switch to explicit transaction
       
       (let [led-zeppelin (find-led-zeppelin conn)
             artist-id    (first led-zeppelin)
@@ -744,19 +753,31 @@ Add a new account:
         (try-with [stmt (jdbc/create-statement conn)]
           (jdbc/execute-update stmt sql)))
           
-        (jdbc/commit! conn)
+        (jdbc/commit! conn)                           ;; commit transaction
       (catch :Exception e
-         (jdbc/rollback! conn)
+         (jdbc/rollback! conn)                ;; rollback in exception case
          (throw e))
       (finally
-        (jdbc/auto-commit! conn :on)))
+        (jdbc/auto-commit! conn :on)))         ;; restore auto transactions
+    ;; - transactional ----------------------------------------------------
         
     (println "Albums:" (jdbc/count-rows conn "Album"))))
 ```
    
+   
 **Commit/Rollback with a TX template:**
 
 The TX template greatly reduces the boiler plate code with JDBC transaction handling.
+
+The work sequence of a tx template:
+  * Switches to the commit mode to explicit transactions
+  * Runs the forms within a JDBC transaction
+  * Commits the transaction at the end of the forms 
+  * Or rolls the transaction back if the forms threw an exception.
+  * Restores the original JDBC commit mode
+  * On commit returns the value of the last form executed
+  * On rollback throws a :com.github.jlangch.venice.TransactionException
+  
 
 ```clojure
 (do
@@ -774,6 +795,7 @@ The TX template greatly reduces the boiler plate code with JDBC transaction hand
                                           "postgres" "postgres")]
     (println "Albums:" (jdbc/count-rows conn "Album"))
       
+    ;; - transactional ----------------------------------------------------
     (jdbc/with-tx conn
       (let [led-zeppelin (find-led-zeppelin conn)
             artist-id    (first led-zeppelin)
@@ -783,6 +805,7 @@ The TX template greatly reduces the boiler plate code with JDBC transaction hand
                          """]
         (try-with [stmt (jdbc/create-statement conn)]
           (jdbc/execute-update stmt sql))))
+    ;; - transactional ----------------------------------------------------
           
     (println "Albums:" (jdbc/count-rows conn "Album"))))
 ```
