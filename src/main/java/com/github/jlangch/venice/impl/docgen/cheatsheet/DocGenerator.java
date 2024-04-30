@@ -43,7 +43,6 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArangoDBSection;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoMysqlDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoPostgresqlDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoQdrantDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoSection;
@@ -149,12 +148,11 @@ public class DocGenerator {
                         "fonts",         "qrref",               "jsonl",            "timing",
                         "zipvault",      "gradlew",             "matrix",           "ascii-table",
                         "docker",        "cargo",               "cargo-arangodb",   "cargo-qdrant",
-                        "cargo-mysql",   "cargo-postgresql",
+                        "cargo-postgresql",
                         "installer",     "mimetypes",           "multipart",        "images",
                         "tomcat",        "jetty",               "http-client",       "http-client-j8",
                         "openai",        "jtokkit",
-                        "jdbc-core",     "jdbc-postgresql",     "jdbc-mysql",
-                        "chinook-mysql", "chinook-postgresql",
+                        "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",     "server-side-events"));
 
@@ -426,7 +424,6 @@ public class DocGenerator {
         docker.addSection(new DocSection("Cargo/ArangoDB", "modules.cargo-arangodb"));
         docker.addSection(new DocSection("Cargo/Qdrant", "modules.cargo-qdrant"));
         docker.addSection(new DocSection("Cargo/PostgreSQL", "modules.cargo-postgresql"));
-        docker.addSection(new DocSection("Cargo/MySQL", "modules.cargo-mysql"));
         content.add(docker);
 
         final DocSection license = new DocSection("License", "license");
@@ -530,7 +527,6 @@ public class DocGenerator {
                 new ModuleCargoArangoDBSection(diBuilder).section(),
                 new ModuleCargoQdrantDBSection(diBuilder).section(),
                 new ModuleCargoPostgresqlDBSection(diBuilder).section(),
-                new ModuleCargoMysqlDBSection(diBuilder).section(),
                 new ModuleTomcatSection(diBuilder).section(),
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
