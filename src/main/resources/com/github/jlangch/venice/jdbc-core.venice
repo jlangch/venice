@@ -2314,6 +2314,46 @@
         columns))))
 
 
+(defn 
+   ^{ :arglists '(
+          "(tables-with-columns conn)" )
+     :doc """
+          Returns a map with all table names in the database and its column names
+
+          Example:
+          
+          ```
+          { "genre_id"  ["genre_id" "name"]
+            ...
+            "playlist_track" ["playlist_id" "track_id"] }
+          ```
+          """
+     :examples '(
+          """
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "chinook" "pg" "pg")
+              (jdbc/tables-with-columns conn)))
+          """,
+          """
+          ;; Formatted as input for ChatGPT
+          (do
+            (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+            (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "chinook" "pg" "pg")
+              (->> (map (fn [[t c]] (str "Table: " t "\nColumns: " (str/join ", " c)))
+                        (jdbc/tables-with-columns conn)) 
+                   (str/join "\n"))))
+          """) }
+ 
+  tables-with-columns [conn]
+
+  (reduce (fn [m t] (assoc m t (into [] (map :name (columns conn t)))))  
+          {}
+          (tables conn)))
+
+
 (defonce type-map {
     (. :Types :ARRAY)                    :ARRAY
     (. :Types :BIGINT)                   :BIGINT
