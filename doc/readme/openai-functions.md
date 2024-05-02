@@ -39,19 +39,19 @@ If we prompt the model about the current weather, it will respond with some clar
           :parameters {
             :type "object"
             :properties {
-                :location {
-                  :type "string"
-                  :description "The city and state, e.g. San Francisco, CA"
-                }
-                :format {
-                  :type "string"
-                  :enum ["celsius", "fahrenheit"]
-                  :description "The temperature unit to use. Infer this from the users location."
-                }
+              :location {
+                :type "string"
+                :description "The city and state, e.g. San Francisco, CA"
+              }
+              :format {
+                :type "string"
+                :enum ["celsius", "fahrenheit"]
+                :description "The temperature unit to use. Infer this from the users location."
+              }
             }
             :required ["location", "format"]
-            }
           }
+        }
       }
       {
         :type "function"
