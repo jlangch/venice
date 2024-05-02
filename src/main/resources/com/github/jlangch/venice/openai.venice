@@ -255,8 +255,8 @@
         _               (validate-openai-api-key openai-api-key)
         tools           (:tools opts)
         _               (validate-tools tools)
-        tool-choice     (:choice opts)
-        _               (validate-tool-choice choice)
+        tool-choice     (:tool_choice opts)
+        _               (validate-tool-choice tool-choice)
         body            (build-prompt model prompt (:prompt-opts opts)
                                       tools tool-choice{:stream false})
         debug?          (:debug opts false)
@@ -693,7 +693,7 @@
     (when-not (sequential? tools)
       (throw (ex :VncException 
                   """
-                  OpenAI Tools options must be `nil` or a sequence of maps!
+                  OpenAI tools options (`:tools`) must be `nil` or a sequence of maps!
 
                   E.g.:
 
@@ -707,12 +707,12 @@
                  """)))))
 
 
-(defn- validate-tool-choice [choice]
-  (when (some? choice)
-    (when-not (map? tools)
+(defn- validate-tool-choice [tools-choice]
+  (when (some? tools-choice)
+    (when-not (map? tools-choice)
       (throw (ex :VncException 
                   """
-                  An OpenAI Tool choice must be `nil` or a map!
+                  An OpenAI tool choice option (`:tool_choice`) must be `nil` or a map!
 
                   E.g.:
 
