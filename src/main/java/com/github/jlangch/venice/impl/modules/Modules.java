@@ -107,6 +107,7 @@ public class Modules {
                         "mimetypes",
                         "multipart",
                         "openai",
+                        "openai-demo",
                         "parsifal",
                         "qrbill",
                         "qrref",

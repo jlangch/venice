@@ -24,63 +24,69 @@ Let's create some function specifications to interface with a hypothetical weath
 The function definitions are passed in as `tools parameter to the OpenAI request:
 
 
+The demo weather functions definitions are defined in the `:openai-demo` module and look like:
+
+```clojure
+(defn demo-weather-function-defs [] 
+   ;; Returns a Venice data map with the OpenAI demo function definitions, that corresponds 
+   ;; to the OpenAI 'tools' JSON data.
+   ;; For better readability the map keys are Venice keyword. Strings would equally work.
+   [ {
+      :type "function"
+      :function {
+        :name "get_current_weather"
+        :description "Get the current weather"
+        :parameters {
+          :type "object"
+          :properties {
+            :location {
+              :type "string"
+              :description "The city and state, e.g. San Francisco, CA"
+            }
+            :format {
+              :type "string"
+              :enum ["celsius", "fahrenheit"]
+              :description "The temperature unit to use. Infer this from the users location."
+            }
+          }
+          :required ["location", "format"]
+        }
+      }
+    },
+    {
+      :type "function"
+      :function {
+        :name "get_n_day_weather_forecast"
+        :description "Get an N-day weather forecast"
+        :parameters {
+          :type "object"
+          :properties {
+            :location {
+              :type "string"
+              :description "The city and state, e.g. San Francisco, CA"
+            }
+            :format {
+              :type "string"
+              :enum ["celsius", "fahrenheit"]
+              :description "The temperature unit to use. Infer this from the users location.",
+            }
+            :num_days {
+              :type "integer"
+              :description "The number of days to forecast"
+            }
+          }
+          :required ["location", "format", "num_days"]
+        }
+      }
+    } ] )
+```
+
 If we prompt the model about the current weather, it will respond with some clarifying questions.
 
 ```clojure
 (do
   (load-module :openai)
-  
-  (defn weather-tools [] 
-    ;; A Venice collection that can be converted 1:1 to JSON
-    [ {
-        :type "function"
-        :function {
-          :name "get_current_weather"
-          :description "Get the current weather"
-          :parameters {
-            :type "object"
-            :properties {
-              :location {
-                :type "string"
-                :description "The city and state, e.g. San Francisco, CA"
-              }
-              :format {
-                :type "string"
-                :enum ["celsius", "fahrenheit"]
-                :description "The temperature unit to use. Infer this from the users location."
-              }
-            }
-            :required ["location", "format"]
-          }
-        }
-      }
-      {
-        :type "function"
-        :function {
-          :name "get_n_day_weather_forecast"
-          :description "Get an N-day weather forecast"
-          :parameters {
-            :type "object"
-            :properties {
-              :location {
-                :type "string"
-                :description "The city and state, e.g. San Francisco, CA"
-              }
-              :format {
-                :type "string"
-                :enum ["celsius", "fahrenheit"]
-                :description "The temperature unit to use. Infer this from the users location.",
-              }
-              :num_days {
-                :type "integer"
-                :description "The number of days to forecast"
-              }
-            }
-            :required ["location", "format", "num_days"]
-          }
-        }
-      } ] )
-  
+  (load-module :openai-demo)  
   
   (let [prompt      [ { :role     "system"
                         :content  """
@@ -92,7 +98,7 @@ If we prompt the model about the current weather, it will respond with some clar
         prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
-                                            :tools (weather-tools)
+                                            :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)]
     (println "Status:  " (:status response))
     (println "Mimetype:" (:mimetype response))
@@ -117,58 +123,7 @@ arguments for us.
 ```clojure
 (do
   (load-module :openai)
-  
-  (defn weather-tools [] 
-    ;; A Venice collection that can be converted 1:1 to JSON
-    [ {
-        :type "function"
-        :function {
-          :name "get_current_weather"
-          :description "Get the current weather"
-          :parameters {
-            :type "object"
-            :properties {
-              :location {
-                :type "string"
-                :description "The city and state, e.g. San Francisco, CA"
-              }
-              :format {
-                :type "string"
-                :enum ["celsius", "fahrenheit"]
-                :description "The temperature unit to use. Infer this from the users location."
-              }
-            }
-            :required ["location", "format"]
-          }
-        }
-      }
-      {
-        :type "function"
-        :function {
-          :name "get_n_day_weather_forecast"
-          :description "Get an N-day weather forecast"
-          :parameters {
-            :type "object"
-            :properties {
-              :location {
-                :type "string"
-                :description "The city and state, e.g. San Francisco, CA"
-              }
-              :format {
-                :type "string"
-                :enum ["celsius", "fahrenheit"]
-                :description "The temperature unit to use. Infer this from the users location.",
-              }
-              :num_days {
-                :type "integer"
-                :description "The number of days to forecast"
-              }
-            }
-            :required ["location", "format", "num_days"]
-          }
-        }
-      } ] )
-  
+  (load-module :openai-demo)
   
   (let [prompt      [ { :role     "system"
                         :content  """
@@ -184,7 +139,7 @@ arguments for us.
         prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
-                                            :tools (weather-tools)
+                                            :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)]
     (println "Status:  " (:status response))
     (println "Mimetype:" (:mimetype response))
