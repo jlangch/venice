@@ -1,8 +1,7 @@
 # Venice meets LLMs
 
 * [OpenAI Client](#openai-client)
-* [LangChain4J](#langchain4j)
-* [Qdrant Vector DB](#qdrant-vector-db)
+* [LangChain4J](langchain4j.md)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
 
 
@@ -15,7 +14,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 
 * [Chat Completion](#chat-completion)
 * [Chat Completion Streaming](#chat-completion-streaming)
-* [OpenAI Functions Cookbook](#openai-functions-cookbook)
+* [OpenAI Functions Cookbook](openai-functions.md)
 * Audio
 * Images
 * Embeddings
@@ -456,66 +455,6 @@ Delta: nil
 Completed.
 Message: "1, 2, 3, 4, 5"
 ```
-
-
-## OpenAI Functions Cookbook
-
-The example is adapted from the [OpenAI API Functions Cookbook](https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models)
-
-
-*work in progress...*
-
-
-
-## LangChain4J
-
-
-*coming soon...*
-
-
-
-## Qdrant Vector DB
-
-Qdrant is a Vector Database and Vector Search Engine that empowers
-LLM applications with Retrieval Augmented Generation (RAG) to access 
-data outside the LLM data world.
-
-
-
-### Start Qdrant Docker Container
-
-Parameters:
-
-| Parameter        | Description |
-| :---             | :---        |
-| cname            | A unique container name |
-| version          | The Qdrant version to use. E.g.: 1.8.3 |
-| mapped-rest-port | The published (mapped) Qdrant REST port on the  host. Defaults to 6333 |
-| mapped-grpc-port | The published (mapped) Qdrant GRPC port on the host. Defaults to 6334 |
-| storage-dir      | Directory where Qdrant persists all the data. |
-| config-file      | An optional custom configuration yaml file |
-| log              | A log function, may be *nil*. E.g: `(fn [s] (println "Qdrant:" s))`|
-
-
-```clojure
-(do
-  (load-module :cargo-qdrant ['cargo-qdrant :as 'qdrant])
-   
-  ;; Run a Qdrant docker container labeled as "qdrant"
-  (qdrant/start "qdrant" "1.8.3" "./qdrant-storage"))
-```
-
-
-### Stop Qdrant Docker Container
-
-```clojure
-(do
-  (load-module :cargo-qdrant ['cargo-qdrant :as 'qdrant])
-   
-  ;; Stop the Qdrant docker container labeled as "qdrant"
-  (qdrant/stop "qdrant"))
-```
-
 
 ## Configuring OpenAI API keys
 
