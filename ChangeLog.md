@@ -22,6 +22,10 @@ All notable changes to this project will be documented in this file.
 ### Improved 
 - JDBC query result table renderer uses now right alignment for numeric columns
 
+### Fixed
+
+- fixed a bug in the HTTP client when slurping a binary data response
+
 
 
 ## [1.12.16] - 2024-04-30
@@ -35,7 +39,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Fixed a problem with starting an already running docker container.
+- a problem with starting an already running docker container.
   Venice is doing nothing if the container version is ok, otherwise
   it stops the container and runs a new one with the desired version.
 

@@ -592,9 +592,9 @@
         encoding        (parse-content-encoding (:content-encoding response))
         is              (:data-stream response)
         debug?          (true? (:debug response false))
-        slurp-plain     (is-slurp-plain-text? mimetype)
-        slurp-json      (is-slurp-json? mimetype)
-        slurp-binary    (not (or slurp-plain slurp-json))]
+        slurp-plain?    (is-slurp-plain-text? mimetype)
+        slurp-json?     (is-slurp-json? mimetype)
+        slurp-binary?   (not (or slurp-plain? slurp-json?))]
     (when (= "text/event-stream" mimetype)
       (throw (ex :VncException 
                  """
@@ -609,21 +609,18 @@
       (println "   mimetype:          " mimetype)
       (println "   charset:           " charset)
       (println "   encoding:          " encoding)
-      (println "   slurp-plain:       " slurp-plain)
-      (println "   slurp-json:        " slurp-json)
-      (println "   slurp-binary:      " slurp-binary)
+      (println "   slurp-plain:       " slurp-plain?)
+      (println "   slurp-json:        " slurp-json?)
+      (println "   slurp-binary:      " slurp-binary?)
       (println "   json-parse-mode:   " json-parse-mode)
       (println))
 
     (cond
-      (is-slurp-plain-text? mimetype)  
-          (slurp-as-plain-text is encoding charset)
+      slurp-plain? (slurp-as-plain-text is encoding charset)
 
-      (is-slurp-json? mimetype) 
-          (slurp-as-json is encoding charset json-parse-mode json-key-fn)
+      slurp-json?  (slurp-as-json is encoding charset json-parse-mode json-key-fn)
 
-      :else                            
-          (slurp-as-binary is encoding))))
+      :else        (slurp-as-binary is encoding))))
 
 
 (defn 
@@ -979,7 +976,7 @@
 
 
 (defn- slurp-as-binary [is encoding]
-  (let [charset  (or (str/trim-to-nil charset) :utf-8)
+  (let [encoding (or encoding :none)
         is       (wrap-is-with-decompressor is encoding)]
     (io/slurp-stream is :binary true)))
 
@@ -989,8 +986,8 @@
     :none     is
     :gzip     (io/wrap-is-with-gzip-input-stream is)
     :deflate  (io/wrap-is-with-inflater-input-stream is)
-    (throw (ex :VncException (str/format "Unsupported 'Content-Encoding' -> '%s'")
-                                          encoding))))
+    (throw (ex :VncException (str/format "Unsupported 'Content-Encoding' -> '%s'"
+                                          encoding)))))
 
                                         
 (defn- status-name [status-code]
