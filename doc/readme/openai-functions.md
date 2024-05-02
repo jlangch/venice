@@ -21,8 +21,10 @@ This notebook contains the following 2 sections:
 
 Let's create some function specifications to interface with a hypothetical weather API. We'll pass these function specification to the Chat Completions API in order to generate function arguments that adhere to the specification.
 
+The function definition is passed in as tools parameter to the OpenAI request:
+
 ```json
-tools = [
+[
     {
         "type": "function",
         "function": {
