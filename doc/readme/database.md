@@ -322,7 +322,7 @@ Lost         92
             JOIN Track t ON t.Album_Id = al.Album_Id
             JOIN Invoice_Line il ON t.track_Id = il.Invoice_Line_Id 	       
             GROUP BY a.Name
-            ORDER BY COUNT(a.Artist_Id) DESC
+            ORDER BY "Total Sold" DESC
             LIMIT 3;
             """)
         (jdbc-core/print-query-result))))

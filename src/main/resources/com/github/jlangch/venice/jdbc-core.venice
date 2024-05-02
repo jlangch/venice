@@ -872,17 +872,23 @@
     (loop [rows []]
       (if (rs-next! rs)
         (recur (conj rows (row-values rs col-count)))
-        { :col-names (col-names rs-meta-data), :rows rows}))))
+        (let [cm (col-meta rs-meta-data)]
+          { :col-names (map :name cm) 
+            :col-meta  cm
+            :rows rows })))))
 
 
-(defn- col-names [rs-meta-data]
+(defn- col-meta [rs-meta-data]
  (assert (instance-of? :ResultSetMetaData rs-meta-data))
  (let [count  (. rs-meta-data :getColumnCount)]
-  (loop [names [], col 1]
+  (loop [info [], col 1]
     (if (<= col count)
-      (let [name (. rs-meta-data :getColumnName col)]
-        (recur (conj names name) (inc col)))
-        names))))
+      (let [name     (. rs-meta-data :getColumnName col)
+            sql-type (. rs-meta-data :getColumnType col)
+            type     (get type-map sql-type :unknown)
+            numeric  (numeric-type? type)]
+        (recur (conj info {:name name, :type type :numeric numeric}) (inc col)))
+        info))))
 
 
 (defn- row-values [rs col-count]
@@ -2028,16 +2034,24 @@
                           (collect-result-set data) 
                           data)
           col-names     (:col-names data)
+          col-meta      (:col-meta  data)
           rows          (:rows data)
-          rows          (map (fn [r] 
-                               (map (fn [v] (render-cell v max-col-width)) r)) 
+          rows          (map (fn [r] (map (fn [v] (render-cell v max-col-width)) r)) 
                              rows)
           widths        (col-widths col-names rows min-col-width max-col-width)
-          headers       (map (fn [v] (hash-map :header { :text     (first v)
-                                                         :align    :left
-                                                         :overflow :newline }
-                                              :width (second v)))
-                            (map vector col-names widths)) ]
+          headers       (map (fn [v] (let [col-meta (first v)
+                                           width    (second v)
+                                           idx      (third v)
+                                           name     (:name col-meta)
+                                           align    (if (and (> idx 1) (:numeric col-meta)) 
+                                                      :right 
+                                                      :left)]
+                                       (hash-map :header { :text     name
+                                                           :align    :left 
+                                                           :overflow :newline }
+                                                 :body   {:align  align}
+                                                 :width width)))
+                            (map vector col-meta widths (lazy-seq 1 inc))) ]
       (ascii-table/render headers rows :standard-database 0))))
 
 
@@ -2323,7 +2337,7 @@
           Example:
           
           ```
-          { "genre_id"  ["genre_id" "name"]
+          { "genre"  ["genre_id" "name"]
             ...
             "playlist_track" ["playlist_id" "track_id"] }
           ```
@@ -2338,10 +2352,15 @@
           """,
           """
           ;; Formatted as input for ChatGPT
+          ;;   Table: genre
+          ;;   Columns: genre_id, name
+          ;;   ....
+          ;;   Table: playlist_track
+          ;;   Columns: playlist_id, track_id
           (do
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
-            (try-with [conn (jdbp/create-connection "localhost" 5432 "chinook" "pg" "pg")
+            (try-with [conn (jdbp/create-connection "localhost" 5432 "chinook" "pg" "pg")]
               (->> (map (fn [[t c]] (str "Table: " t "\nColumns: " (str/join ", " c)))
                         (jdbc/tables-with-columns conn)) 
                    (str/join "\n"))))
@@ -2352,6 +2371,19 @@
   (reduce (fn [m t] (assoc m t (into [] (map :name (columns conn t)))))  
           {}
           (tables conn)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; SQL Types
+;; -----------------------------------------------------------------------------
+
+(defn- numeric-type? [type]
+  (contains? numeric-types type))
+
+
+(defonce numeric-types #{:INTEGER :TINYINT :SMALLINT :BIGINT 
+                         :DECIMAL :DOUBLE  :FLOAT    :NUMERIC})
 
 
 (defonce type-map {
@@ -2395,6 +2427,10 @@
     (. :Types :VARCHAR)                  :VARCHAR } )
 
 
+
+;; -----------------------------------------------------------------------------
+;; Transaction isolation levels
+;; -----------------------------------------------------------------------------
 
 (defonce tx-isolation-levels {
   ;; A constant indicating that transactions are not supported.
