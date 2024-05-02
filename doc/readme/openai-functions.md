@@ -15,6 +15,7 @@ This notebook contains the following 2 sections:
 * **How to generate function arguments:** Specify a set of functions and use the API to generate function arguments.
 * **How to call functions with model generated arguments:** Close the loop by actually executing functions with model generated arguments.
 
+
 ## How to generate function arguments
 
 ### Basic concepts
@@ -380,3 +381,80 @@ with:
   "logprobs": null
 }]
 ```
+
+We can also force the model to not use a function at all. By doing so we prevent it from 
+producing a proper function call.
+
+```clojure
+(do
+  (load-module :openai)
+  (load-module :openai-demo)
+  
+  (let [prompt      [ { :role     "system"
+                        :content  """
+                                  Don't make assumptions about what values to plug into functions.
+                                  Ask for clarification if a user request is ambiguous.
+                                  """ }
+                      { :role     "user"
+                        :content  "Give me the current weather (use Celcius) for Toronto, Canada." } ]
+        prompt-opts { :temperature 0.1 }
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4"
+                                            :tools (openai-demo/demo-weather-function-defs)
+                                            :tool_choice "none"
+                                            :prompt-opts prompt-opts)]
+    (println "Status:  " (:status response))
+    (println "Mimetype:" (:mimetype response))
+    (if (=  (:status response) 200)
+      (println "Choices:" (-> (:data response)  
+                              (:choices)                          
+                              (openai/pretty-print-json)))
+      (println "Error:"   (:data response)))))
+```
+
+Response:
+
+```josn
+[{
+  "finish_reason": "stop",
+  "index": 0,
+  "message": {
+    "role": "assistant",
+    "content": "Sure, let me get that information for you.\n\nAssistant to=functions.get_current_weather:\n{\n  \"format\": \"celsius\",\n  \"location\": \"Toronto, Canada\"\n}"
+  },
+  "logprobs": null
+}]
+```
+
+
+## Debugging
+
+To debug requests and responses set enable the debug option at the `openai/chat-completion` call:
+
+```clojure
+(do
+  (load-module :openai)
+  (load-module :openai-demo)
+  
+  (let [prompt      [ { :role     "system"
+                        :content  """
+                                  Don't make assumptions about what values to plug into functions.
+                                  Ask for clarification if a user request is ambiguous.
+                                  """ }
+                      { :role     "user"
+                        :content  "What's the weather like today in Glasgow, Scotland?" } ]
+        prompt-opts { :temperature 0.1 }
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4"
+                                            :tools (openai-demo/demo-weather-function-defs)
+                                            :prompt-opts prompt-opts
+                                            :debug true)]         ;; <======= DEBUGGING ON
+    (println "Status:  " (:status response))
+    (println "Mimetype:" (:mimetype response))
+    (if (=  (:status response) 200)
+      (println "Choices:" (-> (:data response) 
+                              (:choices)                            
+                              (openai/pretty-print-json)))
+      (println "Error:"   (:data response)))))
+```
+

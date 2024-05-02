@@ -709,10 +709,11 @@
 
 (defn- validate-tool-choice [tools-choice]
   (when (some? tools-choice)
-    (when-not (map? tools-choice)
+    (when-not (or (string? tools-choice) (map? tools-choice))
       (throw (ex :VncException 
                   """
-                  An OpenAI tool choice option (`:tool_choice`) must be `nil` or a map!
+                  An OpenAI tool choice option (`:tool_choice`) must be `nil` 
+                  a string or a map!
 
                   E.g.:
 
