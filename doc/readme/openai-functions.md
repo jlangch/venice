@@ -105,17 +105,23 @@ If we prompt the model about the current weather, it will respond with some clar
     (println "Mimetype:" (:mimetype response))
     (if (=  (:status response) 200)
       (println "Message:" (-> (:data response)
-                              (openai/extract-response-message-content)
+                              (:choices)
                               (openai/pretty-print-json)))
       (println "Error:"   (:data response)))))
 ```
 
 OpenAI answers:
 
-```
-Status:   200
-Mimetype: application/json
-Message: Sure, I can help with that. Could you please tell me your location?
+```json
+[{
+  "finish_reason": "stop",
+  "index": 0,
+  "message": {
+    "role": "assistant",
+    "content": "Sure, I can help with that. Could you please tell me your location?"
+  },
+  "logprobs": null
+}]
 ```
 
 Once we provide the missing information, it will generate the appropriate function 
@@ -204,10 +210,16 @@ By prompting it differently, we can get it to target the other function we've to
 
 OpenAI answers:
 
-```
-Status:   200
-Mimetype: application/json
-Message: I'm sorry, but I need to know the exact number of days you want the forecast for. Could you please specify?
+```json
+[{
+  "finish_reason": "stop",
+  "index": 0,
+  "message": {
+    "role": "assistant",
+    "content": "I'm sorry, but I need to know the exact number of days you want the forecast for. Could you please specify?"
+  },
+  "logprobs": null
+}]
 ```
 
 

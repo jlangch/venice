@@ -312,6 +312,7 @@
          
           Handler arguments:
 
+          | [![width: 15%]] | [![width: 85%]]                  |
           | *delta*       | the delta message sent with the event |
           | *accumulated* | the accumulated message|
           | *type*        | the notification type: ¶\
@@ -593,6 +594,113 @@
         :function   (println (ansi/style (str "function: " content) 
                                          (:bright-magenta ansi/ANSI-CODES)))))))
                                          
+;; -----------------------------------------------------------------------------
+;; OpenAI Functions
+;;
+;; OpenAI responses look like:
+;;
+;; { "created": 1714685814,
+;;   "usage": {
+;;     "completion_tokens": 26,
+;;     "prompt_tokens": 194,
+;;     "total_tokens": 220
+;;   },
+;;   "model": "gpt-4-0613",
+;;   "id": "chatcmpl-9KYOkTLMgIEDN2hpGxCvf4cyOROHJ",
+;;   "choices": [{
+;;     "finish_reason": "tool_calls",
+;;     "index": 0,
+;;     "message": {
+;;       "role": "assistant",
+;;       "tool_calls": [{
+;;         "function": {
+;;           "name": "get_current_weather",
+;;           "arguments": "{\n  \"format\": \"celsius\",\n  \"location\": \"Glasgow\"\n}"
+;;         },
+;;         "id": "call_I9RjSt5rnawMQD1g4GB7xGY3",
+;;         "type": "function"
+;;       }],
+;;       "content": null
+;;     },
+;;     "logprobs": null
+;;   }],
+;;   "system_fingerprint": null,
+;;   "object": "chat.completion"
+;; }
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(execute-functions? response)")
+     :doc """
+          Returns true if the OpenAI JSON response contains at least one call 
+          function definition.
+          """
+     :see-also '( 
+          "openai/execute-functions" ) }
+
+  execute-functions? [response]
+
+  (assert map? response)
+  (not-empty? (get-function-calls response)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(execute-functions response fn-map)")
+     :doc """
+          Execute all functions from an OpenAI JSON response.
+
+          Returns a list of function results. 
+
+          | [![width: 15%]] | [![width: 85%]]        |
+          | OK result      | `{ :ok value }`. E.g: `{ :ok "15˚C" }`      |
+          | ERROR result   | `{ :err exception }`. |
+          """
+     :see-also '( 
+          "openai/execute-functions?" ) }
+
+  execute-functions [response fn-map]
+
+  (assert map? response)
+  (assert map? fn-map)
+  (loop [results []
+         fns     (get-function-calls response)]
+    (if (empty? fns)
+      results
+      (let [fn-def   (first fns)
+            name     (:name fn-def)
+            args     (vals (:arguments fn-def))]
+        (if-let [f (get name fn-map)]
+          (recur (conj results (call-function name f args))
+                 (rest fns))
+          (recur (conj results { :err (make-err-missing-fn name) })
+                 (rest fns)))))))
+
+
+(defn- get-function-calls [response]
+  (->> (map :choices response)
+       (first)
+       (map :tool_calls)
+       (filter #(= "function" (:type %)))
+       (map :function)))
+  
+
+(defn- call-function [name f args]
+  (try 
+    {:ok (apply f args)}
+    (catch :Exception e { :err (make-err-failed-call name (count args) e)})))
+      
+
+(defn- make-err-missing-fn [name]
+  (ex :VncEception "Failed to call OpenAI undefined function \"~{name}\"!" ))
+      
+
+(defn- make-err-failed-call [name arity ex_]
+  (ex :VncEception "Failed to call OpenAI function \"~{name} with arity ~{arity}\"!" 
+                   ex_))
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Util functions
