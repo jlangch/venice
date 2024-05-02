@@ -120,9 +120,12 @@
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
           | :prompt-opts      | An optional map of OpenAI chat request prompt options ¶\
-                                E.g. {:temperature 0.2} ¶\
+                                E.g. `{:temperature 0.2}` ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :tools            | a list of tools. e.g.: function definitions (see OpenAI api for details) |
+          | :tool-choice      | a tool choice. e.g.: function definitions (see OpenAI api for details) ¶\
+                                This forces the model to use a specific function: ¶\
+                                `{:type "function", :function {:name "get_n_day_weather_forecast"}` |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -252,7 +255,10 @@
         _               (validate-openai-api-key openai-api-key)
         tools           (:tools opts)
         _               (validate-tools tools)
-        body            (build-prompt model prompt (:prompt-opts opts) tools {:stream false})
+        tool-choice     (:choice opts)
+        _               (validate-tool-choice choice)
+        body            (build-prompt model prompt (:prompt-opts opts)
+                                      tools tool-choice{:stream false})
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
@@ -604,17 +610,17 @@
   (system-env "OPENAI_API_KEY"))
 
 
-(defn- build-prompt [model prompt prompt-opts tools overrule-opts]
+(defn- build-prompt [model prompt prompt-opts tools tool-choice overrule-opts]
   (let [p (cond 
             (nil? prompt)        {}
             (string? prompt)     {:messages [{:role "user" :content prompt}]}
             (sequential? prompt) {:messages prompt}
             (map? prompt)        prompt
-            :else                {} )
-        t (if (nil? tools) {} {:tools tools})]
+            :else                {} )]
     (merge {:model (or model default-model)} 
            p 
-           t
+           (if (nil? tools) {} {:tools tools})
+           (if (nil? tool-choice) {} {:tool_choice tool-choice})
            (or prompt-opts {})
            (or overrule-opts {}))))
 
@@ -698,4 +704,21 @@
                           :parameters { ... }
                       } } ]
 
+                 """)))))
+
+
+(defn- validate-tool-choice [choice]
+  (when (some? choice)
+    (when-not (map? tools)
+      (throw (ex :VncException 
+                  """
+                  An OpenAI Tool choice must be `nil` or a map!
+
+                  E.g.:
+
+                  { :type "function"
+                    :function { 
+                      :name "get_n_day_weather_forecast" 
+                    } 
+                  }
                  """)))))
