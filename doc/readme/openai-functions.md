@@ -194,8 +194,10 @@ arguments for us.
       (println "Error:"   (:data response)))))
 ```
 
+Returns the message:
+
 ```json
-Message: {
+{
   "created": 1714674616,
   "usage": {
     "completion_tokens": 28,
