@@ -31,6 +31,7 @@ If we prompt the model about the current weather, it will respond with some clar
   (load-module :openai)
   
   (defn weather-tools [] 
+    ;; A Venice collection that can be converted 1:1 to JSON
     [ {
         :type "function"
         :function {
@@ -102,6 +103,8 @@ If we prompt the model about the current weather, it will respond with some clar
       (println "Error:"   (:data response)))))
 ```
 
+OpenAI answers:
+
 ```
 Status:   200
 Mimetype: application/json
@@ -110,5 +113,117 @@ Message: Sure, I can help with that. Could you please tell me your location?
 
 Once we provide the missing information, it will generate the appropriate function 
 arguments for us.
+
+```clojure
+(do
+  (load-module :openai)
+  
+  (defn weather-tools [] 
+    ;; A Venice collection that can be converted 1:1 to JSON
+    [ {
+        :type "function"
+        :function {
+          :name "get_current_weather"
+          :description "Get the current weather"
+          :parameters {
+            :type "object"
+            :properties {
+              :location {
+                :type "string"
+                :description "The city and state, e.g. San Francisco, CA"
+              }
+              :format {
+                :type "string"
+                :enum ["celsius", "fahrenheit"]
+                :description "The temperature unit to use. Infer this from the users location."
+              }
+            }
+            :required ["location", "format"]
+          }
+        }
+      }
+      {
+        :type "function"
+        :function {
+          :name "get_n_day_weather_forecast"
+          :description "Get an N-day weather forecast"
+          :parameters {
+            :type "object"
+            :properties {
+              :location {
+                :type "string"
+                :description "The city and state, e.g. San Francisco, CA"
+              }
+              :format {
+                :type "string"
+                :enum ["celsius", "fahrenheit"]
+                :description "The temperature unit to use. Infer this from the users location.",
+              }
+              :num_days {
+                :type "integer"
+                :description "The number of days to forecast"
+              }
+            }
+            :required ["location", "format", "num_days"]
+          }
+        }
+      } ] )
+  
+  
+  (let [prompt      [ { :role     "system"
+                        :content  """
+                                  Don't make assumptions about what values to plug into functions.
+                                  Ask for clarification if a user request is ambiguous.
+                                  """ }
+                      { :role     "user"
+                        :content  "What's the weather like today?" }
+                      { :role     "assistant"
+                        :content  "Sure, I can help with that. Could you please tell me your location" }
+                      { :role     "user"
+                        :content  "I'm in Glasgow, Scotland." } ]
+        prompt-opts { :temperature 0.1 }
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4"
+                                            :tools (weather-tools)
+                                            :prompt-opts prompt-opts)]
+    (println "Status:  " (:status response))
+    (println "Mimetype:" (:mimetype response))
+    (if (=  (:status response) 200)
+      (println "Message:" (-> (:data response)                            
+                              (openai/pretty-print-json)))
+      (println "Error:"   (:data response)))))
+```
+
+```json
+Message: {
+  "created": 1714674616,
+  "usage": {
+    "completion_tokens": 28,
+    "prompt_tokens": 222,
+    "total_tokens": 250
+  },
+  "model": "gpt-4-0613",
+  "id": "chatcmpl-9KVU85aY4qIxgYvkVUdWVvQWngT2f",
+  "choices": [{
+    "finish_reason": "tool_calls",
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "tool_calls": [{
+        "function": {
+          "name": "get_current_weather",
+          "arguments": "{\n  \"format\": \"celsius\",\n  \"location\": \"Glasgow, Scotland\"\n}"
+        },
+        "id": "call_TZcPN71eztpUlO0U5qPLVbQA",
+        "type": "function"
+      }],
+      "content": null
+    },
+    "logprobs": null
+  }],
+  "system_fingerprint": null,
+  "object": "chat.completion"
+}
+```
 
 
