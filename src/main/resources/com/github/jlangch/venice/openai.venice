@@ -127,7 +127,7 @@
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
 
-          Tools options for passing a function:
+          Tools options (a Venice map) for passing a function definition:
 
           ```
           [ 
