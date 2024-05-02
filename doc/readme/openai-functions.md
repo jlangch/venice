@@ -426,6 +426,74 @@ Response:
 }]
 ```
 
+### Parallel Function Calling
+
+Actual GPT-3.5-Turbo models can call multiple functions in one turn.
+
+```clojure
+(do
+  (load-module :openai)
+  (load-module :openai-demo)
+  
+  (let [prompt      [ { :role     "system"
+                        :content  """
+                                  Don't make assumptions about what values to plug into functions.
+                                  Ask for clarification if a user request is ambiguous.
+                                  """ }
+                      { :role     "user"
+                        :content  """
+                                  What is the weather going to be like in San Francisco 
+                                  and Glasgow over the next 4 day? Give the temperature in Celsius.
+                                  """ } ]
+        prompt-opts { :temperature 0.1 }
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-3.5-turbo"
+                                            :tools (openai-demo/demo-weather-function-defs)
+                                            :prompt-opts prompt-opts)] 
+    (println "Status:  " (:status response))
+    (println "Mimetype:" (:mimetype response))
+    (if (=  (:status response) 200)
+      (println "Choices:" (-> (:data response) 
+                              (:choices)                            
+                              (openai/pretty-print-json)))
+      (println "Error:"   (:data response)))))
+```
+
+Response:
+
+```josn
+[{
+  "finish_reason": "tool_calls",
+  "index": 0,
+  "message": {
+    "role": "assistant",
+    "tool_calls": [{
+      "function": {
+        "name": "get_n_day_weather_forecast",
+        "arguments": "{\"num_days\": 4, \"format\": \"celsius\", \"location\": \"San Francisco\"}"
+      },
+      "id": "call_gIdR2g4mieRcClQEDestGO1x",
+      "type": "function"
+    },{
+      "function": {
+        "name": "get_n_day_weather_forecast",
+        "arguments": "{\"num_days\": 4, \"format\": \"celsius\", \"location\": \"Glasgow\"}"
+      },
+      "id": "call_9A9YPcNDPpZ5G1zqumPNeq6R",
+      "type": "function"
+    }],
+    "content": null
+  },
+  "logprobs": null
+}]
+```
+
+
+## How to call functions with model generated arguments
+
+... in work ...
+
+
 
 ## Debugging
 
@@ -457,4 +525,5 @@ To debug requests and responses set enable the debug option at the `openai/chat-
                               (openai/pretty-print-json)))
       (println "Error:"   (:data response)))))
 ```
+
 
