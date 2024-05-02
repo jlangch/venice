@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - JDBC query result table render uses now right alignment for numeric columns
 
 
+
 ## [1.12.16] - 2024-04-30
 
 ### Added
