@@ -49,12 +49,14 @@ public class ModuleOpenAiSection implements ISectionBuilder {
 
         final DocSection func = new DocSection("OpenAI fn", id());
         all.addSection(func);
-        func.addItem(diBuilder.getDocItem("openai/exec-fn-stop?", false));
-        func.addItem(diBuilder.getDocItem("openai/exec-fn-tool-calls?", false));
         func.addItem(diBuilder.getDocItem("openai/exec-fn", false));
+
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
+        utils.addItem(diBuilder.getDocItem("openai/finish-reason", false));
+        utils.addItem(diBuilder.getDocItem("openai/finish-reason-stop?", false));
+        utils.addItem(diBuilder.getDocItem("openai/finish-reason-calls?", false));
         utils.addItem(diBuilder.getDocItem("openai/pretty-print-json", false));
         utils.addItem(diBuilder.getDocItem("openai/extract-response-message-content", false));
 

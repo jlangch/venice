@@ -564,21 +564,39 @@
 
 (defn 
   ^{ :arglists '(
-          "(extract-response-message-content message)")
+          "(extract-response-message-content response)")
      :doc """
-          Returns the message content of an OpenAI JSON response message.
+          Returns the message content of an OpenAI JSON response.
           """
      :see-also '( 
           "openai/pretty-print-json" ) }
 
-  extract-response-message-content [message]
+  extract-response-message-content [response]
 
-  (assert (coll? message))
+  (assert (coll? response))
 
-  (-> (:choices message)
+  (-> (:choices response)
       (first)
       (:message)
       (:content)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(extract-response-message response)")
+     :doc """
+          Returns the message of an OpenAI JSON response.
+          """
+     :see-also '( 
+          "openai/pretty-print-json" ) }
+
+  extract-response-message [response]
+
+  (assert (coll? response))
+
+  (-> (:choices response)
+      (first)
+      (:message)))
 
 
 (defn pretty-print-conversation [messages]
@@ -631,37 +649,65 @@
 ;; }
 ;; -----------------------------------------------------------------------------
 
-(defn 
-  ^{ :arglists '(
-          "(exec-fn-stop? response)")
-     :doc """
-          Returns true if the OpenAI JSON response requires more input for the
-          function calls
-          """
-     :see-also '( 
-          "openai/exec-fn-tool-calls?"
-          "openai/exec-fn" ) }
-
-  exec-fn-stop? [response]
-
-  (assert map? response)
-  (= "stop" (exec-finish-reason response)))
-
 
 (defn 
   ^{ :arglists '(
-          "(exec-fn-tool-calls? response)")
+          "(finish-reason response)")
      :doc """
-          Returns true if the OpenAI JSON response contains tools calls
+          Returns the finish reason text from an OpenAI JSON response.
+
+          The text depends may be "stop" or "tool_calls". The first signals
+          that the response contains an answer from the model to the passed
+          question. With the ladder the models signals to the caller that
+          functions must be executed to get specific data to answer the question.
           """
      :see-also '( 
-          "openai/exec-fn-stop?"
+          "openai/finish-reason-stop?"
+          "openai/finish-reason-tool-calls?"
+          "openai/exec-fn" ) }
+  
+  finish-reason [response]
+  
+  ;; returns the response finish reason {"stop", "tool-calls"}
+  (->> (:choices response)
+       (first)
+       (:finish_reason)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(finish-reason-stop? response)")
+     :doc """
+          Returns true if the OpenAI JSON response provides an answer to
+          the prompt.
+          """
+     :see-also '( 
+          "openai/finish-reason"
+          "openai/finish-reason-tool-calls?"
           "openai/exec-fn" ) }
 
-  exec-fn-tool-calls? [response]
+  finish-reason-stop? [response]
 
   (assert map? response)
-  (= "tool_calls" (exec-finish-reason response)))
+  (= "stop" (finish-reason response)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(finish-reason-tool-calls? response)")
+     :doc """
+          Returns true if the OpenAI JSON response contains tool calls 
+          (functions) that it wants the client to run
+          """
+     :see-also '( 
+          "openai/finish-reason"
+          "openai/finish-reason-stop?"
+          "openai/exec-fn" ) }
+
+  finish-reason-tool-calls? [response]
+
+  (assert map? response)
+  (= "tool_calls" (finish-reason response)))
 
 
 (defn 
@@ -684,21 +730,24 @@
           | ERROR result   | `{ :err exception }`. |
           """
      :see-also '( 
-          "openai/exec-fn-stop?"
-          "openai/exec-fn-tool-calls?" ) }
+          "openai/finish-reason"
+          "openai/finish-reason-stop?"
+          "openai/finish-reason-tool-calls?" ) }
 
   exec-fn [response fn-map]
 
   (assert map? response)
   (assert map? fn-map)
-  (when-not (exec-fn-tool-calls? response) 
-    (let [finish-reason (exec-finish-reason response)])
+
+  (when-not (finish-reason-tool-calls? response) 
     (throw (ex :VncEception 
-               """
-               The OpenAI response does not have a "tool_calls" finish reason! 
-               Thus the response does not define any functions with arguments
-               to call. The finish reason returned was "~{finish-reason}".
-               """ )))
+              """
+              The OpenAI response does not have a "tool_calls" finish reason! 
+              Thus the response does not define any functions with arguments
+              to call. The finish reason returned was 
+              "~(exec-finish-reason response)".
+              """ )))
+
   (loop [results []
          fns     (get-function-calls response)]
     (if (empty? fns)
@@ -713,13 +762,6 @@
                  (rest fns))        
           (recur (conj results (make-err-missing-fn name)) ;; missing function
                  (rest fns)))))))
-
-
-(defn exec-finish-reason [response]
-  ;; returns the response finish reason {"stop", "tool-calls"}
-  (->> (:choices response)
-       (first)
-       (:finish_reason)))
 
 
 (defn- get-function-calls [response]

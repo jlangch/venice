@@ -517,7 +517,100 @@ Response:
 }]
 ```
 
-### Full example with supplied functions
+### Full weather example with supplied functions (attempt 1)
+
+The OpenAI model calls the function `get-current-weather` to answer the question about
+the current weather in Glasgow.
+
+But the model does not know how to proceed with the supplied results from the called 
+functions.
+
+In a first attempt we can return the result from the function call
+
+`{:ok "The current weather in Glasgow is sunny at 16°C"}`
+
+ as 
+ 
+ `The current weather in Glasgow is sunny at 16°C`
+ 
+ to the user.
+
+
+```clojure
+(do
+  (load-module :openai)
+  (load-module :openai-demo)
+  
+  (let [prompt      [ { :role     "system"
+                        :content  """
+                                  Don't make assumptions about what values to plug into functions.
+                                  Ask for clarification if a user request is ambiguous.
+                                  """ }
+                      { :role     "user"
+                        :content  """
+                                  What is the current weather in Glasgow? Give the temperature in 
+                                  Celsius.
+                                  """ } ]
+        prompt-opts { :temperature 0.1 }
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4"
+                                            :tools (openai-demo/demo-weather-function-defs)
+                                            :prompt-opts prompt-opts)] 
+    (println "Status:       " (:status response))
+    (println "Mimetype:     " (:mimetype response))
+    (println)
+    (if (= (:status response) 200)
+      (let [response (:data response)
+            message  (openai/extract-response-message response)]
+        (println "Finish Reason:" (openai/finish-reason response))
+        (if (openai/finish-reason-tool-calls? response)
+            ;; (println "Message:" (openai/pretty-print-json message))
+            (let [fn-map  (openai-demo/demo-weather-function-map)
+                  results (openai/exec-fn response fn-map)]
+              (println "\nFn results:" (pr-str results)))
+          (println "Message:" (:content message))))
+      (println "Error:" (-> (:data response)
+                            (openai/pretty-print-json))))))
+```
+
+Response:
+
+```
+Finish Reason: tool_calls
+Calling "get-current-weather" with location="Glasgow", format="celsius"
+
+Fn results: [{:ok "The current weather in Glasgow is sunny at 16°C"}]
+```
+
+
+### Full weather example with supplied functions (attempt 2)
+
+The first attempt is not really satisfying. We actually want the model to answer the 
+question. It should use the results from the called functions as additional knowledge 
+helping answering the question.
+
+To achieve this, we need to feedback the results from the questions into the models 
+context and prompt it again with the knowledge enriched context.
+
+The second knowledge enhanced prompt will look like:
+
+```
+[ { :role     "system"
+    :content  """
+              Don't make assumptions about what values to plug into functions.
+              Ask for clarification if a user request is ambiguous.
+              """ }
+  { :role     "system"
+    :content  """
+              The current weather in Glasgow is sunny at 16°C.
+              """ }
+  { :role     "user"
+    :content  """
+              What is the current weather in Glasgow? Give the temperature in 
+              Celsius.
+              """ } ]
+```
+
 
 
 ```clojure
@@ -569,7 +662,6 @@ Finish Reason: tool_calls
 Calling "get-current-weather" with location="Glasgow", format="celsius"
 Results: [{:ok The weather in Glasgow is sunny at 16°C}]
 ```
-
 
 
 
