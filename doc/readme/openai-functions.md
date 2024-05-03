@@ -605,18 +605,29 @@ In version 1 the function call has to deal itself with Celsius / Fahrenheit conv
 whereas in version 2 the function can return temperatures in Celsius always and the
 OpenAI model can convert to Fahrenheit if asked from the user.
 
-You can easily test this by replacing `prompt-usr` in the Phase 2 prompt with
+You can easily test this by replacing the prompt in the Phase 2 with
 
 ```
-{ :role     "user"
-  :content  "What is the current weather in Glasgow? Give the temperature in Fahrenheit." }
+[ { :role     "system"
+    :content  "The current weather in Glasgow is sunny at 16°C." }
+  { :role     "user"
+    :content  "What is the current weather in Glasgow? Give the temperature in Fahrenheit." } ]
+    
+==> "The current weather in Glasgow is sunny at 60.8°F."
 ```
 
 and the OpenAI model does the conversion. Or you can even ask for a final translation to German.
 
 ```
-{ :role     "user"
-  :content  "What is the current weather in Glasgow? Give the temperature in Fahrenheit. Translate the answer to German!" }
+[ { :role     "system"
+    :content  "The current weather in Glasgow is sunny at 16°C." }
+  { :role     "user"
+    :content  """
+              What is the current weather in Glasgow? Give the temperature in Fahrenheit.
+              Translate the answer to German!
+              """ } ]
+              
+==> "Die aktuelle Wetterlage in Glasgow ist sonnig bei 60,8°F."
 ```
 
 
@@ -664,7 +675,7 @@ and the OpenAI model does the conversion. Or you can even ask for a final transl
           (let [response (:data response)
                 content  (openai/extract-response-message-content response)]
             (assert (openai/finish-reason-stop?  response))
-            (println "\nFinal answer: ~(pr-str content)"))))))))
+            (println "\nFinal answer: ~(pr-str content)")))))))
 ```
 
 Response:
