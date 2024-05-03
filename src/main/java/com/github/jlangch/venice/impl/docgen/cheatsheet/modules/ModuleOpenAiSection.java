@@ -56,8 +56,9 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         all.addSection(utils);
         utils.addItem(diBuilder.getDocItem("openai/finish-reason", false));
         utils.addItem(diBuilder.getDocItem("openai/finish-reason-stop?", false));
-        utils.addItem(diBuilder.getDocItem("openai/finish-reason-calls?", false));
+        utils.addItem(diBuilder.getDocItem("openai/finish-reason-tool-calls?", false));
         utils.addItem(diBuilder.getDocItem("openai/pretty-print-json", false));
+        utils.addItem(diBuilder.getDocItem("openai/extract-response-message", false));
         utils.addItem(diBuilder.getDocItem("openai/extract-response-message-content", false));
 
         return section;

@@ -754,8 +754,11 @@
       results
       (let [fn-def   (first fns) ;; next function def to process
             name     (:name fn-def)
-            args-str (:arguments fn-def) ;; for whatever reason OpenAI returns
-                                         ;; a JSON string here
+            args-str (:arguments fn-def) ;; OpenAI decided to return a simple
+                                         ;; string containing JSON data to
+                                         ;; to keep the order of the args!
+                                         ;; A list of tuples had been the 
+                                         ;; better choice here!
             args     (json/read-str args-str)] ;; convert string to JSON
         (if-let [f (get fn-map name)]         
           (recur (conj results (call-function name f args)) ;; call the function
