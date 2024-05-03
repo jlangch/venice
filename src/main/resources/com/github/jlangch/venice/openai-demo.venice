@@ -93,11 +93,11 @@
              """)
     (case location
       "Glasgow"             """
-                            The weather in ~{location} is sunny at \
+                            The current weather in ~{location} is sunny at \
                             ~(temperature 16 format)
                             """
       "San Francisco, CA"   """
-                            The weather in ~{location} is rainy at \
+                            The current weather in ~{location} is rainy at \
                             ~(temperature 12 format)
                             """
       "The weather in ~{location} is cloudy at ~(temperature 17 format)")))
