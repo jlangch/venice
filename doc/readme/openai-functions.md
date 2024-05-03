@@ -659,7 +659,20 @@ Final answer: "The current weather in Glasgow is sunny and the temperature is 16
 
 ## How to call functions with model generated arguments
 
-... in work ...
+In the following examples we'll use the OpenAI chat completion API to answer questions
+about a database. For simplicity the Chinook sample database will be used. See 
+[Venice Chinook](database.md#chinook-dataset-overview)
+
+The OpenAI model shall be enabled to answer questions like: *"Who are the top 5 artists by number of tracks?" *
+
+Before starting follow the [Venice Database tutorial](database.md) to:
+
+ * Install the PostgreSQL JDBC driver
+ * Start a PostgreSQL Docker Instance
+ * Load the Chinook dataset into the PostgreSQL database
+
+
+
 
 
 
