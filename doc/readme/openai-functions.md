@@ -596,71 +596,63 @@ The second knowledge enhanced prompt will look like:
 
 ```
 [ { :role     "system"
-    :content  """
-              Don't make assumptions about what values to plug into functions.
-              Ask for clarification if a user request is ambiguous.
-              """ }
-  { :role     "system"
-    :content  """
-              The current weather in Glasgow is sunny at 16°C.
-              """ }
+    :content  "The current weather in Glasgow is sunny at 16°C." }
   { :role     "user"
-    :content  """
-              What is the current weather in Glasgow? Give the temperature in 
-              Celsius.
-              """ } ]
+    :content  "What is the current weather in Glasgow? Give the temperature in Celsius." } ]
 ```
 
 
+*Note: for simplicity reasons this example just handles the happy path!*
 
 ```clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
   
-  (let [prompt      [ { :role     "system"
-                        :content  """
-                                  Don't make assumptions about what values to plug into functions.
-                                  Ask for clarification if a user request is ambiguous.
-                                  """ }
-                      { :role     "system"
-                        :content  """
-                                  The current weather in Glasgow is sunny at 16°C.
-                                  """ }
-                      { :role     "user"
-                        :content  """
-                                  What is the current weather in Glasgow? Give the temperature in 
-                                  Celsius.
-                                  """ } ]
-        prompt-opts { :temperature 0.1 }
-        response    (openai/chat-completion prompt 
+  (let [prompt-sys  { :role     "system"
+                      :content  """
+                                Don't make assumptions about what values to plug into functions.
+                                Ask for clarification if a user request is ambiguous.
+                                """ }
+        prompt-usr  { :role     "user"
+                      :content  """
+                                What is the current weather in Glasgow? Give the temperature in 
+                                Celsius.
+                                """ }]
+        
+    ;; Phase #1: prompt the model and call the functions
+    (println "Phase #1")
+    (let [response  (openai/chat-completion [ prompt-sys prompt-usr ] 
                                             :model "gpt-4"
-                                            ;; :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)] 
-    (println "Status:       " (:status response))
-    (println "Mimetype:     " (:mimetype response))
-    (if (= (:status response) 200)
+                                            :tools (openai-demo/demo-weather-function-defs)
+                                            :prompt-opts { :temperature 0.1 })]
+      (assert (= (:status response) 200))
       (let [response (:data response)
-            message  (-> (:choices response)
-                         (first)
-                         (:message))]
-        (println "Finish Reason:" (openai/exec-finish-reason response))
-        (if (openai/exec-fn-tool-calls? response)
-            ;; (println "Message:" (openai/pretty-print-json message))
-            (let [fn-map  (openai-demo/demo-weather-function-map)
-                  results (openai/exec-fn response fn-map)]
-              (println "Results:" results))
-          (println "Message:" (:content message))))
-      (println "Error:" (-> (:data response)
-                            (openai/pretty-print-json))))))
+            message  (openai/extract-response-message response)]
+        (assert (openai/finish-reason-tool-calls?  response))
+        (let [fn-map  (openai-demo/demo-weather-function-map)
+              results (openai/exec-fn response fn-map)
+              answer  (:ok (first results))]
+          (println "Fn call result:" (pr-str answer))
+          
+          ;; Phase #2: prompt the model again with enhanced knowledge
+          (println "\nPhase #2")
+          (println "Using the knowledge fact \"~{answer}\" in the 2nd prompt")
+          (let [response  (openai/chat-completion [ { :role "system", :content answer }
+                                                    prompt-usr ] 
+                                                  :model "gpt-4"
+                                                  :prompt-opts { :temperature 0.1 })]
+            (assert (= (:status response) 200))
+            (let [response (:data response)
+                  content  (openai/extract-response-message-content response)]
+              (assert (openai/finish-reason-stop?  response))
+              (println "\nFinal answer: ~(pr-str content)"))))))))
 ```
 
 Response:
 
 ```
-Finish Reason: tool_calls
-Calling "get-current-weather" with location="Glasgow", format="celsius"
-Results: [{:ok The weather in Glasgow is sunny at 16°C}]
+Final answer: "The current weather in Glasgow is sunny and the temperature is 16°C."
 ```
 
 
