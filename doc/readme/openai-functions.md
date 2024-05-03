@@ -517,7 +517,7 @@ Response:
 }]
 ```
 
-### Full weather example with supplied functions (attempt 1)
+### Full weather example with supplied functions (version 1)
 
 The OpenAI model calls the function `get-current-weather` to answer the question about
 the current weather in Glasgow.
@@ -583,13 +583,13 @@ Fn results: [{:ok "The current weather in Glasgow is sunny at 16°C"}]
 ```
 
 
-### Full weather example with supplied functions (attempt 2)
+### Full weather example with supplied functions (version 2)
 
 The first attempt is not really satisfying. We actually want the model to answer the 
-question. It should use the results from the called functions as additional knowledge 
-helping answering the question.
+question. It should use the results from the functions as additional knowledge 
+helping answering questions.
 
-To achieve this, we need to feedback the results from the questions into the models 
+To achieve this, we need to feed back the results from the questions into the model's 
 context and prompt it again with the knowledge enriched context.
 
 The second knowledge enhanced prompt will look like:
@@ -601,6 +601,25 @@ The second knowledge enhanced prompt will look like:
     :content  "What is the current weather in Glasgow? Give the temperature in Celsius." } ]
 ```
 
+In version 1 the function call has to deal itself with Celsius / Fahrenheit conversion,
+whereas in version 2 the function can return temperatures in Celsius always and the
+OpenAI model can convert to Fahrenheit if asked from the user.
+
+You can easily test this by replacing `prompt-usr` in the Phase 2 prompt with
+
+```
+{ :role     "user"
+  :content  "What is the current weather in Glasgow? Give the temperature in Fahrenheit." }
+```
+
+and the OpenAI model does the conversion. Or you can even ask for a final translation to German.
+
+```
+{ :role     "user"
+  :content  "What is the current weather in Glasgow? Give the temperature in Fahrenheit. Translate the answer to German!" }
+```
+
+
 
 *Note: for simplicity reasons this example just handles the happy path!*
 
@@ -609,6 +628,8 @@ The second knowledge enhanced prompt will look like:
   (load-module :openai)
   (load-module :openai-demo)
   
+  ;; Phase #1: prompt the model and call the functions
+  (println "Phase #1")
   (let [prompt-sys  { :role     "system"
                       :content  """
                                 Don't make assumptions about what values to plug into functions.
@@ -618,35 +639,32 @@ The second knowledge enhanced prompt will look like:
                       :content  """
                                 What is the current weather in Glasgow? Give the temperature in 
                                 Celsius.
-                                """ }]
+                                """ }
+        response  (openai/chat-completion [ prompt-sys prompt-usr ] 
+                                          :model "gpt-4"
+                                          :tools (openai-demo/demo-weather-function-defs)
+                                          :prompt-opts { :temperature 0.1 })]
+    (assert (= (:status response) 200))
+    (let [response (:data response)
+          message  (openai/extract-response-message response)]
+      (assert (openai/finish-reason-tool-calls?  response))
+      (let [fn-map  (openai-demo/demo-weather-function-map)
+            results (openai/exec-fn response fn-map)
+            answer  (:ok (first results))]
+        (println "Fn call result:" (pr-str answer))
         
-    ;; Phase #1: prompt the model and call the functions
-    (println "Phase #1")
-    (let [response  (openai/chat-completion [ prompt-sys prompt-usr ] 
-                                            :model "gpt-4"
-                                            :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts { :temperature 0.1 })]
-      (assert (= (:status response) 200))
-      (let [response (:data response)
-            message  (openai/extract-response-message response)]
-        (assert (openai/finish-reason-tool-calls?  response))
-        (let [fn-map  (openai-demo/demo-weather-function-map)
-              results (openai/exec-fn response fn-map)
-              answer  (:ok (first results))]
-          (println "Fn call result:" (pr-str answer))
-          
-          ;; Phase #2: prompt the model again with enhanced knowledge
-          (println "\nPhase #2")
-          (println "Using the knowledge fact \"~{answer}\" in the 2nd prompt")
-          (let [response  (openai/chat-completion [ { :role "system", :content answer }
-                                                    prompt-usr ] 
-                                                  :model "gpt-4"
-                                                  :prompt-opts { :temperature 0.1 })]
-            (assert (= (:status response) 200))
-            (let [response (:data response)
-                  content  (openai/extract-response-message-content response)]
-              (assert (openai/finish-reason-stop?  response))
-              (println "\nFinal answer: ~(pr-str content)"))))))))
+        ;; Phase #2: prompt the model again with enhanced knowledge
+        (println "\nPhase #2")
+        (println "Using the knowledge fact \"~{answer}\" in the 2nd prompt")
+        (let [response  (openai/chat-completion [ { :role "system", :content answer }
+                                                  prompt-usr ] 
+                                                :model "gpt-4"
+                                                :prompt-opts { :temperature 0.1 })]
+          (assert (= (:status response) 200))
+          (let [response (:data response)
+                content  (openai/extract-response-message-content response)]
+            (assert (openai/finish-reason-stop?  response))
+            (println "\nFinal answer: ~(pr-str content)"))))))))
 ```
 
 Response:
