@@ -705,8 +705,10 @@
       results
       (let [fn-def   (first fns) ;; next function def to process
             name     (:name fn-def)
-            args     (vals (:arguments fn-def))]
-        (if-let [f (get name fn-map)]         
+            args-str (:arguments fn-def) ;; for whatever reason OpenAI returns
+                                         ;; a JSON string here
+            args     (json/read-str args-str)] ;; convert string to JSON
+        (if-let [f (get fn-map name)]         
           (recur (conj results (call-function name f args)) ;; call the function
                  (rest fns))        
           (recur (conj results (make-err-missing-fn name)) ;; missing function
@@ -721,16 +723,17 @@
 
 
 (defn- get-function-calls [response]
-  (->> (map :choices response)
+  (->> (:choices response)
        (first)
-       (map :tool_calls)
+       (:message)
+       (:tool_calls)
        (filter #(= "function" (:type %)))
        (map :function)))
   
 
 (defn- call-function [name f args]
   (try 
-    (make-ok (apply f args))
+    (make-ok (f args))
     (catch :Exception e (make-err-failed-call name args e))))
 
 

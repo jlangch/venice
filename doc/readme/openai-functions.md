@@ -549,7 +549,10 @@ Response:
           (let [message (-> (:choices response)
                             (first)
                             (:message))]
-            (println "Message:" (openai/pretty-print-json message)))
+            ;; (println "Message:" (openai/pretty-print-json message))
+            (let [fn-map  (openai-demo/demo-weather-function-map)
+                  results (openai/exec-fn response fn-map)]
+              (println "Results:" results)))
           (println "Message:" (:content message))))
       (println "Error:" (-> (:data response)
                             (openai/pretty-print-json))))))

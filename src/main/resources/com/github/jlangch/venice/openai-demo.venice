@@ -79,33 +79,51 @@
   } ] )
 
 
-(defn get-current-weather [location format] 
-  (case location
-    "Glasgow"             """
-                          The weather in ~{location} is sunny at \
-                          ~(temperature 16 format)
-                          """
-    "San Francisco, CA"   """
-                          The weather in ~{location} is rainy at \
-                          ~(temperature 12 format)
-                          """
-    "The weather in ~{location} is cloudy at ~(temperature 17 format)"))
+(defn demo-weather-function-map []
+  { "get_current_weather"        get-current-weather
+    "get_n_day_weather_forecast" get-n-day-weather-forecast } )
+
+
+(defn get-current-weather [named-args] 
+  (let [location (get named-args "location")
+        format   (get named-args "format")]
+    (println """
+             Calling fn "get-current-weather" with \
+             location="~{location}", format="~{format}"
+             """)
+    (case location
+      "Glasgow"             """
+                            The weather in ~{location} is sunny at \
+                            ~(temperature 16 format)
+                            """
+      "San Francisco, CA"   """
+                            The weather in ~{location} is rainy at \
+                            ~(temperature 12 format)
+                            """
+      "The weather in ~{location} is cloudy at ~(temperature 17 format)")))
 
 
 (defn get-n-day-weather-forecast [location format n-days]
-  (case location
-    "Glasgow"             """
-                          The weather in ~{location} for the next ~(str n-days) \
-                          is mostly sunny at ~(temperature 16 format)
-                          """
-    "San Francisco, CA"   """
-                          The weather in ~{location} for the next ~(str n-days) \
-                          is mostly rainy at ~(temperature 12 format)
-                          """
-    """
-    The weather in ~{location} for the next ~(str n-days) is mostly cloudy at \
-    ~(temperature 12 format)
-    """))
+  (let [location (get named-args "location")
+        format   (get named-args "format")
+        n-days   (get named-args "n_days") ]
+    (println """
+             Calling fn "get-current-weather" with \
+             location="~{location}", format="~{format}", n-days="~{n-days}"
+             """)
+    (case location
+      "Glasgow"             """
+                            The weather in ~{location} for the next ~(str n-days) \
+                            is mostly sunny at ~(temperature 16 format)
+                            """
+      "San Francisco, CA"   """
+                            The weather in ~{location} for the next ~(str n-days) \
+                            is mostly rainy at ~(temperature 12 format)
+                            """
+      """
+      The weather in ~{location} for the next ~(str n-days) is mostly cloudy at \
+      ~(temperature 12 format)
+      """)))
 
 
 (defn- temperature [t format]
