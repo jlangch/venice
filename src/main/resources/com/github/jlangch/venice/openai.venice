@@ -713,9 +713,9 @@
                  (rest fns)))))))
 
 
-(defn- exec-finish-reason [response]
+(defn exec-finish-reason [response]
   ;; returns the response finish reason {"stop", "tool-calls"}
-  (->> (:choices responese)
+  (->> (:choices response)
        (first)
        (:finish_reason)))
 
