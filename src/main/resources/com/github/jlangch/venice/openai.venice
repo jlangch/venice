@@ -813,8 +813,7 @@
                           :description "Get the current weather"
                           :parameters { ... }
                       } } ]
-
-                 """)))))
+                  """)))))
 
 
 (defn- validate-tool-choice [tools-choice]
@@ -832,4 +831,4 @@
                       :name "get_n_day_weather_forecast" 
                     } 
                   }
-                 """)))))
+                  """)))))
