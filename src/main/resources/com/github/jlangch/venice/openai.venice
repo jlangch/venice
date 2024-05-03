@@ -593,11 +593,13 @@
                                          (:bright-blue ansi/ANSI-CODES)))
         :function   (println (ansi/style (str "function: " content) 
                                          (:bright-magenta ansi/ANSI-CODES)))))))
-                                         
+
 ;; -----------------------------------------------------------------------------
-;; OpenAI Functions
-;;
-;; OpenAI responses look like:
+;; POpenAI Functions
+;; -----------------------------------------------------------------------------
+                                        
+;; -----------------------------------------------------------------------------
+;; To remember: An OpenAI responses look like
 ;;
 ;; { "created": 1714685814,
 ;;   "usage": {
@@ -631,51 +633,90 @@
 
 (defn 
   ^{ :arglists '(
-          "(execute-functions? response)")
+          "(exec-functions-stop? response)")
      :doc """
-          Returns true if the OpenAI JSON response contains at least one call 
-          function definition.
+          Returns true if the OpenAI JSON response requires more input for the
+          function calls
           """
      :see-also '( 
-          "openai/execute-functions" ) }
+          "openai/exec-functions-tool-calls?"
+          "openai/exec-functions" ) }
 
-  execute-functions? [response]
+  exec-functions-stop? [response]
 
   (assert map? response)
-  (not-empty? (get-function-calls response)))
+  (= "stop" (exec-finish-reason response)))
 
 
 (defn 
   ^{ :arglists '(
-          "(execute-functions response fn-map)")
+          "(exec-functions-tool-calls? response)")
+     :doc """
+          Returns true if the OpenAI JSON response contains tools calls
+          """
+     :see-also '( 
+          "openai/exec-functions-stop?"
+          "openai/exec-functions" ) }
+
+  exec-functions-tool-calls? [response]
+
+  (assert map? response)
+  (= "tool_calls" (exec-finish-reason response)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(exec-functions response fn-map)")
      :doc """
           Execute all functions from an OpenAI JSON response.
 
-          Returns a list of function results. 
+          `fn-map` is map of named functions:
+
+          ```
+          { "get_current_weather"        get-current-weather
+            "get_n_day_weather_forecast" get-n-day-weather-forecast }
+          ```
+
+          Returns a list of function results, one for each function called. 
 
           | [![width: 15%]] | [![width: 85%]]        |
-          | OK result      | `{ :ok value }`. E.g: `{ :ok "15˚C" }`      |
+          | OK result      | `{ :ok value }`. E.g: `{ :ok "15˚C" }` |
           | ERROR result   | `{ :err exception }`. |
           """
      :see-also '( 
-          "openai/execute-functions?" ) }
+          "openai/exec-functions-stop?"
+          "openai/exec-functions-tool-calls?" ) }
 
-  execute-functions [response fn-map]
+  exec-functions [response fn-map]
 
   (assert map? response)
   (assert map? fn-map)
+  (when-not (exec-functions-tool-calls? response) 
+    (let [finish-reason (exec-finish-reason response)])
+    (throw (ex :VncEception 
+               """
+               The OpenAI response does not have a "tool_calls" finish reason! 
+               Thus the response does not define any functions with arguments
+               to call. The finish reason returned was "~{finish-reason}".
+               """ )))
   (loop [results []
          fns     (get-function-calls response)]
     (if (empty? fns)
       results
-      (let [fn-def   (first fns)
+      (let [fn-def   (first fns) ;; next function def to process
             name     (:name fn-def)
             args     (vals (:arguments fn-def))]
-        (if-let [f (get name fn-map)]
-          (recur (conj results (call-function name f args))
-                 (rest fns))
-          (recur (conj results { :err (make-err-missing-fn name) })
+        (if-let [f (get name fn-map)]         
+          (recur (conj results (call-function name f args)) ;; call the function
+                 (rest fns))        
+          (recur (conj results (make-err-missing-fn name)) ;; missing function
                  (rest fns)))))))
+
+
+(defn- exec-finish-reason [response]
+   (->> (:choices responese)
+       (first)
+       (:finish_reason)))
 
 
 (defn- get-function-calls [response]
@@ -688,17 +729,24 @@
 
 (defn- call-function [name f args]
   (try 
-    {:ok (apply f args)}
-    (catch :Exception e { :err (make-err-failed-call name (count args) e)})))
-      
+    (make-ok (apply f args))
+    (catch :Exception e (make-err-failed-call name args e))))
+
+
+(defn- make-ok [ret-val]
+  {:ok ret-val})
+
 
 (defn- make-err-missing-fn [name]
-  (ex :VncEception "Failed to call OpenAI undefined function \"~{name}\"!" ))
+  {:err (ex :VncEception 
+            "Failed to call OpenAI undefined function \"~{name}\"!" )})
       
 
-(defn- make-err-failed-call [name arity ex_]
-  (ex :VncEception "Failed to call OpenAI function \"~{name} with arity ~{arity}\"!" 
-                   ex_))
+(defn- make-err-failed-call [name args ex_]
+  (let [arity (count args)]
+    {:err (ex :VncEception 
+              "Failed to call OpenAI function \"~{name} with arity ~{arity}\"!" 
+              ex_)}))
 
 
 
@@ -736,53 +784,6 @@
 (defn- dump-prompt [prompt]
   (println "\nPrompt:")
   (println (json/pretty-print (json/write-str prompt))))
-
-
-(defn- demo-functions []
-  [ 
-    { :type "function" 
-      :function {
-          :name "get_current_weather"
-          :description "Get the current weather"
-          :parameters {
-              :type "object"
-              :properties {
-                  :location {
-                      :type "string"
-                      :description "The city and state, e.g. San Francisco, CA"
-                  }
-                  :format {
-                      :type "string"
-                      :enum ["celsius", "fahrenheit"]
-                      :description "The temperature unit to use. Infer this from the users location."
-                  }
-              }
-              :required ["location", "format"]
-          } } }
-    { :type "function"
-      :function {
-          :name "get_n_day_weather_forecast"
-          :description "Get an N-day weather forecast"
-          :parameters {
-              :type "object"
-              :properties {
-                  :location {
-                      :type "string"
-                      :description "The city and state, e.g. San Francisco, CA"
-                  }
-                  :format {
-                      :type "string"
-                      :enum ["celsius", "fahrenheit"]
-                      :description "The temperature unit to use. Infer this from the users location."
-                  }
-                  :num_days {
-                      :type "integer"
-                      :description "The number of days to forecast"
-                  }
-              }
-              :required ["location", "format", "num_days"]
-          } } }
-  ] )
 
 
 (defn- validate-openai-api-key [key]

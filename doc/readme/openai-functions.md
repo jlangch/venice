@@ -1,31 +1,46 @@
 # OpenAI Functions Cookbook
 
-The example is adapted from the [OpenAI API Functions Cookbook](https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models) to demonstrate how OpenAI functions can be used with *Venice*.
+This cookbook is adapted from the [OpenAI API Functions Cookbook](https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models) to demonstrate how OpenAI functions can be used with *Venice*.
 
-This tutorial covers how to use the Chat Completions API in combination with external functions to extend the capabilities of GPT models.
+This tutorial covers the use of Chat Completions API in combination with external functions 
+to extend the capabilities of GPT models.
 
-`tools` is an optional parameter in the Chat Completion API which can be used to provide function specifications. The purpose of this is to enable models to generate function arguments which adhere to the provided specifications. Note that the API will not actually execute any function calls. It is up to developers to execute function calls using model outputs.
+The Chat Completion API provides an optional `tools` parameter that specifies the functions meta 
+data (name, arguments names & types and a function description). The models generate function 
+arguments based on the prompt and the function meta data. The OpenAI API will actually not call 
+the function but instruct the caller to execute a function with the model outputs of function name 
+and arguments.
 
-Within the tools parameter, if the functions parameter is provided then by default the model will decide when it is appropriate to use one of the functions. The API can be forced to use a specific function by setting the tool_choice parameter to `{:type "function", :function {:name "my_function"}}`. The API can also be forced to not use any function by setting the tool_choice parameter to `"none"`. If a function is used, the output will contain `"finish_reason": "tool_calls"` in the response, as well as a tool_calls object that has the name of the function and the generated function arguments.
+The model decides based on the prompt data if and which function to call. The OpenAI API can be forced
+to use a specific function:  `tools_choice = {:type "function", :function {:name "my_function"}}`. The API
+can also be forced to not use any function by setting the parameter `tools_choice = "none"`. 
+
 
 ## Overview
 
-This notebook contains the following 2 sections:
+This cookbook contains the following 2 sections:
 
-* **How to generate function arguments:** Specify a set of functions and use the API to generate function arguments.
-* **How to call functions with model generated arguments:** Close the loop by actually executing functions with model generated arguments.
+* **How to generate function arguments:** Specify a set of functions and use the API to generate 
+  function arguments.
+* **How to call functions with model generated arguments:** Close the loop by actually executing
+  functions with model generated arguments.
 
 
 ## How to generate function arguments
 
 ### Basic concepts
 
-Let's create some function specifications to interface with a hypothetical weather API. We'll pass these function specification to the Chat Completions API in order to generate function arguments that adhere to the specification.
+Throughout the cookbook we will use a hypothetical weather API, that defines two functions
 
-The function definitions are passed in as `tools parameter to the OpenAI request:
+* `get_current_weather` returns the temperature for a given location in Celsius or Fahrenheit
+
+* `get_n_day_weather_forecast` returns an N-day weather forecast for a location 
 
 
-The demo weather functions definitions are defined in the `:openai-demo` module and look like:
+The function definitions are passed in as `tools` parameter to the OpenAI request:
+
+
+The weather API functions definitions are defined in the `:openai-demo` module and look like:
 
 ```clojure
 (defn demo-weather-function-defs [] 
@@ -82,7 +97,9 @@ The demo weather functions definitions are defined in the `:openai-demo` module 
     } ] )
 ```
 
-If we prompt the model about the current weather, it will respond with some clarifying questions.
+
+If we prompt the model about the current weather, it will respond with some clarifying 
+questions due to the missing location.
 
 ```clojure
 (do
@@ -179,7 +196,7 @@ Returns the choices:
  }]
 ```
 
-By prompting it differently, we can get it to target the other function we've told it about.
+By prompting it differently, we can get it to target the `get_n_day_weather_forecast` function:
 
 ```clojure
 (do
@@ -192,7 +209,7 @@ By prompting it differently, we can get it to target the other function we've to
                                   Ask for clarification if a user request is ambiguous.
                                   """ }
                       { :role     "user"
-                        :content  "What is the weather going to be like in Glasgow, Scotland over the next x days" } ]
+                        :content  "What is the weather going to be like in Glasgow, Scotland over the next n days" } ]
         prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
@@ -473,7 +490,7 @@ Actual GPT-3.5-Turbo models can call multiple functions in one turn.
 
 Response:
 
-```josn
+```json
 [{
   "finish_reason": "tool_calls",
   "index": 0,
