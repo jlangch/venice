@@ -595,7 +595,7 @@
                                          (:bright-magenta ansi/ANSI-CODES)))))))
 
 ;; -----------------------------------------------------------------------------
-;; POpenAI Functions
+;; OpenAI Functions
 ;; -----------------------------------------------------------------------------
                                         
 ;; -----------------------------------------------------------------------------
@@ -633,16 +633,16 @@
 
 (defn 
   ^{ :arglists '(
-          "(exec-functions-stop? response)")
+          "(exec-fn-stop? response)")
      :doc """
           Returns true if the OpenAI JSON response requires more input for the
           function calls
           """
      :see-also '( 
-          "openai/exec-functions-tool-calls?"
-          "openai/exec-functions" ) }
+          "openai/exec-fn-tool-calls?"
+          "openai/exec-fn" ) }
 
-  exec-functions-stop? [response]
+  exec-fn-stop? [response]
 
   (assert map? response)
   (= "stop" (exec-finish-reason response)))
@@ -650,15 +650,15 @@
 
 (defn 
   ^{ :arglists '(
-          "(exec-functions-tool-calls? response)")
+          "(exec-fn-tool-calls? response)")
      :doc """
           Returns true if the OpenAI JSON response contains tools calls
           """
      :see-also '( 
-          "openai/exec-functions-stop?"
-          "openai/exec-functions" ) }
+          "openai/exec-fn-stop?"
+          "openai/exec-fn" ) }
 
-  exec-functions-tool-calls? [response]
+  exec-fn-tool-calls? [response]
 
   (assert map? response)
   (= "tool_calls" (exec-finish-reason response)))
@@ -666,7 +666,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(exec-functions response fn-map)")
+          "(exec-fn response fn-map)")
      :doc """
           Execute all functions from an OpenAI JSON response.
 
@@ -684,14 +684,14 @@
           | ERROR result   | `{ :err exception }`. |
           """
      :see-also '( 
-          "openai/exec-functions-stop?"
-          "openai/exec-functions-tool-calls?" ) }
+          "openai/exec-fn-stop?"
+          "openai/exec-fn-tool-calls?" ) }
 
-  exec-functions [response fn-map]
+  exec-fn [response fn-map]
 
   (assert map? response)
   (assert map? fn-map)
-  (when-not (exec-functions-tool-calls? response) 
+  (when-not (exec-fn-tool-calls? response) 
     (let [finish-reason (exec-finish-reason response)])
     (throw (ex :VncEception 
                """
@@ -714,7 +714,8 @@
 
 
 (defn- exec-finish-reason [response]
-   (->> (:choices responese)
+  ;; returns the response finish reason {"stop", "tool-calls"}
+  (->> (:choices responese)
        (first)
        (:finish_reason)))
 

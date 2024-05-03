@@ -47,11 +47,11 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         chat.addItem(diBuilder.getDocItem("openai/chat-completion-streaming", false));
         chat.addItem(diBuilder.getDocItem("openai/process-streaming-events", false));
 
-        final DocSection func = new DocSection("OpenAI functions", id());
+        final DocSection func = new DocSection("OpenAI fn", id());
         all.addSection(func);
-        func.addItem(diBuilder.getDocItem("openai/exec-functions-stop?", false));
-        func.addItem(diBuilder.getDocItem("openai/exec-functions-tool-calls?", false));
-        func.addItem(diBuilder.getDocItem("openai/exec-functions", false));
+        func.addItem(diBuilder.getDocItem("openai/exec-fn-stop?", false));
+        func.addItem(diBuilder.getDocItem("openai/exec-fn-tool-calls?", false));
+        func.addItem(diBuilder.getDocItem("openai/exec-fn", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
