@@ -694,7 +694,7 @@ about a database. For simplicity the Chinook sample database will be used. See
 
 The OpenAI model shall be enabled to answer questions like: *Who are the top 5 artists by number of tracks?*
 
-Before starting follow the [Venice Database tutorial](database.md) to:
+Before starting, follow the [Venice Database tutorial](database.md) to:
 
  1. Install the PostgreSQL JDBC driver
  2. Start a PostgreSQL Docker Instance
