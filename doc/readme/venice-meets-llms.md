@@ -291,7 +291,10 @@ LIMIT 5;
 ```
 
 ```
-This query first joins the artist, album, and track tables together. It then groups the results by artist name and counts the number of tracks associated with each artist. The results are ordered in descending order by the number of tracks, and finally, the `LIMIT 5` clause returns only the top 5 artists.
+This query first joins the artist, album, and track tables together. It then groups the 
+results by artist name and counts the number of tracks associated with each artist. The 
+results are ordered in descending order by the number of tracks, and finally, the `LIMIT 5` 
+clause returns only the top 5 artists.
 ```
 
 
