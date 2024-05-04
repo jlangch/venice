@@ -555,7 +555,20 @@ The OpenAI shall answer questions about the current weather in Glasgow.
 
 1. Ask the model about the current weather in Glasgow
 
-2. The model does not have enough information about the current  weather in Glasgow and returns a function call request to retrieve that information from an external source
+2. The model does not have enough information about the current weather in Glasgow and returns a function call request to retrieve that information from an external source. It provides function parameters in the `tool_calls` part of the response:
+   
+   ```
+   { "tool_calls": [{
+       "function": {
+         "name": "get_n_day_weather_forecast",
+         "arguments": "{\n  \"format\": \"celsius\",\n  \"location\": \"Glasgow\"\n}"
+       },
+       "id": "call_XHddNciVWOFZ3liobUdqpBBl",
+       "type": "function"
+      }]
+   }
+   ```
+    
 
 3. The client calls the requested function to get the information
 
