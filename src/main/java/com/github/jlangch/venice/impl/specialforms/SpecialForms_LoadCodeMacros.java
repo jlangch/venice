@@ -157,7 +157,8 @@ public class SpecialForms_LoadCodeMacros {
                     	"  (load-module mname))              ")
                     .seeAlso(
                         "load-file", "load-classpath-file", "load-string", "loaded-modules",
-                        "loadpath/paths")
+                        "loadpath/paths",
+                        "doc")
                     .build()
         ) {
             @Override

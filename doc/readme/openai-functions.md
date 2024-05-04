@@ -16,6 +16,17 @@ to use a specific function:  `tools_choice = {:type "function", :function {:name
 can also be forced to not use any function by setting the parameter `tools_choice = "none"`. 
 
 
+* [Overview](#overview)
+* [How to generate function arguments](#how-to-generate-function-arguments)
+    * [Basic concepts](#basic-concepts)
+    * [Forcing the use of specific functions or no function](#forcing-the-use-of-specific-functions-or-no-function)
+    * [Parallel Function Calling](#parallel-function-calling)
+    * [Full weather example (version 1)](#full-weather-example-version-1)
+    * [Full weather example (version 2)](#full-weather-example-version-2)
+* [How to call functions with model generated arguments](#how-to-call-functions-with-model-generated-arguments)
+
+
+
 ## Overview
 
 This cookbook contains the following 2 sections:
@@ -35,6 +46,15 @@ Throughout the cookbook we will use a hypothetical weather API, that defines two
 * `get_current_weather` returns the temperature for a given location in Celsius or Fahrenheit
 
 * `get_n_day_weather_forecast` returns an N-day weather forecast for a location 
+
+
+The function definitions are defined in the `openai-demo` module. You can have at look at by
+running these commands in a Venice REPL:
+
+```
+venice> (load-module :openai-demo)
+venice> (doc :openai-demo)
+```
 
 
 The function definitions are passed in as `tools` parameter to the OpenAI request:
@@ -301,7 +321,7 @@ Returns the choices:
 ```
 
 
-#### Forcing the use of specific functions or no function
+### Forcing the use of specific functions or no function
 
 We can force the model to use a specific function, for example `get_n_day_weather_forecast` by 
 using the `:tool_choice` option argument. By doing so, we force the model to make assumptions about 
@@ -517,7 +537,7 @@ Response:
 }]
 ```
 
-### Full weather example with supplied functions (version 1)
+### Full weather example (version 1)
 
 The OpenAI model calls the function `get-current-weather` to answer the question about
 the current weather in Glasgow.
@@ -583,7 +603,7 @@ Fn results: [{:ok "The current weather in Glasgow is sunny at 16°C"}]
 ```
 
 
-### Full weather example with supplied functions (version 2)
+### Full weather example (version 2)
 
 The first attempt is not really satisfying. We actually want the model to answer the 
 question. It should use the results from the functions as additional knowledge 
