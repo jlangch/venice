@@ -774,8 +774,10 @@ All these tasks can be run from a Venice REPL.
 
   ;; function to query the database with a provided SQL.
   (defn ask-database [conn named-args]
+    (println "Calling function 'ask-database')
     (try-with [query (get named-args "query")
                stmt (jdbc/create-statement conn)]
+      (println "DB Query:" query)
       (-> (jdbc/execute-query stmt query)
           (jdbc/print-query-result))
       (catch :Exception e
@@ -793,9 +795,11 @@ All these tasks can be run from a Venice REPL.
                         { :role     "user"
                           :content  "Hi, who are the top 5 artists by number of tracks?" } ]
           prompt-opts { :temperature 0.1 }
+          schema      (db-schema conn)
+          fn-defs     (function-defs schema)
           response    (openai/chat-completion prompt 
                                               :model "gpt-4"
-                                              :tools (function-defs (db-schema conn))
+                                              :tools fn-defs
                                               :prompt-opts prompt-opts)] 
       (println "Status:       " (:status response))
       (println "Mimetype:     " (:mimetype response))
