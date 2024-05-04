@@ -75,11 +75,11 @@ The weather API functions definitions are defined in the `:openai-demo` module a
         :parameters {
           :type "object"
           :properties {
-            :location {
+            "location" {
               :type "string"
               :description "The city and state, e.g. San Francisco, CA"
             }
-            :format {
+            "format" {
               :type "string"
               :enum ["celsius", "fahrenheit"]
               :description "The temperature unit to use. Infer this from the users location."
@@ -97,16 +97,16 @@ The weather API functions definitions are defined in the `:openai-demo` module a
         :parameters {
           :type "object"
           :properties {
-            :location {
+            "location" {
               :type "string"
               :description "The city and state, e.g. San Francisco, CA"
             }
-            :format {
+            "format" {
               :type "string"
               :enum ["celsius", "fahrenheit"]
               :description "The temperature unit to use. Infer this from the users location.",
             }
-            :num_days {
+            "num_days" {
               :type "integer"
               :description "The number of days to forecast"
             }
@@ -722,8 +722,95 @@ Before starting, follow the [Venice Database tutorial](database.md) to:
  
 All these tasks can be run from a Venice REPL.
 
+*... work in progress ...*
+
+```clojure
+(do
+  (load-module :openai)
+  (load-module :openai-demo)
+  (load-module :jdbc-core ['jdbc-core :as 'jdbc])
+  (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
+
+  ;; create a database connection
+  (defn db-connection []
+    (jdbp/create-connection "localhost" 5432 
+                            "chinook_auto_increment" 
+                            "postgres" "postgres"))
+
+  ;; create the database schema                        
+  (defn db-schema [conn]
+    (->> (map (fn [[t c]] (str "Table: " t "\nColumns: " (str/join ", " c)))
+              (jdbc/tables-with-columns conn)) 
+         (str/join "\n")))
+  
+  ;; create the OPenAI API 'tools' function definition "ask_database"
+  (defn tools [database-schema]
+    [ { :type "function"
+        :function {
+          :name "ask_database"
+          :description """
+                       Use this function to answer user questions about music. 
+                       Input should be a fully formed SQL query.
+                       """
+          :parameters {
+            :type "object"
+            :properties {
+              "query" {
+                :type "string"
+                :description  """
+                              SQL query extracting info to answer the user's question.
+                              
+                              SQL should be written using this database schema:
+                              ~{database-schema}
+                              
+                              The query should be returned in plain text, not in JSON.
+                              """
+              }
+            }
+            :required ["query"]
+          }
+        }
+      } ] )
+
+  ;; function to query the database with a provided SQL.
+  (defn ask-database [conn named-args]
+    (try-with [query (get named-args "query")
+               stmt (jdbc/create-statement conn)]
+      (-> (jdbc/execute-query stmt query)
+          (jdbc/print-query-result))
+      (catch :Exception e
+             "Query failed with error: ~(ex-message e)")))
 
 
+  ;; Ask the model
+  ;; Note: for simplicity reasons this example just handles the happy path!
+  (try-with [conn (db-connection)]
+    (let [prompt      [ { :role     "system"
+                          :content  """
+                                    Answer user questions by generating SQL queries against the 
+                                    Chinook Music Database.
+                                    """ }
+                        { :role     "user"
+                          :content  "Hi, who are the top 5 artists by number of tracks?" } ]
+          prompt-opts { :temperature 0.1 }
+          response    (openai/chat-completion prompt 
+                                              :model "gpt-4"
+                                              :tools (function-defs (db-schema conn))
+                                              :prompt-opts prompt-opts)] 
+      (println "Status:       " (:status response))
+      (println "Mimetype:     " (:mimetype response))
+      (println)
+      (assert (= (:status response) 200))
+        (let [response (:data response)
+              message  (openai/extract-response-message response)]
+          (assert (openai/finish-reason-tool-calls?  response))
+          ;; (println "Message:" (openai/pretty-print-json message))
+          (let [fn-map { "ask_database" ask-database }
+                results (openai/exec-fn response fn-map)]
+            (println "\nFn results:" (pr-str results))))))
+
+)
+```
 
 
 

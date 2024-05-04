@@ -37,11 +37,11 @@
         :parameters {
           :type "object"
           :properties {
-            :location {
+            "location" {
               :type "string"
               :description "The city and state, e.g. San Francisco, CA"
             }
-            :format {
+            "format" {
               :type "string"
               :enum ["celsius", "fahrenheit"]
               :description "The temperature unit to use. Infer this from the users location."
@@ -59,16 +59,16 @@
         :parameters {
           :type "object"
           :properties {
-            :location {
+            "location" {
               :type "string"
               :description "The city and state, e.g. San Francisco, CA"
             }
-            :format {
+            "format" {
               :type "string"
               :enum ["celsius", "fahrenheit"]
               :description "The temperature unit to use. Infer this from the users location.",
             }
-            :num_days {
+            "num_days" {
               :type "integer"
               :description "The number of days to forecast"
             }
