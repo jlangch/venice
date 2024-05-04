@@ -574,7 +574,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
 
 4. The function returns a JSON object with the current Glasgow weather data
 
-   Request parameters:
+   Function arguments:
    
    ```json
    { 
@@ -583,7 +583,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
    }
    ```
    
-   Return value:
+   Function return value:
    
    ```json
    { 
@@ -594,7 +594,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
    }
    ```
    
-   Note: The function responds with an error:
+   Note: The function responds with an error if there is no data for a location:
    
    ```json
    { 
