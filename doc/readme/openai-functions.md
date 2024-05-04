@@ -147,7 +147,7 @@ questions due to the missing location.
       (println "Error:"   (:data response)))))
 ```
 
-OpenAI answers:
+The OpenAI model answers:
 
 ```json
 [{
@@ -194,7 +194,7 @@ arguments for us.
       (println "Error:"   (:data response)))))
 ```
 
-Returns the choices:
+Returns the message:
 
 ```json
 [{
@@ -245,7 +245,7 @@ By prompting it differently, we can get it to target the `get_n_day_weather_fore
 ```
 
 
-OpenAI answers:
+The OpenAI model answers:
 
 ```json
 [{
@@ -298,7 +298,7 @@ days are required in the forecast.
       (println "Error:"   (:data response)))))
 ```
 
-Returns the choices:
+Returns the message:
 
 ```json
 [{
@@ -358,7 +358,7 @@ Force the model to use "get_n_day_weather_forecast"
 ```
 
 
-and the model answers with:
+The OpenAI model answers:
 
 ```json
 [{
