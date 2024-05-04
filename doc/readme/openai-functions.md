@@ -560,7 +560,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
    ```
    { "tool_calls": [{
        "function": {
-         "name": "get_n_day_weather_forecast",
+         "name": "get_current_weather",
          "arguments": "{\n  \"format\": \"celsius\",\n  \"location\": \"Glasgow\"\n}"
        },
        "id": "call_XHddNciVWOFZ3liobUdqpBBl",
