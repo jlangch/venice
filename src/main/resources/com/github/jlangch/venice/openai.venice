@@ -564,26 +564,31 @@
 
 (defn 
   ^{ :arglists '(
-          "(extract-response-message-content response)")
+          "(extract-response-message-content response)"
+          "(extract-response-message-content response choice-idx)")
      :doc """
           Returns the message content of an OpenAI JSON response.
           """
      :see-also '( 
           "openai/pretty-print-json" ) }
 
-  extract-response-message-content [response]
+  extract-response-message-content 
+  
+  ([response]
+    (extract-response-message-content response 0))
 
-  (assert (coll? response))
-
-  (-> (:choices response)
-      (first)
-      (:message)
-      (:content)))
+  ([response choice-idx]
+    (assert (coll? response))
+    (-<> (:choices response)
+         (nth <> choice-idx)
+         (:message <>)
+         (:content <>))))
 
 
 (defn 
  ^{ :arglists '(
-          "(extract-function-name response)")
+          "(extract-function-name response)"
+          "(extract-function-name response choice-idx tools-calls-idx)")
      :doc """
           Returns the function name of the response.
           """
@@ -592,34 +597,42 @@
           "openai/finish-reason-stop?"
           "openai/exec-fn" ) }
 
-  extract-function-name [response]
+  extract-function-name 
+  
+  ([response]
+    (extract-function-name response 0 0))
 
-  (assert finish-reason-tool-calls? response)
-  (->> (:choices response)
-       (first)
-       (:message)
-       (:tool_calls)
-       (first)
-       (:function)
-       (:name)))
+  ([response choice-idx tools-calls-idx]
+    (assert finish-reason-tool-calls? response)
+    (-<> (:choices response)
+         (nth <> choice-idx)
+         (:message  <>)
+         (:tool_calls <>)
+         (nth <> tools-calls-idx)
+         (:function <>)
+         (:name  <>))))
 
 
 (defn 
   ^{ :arglists '(
-          "(extract-response-message response)")
+          "(extract-response-message response)"
+          "(extract-response-message response choice-idx)")
      :doc """
           Returns the message of an OpenAI JSON response.
           """
      :see-also '( 
           "openai/pretty-print-json" ) }
 
-  extract-response-message [response]
+  extract-response-message 
+  
+  ([response]
+    (extract-response-message response 0))
 
-  (assert (coll? response))
-
-  (-> (:choices response)
-      (first)
-      (:message)))
+  ([response choice-idx]
+    (assert (coll? response))
+    (-<> (:choices response)
+         (nth <> choice-idx)
+         (:message <>))))
 
 
 (defn pretty-print-conversation [messages]
@@ -675,7 +688,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(finish-reason response)")
+          "(finish-reason response)"
+          "(finish-reason response choice-idx)")
      :doc """
           Returns the finish reason text from an OpenAI JSON response.
 
@@ -689,17 +703,21 @@
           "openai/finish-reason-tool-calls?"
           "openai/exec-fn" ) }
   
-  finish-reason [response]
+  finish-reason 
   
-  ;; returns the response finish reason {"stop", "tool-calls"}
-  (->> (:choices response)
-       (first)
-       (:finish_reason)))
+  ([response]
+    (finish-reason response 0))
+  
+  ([response choice-idx]
+    (-<> (:choices response)
+         (nth <> choice-idx)
+         (:finish_reason <>))))
 
 
 (defn 
   ^{ :arglists '(
-          "(finish-reason-stop? response)")
+          "(finish-reason-stop? response)"
+          "(finish-reason-stop? response choice-idx)")
      :doc """
           Returns true if the OpenAI JSON response provides an answer to
           the prompt.
@@ -709,15 +727,20 @@
           "openai/finish-reason-tool-calls?"
           "openai/exec-fn" ) }
 
-  finish-reason-stop? [response]
+  finish-reason-stop? 
+  
+  ([response]
+    (finish-reason-stop? response 0))
 
-  (assert map? response)
-  (= "stop" (finish-reason response)))
+  ([response choice-idx]
+    (assert map? response)
+    (= "stop" (finish-reason response choice-idx))))
 
 
 (defn 
   ^{ :arglists '(
-          "(finish-reason-tool-calls? response)")
+          "(finish-reason-tool-calls? response)"
+          "(finish-reason-tool-calls? response choice-idx)")
      :doc """
           Returns true if the OpenAI JSON response contains tool calls 
           (functions) that it wants the client to run
@@ -727,10 +750,14 @@
           "openai/finish-reason-stop?"
           "openai/exec-fn" ) }
 
-  finish-reason-tool-calls? [response]
+  finish-reason-tool-calls? 
+  
+  ([response]
+    (finish-reason-tool-calls?  response 0))
 
-  (assert map? response)
-  (= "tool_calls" (finish-reason response)))
+  ([response choice-idx]
+    (assert map? response)
+    (= "tool_calls" (finish-reason response choice-idx))))
 
 
 (defn 
