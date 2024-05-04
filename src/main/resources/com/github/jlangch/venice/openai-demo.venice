@@ -93,11 +93,11 @@
              """)
     (case location
       "Glasgow"             """
-                            The current weather in ~{location} is sunny at \
+                            The current weather in ~{location} is sunny at
                             ~(temperature 16 format)
                             """
       "San Francisco, CA"   """
-                            The current weather in ~{location} is rainy at \
+                            The current weather in ~{location} is rainy at
                             ~(temperature 12 format)
                             """
       "The weather in ~{location} is cloudy at ~(temperature 17 format)")))
@@ -113,21 +113,26 @@
              """)
     (case location
       "Glasgow"             """
-                            The weather in ~{location} for the next ~(str n-days) \
+                            The weather in ~{location} for the next ~(str n-days)
                             is mostly sunny at ~(temperature 16 format)
                             """
       "San Francisco, CA"   """
-                            The weather in ~{location} for the next ~(str n-days) \
+                            The weather in ~{location} for the next ~(str n-days)
                             is mostly rainy at ~(temperature 12 format)
                             """
       """
-      The weather in ~{location} for the next ~(str n-days) is mostly cloudy at \
+      The weather in ~{location} for the next ~(str n-days) is mostly cloudy at
       ~(temperature 12 format)
       """)))
 
 
 (defn- temperature [t format]
-  (case format 
-    "celsius"     (str t "°C")
-    "fahrenheit"  (str (+ (/ (* t 9) 5) 32) "°F")
-    (str t "°C")))
+  (if (str/equals-ignore-case? format "fahrenheit")
+    (str/format "%#.1f°F" (celsius-to-fahrenheit t))
+    (str/format "%#.1f°C" (double t))))
+
+
+(defn- celsius-to-fahrenheit [c]
+  (-> (* (double c) 9)
+      (/ 5)
+      (+ 32)))
