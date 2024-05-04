@@ -21,8 +21,8 @@ can also be forced to not use any function by setting the parameter `tools_choic
     * [Basic concepts](#basic-concepts)
     * [Forcing the use of specific functions or no function](#forcing-the-use-of-specific-functions-or-no-function)
     * [Parallel Function Calling](#parallel-function-calling)
-    * [Full weather example](#full-weather-example)
 * [How to call functions with model generated arguments](#how-to-call-functions-with-model-generated-arguments)
+    * [Weather example](#weather-example)
 
 
 
@@ -537,18 +537,41 @@ Response:
 ```
 
 
-### Full weather example
+
+
+## How to call functions with model generated arguments
+
+The next examples demonstrate how to execute functions whose inputs are model-generated and deliver 
+the required knowledge to model for answering questions
+
+
+
+### Weather example
+
+The OpenAI shall answer questions about the current weather in Glasgow.
+
 
 **Workflow**
 
-1. Ask the model about the weather in Glasgow
+1. Ask the model about the current weather in Glasgow
 
-2. The model does not have enough information about the weather in Glasgow and returns a function call request for the current weather in Glasgow
+2. The model does not have enough information about the current  weather in Glasgow and returns a function call request to retrieve that information from an external source
 
-3. The client calls the requested function locally
+3. The client calls the requested function to get the information
 
 4. The function returns a JSON object with the current Glasgow weather data
 
+   Request parameters:
+   
+   ```json
+   { 
+     "location": "Glasgow",
+     "format": "celsius"
+   }
+   ```
+   
+   Return value:
+   
    ```json
    { 
      "location": "Glasgow",
@@ -642,9 +665,6 @@ Final answer: "Das aktuelle Wetter in Glasgow ist sonnig und die Temperatur betr
 ```
 
 
-
-
-## How to call functions with model generated arguments
 
 In the following examples we'll use the OpenAI chat completion API to answer questions
 about a database. For simplicity the Chinook sample database will be used. See 
