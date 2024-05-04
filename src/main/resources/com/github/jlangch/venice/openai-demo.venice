@@ -84,9 +84,14 @@
     "get_n_day_weather_forecast" get-n-day-weather-forecast } )
 
 
-(defn get-current-weather [named-args] 
-  (let [location (get named-args "location")
-        format   (get named-args "format")]
+(defn get-current-weather 
+  ([named-args] 
+    (assert map? named-args)
+    ;; argument dispatching
+    (get-current-weather (get named-args "location") 
+                         (get named-args "format")))
+
+  ([location format]
     (println """
              Calling fn "get-current-weather" with \
              location="~{location}", format="~{format}"
@@ -103,10 +108,15 @@
       "The weather in ~{location} is cloudy at ~(temperature 17 format)")))
 
 
-(defn get-n-day-weather-forecast [location format n-days]
-  (let [location (get named-args "location")
-        format   (get named-args "format")
-        n-days   (get named-args "n_days") ]
+(defn get-n-day-weather-forecast 
+  ([named-args]
+    (assert map? named-args)
+    ;; argument dispatching
+    (get-n-day-weather-forecast (get named-args "location")
+                                (get named-args "format")
+                                (get named-args "n_days")))
+
+  ([location format n-days]
     (println """
              Calling fn "get-current-weather" with \
              location="~{location}", format="~{format}", n-days="~{n-days}"
