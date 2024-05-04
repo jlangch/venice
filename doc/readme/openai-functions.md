@@ -649,8 +649,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
 
         (println "\nPhase #3: prompt the model again with additional knowledge")
         ;; [5] Additional prompt messages with the function's response
-        (let [error      (:error (json/read-str answer))
-              prompt-fn  { :role     "function"
+        (let [prompt-fn  { :role     "function"
                            :name     (openai/extract-function-name response)
                            :content  answer }
                         ;; [6] Ask the model again
