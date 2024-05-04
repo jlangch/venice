@@ -17,10 +17,13 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
     * [Configuring OpenAI API keys](#configuring-openai-api-keys)
     * [Example: Counting numbers (full model response)](#example-counting-numbers-full-model-response))
     * [Example: Counting numbers (model response content)](#example-counting-numbers-model-response-content)
-    * [Example: Text correction (full model response)](#example-text-correction)
-    * [Example: Text data extraction (full model response)](#example-text-data-extraction)
-    * [Example: Generating SQL (full model response)](#example-generating-sql)
+    * [Example: Text correction](#example-text-correction)
+    * [Example: Text data extraction](#example-text-data-extraction)
+    * [Example: Generating SQL](#example-generating-sql)
 * [Chat Completion Streaming](#chat-completion-streaming)
+    * [Sending Requests](#sending-requests)
+    * [Example 1](#example-1)
+    * [Example 2](#example-2)
 * [OpenAI Functions Cookbook](openai-functions.md)
 * Audio
 * Images
