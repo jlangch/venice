@@ -97,7 +97,7 @@ See:
  * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
 
 
-#### Example 1
+#### Example: Counting numbers (full model response)
 
 ```clojure
 ;; print the full OpenAI response message
@@ -140,7 +140,7 @@ Message: {
 }
 ```
 
-#### Example 2
+#### Example: Counting numbers (model response content)
 
 ```clojure
 ;; print only the OpenAI response message content
@@ -165,7 +165,7 @@ Mimetype: application/json
 Message: "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
 ```
 
-#### Example 3
+#### Example: Text correction
 
 ```clojure
 ;; Dealing with prompt options
@@ -197,7 +197,65 @@ Mimetype: application/json
 Message: She did not go to the market.
 ```
 
-#### Example SQL
+
+#### Example: Text data extraction
+
+```clojure
+;; Dealing with prompt options
+(do
+  (load-module :openai)
+
+  (let [prompt      [ { :role     "user"
+                        :content  """
+                                  Please extract the following information from the given text and 
+                                  return it as a JSON object:
+
+                                  name
+                                  major
+                                  school
+                                  grades
+                                  club
+
+                                  This is the body of text to extract the information from:
+
+                                  Peter Kilmore is a sophomore majoring in computer science at Stanford 
+                                  University. He is Irish and has a 3.8 GPA. Peter is known 
+                                  for his programming skills and is an active member of the 
+                                  university's Robotics Club. He hopes to pursue a career in 
+                                  artificial intelligence after graduating.
+                                  """ } ]
+        prompt-opts { :temperature 0.1 }
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4-turbo" 
+                                            :prompt-opts prompt-opts)]
+    (println "Status:  " (:status response))
+    (println "Mimetype:" (:mimetype response))
+    (if (=  (:status response) 200)
+      (println "Message:" (-> (:data response)
+                              (openai/extract-response-message-content)
+                              (openai/pretty-print-json)))
+      (println "Error:"   (:data response)))))
+```
+
+```
+Status:   200
+Mimetype: application/json
+
+Message:
+```
+
+```json
+{
+  "name": "Peter Kilmore",
+  "major": "computer science",
+  "school": "Stanford University",
+  "grades": "3.8 GPA",
+  "club": "Robotics Club"
+}
+```
+
+
+#### Example: Generating SQL
 
 The database schema used in this SQL example is taken from the Chinook database. 
 See [Venice Chinook](database.md#chinook-dataset-overview)
