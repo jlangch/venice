@@ -108,11 +108,8 @@
                                 :format      format
                                 :temperature (temperature 12 format)
                                 :general     "rainy" })
-      (json/write-str
-        { :location    location
-          :format      format
-          :temperature (temperature 10 format)
-          :general     "cloudy" }))))
+      (json/write-str { :location location
+                        :error    "No weather data available for ~{location}!" }))))
 
 
 (defn get-n-day-weather-forecast 
@@ -142,12 +139,8 @@
                                 :n_days      n-days
                                 :temperature (temperature 12 format)
                                 :general     "mostly rainy" })
-      (json/write-str
-        { :location    location
-          :format      format
-          :n_days      n-days
-          :temperature (temperature 10 format)
-          :general     "mostly cloudy" }))))
+      (json/write-str { :location location
+                        :error    "No weather data available for ~{location}!" }))))
 
 
 (defn- temperature [t format]

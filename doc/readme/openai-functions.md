@@ -580,6 +580,19 @@ The OpenAI shall answer questions about the current weather in Glasgow.
      "temperature": "16.0"
    }
    ```
+   
+   Note: The function responds with an error:
+   
+   ```json
+   { 
+     "location": "London",
+     "error:     "No weather data available for London!"
+   }
+   ```
+   
+   if there is no weather data available for a location
+   
+   
 
 5. The client adds an additional prompt messages with the function's JSON response data and asks the model again
 
@@ -620,12 +633,17 @@ The OpenAI shall answer questions about the current weather in Glasgow.
             results (openai/exec-fn response fn-map)  ;; [3] Call the requested function
             answer  (:ok (first results))]            ;; [4] The function's returned JSON data
         (println "Fn call result:" (pr-str answer))
-        
+
         (println "\nPhase #3: prompt the model again with additional knowledge")
         ;; [5] Additional prompt messages with the function's response
-        (let [prompt-fn  { :role     "function"
-                           :name     (openai/extract-function-name response)
-                           :content  answer }
+        (let [error      (:error (json/read-str answer))
+              prompt-fn  (if error
+                           { :role     "function"
+                             :name     (openai/extract-function-name response)
+                             :content  answer }
+                           { :role     "function"
+                             :name     (openai/extract-function-name response)
+                             :content  answer })
                         ;; [6] Ask the model again
               response  (openai/chat-completion [ prompt-sys prompt-usr prompt-fn ]  
                                                 :model "gpt-4"
@@ -643,6 +661,27 @@ Response:
 Final answer: "The current weather in Glasgow is sunny with a temperature of 16.0 degrees Celsius."
 ```
 
+**Asking the weather for a location without weather data**
+
+When asking for the current weather for London, where there is no weather data 
+available
+
+```
+prompt-usr  { :role     "user"
+              :content  """
+                        What is the current weather in LOndon? Give the temperature in 
+                        Celsius.
+                        """ }
+```
+
+To model responds without halluscinating:
+
+```
+Final answer: "I'm sorry, but I currently don't have access to the weather data for London."
+```
+
+
+**Translating the answer**
 
 To ask the model to translate the answer to german, just enhanced the "user" role prompt
 with the instruction "Translate to German.":
@@ -655,7 +694,6 @@ prompt-usr  { :role     "user"
                         """ }
 ```
 
-
 Translated response:
 
 ```
@@ -663,6 +701,8 @@ Final answer: "Das aktuelle Wetter in Glasgow ist sonnig und die Temperatur betr
 ```
 
 
+
+### Database example
 
 In the following examples we'll use the OpenAI chat completion API to answer questions
 about a database. For simplicity the Chinook sample database will be used. See 
