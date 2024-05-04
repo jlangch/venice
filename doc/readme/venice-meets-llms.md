@@ -2,7 +2,6 @@
 
 * [OpenAI Client](#openai-client)
 * [LangChain4J](langchain4j.md)
-* [Configuring OpenAI API keys](#configuring-openai-api-keys)
 
 
 
@@ -13,6 +12,14 @@
 The OpenAI client runs out-of-the-box without any dependencies on 3rd party libraries.
 
 * [Chat Completion](#chat-completion)
+    * [Configuring OpenAI API keys](#configuring-openai-api-keys)
+    * [Sending Requests](#sending-requests)
+    * [Configuring OpenAI API keys](#configuring-openai-api-keys)
+    * [Example: Counting numbers (full model response)](#example-counting-numbers-full-model-response))
+    * [Example: Counting numbers (model response content)](#example-counting-numbers-model-response-content)
+    * [Example: Text correction (full model response)](#example-text-correction)
+    * [Example: Text data extraction (full model response)](#example-text-data-extraction)
+    * [Example: Generating SQL (full model response)](#example-generating-sql)
 * [Chat Completion Streaming](#chat-completion-streaming)
 * [OpenAI Functions Cookbook](openai-functions.md)
 * Audio
@@ -21,9 +28,50 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 * Assistants
 
 
+
 ### Chat Completion
 
-Runs a chat completion.
+
+
+#### Configuring OpenAI API keys
+
+**Possibility 1**
+
+Define an environment variable at the OS or Shell level:
+
+```
+OPENAI_API_KEY=sk-***********
+```
+
+
+**Possibility 2**
+
+On Unix / Linux operating system simply patch the 'repl.env' file in the REPL home
+directory. 
+
+`repl.env` is supported with *Venice* V1.12.15 and newer when the REPL has been setup
+with:
+
+```
+foo>  java -jar venice-1.12.16.jar -setup -colors
+```
+
+The setup will create a `repl.sh` that *sources* a `repl.env` at REPL startup time.
+
+
+Example 'repl.env':
+
+```
+# ------------------------------------------------------------------------------
+# Environment variables for unix /linux operating systems
+#
+# This file will be 'sourced' by 'repl.sh' at REPL startup time. You can add
+# as many environment variables you like.
+# ------------------------------------------------------------------------------
+
+# OpenAI api key
+export OPENAI_API_KEY=sk-***********
+```
 
 
 #### Sending Requests
@@ -39,7 +87,7 @@ To run the request asynchronously just wrap it in a `future` and
 deref it, when the result is required.
 
 
-#### Parameter «prompt»
+##### Parameter «prompt»
 
 A prompt is either a simple string like
 
@@ -65,7 +113,7 @@ Using prompt roles:
 | *assistant* | Assistent roles are the model’s responses, based on the user messages |
 
 
-#### Parameter «options»
+##### Parameter «options»
 
 | Option             | Description |
 | :---               | :---        |
@@ -76,7 +124,7 @@ Using prompt roles:
 | :debug             | An optional debug flag (true/false). Defaults to false. <br>In debug mode prints the HTTP request and response data |
  
  
-#### Return value
+##### Response value
 
 *The return value is a map with the response data:*
 
@@ -373,7 +421,7 @@ explicitly passed as an option `:openai-api-key "sk-xxxxxxxxxxxxx"`.
 
 
 
-#### Parameter «prompt»
+##### Parameter «prompt»
 
 A prompt is either a simple string like
 
@@ -390,7 +438,7 @@ or a list of prompt message
   {"role": "user", "content": "Where was it played?"} ]
 ```
 
-#### Parameter «options»
+##### Parameter «options»
 
 | Option             | Description |
 | :---               | :---        |
@@ -401,7 +449,7 @@ or a list of prompt message
 | :openai-api-key    | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
 | :debug             | An optional debug flag (true/false). Defaults to false. <br>In debug mode prints the HTTP request and response data |
  
-#### Return value
+##### Response value
 
 *The return value is a map with the response data:*
 
@@ -515,45 +563,5 @@ Delta: "5"
 Delta: nil
 Completed.
 Message: "1, 2, 3, 4, 5"
-```
-
-## Configuring OpenAI API keys
-
-### Possibility 1
-
-Define an environment variable at the OS or Shell level:
-
-```
-OPENAI_API_KEY=sk-***********
-```
-
-
-### Possibility 2
-
-On Unix / Linux operating system simply patch the 'repl.env' file in the REPL home
-directory. 
-
-`repl.env` is supported with *Venice* V1.12.15 and newer when the REPL has been setup
-with:
-
-```
-foo>  java -jar venice-1.12.16.jar -setup -colors
-```
-
-The setup will create a `repl.sh` that *sources* a `repl.env` at REPL startup time.
-
-
-Example 'repl.env':
-
-```
-# ------------------------------------------------------------------------------
-# Environment variables for unix /linux operating systems
-#
-# This file will be 'sourced' by 'repl.sh' at REPL startup time. You can add
-# as many environment variables you like.
-# ------------------------------------------------------------------------------
-
-# OpenAI api key
-export OPENAI_API_KEY=sk-***********
 ```
 
