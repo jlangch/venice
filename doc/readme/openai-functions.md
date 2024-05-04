@@ -21,8 +21,7 @@ can also be forced to not use any function by setting the parameter `tools_choic
     * [Basic concepts](#basic-concepts)
     * [Forcing the use of specific functions or no function](#forcing-the-use-of-specific-functions-or-no-function)
     * [Parallel Function Calling](#parallel-function-calling)
-    * [Full weather example (version 1)](#full-weather-example-version-1)
-    * [Full weather example (version 2)](#full-weather-example-version-2)
+    * [Full weather example](#full-weather-example)
 * [How to call functions with model generated arguments](#how-to-call-functions-with-model-generated-arguments)
 
 
@@ -537,118 +536,31 @@ Response:
 }]
 ```
 
-### Full weather example (version 1)
 
-The OpenAI model calls the function `get-current-weather` to answer the question about
-the current weather in Glasgow.
+### Full weather example
 
-But the model does not know how to proceed with the supplied results from the called 
-functions.
+**Workflow**
 
-In a first attempt we can return the result from the function call
+1. Ask the model about the weather in Glasgow
 
-`{:ok "The current weather in Glasgow is sunny at 16°C"}`
+2. The model does not have enough information about the weather in Glasgow and returns a function call request for the current weather in Glasgow
 
- as 
- 
- `The current weather in Glasgow is sunny at 16°C`
- 
- to the user.
+3. The client calls the requested function locally
 
+4. The function returns a JSON value with the current Glasgow weather data
 
-```clojure
-(do
-  (load-module :openai)
-  (load-module :openai-demo)
-  
-  (let [prompt      [ { :role     "system"
-                        :content  """
-                                  Don't make assumptions about what values to plug into functions.
-                                  Ask for clarification if a user request is ambiguous.
-                                  """ }
-                      { :role     "user"
-                        :content  """
-                                  What is the current weather in Glasgow? Give the temperature in 
-                                  Celsius.
-                                  """ } ]
-        prompt-opts { :temperature 0.1 }
-        response    (openai/chat-completion prompt 
-                                            :model "gpt-4"
-                                            :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)] 
-    (println "Status:       " (:status response))
-    (println "Mimetype:     " (:mimetype response))
-    (println)
-    (if (= (:status response) 200)
-      (let [response (:data response)
-            message  (openai/extract-response-message response)]
-        (println "Finish Reason:" (openai/finish-reason response))
-        (if (openai/finish-reason-tool-calls? response)
-            ;; (println "Message:" (openai/pretty-print-json message))
-            (let [fn-map  (openai-demo/demo-weather-function-map)
-                  results (openai/exec-fn response fn-map)]
-              (println "\nFn results:" (pr-str results)))
-          (println "Message:" (:content message))))
-      (println "Error:" (-> (:data response)
-                            (openai/pretty-print-json))))))
-```
+   ```json
+   { 
+     "location":"Glasgow",
+     "format":"celsius",
+     "general": "sunny",
+     "temperature": "16.0"
+   }
+   ```
 
-Response:
+5. The client adds a additional prompt messages with the function's response and asks the model again
 
-```
-Finish Reason: tool_calls
-Calling "get-current-weather" with location="Glasgow", format="celsius"
-
-Fn results: [{:ok "The current weather in Glasgow is sunny at 16°C"}]
-```
-
-
-### Full weather example (version 2)
-
-The first attempt is not really satisfying. We actually want the model to answer the 
-question. It should use the results from the functions as additional knowledge 
-helping answering questions.
-
-To achieve this, we need to feed back the results from the questions into the model's 
-context and prompt it again with the knowledge enriched context.
-
-The second knowledge enhanced prompt will look like:
-
-```
-[ { :role     "system"
-    :content  "The current weather in Glasgow is sunny at 16°C." }
-  { :role     "user"
-    :content  "What is the current weather in Glasgow? Give the temperature in Celsius." } ]
-```
-
-In version 1 the function call has to deal itself with Celsius / Fahrenheit conversion,
-whereas in version 2 the function can return temperatures in Celsius always and the
-OpenAI model can convert to Fahrenheit if asked from the user.
-
-You can easily test this by replacing the prompt in the Phase 2 with
-
-```
-[ { :role     "system"
-    :content  "The current weather in Glasgow is sunny at 16°C." }
-  { :role     "user"
-    :content  "What is the current weather in Glasgow? Give the temperature in Fahrenheit." } ]
-    
-==> "The current weather in Glasgow is sunny at 60.8°F."
-```
-
-and the OpenAI model does the conversion. Or you can even ask for a final translation to German.
-
-```
-[ { :role     "system"
-    :content  "The current weather in Glasgow is sunny at 16°C." }
-  { :role     "user"
-    :content  """
-              What is the current weather in Glasgow? Give the temperature in Fahrenheit.
-              Translate the answer to German!
-              """ } ]
-              
-==> "Die aktuelle Wetterlage in Glasgow ist sonnig bei 60,8°F."
-```
+6. The model has now all information and returns the final answer
 
 
 
@@ -671,6 +583,7 @@ and the OpenAI model does the conversion. Or you can even ask for a final transl
                                 What is the current weather in Glasgow? Give the temperature in 
                                 Celsius.
                                 """ }
+                  ;; [1] Ask the model about the weather in Glasgow
         response  (openai/chat-completion [ prompt-sys prompt-usr ] 
                                           :model "gpt-4"
                                           :tools (openai-demo/demo-weather-function-defs)
@@ -678,22 +591,27 @@ and the OpenAI model does the conversion. Or you can even ask for a final transl
     (assert (= (:status response) 200))
     (let [response (:data response)
           message  (openai/extract-response-message response)]
+      ;; [2] The model returns a function call request
       (assert (openai/finish-reason-tool-calls?  response))
       (let [fn-map  (openai-demo/demo-weather-function-map)
-            results (openai/exec-fn response fn-map)
-            answer  (:ok (first results))]
+            results (openai/exec-fn response fn-map)  ;; [3] Call the requested function
+            answer  (:ok (first results))]            ;; [4] The function's returned JSON data
         (println "Fn call result:" (pr-str answer))
         
-        ;; Phase #2: prompt the model again with enhanced knowledge
-        (println "\nPhase #2")
-        (println "Using the knowledge fact \"~{answer}\" in the 2nd prompt")
-        (let [response  (openai/chat-completion [ { :role "system", :content answer }
-                                                  prompt-usr ] 
+        ;; Phase #2: prompt the model again with enhanced knowledge returned
+        ;;           from the function call
+        (println "\nPhase #2 (with the knowledege from the function call)")
+        ;; [5] Additional prompt messages with the function's response
+        (let [prompt-fn  { :role     "function"
+                           :name     "get_current_weather" ;; (openai/extract-function-name response)
+                           :content  answer }
+                        ;; [6] Ask the model again
+              response  (openai/chat-completion [ prompt-sys prompt-usr prompt-fn ]  
                                                 :model "gpt-4"
                                                 :prompt-opts { :temperature 0.1 })]
           (assert (= (:status response) 200))
           (let [response (:data response)
-                content  (openai/extract-response-message-content response)]
+                content  (openai/extract-response-message-content response)] ;; [6] Final answer
             (assert (openai/finish-reason-stop?  response))
             (println "\nFinal answer: ~(pr-str content)")))))))
 ```
@@ -701,7 +619,7 @@ and the OpenAI model does the conversion. Or you can even ask for a final transl
 Response:
 
 ```
-Final answer: "The current weather in Glasgow is sunny and the temperature is 16°C."
+Final answer: "The current weather in Glasgow is sunny with a temperature of 16.0 degrees Celsius."
 ```
 
 

@@ -582,6 +582,29 @@
 
 
 (defn 
+ ^{ :arglists '(
+          "(extract-function-name response)")
+     :doc """
+          Returns the function name of the response.
+          """
+     :see-also '( 
+          "openai/finish-reason"
+          "openai/finish-reason-stop?"
+          "openai/exec-fn" ) }
+
+  extract-function-name [response]
+
+  (assert finish-reason-tool-calls? response)
+  (->> (:choices response)
+       (first)
+       (:message)
+       (:tool_calls)
+       (first)
+       (:function)
+       (:name)))
+
+
+(defn 
   ^{ :arglists '(
           "(extract-response-message response)")
      :doc """

@@ -97,22 +97,15 @@
              location="~{location}", format="~{format}"
              """)
     (case location
-      "Glasgow"             (json/write-str
-                              { :location    location
-                                :format      format
-                                :temperature (temperature 16 format)
-                                :general     "sunny" })
-
-      "San Francisco, CA"   (json/write-str
-                              { :location    location
-                                :format      format
-                                :temperature (temperature 12 format)
-                                :general     "rainy" })
-      (json/write-str
-        { :location    location
-          :format      format
-          :temperature (temperature 10 format)
-          :general     "cloudy" }))))
+      "Glasgow"             """
+                            The current weather in ~{location} is sunny at
+                            ~(temperature 16 format)
+                            """
+      "San Francisco, CA"   """
+                            The current weather in ~{location} is rainy at
+                            ~(temperature 12 format)
+                            """
+      "The weather in ~{location} is cloudy at ~(temperature 17 format)")))
 
 
 (defn get-n-day-weather-forecast 
@@ -129,31 +122,24 @@
              location="~{location}", format="~{format}", n-days="~{n-days}"
              """)
     (case location
-      "Glasgow"             (json/write-str
-                              { :location    location
-                                :format      format
-                                :n_days      n-days
-                                :temperature (temperature 16 format)
-                                :general     "mostly sunny" })
-
-      "San Francisco, CA"   (json/write-str
-                              { :location    location
-                                :format      format
-                                :n_days      n-days
-                                :temperature (temperature 12 format)
-                                :general     "mostly rainy" })
-      (json/write-str
-        { :location    location
-          :format      format
-          :n_days      n-days
-          :temperature (temperature 10 format)
-          :general     "mostly cloudy" }))))
+      "Glasgow"             """
+                            The weather in ~{location} for the next ~(str n-days)
+                            is mostly sunny at ~(temperature 16 format)
+                            """
+      "San Francisco, CA"   """
+                            The weather in ~{location} for the next ~(str n-days)
+                            is mostly rainy at ~(temperature 12 format)
+                            """
+      """
+      The weather in ~{location} for the next ~(str n-days) is mostly cloudy at
+      ~(temperature 12 format)
+      """)))
 
 
 (defn- temperature [t format]
   (if (str/equals-ignore-case? format "fahrenheit")
-    (str/format "%#.1f" (celsius-to-fahrenheit t))
-    (str/format "%#.1f" (double t))))
+    (str/format "%#.1f°F" (celsius-to-fahrenheit t))
+    (str/format "%#.1f°C" (double t))))
 
 
 (defn- celsius-to-fahrenheit [c]
