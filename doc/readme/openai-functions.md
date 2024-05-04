@@ -586,7 +586,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
    ```json
    { 
      "location": "London",
-     "error:     "No weather data available for London!"
+     "error"     "No weather data available for London!"
    }
    ```
    
