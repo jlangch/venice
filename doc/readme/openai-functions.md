@@ -601,11 +601,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
      "location": "London",
      "error"     "No weather data available for London!"
    }
-   ```
-   
-   if there is no weather data available for a location
-   
-   
+   ```   
 
 5. The client adds an additional prompt messages with the function's JSON response data and asks the model again
 
