@@ -21,8 +21,8 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
     * [Example: Text data extraction](#example-text-data-extraction)
     * [Example: Generating SQL](#example-generating-sql)
 * [Chat Completion Streaming](#chat-completion-streaming)
-    * [Example 1 (sync)](#example-1)
-    * [Example 2 (async)](#example-2)
+    * [Example sync](#example-sync)
+    * [Example async](#example-async)
 * [OpenAI Functions Cookbook](openai-functions.md)
 * Audio
 * Images
@@ -472,7 +472,7 @@ See:
  * [OpenAI API Examples Prompts](https://platform.openai.com/examples?category=code)
 
 
-#### Example 1
+#### Example sync
 
 ```clojure
 ;; synchronous
@@ -519,7 +519,7 @@ Mimetype: text/event-stream
 Message: "1, 2, 3, 4, 5"
 ```
 
-#### Example 2
+#### Example async
 
 ```clojure
 ;; asynchronous
