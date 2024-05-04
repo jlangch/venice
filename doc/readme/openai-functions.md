@@ -547,18 +547,18 @@ Response:
 
 3. The client calls the requested function locally
 
-4. The function returns a JSON value with the current Glasgow weather data
+4. The function returns a JSON object with the current Glasgow weather data
 
    ```json
    { 
-     "location":"Glasgow",
-     "format":"celsius",
+     "location": "Glasgow",
+     "format": "celsius",
      "general": "sunny",
      "temperature": "16.0"
    }
    ```
 
-5. The client adds a additional prompt messages with the function's response and asks the model again
+5. The client adds an additional prompt messages with the function's JSON response data and asks the model again
 
 6. The model has now all information and returns the final answer
 
@@ -621,6 +621,26 @@ Response:
 ```
 Final answer: "The current weather in Glasgow is sunny with a temperature of 16.0 degrees Celsius."
 ```
+
+
+To ask the model to translate the answer to german, just enhanced the "user" role prompt
+with the instruction "Translate to German.":
+
+```
+prompt-usr  { :role     "user"
+              :content  """
+                        What is the current weather in Glasgow? Give the temperature in 
+                        Celsius. Translate to German.
+                        """ }
+```
+
+
+Translated response:
+
+```
+Final answer: "Das aktuelle Wetter in Glasgow ist sonnig und die Temperatur beträgt 16,0 Grad Celsius."
+```
+
 
 
 
