@@ -21,9 +21,8 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
     * [Example: Text data extraction](#example-text-data-extraction)
     * [Example: Generating SQL](#example-generating-sql)
 * [Chat Completion Streaming](#chat-completion-streaming)
-    * [Sending Requests](#sending-requests)
-    * [Example 1](#example-1)
-    * [Example 2](#example-2)
+    * [Example 1 (sync)](#example-1)
+    * [Example 2 (async)](#example-2)
 * [OpenAI Functions Cookbook](openai-functions.md)
 * Audio
 * Images
