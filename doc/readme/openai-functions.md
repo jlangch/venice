@@ -594,8 +594,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
   (load-module :openai)
   (load-module :openai-demo)
   
-  ;; Phase #1: prompt the model and call the functions
-  (println "Phase #1")
+  (println "Phase #1: prompt the model")
   (let [prompt-sys  { :role     "system"
                       :content  """
                                 Don't make assumptions about what values to plug into functions.
@@ -614,6 +613,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
     (assert (= (:status response) 200))
     (let [response (:data response)
           message  (openai/extract-response-message response)]
+      (println "\nPhase #2: call the requested functions")
       ;; [2] The model returns a function call request
       (assert (openai/finish-reason-tool-calls?  response))
       (let [fn-map  (openai-demo/demo-weather-function-map)
@@ -621,12 +621,10 @@ The OpenAI shall answer questions about the current weather in Glasgow.
             answer  (:ok (first results))]            ;; [4] The function's returned JSON data
         (println "Fn call result:" (pr-str answer))
         
-        ;; Phase #2: prompt the model again with enhanced knowledge returned
-        ;;           from the function call
-        (println "\nPhase #2 (with the knowledege from the function call)")
+        (println "\nPhase #3: prompt the model again with additional knowledge")
         ;; [5] Additional prompt messages with the function's response
         (let [prompt-fn  { :role     "function"
-                           :name     "get_current_weather" ;; (openai/extract-function-name response)
+                           :name     (openai/extract-function-name response)
                            :content  answer }
                         ;; [6] Ask the model again
               response  (openai/chat-completion [ prompt-sys prompt-usr prompt-fn ]  
