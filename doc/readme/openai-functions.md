@@ -723,7 +723,6 @@ Before starting, follow the [Venice Database Tutorial](database.md) to:
  
 All these tasks can be run from a Venice REPL.
 
-*... work in progress, not functional yet ...*
 
 ```clojure
 (do
