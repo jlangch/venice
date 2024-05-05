@@ -724,6 +724,8 @@ Before starting, follow the [Venice Database Tutorial](database.md) to:
 All these tasks can be run from a Venice REPL.
 
 
+The full example:
+
 ```clojure
 (do
   (load-module :openai)
