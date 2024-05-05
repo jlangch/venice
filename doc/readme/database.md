@@ -42,7 +42,7 @@ Download and start the PostgreSQL container:
            
   (let [storage-dir  (io/file (repl/home-dir) "postgres-storage")]
     (when-not (io/exists-dir? storage-dir)
-       (io/mk-dir storage-dir))
+       (io/mkdir storage-dir))
        
     ;; Run a PostgreSQL container labeled as "postgres"
     ;; username: postgres
