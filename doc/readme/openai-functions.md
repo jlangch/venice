@@ -732,11 +732,13 @@ All these tasks can be run from a Venice REPL.
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
 
+
   ;; create a database connection
   (defn db-connection []
     (jdbp/create-connection "localhost" 5432 
                             "chinook_auto_increment" 
                             "postgres" "postgres"))
+
 
   ;; get the database schema (formatted text for OpenAI)                      
   (defn db-schema [conn]
@@ -744,6 +746,7 @@ All these tasks can be run from a Venice REPL.
          (map (fn [[t c]] 
                 (str "Table: " t "\nColumns: " (str/join ", " c)))) 
          (str/join "\n")))
+  
   
   ;; create the OpenAI API 'tools' function definition "ask_database"
   (defn function-defs [database-schema]
@@ -774,15 +777,20 @@ All these tasks can be run from a Venice REPL.
         }
       } ] )
 
+
   ;; function to query the database with a provided SQL.
   (defn ask-database [conn named-args]
     (println "Calling function 'ask-database'")
     (try-with [query (get named-args "query")
-               stmt (jdbc/create-statement conn)]
+               stmt  (jdbc/create-statement conn)]
       (println "DB Query:" query)
-      (jdbc/execute-query stmt query)
+      (let [result (jdbc/execute-query stmt query)
+            rows   (:rows result)]       
+        (json/write-str rows))  ;; return the rows as a JSON string
       (catch :Exception e
-             "Query failed with error: ~(ex-message e)")))
+             ;; return the error as a JSON string
+             (json/write-str { "query" query
+                               "error" "Query failed with error: ~(ex-message e)" }))))
 
 
   ;; Ask the model
@@ -809,16 +817,40 @@ All these tasks can be run from a Venice REPL.
         (let [response (:data response)
               message  (openai/extract-response-message response)]
           (assert (openai/finish-reason-tool-calls?  response))
-          ;; (println "Message:" (openai/pretty-print-json message))
-          (let [fn-map { "ask_database" ask-database }
-                results (openai/exec-fn response fn-map)]
-            (println "\nFn results:" (pr-str results))))))
-
-)
+          ;;(println "Message:" (openai/pretty-print-json message))
+          
+          ;; call the function
+          (let [fn-map     { "ask_database" (partial ask-database conn ) }
+                fn-result  (first (openai/exec-fn response fn-map))
+                answer     (:ok fn-result)
+                err        (:err fn-result)]
+            (when err (throw err))  ;; "ask_database" failed
+            (println "Fn call result:" (pr-str answer))
+            
+            ;; Ask the model again with the queried music data
+            (let [prompt-fn  { :role     "function"
+                               :name     (openai/extract-function-name response)
+                               :content  answer }
+                  response   (openai/chat-completion (conj prompt prompt-fn) 
+                                                     :model "gpt-4"
+                                                     :prompt-opts { :temperature 0.1 })]
+              (assert (= (:status response) 200))
+              (let [response (:data response)
+                    content  (openai/extract-response-message-content response)]
+                (assert (openai/finish-reason-stop?  response))
+                (println)
+                (println content))))))))
 ```
 
+```
+The top 5 artists by number of tracks are:
 
-
+1. Iron Maiden with 213 tracks
+2. U2 with 135 tracks
+3. Led Zeppelin with 114 tracks
+4. Metallica with 112 tracks
+5. Deep Purple with 92 tracks
+```
 
 
 
