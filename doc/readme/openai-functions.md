@@ -599,7 +599,7 @@ The OpenAI shall answer questions about the current weather at a given location.
    ```json
    { 
      "location": "London",
-     "error"     "No weather data available for London!"
+     "error":    "No weather data available for London!"
    }
    ```   
 
