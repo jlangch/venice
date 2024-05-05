@@ -603,7 +603,7 @@ The OpenAI shall answer questions about the current weather at a given location.
    }
    ```   
 
-5. The client adds an additional prompt messages with the function's JSON response data and asks the model again
+5. The client adds an additional prompt message with the function's JSON response data and asks the model again
 
 6. The model has now all information and returns the final answer
 
