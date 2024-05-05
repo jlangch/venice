@@ -687,7 +687,7 @@ Final answer: "I'm sorry, but I currently don't have access to the weather data 
 
 **Translating the answer**
 
-To ask the model to translate the answer to German, just enhanced the "user" role prompt
+To ask the model to translate the answer to German, just enhance the "user" role prompt
 with the instruction "Translate to German.":
 
 ```
