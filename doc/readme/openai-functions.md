@@ -741,7 +741,12 @@ Then run the full example:
                             "postgres" "postgres"))
 
 
-  ;; get the database schema (formatted text for OpenAI)                      
+  ;; get the database schema (formatted text for OpenAI) in the format
+  ;;   Table: table1
+  ;;   Columns: col1, col2, col3, ...
+  ;;   Table: table2
+  ;;   Columns: col1, col2, col3, ...
+  ;;   ...
   (defn db-schema [conn]
     (->> (jdbc/tables-with-columns conn)
          (map (fn [[t c]] 
@@ -749,7 +754,7 @@ Then run the full example:
          (str/join "\n")))
   
   
-  ;; create the OpenAI API 'tools' function definition "ask_database"
+  ;; create the OpenAI API 'tools' function definition for "ask_database"
   (defn function-defs [database-schema]
     [ { :type "function"
         :function {
@@ -779,7 +784,8 @@ Then run the full example:
       } ] )
 
 
-  ;; function to query the database with a provided SQL.
+  ;; query the database with a provided SQL.
+  ;;   named-args is map: {"query" "SELECT * FROM Foo" }
   (defn ask-database [conn named-args]
     (println "Calling function 'ask-database'")
     (try-with [query (get named-args "query")
@@ -796,6 +802,7 @@ Then run the full example:
 
   ;; Ask the model
   ;; Note: for simplicity reasons this example just handles the happy path!
+  ;; /Phase 1/: Initial question to the model
   (try-with [conn (db-connection)]
     (let [prompt      [ { :role     "system"
                           :content  """
@@ -815,32 +822,35 @@ Then run the full example:
       (println "Mimetype:     " (:mimetype response))
       (println)
       (assert (= (:status response) 200))
-        (let [response (:data response)
-              message  (openai/extract-response-message response)]
-          (assert (openai/finish-reason-tool-calls?  response))
-          ;;(println "Message:" (openai/pretty-print-json message))
+      
+      ;; /Phase 2/: model request to call a function
+      (let [response (:data response)
+            message  (openai/extract-response-message response)]
+        (assert (openai/finish-reason-tool-calls?  response))
+        ;;(println "Message:" (openai/pretty-print-json message))
+        
+        ;; call the function
+        (let [fn-map     { "ask_database" (partial ask-database conn ) }
+              fn-result  (first (openai/exec-fn response fn-map))
+              answer     (:ok fn-result)
+              err        (:err fn-result)]
+          (when err (throw err))  ;; "ask_database" failed
+          (println "Fn call result:" (pr-str answer))
           
-          ;; call the function
-          (let [fn-map     { "ask_database" (partial ask-database conn ) }
-                fn-result  (first (openai/exec-fn response fn-map))
-                answer     (:ok fn-result)
-                err        (:err fn-result)]
-            (when err (throw err))  ;; "ask_database" failed
-            (println "Fn call result:" (pr-str answer))
-            
-            ;; Ask the model again with the queried music data
-            (let [prompt-fn  { :role     "function"
-                               :name     (openai/extract-function-name response)
-                               :content  answer }
-                  response   (openai/chat-completion (conj prompt prompt-fn) 
-                                                     :model "gpt-4"
-                                                     :prompt-opts { :temperature 0.1 })]
-              (assert (= (:status response) 200))
-              (let [response (:data response)
-                    content  (openai/extract-response-message-content response)]
-                (assert (openai/finish-reason-stop?  response))
-                (println)
-                (println content))))))))
+          ;; /Phase 3/: Ask the model again with the queried music data obtained
+          ;;            from the function
+          (let [prompt-fn  { :role     "function"
+                              :name     (openai/extract-function-name response)
+                              :content  answer }
+                response   (openai/chat-completion (conj prompt prompt-fn) 
+                                                   :model "gpt-4"
+                                                   :prompt-opts { :temperature 0.1 })]
+            (assert (= (:status response) 200))
+            (let [response (:data response)
+                  content  (openai/extract-response-message-content response)]
+              (assert (openai/finish-reason-stop?  response))
+              (println)
+              (println content))))))))
 ```
 
 ```
