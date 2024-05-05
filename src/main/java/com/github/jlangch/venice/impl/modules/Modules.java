@@ -109,6 +109,7 @@ public class Modules {
                         "openai",
                         "openai-demo",
                         "parsifal",
+                        "pretty-print",
                         "qrbill",
                         "qrref",
                         "repl-setup",
