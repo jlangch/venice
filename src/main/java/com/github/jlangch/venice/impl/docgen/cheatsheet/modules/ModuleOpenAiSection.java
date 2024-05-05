@@ -51,15 +51,19 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         all.addSection(func);
         func.addItem(diBuilder.getDocItem("openai/exec-fn", false));
 
+        final DocSection response = new DocSection("Response", id());
+        all.addSection(response);
+        response.addItem(diBuilder.getDocItem("openai/finish-reason", false));
+        response.addItem(diBuilder.getDocItem("openai/finish-reason-stop?", false));
+        response.addItem(diBuilder.getDocItem("openai/finish-reason-tool-calls?", false));
+        response.addItem(diBuilder.getDocItem("openai/extract-response-message", false));
+        response.addItem(diBuilder.getDocItem("openai/extract-response-message-content", false));
+        response.addItem(diBuilder.getDocItem("openai/extract-response-message-role", false));
+        response.addItem(diBuilder.getDocItem("openai/extract-function-name", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
-        utils.addItem(diBuilder.getDocItem("openai/finish-reason", false));
-        utils.addItem(diBuilder.getDocItem("openai/finish-reason-stop?", false));
-        utils.addItem(diBuilder.getDocItem("openai/finish-reason-tool-calls?", false));
         utils.addItem(diBuilder.getDocItem("openai/pretty-print-json", false));
-        utils.addItem(diBuilder.getDocItem("openai/extract-response-message", false));
-        utils.addItem(diBuilder.getDocItem("openai/extract-response-message-content", false));
 
         return section;
     }

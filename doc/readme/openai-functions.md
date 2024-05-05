@@ -780,8 +780,7 @@ All these tasks can be run from a Venice REPL.
     (try-with [query (get named-args "query")
                stmt (jdbc/create-statement conn)]
       (println "DB Query:" query)
-      (->> (jdbc/execute-query stmt query)
-           (jdbc/print-query-result))
+      (jdbc/execute-query stmt query)
       (catch :Exception e
              "Query failed with error: ~(ex-message e)")))
 

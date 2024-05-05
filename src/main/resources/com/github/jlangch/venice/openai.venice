@@ -564,13 +564,40 @@
 
 (defn 
   ^{ :arglists '(
+          "(extract-response-message response)"
+          "(extract-response-message response choice-idx)")
+     :doc """
+          Returns the message of an OpenAI JSON response.
+          """
+     :see-also '( 
+          "openai/extract-response-message"
+          "openai/extract-response-message-content"
+          "openai/extract-response-message-role"
+          "openai/extract-function-name" ) }
+
+  extract-response-message 
+  
+  ([response]
+    (extract-response-message response 0))
+
+  ([response choice-idx]
+    (assert (coll? response))
+    (-<> (:choices response)
+         (nth <> choice-idx)
+         (:message <>))))
+
+
+(defn 
+  ^{ :arglists '(
           "(extract-response-message-content response)"
           "(extract-response-message-content response choice-idx)")
      :doc """
           Returns the message content of an OpenAI JSON response.
           """
      :see-also '( 
-          "openai/pretty-print-json" ) }
+          "openai/extract-response-message"
+          "openai/extract-response-message-role"
+          "openai/extract-function-name" ) }
 
   extract-response-message-content 
   
@@ -586,6 +613,31 @@
 
 
 (defn 
+  ^{ :arglists '(
+          "(extract-response-message-role response)"
+          "(extract-response-message-role response choice-idx)")
+     :doc """
+          Returns the message role of an OpenAI JSON response.
+          """
+     :see-also '( 
+          "openai/extract-response-message"
+          "openai/extract-response-message-content"
+          "openai/extract-function-name" ) }
+
+  extract-response-message-role 
+  
+  ([response]
+    (extract-response-message-role response 0))
+
+  ([response choice-idx]
+    (assert (coll? response))
+    (-<> (:choices response)
+         (nth <> choice-idx)
+         (:message <>)
+         (:role <>))))
+
+
+(defn 
  ^{ :arglists '(
           "(extract-function-name response)"
           "(extract-function-name response choice-idx tools-calls-idx)")
@@ -593,9 +645,9 @@
           Returns the function name of the response.
           """
      :see-also '( 
-          "openai/finish-reason"
-          "openai/finish-reason-stop?"
-          "openai/exec-fn" ) }
+          "openai/extract-response-message"
+          "openai/extract-response-message-content"
+          "openai/extract-response-message-role" ) }
 
   extract-function-name 
   
@@ -611,28 +663,6 @@
          (nth <> tools-calls-idx)
          (:function <>)
          (:name  <>))))
-
-
-(defn 
-  ^{ :arglists '(
-          "(extract-response-message response)"
-          "(extract-response-message response choice-idx)")
-     :doc """
-          Returns the message of an OpenAI JSON response.
-          """
-     :see-also '( 
-          "openai/pretty-print-json" ) }
-
-  extract-response-message 
-  
-  ([response]
-    (extract-response-message response 0))
-
-  ([response choice-idx]
-    (assert (coll? response))
-    (-<> (:choices response)
-         (nth <> choice-idx)
-         (:message <>))))
 
 
 (defn pretty-print-conversation [messages]
