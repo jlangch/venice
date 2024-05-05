@@ -154,7 +154,7 @@ public class DocGenerator {
                         "openai",        "jtokkit",
                         "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
-                        "ring-util",     "server-side-events",   "pretty-print"));
+                        "ring-util",     "server-side-events",  "pretty-print"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 

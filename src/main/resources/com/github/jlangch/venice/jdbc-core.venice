@@ -2361,8 +2361,9 @@
             (load-module :jdbc-core ['jdbc-core :as 'jdbc])
             (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
             (try-with [conn (jdbp/create-connection "localhost" 5432 "chinook" "pg" "pg")]
-              (->> (map (fn [[t c]] (str "Table: " t "\nColumns: " (str/join ", " c)))
-                        (jdbc/tables-with-columns conn)) 
+              (->> (jdbc/tables-with-columns conn)
+                   (map (fn [[t c]] 
+                          (str "Table: " t "\nColumns: " (str/join ", " c)))) 
                    (str/join "\n"))))
           """) }
  

@@ -713,9 +713,9 @@ In the following examples we'll use the OpenAI chat completion API to answer que
 about a database. For simplicity the Chinook sample database will be used. See 
 [Venice and Chinook Dataset](database.md#chinook-dataset-overview)
 
-The OpenAI model shall be enabled to answer questions like: *Who are the top 5 artists by number of tracks?*
+The OpenAI model shall be enabled to answer questions on the dataset like: *Who are the top 5 artists by number of tracks?*
 
-Before starting, follow the [Venice Database tutorial](database.md) to:
+Before starting, follow the [Venice Database Tutorial](database.md) to:
 
  1. Install the PostgreSQL JDBC driver
  2. Start a PostgreSQL Docker Instance
@@ -723,7 +723,7 @@ Before starting, follow the [Venice Database tutorial](database.md) to:
  
 All these tasks can be run from a Venice REPL.
 
-*... work in progress ...*
+*... work in progress, not functional yet ...*
 
 ```clojure
 (do
@@ -738,13 +738,14 @@ All these tasks can be run from a Venice REPL.
                             "chinook_auto_increment" 
                             "postgres" "postgres"))
 
-  ;; create the database schema                        
+  ;; get the database schema (formatted text for OpenAI)                      
   (defn db-schema [conn]
-    (->> (map (fn [[t c]] (str "Table: " t "\nColumns: " (str/join ", " c)))
-              (jdbc/tables-with-columns conn)) 
+    (->> (jdbc/tables-with-columns conn)
+         (map (fn [[t c]] 
+                (str "Table: " t "\nColumns: " (str/join ", " c)))) 
          (str/join "\n")))
   
-  ;; create the OPenAI API 'tools' function definition "ask_database"
+  ;; create the OpenAI API 'tools' function definition "ask_database"
   (defn tools [database-schema]
     [ { :type "function"
         :function {
