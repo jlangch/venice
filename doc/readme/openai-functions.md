@@ -548,7 +548,7 @@ the required knowledge to model for answering questions
 
 ### Weather example
 
-The OpenAI shall answer questions about the current weather in Glasgow.
+The OpenAI shall answer questions about the current weather at a given location.
 
 
 **Workflow**
