@@ -721,7 +721,7 @@ Before starting, follow the [Venice Database Tutorial](database.md) to:
  2. Start a PostgreSQL Docker Instance
  3. Load the Chinook dataset into the PostgreSQL database
  
-All these tasks can be run from a Venice REPL.
+All these preliminary tasks can be run from a Venice REPL.
 
 
 Then run the full example:
