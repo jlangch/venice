@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
   Venice
 
 ### Improved 
+
 - JDBC query result table renderer uses now right alignment for numeric columns
 
 ### Fixed
