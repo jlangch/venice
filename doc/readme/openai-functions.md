@@ -823,7 +823,7 @@ Then run the full example:
       (println)
       (assert (= (:status response) 200))
       
-      ;; /Phase 2/: model request to call a function
+      ;; /Phase 2/: model requests to call the function "ask_database"
       (let [response (:data response)
             message  (openai/extract-response-message response)]
         (assert (openai/finish-reason-tool-calls?  response))
@@ -838,7 +838,7 @@ Then run the full example:
           (println "Fn call result:" (pr-str answer))
           
           ;; /Phase 3/: Ask the model again with the queried music data obtained
-          ;;            from the function
+          ;;            from the function "ask_database"
           (let [prompt-fn  { :role     "function"
                               :name     (openai/extract-function-name response)
                               :content  answer }
@@ -849,6 +849,8 @@ Then run the full example:
             (let [response (:data response)
                   content  (openai/extract-response-message-content response)]
               (assert (openai/finish-reason-stop?  response))
+              (println)
+              (println "Question: \"Hi, who are the top 5 artists by number of tracks?\"")
               (println)
               (println content))))))))
 ```
