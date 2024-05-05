@@ -23,6 +23,7 @@ can also be forced to not use any function by setting the parameter `tools_choic
     * [Parallel Function Calling](#parallel-function-calling)
 * [How to call functions with model generated arguments](#how-to-call-functions-with-model-generated-arguments)
     * [Weather example](#weather-example)
+    * [Database example](#database-example)
 
 
 
