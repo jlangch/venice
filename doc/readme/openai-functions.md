@@ -746,7 +746,7 @@ All these tasks can be run from a Venice REPL.
          (str/join "\n")))
   
   ;; create the OpenAI API 'tools' function definition "ask_database"
-  (defn tools [database-schema]
+  (defn function-defs [database-schema]
     [ { :type "function"
         :function {
           :name "ask_database"
@@ -776,12 +776,12 @@ All these tasks can be run from a Venice REPL.
 
   ;; function to query the database with a provided SQL.
   (defn ask-database [conn named-args]
-    (println "Calling function 'ask-database')
+    (println "Calling function 'ask-database'")
     (try-with [query (get named-args "query")
                stmt (jdbc/create-statement conn)]
       (println "DB Query:" query)
-      (-> (jdbc/execute-query stmt query)
-          (jdbc/print-query-result))
+      (->> (jdbc/execute-query stmt query)
+           (jdbc/print-query-result))
       (catch :Exception e
              "Query failed with error: ~(ex-message e)")))
 

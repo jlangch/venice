@@ -837,13 +837,13 @@
 
 
 (defn- make-err-missing-fn [name]
-  {:err (ex :VncEception 
+  {:err (ex :VncException 
             "Failed to call OpenAI undefined function \"~{name}\"!" )})
       
 
 (defn- make-err-failed-call [name args ex_]
   (let [arity (count args)]
-    {:err (ex :VncEception 
+    {:err (ex :VncException 
               "Failed to call OpenAI function \"~{name} with arity ~{arity}\"!" 
               ex_)}))
 
