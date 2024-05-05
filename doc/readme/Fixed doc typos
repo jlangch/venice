@@ -644,7 +644,7 @@ The OpenAI shall answer questions about the current weather in Glasgow.
         (println "Fn call result:" (pr-str answer))
 
         (println "\nPhase #3: prompt the model again with additional knowledge")
-        ;; [5] Additional prompt messages with the function's response
+        ;; [5] Additional prompt message with the function's response
         (let [prompt-fn  { :role     "function"
                            :name     (openai/extract-function-name response)
                            :content  answer }
@@ -673,12 +673,12 @@ available
 ```
 prompt-usr  { :role     "user"
               :content  """
-                        What is the current weather in LOndon? Give the temperature in 
+                        What is the current weather in London? Give the temperature in 
                         Celsius.
                         """ }
 ```
 
-To model responds without halluscinating:
+the model responds without halluscinating:
 
 ```
 Final answer: "I'm sorry, but I currently don't have access to the weather data for London."
@@ -687,7 +687,7 @@ Final answer: "I'm sorry, but I currently don't have access to the weather data 
 
 **Translating the answer**
 
-To ask the model to translate the answer to german, just enhanced the "user" role prompt
+To ask the model to translate the answer to german, just enhance the "user" role prompt
 with the instruction "Translate to German.":
 
 ```
