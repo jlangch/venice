@@ -53,6 +53,7 @@ public class ModuleOpenAiSection implements ISectionBuilder {
 
         final DocSection response = new DocSection("Response", id());
         all.addSection(response);
+        response.addItem(diBuilder.getDocItem("openai/assert-response-http-ok", false));
         response.addItem(diBuilder.getDocItem("openai/finish-reason", false));
         response.addItem(diBuilder.getDocItem("openai/finish-reason-stop?", false));
         response.addItem(diBuilder.getDocItem("openai/finish-reason-tool-calls?", false));

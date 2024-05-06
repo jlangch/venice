@@ -564,6 +564,29 @@
 
 (defn 
   ^{ :arglists '(
+          "(assert-response-http-ok response)")
+     :doc """
+          Throws an exception if the response' HTTP status is not HTTP_OK.
+
+          The exception holds the response's details.
+          """ }
+
+  assert-response-http-ok [response]
+
+  (when-not (=  (:status response) 200)
+    (throw (ex :VncException
+               """
+               HTTP response is not HTTP_OK!
+
+               HTTP Status: ~(:status response)
+               Mimetype:    ~(:mimetype response)
+
+               Response:    ~(:data response)
+               """))))
+
+
+(defn 
+  ^{ :arglists '(
           "(extract-response-message response)"
           "(extract-response-message response choice-idx)")
      :doc """
