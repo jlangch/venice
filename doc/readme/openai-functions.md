@@ -1,4 +1,4 @@
-# OpenAI Functions Cookbook
+# Functions Cookbook
 
 This cookbook is adapted from the [OpenAI API Functions Cookbook](https://cookbook.openai.com/examples/how_to_call_functions_with_chat_models) to demonstrate how OpenAI functions can be used with *Venice*.
 
@@ -785,7 +785,8 @@ Then run the full example:
 
 
   ;; query the database with a provided SQL.
-  ;;   named-args is map: {"query" "SELECT * FROM Foo" }
+  ;;   conn:       a JDBC database connection
+  ;;   named-args: a map e.g.: {"query" "SELECT * FROM Foo" }
   (defn ask-database [conn named-args]
     (println "Calling function 'ask-database'")
     (try-with [query (get named-args "query")
@@ -802,12 +803,13 @@ Then run the full example:
 
   ;; Ask the model
   ;; Note: for simplicity reasons this example just handles the happy path!
+  
   ;; /Phase 1/: Initial question to the model
   (try-with [conn (db-connection)]
     (let [prompt      [ { :role     "system"
                           :content  """
-                                    Answer user questions by generating SQL queries against the 
-                                    Chinook Music Database.
+                                    Answer user questions by generating SQL queries against 
+                                    the Chinook Music Database.
                                     """ }
                         { :role     "user"
                           :content  "Hi, who are the top 5 artists by number of tracks?" } ]
@@ -829,7 +831,7 @@ Then run the full example:
         (assert (openai/finish-reason-tool-calls?  response))
         ;;(println "Message:" (openai/pretty-print-json message))
         
-        ;; call the function
+        ;; call the function "ask_database"
         (let [fn-map     { "ask_database" (partial ask-database conn ) }
               fn-result  (first (openai/exec-fn response fn-map))
               answer     (:ok fn-result)
@@ -840,8 +842,8 @@ Then run the full example:
           ;; /Phase 3/: Ask the model again with the queried music data obtained
           ;;            from the function "ask_database"
           (let [prompt-fn  { :role     "function"
-                              :name     (openai/extract-function-name response)
-                              :content  answer }
+                             :name     (openai/extract-function-name response)
+                             :content  answer }
                 response   (openai/chat-completion (conj prompt prompt-fn) 
                                                    :model "gpt-4"
                                                    :prompt-opts { :temperature 0.1 })]
@@ -854,6 +856,9 @@ Then run the full example:
               (println)
               (println content))))))))
 ```
+
+The model answers the question "Hi, who are the top 5 artists by number of tracks?" 
+with:
 
 ```
 The top 5 artists by number of tracks are:

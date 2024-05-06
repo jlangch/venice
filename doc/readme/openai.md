@@ -19,7 +19,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
     * [Examples Streaming](#examples-streaming)
         * [Example sync](#example-sync)
         * [Example async](#example-async)
-* [OpenAI Functions Cookbook](openai-functions.md)
+* [Functions Cookbook](openai-functions.md)
 * Audio
 * Images
 * Embeddings
