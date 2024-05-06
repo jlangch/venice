@@ -63,6 +63,9 @@ public class PdfSection implements ISectionBuilder {
         tools.addItem(diBuilder.getDocItem("pdf/pages"));
         tools.addItem(diBuilder.getDocItem("pdf/watermark", false));
         tools.addItem(diBuilder.getDocItem("pdf/to-text", false));
+        tools.addItem(diBuilder.getDocItem("pdf/page-to-image", false));
+        tools.addItem(diBuilder.getDocItem("pdf/extract-images", false));
+        tools.addItem(diBuilder.getDocItem("pdf/page-count", false));
 
         return section;
     }

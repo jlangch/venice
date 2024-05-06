@@ -24,8 +24,10 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
@@ -36,6 +38,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.rendering.PDFRenderer;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -43,6 +57,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -602,6 +617,168 @@ public class PdfFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction pdf_page_to_image =
+        new VncFunction(
+                "pdf/page-to-image",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(pdf/page-to-image pdf page-nr)",
+                        "(pdf/page-to-image pdf page-nr dpi)")
+                    .doc(
+                        "Converts a page from the PDF to an image buffer. \n\n" +
+                        "The passed PDF pdf is a bytebuf. Returns the image buffer as a" +
+                        ":java.awt.image.BufferedImage that can be further " +
+                        "processed or saved with the  `:images` module. ")
+                    .seeAlso("pdf/render", "pdf/to-text")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                sandboxFunctionCallValidation();
+
+                final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
+                final long pageNr = Coerce.toVncLong(args.second()).toJavaLong();
+
+                Double dpi = null;
+                if (args.size() == 3) {
+                    if (Types.isVncLong(args.third())) {
+                        dpi = Coerce.toVncLong(args.third()).toJavaDouble();
+                    }
+                    else if (Types.isVncDouble(args.third())) {
+                        dpi = Coerce.toVncDouble(args.third()).toJavaDouble();
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'page-to-image' does not allow %s as dpi value",
+                                Types.getType(args.third())));
+                    }
+                }
+
+                try(PDDocument doc = Loader.loadPDF(pdf.array())) {
+                    final PDFRenderer pdfRenderer = new PDFRenderer(doc);
+
+                    final BufferedImage img = dpi != null
+                                                ? pdfRenderer.renderImage((int)pageNr, dpi.floatValue())
+                                                : pdfRenderer.renderImage((int)pageNr);
+
+                    return new VncJavaObject(img);
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to convert PDF page to an image", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction pdf_extract_images =
+        new VncFunction(
+                "pdf/extract-images",
+                VncFunction
+                    .meta()
+                    .arglists("(pdf/extract-images pdf page-nr)")
+                    .doc(
+                        "Extracts the images from the PDF page. \n\n" +
+                        "The passed PDF pdf is a bytebuf. Returns the images as a" +
+                        "list of :java.awt.image.BufferedImage that can be further " +
+                        "processed or saved with the `:images` module. ")
+                    .seeAlso("pdf/render", "pdf/to-text")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                sandboxFunctionCallValidation();
+
+                final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
+                final long pageNr = Coerce.toVncLong(args.second()).toJavaLong();
+
+                try(PDDocument doc = Loader.loadPDF(pdf.array())) {
+                    final PDPage page = doc.getPage((int)pageNr);
+
+                    final List<VncVal> images = new ArrayList<>();
+
+                    final PDFStreamEngine engine = new PDFStreamEngine() {
+                        @Override
+                        protected void processOperator(Operator operator, List<COSBase> operands) throws IOException{
+                            String operation = operator.getName();
+
+                            if ("Do".equals(operation)) {
+                                COSName objectName = (COSName)operands.get(0);
+                                PDXObject pdxObject = getResources().getXObject(objectName);
+
+                                if (pdxObject instanceof PDImageXObject) {
+                                    // Image
+                                    PDImageXObject img = (PDImageXObject) pdxObject;
+                                    BufferedImage bImg = img.getImage();
+
+                                    images.add(new VncJavaObject(bImg));
+
+                                }
+                                else if (pdxObject instanceof PDFormXObject) {
+                                    PDFormXObject form = (PDFormXObject) pdxObject;
+                                    showForm(form);
+                                }
+                            }
+                            else {
+                                super.processOperator(operator, operands);
+                            }
+                        }
+                    };
+
+                    engine.processPage(page);
+
+                    return VncList.ofColl(images);
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to extract images from PDF", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction pdf_page_count =
+        new VncFunction(
+                "pdf/page-count",
+                VncFunction
+                    .meta()
+                    .arglists("(pdf/page-count pdf)")
+                    .doc("Returns the number of pages in a PDF.")
+                    .seeAlso("pdf/render", "pdf/to-text")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                sandboxFunctionCallValidation();
+
+                final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+                try(PDDocument doc = Loader.loadPDF(pdf.array())) {
+                	return new VncLong(doc.getNumberOfPages());
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to get the number of PDF pages", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     private static Map<String,ByteBuffer> mapResources(final VncMap resourceMap) {
         final Map<String,ByteBuffer> resources = new HashMap<>();
@@ -762,6 +939,9 @@ public class PdfFunctions {
                     .add(pdf_pages)
                     .add(pdf_text_to_pdf)
                     .add(pdf_to_text)
+                    .add(pdf_page_to_image)
+                    .add(pdf_extract_images)
+                    .add(pdf_page_count)
                     .toMap();
 
 }
