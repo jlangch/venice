@@ -589,8 +589,10 @@
         "application/json"   (let [details (openai/pretty-print-json (:data response))]
                                (throw (ex :VncException (str info details))))
  
-
         "plain/text"         (let [details (:data response)]
+                               (throw (ex :VncException (str info details))))
+ 
+        "plain/html"         (let [details (:data response)]
                                (throw (ex :VncException (str info details))))
 
         (throw (ex :VncException info))))))
