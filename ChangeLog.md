@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Fixed
+
+- 'repl.sh' and 'repl.bat' to source the 'repl.env' within the restart loop
+
 
 
 ## [1.12.18] - 2024-05-06

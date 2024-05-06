@@ -28,16 +28,16 @@ if not exist %REPL_HOME% (
 if not exist %REPL_HOME%\tmp mkdir %REPL_HOME%\tmp
 if not exist %REPL_HOME%\scripts mkdir %REPL_HOME%\scripts
 
-REM # load environment variables
-if exist %REPL_HOME%/repl.env.bat (
-  call %REPL_HOME%/repl.env.bat
-)
-
 
 cd %REPL_HOME%
 
 
 :start
+
+REM # load environment variables
+if exist %REPL_HOME%/repl.env.bat (
+  call %REPL_HOME%/repl.env.bat
+)
 
 java.exe ^
   -server ^
