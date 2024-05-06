@@ -574,15 +574,26 @@
   assert-response-http-ok [response]
 
   (when-not (=  (:status response) 200)
-    (throw (ex :VncException
-               """
-               HTTP response is not HTTP_OK!
+    (let [status    (:status response)
+          mimetype  (:mimetype response)
+          info      """
+                    HTTP response is not HTTP_OK!
+                    
+                    HTTP Status: ~{status}
+                    Mimetype:    ~{mimetype}
+                    
+                    Response:
 
-               HTTP Status: ~(:status response)
-               Mimetype:    ~(:mimetype response)
+                    """]
+      (case mimetype
+        "application/json"   (let [details (openai/pretty-print-json (:data response))]
+                               (throw (ex :VncException (str info details))))
+ 
 
-               Response:    ~(:data response)
-               """))))
+        "plain/text"         (let [details (:data response)]
+                               (throw (ex :VncException (str info details))))
+
+        (throw (ex :VncException info))))))
 
 
 (defn 
