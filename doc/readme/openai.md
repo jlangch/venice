@@ -51,7 +51,7 @@ directory.
 with:
 
 ```
-foo>  java -jar venice-1.12.17.jar -setup -colors
+foo>  java -jar venice-1.12.18.jar -setup -colors
 ```
 
 The setup will create a `repl.sh` that *sources* a `repl.env` at REPL startup time.
