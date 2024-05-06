@@ -18,7 +18,7 @@ Basically Venice can handle any SQL database for which a JDBC driver is availabl
 * [Create / Drop Tables](#create-and-drop-tables)
 * [Transactions](#transactions)
 
-
+<br/>
 
 ## Install the PostgreSQL JDBC driver
 
