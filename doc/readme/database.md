@@ -4,9 +4,14 @@ The Venice database modules are based on the [Java Database Connectivity (JDBC) 
 
 Basically Venice can handle any SQL database for which a JDBC driver is available.
 
+**Setup Tasks**
+
 * [Install the PostgreSQL JDBC driver](#install-the-postgresql-jdbc-driver)
 * [Start a PostgreSQL Docker Instance](#start-a-postgresql-docker-instance)
 * [Load the Chinook Dataset](#load-the-chinook-dataset)
+
+**Working with the Database**
+
 * [Chinook Dataset Overview](#chinook-dataset-overview)
 * [Queries](#queries)
 * [Updates](#updates)

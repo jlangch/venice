@@ -610,7 +610,7 @@ The OpenAI shall answer questions about the current weather at a given location.
 
 
 
-*Note: for simplicity reasons this example just handles the happy path!*
+*Note: for simplicity this example just handles the happy path!*
 
 ```clojure
 (do
@@ -802,7 +802,7 @@ Then run the full example:
 
 
   ;; Ask the model
-  ;; Note: for simplicity reasons this example just handles the happy path!
+  ;; Note: for simplicity this example just handles the happy path!
   
   ;; /Phase 1/: Initial question to the model
   (try-with [conn (db-connection)]
