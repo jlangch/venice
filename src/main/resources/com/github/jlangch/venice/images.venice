@@ -29,7 +29,8 @@
 
 (ns images)
 
-(import :java.awt.Color
+(import :java.awt.BasicStroke
+        :java.awt.Color
         :java.awt.Graphics
         :java.awt.Graphics2D
         :java.awt.Image
@@ -60,8 +61,12 @@
 ;; Constants
 ;; -----------------------------------------------------------------------------
 
-(defonce TYPE_INT_RGB  (. :BufferedImage :TYPE_INT_RGB))
-(defonce TYPE_INT_ARGB (. :BufferedImage :TYPE_INT_ARGB))
+(defonce TYPE_INT_RGB   (. :BufferedImage :TYPE_INT_RGB))
+(defonce TYPE_INT_ARGB  (. :BufferedImage :TYPE_INT_ARGB))
+(defonce TYPE_BYTE_GRAY (. :BufferedImage :TYPE_BYTE_GRAY))
+
+(defonce transparent (. :Color :new 0x00FFFFFF true))
+
 
 (defonce resize-modes #{ :resize-auto 
                          :resize-performance 
@@ -167,7 +172,81 @@
                Failed to write image. No appropriate writer found for format \
                '~{format-name}'!
                """))))
- 
+
+
+
+;; -----------------------------------------------------------------------------
+;; Create Image
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(create width height type)") 
+     :doc """
+          Creates a new `:java.awt.image.BufferedImage` with the given 
+          width, height, and type.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (-> (images/create 400 200 images/TYPE_INT_ARGB)
+                (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
+          """)
+     :see-also '(
+          "images/g2d"
+          "images/save" ) }
+
+  create [width height type]
+
+  (assert (long? width))
+  (assert (long? height))
+  (assert (int? type))
+
+  (try 
+    (. :BufferedImage :new width height type)
+    (catch :Exception e
+      (throw (ex :VncException "Faled to create image" e)))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Drawing
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(g2d img)")
+     :doc """
+          Creates a Graphics2D context from an image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (import :java.awt.BasicStroke)
+            (import :java.awt.Color)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (. g :setColor (. :Color :BLUE))
+              (. g :setStroke (. :BasicStroke :new 10.0))
+              (. g :drawOval 100 50 200 100)
+              (. g :dispose)
+
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create" ) }
+
+  g2d [img]
+
+  (assert (instance-of? :BufferedImage img))
+
+  (. img :createGraphics))
+
 
 
 ;; -----------------------------------------------------------------------------

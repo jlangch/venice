@@ -46,6 +46,10 @@ public class ModuleImagesSection implements ISectionBuilder {
         load.addItem(diBuilder.getDocItem("images/load", false));
         load.addItem(diBuilder.getDocItem("images/save", false));
 
+        final DocSection create = new DocSection("Create", id());
+        all.addSection(create);
+        create.addItem(diBuilder.getDocItem("images/create", false));
+
         final DocSection props = new DocSection("Properties", id());
         all.addSection(props);
         props.addItem(diBuilder.getDocItem("images/dimension", false));
@@ -63,6 +67,10 @@ public class ModuleImagesSection implements ISectionBuilder {
         transform.addItem(diBuilder.getDocItem("images/resize-fit", false));
         transform.addItem(diBuilder.getDocItem("images/resize", false));
         transform.addItem(diBuilder.getDocItem("images/apply-ops", false));
+
+        final DocSection drawing = new DocSection("Drawing", id());
+        all.addSection(drawing);
+        drawing.addItem(diBuilder.getDocItem("images/g2d", false));
 
         return section;
     }
