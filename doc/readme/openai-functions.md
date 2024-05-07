@@ -618,7 +618,8 @@ The OpenAI shall answer questions about the current weather at a given location.
   (load-module :openai-demo)
   
   (println "Phase #1: prompt the model")
-  (let [prompt    [ { :role     "system"
+  (let [model     "gpt-4"
+        prompt    [ { :role     "system"
                       :content  """
                                 Don't make assumptions about what values to plug into functions.
                                 Ask for clarification if a user request is ambiguous.
@@ -630,7 +631,7 @@ The OpenAI shall answer questions about the current weather at a given location.
                                 """ } ]
                   ;; [1] Ask the model about the weather in Glasgow
         response  (openai/chat-completion prompt
-                                          :model "gpt-4"
+                                          :model model
                                           :tools (openai-demo/demo-weather-function-defs)
                                           :prompt-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
@@ -649,12 +650,12 @@ The OpenAI shall answer questions about the current weather at a given location.
 
         (println "\nPhase #3: prompt the model again with additional knowledge")
         ;; [5] Additional prompt message with the function's response
-        (let [prompt-fn  { :role     "function"
-                           :name     (openai/extract-function-name response)
-                           :content  answer }
+        (let [prompt-fn { :role     "function"
+                          :name     (openai/extract-function-name response)
+                          :content  answer }
                         ;; [6] Ask the model again
               response  (openai/chat-completion (conj prompt prompt-fn)
-                                                :model "gpt-4"
+                                                :model model
                                                 :prompt-opts { :temperature 0.1 })]
           (openai/assert-response-http-ok response)
           (let [response (:data response)
@@ -809,22 +810,19 @@ Then run the full example:
   
   ;; Phase 1: Initial question to the model
   (try-with [conn (db-connection)]
-    (let [prompt      [ { :role     "system"
+    (let [model       "gpt-4"
+          prompt      [ { :role     "system"
                           :content  """
                                     Answer user questions by generating SQL queries against 
                                     the Chinook Music Database.
                                     """ }
                         { :role     "user"
                           :content  "Hi, who are the top 5 artists by number of tracks?" } ]
-          schema      (db-schema conn)
-          fn-defs     (function-defs schema)
+          fn-defs     (function-defs (db-schema conn))
           response    (openai/chat-completion prompt 
-                                              :model "gpt-4"
+                                              :model model
                                               :tools fn-defs
                                               :prompt-opts { :temperature 0.1 })] 
-      (println "Status:       " (:status response))
-      (println "Mimetype:     " (:mimetype response))
-      (println)
       (openai/assert-response-http-ok response)
       
       ;; Phase 2: model requests to call the function "ask_database"
@@ -848,7 +846,7 @@ Then run the full example:
                              :name     (openai/extract-function-name response)
                              :content  answer }
                 response   (openai/chat-completion (conj prompt prompt-fn) 
-                                                   :model "gpt-4"
+                                                   :model model
                                                    :prompt-opts { :temperature 0.1 })]
             (openai/assert-response-http-ok response)
             (let [response (:data response)
@@ -900,9 +898,8 @@ To debug requests and responses set enable the debug option at the `openai/chat-
     (println "Status:  " (:status response))
     (println "Mimetype:" (:mimetype response))
     (if (=  (:status response) 200)
-      (println "Choices:" (-> (:data response) 
-                              (:choices)                            
-                              (openai/pretty-print-json)))
+      (println "Response:" (-> (:data response) 
+                               (openai/pretty-print-json)))
       (println "Error:"   (:data response)))))
 ```
 

@@ -58,8 +58,9 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         response.addItem(diBuilder.getDocItem("openai/finish-reason-stop?", false));
         response.addItem(diBuilder.getDocItem("openai/finish-reason-tool-calls?", false));
         response.addItem(diBuilder.getDocItem("openai/extract-response-message", false));
-        response.addItem(diBuilder.getDocItem("openai/extract-response-message-content", false));
         response.addItem(diBuilder.getDocItem("openai/extract-response-message-role", false));
+        response.addItem(diBuilder.getDocItem("openai/extract-response-message-content", false));
+        response.addItem(diBuilder.getDocItem("openai/extract-response-tool-calls-id", false));
         response.addItem(diBuilder.getDocItem("openai/extract-function-name", false));
 
         final DocSection utils = new DocSection("Utils", id());

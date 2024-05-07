@@ -607,8 +607,9 @@
           """
      :see-also '( 
           "openai/extract-response-message"
-          "openai/extract-response-message-content"
           "openai/extract-response-message-role"
+          "openai/extract-response-message-content"
+          "openai/extract-response-tool-calls-id"
           "openai/extract-function-name" ) }
 
   extract-response-message 
@@ -633,6 +634,7 @@
      :see-also '( 
           "openai/extract-response-message"
           "openai/extract-response-message-role"
+          "openai/extract-response-tool-calls-id"
           "openai/extract-function-name" ) }
 
   extract-response-message-content 
@@ -658,6 +660,7 @@
      :see-also '( 
           "openai/extract-response-message"
           "openai/extract-response-message-content"
+          "openai/extract-response-tool-calls-id"
           "openai/extract-function-name" ) }
 
   extract-response-message-role 
@@ -674,6 +677,33 @@
 
 
 (defn 
+  ^{ :arglists '(
+          "(extract-response-tool-calls-id response)"
+          "(extract-response-tool-calls-id  response choice-idx)")
+     :doc """
+          Returns the message "tool_calls" id of an OpenAI JSON response.
+          """
+     :see-also '( 
+          "openai/extract-response-message"
+          "openai/extract-response-message-role"
+          "openai/extract-response-message-content"
+          "openai/extract-function-name" ) }
+
+  extract-response-tool-calls-id
+  
+  ([response]
+    (extract-response-tool-calls-id response 0))
+
+  ([response choice-idx]
+    (assert (coll? response))
+    (-<> (:choices response)
+         (nth <> choice-idx)
+         (:message <>)
+         (:tool_calls <>)
+         (:id <>))))
+
+
+(defn 
  ^{ :arglists '(
           "(extract-function-name response)"
           "(extract-function-name response choice-idx tools-calls-idx)")
@@ -682,8 +712,9 @@
           """
      :see-also '( 
           "openai/extract-response-message"
+          "openai/extract-response-message-role"
           "openai/extract-response-message-content"
-          "openai/extract-response-message-role" ) }
+          "openai/extract-response-tool-calls-id" ) }
 
   extract-function-name 
   
