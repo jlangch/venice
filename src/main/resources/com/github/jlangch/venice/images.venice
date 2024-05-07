@@ -273,6 +273,121 @@
   (. img :createGraphics))
 
 
+(defn
+  ^{ :arglists '(
+          "(fill-circle g2d x y radius)"
+          "(fill-oval g2d x y radius color)")
+     :doc """
+          Draws a filled circle in the given color in the graphics context. 
+          If the color is missing uses the current foreground color of
+          the graphics context. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (import :java.awt.BasicStroke)
+            (import :java.awt.Color)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (images/fill-circle g 200 100 100 (. :Color :BLUE))
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """,
+         """
+          (do
+            (load-module :images)
+
+            (import :java.awt.BasicStroke)
+            (import :java.awt.Color)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (images/fill-circle g 200 100 100 (. :Color :BLUE))
+
+              (. g :setComposite (. :java.awt.AlphaComposite :Clear))
+
+              (images/fill-circle g 200 100 100)
+
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """)
+     :see-also '(
+          "images/create" ) }
+
+  fill-circle 
+  
+  ([g2d x y radius]
+    (fill-circle g2d x y radius nil))
+
+  ([g2d x y radius color]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (long? radius))
+    (assert (or (nil? color) (instance-of? :Color color)))
+
+    (when color
+      (. g2d :setColor color))
+
+    (. g2d :fillOval (- x (/ radius 2)) 
+                     (- y (/ radius 2)) 
+                     radius
+                     radius)))
+
+
+(defn
+  ^{ :arglists '(
+          "(fill-oval g2d center-x center-y width height)"
+          "(fill-oval g2d center-x center-y width height color)")
+     :doc """
+          Draws a filled oval in the given color in the graphics context. 
+          If the color is missing uses the current foreground color of
+          the graphics context. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (import :java.awt.BasicStroke)
+            (import :java.awt.Color)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (images/fill-oval g 200 100 200 100 (. :Color :BLUE))
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create" ) }
+
+  fill-oval 
+  
+  ([g2d center-x center-y width height]
+    (fill-oval g2d center-x center-y width height nil))
+
+  ([g2d center-x center-y width height color]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (long? center-x))
+    (assert (long? center-y))
+    (assert (long? width))
+    (assert (long? height))
+    (assert (or (nil? color) (instance-of? :Color color)))
+
+    (when color
+      (. g2d :setColor color))
+
+    (. g2d :fillOval (- center-x (/ width 2)) 
+                     (- center-y (/ height 2)) 
+                     width
+                     height)))
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Image properties
