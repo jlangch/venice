@@ -679,7 +679,7 @@
 (defn 
   ^{ :arglists '(
           "(extract-response-tool-calls-id response)"
-          "(extract-response-tool-calls-id  response choice-idx)")
+          "(extract-response-tool-calls-id response choice-idx)")
      :doc """
           Returns the message "tool_calls" id of an OpenAI JSON response.
           """
