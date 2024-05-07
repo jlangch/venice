@@ -31,6 +31,7 @@
 
 (import :java.awt.BasicStroke
         :java.awt.Color
+        :java.awt.Font
         :java.awt.Graphics
         :java.awt.Graphics2D
         :java.awt.Image
@@ -300,7 +301,7 @@
      :doc """
           Turns anti-alias on/off on the Graphics2D context
 
-          `anti-alias on` is a short form of:
+          `(images/anti-alias on)` is a short form of:
           
           ````
           (let [key (. :RenderingHints :KEY_ANTIALIASING)
@@ -395,7 +396,8 @@
           "images/anti-alias"
           "images/fill-oval"
           "images/fill-rect"
-          "images/fill-round-rect" ) }
+          "images/fill-round-rect"
+          "images/draw-string" ) }
 
   fill-circle 
   
@@ -446,7 +448,8 @@
           "images/anti-alias"
           "images/fill-circle"
           "images/fill-rect"
-          "images/fill-round-rect" ) }
+          "images/fill-round-rect"
+          "images/draw-string" ) }
 
   fill-oval 
   
@@ -500,7 +503,8 @@
           "images/anti-alias"
           "images/fill-circle"
           "images/fill-oval"
-          "images/fill-round-rect" ) }
+          "images/fill-round-rect"
+          "images/draw-string" ) }
 
   fill-rect 
   
@@ -554,7 +558,8 @@
           "images/anti-alias"
           "images/fill-circle"
           "images/fill-oval"
-          "images/fill-rect" ) }
+          "images/fill-rect"
+          "images/draw-string" ) }
 
   fill-round-rect 
   
@@ -575,6 +580,69 @@
       (. g2d :setColor color))
 
     (. g2d :fillRoundRect x y width height arc-width arc-height)))
+
+
+(defn
+  ^{ :arglists '(
+          "(draw-string g2d text x y)"
+          "(draw-string g2d text x y color)"
+          "(draw-string g2d text x y color size)")
+     :doc """
+          Draws text at the given position. If the color is missing uses the 
+          current foreground color of the graphics context. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (import :java.awt.Color)
+            (import :java.awt.Font)
+
+            (let [bg  (. :Color :WHITE)
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+
+              (images/anti-alias g true)   ;; enable anti-alias 
+
+              (images/draw-string g "Hello, world!" 50 120 (. :Color :BLUE) 50)
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/fill-round-rect" ) }
+
+  draw-string
+  
+  ([g2d text x y]
+    (draw-string g2d text x y nil nil))
+
+  ([g2d text x y color]
+   (draw-string g2d text x y color nil))
+
+  ([g2d text x y color size]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (string? text))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (or (nil? color) (instance-of? :Color color)))
+    (assert (or (nil? size) (long? size)))
+
+    (when color
+      (. g2d :setColor color))
+
+    (when size
+      (let [f (. g2d :getFont)]
+        ;; just change the font size, keep name and style
+        (->> (. :Font :new (str f) (. f :getStyle) size)
+             (. g2d :setFont))))
+
+    (. g2d :drawString text x y)))
 
 
 

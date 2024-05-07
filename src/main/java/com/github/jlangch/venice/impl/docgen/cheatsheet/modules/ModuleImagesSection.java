@@ -77,6 +77,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         drawing.addItem(diBuilder.getDocItem("images/fill-oval", false));
         drawing.addItem(diBuilder.getDocItem("images/fill-rect", false));
         drawing.addItem(diBuilder.getDocItem("images/fill-round-rect", false));
+        drawing.addItem(diBuilder.getDocItem("images/draw-string", false));
 
         return section;
     }
