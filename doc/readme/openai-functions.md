@@ -816,13 +816,12 @@ Then run the full example:
                                     """ }
                         { :role     "user"
                           :content  "Hi, who are the top 5 artists by number of tracks?" } ]
-          prompt-opts { :temperature 0.1 }
           schema      (db-schema conn)
           fn-defs     (function-defs schema)
           response    (openai/chat-completion prompt 
                                               :model "gpt-4"
                                               :tools fn-defs
-                                              :prompt-opts prompt-opts)] 
+                                              :prompt-opts { :temperature 0.1 })] 
       (println "Status:       " (:status response))
       (println "Mimetype:     " (:mimetype response))
       (println)
@@ -836,7 +835,7 @@ Then run the full example:
         (assert (openai/finish-reason-tool-calls?  response))
         
         ;; call the function "ask_database"
-        (let [fn-map     { "ask_database" (partial ask-database conn ) }
+        (let [fn-map     { "ask_database" (partial ask-database conn) }
               fn-result  (first (openai/exec-fn response fn-map))
               answer     (:ok fn-result)
               err        (:err fn-result)]
