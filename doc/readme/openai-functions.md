@@ -618,27 +618,30 @@ The OpenAI shall answer questions about the current weather at a given location.
   (load-module :openai-demo)
   
   (println "Phase #1: prompt the model")
-  (let [prompt-sys  { :role     "system"
+  (let [prompt    [ { :role     "system"
                       :content  """
                                 Don't make assumptions about what values to plug into functions.
                                 Ask for clarification if a user request is ambiguous.
                                 """ }
-        prompt-usr  { :role     "user"
+                    { :role     "user"
                       :content  """
                                 What is the current weather in Glasgow? Give the temperature in 
                                 Celsius.
-                                """ }
+                                """ } ]
                   ;; [1] Ask the model about the weather in Glasgow
-        response  (openai/chat-completion [ prompt-sys prompt-usr ] 
+        response  (openai/chat-completion prompt
                                           :model "gpt-4"
                                           :tools (openai-demo/demo-weather-function-defs)
                                           :prompt-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
-    (let [response (:data response)
-          message  (openai/extract-response-message response)]
-      (println "\nPhase #2: call the requested functions")
-      ;; [2] The model returns a function call request
+    (let [response (:data response)]     
+      ;;(println "Message:" (->> (openai/extract-response-message response)
+      ;;                         (openai/pretty-print-json)))
+
       (assert (openai/finish-reason-tool-calls?  response))
+      ;; [2] The model returns a function call request
+      (println "\nPhase #2: call the requested functions")
+      
       (let [fn-map  (openai-demo/demo-weather-function-map)
             results (openai/exec-fn response fn-map)  ;; [3] Call the requested function
             answer  (:ok (first results))]            ;; [4] The function's returned JSON data
@@ -650,7 +653,7 @@ The OpenAI shall answer questions about the current weather at a given location.
                            :name     (openai/extract-function-name response)
                            :content  answer }
                         ;; [6] Ask the model again
-              response  (openai/chat-completion [ prompt-sys prompt-usr prompt-fn ]  
+              response  (openai/chat-completion (conj prompt prompt-fn)
                                                 :model "gpt-4"
                                                 :prompt-opts { :temperature 0.1 })]
           (openai/assert-response-http-ok response)
@@ -826,10 +829,11 @@ Then run the full example:
       (openai/assert-response-http-ok response)
       
       ;; Phase 2: model requests to call the function "ask_database"
-      (let [response (:data response)
-            message  (openai/extract-response-message response)]
+      (let [response (:data response)]
+        ;;(println "Message:" (->> (openai/extract-response-message response)
+        ;;                         (openai/pretty-print-json message)))
+
         (assert (openai/finish-reason-tool-calls?  response))
-        ;;(println "Message:" (openai/pretty-print-json message))
         
         ;; call the function "ask_database"
         (let [fn-map     { "ask_database" (partial ask-database conn ) }
