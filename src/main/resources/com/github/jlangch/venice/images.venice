@@ -181,7 +181,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(create width height type)") 
+          "(create width height type)"
+          "(create width height type color)") 
      :doc """
           Creates a new `:java.awt.image.BufferedImage` with the given 
           width, height, and type.
@@ -192,22 +193,40 @@
             (load-module :images)
             (-> (images/create 400 200 images/TYPE_INT_ARGB)
                 (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
+          """,
+          """
+          (do
+            (load-module :images)
+            (import :java.awt.Color)
+            (-> (images/create 400 200 images/TYPE_INT_ARGB (. :Color :WHITE))
+                (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
           """)
      :see-also '(
           "images/copy"
           "images/save"
           "images/g2d" ) }
 
-  create [width height type]
+  create
+  
+  ([width height type]
+     (create width height type nil))
 
-  (assert (long? width))
-  (assert (long? height))
-  (assert (int? type))
+  ([width height type color]
+    (assert (long? width))
+    (assert (long? height))
+    (assert (int? type))
+    (assert (or (nil? color) (instance-of? :Color color)))
 
-  (try 
-    (. :BufferedImage :new width height type)
-    (catch :Exception e
-      (throw (ex :VncException "Faled to create image" e)))))
+    (try 
+      (let [img (. :BufferedImage :new width height type)]
+        (when color
+          (let [g (images/g2d img)]
+            (. g :setColor color)
+            (. g :fillRect 0 0 width height)))
+        img)
+      (catch :Exception e
+        (throw (ex :VncException "Faled to create image" e))))))
+
 
 (defn 
   ^{ :arglists '(
@@ -244,6 +263,8 @@
           "(g2d img)")
      :doc """
           Creates a Graphics2D context from an image.
+
+          See: [Rendering Quality](https://docs.oracle.com/javase/tutorial/2d/advanced/quality.html)
           """
      :examples '(
           """
@@ -262,9 +283,10 @@
               (. g :dispose)
 
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """ ) 
      :see-also '(
-          "images/create" ) }
+          "images/create"
+          "images/anti-alias" ) }
 
   g2d [img]
 
@@ -272,11 +294,70 @@
 
   (. img :createGraphics))
 
+(defn
+  ^{ :arglists '(
+          "(anti-alias g2d on)")
+     :doc """
+          Turns anti-alias on/off on the Graphics2D context
+
+          `anti-alias on` is a short form of:
+          
+          ````
+          (let [key (. :RenderingHints :KEY_ANTIALIASING)
+                val (. :RenderingHints :VALUE_ANTIALIAS_ON)]
+            (. g2d :setRenderingHint key val))
+
+          (let [key (. :RenderingHints :KEY_TEXT_ANTIALIASING)
+                val (. :RenderingHints :VALUE_TEXT_ANTIALIAS_ON)]
+            (. g2d :setRenderingHint key val))
+          ```
+
+          See: [Rendering Quality](https://docs.oracle.com/javase/tutorial/2d/advanced/quality.html)
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (import :java.awt.Color)
+
+            (let [bg  (. :Color :WHITE)
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/fill-round-rect g 80 100 100 50 12 12 (. :Color :BLUE))
+
+              (images/anti-alias g false)   ;; disable anti-alias 
+              (images/fill-round-rect g 220 100 100 50 12 12 (. :Color :RED))
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ ) 
+     :see-also '(
+          "images/create"
+          "images/g2d" ) }
+
+  anti-alias [g2d on]
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (boolean? on))
+
+  (let [key-1 (. :RenderingHints :KEY_ANTIALIASING)
+        key-2 (. :RenderingHints :KEY_TEXT_ANTIALIASING)]
+    (if on
+        (let [val-1 (. :RenderingHints :VALUE_ANTIALIAS_ON)
+              val-2 (. :RenderingHints :VALUE_TEXT_ANTIALIAS_ON)]
+          (. g2d :setRenderingHint key-1 val-1)
+          (. g2d :setRenderingHint key-2 val-2))
+        (let [val-1 (. :RenderingHints :VALUE_ANTIALIAS_OFF)
+              val-2 (. :RenderingHints :VALUE_TEXT_ANTIALIAS_OFF)]
+          (. g2d :setRenderingHint key-1 val-1)
+          (. g2d :setRenderingHint key-2 val-2)))))
+
 
 (defn
   ^{ :arglists '(
           "(fill-circle g2d x y radius)"
-          "(fill-oval g2d x y radius color)")
+          "(fill-circle g2d x y radius color)")
      :doc """
           Draws a filled circle in the given color in the graphics context. 
           If the color is missing uses the current foreground color of
@@ -286,8 +367,6 @@
           """
           (do
             (load-module :images)
-
-            (import :java.awt.BasicStroke)
             (import :java.awt.Color)
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
@@ -298,25 +377,25 @@
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """,
          """
-          (do
+           ;; create a mask
+           (do
             (load-module :images)
-
-            (import :java.awt.BasicStroke)
             (import :java.awt.Color)
 
-            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+            (let [col (. :Color :WHITE)
+                  img (images/create 400 200 images/TYPE_INT_ARGB col)
                   g   (images/g2d img)]
-
-              (images/fill-circle g 200 100 100 (. :Color :BLUE))
-
               (. g :setComposite (. :java.awt.AlphaComposite :Clear))
-
               (images/fill-circle g 200 100 100)
-
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """)
      :see-also '(
-          "images/create" ) }
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/fill-round-rect" ) }
 
   fill-circle 
   
@@ -352,8 +431,6 @@
           """
           (do
             (load-module :images)
-
-            (import :java.awt.BasicStroke)
             (import :java.awt.Color)
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
@@ -364,7 +441,12 @@
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
      :see-also '(
-          "images/create" ) }
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/fill-circle"
+          "images/fill-rect"
+          "images/fill-round-rect" ) }
 
   fill-oval 
   
@@ -386,6 +468,113 @@
                      (- center-y (/ height 2)) 
                      width
                      height)))
+
+
+(defn
+  ^{ :arglists '(
+          "(fill-rect g2d x y width height)"
+          "(fill-rect g2d x y width height color)")
+     :doc """
+          Draws a filled rectangle in the given color in the graphics context. 
+          If the color is missing uses the current foreground color of
+          the graphics context. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (import :java.awt.Color)
+
+            (let [bg  (. :Color :WHITE)
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+
+              (images/fill-rect g 200 100 100 50 (. :Color :BLUE))
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-round-rect" ) }
+
+  fill-rect 
+  
+  ([g2d x y width height]
+    (fill-rect g2d x y width height nil))
+
+  ([g2d x y width height color]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (long? width))
+    (assert (long? height))
+    (assert (or (nil? color) (instance-of? :Color color)))
+
+    (when color
+      (. g2d :setColor color))
+
+    (. g2d :fillRect x y width height)))
+
+
+(defn
+  ^{ :arglists '(
+          "(fill-round-rect g2d x y width height arc-width arc-height)"
+          "(fill-round-rect g2d x y width height arc-width arc-height color)")
+     :doc """
+          Draws a filled rounded rectangle in the given color in the graphics 
+          context. If the color is missing uses the current foreground color of
+          the graphics context. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (import :java.awt.Color)
+
+            (let [bg  (. :Color :WHITE)
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/fill-round-rect g 80 100 100 50 12 12 (. :Color :BLUE))
+
+              (images/anti-alias g false)   ;; disable anti-alias 
+              (images/fill-round-rect g 220 100 100 50 12 12 (. :Color :RED))
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-rect" ) }
+
+  fill-round-rect 
+  
+  ([g2d x y width height arc-width arc-height]
+    (fill-round-rect g2d x y width height arc-width arc-height nil))
+
+  ([g2d x y width height arc-width arc-height color]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (long? width))
+    (assert (long? height))
+    (assert (long? arc-width))
+    (assert (long? arc-height))
+    (assert (or (nil? color) (instance-of? :Color color)))
+
+    (when color
+      (. g2d :setColor color))
+
+    (. g2d :fillRoundRect x y width height arc-width arc-height)))
 
 
 
