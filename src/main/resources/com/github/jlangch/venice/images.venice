@@ -194,8 +194,9 @@
                 (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
           """)
      :see-also '(
-          "images/g2d"
-          "images/save" ) }
+          "images/copy"
+          "images/save"
+          "images/g2d" ) }
 
   create [width height type]
 
@@ -207,6 +208,30 @@
     (. :BufferedImage :new width height type)
     (catch :Exception e
       (throw (ex :VncException "Faled to create image" e)))))
+
+(defn 
+  ^{ :arglists '(
+          "(copy img)") 
+     :doc """
+          Creates a copy of `:java.awt.image.BufferedImage`.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (-> (images/create 400 200 images/TYPE_INT_ARGB)
+                (images/copy)
+                (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
+          """)
+     :see-also '(
+          "images/g2d"
+          "images/save" ) }
+
+  copy [img]
+
+  (assert (instance-of? :BufferedImage img))
+
+  (copy-to-derived-image img))
 
 
 
