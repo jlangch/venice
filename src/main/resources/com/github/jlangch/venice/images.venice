@@ -412,17 +412,15 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-
               (. g :setColor images/blue)
-                (. g :setStroke (images/basic-stroke 10.0 
-                                                     images/cap-round 
-                                                     images/join-miter 
-                                                     5.0 
-                                                     [20.0] 
-                                                     20.0))
-                (. g :drawOval 100 50 200 100)
+              (. g :setStroke (images/basic-stroke 10.0 
+                                                   images/cap-round 
+                                                   images/join-miter 
+                                                   5.0 
+                                                   [20.0] 
+                                                   20.0))
+              (. g :drawOval 100 50 200 100)
               (. g :dispose)
-
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """ ) 
      :see-also '(
