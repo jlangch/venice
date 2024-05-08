@@ -69,6 +69,8 @@
 (defonce transparent (. :Color :new 0x00FFFFFF true))
 
 (defonce blue         (. :Color :BLUE))
+(defonce dark-blue    (. :Color :new   0I  39I  88I))
+(defonce light-blue   (. :Color :new 200I 230I 255I))
 (defonce black        (. :Color :BLACK))
 (defonce cyan         (. :Color :CYAN))
 (defonce dark-gray    (. :Color :DARK_GRAY))
@@ -79,6 +81,8 @@
 (defonce orange       (. :Color :ORANGE))
 (defonce pink         (. :Color :PINK))
 (defonce red          (. :Color :RED))
+(defonce dark-red     (. :Color :new  88I   0I  39I))
+(defonce light-red    (. :Color :new 255I 200I 230I))
 (defonce white        (. :Color :WHITE))
 (defonce yellow       (. :Color :YELLOW))
 
@@ -298,8 +302,9 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-              (images/stroke 10.0)
-              (images/fill-oval 100 50 200 100 images/blue)
+              (images/stroke g 10.0)
+              (images/fg-color g images/blue)
+              (images/fill-oval g 100 50 200 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
           """ ) 
@@ -343,13 +348,16 @@
             (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
-
+              
               (images/anti-alias g true)   ;; enable anti-alias 
-              (images/fill-round-rect g 80 100 100 50 12 12 images/blue)
-
+              (images/fg-color g images/blue)
+              (images/fill-round-rect g 80 100 100 50 12 12)
+              
               (images/anti-alias g false)   ;; disable anti-alias 
-              (images/fill-round-rect g 220 100 100 50 12 12 images/red)
- 
+              (images/fg-color g images/red)
+              (images/fill-round-rect g 220 100 100 50 12 12)
+              
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """ ) 
      :see-also '(
@@ -394,24 +402,27 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-              (images/stroke 10.0 images/cap-round images/join-miter))
-              (images/fill-oval 100 50 200 100 images/blue)
+              (images/fg-color g images/blue)
+              (images/stroke g 10.0 images/cap-round images/join-miter)
+              (images/draw-oval g 100 50 200 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """
-         """
+          """
+          """
           (do
             (load-module :images)
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-              (images/stroke 10.0 
+              (images/fg-color g images/blue)
+              (images/stroke g
+                             10.0 
                              images/cap-round 
                              images/join-miter 
                              5.0 
                              [20.0] 
-                             20.0))
-              (images/fill-oval 100 50 200 100 images/blue)
+                             20.0)
+              (images/draw-oval g 100 50 200 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """ ) 
@@ -463,6 +474,67 @@
 
 (defn
   ^{ :arglists '(
+          "(fg-color g2d color)")
+     :doc """
+          Sets the foreground color on the graphics context.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/fill-oval g 100 50 200 100)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ ) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/stroke"
+          "images/bg-color" ) }
+
+  fg-color [g2d color]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (instance-of? :Color color))
+    (. g2d :setColor color))
+
+
+(defn
+  ^{ :arglists '(
+          "(bg-color g2d color)")
+     :doc """
+          Sets the background color on the graphics context.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/bg-color g images/green)
+              (images/fill-oval g 100 50 200 100)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ ) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/stroke"
+          "images/fg-color" ) }
+
+  bg-color [g2d color]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (instance-of? :Color color))
+    (. g2d :setBackground color))
+
+
+(defn
+  ^{ :arglists '(
           "(dispose g2d)")
      :doc """
           Disposes of this graphics context and releases any system resources 
@@ -475,10 +547,9 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-
-              (images/fill-oval 100 50 200 100 images/blue)
+              (images/fg-color g images/blue)
+              (images/fill-oval g 100 50 200 100)
               (images/dispose g)
-
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """ ) 
      :see-also '(
@@ -489,7 +560,6 @@
   dispose [g2d]
     (assert (instance-of? :Graphics2D g2d))
     (. g2d :dispose))
-
 
 
 
@@ -510,10 +580,10 @@
  
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-
-              (images/fill-circle g 100 100 100 images/blue)
+              (images/fg-color g images/blue)
+              (images/fill-circle g 100 100 100)
               (images/copy-area g 50 50 100 100 200 30)
- 
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """)
      :see-also '(
@@ -528,6 +598,7 @@
           "images/draw-line" ) }
 
   copy-area [g2d x y width height dx dy]
+
     (assert (instance-of? :Graphics2D g2d))
     (assert (long? x))
     (assert (long? y))
@@ -540,12 +611,9 @@
 
 (defn
   ^{ :arglists '(
-          "(fill-circle g2d x y radius)"
-          "(fill-circle g2d x y radius color)")
+          "(fill-circle g2d x y radius)")
      :doc """
-          Draws a filled circle in the given color in the graphics context. 
-          If the color is missing uses the current foreground color of
-          the graphics context. 
+          Draws a filled circle. 
           """
      :examples '(
           """
@@ -554,9 +622,9 @@
  
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-
-              (images/fill-circle g 200 100 100 images/blue)
- 
+              (images/fg-color g images/blue)
+              (images/fill-circle g 200 100 100)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """,
          """
@@ -569,6 +637,7 @@
                   g   (images/g2d img)]
               (. g :setComposite (. :java.awt.AlphaComposite :Clear))
               (images/fill-circle g 200 100 100)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """)
      :see-also '(
@@ -582,35 +651,24 @@
           "images/draw-string"
           "images/draw-line" ) }
 
-  fill-circle 
-  
-  ([g2d x y radius]
-    (fill-circle g2d x y radius nil))
+  fill-circle [g2d x y radius]
 
-  ([g2d x y radius color]
-    (assert (instance-of? :Graphics2D g2d))
-    (assert (long? x))
-    (assert (long? y))
-    (assert (long? radius))
-    (assert (or (nil? color) (instance-of? :Color color)))
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (long? x))
+  (assert (long? y))
+  (assert (long? radius))
 
-    (when color
-      (. g2d :setColor color))
-
-    (. g2d :fillOval (- x (/ radius 2)) 
-                     (- y (/ radius 2)) 
-                     radius
-                     radius)))
+  (. g2d :fillOval (- x (/ radius 2)) 
+                    (- y (/ radius 2)) 
+                    radius
+                    radius))
 
 
 (defn
   ^{ :arglists '(
-          "(fill-oval g2d center-x center-y width height)"
-          "(fill-oval g2d center-x center-y width height color)")
+          "(fill-oval g2d center-x center-y width height)")
      :doc """
-          Draws a filled oval in the given color in the graphics context. 
-          If the color is missing uses the current foreground color of
-          the graphics context. 
+          Draws a filled oval. 
           """
      :examples '(
           """
@@ -619,9 +677,9 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-
-              (images/fill-oval g 200 100 200 100 images/blue)
- 
+              (images/fg-color g images/blue)
+              (images/fill-oval g 200 100 200 100)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
      :see-also '(
@@ -662,9 +720,7 @@
           "(fill-rect g2d x y width height)"
           "(fill-rect g2d x y width height color)")
      :doc """
-          Draws a filled rectangle in the given color in the graphics context. 
-          If the color is missing uses the current foreground color of
-          the graphics context. 
+          Draws a filled rectangle. 
           """
      :examples '(
           """
@@ -674,9 +730,9 @@
             (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
-
-              (images/fill-rect g 200 100 100 50 images/blue)
- 
+              (images/fg-color g images/blue)
+              (images/fill-rect g 200 100 100 50)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
      :see-also '(
@@ -690,33 +746,22 @@
           "images/draw-string"
           "images/draw-line" ) }
 
-  fill-rect 
-  
-  ([g2d x y width height]
-    (fill-rect g2d x y width height nil))
+  fill-rect [g2d x y width height]
 
-  ([g2d x y width height color]
-    (assert (instance-of? :Graphics2D g2d))
-    (assert (long? x))
-    (assert (long? y))
-    (assert (long? width))
-    (assert (long? height))
-    (assert (or (nil? color) (instance-of? :Color color)))
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (long? x))
+  (assert (long? y))
+  (assert (long? width))
+  (assert (long? height))
 
-    (when color
-      (. g2d :setColor color))
-
-    (. g2d :fillRect x y width height)))
+  (. g2d :fillRect x y width height))
 
 
 (defn
   ^{ :arglists '(
-          "(fill-round-rect g2d x y width height arc-width arc-height)"
-          "(fill-round-rect g2d x y width height arc-width arc-height color)")
+          "(fill-round-rect g2d x y width height arc-width arc-height)")
      :doc """
-          Draws a filled rounded rectangle in the given color in the graphics 
-          context. If the color is missing uses the current foreground color of
-          the graphics context. 
+          Draws a filled rounded rectangle. 
           """
      :examples '(
           """
@@ -726,13 +771,15 @@
             (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
-
+              (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
-              (images/fill-round-rect g 80 100 100 50 12 12 images/blue)
+              (images/fill-round-rect g 80 100 100 50 12 12)
 
+              (images/fg-color g images/red)
               (images/anti-alias g false)   ;; disable anti-alias 
-              (images/fill-round-rect g 220 100 100 50 12 12 images/red)
+              (images/fill-round-rect g 220 100 100 50 12 12)
  
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
      :see-also '(
@@ -746,12 +793,8 @@
           "images/draw-string"
           "images/draw-line" ) }
 
-  fill-round-rect 
-  
-  ([g2d x y width height arc-width arc-height]
-    (fill-round-rect g2d x y width height arc-width arc-height nil))
+  fill-round-rect [g2d x y width height arc-width arc-height]
 
-  ([g2d x y width height arc-width arc-height color]
     (assert (instance-of? :Graphics2D g2d))
     (assert (long? x))
     (assert (long? y))
@@ -759,22 +802,209 @@
     (assert (long? height))
     (assert (long? arc-width))
     (assert (long? arc-height))
-    (assert (or (nil? color) (instance-of? :Color color)))
+    (. g2d :fillRoundRect x y width height arc-width arc-height))
 
-    (when color
-      (. g2d :setColor color))
 
-    (. g2d :fillRoundRect x y width height arc-width arc-height)))
+(defn
+  ^{ :arglists '(
+          "(draw-circle g2d x y radius)")
+     :doc """
+          Draws a  circle. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+ 
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/draw-circle g 200 100 100)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """,
+         """
+           ;; create a mask
+           (do
+            (load-module :images)
+
+            (let [col images/white
+                  img (images/create 400 200 images/TYPE_INT_ARGB col)
+                  g   (images/g2d img)]
+              (. g :setComposite (. :java.awt.AlphaComposite :Clear))
+              (images/stroke g 10.0)
+              (images/draw-circle g 200 100 100)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """)
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/fill-round-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  draw-circle [g2d x y radius]
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (long? x))
+  (assert (long? y))
+  (assert (long? radius))
+
+  (. g2d :drawOval (- x (/ radius 2)) 
+                    (- y (/ radius 2)) 
+                    radius
+                    radius))
+
+
+(defn
+  ^{ :arglists '(
+          "(draw-oval g2d center-x center-y width height)")
+     :doc """
+          Draws an oval. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+              (images/stroke g 10.0)
+              (images/fg-color g images/blue)
+              (images/draw-oval g 200 100 200 100)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-rect"
+          "images/fill-round-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  draw-oval [g2d center-x center-y width height]
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (long? center-x))
+  (assert (long? center-y))
+  (assert (long? width))
+  (assert (long? height))
+
+  (. g2d :drawOval (- center-x (/ width 2)) 
+                    (- center-y (/ height 2)) 
+                    width
+                    height))
+
+
+(defn
+  ^{ :arglists '(
+          "(draw-rect g2d x y width height)"
+          "(draw-rect g2d x y width height color)")
+     :doc """
+          Draws a rectangle. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [bg  images/white
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+              (images/stroke g 10.0)
+              (images/fg-color g images/blue)
+              (images/draw-rect g 200 100 100 50)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-round-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  draw-rect [g2d x y width height]
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (long? x))
+  (assert (long? y))
+  (assert (long? width))
+  (assert (long? height))
+
+  (. g2d :drawRect x y width height))
+
+
+(defn
+  ^{ :arglists '(
+          "(draw-round-rect g2d x y width height arc-width arc-height)")
+     :doc """
+          Draws a rounded rectangle. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            
+            (let [bg  images/white
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+
+              (images/stroke g 10.0)
+
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/draw-round-rect g 80 100 100 50 12 12)
+
+              (images/fg-color g images/red)
+              (images/anti-alias g false)   ;; disable anti-alias 
+              (images/draw-round-rect g 220 100 100 50 12 12)
+ 
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  draw-round-rect [g2d x y width height arc-width arc-height]
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (long? x))
+  (assert (long? y))
+  (assert (long? width))
+  (assert (long? height))
+  (assert (long? arc-width))
+  (assert (long? arc-height))
+  (. g2d :drawRoundRect x y width height arc-width arc-height))
 
 
 (defn
   ^{ :arglists '(
           "(draw-string g2d text x y)"
-          "(draw-string g2d text x y color)"
-          "(draw-string g2d text x y color size)")
+          "(draw-string g2d text x y size)")
      :doc """
-          Draws text at the given position. If the color is missing uses the 
-          current foreground color of the graphics context. 
+          Draws text with an optional size at the given position.
           """
      :examples '(
           """
@@ -785,11 +1015,10 @@
             (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
-
+              (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
-
-              (images/draw-string g "Hello, world!" 50 120 images/blue 50)
- 
+              (images/draw-string g "Hello, world!" 50 120 50)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
      :see-also '(
@@ -806,21 +1035,14 @@
   draw-string
   
   ([g2d text x y]
-    (draw-string g2d text x y nil nil))
+    (draw-string g2d text x y nil))
 
-  ([g2d text x y color]
-   (draw-string g2d text x y color nil))
-
-  ([g2d text x y color size]
+  ([g2d text x y size]
     (assert (instance-of? :Graphics2D g2d))
     (assert (string? text))
     (assert (long? x))
     (assert (long? y))
-    (assert (or (nil? color) (instance-of? :Color color)))
     (assert (or (nil? size) (long? size)))
-
-    (when color
-      (. g2d :setColor color))
 
     (when size
       (let [f (. g2d :getFont)]
@@ -833,11 +1055,9 @@
 
 (defn
   ^{ :arglists '(
-          "(draw-line g2d x1 y1 x2 y2)"
-          "(draw-line g2d x1 y1 x2 y2 color)")
+          "(draw-line g2d x1 y1 x2 y2)")
      :doc """
-          Draws a line. If the color is missing uses the 
-          current foreground color of the graphics context. 
+          Draws a line. 
           """
      :examples '(
           """
@@ -847,12 +1067,11 @@
             (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
-
               (images/anti-alias g true)   ;; enable anti-alias 
               (images/stroke g 10.0 images/cap-round images/join-miter))
-              (images/draw-line g 50 50 350 150 images/blue)
+              (images/fg-color g images/blue)
+              (images/draw-line g 50 50 350 150)
               (images/dispose g)
- 
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
      :see-also '(
@@ -864,25 +1083,17 @@
           "images/fill-oval"
           "images/fill-rect"
           "images/fill-round-rect"
-          "images/draw-text" ) }
+          "images/draw-string" ) }
 
-  draw-line 
-  
-  ([g2d x1 y1 x2 y2]
-    (draw-line g2d x1 y1 x2 y2 nil))
+  draw-line [g2d x1 y1 x2 y2]
 
-  ([g2d x1 y1 x2 y2 color]
     (assert (instance-of? :Graphics2D g2d))
     (assert (long? x1))
     (assert (long? y1))
     (assert (long? x2))
     (assert (long? y2))
-    (assert (or (nil? color) (instance-of? :Color color)))
 
-    (when color
-      (. g2d :setColor color))
-
-    (. g2d :drawLine x1 y1 x2 y2)))
+    (. g2d :drawLine x1 y1 x2 y2))
 
 
 
