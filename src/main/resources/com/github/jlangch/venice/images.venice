@@ -78,21 +78,24 @@
 
 (defonce transparent (. :Color :new 0x00FFFFFF true))
 
+;; see: https://htmlcolorcodes.com/color-names/
 (defonce blue         (. :Color :BLUE))
-(defonce dark-blue    (. :Color :new   0I  39I  88I))
-(defonce light-blue   (. :Color :new 200I 230I 255I))
+(defonce dark-blue    (. :Color :new   0I   0I 128I))
+(defonce light-blue   (. :Color :new  87I 155I 255I))
 (defonce black        (. :Color :BLACK))
 (defonce cyan         (. :Color :CYAN))
 (defonce dark-gray    (. :Color :DARK_GRAY))
 (defonce gray         (. :Color :GRAY))
 (defonce green        (. :Color :GREEN))
+(defonce dark-green   (. :Color :new   0I  94I   0I))
+(defonce light-green  (. :Color :new 155I 232I 155I))
 (defonce light-gray   (. :Color :LIGHT_GRAY))
 (defonce magenta      (. :Color :MAGENTA))
 (defonce orange       (. :Color :ORANGE))
 (defonce pink         (. :Color :PINK))
 (defonce red          (. :Color :RED))
-(defonce dark-red     (. :Color :new  88I   0I  39I))
-(defonce light-red    (. :Color :new 255I 200I 230I))
+(defonce dark-red     (. :Color :new 130I   0I   0I))
+(defonce light-red    (. :Color :new 240I 125I 152I))
 (defonce white        (. :Color :WHITE))
 (defonce yellow       (. :Color :YELLOW))
 
@@ -355,8 +358,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               
               (images/anti-alias g true)   ;; enable anti-alias 
@@ -523,8 +525,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/bg-color g images/blue)
               (images/clear-rect g 150 80 100 50)
@@ -558,8 +559,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
               (images/set-clip g 0 0 200 200) ;; left half of the img
@@ -606,8 +606,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)
                   old (images/get-clip g)]
               (images/anti-alias g true)   ;; enable anti-alias 
@@ -651,8 +650,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/get-clip-bounds g)))
          """) 
@@ -762,8 +760,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/bg-color g images/blue)
               (images/clear-rect g 150 80 100 50)
@@ -815,8 +812,7 @@
            (do
             (load-module :images)
 
-            (let [col images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB col)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (. g :setComposite (. :java.awt.AlphaComposite :Clear))
               (images/fill-circle g 200 100 100)
@@ -909,8 +905,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
               (images/fill-rect g 150 80 100 50)
@@ -950,8 +945,7 @@
           (do
             (load-module :images)
             
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/whitebg)
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
@@ -1010,8 +1004,7 @@
            (do
             (load-module :images)
 
-            (let [col images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB col)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (. g :setComposite (. :java.awt.AlphaComposite :Clear))
               (images/stroke g 10.0)
@@ -1099,8 +1092,7 @@
           (do
             (load-module :images)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/stroke g 10.0)
               (images/fg-color g images/blue)
@@ -1141,8 +1133,7 @@
           (do
             (load-module :images)
             
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
 
               (images/stroke g 10.0)
@@ -1194,8 +1185,7 @@
             (load-module :images)
             (import :java.awt.Font)
 
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
@@ -1246,8 +1236,7 @@
           (do
             (load-module :images)
  
-            (let [bg  images/white
-                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/anti-alias g true)   ;; enable anti-alias 
               (images/stroke g 10.0 images/cap-round images/join-miter)
@@ -1276,6 +1265,64 @@
     (assert (long? y2))
 
     (. g2d :drawLine x1 y1 x2 y2))
+
+
+(defn
+  ^{ :arglists '(
+          "(draw-image g2d x y)"
+          "(draw-image g2d x y width height)")
+     :doc """
+          Draws an image to the position x,y in the graphics context. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+ 
+            (let [img1 (images/create 50 50 images/TYPE_INT_ARGB images/blue)
+                  img2 (images/create 50 50 images/TYPE_INT_ARGB images/pink)
+                  img  (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g    (images/g2d img)]
+             
+              (images/draw-image g img1 100 30)
+              (images/draw-image g img2 130 60)
+              (images/draw-image g img1 160 90)
+
+              (images/draw-image g img1 250 30 30 30)
+              (images/draw-image g img2 280 60 30 30)
+              (images/draw-image g img1 310 90 30 30)
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/fill-round-rect"
+          "images/draw-string" ) }
+
+  draw-image 
+  
+  ([g2d img x y]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (instance-of? :Image img))
+    (assert (long? x))
+    (assert (long? y))
+    (. g2d :drawImage img x y nil))
+  
+  ([g2d img x y width height]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (instance-of? :Image img))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (long? width))
+    (assert (long? height))
+     (. g2d :drawImage img x y width height nil)))
 
 
 
@@ -1557,7 +1604,7 @@
             (load-module :images)
             (import :java.awt.Color)
             (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
-                (images/pad 200 (. :Color :WHITE))
+                (images/pad 200 images/white)
                 (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
           """ ) }
 
@@ -1578,7 +1625,7 @@
           img-alpha?   (not (opaque? img))
           width        (+ img-width pad-left pad-right)
           height       (+ img-height pad-top pad-bottom)
-          type         (if (or (color-alpha? color) img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
+          type         (if (or (color-alpha? color) img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)
           dest         (. :BufferedImage :new width height type)
           g            (. dest :getGraphics)]
 

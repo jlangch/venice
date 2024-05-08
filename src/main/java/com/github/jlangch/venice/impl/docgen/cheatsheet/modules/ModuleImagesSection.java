@@ -92,6 +92,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         drawing.addItem(diBuilder.getDocItem("images/draw-round-rect", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-string", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-line", false));
+        drawing.addItem(diBuilder.getDocItem("images/draw-image", false));
 
         final DocSection fill = new DocSection("Filling", id());
         all.addSection(fill);
