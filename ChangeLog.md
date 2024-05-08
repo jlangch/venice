@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- many new imaging functions to `:images` module
+- many new imaging functions to the `:images` module
 
 ### Fixed
 
