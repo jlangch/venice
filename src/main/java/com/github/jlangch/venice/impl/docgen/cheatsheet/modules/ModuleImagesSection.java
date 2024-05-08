@@ -76,6 +76,9 @@ public class ModuleImagesSection implements ISectionBuilder {
         g2d.addItem(diBuilder.getDocItem("images/stroke", false));
         g2d.addItem(diBuilder.getDocItem("images/fg-color", false));
         g2d.addItem(diBuilder.getDocItem("images/bg-color", false));
+        g2d.addItem(diBuilder.getDocItem("images/get-clip", false));
+        g2d.addItem(diBuilder.getDocItem("images/set-clip", false));
+        g2d.addItem(diBuilder.getDocItem("images/get-clip-bounds", false));
 
         final DocSection drawing = new DocSection("Drawing", id());
         all.addSection(drawing);
@@ -94,6 +97,12 @@ public class ModuleImagesSection implements ISectionBuilder {
         fill.addItem(diBuilder.getDocItem("images/fill-oval", false));
         fill.addItem(diBuilder.getDocItem("images/fill-rect", false));
         fill.addItem(diBuilder.getDocItem("images/fill-round-rect", false));
+
+        final DocSection shapes = new DocSection("Shapes", id());
+        all.addSection(shapes);
+        shapes.addItem(diBuilder.getDocItem("images/point", false));
+        shapes.addItem(diBuilder.getDocItem("images/rectangle", false));
+        shapes.addItem(diBuilder.getDocItem("images/polygon", false));
 
         return section;
     }

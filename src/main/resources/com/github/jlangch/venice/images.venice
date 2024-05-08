@@ -26,6 +26,14 @@
 ;;;;
 ;;;; This is a Venice rewrite of the 'imgscalr'.
 
+;;;; Java2D device coordinates
+;;;;
+;;;;       +--------> x
+;;;;       |
+;;;;       |
+;;;;       v
+;;;;       y
+
 
 (ns images)
 
@@ -36,6 +44,7 @@
         :java.awt.Graphics2D
         :java.awt.Image
         :java.awt.RenderingHints
+        :java.awt.Shape
         :java.awt.Transparency
         :java.awt.color.ColorSpace
         :java.awt.geom.AffineTransform
@@ -56,6 +65,7 @@
         :javax.imageio.stream.FileImageInputStream
         :javax.imageio.spi.IIORegistry
         :javax.imageio.spi.ImageWriterSpi)
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -531,6 +541,129 @@
     (assert (instance-of? :Graphics2D g2d))
     (assert (instance-of? :Color color))
     (. g2d :setBackground color))
+
+
+(defn
+  ^{ :arglists '(
+          "(set-clip g2d shape)"
+          "(set-clip g2d x y width height)")
+     :doc """
+          Sets the current clip to the rectangle specified by the given 
+          coordinates.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [bg  images/white
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+              (images/set-clip g 0 0 400 200)
+              (images/fill-oval g 150 80 100 50)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-round-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  set-clip 
+
+  ([g2d shape]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (or (nil? shape ) (instance-of? :Shape shape)))
+    (. g2d :setClip shape))
+
+  ([g2d x y width height]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (long? width))
+    (assert (long? height))
+
+    (. g2d :setClip x y width height)))
+
+
+(defn
+  ^{ :arglists '(
+          "(get-clip g2d)")
+     :doc """
+          Returns the current clip shape.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [bg  images/white
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)
+                  old (images/get-clip)]
+              (images/set-clip g 0 0 400 200)
+              (images/fill-oval g 150 80 100 50)
+              (images/set-clip g old) ;; restore clipping 
+              ;; ...
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-round-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  get-clip [g2d]
+
+  (assert (instance-of? :Graphics2D g2d))
+
+  (. g2d :getClip))
+
+
+(defn
+  ^{ :arglists '(
+          "(get-clip-bounds g2d)")
+     :doc """
+          Returns the current clip bounds as a :java.awt.Rectangle.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [bg  images/white
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+              (images/get-clip-bounds g)))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-round-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  get-clip-bounds [g2d]
+
+  (assert (instance-of? :Graphics2D g2d))
+
+  (. g2d :getClipBounds))
 
 
 (defn
@@ -1688,6 +1821,76 @@
   format-names []
 
   (. :ImageIO :getWriterFormatNames))
+
+
+(defn 
+  ^{ :arglists '(
+          "(point x y)") 
+     :doc """
+          Creates a :java.awt.Point.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/point 0 0))
+          """ ) }
+
+  point [x y]
+
+  (assert (long? x))
+  (assert (long? y))
+
+  (. :java.awt.Point :new x y))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rectangle x y width height)") 
+     :doc """
+          Creates a :java.awt.Rectangle.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/rectangle 0 0 200 100))
+          """ ) }
+
+  rectangle [x y width height]
+
+  (assert (long? x))
+  (assert (long? y))
+  (assert (long? width))
+  (assert (long? height))
+
+  (. :java.awt.Rectangle :new x y width height))
+
+
+(defn 
+  ^{ :arglists '(
+          "(polygon points)") 
+     :doc """
+          Creates a :java.awt.Polygon.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/ploygon [[0 0] [0 100] [100 100]  [100 0] [0 0]]))
+          """ ) }
+
+  polygon [points]
+
+  (assert (sequential? points))
+ 
+  (loop [poly   (. :java.awt.Polygon :new) 
+         points points]
+    (if (empty? points)
+      poly
+      (let [[x y] (first points)]
+        (. poly :addPoint x y)
+        (recur poly (rest points))))))
 
 
 
