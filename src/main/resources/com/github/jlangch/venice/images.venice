@@ -1546,7 +1546,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(pad img padding color)") 
+          "(pad img padding color)"
+          "(pad img pad-top pad-right pad-bottom pad-left color)") 
      :doc """
           Pads an image. Returns a new image.
           """
@@ -1560,32 +1561,47 @@
                 (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
           """ ) }
 
-  pad [img padding color]
+  pad 
+  
+  ([img padding color]
+    (pad img padding padding padding padding color))
+  
+  ([img pad-top pad-right pad-bottom pad-left color]
+    (assert (instance-of? :Image img))
+    (assert (and (long? pad-top) (>= pad-top 0)))
+    (assert (and (long? pad-right) (>= pad-right 0)))
+    (assert (and (long? pad-bottom) (>= pad-bottom 0)))
+    (assert (and (long? pad-left) (>= pad-left 0)))
+    (assert (instance-of? :Color color))
 
-  (assert (instance-of? :Image img))
-  (assert (and (long? padding) (>= padding 0)))
-  (assert (instance-of? :Color color))
+    (let [[img-width img-height] (dimension img)
+          img-alpha?   (not (opaque? img))
+          width        (+ img-width pad-left pad-right)
+          height       (+ img-height pad-top pad-bottom)
+          type         (if (or (color-alpha? color) img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
+          dest         (. :BufferedImage :new width height type)
+          g            (. dest :getGraphics)]
 
-  (let [[img-width img-height] (dimension img)
-        img-alpha?   (not (opaque? img))
-        width        (+ img-width (* padding 2))
-        height       (+ img-height (* padding 2))
-        type         (if (or (color-alpha? color) img-alpha?) TYPE_INT_ARGB TYPE_INT_RGB)       
-        dest         (. :BufferedImage :new width height type)
-        g            (. dest :getGraphics)]
+          ;; draw the padding border
+          ;; +-+------------------+-+
+          ;; |*|******************|*|
+          ;; +-+------------------+-+
+          ;; |*|                  |*|
+          ;; |*|                  |*|
+          ;; +-+------------------+-+
+          ;; |*|******************|*|
+          ;; +-+------------------+-+
+          (. g :setColor color)
+          (. g :fillRect 0 0 width pad-top)
+          (. g :fillRect 0 pad-top pad-left (- height pad-top pad-bottom))
+          (. g :fillRect (- width pad-right) pad-top pad-right (- height pad-top pad-bottom))
+          (. g :fillRect 0 (- height pad-bottom) width pad-bottom)
 
-        ;; draw the padding border
-        (. g :setColor color)
-        (. g :fillRect 0 0 width padding)
-        (. g :fillRect 0 padding padding height)
-        (. g :fillRect padding (- height padding) width height)
-        (. g :fillRect (- width padding) padding width (- height padding))
+          ; draw the centered image
+          (. g :drawImage img pad-left pad-top nil)
+          (. g :dispose)
+      dest)))
 
-        ; draw the centered image
-        (. g :drawImage img padding padding nil)
-        (. g :dispose)
-
-    dest))
 
 (defn 
   ^{ :arglists '(
