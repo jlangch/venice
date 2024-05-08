@@ -12,8 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- functions `create` (create new image) and `g2d` (get Graphics2D context) 
-  to :images module
+- many new imaging functions to `:images` module
 
 ### Fixed
 
