@@ -73,7 +73,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         all.addSection(g2d);
         g2d.addItem(diBuilder.getDocItem("images/g2d", false));
         g2d.addItem(diBuilder.getDocItem("images/anti-alias", false));
-        g2d.addItem(diBuilder.getDocItem("images/basic-stroke", false));
+        g2d.addItem(diBuilder.getDocItem("images/stroke", false));
 
         final DocSection drawing = new DocSection("Drawing", id());
         all.addSection(drawing);
