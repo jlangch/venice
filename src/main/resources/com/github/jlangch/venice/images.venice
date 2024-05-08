@@ -2022,7 +2022,7 @@
           """
           (do
             (load-module :images)
-            (images/ploygon [[0 0] [0 100] [100 100]  [100 0] [0 0]]))
+            (images/polygon [[0 0] [0 100] [100 100]  [100 0] [0 0]]))
           """ ) }
 
   polygon [points]
