@@ -1280,7 +1280,7 @@
             (load-module :images)
  
             (let [img1 (images/create 50 50 images/TYPE_INT_ARGB images/blue)
-                  img2 (images/create 50 50 images/TYPE_INT_ARGB images/pink)
+                  img2 (images/create 50 50 images/TYPE_INT_ARGB images/magenta)
                   img  (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g    (images/g2d img)]
              
