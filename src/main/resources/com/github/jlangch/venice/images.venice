@@ -280,7 +280,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Drawing
+;; Graphics Context
 ;; -----------------------------------------------------------------------------
 
 (defn
@@ -459,6 +459,52 @@
     (. :BasicStroke :new width cap join meter-limit dash dash-phase)))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Drawing
+;; -----------------------------------------------------------------------------
+
+
+(defn
+  ^{ :arglists '(
+          "(copy-area g2d x y with height dx dy)")
+     :doc """
+          Copies an area of the component by a distance specified by dx and dy. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+ 
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (images/fill-circle g 100 100 100 images/blue)
+              (images/copy-area g 50 50 100 100 200 30)
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """)
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/fill-round-rect"
+          "images/draw-string" ) }
+
+  copy-area [g2d x y width height dx dy]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (long? width))
+    (assert (long? height))
+    (assert (long? dx))
+    (assert (long? dy))
+    (. g2d :copyArea x y width height dx dy))
+
+
 (defn
   ^{ :arglists '(
           "(fill-circle g2d x y radius)"
@@ -496,6 +542,7 @@
           "images/create"
           "images/g2d"
           "images/anti-alias"
+          "images/copy-area"
           "images/fill-oval"
           "images/fill-rect"
           "images/fill-round-rect"
@@ -547,6 +594,7 @@
           "images/create"
           "images/g2d"
           "images/anti-alias"
+          "images/copy-area"
           "images/fill-circle"
           "images/fill-rect"
           "images/fill-round-rect"
@@ -600,6 +648,7 @@
           "images/create"
           "images/g2d"
           "images/anti-alias"
+          "images/copy-area"
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-round-rect"
@@ -654,6 +703,7 @@
           "images/create"
           "images/g2d"
           "images/anti-alias"
+          "images/copy-area"
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-rect"
@@ -709,6 +759,7 @@
           "images/create"
           "images/g2d"
           "images/anti-alias"
+          "images/copy-area"
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-rect"
