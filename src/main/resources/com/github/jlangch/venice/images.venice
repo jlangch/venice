@@ -268,7 +268,7 @@
           """)
      :see-also '(
           "images/g2d"
-          "images/basic-stroke"
+          "images/stroke"
           "images/save" ) }
 
   copy [img]
@@ -298,18 +298,15 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-
-              (. g :setColor images/blue)
-              (. g :setStroke (basic-stroke 10.0))
-              (. g :drawOval 100 50 200 100)
-              (. g :dispose)
-
+              (images/stroke 10.0)
+              (images/fill-oval 100 50 200 100 images/blue)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
           """ ) 
      :see-also '(
           "images/create"
           "images/anti-alias"
-          "images/basic-stroke" ) }
+          "images/stroke" ) }
 
   g2d [img]
 
@@ -358,7 +355,7 @@
      :see-also '(
           "images/create"
           "images/g2d"
-          "images/basic-stroke" ) }
+          "images/stroke" ) }
 
   anti-alias [g2d on]
 
@@ -380,15 +377,14 @@
 
 (defn
   ^{ :arglists '(
-          "(basic-stroke)"
-          "(basic-stroke width)"
-          "(basic-stroke width cap join)"
-          "(basic-stroke width cap join meter-limit)"
-          "(basic-stroke width cap join meter-limit dash dash-phase)")
+          "(stroke g2d)"
+          "(stroke g2d width)"
+          "(stroke g2d width cap join)"
+          "(stroke g2d width cap join meter-limit)"
+          "(stroke g2d width cap join meter-limit dash dash-phase)")
      :doc """
-          Create a :java.awt.BasicStroke
-          ```
-
+          Sets a new stroke on the graphics context
+ 
           See: [BasicStroke](https://docs.oracle.com/javase/8/docs/api/java/awt/BasicStroke.html)
           """
      :examples '(
@@ -398,12 +394,9 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-
-              (. g :setColor images/blue)
-              (. g :setStroke (images/basic-stroke 10.0))
-              (. g :drawOval 100 50 200 100)
-              (. g :dispose)
-
+              (images/stroke 10.0 images/cap-round images/join-miter))
+              (images/fill-oval 100 50 200 100 images/blue)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """
          """
@@ -412,58 +405,97 @@
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
-              (. g :setColor images/blue)
-              (. g :setStroke (images/basic-stroke 10.0 
-                                                   images/cap-round 
-                                                   images/join-miter 
-                                                   5.0 
-                                                   [20.0] 
-                                                   20.0))
-              (. g :drawOval 100 50 200 100)
-              (. g :dispose)
+              (images/stroke 10.0 
+                             images/cap-round 
+                             images/join-miter 
+                             5.0 
+                             [20.0] 
+                             20.0))
+              (images/fill-oval 100 50 200 100 images/blue)
+              (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """ ) 
      :see-also '(
           "images/create"
           "images/g2d" ) }
 
-  basic-stroke
+  stroke
   
-  ([]
-    (. :BasicStroke :new))
+  ([g2d]
+    (assert (instance-of? :Graphics2D g2d))
+    (->> (. :BasicStroke :new)
+         (. g2d :setStroke)))
 
-  ([width]
+  ([g2d width]
+    (assert (instance-of? :Graphics2D g2d))
     (assert (double? width))
-    (. :BasicStroke :new width))
+    (->> (. :BasicStroke :new width)
+         (. g2d :setStroke)))
 
-  ([width cap join]
+  ([g2d width cap join]
+    (assert (instance-of? :Graphics2D g2d))
     (assert (double? width))
     (assert (int? cap))
     (assert (int? join))
-    (. :BasicStroke :new width cap join))
+    (->> (. :BasicStroke :new width cap join)
+         (. g2d :setStroke)))
 
-  ([width cap join meter-limit]
+  ([g2d width cap join meter-limit]
+    (assert (instance-of? :Graphics2D g2d))
     (assert (double? width))
     (assert (int? cap))
     (assert (int? join))
     (assert (double? meter-limit))
-    (. :BasicStroke :new width cap join meter-limit))
+    (->> (. :BasicStroke :new width cap join meter-limit)
+         (. g2d :setStroke)))
 
-  ([width cap join meter-limit dash dash-phase]
+  ([g2d width cap join meter-limit dash dash-phase]
+    (assert (instance-of? :Graphics2D g2d))
     (assert (double? width))
     (assert (int? cap))
     (assert (int? join))
     (assert (double? meter-limit))
     (assert (sequential? dash))
     (assert (double? dash-phase))
-    (. :BasicStroke :new width cap join meter-limit dash dash-phase)))
+    (->> (. :BasicStroke :new width cap join meter-limit dash dash-phase)
+         (. g2d :setStroke))))
+
+
+(defn
+  ^{ :arglists '(
+          "(dispose g2d)")
+     :doc """
+          Disposes of this graphics context and releases any system resources 
+          that it is using.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (images/fill-oval 100 50 200 100 images/blue)
+              (images/dispose g)
+
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ ) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/stroke" ) }
+
+  dispose [g2d]
+    (assert (instance-of? :Graphics2D g2d))
+    (. g2d :dispose))
+
 
 
 
 ;; -----------------------------------------------------------------------------
 ;; Drawing
 ;; -----------------------------------------------------------------------------
-
 
 (defn
   ^{ :arglists '(
@@ -817,12 +849,9 @@
                   g   (images/g2d img)]
 
               (images/anti-alias g true)   ;; enable anti-alias 
-              (. g :setStroke (images/basic-stroke 10.0
-                                                   images/cap-round 
-                                                   images/join-miter))
-
-
+              (images/stroke g 10.0 images/cap-round images/join-miter))
               (images/draw-line g 50 50 350 150 images/blue)
+              (images/dispose g)
  
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
