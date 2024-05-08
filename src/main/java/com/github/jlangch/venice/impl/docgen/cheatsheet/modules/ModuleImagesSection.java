@@ -67,6 +67,8 @@ public class ModuleImagesSection implements ISectionBuilder {
         transform.addItem(diBuilder.getDocItem("images/pad", false));
         transform.addItem(diBuilder.getDocItem("images/resize-fit", false));
         transform.addItem(diBuilder.getDocItem("images/resize", false));
+        transform.addItem(diBuilder.getDocItem("images/shear", false));
+        transform.addItem(diBuilder.getDocItem("images/translate", false));
         transform.addItem(diBuilder.getDocItem("images/apply-ops", false));
 
         final DocSection g2d = new DocSection("G2D", id());

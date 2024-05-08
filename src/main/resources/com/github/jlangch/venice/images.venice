@@ -1415,16 +1415,90 @@
       img)))
 
 
-(defn- transform [img tx width height]
-  (assert (instance-of? :Image img))
-  (assert (and (long? width) (pos? width)))
-  (assert (and (long? height) (pos? height)))
+(defn 
+  ^{ :arglists '(
+          "(shear img shx shy)"
+          "(shear img shx shy color)") 
+     :doc """
+          Shears an image vertically and/or horizontally. Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
+                (images/shear 0.05 0.0)
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
+          """ ) }
 
-  (let [result (create-derived-image img width height)
-        g2d    (. result :createGraphics)]
-    (. g2d :drawImage img tx nil)
-    (. g2d :dispose)
-    result))
+  shear 
+
+  ([img shx shy]
+    (shear img x y nil))
+ 
+  ([img shx shy color]
+    (assert (instance-of? :Image img))
+    (assert (double? shx))
+    (assert (double? shy))
+    (assert (or (nil? color) (instance-of? :Color color)))
+
+    (let [[width height] (dimension img)
+          tx             (. :AffineTransform :new)]
+      (. tx :shear shx shy)
+      (transform img tx width height color))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(translate img x y)"
+          "(translate img x y color)") 
+     :doc """
+          Translates from (0, 0) to the current (x, y) position. 
+          Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
+                (images/transalte 200 100)
+                (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
+          """ ) }
+
+  translate 
+  
+  ([img x y]
+    (translate img x y nil))
+
+  ([img x y color]
+    (assert (instance-of? :Image img))
+    (assert (long? x))
+    (assert (long? y))
+    (assert (or (nil? color) (instance-of? :Color color)))
+
+    (let [[width height] (dimension img)
+          tx             (. :AffineTransform :new)]
+      (. tx :translate x y)
+      (transform img tx width height color))))
+
+
+(defn- transform 
+  ([img tx width height]
+    (transform img tx width height nil))
+
+  ([img tx width height color]
+    (assert (instance-of? :Image img))
+    (assert (and (long? width) (pos? width)))
+    (assert (and (long? height) (pos? height)))
+
+    (let [result (create-derived-image img width height)
+          g2d    (. result :createGraphics)]
+      (when color
+        (. g2d :setColor color)
+        (. g2d :fillRect 0 0 width height))
+      (. g2d :drawImage img tx nil)
+      (. g2d :dispose)
+      result)))
 
 
 ;; -----------------------------------------------------------------------------
@@ -1906,9 +1980,9 @@
 ;; Internals
 ;; -----------------------------------------------------------------------------
 
-(defn-  create-derived-image 
+(defn- create-derived-image 
   ([src]
-    (create-derived-image (long (. img :getWidth)) (long (. img :getHeight))))
+    (create-derived-image src (long (. src :getWidth)) (long (. src :getHeight))))
 
   ([src width height]
     (assert (instance-of? :Image src))
