@@ -29,7 +29,7 @@
 ;;;; Java2D device coordinates
 ;;;;
 ;;;;       +--------> x
-;;;;       |
+;;;;       | 
 ;;;;       |
 ;;;;       v
 ;;;;       y
@@ -550,6 +550,8 @@
      :doc """
           Sets the current clip to the rectangle specified by the given 
           coordinates.
+
+          A shape can be `nil` to remove any clipping.
           """
      :examples '(
           """
@@ -559,8 +561,9 @@
             (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
-              (images/set-clip g 0 0 400 200)
-              (images/fill-oval g 150 80 100 50)
+              (images/fg-color g images/blue)
+              (images/set-clip g 0 0 200 200) ;; left half of the img
+              (images/fill-oval g 200 100 300 150)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
@@ -606,11 +609,16 @@
             (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)
-                  old (images/get-clip)]
-              (images/set-clip g 0 0 400 200)
-              (images/fill-oval g 150 80 100 50)
-              (images/set-clip g old) ;; restore clipping 
-              ;; ...
+                  old (images/get-clip g)]
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/fg-color g images/blue)
+              (images/set-clip g 0 0 200 200) ;; left half of the img
+              (images/fill-oval g 200 100 300 150)
+              (images/set-clip g old) ;; restore previous clipping 
+              (images/stroke g 10.0 images/cap-round images/join-miter)
+              (images/fg-color g images/red)
+              (images/draw-line g 50 50 350 150)
+
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
@@ -1242,7 +1250,7 @@
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
               (images/anti-alias g true)   ;; enable anti-alias 
-              (images/stroke g 10.0 images/cap-round images/join-miter))
+              (images/stroke g 10.0 images/cap-round images/join-miter)
               (images/fg-color g images/blue)
               (images/draw-line g 50 50 350 150)
               (images/dispose g)
