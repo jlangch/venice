@@ -492,7 +492,8 @@
           "images/fill-oval"
           "images/fill-rect"
           "images/fill-round-rect"
-          "images/draw-string" ) }
+          "images/draw-string"
+          "images/draw-line" ) }
 
   copy-area [g2d x y width height dx dy]
     (assert (instance-of? :Graphics2D g2d))
@@ -546,7 +547,8 @@
           "images/fill-oval"
           "images/fill-rect"
           "images/fill-round-rect"
-          "images/draw-string" ) }
+          "images/draw-string"
+          "images/draw-line" ) }
 
   fill-circle 
   
@@ -598,7 +600,8 @@
           "images/fill-circle"
           "images/fill-rect"
           "images/fill-round-rect"
-          "images/draw-string" ) }
+          "images/draw-string"
+          "images/draw-line" ) }
 
   fill-oval 
   
@@ -652,7 +655,8 @@
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-round-rect"
-          "images/draw-string" ) }
+          "images/draw-string"
+          "images/draw-line" ) }
 
   fill-rect 
   
@@ -707,7 +711,8 @@
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-rect"
-          "images/draw-string" ) }
+          "images/draw-string"
+          "images/draw-line" ) }
 
   fill-round-rect 
   
@@ -763,7 +768,8 @@
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-rect"
-          "images/fill-round-rect" ) }
+          "images/fill-round-rect"
+          "images/draw-line" ) }
 
   draw-string
   
@@ -791,6 +797,63 @@
              (. g2d :setFont))))
 
     (. g2d :drawString text x y)))
+
+
+(defn
+  ^{ :arglists '(
+          "(draw-line g2d x1 y1 x2 y2)"
+          "(draw-line g2d x1 y1 x2 y2 color)")
+     :doc """
+          Draws a line. If the color is missing uses the 
+          current foreground color of the graphics context. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+ 
+            (let [bg  images/white
+                  img (images/create 400 200 images/TYPE_INT_ARGB bg)
+                  g   (images/g2d img)]
+
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (. g :setStroke (images/basic-stroke 10.0
+                                                   images/cap-round 
+                                                   images/join-miter))
+
+
+              (images/draw-line g 50 50 350 150 images/blue)
+ 
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/fill-round-rect"
+          "images/draw-text" ) }
+
+  draw-line 
+  
+  ([g2d x1 y1 x2 y2]
+    (draw-line g2d x1 y1 x2 y2 nil))
+
+  ([g2d x1 y1 x2 y2 color]
+    (assert (instance-of? :Graphics2D g2d))
+    (assert (long? x1))
+    (assert (long? y1))
+    (assert (long? x2))
+    (assert (long? y2))
+    (assert (or (nil? color) (instance-of? :Color color)))
+
+    (when color
+      (. g2d :setColor color))
+
+    (. g2d :drawLine x1 y1 x2 y2)))
 
 
 

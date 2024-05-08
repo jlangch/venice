@@ -69,17 +69,21 @@ public class ModuleImagesSection implements ISectionBuilder {
         transform.addItem(diBuilder.getDocItem("images/resize", false));
         transform.addItem(diBuilder.getDocItem("images/apply-ops", false));
 
+        final DocSection g2d = new DocSection("G2D", id());
+        all.addSection(g2d);
+        g2d.addItem(diBuilder.getDocItem("images/g2d", false));
+        g2d.addItem(diBuilder.getDocItem("images/anti-alias", false));
+        g2d.addItem(diBuilder.getDocItem("images/basic-stroke", false));
+
         final DocSection drawing = new DocSection("Drawing", id());
         all.addSection(drawing);
-        drawing.addItem(diBuilder.getDocItem("images/g2d", false));
-        drawing.addItem(diBuilder.getDocItem("images/anti-alias", false));
-        drawing.addItem(diBuilder.getDocItem("images/basic-stroke", false));
         drawing.addItem(diBuilder.getDocItem("images/copy-area", false));
         drawing.addItem(diBuilder.getDocItem("images/fill-circle", false));
         drawing.addItem(diBuilder.getDocItem("images/fill-oval", false));
         drawing.addItem(diBuilder.getDocItem("images/fill-rect", false));
         drawing.addItem(diBuilder.getDocItem("images/fill-round-rect", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-string", false));
+        drawing.addItem(diBuilder.getDocItem("images/draw-line", false));
 
         return section;
     }
