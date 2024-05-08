@@ -80,6 +80,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         final DocSection drawing = new DocSection("Drawing", id());
         all.addSection(drawing);
         drawing.addItem(diBuilder.getDocItem("images/copy-area", false));
+        drawing.addItem(diBuilder.getDocItem("images/clear-rect", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-circle", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-oval", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-rect", false));
