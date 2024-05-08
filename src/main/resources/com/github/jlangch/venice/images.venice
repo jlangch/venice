@@ -68,6 +68,27 @@
 
 (defonce transparent (. :Color :new 0x00FFFFFF true))
 
+(defonce blue         (. :Color :BLUE))
+(defonce black        (. :Color :BLACK))
+(defonce cyan         (. :Color :CYAN))
+(defonce dark-gray    (. :Color :DARK_GRAY))
+(defonce gray         (. :Color :GRAY))
+(defonce green        (. :Color :GREEN))
+(defonce light-gray   (. :Color :LIGHT_GRAY))
+(defonce magenta      (. :Color :MAGENTA))
+(defonce orange       (. :Color :ORANGE))
+(defonce pink         (. :Color :PINK))
+(defonce red          (. :Color :RED))
+(defonce white        (. :Color :WHITE))
+(defonce yellow       (. :Color :YELLOW))
+
+(defonce cap-butt     (. :BasicStroke :CAP_BUTT))
+(defonce cap-round    (. :BasicStroke :CAP_ROUND))
+(defonce cap-square   (. :BasicStroke :CAP_SQUARE))
+(defonce join-bevel   (. :BasicStroke :JOIN_BEVEL))
+(defonce join-miter   (. :BasicStroke :JOIN_MITER))
+(defonce join-round   (. :BasicStroke :JOIN_ROUND))
+
 
 (defonce resize-modes #{ :resize-auto 
                          :resize-performance 
@@ -187,6 +208,9 @@
      :doc """
           Creates a new `:java.awt.image.BufferedImage` with the given 
           width, height, and type.
+
+          Without color, creates a transparent image (type 'TYPE_INT_ARGB')
+          or black image (type 'TYPE_INT_RGB'). 
           """
      :examples '(
           """
@@ -198,8 +222,7 @@
           """
           (do
             (load-module :images)
-            (import :java.awt.Color)
-            (-> (images/create 400 200 images/TYPE_INT_ARGB (. :Color :WHITE))
+            (-> (images/create 400 200 images/TYPE_INT_ARGB images/white)
                 (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
           """)
      :see-also '(
@@ -245,6 +268,7 @@
           """)
      :see-also '(
           "images/g2d"
+          "images/basic-stroke"
           "images/save" ) }
 
   copy [img]
@@ -272,14 +296,11 @@
           (do
             (load-module :images)
 
-            (import :java.awt.BasicStroke)
-            (import :java.awt.Color)
-
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
 
-              (. g :setColor (. :Color :BLUE))
-              (. g :setStroke (. :BasicStroke :new 10.0))
+              (. g :setColor images/blue)
+              (. g :setStroke (basic-stroke 10.0))
               (. g :drawOval 100 50 200 100)
               (. g :dispose)
 
@@ -287,13 +308,15 @@
           """ ) 
      :see-also '(
           "images/create"
-          "images/anti-alias" ) }
+          "images/anti-alias"
+          "images/basic-stroke" ) }
 
   g2d [img]
 
   (assert (instance-of? :BufferedImage img))
 
   (. img :createGraphics))
+
 
 (defn
   ^{ :arglists '(
@@ -319,23 +342,23 @@
           """
           (do
             (load-module :images)
-            (import :java.awt.Color)
 
-            (let [bg  (. :Color :WHITE)
+            (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
 
               (images/anti-alias g true)   ;; enable anti-alias 
-              (images/fill-round-rect g 80 100 100 50 12 12 (. :Color :BLUE))
+              (images/fill-round-rect g 80 100 100 50 12 12 images/blue)
 
               (images/anti-alias g false)   ;; disable anti-alias 
-              (images/fill-round-rect g 220 100 100 50 12 12 (. :Color :RED))
+              (images/fill-round-rect g 220 100 100 50 12 12 images/red)
  
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """ ) 
      :see-also '(
           "images/create"
-          "images/g2d" ) }
+          "images/g2d"
+          "images/basic-stroke" ) }
 
   anti-alias [g2d on]
 
@@ -357,6 +380,89 @@
 
 (defn
   ^{ :arglists '(
+          "(basic-stroke)"
+          "(basic-stroke width)"
+          "(basic-stroke width cap join)"
+          "(basic-stroke width cap join meter-limit)"
+          "(basic-stroke width cap join meter-limit dash dash-phase)")
+     :doc """
+          Create a :java.awt.BasicStroke
+          ```
+
+          See: [BasicStroke](https://docs.oracle.com/javase/8/docs/api/java/awt/BasicStroke.html)
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (. g :setColor images/blue)
+              (. g :setStroke (images/basic-stroke 10.0))
+              (. g :drawOval 100 50 200 100)
+              (. g :dispose)
+
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """
+         """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+
+              (. g :setColor images/blue)
+                (. g :setStroke (images/basic-stroke 10.0 
+                                                     images/cap-round 
+                                                     images/join-miter 
+                                                     5.0 
+                                                     [20.0] 
+                                                     20.0))
+                (. g :drawOval 100 50 200 100)
+              (. g :dispose)
+
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ ) 
+     :see-also '(
+          "images/create"
+          "images/g2d" ) }
+
+  basic-stroke
+  
+  ([]
+    (. :BasicStroke :new))
+
+  ([width]
+    (assert (double? width))
+    (. :BasicStroke :new width))
+
+  ([width cap join]
+    (assert (double? width))
+    (assert (int? cap))
+    (assert (int? join))
+    (. :BasicStroke :new width cap join))
+
+  ([width cap join meter-limit]
+    (assert (double? width))
+    (assert (int? cap))
+    (assert (int? join))
+    (assert (double? meter-limit))
+    (. :BasicStroke :new width cap join meter-limit))
+
+  ([width cap join meter-limit dash dash-phase]
+    (assert (double? width))
+    (assert (int? cap))
+    (assert (int? join))
+    (assert (double? meter-limit))
+    (assert (sequential? dash))
+    (assert (double? dash-phase))
+    (. :BasicStroke :new width cap join meter-limit dash dash-phase)))
+
+
+(defn
+  ^{ :arglists '(
           "(fill-circle g2d x y radius)"
           "(fill-circle g2d x y radius color)")
      :doc """
@@ -368,12 +474,11 @@
           """
           (do
             (load-module :images)
-            (import :java.awt.Color)
-
+ 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
 
-              (images/fill-circle g 200 100 100 (. :Color :BLUE))
+              (images/fill-circle g 200 100 100 images/blue)
  
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """,
@@ -381,9 +486,8 @@
            ;; create a mask
            (do
             (load-module :images)
-            (import :java.awt.Color)
 
-            (let [col (. :Color :WHITE)
+            (let [col images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB col)
                   g   (images/g2d img)]
               (. g :setComposite (. :java.awt.AlphaComposite :Clear))
@@ -433,12 +537,11 @@
           """
           (do
             (load-module :images)
-            (import :java.awt.Color)
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB)
                   g   (images/g2d img)]
 
-              (images/fill-oval g 200 100 200 100 (. :Color :BLUE))
+              (images/fill-oval g 200 100 200 100 images/blue)
  
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
@@ -487,13 +590,11 @@
           (do
             (load-module :images)
 
-            (import :java.awt.Color)
-
-            (let [bg  (. :Color :WHITE)
+            (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
 
-              (images/fill-rect g 200 100 100 50 (. :Color :BLUE))
+              (images/fill-rect g 200 100 100 50 images/blue)
  
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
@@ -538,17 +639,16 @@
           """
           (do
             (load-module :images)
-            (import :java.awt.Color)
-
-            (let [bg  (. :Color :WHITE)
+            
+            (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
 
               (images/anti-alias g true)   ;; enable anti-alias 
-              (images/fill-round-rect g 80 100 100 50 12 12 (. :Color :BLUE))
+              (images/fill-round-rect g 80 100 100 50 12 12 images/blue)
 
               (images/anti-alias g false)   ;; disable anti-alias 
-              (images/fill-round-rect g 220 100 100 50 12 12 (. :Color :RED))
+              (images/fill-round-rect g 220 100 100 50 12 12 images/red)
  
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
@@ -595,16 +695,15 @@
           """
           (do
             (load-module :images)
-            (import :java.awt.Color)
             (import :java.awt.Font)
 
-            (let [bg  (. :Color :WHITE)
+            (let [bg  images/white
                   img (images/create 400 200 images/TYPE_INT_ARGB bg)
                   g   (images/g2d img)]
 
               (images/anti-alias g true)   ;; enable anti-alias 
 
-              (images/draw-string g "Hello, world!" 50 120 (. :Color :BLUE) 50)
+              (images/draw-string g "Hello, world!" 50 120 images/blue 50)
  
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
          """) 
