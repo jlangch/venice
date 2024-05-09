@@ -598,22 +598,10 @@ public class ReplFunctions {
                             "The REPL env file ('repl.env' on Unix or 'repl.env.bat' " +
                             "on Windows ) is 'sourced' at REPL start time to make the " +
                             "contained vars available as system env vars!\n\n"+
-                            "DO NO FORGET to restart the REPL after removing an env var!\n\n" +
+                            "To take a removed env var into effect a whole new REPL " +
+                            "has to be started! A simple restart does not work!\n\n" +
                             "Note: This function is only available when called from " +
-                            "within a REPL!\n\n\n" +
-                            "**Example**                      \n\n" +
-                            "*1. Remove env var:*             \n\n" +
-                            "```                              \n" +
-                            "(repl/remove-env \"DEMO\")       \n" +
-                            "```                              \n" +
-                            "*2. Restart the REPL:*           \n\n" +
-                            "```                              \n" +
-                            "venice> !restart                 \n" +
-                            "```                              \n" +
-                            "*3. Test:*                       \n\n" +
-                            "```                              \n" +
-                            "(system-env \"DEMO\")            \n" +
-                            "```                              ")
+                            "within a REPL!")
                         .examples(
                             "(repl/remove-env \"DEMO\")")
                         .seeAlso(
