@@ -164,7 +164,10 @@
             (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg")))
           """)
      :see-also '(
-          "images/save" ) }
+          "images/save"
+          "images/create"
+          "images/copy"
+          "images/g2d") }
 
   load [f]
 
@@ -195,6 +198,9 @@
           """) 
      :see-also '(
           "images/load"
+          "images/create"
+          "images/copy"
+          "images/g2d"
           "images/format-names" ) }
 
   save [img format-name f]
@@ -244,9 +250,10 @@
                 (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
           """)
      :see-also '(
-          "images/copy"
+          "images/load"
           "images/save"
-          "images/g2d" ) }
+          "images/copy"
+          "images/g2d") }
 
   create
   
@@ -285,9 +292,10 @@
                 (images/save :png (io/file "/Users/foo/Desktop/test.png"))))
           """)
      :see-also '(
-          "images/g2d"
-          "images/stroke"
-          "images/save" ) }
+          "images/load"
+          "images/save"
+          "images/create"
+          "images/g2d") }
 
   copy [img]
 
@@ -324,8 +332,14 @@
           """ ) 
      :see-also '(
           "images/create"
+          "images/dispose"
           "images/anti-alias"
-          "images/stroke" ) }
+          "images/stroke"
+          "images/fg-color"
+          "images/bg-color"
+          "images/set-clip"
+          "images/get-clip"
+          "images/get-clip-bounds" ) }
 
   g2d [img]
 
@@ -376,7 +390,13 @@
      :see-also '(
           "images/create"
           "images/g2d"
-          "images/stroke" ) }
+          "images/dispose"
+          "images/stroke"
+          "images/fg-color"
+          "images/bg-color"
+          "images/set-clip"
+          "images/get-clip"
+          "images/get-clip-bounds" ) }
 
   anti-alias [g2d on]
 
@@ -441,7 +461,14 @@
          """ ) 
      :see-also '(
           "images/create"
-          "images/g2d" ) }
+          "images/g2d"
+          "images/dispose"
+          "images/anti-alias"
+          "images/fg-color"
+          "images/bg-color"
+          "images/set-clip"
+          "images/get-clip"
+          "images/get-clip-bounds" ) }
 
   stroke
   
@@ -506,8 +533,13 @@
      :see-also '(
           "images/create"
           "images/g2d"
+          "images/dispose"
+          "images/anti-alias"
           "images/stroke"
-          "images/bg-color" ) }
+          "images/fg-color"
+          "images/set-clip"
+          "images/get-clip"
+          "images/get-clip-bounds" ) }
 
   fg-color [g2d color]
     (assert (instance-of? :Graphics2D g2d))
@@ -536,8 +568,13 @@
      :see-also '(
           "images/create"
           "images/g2d"
+          "images/dispose"
+          "images/anti-alias"
           "images/stroke"
-          "images/fg-color" ) }
+          "images/fg-color"
+          "images/set-clip"
+          "images/get-clip"
+          "images/get-clip-bounds" ) }
 
   bg-color [g2d color]
     (assert (instance-of? :Graphics2D g2d))
@@ -571,13 +608,13 @@
      :see-also '(
           "images/create"
           "images/g2d"
+          "images/dispose"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/stroke"
+          "images/fg-color"
+          "images/bg-color"
+          "images/get-clip"
+          "images/get-clip-bounds" ) }
 
   set-clip 
 
@@ -625,13 +662,13 @@
      :see-also '(
           "images/create"
           "images/g2d"
+          "images/dispose"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/stroke"
+          "images/fg-color"
+          "images/bg-color"
+          "images/set-clip"
+          "images/get-clip-bounds" ) }
 
   get-clip [g2d]
 
@@ -658,13 +695,13 @@
      :see-also '(
           "images/create"
           "images/g2d"
+          "images/dispose"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/stroke"
+          "images/fg-color"
+          "images/bg-color"
+          "images/set-clip"
+          "images/get-clip" ) }
 
   get-clip-bounds [g2d]
 
@@ -695,7 +732,13 @@
      :see-also '(
           "images/create"
           "images/g2d"
-          "images/stroke" ) }
+          "images/anti-alias"
+          "images/stroke"
+          "images/fg-color"
+          "images/bg-color"
+          "images/set-clip"
+          "images/get-clip"
+          "images/get-clip-bounds" ) }
 
   dispose [g2d]
     (assert (instance-of? :Graphics2D g2d))
@@ -729,13 +772,7 @@
      :see-also '(
           "images/create"
           "images/g2d"
-          "images/anti-alias"
-          "images/copy-area"
-          "images/fill-oval"
-          "images/fill-rect"
-          "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/clear-rect" ) }
 
   copy-area [g2d x y width height dx dy]
 
@@ -767,17 +804,12 @@
               (images/clear-rect g 150 80 100 50)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
-          "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/bg-color"
+          "images/copy-area" ) }
 
   clear-rect [g2d x y width height]
 
@@ -807,10 +839,10 @@
               (images/fill-circle g 200 100 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """,
-         """
-           ;; create a mask
-           (do
+          """,
+          """
+          ;; create a mask
+          (do
             (load-module :images)
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
@@ -819,17 +851,15 @@
               (images/fill-circle g 200 100 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """)
+          """)
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
           "images/fill-oval"
           "images/fill-rect"
           "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/fill-polygon" ) }
 
   fill-circle [g2d x y radius]
 
@@ -861,17 +891,15 @@
               (images/fill-oval g 200 100 200 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
           "images/fill-circle"
           "images/fill-rect"
           "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/fill-polygon" ) }
 
   fill-oval 
   
@@ -912,17 +940,15 @@
               (images/fill-rect g 150 80 100 50)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-round-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/fill-polygon" ) }
 
   fill-rect [g2d x y width height]
 
@@ -958,17 +984,15 @@
  
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/fill-polygon" ) }
 
   fill-round-rect [g2d x y width height arc-width arc-height]
 
@@ -1019,17 +1043,15 @@
 
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
           "images/fill-circle"
           "images/fill-oval"
           "images/fill-rect"
-          "images/draw-string"
-          "images/draw-line" ) }
+          "images/fill-round-rect" ) }
 
   fill-polygon [g2d polygon]
 
@@ -1055,10 +1077,10 @@
               (images/draw-circle g 200 100 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """,
-         """
-           ;; create a mask
-           (do
+          """,
+          """
+          ;; create a mask
+          (do
             (load-module :images)
 
             (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
@@ -1068,17 +1090,19 @@
               (images/draw-circle g 200 100 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """)
+          """)
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-oval"
-          "images/fill-rect"
-          "images/fill-round-rect"
+          "images/stroke"
+          "images/draw-oval"
+          "images/draw-rect"
+          "images/draw-round-rect"
+          "images/draw-polygon"
           "images/draw-string"
-          "images/draw-line" ) }
+          "images/draw-line"
+          "images/draw-image" ) }
 
   draw-circle [g2d x y radius]
 
@@ -1111,17 +1135,19 @@
               (images/draw-oval g 200 100 200 100)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-rect"
-          "images/fill-round-rect"
+          "images/stroke"
+          "images/draw-circle"
+          "images/draw-rect"
+          "images/draw-round-rect"
+          "images/draw-polygon"
           "images/draw-string"
-          "images/draw-line" ) }
+          "images/draw-line"
+          "images/draw-image" ) }
 
   draw-oval [g2d center-x center-y width height]
 
@@ -1156,17 +1182,19 @@
               (images/draw-rect g 150 70 100 50)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-round-rect"
+          "images/stroke"
+          "images/draw-circle"
+          "images/draw-oval"
+          "images/draw-round-rect"
+          "images/draw-polygon"
           "images/draw-string"
-          "images/draw-line" ) }
+          "images/draw-line"
+          "images/draw-image" ) }
 
   draw-rect [g2d x y width height]
 
@@ -1205,17 +1233,19 @@
  
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-rect"
+          "images/stroke"
+          "images/draw-circle"
+          "images/draw-oval"
+          "images/draw-rect"
+          "images/draw-polygon"
           "images/draw-string"
-          "images/draw-line" ) }
+          "images/draw-line"
+          "images/draw-image" ) }
 
   draw-round-rect [g2d x y width height arc-width arc-height]
 
@@ -1267,17 +1297,18 @@
 
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-rect"
+          "images/draw-circle"
+          "images/draw-oval"
+          "images/draw-rect"
+          "images/draw-round-rect"
           "images/draw-string"
-          "images/draw-line" ) }
+          "images/draw-line"
+          "images/draw-image" ) }
 
   draw-polygon [g2d polygon]
 
@@ -1306,17 +1337,19 @@
               (images/draw-string g "Hello, world!" 50 120 50)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-rect"
-          "images/fill-round-rect"
-          "images/draw-line" ) }
+          "images/stroke"
+          "images/draw-circle"
+          "images/draw-oval"
+          "images/draw-rect"
+          "images/draw-round-rect"
+          "images/draw-polygon"
+          "images/draw-line"
+          "images/draw-image" ) }
 
   draw-string
   
@@ -1358,17 +1391,19 @@
               (images/draw-line g 50 50 350 150)
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-rect"
-          "images/fill-round-rect"
-          "images/draw-string" ) }
+          "images/stroke"
+          "images/draw-circle"
+          "images/draw-oval"
+          "images/draw-rect"
+          "images/draw-round-rect"
+          "images/draw-polygon"
+          "images/draw-string"
+          "images/draw-image" ) }
 
   draw-line [g2d x1 y1 x2 y2]
 
@@ -1408,17 +1443,18 @@
 
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-         """) 
+          """) 
      :see-also '(
           "images/create"
           "images/g2d"
           "images/anti-alias"
-          "images/copy-area"
-          "images/fill-circle"
-          "images/fill-oval"
-          "images/fill-rect"
-          "images/fill-round-rect"
-          "images/draw-string" ) }
+          "images/draw-circle"
+          "images/draw-oval"
+          "images/draw-rect"
+          "images/draw-round-rect"
+          "images/draw-polygon"
+          "images/draw-string"
+          "images/draw-line" ) }
 
   draw-image 
   
