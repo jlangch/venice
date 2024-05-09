@@ -437,7 +437,8 @@ public class ReplFunctions {
                             "repl?",
                             "repl/home-dir",
                             "repl/get-env",
-                            "repl/add-env")
+                            "repl/add-env",
+                            "repl/remove-env")
                         .build()
             ) {
                 @Override
@@ -474,7 +475,8 @@ public class ReplFunctions {
                             "repl?",
                             "repl/home-dir",
                             "repl/cat-env",
-                            "repl/add-env")
+                            "repl/add-env",
+                            "repl/remove-env")
                         .build()
             ) {
                 @Override
@@ -532,7 +534,8 @@ public class ReplFunctions {
                             "repl?",
                             "repl/home-dir",
                             "repl/get-env",
-                            "repl/cat-env")
+                            "repl/cat-env",
+                            "repl/remove-env")
                         .build()
             ) {
                 @Override
@@ -618,7 +621,8 @@ public class ReplFunctions {
                             "repl?",
                             "repl/home-dir",
                             "repl/get-env",
-                            "repl/cat-env")
+                            "repl/cat-env",
+                            "repl/add-env")
                         .build()
             ) {
                 @Override
