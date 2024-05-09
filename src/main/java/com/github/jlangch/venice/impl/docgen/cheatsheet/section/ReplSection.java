@@ -61,6 +61,12 @@ public class ReplSection implements ISectionBuilder {
         config.addItem(diBuilder.getDocItem("repl/color-theme", false));
         config.addItem(diBuilder.getDocItem("repl/color-theme!", false));
 
+        final DocSection env = new DocSection("Env", "repl.env");
+        all.addSection(env);
+        env.addItem(diBuilder.getDocItem("repl/cat-env", false));
+        env.addItem(diBuilder.getDocItem("repl/get-env", false));
+        env.addItem(diBuilder.getDocItem("repl/add-env", false));
+
         return section;
     }
 

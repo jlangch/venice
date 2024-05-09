@@ -21,10 +21,14 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
@@ -51,7 +55,10 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.util.OS;
 
 
 public class ReplFunctions {
@@ -96,6 +103,9 @@ public class ReplFunctions {
         fns.add(setHandlerFn(repl));
         fns.add(getColorTheme(config));
         fns.add(setColorTheme(env, config));
+        fns.add(catReplEnv(replDirs));
+        fns.add(getReplEnv(replDirs));
+        fns.add(addReplEnv(replDirs));
         fns.add(waitAnyKeyPressed(terminal));
         fns.add(exit(repl));
 
@@ -404,6 +414,161 @@ public class ReplFunctions {
             };
     }
 
+    private static VncFunction catReplEnv(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/cat-env",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/cat-env)")
+                        .doc(
+                            "Returns the content of the REPL's local env file.\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .examples(
+                            "(printl (repl/cat-env))")
+                        .seeAlso(
+                            "repl?",
+                            "repl/home-dir",
+                            "repl/get-env",
+                            "repl/add-env")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                   final List<String> lines = loadReplEnv(replDirs);
+
+                   return new VncString(String.join("\n", lines));
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction getReplEnv(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/get-env",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/get-env name)")
+                        .doc(
+                            "Returns the value of a REPL local env var.\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .examples(
+                            "(repl/get-env \"DEMO\")")
+                        .seeAlso(
+                            "repl?",
+                            "repl/home-dir",
+                            "repl/cat-env",
+                            "repl/add-env")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final String name = Coerce.toVncString(args.first()).getValue();
+
+                    final String value = parseReplEnvVars(replDirs)
+                                            .stream()
+                                            .filter(v -> name.equals(v.getFirst()))
+                                            .map(v -> v.getSecond())
+                                            .findFirst()
+                                            .orElse(null);
+
+                    return value == null ? Constants.Nil : new VncString(value);
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction addReplEnv(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/add-env",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/add-env! name value)")
+                        .doc(
+                            "Add (or replace) an env var to REPL local env file.\n\n" +
+                            "DO NO FORGET to restart the REPL after adding an env var!\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!\n\n\n" +
+                            "**Example**                      \n\n" +
+                            "*1. Add env var:*                \n\n" +
+                            "```                              \n" +
+                            "(repl/add-env \"DEMO\" \"100\")  \n" +
+                            "```                              \n" +
+                            "*2. Restart the REPL:*           \n\n" +
+                            "```                              \n" +
+                            "venice> !restart                 \n" +
+                            "```                              \n" +
+                            "*3. Test:*                       \n\n" +
+                            "```                              \n" +
+                            "(system-env \"DEMO\")            \n" +
+                            "```                              ")
+                        .examples(
+                            "(repl/add-env \"DEMO\")")
+                        .seeAlso(
+                            "repl?",
+                            "repl/home-dir",
+                            "repl/get-env",
+                            "repl/cat-env")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 2);
+
+                    final String name = Coerce.toVncString(args.first()).getValue().trim();
+                    final String value = Coerce.toVncString(args.second()).getValue().trim();
+
+                    final List<String> out = new ArrayList<>();
+
+                    boolean replaced = false;
+
+                    for(String line : loadReplEnv(replDirs)) {
+                        if (isEnvVarLine(line)) {
+                            final String[] nv = splitEnvVarLine(line);
+                            if (nv.length == 2 && name.equals(nv[0].trim())) {
+                                // replace
+                                out.add(renderEnvVarLine(name, value));
+                                replaced = true;
+                                continue;
+                            }
+                        }
+
+                        out.add(line);
+                    }
+
+                    if (!replaced) {
+                        // add the new env var at the end of the file
+                        out.add(renderEnvVarLine(name, value));
+                    }
+
+                    try {
+                        Files.write(
+                            replEnvFile(replDirs).toPath(),
+                            out,
+                            StandardOpenOption.WRITE,
+                            StandardOpenOption.TRUNCATE_EXISTING);
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to updated the REPL's env file!");
+                    }
+
+                    return Constants.Nil;
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
     private static VncFunction setHandlerFn(final IRepl repl) {
         return
             new VncFunction(
@@ -472,12 +637,12 @@ public class ReplFunctions {
                     NonBlockingReader reader = terminal.reader();
 
                     try {
-	                    final int c = reader.read();
+                        final int c = reader.read();
 
-	                    return new VncChar((char)c);
+                        return new VncChar((char)c);
                     }
                     catch(IOException ex) {
-                    	return Constants.Nil;
+                        return Constants.Nil;
                     }
                 }
 
@@ -510,5 +675,67 @@ public class ReplFunctions {
                 private static final long serialVersionUID = -1L;
             };
     }
+
+
+    // ------------------------------------------------------------------------
+    // Utils
+    // ------------------------------------------------------------------------
+
+    private static File replEnvFile(final ReplDirs replDirs) {
+        return new File(
+                replDirs.getHomeDir(),
+                OS.isWindows() ? "repl.env.bat" : "repl.env");
+    }
+
+    private static List<Tuple2<String,String>> parseReplEnvVars(final ReplDirs replDirs) {
+        return loadReplEnv(replDirs)
+                   .stream()
+                   .filter(l -> isEnvVarLine(l))
+                   .map(l -> splitEnvVarLine(l))
+                   .filter(nv -> nv.length == 2)
+                   .map(nv -> new Tuple2<String,String>(nv[0].trim(), nv[1].trim()))
+                   .collect(Collectors.toList());
+    }
+
+    private static List<String> loadReplEnv(final ReplDirs replDirs) {
+        final File envFile = replEnvFile(replDirs);
+
+        if (envFile.canRead()) {
+            try {
+                return Files.readAllLines(envFile.toPath());
+            }
+            catch(Exception ex) {
+                throw new VncException("Failed to load the REPL's env file!", ex);
+            }
+        }
+        else {
+            throw new VncException("The REPL's env file does not exist");
+        }
+    }
+
+
+    private static boolean isEnvVarLine(final String line) {
+        return line.matches("^(export|set) *[^=] *.*$");
+    }
+
+    private static String removeEnvVarPrefix(final String line) {
+        String l = line;
+        l = StringUtil.removeStart(l, "export ");
+        l = StringUtil.removeStart(l, "set ");
+        return l;
+    }
+
+    private static final String[] splitEnvVarLine(final String line) {
+        return removeEnvVarPrefix(line).split("=");
+    }
+
+    private static final String renderEnvVarLine(final String name, final String value) {
+        return String.format(
+                "%s %s=%s",
+                OS.isWindows() ? "set" : "export",
+                name.trim(),
+                value.trim());
+    }
+
 
 }

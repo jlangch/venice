@@ -34,7 +34,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 Pass the OpenAI API key as an option to the OpenAI client requests:
 
 ```
-(chat-completion ... :openai-api-key sk-123456789)
+(openai/chat-completion ... :openai-api-key sk-123456789)
 ```
 
 
