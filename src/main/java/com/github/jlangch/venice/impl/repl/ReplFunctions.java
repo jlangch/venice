@@ -423,11 +423,15 @@ public class ReplFunctions {
                         .arglists("(repl/cat-env)")
                         .doc(
                             "Returns the content of the REPL's local env file.\n\n" +
+                            "The REPL env file ('repl.env' on Unix or 'repl.env.bat' " +
+                            "on Windows ) is 'sourced' at REPL start time to make the " +
+                            "contained vars available as system env vars!\n\n"+
                             "Note: This function is only available when called from " +
                             "within a REPL!")
                         .examples(
                             "(printl (repl/cat-env))")
                         .seeAlso(
+                            "system-env",
                             "repl?",
                             "repl/home-dir",
                             "repl/get-env",
@@ -456,11 +460,15 @@ public class ReplFunctions {
                         .arglists("(repl/get-env name)")
                         .doc(
                             "Returns the value of a REPL local env var.\n\n" +
-                            "Note: This function is only available when called from " +
+                            "The REPL env file ('repl.env' on Unix or 'repl.env.bat' " +
+                            "on Windows ) is 'sourced' at REPL start time to make the " +
+                            "contained vars available as system env vars!\n\n"+
+                           "Note: This function is only available when called from " +
                             "within a REPL!")
                         .examples(
                             "(repl/get-env \"DEMO\")")
                         .seeAlso(
+                            "system-env",
                             "repl?",
                             "repl/home-dir",
                             "repl/cat-env",
@@ -495,7 +503,10 @@ public class ReplFunctions {
                         .meta()
                         .arglists("(repl/add-env! name value)")
                         .doc(
-                            "Add (or replace) an env var to REPL local env file.\n\n" +
+                            "Add (or replace) an env var to the REPL's local env file.\n\n" +
+                            "The REPL env file ('repl.env' on Unix or 'repl.env.bat' " +
+                            "on Windows ) is 'sourced' at REPL start time to make the " +
+                            "contained vars available as system env vars!\n\n"+
                             "DO NO FORGET to restart the REPL after adding an env var!\n\n" +
                             "Note: This function is only available when called from " +
                             "within a REPL!\n\n\n" +
@@ -513,8 +524,9 @@ public class ReplFunctions {
                             "(system-env \"DEMO\")            \n" +
                             "```                              ")
                         .examples(
-                            "(repl/add-env \"DEMO\")")
+                            "(repl/add-env \"DEMO\" \"100\")")
                         .seeAlso(
+                            "system-env",
                             "repl?",
                             "repl/home-dir",
                             "repl/get-env",
