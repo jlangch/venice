@@ -5,10 +5,9 @@
 
 The OpenAI client runs out-of-the-box without any dependencies on 3rd party libraries.
 
+* [Configuring OpenAI API keys](#configuring-openai-api-keys)
 * [Chat Completion](#chat-completion)
-    * [Configuring OpenAI API keys](#configuring-openai-api-keys)
     * [Sending Requests](#sending-requests)
-    * [Configuring OpenAI API keys](#configuring-openai-api-keys)
     * [Examples](#examples)
         * [Example: Counting numbers (full model response)](#example-counting-numbers-full-model-response))
         * [Example: Counting numbers (model response content)](#example-counting-numbers-model-response-content)
@@ -27,32 +26,39 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 
 
 
-## Chat Completion
-
-
-
 ### Configuring OpenAI API keys
 
-**Possibility 1**
+
+**Option 1**
+
+Pass the OpenAI API key as an option to the OpenAI client requests:
+
+```
+(chat-completion ... :openai-api-key sk-123456789)
+```
+
+
+**Option 2**
 
 Define an environment variable at the OS or Shell level:
 
 ```
-OPENAI_API_KEY=sk-***********
+OPENAI_API_KEY=sk-123456789
 ```
 
 
-**Possibility 2**
+**Option 3**
 
-On Unix / Linux operating system simply patch the 'repl.env' file in the REPL home
-directory. 
+Add the key to the 'repl.env' file in the REPL home directory. 
 
-`repl.env` is supported with *Venice* V1.12.15 and newer when the REPL has been setup
+`repl.env` is supported with *Venice* V1.12.18 and newer when the REPL has been setup
 with:
 
 ```
 foo>  java -jar venice-1.12.18.jar -setup -colors
 ```
+
+*Unix like OSs*
 
 The setup will create a `repl.sh` that *sources* a `repl.env` at REPL startup time.
 
@@ -70,6 +76,29 @@ Example 'repl.env':
 # OpenAI api key
 export OPENAI_API_KEY=sk-***********
 ```
+
+*Windows*
+
+The setup will create a `repl.bat` that *sources* a `repl.env.bat` at REPL startup time.
+
+
+Example 'repl.env.bat':
+
+```
+REM # ------------------------------------------------------------------------------
+REM # Environment variables for windows operating systems
+REM #
+REM # This file will be 'sourced' by 'repl.bat' at REPL startup time. You can add
+REM # as many environment variables you like.
+REM # ------------------------------------------------------------------------------
+
+REM # OpenAI api key
+set OPENAI_API_KEY=sk-***********
+```
+
+
+
+## Chat Completion
 
 
 ### Sending Requests
