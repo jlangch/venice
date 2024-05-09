@@ -9059,9 +9059,11 @@ public class CoreFunctions {
                     @SuppressWarnings("unchecked")
                     final Stream<Object> stream = (Stream<Object>)delegate;
 
-                    try (Stream<Object> s = stream) {
+                    try (Stream<Object> s = stream) {  // close the stream after use!
                         return VncList.ofList(
-                                s.map(o -> new VncJavaObject(o))
+                                s.map(o -> o instanceof VncVal
+                                               ? (VncVal)o
+                                               : new VncJavaObject(o))
                                  .collect(Collectors.toList()));
                     }
                 }
