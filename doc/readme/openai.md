@@ -74,7 +74,7 @@ Example 'repl.env':
 # ------------------------------------------------------------------------------
 
 # OpenAI api key
-export OPENAI_API_KEY=sk-***********
+export OPENAI_API_KEY=sk-123456789
 ```
 
 *Windows*
@@ -93,7 +93,7 @@ REM # as many environment variables you like.
 REM # ------------------------------------------------------------------------------
 
 REM # OpenAI api key
-set OPENAI_API_KEY=sk-***********
+set OPENAI_API_KEY=sk-123456789
 ```
 
 
