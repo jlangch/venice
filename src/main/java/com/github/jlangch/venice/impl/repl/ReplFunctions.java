@@ -42,6 +42,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -106,6 +107,7 @@ public class ReplFunctions {
         fns.add(catReplEnv(replDirs));
         fns.add(getReplEnv(replDirs));
         fns.add(addReplEnv(replDirs));
+        fns.add(removeReplEnv(replDirs));
         fns.add(waitAnyKeyPressed(terminal));
         fns.add(exit(repl));
 
@@ -501,7 +503,7 @@ public class ReplFunctions {
                     "repl/add-env",
                     VncFunction
                         .meta()
-                        .arglists("(repl/add-env! name value)")
+                        .arglists("(repl/add-env name value)")
                         .doc(
                             "Add (or replace) an env var to the REPL's local env file.\n\n" +
                             "The REPL env file ('repl.env' on Unix or 'repl.env.bat' " +
@@ -575,6 +577,84 @@ public class ReplFunctions {
                     }
 
                     return Constants.Nil;
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction removeReplEnv(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/remove-env",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/remove-env name)")
+                        .doc(
+                            "Remove an env var to the REPL's local env file.\n\n" +
+                            "The REPL env file ('repl.env' on Unix or 'repl.env.bat' " +
+                            "on Windows ) is 'sourced' at REPL start time to make the " +
+                            "contained vars available as system env vars!\n\n"+
+                            "DO NO FORGET to restart the REPL after removing an env var!\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!\n\n\n" +
+                            "**Example**                      \n\n" +
+                            "*1. Remove env var:*             \n\n" +
+                            "```                              \n" +
+                            "(repl/remove-env \"DEMO\")       \n" +
+                            "```                              \n" +
+                            "*2. Restart the REPL:*           \n\n" +
+                            "```                              \n" +
+                            "venice> !restart                 \n" +
+                            "```                              \n" +
+                            "*3. Test:*                       \n\n" +
+                            "```                              \n" +
+                            "(system-env \"DEMO\")            \n" +
+                            "```                              ")
+                        .examples(
+                            "(repl/remove-env \"DEMO\")")
+                        .seeAlso(
+                            "system-env",
+                            "repl?",
+                            "repl/home-dir",
+                            "repl/get-env",
+                            "repl/cat-env")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final String name = Coerce.toVncString(args.first()).getValue().trim();
+
+                    final List<String> out = new ArrayList<>();
+
+                    boolean removed = false;
+
+                    for(String line : loadReplEnv(replDirs)) {
+                        if (isEnvVarLine(line)) {
+                            final String[] nv = splitEnvVarLine(line);
+                            if (nv.length == 2 && name.equals(nv[0].trim())) {
+                                removed = true;
+                                continue;
+                            }
+                        }
+
+                        out.add(line);
+                    }
+
+                    try {
+                        Files.write(
+                            replEnvFile(replDirs).toPath(),
+                            out,
+                            StandardOpenOption.WRITE,
+                            StandardOpenOption.TRUNCATE_EXISTING);
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to updated the REPL's env file!");
+                    }
+
+                    return VncBoolean.of(removed);
                 }
 
                 private static final long serialVersionUID = -1L;

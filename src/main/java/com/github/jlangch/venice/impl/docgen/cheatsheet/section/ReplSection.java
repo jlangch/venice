@@ -66,6 +66,7 @@ public class ReplSection implements ISectionBuilder {
         env.addItem(diBuilder.getDocItem("repl/cat-env", false));
         env.addItem(diBuilder.getDocItem("repl/get-env", false));
         env.addItem(diBuilder.getDocItem("repl/add-env", false));
+        env.addItem(diBuilder.getDocItem("repl/remove-env", false));
 
         return section;
     }
