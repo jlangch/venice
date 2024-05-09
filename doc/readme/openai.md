@@ -67,7 +67,7 @@ Example 'repl.env':
 
 ```
 # ------------------------------------------------------------------------------
-# Environment variables for unix /linux operating systems
+# Environment variables for unix / linux operating systems
 #
 # This file will be 'sourced' by 'repl.sh' at REPL startup time. You can add
 # as many environment variables you like.
