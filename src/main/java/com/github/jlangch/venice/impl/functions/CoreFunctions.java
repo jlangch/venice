@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.VncException;
@@ -597,7 +598,7 @@ public class CoreFunctions {
                         "(symbol \"foo\" \"a\")",
                         "(symbol *ns* \"a\")",
                         "(symbol 'a)",
-                    	"((resolve (symbol \"core\" \"+\")) 1 2)",
+                        "((resolve (symbol \"core\" \"+\")) 1 2)",
                         "(name str/reverse)",
                         "(namespace str/reverse)")
                     .seeAlso("resolve", "name", "namespace")
@@ -700,8 +701,8 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(keyword name)",
-                    	"(keyword ns name)")
+                        "(keyword name)",
+                        "(keyword ns name)")
                     .doc("Returns a keyword from the given name")
                     .examples(
                         "(keyword \"a\")",
@@ -719,21 +720,21 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 1, 2);
 
                 if (args.size() == 1) {
-	                if (Types.isVncKeyword(args.first())) {
-	                    return args.first();
-	                }
-	                else if (Types.isVncString(args.first())) {
-	                    return new VncKeyword(((VncString)args.first()).getValue());
-	                }
-	                else if (Types.isVncJavaObject(args.first()) && ((VncJavaObject)args.first()).isEnum()) {
-	                	final Enum<?> e = (Enum<?>)((VncJavaObject)args.first()).getDelegate();
-	                    return new VncKeyword(e.name());
-	                }
-	                else {
-	                    throw new VncException(String.format(
-	                            "Function 'keyword' does not allow %s name",
-	                            Types.getType(args.first())));
-	                }
+                    if (Types.isVncKeyword(args.first())) {
+                        return args.first();
+                    }
+                    else if (Types.isVncString(args.first())) {
+                        return new VncKeyword(((VncString)args.first()).getValue());
+                    }
+                    else if (Types.isVncJavaObject(args.first()) && ((VncJavaObject)args.first()).isEnum()) {
+                        final Enum<?> e = (Enum<?>)((VncJavaObject)args.first()).getDelegate();
+                        return new VncKeyword(e.name());
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'keyword' does not allow %s name",
+                                Types.getType(args.first())));
+                    }
                 }
                 else {
                     if (Types.isVncSymbol(args.first())) {
@@ -5367,8 +5368,8 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(not-every? pred coll)")
                     .doc(
-	                    "Returns true if coll is a collection and the predicate is " +
-	                    "not true for all collection items, false otherwise.")
+                        "Returns true if coll is a collection and the predicate is " +
+                        "not true for all collection items, false otherwise.")
                     .examples(
                         "(not-every? number? nil)",
                         "(not-every? number? [])",
@@ -6140,7 +6141,7 @@ public class CoreFunctions {
                     return new VncMutableList();
                 }
                 else if (args.size() == 1) {
-                	return args.first();
+                    return args.first();
                 }
                 else {
                     VncVal coll = args.first();
@@ -6672,12 +6673,12 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(nth coll idx)",
-                    	"(nth coll idx defaultVal)")
+                        "(nth coll idx)",
+                        "(nth coll idx defaultVal)")
                     .doc(
-                    	"Returns the nth element of coll. \n\n" +
-                    	"Throws an exception if the index does not exist and there " +
-                    	"is no default value passed else returns the default value.")
+                        "Returns the nth element of coll. \n\n" +
+                        "Throws an exception if the index does not exist and there " +
+                        "is no default value passed else returns the default value.")
                     .examples(
                         "(nth nil 1)",
                         "(nth [1 2 3] 1)",
@@ -6701,30 +6702,30 @@ public class CoreFunctions {
                 }
 
                 if (args.size() == 2) {
-	                if (Types.isVncSequence(coll)) {
-	                    return ((VncSequence)coll).nth(idx);
-	                }
-	                else if (Types.isVncString(coll)) {
-	                    return ((VncString)coll).nth(idx);
-	                }
-	                else {
-	                    throw new VncException(String.format(
-	                            "Invalid argument type %s while calling function 'nth'",
-	                            Types.getType(coll)));
-	                }
+                    if (Types.isVncSequence(coll)) {
+                        return ((VncSequence)coll).nth(idx);
+                    }
+                    else if (Types.isVncString(coll)) {
+                        return ((VncString)coll).nth(idx);
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Invalid argument type %s while calling function 'nth'",
+                                Types.getType(coll)));
+                    }
                 }
                 else {
-	                if (Types.isVncSequence(coll)) {
-	                    return ((VncSequence)coll).nthOrDefault(idx, args.third());
-	                }
-	                else if (Types.isVncString(coll)) {
-	                    return ((VncString)coll).nthOrDefault(idx, args.third());
-	                }
-	                else {
-	                    throw new VncException(String.format(
-	                            "Invalid argument type %s while calling function 'nth'",
-	                            Types.getType(coll)));
-	                }
+                    if (Types.isVncSequence(coll)) {
+                        return ((VncSequence)coll).nthOrDefault(idx, args.third());
+                    }
+                    else if (Types.isVncString(coll)) {
+                        return ((VncString)coll).nthOrDefault(idx, args.third());
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Invalid argument type %s while calling function 'nth'",
+                                Types.getType(coll)));
+                    }
                 }
             }
 
@@ -9052,11 +9053,17 @@ public class CoreFunctions {
                 if (Types.isVncJavaObject(val, java.util.stream.Stream.class)) {
                     // convert to venice list
                     // TODO: handle the formal type
+
+                    final Object delegate = ((VncJavaObject)val).getDelegate();
+
                     @SuppressWarnings("unchecked")
-                    java.util.stream.Stream<Object> stream = (java.util.stream.Stream<Object>)((VncJavaObject)val).getDelegate();
-                    return VncList.ofList(
-                            stream.map(o -> new VncJavaObject(o))
-                                  .collect(Collectors.toList()));
+                    final Stream<Object> stream = (Stream<Object>)delegate;
+
+                    try (Stream<Object> s = stream) {
+                        return VncList.ofList(
+                                s.map(o -> new VncJavaObject(o))
+                                 .collect(Collectors.toList()));
+                    }
                 }
                 else if (Types.isVncMap(val)) {
                     if (((VncMap)val).isEmpty()) {
@@ -9569,7 +9576,7 @@ public class CoreFunctions {
                     return new VncString(((VncFunction)arg).getSimpleName());
                 }
                 else if (Types.isVncJavaObject(args.first()) && ((VncJavaObject)args.first()).isEnum()) {
-                	final Enum<?> e = (Enum<?>)((VncJavaObject)args.first()).getDelegate();
+                    final Enum<?> e = (Enum<?>)((VncJavaObject)args.first()).getDelegate();
                     return new VncString(e.name());
                 }
                 else {
