@@ -43,6 +43,7 @@
         :java.awt.Graphics
         :java.awt.Graphics2D
         :java.awt.Image
+        :java.awt.Polygon
         :java.awt.RenderingHints
         :java.awt.Shape
         :java.awt.Transparency
@@ -945,7 +946,7 @@
           (do
             (load-module :images)
             
-            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/whitebg)
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
@@ -971,14 +972,70 @@
 
   fill-round-rect [g2d x y width height arc-width arc-height]
 
-    (assert (instance-of? :Graphics2D g2d))
-    (assert (long? x))
-    (assert (long? y))
-    (assert (long? width))
-    (assert (long? height))
-    (assert (long? arc-width))
-    (assert (long? arc-height))
-    (. g2d :fillRoundRect x y width height arc-width arc-height))
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (long? x))
+  (assert (long? y))
+  (assert (long? width))
+  (assert (long? height))
+  (assert (long? arc-width))
+  (assert (long? arc-height))
+  (. g2d :fillRoundRect x y width height arc-width arc-height))
+
+
+(defn
+  ^{ :arglists '(
+          "(fill-polygon g2d polygon)")
+     :doc """
+          Draws a filled polygon. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (defn hexagon [r]
+              (let [cos-60° (math/cos (math/to-radians 60))
+                    sin-60° (math/sin (math/to-radians 60))]          
+                [ [r                 0               ] 
+                  [(* r cos-60°)     (* r sin-60°)   ] 
+                  [(* -1 r cos-60°)  (* r sin-60°)   ]  
+                  [(* -1 r)          0               ] 
+                  [(* -1 r cos-60°)  (* -1 r sin-60°)]
+                  [(* r cos-60°)     (* -1 r sin-60°)]]))
+            
+            (defn move [dx dy points]
+              (map (fn [[x y]] [(+ x dx) (+ y dy)]) points))
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+
+              ;; hexagon
+              (->> (hexagon 80)
+                   (move 200 100)
+                   (images/polygon)
+                   (images/fill-polygon g))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  fill-polygon [g2d polygon]
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (instance-of? :Polygon polygon))
+  (. g2d :fillPolygon polygon))
 
 
 (defn
@@ -1170,6 +1227,63 @@
   (assert (long? arc-width))
   (assert (long? arc-height))
   (. g2d :drawRoundRect x y width height arc-width arc-height))
+
+
+(defn
+  ^{ :arglists '(
+          "(draw-polygon g2d polygon)")
+     :doc """
+          Draws a polygon. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (defn hexagon [r]
+              (let [cos-60° (math/cos (math/to-radians 60))
+                    sin-60° (math/sin (math/to-radians 60))]          
+                [ [r                 0               ] 
+                  [(* r cos-60°)     (* r sin-60°)   ] 
+                  [(* -1 r cos-60°)  (* r sin-60°)   ]  
+                  [(* -1 r)          0               ] 
+                  [(* -1 r cos-60°)  (* -1 r sin-60°)]
+                  [(* r cos-60°)     (* -1 r sin-60°)]]))
+            
+            (defn move [dx dy points]
+              (map (fn [[x y]] [(+ x dx) (+ y dy)]) points))
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
+
+              ;; hexagon
+              (->> (hexagon 80)
+                   (move 200 100)
+                   (images/polygon)
+                   (images/draw-polygon g))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/anti-alias"
+          "images/copy-area"
+          "images/fill-circle"
+          "images/fill-oval"
+          "images/fill-rect"
+          "images/draw-string"
+          "images/draw-line" ) }
+
+  draw-polygon [g2d polygon]
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (instance-of? :Polygon polygon))
+  (. g2d :drawPolygon polygon))
 
 
 (defn
@@ -2029,7 +2143,7 @@
 
   (assert (sequential? points))
  
-  (loop [poly   (. :java.awt.Polygon :new) 
+  (loop [poly   (. :Polygon :new) 
          points points]
     (if (empty? points)
       poly

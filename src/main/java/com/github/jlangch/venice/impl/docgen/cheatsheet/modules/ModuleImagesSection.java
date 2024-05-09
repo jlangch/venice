@@ -90,6 +90,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         drawing.addItem(diBuilder.getDocItem("images/draw-oval", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-rect", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-round-rect", false));
+        drawing.addItem(diBuilder.getDocItem("images/draw-polygon", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-string", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-line", false));
         drawing.addItem(diBuilder.getDocItem("images/draw-image", false));
@@ -100,6 +101,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         fill.addItem(diBuilder.getDocItem("images/fill-oval", false));
         fill.addItem(diBuilder.getDocItem("images/fill-rect", false));
         fill.addItem(diBuilder.getDocItem("images/fill-round-rect", false));
+        fill.addItem(diBuilder.getDocItem("images/fill-polygon", false));
 
         final DocSection shapes = new DocSection("Shapes", id());
         all.addSection(shapes);
