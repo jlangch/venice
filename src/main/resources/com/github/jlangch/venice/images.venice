@@ -1375,7 +1375,6 @@
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
-              (images/stroke g 5.0 images/cap-round images/join-miter)
 
               ;; hexagon
               (->> (images/hexagon-poly)
