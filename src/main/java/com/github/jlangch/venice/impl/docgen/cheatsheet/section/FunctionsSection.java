@@ -125,6 +125,7 @@ public class FunctionsSection implements ISectionBuilder {
         all.addSection(def);
         def.addItem(diBuilder.getDocItem("fn-name"));
         def.addItem(diBuilder.getDocItem("fn-about"));
+        def.addItem(diBuilder.getDocItem("fn-args"));
         def.addItem(diBuilder.getDocItem("fn-body"));
         def.addItem(diBuilder.getDocItem("fn-pre-conditions"));
 

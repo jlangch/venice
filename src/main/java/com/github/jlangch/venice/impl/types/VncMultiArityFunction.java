@@ -145,7 +145,9 @@ public class VncMultiArityFunction extends VncFunction {
         final List<VncFunction> list = new ArrayList<>();
 
         for(VncFunction f : fixedArgFunctions) {
-            list.add(f);
+        	if (f != null) {
+                list.add(f);
+        	}
         }
         list.addAll(variadicArgFunctions);
 

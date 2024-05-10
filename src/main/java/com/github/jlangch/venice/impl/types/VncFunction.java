@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -82,17 +83,23 @@ public abstract class VncFunction
 
         int fixedArgs = 0;
         boolean variadic = false;
+        VncVal variadicName = null;
         if (params != null) {
             for(VncVal p : params) {
                 if (isElisionSymbol(p)) {
                     variadic = true;
+                    variadicName = params.last();
                     break;
                 }
                 fixedArgs++;
             }
         }
+
         this.fixedArgsCount = fixedArgs;
         this.variadicArgs = variadic;
+        this.variadicArgName = variadicName != null && Types.isVncSymbol(variadicName)
+                                 ? ((VncSymbol)variadicName).getSimpleName()
+                                 : null;
 
         this.anonymous = isAnonymousFuncName(simpleName);
         this.macro = macro;
@@ -235,6 +242,10 @@ public abstract class VncFunction
         return variadicArgs;
     }
 
+    public String getVariadicArgName() {
+        return variadicArgName;
+    }
+
     public VncVal getBody() {
         return Constants.Nil;
     }
@@ -361,7 +372,7 @@ public abstract class VncFunction
         return name == null || name.startsWith("anonymous-");
     }
 
-    private static boolean isElisionSymbol(final VncVal val) {
+    public static boolean isElisionSymbol(final VncVal val) {
         return (val instanceof VncSymbol) && ((VncSymbol)val).getName().equals("&");
     }
 
@@ -408,6 +419,7 @@ public abstract class VncFunction
     private final VncVector params;
     private final int fixedArgsCount;
     private final boolean variadicArgs;
+    private final String variadicArgName;
 
     private final VncVector preConditions;
 

@@ -1745,10 +1745,62 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_fn_name() {
+        final Venice venice = new Venice();
+
+        final String script = "(fn-name (fn sum [x y] (+ x y)))";
+
+        assertEquals("user/sum", venice.eval(script));
+    }
+
+    @Test
     public void test_fn_body() {
         final Venice venice = new Venice();
 
         assertEquals("((if x false true))", venice.eval("(pr-str (fn-body not))"));
+    }
+
+    @Test
+    public void test_fn_args_1() {
+        final Venice venice = new Venice();
+
+        final String script = "(do                    \n" +
+                              "  (defn sum [x y]      \n" +
+                              "     (+ x y))          \n" +
+                              "  (->> (var-get sum)   \n" +
+                              "       (fn-args)       \n" +
+                              "       (pr-str)))      ";
+
+        assertEquals("({:params [\"x\" \"y\"] :variadic false})", venice.eval(script));
+    }
+
+    @Test
+    public void test_fn_args_2() {
+        final Venice venice = new Venice();
+
+        final String script = "(do                    \n" +
+                              "  (defn sum            \n" +
+                              "    ([x] x)            \n" +
+                              "    ([x y] (+ x y)))   \n" +
+                              "  (->> (var-get sum)   \n" +
+                              "       (fn-args)       \n" +
+                              "       (pr-str)))      ";
+
+        assertEquals("({:params [\"x\"] :variadic false} {:params [\"x\" \"y\"] :variadic false})", venice.eval(script));
+    }
+
+    @Test
+    public void test_fn_args_3() {
+        final Venice venice = new Venice();
+
+        final String script = "(do                    \n" +
+                              "  (defn sum [x y & z]  \n" +
+                              "     (apply + x y z))  \n" +
+                              "  (->> (var-get sum)   \n" +
+                              "       (fn-args)       \n" +
+                              "       (pr-str)))      ";
+
+        assertEquals("({:params [\"x\" \"y\"] :variadic true :variadicName \"z\"})", venice.eval(script));
     }
 
     @Test

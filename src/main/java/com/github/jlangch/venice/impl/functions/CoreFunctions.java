@@ -874,7 +874,7 @@ public class CoreFunctions {
                         "(fn-about and)",
                         "(fn-about println)",
                         "(fn-about +)")
-                    .seeAlso("fn-name", "fn-body", "fn-pre-conditions")
+                    .seeAlso("fn-name", "fn-body", "fn-args", "fn-pre-conditions")
                     .build()
         ) {
             @Override
@@ -922,7 +922,7 @@ public class CoreFunctions {
                         "         (map #(* % 10))))  \n" +
                         "  (fn-body (var-get calc))) ")
                     .seeAlso(
-                        "fn-name", "fn-about", "fn-pre-conditions")
+                        "fn-name", "fn-about", "fn-args", "fn-pre-conditions")
                     .build()
         ) {
             @Override
@@ -956,6 +956,72 @@ public class CoreFunctions {
                 }
                 else {
                     return fn.getBody();
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction fn_args =
+        new VncFunction(
+                "fn-args",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(fn-args fn)")
+                    .doc(
+                        "Returns the argument list of a function.\n\n" +
+                        "Returns `nil` if fn is not a function or if fn is a " +
+                        "native function.")
+                    .examples(
+                        ";; single arity             \n" +
+                        "(do                         \n" +
+                        "  (defn sum [x y]           \n" +
+                        "    (+ x y))                \n" +
+                        "  (fn-args (var-get sum)))  ",
+                        ";; single arity, vargs      \n" +
+                        "(do                         \n" +
+                        "  (defn sum [x & z]         \n" +
+                        "    (apply + x z))          \n" +
+                        "  (fn-args (var-get sum)))  ",
+                        ";; multi arity              \n" +
+                        "(do                         \n" +
+                        "  (defn sum                 \n" +
+                        "    ([x] x)                 \n" +
+                        "    ([x y] (+ x y)))        \n" +
+                        "                            \n" +
+                        "  (fn-args (var-get sum)))  "
+                        )
+                   .seeAlso(
+                        "fn-name", "fn-about", "fn-body", "fn-pre-conditions")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
+
+                if (!Types.isVncFunction(args.first())) {
+                    return Nil;
+                }
+
+                final VncFunction fn = (VncFunction)args.first();
+                fn.sandboxFunctionCallValidation();
+
+                if (fn instanceof VncMultiArityFunction) {
+                    final VncMultiArityFunction mafn = (VncMultiArityFunction)fn;
+
+                    return VncList.ofColl(
+                            mafn.getFunctions()
+                                .stream()
+                                .map(f -> getFnArgs((VncFunction)f))
+                                .collect(Collectors.toList()));
+                }
+                else if (fn instanceof VncMultiFunction) {
+                    return Nil;  // not supported
+                }
+                else {
+                    return VncList.of(getFnArgs(fn));
                 }
             }
 
@@ -9784,6 +9850,33 @@ public class CoreFunctions {
     // Helpers
     ///////////////////////////////////////////////////////////////////////////
 
+    private static VncMap getFnArgs(final VncFunction fn) {
+        final boolean variadic = fn.hasVariadicArgs();
+        final String variadicArgName = fn.getVariadicArgName();
+
+        VncOrderedMap map = new VncOrderedMap();
+
+        VncVector params = VncVector.empty();
+        for (VncVal p : fn.getParams()) {
+            if (VncFunction.isElisionSymbol(p)) {
+                break;
+            }
+            else {
+                params = params.addAtEnd(new VncString(((VncSymbol)p).getSimpleName()));
+            }
+        }
+
+        map = map.assoc(new VncKeyword("params"), params);
+        map = map.assoc(new VncKeyword("variadic"), VncBoolean.of(variadic));
+
+        if (variadic) {
+            map = map.assoc(new VncKeyword("variadicName"),
+                            new VncString(variadicArgName));
+        }
+
+        return map;
+    }
+
     private static VncVal sort(
             final String fnName,
             final VncVal coll
@@ -9889,6 +9982,7 @@ public class CoreFunctions {
                 .add(fn_name)
                 .add(fn_about)
                 .add(fn_body)
+                .add(fn_args)
                 .add(fn_pre_conditions)
 
                 .add(just)
