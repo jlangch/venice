@@ -1638,10 +1638,9 @@
               (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
 
-              ;; hexagon
-              (let [anchor-x 200
-                    anchor-y 170]
-                (doseq [angle (range 0 190 10)]                  
+              ;; draw an arc of hexagons
+              (let [anchor-x 200, anchor-y 170]
+                (doseq [angle (range 0 190 10)]
                   (->> (images/hexagon-poly)
                        (images/scale-points 20)
                        (images/rotate-points 90)
