@@ -673,7 +673,6 @@
   get-clip [g2d]
 
   (assert (instance-of? :Graphics2D g2d))
-
   (. g2d :getClip))
 
 
@@ -706,7 +705,6 @@
   get-clip-bounds [g2d]
 
   (assert (instance-of? :Graphics2D g2d))
-
   (. g2d :getClipBounds))
 
 
@@ -741,9 +739,365 @@
           "images/get-clip-bounds" ) }
 
   dispose [g2d]
-    (assert (instance-of? :Graphics2D g2d))
-    (. g2d :dispose))
 
+  (assert (instance-of? :Graphics2D g2d))
+  (. g2d :dispose))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Affine Transformation
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(set-transform g2d tx)")
+     :doc """
+          Overwrites the Transform in the Graphics2D context. 'tx' may be `nil`.
+
+          Note: This function should **never** be used to apply a new
+          coordinate transform on top of an existing transform. It should
+          only be used to restore the original transform of the graphics.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/fill-oval g 200 100 200 100)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ ) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/get-transform"
+          "images/transform"
+          "images/tx-identity"
+          "images/tx-translate"
+          "images/tx-scale"
+          "images/tx-rotate"
+          "images/tx-shear" ) }
+
+  set-transform [g2d tx]
+    
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (or (nil? tx) (instance-of? :AffineTransform tx)))
+  (. g2d :setTransform tx))
+
+
+(defn
+  ^{ :arglists '(
+          "(get-transform g2d)")
+     :doc """
+          Returns a copy of the current Transform in the Graphics2D context.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/fill-oval g 200 100 200 100)
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ ) 
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/set-transform"
+          "images/transform"
+          "images/tx-identity"
+          "images/tx-translate"
+          "images/tx-scale"
+          "images/tx-rotate"
+          "images/tx-shear" ) }
+
+  get-transform [g2d]
+    
+  (assert (instance-of? :Graphics2D g2d))
+  (. g2d :getTransform))
+
+
+(defn transform [g2d tx]
+  ^{ :arglists '(
+          "(transform g2d tx)")
+     :doc """
+          Add a affine transformer to the Graphics2D context.
+
+          **Note: The last specified transform on the graphics context is applied first!**
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img    (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g      (images/g2d img)
+                  square [[-1 -1] [1 -1] [1 1] [-1 1]]]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
+              (images/transform g (images/tx-translate 200 100))
+              (images/transform g (images/tx-scale 15))
+              (images/draw-polygon g (images/polygon square))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ )
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/set-transform"
+          "images/get-transform"
+          "images/tx-identity"
+          "images/tx-translate"
+          "images/tx-scale"
+          "images/tx-rotate"
+          "images/tx-shear" ) }
+
+  (assert (instance-of? :Graphics2D g2d))
+  (assert (instance-of? :AffineTransform tx))
+  (. g2d :transform tx))
+
+
+(defn 
+  ^{ :arglists '(
+          "(tx-identity )")
+     :doc """
+          Create identity transformer.
+
+          **Note: The last specified transform on the graphics context is applied first!**
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img    (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g      (images/g2d img)
+                  square [[30 30] [50 30] [50 50] [30 50]]]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
+              (images/transform g (images/tx-identity))
+              (images/draw-polygon g (images/polygon square))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ )
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/set-transform"
+          "images/get-transform"
+          "images/transform"
+          "images/tx-scale"
+          "images/tx-rotate"
+          "images/tx-shear" ) }
+
+  tx-identity []
+
+  (. :AffineTransform :new))
+
+
+(defn 
+  ^{ :arglists '(
+          "(tx-translate x y)")
+     :doc """
+          Create a translate transformer.
+          
+          **Note: The last specified transform on the graphics context is applied first!**
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img    (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g      (images/g2d img)
+                  square [[-1 -1] [1 -1] [1 1] [-1 1]]]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
+              (images/transform g (images/tx-translate 200 100))
+              (images/transform g (images/tx-scale 15))
+              (images/draw-polygon g (images/polygon square))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ )
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/set-transform"
+          "images/get-transform"
+          "images/transform"
+          "images/tx-identity"
+          "images/tx-scale"
+          "images/tx-rotate"
+          "images/tx-shear" ) }
+
+  tx-translate [x y]
+
+  (assert (or (long? x) (double? x)))
+  (assert (or (long? y) (double? y)))
+  (. :AffineTransform :getTranslateInstance x y))
+
+
+(defn 
+  ^{ :arglists '(
+          "(tx-scale s)"
+          "(tx-scale sx sy)")
+     :doc """
+          Create a scale transformer.
+
+          Take care for strokes when scaling up/down. A stroke width will be
+          scaled as well!
+          
+          **Note: The last specified transform on the graphics context is applied first!**
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img    (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g      (images/g2d img)
+                  square [[-1 -1] [1 -1] [1 1] [-1 1]]]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
+              (images/transform g (images/tx-translate 200 100))
+              (images/transform g (images/tx-scale 15))
+              (images/draw-polygon g (images/polygon square))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ )
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/set-transform"
+          "images/get-transform"
+          "images/transform"
+          "images/tx-identity"
+          "images/tx-translate"
+          "images/tx-rotate"
+          "images/tx-shear" ) }
+
+  tx-scale 
+
+  ([s]
+    (assert (or (long? s) (double? s)))
+    (. :AffineTransform :getScaleInstance s s))
+
+  ([sx sy]
+    (assert (or (long? sx) (double? sx)))
+    (assert (or (long? sy) (double? sy)))
+    (. :AffineTransform :getScaleInstance sx sy)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(tx-shear sx sy)")
+     :doc """
+          Create a shear transformer.
+          
+          **Note: The last specified transform on the graphics context is applied first!**
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img    (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g      (images/g2d img)
+                  square [[-1 -1] [1 -1] [1 1] [-1 1]]]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
+              (images/transform g (images/tx-translate 200 100))
+              (images/transform g (images/tx-shear -0.3 0.0))
+              (images/transform g (images/tx-scale 15))
+              (images/draw-polygon g (images/polygon square))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ )
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/set-transform"
+          "images/get-transform"
+          "images/transform"
+          "images/tx-identity"
+          "images/tx-translate"
+          "images/tx-scale"
+          "images/tx-rotate" ) }
+
+  tx-shear [sx sy]
+
+  (assert (or (long? sx) (double? sx)))
+  (assert (or (long? sy) (double? sy)))
+  (. :AffineTransform :getShearInstance sx sy))
+
+
+(defn 
+  ^{ :arglists '(
+          "(tx-rotate angle)"
+          "(tx-rotate angle anchor-x anchor-y)")
+     :doc """
+          Create a rotate transformer.
+          
+          **Note: The last specified transform on the graphics context is applied first!**
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+
+            (let [img    (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g      (images/g2d img)
+                  square [[-1 -1] [1 -1] [1 1] [-1 1]]]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
+              (images/transform g (images/tx-translate 200 100))
+              (images/transform g (images/tx-rotate 45))
+              (images/transform g (images/tx-scale 15))
+              (images/draw-polygon g (images/polygon square))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+         """ )
+     :see-also '(
+          "images/create"
+          "images/g2d"
+          "images/set-transform"
+          "images/get-transform"
+          "images/transform"
+          "images/tx-identity"
+          "images/tx-translate"
+          "images/tx-scale"
+          "images/tx-shear" ) }
+
+  tx-rotate 
+  
+  ([angle]
+    (assert (or (long? angle) (double? angle)))
+    (. :AffineTransform :getRotateInstance (math/to-radians angle)))
+  
+  ([angle anchor-x anchor-y]
+    (assert (or (long? angle) (double? angle)))
+    (assert (or (long? anchor-x) (double? anchor-x)))
+    (assert (or (long? anchor-y) (double? anchor-y)))
+    (. :AffineTransform :getRotateInstance (to-radian angle) anchor-x anchor-y)))
 
 
 ;; -----------------------------------------------------------------------------
@@ -1017,33 +1371,22 @@
           (do
             (load-module :images)
 
-            (defn hexagon [r]
-              (let [cos-60° (math/cos (math/to-radians 60))
-                    sin-60° (math/sin (math/to-radians 60))]          
-                [ [r                 0               ] 
-                  [(* r cos-60°)     (* r sin-60°)   ] 
-                  [(* -1 r cos-60°)  (* r sin-60°)   ]  
-                  [(* -1 r)          0               ] 
-                  [(* -1 r cos-60°)  (* -1 r sin-60°)]
-                  [(* r cos-60°)     (* -1 r sin-60°)]]))
-            
-            (defn move [dx dy points]
-              (map (fn [[x y]] [(+ x dx) (+ y dy)]) points))
-
             (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
               (images/anti-alias g true)   ;; enable anti-alias 
+              (images/stroke g 5.0 images/cap-round images/join-miter)
 
               ;; hexagon
-              (->> (hexagon 80)
-                   (move 200 100)
+              (->> (images/hexagon-poly)
+                   (images/scale-points 80)
+                   (images/translate-points 200 100)
                    (images/polygon)
                    (images/fill-polygon g))
 
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
-          """) 
+          """ ) 
      :see-also '(
           "images/create"
           "images/g2d"
@@ -1270,19 +1613,6 @@
           (do
             (load-module :images)
 
-            (defn hexagon [r]
-              (let [cos-60° (math/cos (math/to-radians 60))
-                    sin-60° (math/sin (math/to-radians 60))]          
-                [ [r                 0               ] 
-                  [(* r cos-60°)     (* r sin-60°)   ] 
-                  [(* -1 r cos-60°)  (* r sin-60°)   ]  
-                  [(* -1 r)          0               ] 
-                  [(* -1 r cos-60°)  (* -1 r sin-60°)]
-                  [(* r cos-60°)     (* -1 r sin-60°)]]))
-            
-            (defn move [dx dy points]
-              (map (fn [[x y]] [(+ x dx) (+ y dy)]) points))
-
             (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
                   g   (images/g2d img)]
               (images/fg-color g images/blue)
@@ -1290,10 +1620,35 @@
               (images/stroke g 5.0 images/cap-round images/join-miter)
 
               ;; hexagon
-              (->> (hexagon 80)
-                   (move 200 100)
+              (->> (images/hexagon-poly)
+                   (images/scale-points 80)
+                   (images/translate-points 200 100)
                    (images/polygon)
                    (images/draw-polygon g))
+
+              (images/dispose g)
+              (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
+          """
+          """
+          (do
+            (load-module :images)
+
+            (let [img (images/create 400 200 images/TYPE_INT_ARGB images/white)
+                  g   (images/g2d img)]
+              (images/fg-color g images/blue)
+              (images/anti-alias g true)   ;; enable anti-alias 
+
+              ;; hexagon
+              (let [anchor-x 200
+                    anchor-y 170]
+                (doseq [angle (range 0 190 10)]                  
+                  (->> (images/hexagon-poly)
+                       (images/scale-points 20)
+                       (images/rotate-points 90)
+                       (images/translate-points 50 170)
+                       (images/rotate-points angle anchor-x anchor-y)
+                       (images/polygon)
+                       (images/draw-polygon g))))
 
               (images/dispose g)
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
@@ -1314,7 +1669,7 @@
 
   (assert (instance-of? :Graphics2D g2d))
   (assert (instance-of? :Polygon polygon))
-  (. g2d :drawPolygon polygon))
+  (. g2d :draw polygon))
 
 
 (defn
@@ -1560,19 +1915,19 @@
                     new-height width]
                       (. tx :translate new-width 0)
                       (. tx :quadrantRotate 1)
-                (transform img tx new-width new-height))
+                (transform-img img tx new-width new-height))
 
       180     (let [new-width  width
                     new-height height]
                        (. tx :translate new-width new-height)
                        (. tx :quadrantRotate 2)
-                 (transform img tx new-width new-height))
+                 (transform-img img tx new-width new-height))
 
       270     (let [new-width  height
                     new-height width]
                       (. tx :translate 0 new-height)
                       (. tx :quadrantRotate 3)
-                (transform img tx new-width new-height))
+                (transform-img img tx new-width new-height))
 
       img)))
 
@@ -1604,11 +1959,11 @@
     (case mode
       :horizontal (do (. tx :translate width 0)
                       (. tx :scale -1.0 1.0)
-                      (transform img tx width height))
+                      (transform-img img tx width height))
 
       :vertical   (do (. tx :translate 0 height)
                       (. tx :scale 1.0 -1.0)
-                      (transform img tx width height))
+                      (transform-img img tx width height))
       img)))
 
 
@@ -1642,7 +1997,7 @@
     (let [[width height] (dimension img)
           tx             (. :AffineTransform :new)]
       (. tx :shear shx shy)
-      (transform img tx width height color))))
+      (transform-img img tx width height color))))
 
 
 (defn 
@@ -1658,7 +2013,7 @@
           (do
             (load-module :images)
             (-> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
-                (images/transalte 200 100)
+                (images/translate 200 100)
                 (images/save "jpg" (io/file "/Users/foo/Desktop/Pink-Forest-1.jpg"))))
           """ ) }
 
@@ -1676,12 +2031,12 @@
     (let [[width height] (dimension img)
           tx             (. :AffineTransform :new)]
       (. tx :translate x y)
-      (transform img tx width height color))))
+      (transform-img img tx width height color))))
 
 
-(defn- transform 
+(defn- transform-img 
   ([img tx width height]
-    (transform img tx width height nil))
+    (transform-img img tx width height nil))
 
   ([img tx width height color]
     (assert (instance-of? :Image img))
@@ -2122,7 +2477,7 @@
   ^{ :arglists '(
           "(point x y)") 
      :doc """
-          Creates a :java.awt.Point.
+          Creates a `:java.awt.Point`
           """
      :examples '(
           """
@@ -2143,7 +2498,7 @@
   ^{ :arglists '(
           "(rectangle x y width height)") 
      :doc """
-          Creates a :java.awt.Rectangle.
+          Creates a `:java.awt.Rectangle`
           """
      :examples '(
           """
@@ -2166,7 +2521,7 @@
   ^{ :arglists '(
           "(polygon points)") 
      :doc """
-          Creates a :java.awt.Polygon.
+          Creates a `:java.awt.Polygon` 
           """
      :examples '(
           """
@@ -2184,8 +2539,153 @@
     (if (empty? points)
       poly
       (let [[x y] (first points)]
-        (. poly :addPoint x y)
+        (. poly :addPoint (double x) (double y))
         (recur poly (rest points))))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(hexagon-poly)") 
+     :doc """
+          Creates a normalized (center at (0,0), radius 1) hexagon polygon
+          point list.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/hexagon-poly))
+          """ ) }
+
+  hexagon-poly []
+
+  (let [cos-60° (math/cos (math/to-radians 60))
+        sin-60° (math/sin (math/to-radians 60))] 
+    [ [1.0               0.0             ] 
+      [cos-60°           sin-60°         ] 
+      [(negate cos-60°)  sin-60°         ]  
+      [-1.0              0.0             ] 
+      [(negate cos-60°)  (negate sin-60°)]
+      [cos-60°           (negate sin-60°)]]))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rectangle-poly x y width height)") 
+     :doc """
+          Creates a rectangle polygon point list.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/rectangle-poly 0 0 200 100))
+          """ ) }
+
+  rectangle-poly [x y width height]
+
+  [ [x              y            ] 
+    [(+ x width)    y            ] 
+    [(+ x width)    (+ y height) ]  
+    [x              (+ y height) ] ])
+
+
+(defn 
+  ^{ :arglists '(
+          "(square-poly x y length)") 
+     :doc """
+          Creates a square polygon point list.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (images/square-poly 0 0 100))
+          """ ) }
+
+  square-poly [x y length]
+
+  [ [x              y            ] 
+    [(+ x length)   y            ] 
+    [(+ x length)   (+ y length) ]  
+    [x              (+ y length) ] ])
+
+
+(defn 
+  ^{ :arglists '(
+        "(scale-points factor points)"
+        "(scale-points factor-x factor-y points)") 
+    :doc """
+        Scales the points of a polygon point list with factor.
+        """
+    :examples '(
+        """
+        (do
+          (load-module :images)
+          (->> (images/rectangle-poly 0 0 200 100)
+               (images/scale-points 4.0 100 50)))
+        """ ) }
+
+  scale-points 
+  
+  ([factor points]
+    (map (fn [[x y]] [(* x factor) (* y factor)]) points))
+
+  ([factor anchor-x anchor-y points]
+    (->> points
+         (translate-points (negate anchor-x) (negate anchor-y))
+         (scale-points factor)
+         (translate-points anchor-x anchor-y))))
+
+
+(defn 
+  ^{ :arglists '(
+        "(translate-points dx dy points)") 
+    :doc """
+        Translate the points of a polygon point list.
+        """
+    :examples '(
+        """
+        (do
+          (load-module :images)
+          (->> (images/rectangle-poly 0 0 200 100)
+               (images/translate-points 4.0)))
+        """ ) }
+
+  translate-points [dx dy points]
+
+  (map (fn [[x y]] [(+ x dx) (+ y dy)]) points))
+
+
+(defn 
+  ^{ :arglists '(
+        "(rotate-points angle points)"
+        "(rotate-points angle anchor-x anchor-y points)") 
+    :doc """
+        Rotate the points of a polygon point list with an angle in degrees 
+        [0..360] around an anchor point. The default anchor point is (0,0)
+        """
+    :examples '(
+        """
+        (do
+          (load-module :images)
+          (->> (images/rectangle-poly 0 0 200 100)
+               (images/rotate-points 45 (square-poly 100 100 100 100))))
+        """ ) }
+
+  rotate-points
+
+  ([angle points]
+    (let [cos (math/cos (math/to-radians angle))
+          sin (math/sin (math/to-radians angle))] 
+      (map (fn [[x y]] [(- (* x cos) (* y sin)) (+ (* x sin) (* y cos))]) points)))
+
+  ([angle anchor-x anchor-y points]
+    (->> points
+         (translate-points (negate anchor-x) (negate anchor-y))
+         (rotate-points angle)
+         (translate-points anchor-x anchor-y))))
+
 
 
 
