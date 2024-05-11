@@ -9924,14 +9924,14 @@ public class CoreFunctions {
     private static VncVal sort(
             final String fnName,
             final VncVal coll
-        ) {
-          return sort(
-              fnName,
-              coll,
-              (x,y) -> Coerce
-                         .toVncLong(compare.apply(VncList.of(x,y)))
-                         .getIntValue());
-        }
+    ) {
+        return sort(
+                fnName,
+                coll,
+                (x,y) -> Coerce
+                           .toVncLong(compare.apply(VncList.of(x,y)))
+                           .getIntValue());
+    }
 
     private static VncVal sort(
             final String fnName,
