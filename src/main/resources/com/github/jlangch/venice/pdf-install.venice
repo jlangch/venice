@@ -40,10 +40,7 @@
     "com.github.librepdf:openpdf:1.3.35"
     "com.github.librepdf:pdf-toolbox:1.3.35"
     "com.github.librepdf:openpdf-fonts-extra:1.3.35"
-    "org.apache.pdfbox:pdfbox:3.0.1"
-    "org.apache.pdfbox:pdfbox-io:3.0.1"
-    "org.apache.pdfbox:fontbox:3.0.1"
-    "org.slf4j:slf4j-api:2.0.10"])
+    "org.apache.pdfbox:pdfbox:3.0.1" ])
 
 
 (defn
@@ -67,9 +64,9 @@
 
   install [ & options]
 
-  ;; install xchart
-  (load-module :xchart-install)
-  (apply xchart-install/install options)
-
-  ;; no dependency reolving, just install the listed libs
-  (apply installer/install-libs (libraries) options))
+  
+  (load-module :xchart-install) ;; install xchart as dependency
+   
+  (let [libs (concat (pdf-install/libraries)
+                     (xchart-install/libraries))]
+    (apply installer/install libs options)))

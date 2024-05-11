@@ -98,11 +98,9 @@
 
                required Tomcat 10.0.x (Java 8):
                  tomcat-embed-core-10.0.27.jar
-                 jakarta.annotation-api:2.1.1.jar
 
                required Tomcat 10.1.x (Java 11+):
-                 tomcat-embed-core-10.1.1.jar
-                 jakarta.annotation-api:2.1.1.jar
+                 tomcat-embed-core-10.1.19.jar
                """))))
 
 

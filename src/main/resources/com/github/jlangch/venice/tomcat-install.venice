@@ -36,10 +36,8 @@
 
 (defn libraries []
   (if (= 8 (java-major-version))
-    [ "org.apache.tomcat.embed:tomcat-embed-core:10.0.27"
-      "jakarta.annotation:jakarta.annotation-api:2.1.1" ]
-    [ "org.apache.tomcat.embed:tomcat-embed-core:10.1.19"
-      "jakarta.annotation:jakarta.annotation-api:2.1.1" ]))
+    [ "org.apache.tomcat.embed:tomcat-embed-core:10.0.27" ]
+    [ "org.apache.tomcat.embed:tomcat-embed-core:10.1.19" ]))
 
 
 (defn

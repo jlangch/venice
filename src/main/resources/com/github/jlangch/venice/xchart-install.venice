@@ -37,6 +37,7 @@
 (defn libraries []
   [ "org.knowm.xchart:xchart:3.8.6" ])
 
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc
@@ -58,5 +59,4 @@
 
   install [ & options]
 
-  ;; no dependency reolving, just install the xchart lib
-  (apply installer/install-libs (libraries) options))
+  (apply installer/install (libraries) options))
