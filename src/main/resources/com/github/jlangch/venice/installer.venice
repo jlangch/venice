@@ -74,6 +74,7 @@
          (installer/install-module :pdf :dir (repl/libs-dir) :silent false))
        """)
      :see-also '( 
+       "installer/install"
        "installer/install-libs" ) }
 
   install-module [name & options]
@@ -122,7 +123,8 @@
                             :silent false))
        """)
      :see-also '( 
-       "installer/install-libs" ) }
+       "installer/install-libs"
+       "installer/install-module" ) }
 
   install [artifacts & options]
 
@@ -154,7 +156,8 @@
   ^{ :arglists '("(install-libs libs options*)")
      :doc
        """
-       Install Java libraries.
+       Install Java libraries (artifacts). Does not install the library's
+       dependencies!
 
        Options:
 
@@ -177,6 +180,7 @@
                                  :silent false))
        """)
      :see-also '( 
+       "installer/install"
        "installer/install-module" ) }
 
   install-libs [libs & options]
