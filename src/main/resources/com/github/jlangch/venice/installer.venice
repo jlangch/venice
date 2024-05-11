@@ -117,8 +117,8 @@
        """
        (do
          (load-module :installer)
-         (installer/install ["dev.langchain4j:langchain4j:0.28.0" 
-                             "dev.langchain4j:langchain4j-open-ai:0.28.0"] 
+         (installer/install [ "dev.langchain4j:langchain4j:0.30.0" 
+                              "dev.langchain4j:langchain4j-open-ai:0.30.0" ] 
                             :dir (repl/libs-dir) 
                             :silent false))
        """)

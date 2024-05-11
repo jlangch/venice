@@ -44,6 +44,7 @@ public class ModuleInstallerSection implements ISectionBuilder {
 
         final DocSection install = new DocSection("Install", id());
         all.addSection(install);
+        install.addItem(diBuilder.getDocItem("installer/install", false));
         install.addItem(diBuilder.getDocItem("installer/install-module", false));
         install.addItem(diBuilder.getDocItem("installer/install-libs", false));
 
