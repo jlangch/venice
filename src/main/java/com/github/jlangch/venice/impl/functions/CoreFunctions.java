@@ -9929,8 +9929,8 @@ public class CoreFunctions {
               fnName,
               coll,
               (x,y) -> Coerce
-                    .toVncLong(compare.apply(VncList.of(x,y)))
-                    .getIntValue());
+                         .toVncLong(compare.apply(VncList.of(x,y)))
+                         .getIntValue());
         }
 
     private static VncVal sort(
@@ -9962,7 +9962,7 @@ public class CoreFunctions {
         else if (Types.isVncMap(coll)) {
             return VncList.ofList(
                      ((VncMap)coll)
-                         .toVncList()
+                        .toVncList()
                         .stream()
                         .sorted(c)
                         .collect(Collectors.toList()));
