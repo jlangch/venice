@@ -37,12 +37,16 @@
 ;; E.g. :jansi -> :jansi-install
 (def- installable-modules [ :jansi
                             :bouncycastle
-                            :chatgpt
                             :excel
                             :pdf
                             :qrbill
                             :tomcat
-                            :xchart ])
+                            :xchart
+                            
+                            ;; :jtokkit
+                            ;; :langchain
+                            ;; :postgresql-jdbc
+                          ])
 
 
 (defn 

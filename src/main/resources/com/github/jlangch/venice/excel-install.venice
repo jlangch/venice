@@ -34,6 +34,9 @@
 (load-module :installer)
 
 
+(defn libraries []
+  (libraries-5.x) )
+
 (defn libraries-5.x []
   [ "org.apache.poi:poi:5.2.3"
     "org.apache.poi:poi-ooxml:5.2.3"
