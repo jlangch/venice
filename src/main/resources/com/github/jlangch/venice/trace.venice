@@ -212,7 +212,7 @@
   untrace-var [v]
 
   `(let [n (trace/qualified-name ~v)
-        f (var-get (symbol n))]
+         f (var-get (symbol n))]
     (if (fn? f)
       (when-let [delegate (-> f meta :traced)]
         (set! (symbol n) delegate)
