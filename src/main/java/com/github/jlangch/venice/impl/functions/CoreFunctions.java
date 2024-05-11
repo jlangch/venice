@@ -101,6 +101,7 @@ import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
@@ -1008,7 +1009,11 @@ public class CoreFunctions {
                 final VncFunction fn = (VncFunction)args.first();
                 fn.sandboxFunctionCallValidation();
 
-                if (fn instanceof VncMultiArityFunction) {
+                if (fn.isNative()) {
+                    // Native Function: Fallback to the function's meta data arglist
+                	return getFnArgsFromMetaData(fn);
+                }
+                else if (fn instanceof VncMultiArityFunction) {
                     final VncMultiArityFunction mafn = (VncMultiArityFunction)fn;
 
                     return VncList.ofColl(
@@ -9870,11 +9875,49 @@ public class CoreFunctions {
         map = map.assoc(new VncKeyword("variadic"), VncBoolean.of(variadic));
 
         if (variadic) {
-            map = map.assoc(new VncKeyword("variadicName"),
+            map = map.assoc(new VncKeyword("variadic-name"),
                             new VncString(variadicArgName));
         }
 
         return map;
+    }
+
+    private static VncList getFnArgsFromMetaData(final VncFunction fn) {
+    	VncList fnArgsList = VncList.empty();
+
+        final VncList arglists = (VncList)fn.getMetaVal(MetaUtil.ARGLIST, VncList.empty());
+
+        for(VncVal arglist : arglists) {
+        	String s = ((VncString)arglist).getValue().trim();
+        	s = StringUtil.removeStart(s, "(");
+        	s = StringUtil.removeEnd(s, ")");
+            String e[] = s.split(" ");
+
+            VncVector params = VncVector.empty();
+            boolean variadic = false;
+            VncVal variadicName = null;
+
+            for (int ii=1; ii<e.length; ii++) {
+                if (VncFunction.isElisionSymbol(e[ii])) {
+                    variadic = true;
+                    variadicName = new VncString(e[e.length-1]);
+                    break;
+                }
+                params = params.addAtEnd(new VncString(e[ii]));
+            }
+
+            VncOrderedMap map = new VncOrderedMap();
+            map = map.assoc(new VncKeyword("params"), params);
+            map = map.assoc(new VncKeyword("variadic"), VncBoolean.of(variadic));
+
+            if (variadicName != null) {
+                map = map.assoc(new VncKeyword("variadic-name"), variadicName);
+            }
+
+            fnArgsList = fnArgsList.addAtEnd(map);
+        }
+
+        return fnArgsList;
     }
 
     private static VncVal sort(

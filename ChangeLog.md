@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - many new imaging functions to the `:images` module
+- function `fn-args` to return meta data on a functions's arguments.
 
 ### Fixed
 

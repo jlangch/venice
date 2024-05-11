@@ -1800,7 +1800,21 @@ public class CoreFunctionsTest {
                               "       (fn-args)       \n" +
                               "       (pr-str)))      ";
 
-        assertEquals("({:params [\"x\" \"y\"] :variadic true :variadicName \"z\"})", venice.eval(script));
+        assertEquals("({:params [\"x\" \"y\"] :variadic true :variadic-name \"z\"})", venice.eval(script));
+    }
+
+    @Test
+    public void test_fn_args_4_native() {
+        final Venice venice = new Venice();
+
+        final String script = "(->> (var-get +)   \n" +
+                              "     (fn-args)       \n" +
+                              "     (pr-str)))      ";
+
+        assertEquals("({:params [] :variadic false} "
+        		    + "{:params [\"x\"] :variadic false} "
+        		    + "{:params [\"x\" \"y\"] :variadic false} "
+        		    + "{:params [\"x\" \"y\"] :variadic true :variadic-name \"more\"})", venice.eval(script));
     }
 
     @Test

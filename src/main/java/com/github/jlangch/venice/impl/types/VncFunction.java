@@ -376,6 +376,10 @@ public abstract class VncFunction
         return (val instanceof VncSymbol) && ((VncSymbol)val).getName().equals("&");
     }
 
+    public static boolean isElisionSymbol(final String val) {
+        return val.equals("&");
+    }
+
 
     public static FunctionMetaBuilder meta() {
         return new FunctionMetaBuilder();
