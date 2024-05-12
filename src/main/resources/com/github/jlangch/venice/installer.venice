@@ -42,11 +42,9 @@
                             :qrbill
                             :tomcat
                             :xchart
-                            
-                            ;; :jtokkit
-                            ;; :langchain
-                            ;; :postgresql-jdbc
-                          ])
+                            :jtokkit
+                            :langchain
+                            :postgresql-jdbc ])
 
 
 (defn 
@@ -220,6 +218,7 @@
   (when (io/exists-dir? dir)
     (->> (io/list-files-glob dir "*.{jar,ttf}")
          (filter #(not (jansi-lib? %)))
+         (filter #(not (venice-lib? %)))
          (docoll io/delete-file))))
 
 
@@ -282,16 +281,22 @@
                "Internet is not available, cannot install!")))
   
   (let [options  (default-options options)
-        opts     (apply hash-map options)]
+        opts     (apply hash-map options)
+        silent   (:silent opts true)]
     (validate-install-dir opts)
 
-    ;; install the modules
-    (doseq [name installable-modules] (apply install-module name options))
-    
-    ;; install Maven
-    (when (repl?)
-      (when-not (:silent opts true) (println "\n[Maven]"))
-      (maven/install))
+    ;; get the modules' libraries
+    (when-not silent (println "Processing modules:"))
+    (let [libs (loop [names installable-modules, libs []]
+                  (if-let [name (first names)] 
+                    (let [module-name (installer-module-name name)]
+                      (when-not silent (println "  " module-name))
+                      (load-module module-name)
+                      (let [libs* ((resolve (symbol module-name "libraries")))]
+                        (recur (rest names) (concat libs libs*))))
+                    libs))]
+      ;; install the libraries and its dependencies
+      (apply install libs options))
 
     ;; install the demo fonts
     (apply install-demo-fonts options)))
@@ -380,6 +385,13 @@
   (case (type f)
     :core/string  (jansi-lib? (io/file f))
     :java.io.File (match? (io/file-name f) #"jansi-[0-9]+[.][0-9]+[.][0-9]+[.]jar")
+    false))
+
+
+(defn- venice-lib? [f]
+  (case (type f)
+    :core/string  (venice-lib? (io/file f))
+    :java.io.File (match? (io/file-name f) #"venice-.*[.]jar")
     false))
 
 

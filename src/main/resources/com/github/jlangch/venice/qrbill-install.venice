@@ -42,10 +42,6 @@
     "com.github.jai-imageio:jai-imageio-jpeg2000:1.4.0" ] )
 
 
-(defn depends-on-installer []
-   [ "pdf-install"
-     "bouncycastle-instal" ])
-
 (defn
   ^{ :arglists '("(install options*)")
      :doc
@@ -67,7 +63,6 @@
 
   install [ & options]
 
-  
   (load-module :pdf-install)           ;; install pdf as dependency
   (load-module :bouncycastle-install)  ;; install bouncy castle as dependency
    
