@@ -20,62 +20,9 @@
 ;;;; limitations under the License.
 
 
-;;;; Install PostgreSQL JDBC driver:
-;;;;
-;;;;   (load-module :postgresql-jdbc-install)
-;;;;   (postgresql-jdbc-install/install :dir (repl/libs-dir) :silent false)
-;;;;
-;;;; Note: This not a package manager. The module provides functions to
-;;;;       download Java libraries to a directory. 
+;;;; PostgreSQL JDBC:
 
 
-(ns postgresql-jdbc-install)
+(ns postgresql-jdbc)
 
-(load-module :installer)
-
-
-(defn libraries []
-  [ "org.postgresql:postgresql:42.7.3" ] )
-
-
-(defn
-  ^{ :arglists '("(install options*)")
-     :doc
-       """
-       Install the PostgreSQL JDBC driver.
-
-       Options:
-
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress \
-                                 bar, defaults to true |
-       """
-     :examples '(
-       """
-       (do
-         (load-module :postgresql-jdbc-install)
-         (postgresql-jdbc-install/install :dir (repl/libs-dir) :silent false))
-       """) }
-
-  install [ & options]
-
-  (apply installer/install-libs (libraries) options))
-
-
-(defn 
-  ^{ :arglists '("(installed?)")
-     :doc
-       """
-       Returns true if the PostgreSQL JDBC driver is on the classpath else
-       false.
-       """
-     :examples '(
-       """
-       (do
-         (load-module :postgresql-jdbc-install)
-         (postgresql-jdbc-install/installed?))
-       """) }
-
-  installed? []
-
-  (exists-class? :org.postgresql.PGConnection))
+;; empty
