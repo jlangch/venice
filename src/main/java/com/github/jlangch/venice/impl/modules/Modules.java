@@ -109,6 +109,7 @@ public class Modules {
                         "openai",
                         "openai-demo",
                         "parsifal",
+                        "postgresql-jdbc",
                         "pretty-print",
                         "qrbill",
                         "qrref",
