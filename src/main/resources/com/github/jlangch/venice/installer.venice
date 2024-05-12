@@ -237,6 +237,9 @@
          * :qrbill
          * :tomcat
          * :xchart
+         * :jtokkit
+         * :langchain
+         * :postgresql-jdbc 
 
        Options:
 
