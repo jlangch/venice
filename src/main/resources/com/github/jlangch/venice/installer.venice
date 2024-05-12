@@ -245,6 +245,8 @@
                                  `(repl/libs-dir)` |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
+       | :clean {true,false}   | if clean is true cleans the install dir \
+                                 before installing, defaults to false |
        | :force {true,false}   | if force is true download the artifact \
                                  even if it exist already on the download \
                                  dir, else skip the download if it exists. \
@@ -269,6 +271,11 @@
        (do
          (load-module :installer)
          (installer/install-demo :dir (repl/libs-dir) :silent false))
+       """
+       """
+       (do
+         (load-module :installer)
+         (installer/install-demo :dir (repl/libs-dir) :silent false :clean true))
        """)
      :see-also '( 
        "installer/install-demo-fonts"
@@ -282,8 +289,14 @@
   
   (let [options  (default-options options)
         opts     (apply hash-map options)
-        silent   (:silent opts true)]
+        silent   (:silent opts true)
+        clean    (:clean opts false)]
     (validate-install-dir opts)
+
+    (when clean
+      (let [dir (:dir opts (if (repl?) (repl/libs-dir) "."))]
+        (when-not silent (println "Cleaning:" dir))
+        (installer/clean dir)))
 
     ;; get the modules' libraries
     (when-not silent (println "Processing modules:"))
