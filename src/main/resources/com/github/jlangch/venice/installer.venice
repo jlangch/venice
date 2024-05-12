@@ -268,14 +268,19 @@
        ```
        (installer/clean (repl/libs-dir))
        ```
+
+       This removes all JAR lib and the fonts, except the JAnsi and the Venice 
+       libs.
        """
      :examples '(
        """
+       ;; install the demo modules
        (do
          (load-module :installer)
          (installer/install-demo :dir (repl/libs-dir) :silent false))
        """
        """
+       ;; clean install dir before installing the demo modules
        (do
          (load-module :installer)
          (installer/install-demo :dir (repl/libs-dir) :silent false :clean true))
