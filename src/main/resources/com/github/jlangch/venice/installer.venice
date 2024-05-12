@@ -126,7 +126,7 @@
 
   install [artifacts & options]
 
-  (assert (sequential? artifacts) "artifacts must be a sequence of library artifacts")
+  (assert (sequential? artifacts) "Artifacts must be a sequence of library artifacts")
   
   (when-not (io/internet-avail?)
     (throw (ex :VncException 
@@ -136,15 +136,21 @@
         opts     (apply hash-map options)
         silent   (:silent opts true)]
     (validate-install-dir opts)
+
     (when-not silent
       (println "Resolving dependencies ..."))
+
+    ;; Resolve the artifacts dependencies
     (let [deps (maven/dependencies artifacts :print false :format :list)
           cnt  (count deps)]
       (when-not silent
         (printf "Artifacts and dependencies (%d):%n" cnt)
         (doseq [lib deps] (printf "   %s%n" lib))
         (println))
+
+      ;; Download the Maven artifacts
       (doseq [lib deps] (apply maven/download lib options)) 
+
       (when-not silent
         (println)
         (printf "Installed %d artefacts.%n" cnt)))))
@@ -312,8 +318,7 @@
                   (if-let [name (first names)] 
                     (let [module-name (installer-module-name name)]
                       (when-not silent (println "  " module-name))
-                      (load-module module-name)
-                      (let [libs* ((resolve (symbol module-name "libraries")))]
+                      (let [libs* (get-module-libraries module-name)]
                         (recur (rest names) (concat libs libs*))))
                     libs))]
       ;; install the libraries and its dependencies
@@ -415,6 +420,17 @@
     :java.io.File (match? (io/file-name f) #"venice-.*[.]jar")
     false))
 
+
+(defn- get-module-libraries [module-name]
+  (try
+    (load-module module-name)
+    ((resolve (symbol module-name "libraries")))
+    (catch :Exception e
+      (throw (ex :VncException """
+                               Failed to get library dependencies of the \
+                               installer module :{module-name}
+                               """
+                               e)))))
 
 (defn- validate-install-dir [opts]
   (assert map? opts)
