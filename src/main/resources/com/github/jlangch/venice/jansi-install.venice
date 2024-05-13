@@ -59,4 +59,4 @@
 
   install [ & options]
 
-  (apply installer/install (libraries) options))
+  (apply installer/install-libs (libraries) options))
