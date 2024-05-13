@@ -87,12 +87,3 @@
 (defonce tau                   #\u03C4)  ;; tau 'τ'
 
 (defonce delta-upper           #\u0394)  ;; uppercase greek delta 'Δ'
-
-
-(defonce table                """
-                              ┌───┬───┐
-                              │   │   │
-                              ├───┼───┤
-                              │   │   │
-                              └───┴───┘
-                              """)

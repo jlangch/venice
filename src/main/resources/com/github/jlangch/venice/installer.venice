@@ -88,6 +88,7 @@
         silent  (:silent opts true)]
     (validate-install-dir opts)
     (when-not silent (println "\n[Module ~{name}]"))
+
     (load-module name)
     ;; install (apply :pdf-install/install options)
     (apply (resolve (symbol name "install")) options)))

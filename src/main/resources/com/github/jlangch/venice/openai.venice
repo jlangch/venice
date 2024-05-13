@@ -451,6 +451,15 @@
       (assoc result :data (hc/slurp-response response :json-parse-mode :pretty-print)))))
 
 
+;; -----------------------------------------------------------------------------
+;; IMAGES
+;; -----------------------------------------------------------------------------
+
+;; https://medium.com/intermerz/prompt-design-f%C3%BCr-dall-e-fotorealismus-emulation-der-realit%C3%A4t-31af8939ee1c
+
+
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Public utils
