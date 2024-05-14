@@ -28,9 +28,9 @@
   (pdf/check-required-libs)
 
   ;; ensure the fonts are available when loading this file
-  (->> ["fonts/OpenSans-Regular.ttf"
-        "fonts/OpenSans-Italic.ttf"
-        "fonts/JetBrainsMono-Regular.ttf"]
+  (->> ["OpenSans-Regular.ttf"
+        "OpenSans-Italic.ttf"
+        "JetBrainsMono-Regular.ttf"]
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
                    (throw (ex :VncException
@@ -48,7 +48,7 @@
          <style type="text/css">
            @font-face {
               font-family: 'Open Sans';
-              src: url('classpath:/fonts/OpenSans-Regular.ttf');
+              src: url('classpath:/OpenSans-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -56,7 +56,7 @@
            }
            @font-face {
               font-family: 'Open Sans Italic';
-              src: url('classpath:/fonts/OpenSans-Italic.ttf');
+              src: url('classpath:/OpenSans-Italic.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -64,7 +64,7 @@
            }
            @font-face {
               font-family: 'JetBrains Mono';
-              src: url('classpath:/fonts/JetBrainsMono-Regular.ttf');
+              src: url('classpath:/JetBrainsMono-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
