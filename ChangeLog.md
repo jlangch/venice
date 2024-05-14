@@ -10,11 +10,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.20] - 2024-05-xx
+## [1.12.20] - 2024-05-14
 
-### Added
+### Fixed
 
-- ...
+- a bug in the Venice setup that crept into the last 1.12.19 release
 
 
 
