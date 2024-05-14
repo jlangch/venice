@@ -30,7 +30,7 @@
   ;; ensure the fonts are available when loading this file
   (->> ["fonts/OpenSans-Regular.ttf"
         "fonts/OpenSans-Italic.ttf"
-        "fonts/SourceCodePro-Regular.ttf"]
+        "fonts/JetBrainsMono-Regular.ttf"]
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
                    (throw (ex :VncException
@@ -63,8 +63,8 @@
               -fs-pdf-font-encoding: Identity-H;
            }
            @font-face {
-              font-family: 'Source Code Pro';
-              src: url('classpath:/fonts/SourceCodePro-Regular.ttf');
+              font-family: 'JetBrains Mono';
+              src: url('classpath:/fonts/JetBrainsMono-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -111,8 +111,8 @@
              font-family: 'Open Sans', sans-serif;
              font-style: italic;
            }
-           div.source-code-pro {
-             font-family: 'Source Code Pro', monospace;
+           div.jetbrains-mono {
+             font-family: 'JetBrains Mono', monospace;
            }
          </style>
        </head>
@@ -133,8 +133,8 @@
          <div class="head">Open Sans Italic</div>
          <div class="open-sans-italic">${= (kira/escape-xml text) }$</div>
 
-         <div class="head">Source Code Pro</div>
-         <div class="source-code-pro">${= (kira/escape-xml text) }$</div>
+         <div class="head">JetBrains Mono</div>
+         <div class="jetbrains-mono">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)
