@@ -12,8 +12,10 @@ Open a REPL and use the command `!source-pdf`:
 To create a HTML and PDF representation from the 'sudoku.venice' script run:
 
 ```clojure
-venice> !source-pdf ./sudoku.venice
+venice> !source-pdf ./scripts/sudoku.venice
 ```
+
+*Note: The 'sudoku.venice' script is installed at REPL setup time in the REPL 'scripts' directory.*
 
 Output Examples:
 
@@ -34,7 +36,7 @@ project and requires these Java libraries:
 and the fonts:
 
  - OpenSans-Regular.ttf
- - SourceCodePro-Regular.ttf
+ - JetBrainsMono-Regular.ttf
 
 
 Run this script from the REPL to download the fonts and PDF libraries:
@@ -48,15 +50,13 @@ Run this script from the REPL to download the fonts and PDF libraries:
   (pdf-install/install :dir (repl/libs-dir) :silent false)
 
   ;; Download and unzip the font families
-  (fonts/download-font-family "Open Sans" 
-                              :dir (repl/fonts-dir) 
+  (fonts/download-font-family "open-sans" 
+                              :dir (repl/libs-dir) 
                               :extract true 
-                              :glob-pattern "static/OpenSans/*.ttf"
                               :silent false)
-  (fonts/download-font-family "Source Code Pro" 
-                              :dir (repl/fonts-dir) 
+  (fonts/download-font-family "jetbrains-mono" 
+                              :dir (repl/libs-dir) 
                               :extract true 
-                              :glob-pattern "static/*.ttf"
                               :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM

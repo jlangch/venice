@@ -509,7 +509,7 @@ The :font module provides the function `fonts/download-demo-fonts` to download t
 demo Open Source fonts from [Google Fonts](https://fonts.google.com)
    
   * "Open Sans"
-  * "Source Code Pro"
+  * "JetBrains Mono"
   * "Audiowide" 
   * "Roboto"
   
@@ -538,7 +538,7 @@ and restart the REPL.
   ;; ensure the fonts are available when loading this file
   (->> ["OpenSans-Regular.ttf"
         "OpenSans-Italic.ttf"
-        "SourceCodePro-Regular.ttf"]
+        "JetBrainsMono-Regular.ttf"]
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
                    (throw (. :VncException :new
@@ -569,8 +569,8 @@ and restart the REPL.
               -fs-pdf-font-encoding: Identity-H;
            }
            @font-face {
-              font-family: 'Source Code Pro';
-              src: url('classpath:SourceCodePro-Regular.ttf');
+              font-family: 'JetBrains Mono';
+              src: url('classpath:JetBrainsMono-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -617,8 +617,8 @@ and restart the REPL.
              font-family: 'Open Sans', sans-serif;
              font-style: italic;
            }
-           div.source-code-pro {
-             font-family: 'Source Code Pro', monospace;
+           div.jetbrains-mono {
+             font-family: 'JetBrains Mono', monospace;
            }
          </style>
        </head>
@@ -639,8 +639,8 @@ and restart the REPL.
          <div class="head">Open Sans Italic</div>
          <div class="open-sans-italic">${= (kira/escape-xml text) }$</div>
 
-         <div class="head">Source Code Pro</div>
-         <div class="source-code-pro">${= (kira/escape-xml text) }$</div>
+         <div class="head">JetBrains Mono</div>
+         <div class="jetbrains-mono">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)

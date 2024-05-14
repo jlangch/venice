@@ -218,13 +218,17 @@ public class SourceCodeRenderer {
         if (!font.canRead()) {
             System.out.println("Error: Font " + font.getAbsolutePath() + " is not available!");
             System.out.println("    -> Download from " + fontOpenSansDownload);
+            System.out.println("    -> And extract the TTF fonts to the REPL 'libs' dir");
+            System.out.println("    -> Restart the REPL");
             ok = false;
         }
 
-        font = new File (fontDir, fontSourceCodePro);
+        font = new File (fontDir, fontJetBrainsMono);
         if (!font.canRead()) {
             System.out.println("Error: Font " + font.getAbsolutePath() + " is not available!");
-            System.out.println("    -> Download from " + fontSourceCodeProDownload);
+            System.out.println("    -> Download from " + fontJetBrainsMonoDownload);
+            System.out.println("    -> And extract the TTF fonts to the REPL 'libs' dir");
+            System.out.println("    -> Restart the REPL");
             ok = false;
         }
 
@@ -242,11 +246,11 @@ public class SourceCodeRenderer {
     }
 
 
-    private static final String fontOpenSansDownload = "https://fonts.google.com/specimen/Open+Sans";
-    private static final String fontSourceCodeProDownload = "https://fonts.google.com/specimen/Source+Sans+Pro";
+    private static final String fontOpenSansDownload = "https://www.fontsquirrel.com/fonts/download/open-sans";
+    private static final String fontJetBrainsMonoDownload = "https://www.fontsquirrel.com/fonts/download/jetbrains-mono";
 
     private static final String fontOpenSans = "OpenSans-Regular.ttf";
-    private static final String fontSourceCodePro = "SourceCodePro-Regular.ttf";
+    private static final String fontJetBrainsMono = "JetBrainsMono-Regular.ttf";
 
     private final CodeHighlighter codeHighlighter;
 }

@@ -337,10 +337,10 @@
 
        Installs the open source font families:
 
-         * Open Sans
-         * Source Code Pro
+         * Open Sans  (https://github.com/googlefonts/opensans/)
+         * Source Code Pro  (https://github.com/adobe-fonts/source-code-pro)
          * Audiowide
-         * Roboto
+         * Roboto  (https://github.com/googlefonts/roboto/)
 
        Options:
 
@@ -386,7 +386,9 @@
         dir      (:dir opts ".")]
     (validate-install-dir opts)
 
-    (when-not silent (println "\n[Fonts]"))
+    (when-not silent 
+      (println "\nInstalling fonts to: " (io/file-canonical dir))
+      (println "\n[Fonts]"))
     (load-module :fonts)
     (fonts/download-demo-fonts dir silent)))
 

@@ -25,32 +25,31 @@
 (ns fonts)
 
 
-(def fonts-family-url "https://fonts.google.com/download?family=")
+(def fonts-family-url "https://www.fontsquirrel.com/fonts/download/")
 
+(def family-open-sans "open-sans")
+(def family-roboto "roboto")
+(def family-jetbrains-mono "jetbrains-mono")
 
 (defn
   ^{ :arglists '("(fonts/download-font-family family-name options*)")
      :doc
        """
        Download a font family from the
-       [Google fonts](https://fonts.google.com/) repository
+       [Font Squirrel](https://www.fontsquirrel.com/) repository
 
-       Some useful font families with name and true type font files
-       globbing pattern to extract the files from the family zip file:
+       Some useful font families:
 
-       | Family            | TTF glob pattern        |
+       | Family            | Download family ref     |
        | :---------------- | :---------------------- |
-       | "Open Sans"       | "static/OpenSans/*.ttf" |
-       | "Source Code Pro" | "static/*.ttf"          |
-       | "Audiowide"       | "*.ttf"                 |
-       | "Roboto"          | "*.ttf"                 |
+       | "Open Sans"       | "open-sans"             |
+       | "JetBrains Mono"  | "jetbrains-mono"        |
+       | "Roboto"          | "roboto"                |
 
        Options:
 
        | :extract {true,false} | if true extract the TTF files from the font \
                                  family ZIP, else just download the ZIP |
-       | :glob-pattern {pat}   | an optional glob pattern to select the TTF \
-                                 files to be extracted. E.g.: "*.ttf" |
        | :dir path             | download dir, defaults to "." |
        | :silent {true,false}  | if silent is true does not print download \
                                  info, defaults to true |
@@ -60,19 +59,19 @@
        (do
          (load-module :fonts)
 
-         (fonts/download-font-family "Open Sans"
+         (fonts/download-font-family "open-sans"
                                      :dir (repl/libs-dir)
                                      :extract true
-                                     :glob-pattern "static/OpenSans/*.ttf"
+                                     :glob-pattern "*.ttf"
                                      :silent false)
 
-         (fonts/download-font-family "Source Code Pro"
+         (fonts/download-font-family "jetbrains-mono"
                                      :dir (repl/libs-dir)
                                      :extract true
-                                     :glob-pattern "static/*.ttf"
+                                     :glob-pattern "*.ttf"
                                      :silent false)
 
-         (fonts/download-font-family "Roboto"
+         (fonts/download-font-family "roboto"
                                      :dir (repl/libs-dir)
                                      :extract true
                                      :glob-pattern "*.ttf"
@@ -93,27 +92,30 @@
     (when-not silent
       (println "Downloading '~{family-name}' font family..."))
 
-    (if extract
-      (try
-        (->> (io/download url :binary true :user-agent "Mozilla")
-             (io/unzip-all glob)
-             (map-keys #(io/file-name (io/file %)))
-             (docoll (fn [[k v]] (log k) (io/spit (io/file dir k) v))))
-        (catch :VncException e
-          (throw (ex :VncException
-                     """
-                     Failed to download and extract the font family \
-                     ~{family-name}!
-                     """
-                     e))))
-      (try
-        (let [file (io/file dir (str name ".zip"))]
-          (->> (io/download url :binary true :user-agent "Mozilla")
-               (io/spit file)))
-        (catch :VncException e
-          (throw (ex :VncException
-                     "Failed to download the font family ~{family-name} zip!"
-                     e)))))))
+    (let [zip (download-font-zip url family-name)]
+      (if extract
+        ;; extract the font files
+        (try
+          (as-> zip v
+                (io/unzip-all glob v)
+                (map-keys #(io/file-name (io/file %)) v)
+                (doseq [[f data] v]
+                  (log f) 
+                  (io/spit (io/file dir f) data)))
+          (catch :VncException e
+            (throw (ex :VncException
+                      "Failed to extract the font family ~{family-name}!"
+                      e))))
+        ;; save the font zip file
+        (try
+          (let [file (io/file dir (str name ".zip"))]
+            (when-not silent
+              (println "Saving '~{family-name}' to" file))
+            (io/spit file zip))
+          (catch :VncException e
+            (throw (ex :VncException
+                      "Failed to save the font family ~{family-name} zip!"
+                      e))))))))
 
 
 (defn 
@@ -125,8 +127,7 @@
        Downloads the Venice demo fonts
        
        * "Open Sans"
-       * "Source Code Pro"
-       * "Audiowide" 
+       * "JetBrains Mono"
        * "Roboto"
 
        to the specified dir
@@ -144,26 +145,32 @@
     (fonts/download-demo-fonts dir false))
 
   ([dir silent]
-    (fonts/download-font-family "Open Sans"
-                                :dir dir
-                                :extract true
-                                :glob-pattern "static/OpenSans/*.ttf"
-                                :silent silent)
-
-    (fonts/download-font-family "Source Code Pro"
-                                :dir dir
-                                :extract true
-                                :glob-pattern "static/*.ttf"
-                                :silent silent)
-
-    (fonts/download-font-family "Roboto"
+    (fonts/download-font-family "open-sans"
                                 :dir dir
                                 :extract true
                                 :glob-pattern "*.ttf"
                                 :silent silent)
 
-    (fonts/download-font-family "Audiowide"
+    (fonts/download-font-family "jetbrains-mono"
+                                :dir dir
+                                :extract true
+                                :glob-pattern "*.ttf"
+                                :silent silent)
+
+    (fonts/download-font-family "roboto"
                                 :dir dir
                                 :extract true
                                 :glob-pattern "*.ttf"
                                 :silent silent)))
+
+
+(defn- download-font-zip [url family-name]
+  (try
+    (io/download url :binary true :user-agent "Mozilla")
+    (catch :VncException e
+      (throw (ex :VncException
+                """
+                Failed to download and the font family \
+                ~{family-name}!
+                """
+                e)))))

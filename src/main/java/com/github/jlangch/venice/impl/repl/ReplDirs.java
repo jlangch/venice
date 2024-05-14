@@ -31,20 +31,23 @@ public class ReplDirs {
     private ReplDirs() {
         this.homeDir = null;
         this.libsDir = null;
-        this.fontsDir = null;
+        this.tmpDir = null;
         this.scriptsDir = null;
+        this.toolsDir = null;
     }
 
     private ReplDirs(
             final File homeDir,
             final File libsDir,
-            final File fontsDir,
-            final File scriptsDir
+            final File tmpDir,
+            final File scriptsDir,
+            final File toolsDir
     ) {
         this.homeDir = homeDir;
         this.libsDir = libsDir;
-        this.fontsDir = fontsDir;
+        this.tmpDir = tmpDir;
         this.scriptsDir = scriptsDir;
+        this.toolsDir = toolsDir;
     }
 
     public static ReplDirs create() {
@@ -52,14 +55,16 @@ public class ReplDirs {
 
         if (homeDir != null) {
             final File libsDir = new File(homeDir, "libs");
-            final File fontsDir = new File(homeDir, "fonts");
+            final File tmpDir = new File(homeDir, "tmp");
             final File scriptsDir = new File(homeDir, "scripts");
+            final File toolsDir = new File(homeDir, "tools");
 
             return new ReplDirs(
                         homeDir.isDirectory() ? homeDir : null,
                         libsDir.isDirectory() ? libsDir : null,
-                        fontsDir.isDirectory() ? fontsDir : null,
-                        scriptsDir.isDirectory() ? scriptsDir : null);
+                        tmpDir.isDirectory() ? tmpDir : null,
+                        scriptsDir.isDirectory() ? scriptsDir : null,
+                        toolsDir.isDirectory() ? toolsDir : null);
         }
         else {
             return new ReplDirs();
@@ -79,11 +84,19 @@ public class ReplDirs {
     }
 
     public File getFontsDir() {
-        return fontsDir;
+        return libsDir;
+    }
+
+    public File getTmpDir() {
+        return tmpDir;
     }
 
     public File getScriptsDir() {
         return scriptsDir;
+    }
+
+    public File getToolsDir() {
+        return toolsDir;
     }
 
     public boolean valid() {
@@ -99,6 +112,7 @@ public class ReplDirs {
 
     private final File homeDir;
     private final File libsDir;
-    private final File fontsDir;
+    private final File tmpDir;
     private final File scriptsDir;
+    private final File toolsDir;
 }

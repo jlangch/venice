@@ -9,7 +9,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
         <style>
             ${ (when-not pdfmode }$
             /* see https://fonts.google.com/ */ 
-            @import url('https://fonts.googleapis.com/css?family=Audiowide|Open+Sans|Source+Code+Pro&display=swap');
+            @import url('https://fonts.googleapis.com/css?family=Audiowide|Open+Sans|JetBrains+Mono&display=swap');
             ${ ) }$
            
             ${ (when pdfmode }$
@@ -22,8 +22,8 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 -fs-pdf-font-encoding: Identity-H;
             }
             @font-face {
-                font-family: 'Source Code Pro';
-                src: url('SourceCodePro-Regular.ttf');
+                font-family: 'JetBrains Mono';
+                src: url('JetBrainsMono-Regular.ttf');
                 font-style: normal;
                 font-weight: normal;
                 -fs-pdf-font-embed: embed;
@@ -80,7 +80,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 ${ (when-not pdfmode }$margin-left: 3em;${ ) }$
                 display: block;
                 white-space: pre-wrap;
-                font-family: 'Source Code Pro', sans-serif;
+                font-family: 'JetBrains Mono', sans-serif;
                 font-weight: 400;
             }
         </style>
