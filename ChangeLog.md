@@ -18,10 +18,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- the TTF font source from *Google Fonts* to [Font Squirrel](https://www.fontsquirrel.com/).
-  The PDF font examples now use "Opens Sans", "Roboto", and "JetBrains Mono" from *Font Squirrel*.
-  The `:fonts` module has been adapted to download the fonts from *Font Squirrel*.
-  "Opens Sans", "Roboto", and "JetBrains Mono" are licensed under *Apache License v2*
+- the *True Type* font source from *Google Fonts* to [Font Squirrel](https://www.fontsquirrel.com/).
+
+  The PDF font examples now use "Opens Sans", "Roboto", "Source Code Pro" 
+  and "JetBrains Mono" fonts from the *Font Squirrel* repository.
+  
+  The `:fonts` module has been adapted to download these fonts from *Font Squirrel*.
+  These fonts are made available under the *Apache License v2* or *SIL Open Font License v1.10*.y
 
 
 ## [1.12.20] - 2024-05-14
