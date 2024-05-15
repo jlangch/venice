@@ -85,7 +85,9 @@
                                      :extract true
                                      :glob-pattern "*.otf"
                                      :silent false))
-       """) }
+       """)
+     :see-also '(
+       "fonts/download-demo-fonts") }
 
   download-font-family [family-name & options]
 
@@ -152,7 +154,9 @@
        (do
          (load-module :fonts)
          (fonts/download-demo-fonts (repl/libs-dir) false))
-       """) }
+       """)
+     :see-also '(
+       "fonts/download-font-family") }
 
   download-demo-fonts
 
