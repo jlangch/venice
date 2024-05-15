@@ -508,12 +508,12 @@ like:
 The :font module provides the function `fonts/download-demo-fonts` to download the 
 demo Open Source fonts from [Font Squirrel](https://www.fontsquirrel.com/fonts/download/)
    
-| Family          | Download family ref   | Type | License                     |
-| :-------------- | :-------------------- | :--- | :-------------------------- |
-| Open Sans       | open-sans             | TTF  | Apache License v2           |
-| Roboto          | roboto                | TTF  | Apache License v2           |
-| Source Code Pro | source-code-pro       | OTF  | SIL Open Font License v1.10 |
-| JetBrains Mono  | jetbrains-mono        | TTF  | Apache License v2           |
+| Family          | Type | License                     |
+| :-------------- | :--- | :-------------------------- |
+| Open Sans       | TTF  | Apache License v2           |
+| Roboto          | TTF  | Apache License v2           |
+| Source Code Pro | OTF  | SIL Open Font License v1.10 |
+| JetBrains Mono  | TTF  | Apache License v2           |
 
   
 to the REPL's classpath. Just run
