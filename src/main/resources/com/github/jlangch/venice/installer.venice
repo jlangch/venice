@@ -382,26 +382,30 @@
 
   install-demo-fonts [& options]
   
-  (when-not (io/internet-avail?)
-    (throw (ex :VncException 
-               "Internet is not available, cannot install demo fonts!")))
-
-  (let [options  (default-options options)
-        opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
+  (let [options         (default-options options)
+        opts            (apply hash-map options)
+        skip-demo-fonts (:skip-demo-fonts opts false)
+        silent          (:silent opts true)
+        dir             (:dir opts ".")]
     (validate-install-dir opts)
 
-    (when-not silent 
-      (println "\nInstalling fonts to: " (io/file-canonical dir))
-      (println "\n[Fonts]"))
-    (load-module :fonts)
-    (fonts/download-demo-fonts dir silent)))
+    (when-not skip-demo-fonts
+      (when-not (io/internet-avail?)
+        (throw (ex :VncException 
+                   "Internet is not available, cannot install demo fonts!")))
+
+      (when-not silent 
+        (println "\nInstalling fonts to: " (io/file-canonical dir))
+        (println "\n[Fonts]"))
+      (load-module :fonts)
+      (fonts/download-demo-fonts dir silent))))
 
 
 (defn- default-options [opts]
   (if (repl?)
-    (->> (merge { :dir (repl/libs-dir) :silent false :force false }
+    (->> (merge { :dir (repl/libs-dir) 
+                  :silent false 
+                  :force false }
                 (apply hash-map opts))
          seq
          flatten)

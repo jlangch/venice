@@ -51,9 +51,11 @@
 
        Options:
 
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress \
-                                 bar, defaults to true |
+       | :dir path                     | download dir, defaults to "." |
+       | :silent {true,false}          | if silent is true does not show a \
+                                         progress  bar, defaults to true |
+       | :skip-demo-fonts {true,false} | if false downloads the demo fonts else \
+                                         skips them. Defaults to false |
        """
      :examples '(
        """
@@ -66,7 +68,19 @@
 
   
   (load-module :xchart-install) ;; install xchart as dependency
+  (load-module :fonts) ;; install xchart as dependency
    
-  (let [libs (concat (pdf-install/libraries)
-                     (xchart-install/libraries))]
-    (apply installer/install libs options)))
+  (let [opts            (apply hash-map options)
+        dir             (:dir opts ".")
+        silent          (:silent opts true)
+        skip-demo-fonts (:skip-demo-fonts opts false)
+        libs            (concat (pdf-install/libraries)
+                                (xchart-install/libraries))]
+    ;; install pdf and xchart dependencies
+    (apply installer/install libs options)
+
+    ;; install the demo fonts
+    (when-not skip-demo-fonts
+      (when-not silent
+        (println "\nDownloading demo fonts..."))
+      (fonts/download-demo-fonts dir silent))))

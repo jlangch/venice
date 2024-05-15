@@ -9,7 +9,7 @@ Flying Saucer documentation is available in the user guide, linked from their we
 
 Note: Use Venice 1.10.35+ or newer to have all features demonstrated here available.
 
-Run this script from the REPL to download the PDF libraries:
+Run this script from the REPL to download the PDF libraries and the demo fonts:
 
 ```clojure
 (do
@@ -22,6 +22,20 @@ Run this script from the REPL to download the PDF libraries:
   (println "Restarting...")
   (repl/restart))
 ```
+
+This installs also the open Source fonts from [Font Squirrel](https://www.fontsquirrel.com/fonts/download/)
+   
+| Family          | Type | License                     |
+| :-------------- | :--- | :-------------------------- |
+| Open Sans       | TTF  | Apache License v2           |
+| Roboto          | TTF  | Apache License v2           |
+| Source Code Pro | OTF  | SIL Open Font License v1.10 |
+| JetBrains Mono  | TTF  | Apache License v2           |
+
+  
+to the REPL's classpath. 
+
+
 
 
 ## PDF Generation
@@ -505,32 +519,8 @@ like:
    }
 ```
 
-The :font module provides the function `fonts/download-demo-fonts` to download the 
-demo Open Source fonts from [Font Squirrel](https://www.fontsquirrel.com/fonts/download/)
-   
-| Family          | Type | License                     |
-| :-------------- | :--- | :-------------------------- |
-| Open Sans       | TTF  | Apache License v2           |
-| Roboto          | TTF  | Apache License v2           |
-| Source Code Pro | OTF  | SIL Open Font License v1.10 |
-| JetBrains Mono  | TTF  | Apache License v2           |
 
-  
-to the REPL's classpath. Just run
-
-```clojure
-(do
-  (load-module :fonts)
-  (fonts/download-demo-fonts (repl/libs-dir)))
-```
-
-and **restart** the REPL to activate the fonts on the Java classpath:
-
-```
-venice> !restart
-```
-
-In the restarted REPL run the example:
+Run the example:
 
 ```clojure
 (do
