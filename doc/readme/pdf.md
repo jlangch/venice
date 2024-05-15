@@ -506,12 +506,15 @@ like:
 ```
 
 The :font module provides the function `fonts/download-demo-fonts` to download the 
-demo Open Source fonts from [Google Fonts](https://fonts.google.com)
+demo Open Source fonts from [Font Squirrel](https://www.fontsquirrel.com/fonts/download/)
    
-  * "Open Sans"
-  * "JetBrains Mono"
-  * "Audiowide" 
-  * "Roboto"
+| Family          | Download family ref   | Type | License                     |
+| :-------------- | :-------------------- | :--- | :-------------------------- |
+| Open Sans       | open-sans             | TTF  | Apache License v2           |
+| Roboto          | roboto                | TTF  | Apache License v2           |
+| Source Code Pro | source-code-pro       | OTF  | SIL Open Font License v1.10 |
+| JetBrains Mono  | jetbrains-mono        | TTF  | Apache License v2           |
+
   
 to the REPL's classpath. Just run
 
@@ -538,6 +541,7 @@ and restart the REPL.
   ;; ensure the fonts are available when loading this file
   (->> ["OpenSans-Regular.ttf"
         "OpenSans-Italic.ttf"
+        "SourceCodePro-Regular.otf"
         "JetBrainsMono-Regular.ttf"]
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
@@ -563,6 +567,14 @@ and restart the REPL.
            @font-face {
               font-family: 'Open Sans Italic';
               src: url('classpath:OpenSans-Italic.ttf');
+              font-style: normal;
+              font-weight: normal;
+              -fs-pdf-font-embed: embed;
+              -fs-pdf-font-encoding: Identity-H;
+           }
+           @font-face {
+              font-family: 'Source Code Pro';
+              src: url('classpath:SourceCodePro-Regular.otf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -617,6 +629,9 @@ and restart the REPL.
              font-family: 'Open Sans', sans-serif;
              font-style: italic;
            }
+           div.source-code-pro {
+             font-family: 'Source Code Pro', monospace;
+           }
            div.jetbrains-mono {
              font-family: 'JetBrains Mono', monospace;
            }
@@ -638,6 +653,9 @@ and restart the REPL.
 
          <div class="head">Open Sans Italic</div>
          <div class="open-sans-italic">${= (kira/escape-xml text) }$</div>
+
+         <div class="head">Source Code Pro</div>
+         <div class="source-code-pro">${= (kira/escape-xml text) }$</div>
 
          <div class="head">JetBrains Mono</div>
          <div class="jetbrains-mono">${= (kira/escape-xml text) }$</div>

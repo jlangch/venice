@@ -335,12 +335,18 @@
        """
        Install the Venice demo fonts.
 
-       Installs the open source font families:
+       Installs the open source font families from 
 
-         * Open Sans  (https://github.com/googlefonts/opensans/)
-         * Source Code Pro  (https://github.com/adobe-fonts/source-code-pro)
-         * Audiowide
-         * Roboto  (https://github.com/googlefonts/roboto/)
+       | Family          | Download family ref   | Type | License                     |
+       | :-------------- | :-------------------- | :--- | :-------------------------- |
+       | Open Sans       | open-sans             | TTF  | Apache License v2           |
+       | Roboto          | roboto                | TTF  | Apache License v2           |
+       | Source Code Pro | source-code-pro       | OTF  | SIL Open Font License v1.10 |
+       | JetBrains Mono  | jetbrains-mono        | TTF  | Apache License v2           |
+
+
+       Downloads the font families from the
+       [Font Squirrel](https://www.fontsquirrel.com/) repository
 
        Options:
 

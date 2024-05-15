@@ -223,11 +223,11 @@ public class SourceCodeRenderer {
             ok = false;
         }
 
-        font = new File (fontDir, fontJetBrainsMono);
+        font = new File (fontDir, fontSourceCodePro);
         if (!font.canRead()) {
             System.out.println("Error: Font " + font.getAbsolutePath() + " is not available!");
-            System.out.println("    -> Download from " + fontJetBrainsMonoDownload);
-            System.out.println("    -> And extract the TTF fonts to the REPL 'libs' dir");
+            System.out.println("    -> Download from " + fontSourceCodeProDownload);
+            System.out.println("    -> And extract the OTF fonts to the REPL 'libs' dir");
             System.out.println("    -> Restart the REPL");
             ok = false;
         }
@@ -247,10 +247,10 @@ public class SourceCodeRenderer {
 
 
     private static final String fontOpenSansDownload = "https://www.fontsquirrel.com/fonts/download/open-sans";
-    private static final String fontJetBrainsMonoDownload = "https://www.fontsquirrel.com/fonts/download/jetbrains-mono";
+    private static final String fontSourceCodeProDownload = "https://www.fontsquirrel.com/fonts/download/source-code-pro";
 
     private static final String fontOpenSans = "OpenSans-Regular.ttf";
-    private static final String fontJetBrainsMono = "JetBrainsMono-Regular.ttf";
+    private static final String fontSourceCodePro = "SourceCodePro-Regular.otf";
 
     private final CodeHighlighter codeHighlighter;
 }

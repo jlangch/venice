@@ -30,22 +30,25 @@
 (def family-open-sans "open-sans")
 (def family-roboto "roboto")
 (def family-jetbrains-mono "jetbrains-mono")
+(def family-source-code-pro "source-code-pro")
 
 (defn
   ^{ :arglists '("(fonts/download-font-family family-name options*)")
      :doc
        """
-       Download a font family from the
+       Downloads a font family from the
        [Font Squirrel](https://www.fontsquirrel.com/) repository
 
        Some useful font families:
 
-       | Family            | Download family ref     |
-       | :---------------- | :---------------------- |
-       | "Open Sans"       | "open-sans"             |
-       | "JetBrains Mono"  | "jetbrains-mono"        |
-       | "Roboto"          | "roboto"                |
+       | Family          | Download family ref   | Type | License                     |
+       | :-------------- | :-------------------- | :--- | :-------------------------- |
+       | Open Sans       | open-sans             | TTF  | Apache License v2           |
+       | Roboto          | roboto                | TTF  | Apache License v2           |
+       | Source Code Pro | source-code-pro       | OTF  | SIL Open Font License v1.10 |
+       | JetBrains Mono  | jetbrains-mono        | TTF  | Apache License v2           |
 
+ 
        Options:
 
        | :extract {true,false} | if true extract the TTF files from the font \
@@ -75,6 +78,12 @@
                                      :dir (repl/libs-dir)
                                      :extract true
                                      :glob-pattern "*.ttf"
+                                     :silent false)
+
+         (fonts/download-font-family "source-code-pro"
+                                     :dir (repl/libs-dir)
+                                     :extract true
+                                     :glob-pattern "*.otf"
                                      :silent false))
        """) }
 
@@ -126,11 +135,17 @@
        """
        Downloads the Venice demo fonts
        
-       * "Open Sans"
-       * "JetBrains Mono"
-       * "Roboto"
+       | Family          | Download family ref   | Type | License                     |
+       | :-------------- | :-------------------- | :--- | :-------------------------- |
+       | Open Sans       | open-sans             | TTF  | Apache License v2           |
+       | Roboto          | roboto                | TTF  | Apache License v2           |
+       | Source Code Pro | source-code-pro       | OTF  | SIL Open Font License v1.10 |
+       | JetBrains Mono  | jetbrains-mono        | TTF  | Apache License v2           |
 
-       to the specified dir
+       to the specified dir.
+
+       Downloads the font families from the
+       [Font Squirrel](https://www.fontsquirrel.com/) repository
        """
      :examples '(
        """
@@ -161,7 +176,13 @@
                                 :dir dir
                                 :extract true
                                 :glob-pattern "*.ttf"
-                                :silent silent)))
+                                :silent silent)
+                                
+    (fonts/download-font-family "source-code-pro"
+                                :dir (repl/libs-dir)
+                                :extract true
+                                :glob-pattern "*.otf"
+                                :silent false)))
 
 
 (defn- download-font-zip [url family-name]
