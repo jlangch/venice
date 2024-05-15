@@ -526,7 +526,7 @@ to the REPL's classpath. Just run
 
 and **restart** the REPL to activate the fonts on the Java classpath:
 
-```shell
+```
 venice> !restart
 ```
 
