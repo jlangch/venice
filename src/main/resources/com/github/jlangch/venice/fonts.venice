@@ -68,12 +68,6 @@
                                      :glob-pattern "*.ttf"
                                      :silent false)
 
-         (fonts/download-font-family "jetbrains-mono"
-                                     :dir (repl/libs-dir)
-                                     :extract true
-                                     :glob-pattern "*.ttf"
-                                     :silent false)
-
          (fonts/download-font-family "roboto"
                                      :dir (repl/libs-dir)
                                      :extract true
@@ -84,6 +78,12 @@
                                      :dir (repl/libs-dir)
                                      :extract true
                                      :glob-pattern "*.otf"
+                                     :silent false)
+
+         (fonts/download-font-family "jetbrains-mono"
+                                     :dir (repl/libs-dir)
+                                     :extract true
+                                     :glob-pattern "*.ttf"
                                      :silent false))
        """)
      :see-also '(
@@ -170,23 +170,25 @@
                                 :glob-pattern "*.ttf"
                                 :silent silent)
 
+    (fonts/download-font-family "roboto"
+                                :dir dir
+                                :extract true
+                                :glob-pattern "*.ttf"
+                                :silent silent)
+
+    (fonts/download-font-family "source-code-pro"
+                                :dir dir
+                                :extract true
+                                :glob-pattern "*.otf"
+                                :silent silent)
+
     (fonts/download-font-family "jetbrains-mono"
                                 :dir dir
                                 :extract true
                                 :glob-pattern "*.ttf"
                                 :silent silent)
 
-    (fonts/download-font-family "roboto"
-                                :dir dir
-                                :extract true
-                                :glob-pattern "*.ttf"
-                                :silent silent)
-                                
-    (fonts/download-font-family "source-code-pro"
-                                :dir (repl/libs-dir)
-                                :extract true
-                                :glob-pattern "*.otf"
-                                :silent false)))
+    (fonts/extract-audiowide-font dir silent)))
 
 
 (defn- download-font-zip [url family-name]
@@ -199,3 +201,17 @@
                 ~{family-name}!
                 """
                 e)))))
+
+
+(defn- extract-audiowide-font [dir silent]
+  (let [font-name "Audiowide-Regular.ttf"]
+    (when-not silent
+      (println "Loading 'Audiowide' font family...")
+      (println " Extracting '~{font-name}'..."))
+
+    (io/spit (io/file dir font-name) (load-font font-name))))
+
+
+(defn- load-font [name]
+  (->> "com/github/jlangch/venice/fonts/~{name}"
+       (io/load-classpath-resource )))
