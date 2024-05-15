@@ -524,9 +524,13 @@ to the REPL's classpath. Just run
   (fonts/download-demo-fonts (repl/libs-dir)))
 ```
 
-and restart the REPL.
+and **restart** the REPL to activate the fonts on the Java classpath:
 
+```shell
+venice> !restart
+```
 
+In the restarted REPL run the example:
 
 ```clojure
 (do
