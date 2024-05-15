@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 ## [1.12.21] - 2024-05-15
 
 Google changed the download URL for fonts from *Google Fonts* again causing all
-font examples to fail. Changed to [Font Squirrel](https://www.fontsquirrel.com/).
+font examples to fail. Moved to [Font Squirrel](https://www.fontsquirrel.com/).
 
 
 ### Changed
@@ -45,7 +45,7 @@ font examples to fail. Changed to [Font Squirrel](https://www.fontsquirrel.com/)
 ### Added
 
 - many new imaging functions to the `:images` module
-- function `fn-args` to return meta data on a functions's arguments.
+- function `fn-args` to return meta data on a functions' arguments.
 
 ### Fixed
 
