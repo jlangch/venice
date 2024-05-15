@@ -50,18 +50,8 @@ Run this script from the REPL to download the fonts and PDF libraries:
   (load-module :pdf-install)
   (load-module :fonts)
   
-  ;; Download the PDF libs from Maven
+  ;; Download the PDF libs from Maven and the fonts
   (pdf-install/install :dir (repl/libs-dir) :silent false)
-
-  ;; Download and unzip the font families
-  (fonts/download-font-family "open-sans" 
-                              :dir (repl/libs-dir) 
-                              :extract true 
-                              :silent false)
-  (fonts/download-font-family "jetbrains-mono" 
-                              :dir (repl/libs-dir) 
-                              :extract true 
-                              :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (println "\nRestarting REPL...")
