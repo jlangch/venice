@@ -10,11 +10,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.21] - 2024-05-14
+## [1.12.21] - 2024-05-15
 
-### Added
+Google changed the download URL for fonts from *Google Fonts* again causing all
+font examples to fail. Changed to [Font Squirrel](https://www.fontsquirrel.com/).
 
-- ...
 
 ### Changed
 
@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file.
   
   The `:fonts` module has been adapted to download these fonts from *Font Squirrel*.
   These fonts are made available under the *Apache License v2* or *SIL Open Font License v1.10*.
+
 
 
 ## [1.12.20] - 2024-05-14
