@@ -64,7 +64,7 @@ Run this script from the REPL to download the fonts and PDF libraries:
                               :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
-  (println "Restarting...")
+  (println "\nRestarting REPL...")
   (repl/restart))
 ```
  

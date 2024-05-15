@@ -19,7 +19,7 @@ Run this script from the REPL to download the PDF libraries and the demo fonts:
   (pdf-install/install :dir (repl/libs-dir) :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
-  (println "Restarting...")
+  (println "\nRestarting REPL...")
   (repl/restart))
 ```
 

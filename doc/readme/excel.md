@@ -20,7 +20,7 @@ libraries:
   (excel-install/install :dir (repl/libs-dir) :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
-  (println "Restarting...")
+  (println "\Restarting REPL...")
   (repl/restart))
 ```
 

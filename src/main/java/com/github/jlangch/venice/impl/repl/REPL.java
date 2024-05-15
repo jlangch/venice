@@ -386,7 +386,7 @@ public class REPL implements IRepl {
 
                             case "restart":
                                 if (restartable) {
-                                    printer.println("system", "restarting...");
+                                    printer.println("system", "Restarting REPL...");
                                     ReplRestart.restart(
                                             venice.isMacroExpandOnLoad(),
                                             config.getColorMode());
