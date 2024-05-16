@@ -41,9 +41,9 @@
 
 ;; see https://platform.openai.com/docs/models/continuous-model-upgrades
 
+(def gpt-4o        "gpt-4o")           ;; GPT-4o, 128'000 tokens
 (def gpt-4-turbo   "gpt-4.0-turbo")    ;; GPT-4 Turbo with Vision, 128'000 tokens
 (def gpt-4         "gpt-4")            ;; GPT-4, 8'192 tokens
-(def gpt-4-32k     "gpt-4-32k")        ;; GPT-4, 32'768 tokens
 (def gpt-3.5-turbo "gpt-3.5-turbo")    ;; GPT-3.5, 16'385 tokens
 
 (def dall-e-3      "dall-e-3")         ;; DALL-E 3
@@ -57,8 +57,6 @@
 (def text-embedding-3-large  "text-embedding-3-large")   ;; Text embedding, dimension 3'072
 (def text-embedding-3-small  "text-embedding-3-small")   ;; Text embedding, dimension 1'536
 (def text-embedding-ada-002  "text-embedding-ada-002")   ;; Text embedding, dimension 1'536
-
-(def default-model "gpt-3.5-turbo")
 
 
 
@@ -106,7 +104,7 @@
           | *system*    | Allows to specify the way the model answers questions. ¶\
                           Classic example: "You are a helpful assistant." |
           | *user*      | Equivalent to the queries made by the user. |
-          | *assistant* | Assistent roles are the model’s responses, based on the user messages. |
+          | *assistant* | Assistent roles are the model's responses, based on the user messages. |
 
 
           ¶*Parameter request «options»*
@@ -115,12 +113,15 @@
           | :uri              | An OpenAI chat completion URI. E.g.: \
                                 "https://api.openai.com/v1/chat/completions". ¶\
                                 Defaults  to "https://api.openai.com/v1/chat/completions" |
-          | :model            | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
-                                to "gpt-3.5-turbo" |
+          | :model            | An OpenAI model. E.g.: "gpt-4o". Defaults \
+                                to "gpt-4o". ¶\
+                                The model can also be passed as a keyword. E.g.: \
+                                `:gpt-4o`, `:gpt-4-turbo`, ...  |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
-          | :prompt-opts      | An optional map of OpenAI chat request prompt options ¶\
-                                E.g. `{:temperature 0.2}` ¶\
+          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :temperature 0.2 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :tools            | a list of tools. e.g.: function definitions (see OpenAI api for details) |
           | :tool-choice      | a tool choice. e.g.: function definitions (see OpenAI api for details) ¶\
@@ -169,10 +170,10 @@
                               of header values |
           | :message        | The final chat completion message if the OpenAI \
                               server returned the HTTP status `HTTP_OK`, else `nil` |
-          | :data           | If the response' HTTP status is `HTTP_OK` \
+          | :data           | If the response HTTP status is `HTTP_OK` \
                               the data fields contains the chat completion \
                               message. ¶\
-                              If the response' HTTP status is not `HTTP_OK` \
+                              If the response HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
                               formatted as plain or JSON string. |
           
@@ -192,9 +193,12 @@
           (do
             (load-module :openai)
 
-            (let [prompt    (str "Count to 10, with a comma between each number "
-                                 "and no newlines. E.g., 1, 2, 3, ...")
-                  response  (openai/chat-completion prompt)]
+            (let [prompt    """
+                            Count to 10, with a comma between each number and no newlines. 
+                            E.g., 1, 2, 3, ...
+                            """
+                  response  (openai/chat-completion prompt 
+                                                    :model :gpt-4o)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -206,9 +210,12 @@
           (do
             (load-module :openai)
 
-            (let [prompt    (str "Count to 10, with a comma between each number "
-                                 "and no newlines. E.g., 1, 2, 3, ...")
-                  response  (openai/chat-completion prompt)]
+            (let [prompt    """
+                            Count to 10, with a comma between each number and no newlines. 
+                            E.g., 1, 2, 3, ...
+                            """
+                  response  (openai/chat-completion prompt
+                                                    :model :gpt-4o)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -222,16 +229,19 @@
           (do
             (load-module :openai)
 
-            (let [prompt   [ { :role     "system"
-                               :content  "You will be provided with statements, and your task is to convert them to standard English." }
-                             { :role     "user"
-                               :content  "She no went to the market." } ]
+            (let [prompt      [ { :role     "system"
+                                  :content  """
+                                            You will be provided with statements, and your task 
+                                            is to convert them to standard English.
+                                            """ }
+                                { :role     "user"
+                                  :content  "She no went to the market." } ]
                   prompt-opts { :temperature 0.7
                                 :max_tokens 64
                                 :top_p 1 }
-                  response  (openai/chat-completion prompt 
-                                                    :model "gpt-3.5-turbo" 
-                                                    :prompt-opts prompt-opts)]
+                  response    (openai/chat-completion prompt 
+                                                      :model :gpt-4o
+                                                      :prompt-opts prompt-opts)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -250,7 +260,7 @@
   (let [opts            (apply hash-map options)
         _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/chat/completions")
-        model           (:model opts default-model)
+        model           (to-model (:model opts :gpt-4o))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         tools           (:tools opts)
@@ -326,8 +336,10 @@
           | :uri              | An OpenAI chat completion URI. E.g.: \
                                 "https://api.openai.com/v1/chat/completions". ¶\
                                 Defaults  to "https://api.openai.com/v1/chat/completions" |
-          | :model            | An OpenAI model. E.g.: "gpt-3.5-turbo". Defaults \
-                                to "gpt-3.5-turbo" |
+          | :model            | An OpenAI model. E.g.: "gpt-4o". Defaults \
+                                to "gpt-4o". ¶\
+                                The model can also be passed as a keyword. E.g.: \
+                                `:gpt-4o`, `:gpt-4-turbo`, ...  |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
           | :sync             | if *true* runs the request syncronously and waits \
@@ -338,8 +350,9 @@
                                 (with an optional timeout) to get the full \
                                 message. ¶\
                                 Defaults to *true* |
-          | :prompt-opts      | An optional map of OpenAI chat request prompt options ¶\
-                                E.g. {:temperature 0.2} ¶\
+          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :temperature 0.2 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
@@ -356,10 +369,10 @@
                               of header values |
           | :message        | The final chat completion message if the OpenAI \
                               server returned the HTTP status `HTTP_OK`, else `nil` |
-          | :data           | If the response' HTTP status is `HTTP_OK` \
+          | :data           | If the response HTTP status is `HTTP_OK` \
                               the data fields contains the chat completion \
                               message.  ¶\
-                              If the response' HTTP status is not `HTTP_OK` \
+                              If the response HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
                               formatted as plain or JSON string. |
           
@@ -380,14 +393,19 @@
           (do
             (load-module :openai)
           
-            (let [prompt    (str "Count to 10, with a comma between each number "
-                                 "and no newlines. E.g., 1, 2, 3, ...")
+            (let [prompt    """
+                            Count to 10, with a comma between each number and no newlines. 
+                            E.g., 1, 2, 3, ...
+                            """
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming prompt handler :sync true)]
+                  response  (openai/chat-completion-streaming prompt 
+                                                              handler 
+                                                              :model :gpt-4o
+                                                              :sync true)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -402,14 +420,19 @@
           (do
             (load-module :openai)
           
-            (let [prompt    (str "Count to 10, with a comma between each number "
-                                 "and no newlines. E.g., 1, 2, 3, ...")
+            (let [prompt    """
+                            Count to 10, with a comma between each number and no newlines. 
+                            E.g., 1, 2, 3, ...
+                            """
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming prompt handler :sync false)]
+                  response  (openai/chat-completion-streaming prompt 
+                                                              handler 
+                                                              :model :gpt-4o
+                                                              :sync false)]
               (println "Status:  " (:status response))
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
@@ -427,7 +450,7 @@
   (let [opts            (apply hash-map options)
         _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/chat/completions")
-        model           (:model opts default-model)
+        model           (to-model (:model opts :gpt-4o))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         sync?           (:sync opts true)
@@ -496,11 +519,14 @@
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
           
             (let [api-key   (system-env "OPENAI_API_KEY")
-                  content   (str "Count to 10, with a comma between each number "
-                                 "and no newlines. E.g., 1, 2, 3, ...")
-                  body      { :model "gpt-3.5-turbo"
-                              :messages [ { :role "user"  :content content  } ]
-                              :stream true } 
+                  content   """
+                            Count to 10, with a comma between each number and no newlines. 
+                            E.g., 1, 2, 3, ...
+                            """
+                  body      { :model    :gpt-4o
+                              :messages [ { :role   "user" 
+                                            :content content  } ]
+                              :stream   true } 
                   response  (hc/send :post 
                               "https://api.openai.com/v1/chat/completions"
                               :headers { "Content-Type" "application/json"
@@ -575,9 +601,9 @@
   ^{ :arglists '(
           "(assert-response-http-ok response)")
      :doc """
-          Throws an exception if the response' HTTP status is not HTTP_OK.
+          Throws an exception if the response HTTP status is not HTTP_OK.
 
-          The exception holds the response's details.
+          The exception holds the response details.
           """ }
 
   assert-response-http-ok [response]
@@ -958,6 +984,15 @@
 ;; -----------------------------------------------------------------------------
 ;; Util functions
 ;; -----------------------------------------------------------------------------
+
+(defn- to-model [model default-model] 
+  (let [model (or model default-model)]
+    (cond
+      (keyword? model)  (name model)
+      (string? model)   model
+      :else             (throw (ex :VncException 
+                                    "Invalid OpenAI model data type ~(type model).")))))
+  
 
 (defn- extract-streaming-delta-content [payload]
   (-> (json/read-str payload :key-fn keyword)
