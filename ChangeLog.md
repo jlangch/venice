@@ -27,8 +27,8 @@ font examples to fail. Moved to [Font Squirrel](https://www.fontsquirrel.com/).
   The PDF font examples now use "Opens Sans", "Roboto", "Source Code Pro" 
   and "JetBrains Mono" fonts from the *Font Squirrel* repository.
   
-  The `:fonts` module has been adapted to download these fonts from *Font Squirrel*.
-  These fonts are made available under the *Apache License v2* or *SIL Open Font License v1.10*.
+  The :fonts module has been updated to download these fonts from *Font Squirrel*. 
+  They are available under the Apache License v2 or the SIL Open Font License v1.10.
 
 
 
