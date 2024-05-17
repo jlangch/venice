@@ -22,7 +22,8 @@ font examples to fail. Moved to [Font Squirrel](https://www.fontsquirrel.com/).
 
 ### Changed
 
-- the *True Type* font source from *Google Fonts* to [Font Squirrel](https://www.fontsquirrel.com/).
+- the *True Type* font source from *Google Fonts* to 
+  [Font Squirrel](https://www.fontsquirrel.com/).
 
   The PDF font examples now use "Opens Sans", "Roboto", "Source Code Pro" 
   and "JetBrains Mono" fonts from the *Font Squirrel* repository.
