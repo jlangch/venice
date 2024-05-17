@@ -1,3 +1,7 @@
+
+![logo-text](https://github.com/jlangch/venice/blob/master/doc/logo/logo-text.png)
+
+
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice)
 [![](https://github.com/jlangch/venice/blob/master/doc/maven-central.svg)](https://search.maven.org/search?q=a:venice)
 [![](https://github.com/jlangch/venice/blob/master/doc/license.svg)](./LICENSE)
