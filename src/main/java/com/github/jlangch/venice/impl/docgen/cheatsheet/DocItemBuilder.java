@@ -390,14 +390,28 @@ public class DocItemBuilder {
     }
 
     private List<String> toStringList(final VncList list, final String name, final String helpType) {
-        try {
-            return list.stream()
-                       .map(s -> ((VncString)s).getValue())
-                       .collect(Collectors.toList());
+        final List<String> tmpList = new ArrayList<>();
+
+        int index = 0;
+        for(VncVal item : list.getJavaList()) {
+        	if (item instanceof VncString) {
+        		tmpList.add(((VncString)item).getValue());
+        	}
+        	else {
+                throw new RuntimeException(
+                			String.format(
+                					"Failed on item '%s' (at index %d) while processing %s. " +
+                					"Expected an item of type :core/string but got %s (%s)",
+                					name,
+                					index,
+                					helpType,
+                					item.getType().toString(true),
+                					StringUtil.truncate(item.toString(true), 20, "...")));
+        	}
+        	index++;
         }
-        catch(Exception ex) {
-            throw new RuntimeException(String.format("Failed on item '%s' processing %s", name, helpType), ex);
-        }
+
+        return tmpList;
     }
 
 

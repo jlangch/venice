@@ -193,10 +193,10 @@
           (do
             (load-module :openai)
 
-            (let [prompt    """
+            (let [prompt    \"\"\"
                             Count to 10, with a comma between each number and no newlines. 
                             E.g., 1, 2, 3, ...
-                            """
+                            \"\"\"
                   response  (openai/chat-completion prompt 
                                                     :model :gpt-4o)]
               (println "Status:  " (:status response))
@@ -210,10 +210,10 @@
           (do
             (load-module :openai)
 
-            (let [prompt    """
+            (let [prompt    \"\"\"
                             Count to 10, with a comma between each number and no newlines. 
                             E.g., 1, 2, 3, ...
-                            """
+                            \"\"\"
                   response  (openai/chat-completion prompt
                                                     :model :gpt-4o)]
               (println "Status:  " (:status response))
@@ -230,10 +230,10 @@
             (load-module :openai)
 
             (let [prompt      [ { :role     "system"
-                                  :content  """
+                                  :content  \"\"\"
                                             You will be provided with statements, and your task 
                                             is to convert them to standard English.
-                                            """ }
+                                            \"\"\" }
                                 { :role     "user"
                                   :content  "She no went to the market." } ]
                   prompt-opts { :temperature 0.7
@@ -260,7 +260,7 @@
   (let [opts            (apply hash-map options)
         _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/chat/completions")
-        model           (to-model (:model opts :gpt-4o))
+        model           (to-model (:model opts) :gpt-4o)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         tools           (:tools opts)
@@ -393,10 +393,10 @@
           (do
             (load-module :openai)
           
-            (let [prompt    """
+            (let [prompt    \"\"\"
                             Count to 10, with a comma between each number and no newlines. 
                             E.g., 1, 2, 3, ...
-                            """
+                            \"\"\"
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
@@ -420,10 +420,10 @@
           (do
             (load-module :openai)
           
-            (let [prompt    """
+            (let [prompt    \"\"\"
                             Count to 10, with a comma between each number and no newlines. 
                             E.g., 1, 2, 3, ...
-                            """
+                            \"\"\"
                   handler   (fn [delta accumulated status]
                               (case status
                                 :opened  (println "Started...")
@@ -450,7 +450,7 @@
   (let [opts            (apply hash-map options)
         _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/chat/completions")
-        model           (to-model (:model opts :gpt-4o))
+        model           (to-model (:model opts) :gpt-4o)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         sync?           (:sync opts true)
@@ -519,10 +519,10 @@
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
           
             (let [api-key   (system-env "OPENAI_API_KEY")
-                  content   """
+                  content   \"\"\"
                             Count to 10, with a comma between each number and no newlines. 
                             E.g., 1, 2, 3, ...
-                            """
+                            \"\"\"
                   body      { :model    :gpt-4o
                               :messages [ { :role   "user" 
                                             :content content  } ]
