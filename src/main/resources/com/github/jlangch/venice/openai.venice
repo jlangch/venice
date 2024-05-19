@@ -220,7 +220,7 @@
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
                 (println "Message:" (-> (:data response)
-                                        (openai/extract-response-message-content)
+                                        (openai/chat-extract-response-message-content)
                                         (pr-str)))
                 (println "Error:"   (:data response)))))
           """,
@@ -246,13 +246,13 @@
               (println "Mimetype:" (:mimetype response))
               (if (=  (:status response) 200)
                 (println "Message:" (-> (:data response)
-                                        (openai/extract-response-message-content)
+                                        (openai/chat-extract-response-message-content)
                                         (openai/pretty-print-json)))
                 (println "Error:"   (:data response)))))
             """ )
      :see-also '( 
           "openai/chat-completion-streaming"
-          "openai/extract-response-message-content"
+          "openai/chat-extract-response-message-content"
           "openai/pretty-print-json" ) }
 
   chat-completion [prompt & options]
@@ -267,8 +267,8 @@
         _               (validate-tools tools)
         tool-choice     (:tool_choice opts)
         _               (validate-tool-choice tool-choice)
-        body            (build-prompt model prompt (:prompt-opts opts)
-                                      tools tool-choice{:stream false})
+        body            (build-chat-prompt model prompt (:prompt-opts opts)
+                                           tools tool-choice {:stream false})
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
@@ -441,7 +441,7 @@
           """ )
      :see-also '( 
           "openai/chat-completion"
-          "openai/process-streaming-events" ) }
+          "openai/chat-process-streaming-events" ) }
 
   chat-completion-streaming [prompt handler & options]
 
@@ -454,7 +454,7 @@
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         sync?           (:sync opts true)
-        body            (build-prompt model prompt (:prompt-opts opts) nil {:stream true})
+        body            (build-chat-prompt model prompt (:prompt-opts opts) nil {:stream true})
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
@@ -469,7 +469,7 @@
     (if (and (= "text/event-stream" (:content-type-mimetype response))
              (= (:http-status response) 200))
      
-      (let [fr (openai/process-streaming-events response handler)]
+      (let [fr (openai/chat-process-streaming-events response handler)]
         (assoc result :data (if sync? @fr fr)))
       (assoc result :data (hc/slurp-response response :json-parse-mode :pretty-print)))))
 
@@ -479,6 +479,171 @@
 ;; -----------------------------------------------------------------------------
 
 ;; https://medium.com/intermerz/prompt-design-f%C3%BCr-dall-e-fotorealismus-emulation-der-realit%C3%A4t-31af8939ee1c
+
+(defn 
+  ^{ :arglists '(
+          "(image-create prompt response-format & options)" )
+     :doc """
+          Create images.
+
+          ¶*Parameter «prompt»*
+
+          ```
+          "A portrait of a dog in a library, Sigma 85mm f/1.4"
+          ```
+
+          ¶*Parameter «response-format»*
+
+          The format in which the generated images are returned
+
+          * `:url`
+          * `:b64_json`
+
+          Note: URLs are only valid for 60 minutes after the image has been generated.
+
+          ¶*Parameter request «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/images/generations". ¶\
+                                Defaults  to "https://api.openai.com/v1/images/generations" |
+          | :model            | An OpenAI model. E.g.: "dall-e-3". Defaults \
+                                to "dall-e-3". ¶\
+                                The model can also be passed as a keyword. E.g.: \
+                                `:dall-e-2`, `:dall-e-3`, ...  |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :style "vivid" :size "1024x1024", :quality "hd" :n 1 }`. ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/create) |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :message        | The final chat completion message if the OpenAI \
+                              server returned the HTTP status `HTTP_OK`, else `nil` |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Image Guide](https://platform.openai.com/docs/guides/images/usage)
+          * [OpenAI Image API](https://platform.openai.com/docs/api-reference/images)
+          """ 
+     :examples '(
+          """
+          ;; :url => print the full OpenAI response message
+          (do
+            (load-module :openai)
+
+            (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
+                  response  (openai/image-create prompt :url
+                                                 :model :dall-e-3
+                                                 :prompt-opts {:quality "hd"})]
+              (if (= (:status response) 200)
+                (println "Response:" (openai/pretty-print-json (:data response)))
+                (println "Error:"   (:data response)))))
+          """,
+          """
+          ;; :b64_json => print the full OpenAI response message
+          (do
+            (load-module :openai)
+
+            (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
+                  response  (openai/image-create prompt :b64_json
+                                                 :model :dall-e-3
+                                                 :prompt-opts {:quality "hd"})]
+              (if (= (:status response) 200)
+                (println "Response:" (openai/pretty-print-json (:data response)))
+                (println "Error:"   (:data response)))))
+          """,
+          """
+          ;; :url => save the image
+          (do
+            (load-module :openai)
+            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+            (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
+                  response  (openai/image-create prompt :url
+                                                 :model :dall-e-3
+                                                 :prompt-opts {:quality "hd"})]
+              (if (= (:status response) 200)
+                (let [data       (:data (:data response))
+                      img-data   (first data) ;; 1st image data
+                      url        (:url img-data)
+                      _          (println "Downloading image...")
+                      img        (openai/image-download url "image-1")
+                      file       (str "./" (:name img))]
+                  (io/spit file (:data img))
+                  (println "Saved image to:" file))
+                (println "Error:"   (:data response)))))
+          """,
+          """
+          ;; :b64_json => save the image
+          (do
+            (load-module :openai)
+            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+            (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
+                  response  (openai/image-create prompt :b64_json
+                                                 :model :dall-e-3
+                                                 :prompt-opts {:quality "hd"})]
+              (if (= (:status response) 200)
+                (let [data       (:data (:data response))
+                      img-data   (first data) ;; 1st image data   
+                      img        (->> (get img-data :b64_json)
+                                      (str/decode-base64))
+                      file       "./image-2.png"]
+                  (io/spit file img)
+                  (println "Saved image to:" file))
+                (println "Error:"   (:data response)))))
+          """ )
+     :see-also '( 
+          "openai/pretty-print-json"
+          "openai/image-download" ) }
+
+  image-create [prompt response-format & options]
+
+  (assert (string? prompt)
+          "The prompt must be a string")
+  (assert (or (= response-format :url) (= response-format :b64_json))
+          "The response-format value must be :url or :b64_json")
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             (:uri opts "https://api.openai.com/v1/images/generations")
+        model           (to-model (:model opts) :dall-e-3)
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        body            (build-image-prompt model prompt (:prompt-opts opts) 
+                                            {:response_format response-format})
+        debug?          (:debug opts false)
+        _               (when debug? (dump-prompt body))
+        response        (hc/send :post 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body (json/write-str body)
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+   (assoc result :data  (hc/slurp-response response 
+                                           :json-parse-mode :data 
+                                           :json-key-fn keyword))))
 
 
 
@@ -490,7 +655,7 @@
 
 (defn 
  ^{ :arglists '(
-          "(process-streaming-events response handler)")
+          "(chat-process-streaming-events response handler)")
      :doc """
           Processes OpenAI server side events (SSE) and calls for every event 
           the passed handler function.
@@ -535,7 +700,7 @@
                               :debug false)]
               (println "Status:" (:http-status response))
               (if (= "text/event-stream" (:content-type-mimetype response))
-                (let [text @(openai/process-streaming-events 
+                (let [text @(openai/chat-process-streaming-events 
                                 response
                                 (fn [delta accumulated status]
                                   (case status
@@ -548,7 +713,7 @@
      :see-also '( 
           "http-client-j8/slurp-response" ) }
 
-  process-streaming-events [response handler]
+  chat-process-streaming-events [response handler]
 
   (assert (some? response))
   (assert (fn? handler))
@@ -590,7 +755,7 @@
           Returns a pretty printed Venice JSON data value.
           """
      :see-also '( 
-          "openai/extract-response-message-content" ) }
+          "openai/chat-extract-response-message-content" ) }
 
   pretty-print-json [data]
 
@@ -635,22 +800,22 @@
 
 (defn 
   ^{ :arglists '(
-          "(extract-response-message response)"
-          "(extract-response-message response choice-idx)")
+          "(chat-extract-response-message response)"
+          "(chat-extract-response-message response choice-idx)")
      :doc """
-          Returns the message of an OpenAI JSON response.
+          Returns the message of an OpenAI chat JSON response.
           """
      :see-also '( 
-          "openai/extract-response-message"
-          "openai/extract-response-message-role"
-          "openai/extract-response-message-content"
-          "openai/extract-response-tool-calls-id"
-          "openai/extract-function-name" ) }
+          "openai/chat-extract-response-message"
+          "openai/chat-extract-response-message-role"
+          "openai/chat-extract-response-message-content"
+          "openai/chat-extract-response-tool-calls-id"
+          "openai/chat-extract-function-name" ) }
 
-  extract-response-message 
+  chat-extract-response-message 
   
   ([response]
-    (extract-response-message response 0))
+    (chat-extract-response-message response 0))
 
   ([response choice-idx]
     (assert (coll? response))
@@ -661,21 +826,21 @@
 
 (defn 
   ^{ :arglists '(
-          "(extract-response-message-content response)"
-          "(extract-response-message-content response choice-idx)")
+          "(chat-extract-response-message-content response)"
+          "(chat-extract-response-message-content response choice-idx)")
      :doc """
-          Returns the message content of an OpenAI JSON response.
+          Returns the message content of an OpenAI chat JSON response.
           """
      :see-also '( 
-          "openai/extract-response-message"
-          "openai/extract-response-message-role"
-          "openai/extract-response-tool-calls-id"
-          "openai/extract-function-name" ) }
+          "openai/chat-extract-response-message"
+          "openai/chat-extract-response-message-role"
+          "openai/chat-extract-response-tool-calls-id"
+          "openai/chat-extract-function-name" ) }
 
-  extract-response-message-content 
+  chat-extract-response-message-content 
   
   ([response]
-    (extract-response-message-content response 0))
+    (chat-extract-response-message-content response 0))
 
   ([response choice-idx]
     (assert (coll? response))
@@ -687,21 +852,21 @@
 
 (defn 
   ^{ :arglists '(
-          "(extract-response-message-role response)"
-          "(extract-response-message-role response choice-idx)")
+          "(chat-extract-response-message-role response)"
+          "(chat-extract-response-message-role response choice-idx)")
      :doc """
-          Returns the message role of an OpenAI JSON response.
+          Returns the message role of an OpenAI chat JSON response.
           """
      :see-also '( 
-          "openai/extract-response-message"
-          "openai/extract-response-message-content"
-          "openai/extract-response-tool-calls-id"
-          "openai/extract-function-name" ) }
+          "openai/chat-extract-response-message"
+          "openai/chat-extract-response-message-content"
+          "openai/chat-extract-response-tool-calls-id"
+          "openai/chat-extract-function-name" ) }
 
-  extract-response-message-role 
+  chat-extract-response-message-role 
   
   ([response]
-    (extract-response-message-role response 0))
+    (chat-extract-response-message-role response 0))
 
   ([response choice-idx]
     (assert (coll? response))
@@ -713,21 +878,21 @@
 
 (defn 
   ^{ :arglists '(
-          "(extract-response-tool-calls-id response)"
-          "(extract-response-tool-calls-id response choice-idx)")
+          "(chat-extract-response-tool-calls-id response)"
+          "(chat-extract-response-tool-calls-id response choice-idx)")
      :doc """
-          Returns the message "tool_calls" id of an OpenAI JSON response.
+          Returns the message "tool_calls" id of an OpenAI chat JSON response.
           """
      :see-also '( 
-          "openai/extract-response-message"
-          "openai/extract-response-message-role"
-          "openai/extract-response-message-content"
-          "openai/extract-function-name" ) }
+          "openai/chat-extract-response-message"
+          "openai/chat-extract-response-message-role"
+          "openai/chat-extract-response-message-content"
+          "openai/chat-extract-function-name" ) }
 
-  extract-response-tool-calls-id
+  chat-extract-response-tool-calls-id
   
   ([response]
-    (extract-response-tool-calls-id response 0))
+    (chat-extract-response-tool-calls-id response 0))
 
   ([response choice-idx]
     (assert (coll? response))
@@ -739,25 +904,25 @@
 
 
 (defn 
- ^{ :arglists '(
-          "(extract-function-name response)"
-          "(extract-function-name response choice-idx tools-calls-idx)")
+  ^{ :arglists '(
+          "(chat-extract-function-name response)"
+          "(chat-extract-function-name response choice-idx tools-calls-idx)")
      :doc """
-          Returns the function name of the response.
+          Returns the function name of an OpenAI chat JSON response.
           """
      :see-also '( 
-          "openai/extract-response-message"
-          "openai/extract-response-message-role"
-          "openai/extract-response-message-content"
-          "openai/extract-response-tool-calls-id" ) }
+          "openai/chat-extract-response-message"
+          "openai/chat-extract-response-message-role"
+          "openai/chat-extract-response-message-content"
+          "openai/chat-extract-response-tool-calls-id" ) }
 
-  extract-function-name 
+  chat-extract-function-name 
   
   ([response]
-    (extract-function-name response 0 0))
+    (chat-extract-function-name response 0 0))
 
   ([response choice-idx tools-calls-idx]
-    (assert finish-reason-tool-calls? response)
+    (assert chat-finish-reason-tool-calls? response)
     (-<> (:choices response)
          (nth <> choice-idx)
          (:message  <>)
@@ -779,6 +944,57 @@
                                          (:bright-blue ansi/ANSI-CODES)))
         :function   (println (ansi/style (str "function: " content) 
                                          (:bright-magenta ansi/ANSI-CODES)))))))
+
+
+(defn
+  ^{ :arglists '(
+          "(image-download url basename)")
+     :doc """
+          Downloads an image from the given url.
+
+          Returns a map with the image data.
+
+          E.g.: basename = image-1
+
+          ```
+          { :name     image-1.png
+            :mimetype "image/png"
+            :data     <bytebuf> }
+          ```
+          """ }
+
+  image-download [url img-basename]
+
+  (let [img-response (hc/send :get url)
+        mimetype     (:content-type-mimetype img-response)
+        img-name     (image-file-name-from-mimetype img-basename mimetype)
+        data         (hc/slurp-response img-response)]                 
+    { :name     img-name
+      :mimetype mimetype
+      :data     data }))
+
+(defn 
+  ^{ :arglists '(
+          "(image-file-name-from-mimetype basename mimetype)")
+     :doc """
+          Creates an image file name from a given basename and an image mimetype.
+
+          Examples:
+
+          | basename | mimetype   | filename       |
+          | :--------| :--------- | :------------- |
+          | image-1  | image/png  | "image-1.png"  |
+          | image-2  | image/jpeg | "image-2.jpeg" |
+          | image-3  | image/gif  | "image-3.gif"  |
+          """ }
+  image-file-name-from-mimetype [basename mimetype]
+
+  (assert (string? basename))
+  (assert (string? mimetype))
+
+  (str basename "." (second (str/split mimetype "/"))))
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; OpenAI Functions
@@ -820,8 +1036,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(finish-reason response)"
-          "(finish-reason response choice-idx)")
+          "(chat-finish-reason response)"
+          "(chat-finish-reason response choice-idx)")
      :doc """
           Returns the finish reason text from an OpenAI JSON response.
 
@@ -831,14 +1047,14 @@
           functions must be executed to get specific data to answer the question.
           """
      :see-also '( 
-          "openai/finish-reason-stop?"
-          "openai/finish-reason-tool-calls?"
+          "openai/chat-finish-reason-stop?"
+          "openai/chat-finish-reason-tool-calls?"
           "openai/exec-fn" ) }
   
-  finish-reason 
+  chat-finish-reason 
   
   ([response]
-    (finish-reason response 0))
+    (chat-finish-reason response 0))
   
   ([response choice-idx]
     (-<> (:choices response)
@@ -848,48 +1064,48 @@
 
 (defn 
   ^{ :arglists '(
-          "(finish-reason-stop? response)"
-          "(finish-reason-stop? response choice-idx)")
+          "(chat-finish-reason-stop? response)"
+          "(chat-finish-reason-stop? response choice-idx)")
      :doc """
           Returns true if the OpenAI JSON response provides an answer to
           the prompt.
           """
      :see-also '( 
-          "openai/finish-reason"
-          "openai/finish-reason-tool-calls?"
+          "openai/chat-finish-reason"
+          "openai/chat-finish-reason-tool-calls?"
           "openai/exec-fn" ) }
 
-  finish-reason-stop? 
+  chat-finish-reason-stop? 
   
   ([response]
-    (finish-reason-stop? response 0))
+    (chat-finish-reason-stop? response 0))
 
   ([response choice-idx]
     (assert map? response)
-    (= "stop" (finish-reason response choice-idx))))
+    (= "stop" (chat-finish-reason response choice-idx))))
 
 
 (defn 
   ^{ :arglists '(
-          "(finish-reason-tool-calls? response)"
-          "(finish-reason-tool-calls? response choice-idx)")
+          "(chat-finish-reason-tool-calls? response)"
+          "(chat-finish-reason-tool-calls? response choice-idx)")
      :doc """
           Returns true if the OpenAI JSON response contains tool calls 
           (functions) that it wants the client to run
           """
      :see-also '( 
-          "openai/finish-reason"
-          "openai/finish-reason-stop?"
+          "openai/chat-finish-reason"
+          "openai/chat-finish-reason-stop?"
           "openai/exec-fn" ) }
 
-  finish-reason-tool-calls? 
+  chat-finish-reason-tool-calls? 
   
   ([response]
-    (finish-reason-tool-calls?  response 0))
+    (chat-finish-reason-tool-calls?  response 0))
 
   ([response choice-idx]
     (assert map? response)
-    (= "tool_calls" (finish-reason response choice-idx))))
+    (= "tool_calls" (chat-finish-reason response choice-idx))))
 
 
 (defn 
@@ -912,22 +1128,22 @@
           | ERROR result   | `{ :err exception }`. |
           """
      :see-also '( 
-          "openai/finish-reason"
-          "openai/finish-reason-stop?"
-          "openai/finish-reason-tool-calls?" ) }
+          "openai/chat-finish-reason"
+          "openai/chat-finish-reason-stop?"
+          "openai/chat-finish-reason-tool-calls?" ) }
 
   exec-fn [response fn-map]
 
   (assert map? response)
   (assert map? fn-map)
 
-  (when-not (finish-reason-tool-calls? response) 
+  (when-not (chat-finish-reason-tool-calls? response) 
     (throw (ex :VncEception 
               """
               The OpenAI response does not have a "tool_calls" finish reason! 
               Thus the response does not define any functions with arguments
               to call. The finish reason returned was 
-              "~(exec-finish-reason response)".
+              "~(exec-chat-finish-reason response)".
               """ )))
 
   (loop [results []
@@ -1006,19 +1222,26 @@
   (system-env "OPENAI_API_KEY"))
 
 
-(defn- build-prompt [model prompt prompt-opts tools tool-choice overrule-opts]
+(defn- build-chat-prompt [model prompt prompt-opts tools tool-choice overrule-opts]
   (let [p (cond 
             (nil? prompt)        {}
             (string? prompt)     {:messages [{:role "user" :content prompt}]}
             (sequential? prompt) {:messages prompt}
             (map? prompt)        prompt
             :else                {} )]
-    (merge {:model (or model default-model)} 
+    (merge {:model model} 
            p 
            (if (nil? tools) {} {:tools tools})
            (if (nil? tool-choice) {} {:tool_choice tool-choice})
            (or prompt-opts {})
            (or overrule-opts {}))))
+
+
+(defn- build-image-prompt [model prompt prompt-opts overrule-opts]
+  (merge {:model  model
+          :prompt prompt} 
+         (or prompt-opts {})
+         (or overrule-opts {})))
 
   
 (defn- dump-prompt [prompt]
@@ -1071,3 +1294,4 @@
                     } 
                   }
                   """)))))
+

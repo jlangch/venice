@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - the Venice logo to the cheatsheet
+- :openai module support for image creation (edits and variations will follow).
 
 
 

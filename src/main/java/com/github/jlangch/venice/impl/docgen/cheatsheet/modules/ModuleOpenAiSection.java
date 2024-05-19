@@ -41,30 +41,41 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         final DocSection all = new DocSection("(load-module :openai)", id());
         section.addSection(all);
 
-        final DocSection chat = new DocSection("OpenAI chat", id());
+        final DocSection chat = new DocSection("Chat", id());
         all.addSection(chat);
         chat.addItem(diBuilder.getDocItem("openai/chat-completion", false));
         chat.addItem(diBuilder.getDocItem("openai/chat-completion-streaming", false));
-        chat.addItem(diBuilder.getDocItem("openai/process-streaming-events", false));
+        chat.addItem(diBuilder.getDocItem("openai/chat-process-streaming-events", false));
 
-        final DocSection func = new DocSection("OpenAI fn", id());
+        final DocSection func = new DocSection("Function", id());
         all.addSection(func);
         func.addItem(diBuilder.getDocItem("openai/exec-fn", false));
 
-        final DocSection response = new DocSection("Response", id());
-        all.addSection(response);
-        response.addItem(diBuilder.getDocItem("openai/assert-response-http-ok", false));
-        response.addItem(diBuilder.getDocItem("openai/finish-reason", false));
-        response.addItem(diBuilder.getDocItem("openai/finish-reason-stop?", false));
-        response.addItem(diBuilder.getDocItem("openai/finish-reason-tool-calls?", false));
-        response.addItem(diBuilder.getDocItem("openai/extract-response-message", false));
-        response.addItem(diBuilder.getDocItem("openai/extract-response-message-role", false));
-        response.addItem(diBuilder.getDocItem("openai/extract-response-message-content", false));
-        response.addItem(diBuilder.getDocItem("openai/extract-response-tool-calls-id", false));
-        response.addItem(diBuilder.getDocItem("openai/extract-function-name", false));
+        final DocSection response_chat = new DocSection("Response chat", id());
+        all.addSection(response_chat);
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-finish-reason", false));
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-finish-reason-stop?", false));
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-finish-reason-tool-calls?", false));
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-extract-response-message", false));
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-extract-response-message-role", false));
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-extract-response-message-content", false));
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-extract-response-tool-calls-id", false));
+        response_chat.addItem(diBuilder.getDocItem("openai/chat-extract-function-name", false));
+
+
+        final DocSection image = new DocSection("Image", id());
+        all.addSection(image);
+        image.addItem(diBuilder.getDocItem("openai/image-create", false));
+
+
+        final DocSection image_utils = new DocSection("Image Utils", id());
+        all.addSection(image_utils);
+        image_utils.addItem(diBuilder.getDocItem("openai/image-download", false));
+
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
+        utils.addItem(diBuilder.getDocItem("openai/assert-response-http-ok", false));
         utils.addItem(diBuilder.getDocItem("openai/pretty-print-json", false));
 
         return section;
