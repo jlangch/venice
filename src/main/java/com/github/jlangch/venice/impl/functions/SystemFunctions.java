@@ -50,6 +50,7 @@ import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -61,9 +62,11 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.javainterop.ReturnValue;
 import com.github.jlangch.venice.util.OS;
 
@@ -959,6 +962,39 @@ public class SystemFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction logo =
+        new VncFunction(
+                "logo",
+                VncFunction
+                    .meta()
+                    .arglists("(logo)")
+                    .doc("Returns the Venice logo.\n\n" +
+                         "Returns a map with the keys :name, :mimetype, and :data")
+                    .examples("(logo)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                return new VncOrderedMap()
+                			.assoc(
+                				new VncKeyword(":name"),
+                				new VncString("logo.pdf"),
+
+                				new VncKeyword(":mimetype"),
+                				new VncString(MimeTypes.APPLICATION_PDF),
+
+                				new VncKeyword(":data"),
+                				new VncByteBuffer(
+                                      new ClassPathResource("com/github/jlangch/venice/images/logo.png")
+                                            .getResourceAsBinary()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     public static long javaMajorVersion() {
         String version = System.getProperty("java.version");
 
@@ -1044,6 +1080,7 @@ public class SystemFunctions {
                     .add(jansi_version)
                     .add(license)
                     .add(license_all)
+                    .add(logo)
                     .toMap();
 
 
