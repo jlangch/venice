@@ -968,9 +968,11 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(logo)")
-                    .doc("Returns the Venice logo.\n\n" +
-                         "Returns a map with the keys :name, :mimetype, and :data")
-                    .examples("(logo)")
+                    .doc("Returns the Venice logo, a map with the keys `:name`, `:mimetype`, and `:data`")
+                    .examples(
+                    	"(logo)",
+                    	"(let [l (logo)]     \n" +
+                    	"  (io/spit (io/file (:name l)) (:data l)))")
                     .build()
         ) {
             @Override
@@ -980,10 +982,10 @@ public class SystemFunctions {
                 return new VncOrderedMap()
                 			.assoc(
                 				new VncKeyword(":name"),
-                				new VncString("logo.pdf"),
+                				new VncString("logo.png"),
 
                 				new VncKeyword(":mimetype"),
-                				new VncString(MimeTypes.APPLICATION_PDF),
+                				new VncString(MimeTypes.IMAGE_PNG),
 
                 				new VncKeyword(":data"),
                 				new VncByteBuffer(
