@@ -793,7 +793,7 @@ See:
                                       (:data response)))))))
 
   (->> (create-image)            ;; create an image
-        (create-image-variant)))  ;; create a variant of the image
+       (create-image-variant)))  ;; create a variant of the image
 ```
 
 
@@ -920,11 +920,11 @@ See:
 
   ;; derive an image with a mask at the center for placing the flamingo 
   (create-image-mask "./image-edit-source.png"
-                      "./image-edit-mask.png") 
+                     "./image-edit-mask.png") 
 
   ;; place the flamingo in the mask area at the center
   (create-image-edit "A sunlit indoor lounge area with a pool containing a flamingo"
-                      "./image-edit-source.png"
-                      "./image-edit-mask.png"
-                      "./image-edit-result.png"))
+                     "./image-edit-source.png"
+                     "./image-edit-mask.png"
+                     "./image-edit-result.png"))
 ```
