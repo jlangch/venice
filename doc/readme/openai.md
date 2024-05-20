@@ -645,7 +645,6 @@ Note: URLs are only valid for 60 minutes after the image has been generated.
 | :status    | The HTTP status (a long)         |
 | :mimetype  | The content type's mimetype      |
 | :headers   | A map of headers. key: header name, value: list of header values |
-| :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
 | :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
           
@@ -769,7 +768,6 @@ Note: URLs are only valid for 60 minutes after the image has been generated.
 | :status    | The HTTP status (a long)         |
 | :mimetype  | The content type's mimetype      |
 | :headers   | A map of headers. key: header name, value: list of header values |
-| :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
 | :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
           
@@ -876,7 +874,6 @@ Note: URLs are only valid for 60 minutes after the image has been generated.
 | :status    | The HTTP status (a long)         |
 | :mimetype  | The content type's mimetype      |
 | :headers   | A map of headers. key: header name, value: list of header values |
-| :message   | The final chat completion message if the OpenAI  server returned the HTTP status `HTTP_OK`, else `nil` |
 | :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
           
