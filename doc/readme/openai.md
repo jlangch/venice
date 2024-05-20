@@ -682,7 +682,7 @@ Return image as URL (response format `:url`) JSON and save it to a file
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
   (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-        response  (openai/image-create prompt 
+        response  (openai/image-create prompt                 ;; generate image
                                       :url
                                       :model :dall-e-3
                                       :prompt-opts {:quality "hd"})]
@@ -691,10 +691,10 @@ Return image as URL (response format `:url`) JSON and save it to a file
             img-data   (first data) ;; 1st image data
             url        (:url img-data)
             _          (println "Downloading image...")
-            img        (openai/image-download url "image-1")
+            img        (openai/image-download url "image-1")  ;; download image URL
             file       (str "./" (:name img))]
         (io/spit file (:data img))
-        (println "Saved image to:" file))
+        (println "Saved image to:" file))                     ;; save image to file
         (println "Error:" (:data response)))))
 ```
 
@@ -709,7 +709,7 @@ Return image as Base64 (response format `:b64_json`) JSON and save it to a file
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
   (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-        response  (openai/image-create prompt 
+        response  (openai/image-create prompt          ;; generate image
                                        :b64_json
                                        :model :dall-e-3
                                        :prompt-opts {:quality "hd"})]
@@ -717,9 +717,9 @@ Return image as Base64 (response format `:b64_json`) JSON and save it to a file
       (let [data       (:data (:data response))
             img-data   (first data) ;; 1st image data   
             img        (->> (get img-data :b64_json)
-                            (str/decode-base64))
+                            (str/decode-base64))       ;; base64 image decoding
             file       "./image-2.png"]
-         (io/spit file img)
+         (io/spit file img)                            ;; save image to file
          (println "Saved image to:" file))
          (println "Error:" (:data response)))))
 ```
@@ -788,7 +788,7 @@ See:
   (defn create-image []
     (println "Requesting image...")
     (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-          response  (openai/image-create prompt :b64_json
+          response  (openai/image-create prompt :b64_json            ;; generate image
                                           :model :dall-e-3
                                           :prompt-opts {:size "1024x1024", :quality "hd"})]
       (if (= (:status response) 200)
@@ -804,7 +804,7 @@ See:
 
   (defn create-image-variant [img]
     (println "Requesting image variant...")
-    (let [response  (openai/image-variants img
+    (let [response  (openai/image-variants img                      ;; generate image variant
                                            :b64_json
                                            :model :dall-e-3
                                            :prompt-opts {:size "1024x1024", :n 1})]
@@ -895,7 +895,7 @@ See:
 
   (defn create-image [prompt img-file]
     (println "Requesting image...")
-    (let [response  (openai/image-create prompt 
+    (let [response  (openai/image-create prompt               ;; generate image
                                          :b64_json
                                          :model :dall-e-3
                                          :prompt-opts {:size "1024x1024", :quality "hd"})]
