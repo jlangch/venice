@@ -66,6 +66,8 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         final DocSection image = new DocSection("Image", id());
         all.addSection(image);
         image.addItem(diBuilder.getDocItem("openai/image-create", false));
+        image.addItem(diBuilder.getDocItem("openai/image-variants", false));
+        image.addItem(diBuilder.getDocItem("openai/image-edits", false));
 
 
         final DocSection image_utils = new DocSection("Image Utils", id());

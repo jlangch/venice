@@ -1195,7 +1195,7 @@
               (images/save img :png (io/file "/Users/foo/Desktop/test.png"))))
           """,
           """
-          ;; create a mask
+          ;; create a mask (fill circle with transparent pixels)
           (do
             (load-module :images)
 
@@ -1873,8 +1873,8 @@
   ^{ :arglists '(
           "(alpha-channel? img)") 
      :doc """
-          Returns true if the image supports an alpha channel. 'f' may 
-          be a `:java.io.File` or a `:java.awt.Image`.
+          Returns `true` if the image supports an alpha channel else `false`. 
+          'img' is a `:java.awt.Image`.
           """
      :examples '(
           """
