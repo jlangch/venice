@@ -474,6 +474,7 @@
       (assoc result :data (hc/slurp-response response :json-parse-mode :pretty-print)))))
 
 
+
 ;; -----------------------------------------------------------------------------
 ;; IMAGES
 ;; -----------------------------------------------------------------------------
@@ -612,6 +613,7 @@
                 (println "Error:"   (:data response)))))
           """ )
      :see-also '( 
+          "openai/image-variants"
           "openai/pretty-print-json"
           "openai/image-download" ) }
 
@@ -645,6 +647,154 @@
                                            :json-parse-mode :data 
                                            :json-key-fn keyword))))
 
+
+(defn 
+  ^{ :arglists '(
+          "(image-variants image response-format & options)" )
+     :doc """
+          Create image variants. 
+          
+          It only supports "dall-e-2". The quality of the variants is poor.
+          Looks like OpenAI is giving it up.
+
+          ¶*Parameter «image»*
+
+          The image to create variants from.
+
+          ¶*Parameter «response-format»*
+
+          The format in which the generated images are returned
+
+          * `:url`
+          * `:b64_json`
+
+          Note: URLs are only valid for 60 minutes after the image has been generated.
+
+          ¶*Parameter request «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/images/generations". ¶\
+                                Defaults  to "https://api.openai.com/v1/images/generations" |
+          | :model            | An OpenAI model. E.g.: "dall-e-2". Defaults \
+                                to "dall-e-2". ¶\
+                                The model can also be passed as a keyword. E.g.: \
+                                `:dall-e-2`, `:dall-e-3`, ...  |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :size "1024x1024", :n 1 }`. ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/create) |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :message        | The final chat completion message if the OpenAI \
+                              server returned the HTTP status `HTTP_OK`, else `nil` |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Image Guide](https://platform.openai.com/docs/guides/images/usage)
+          * [OpenAI Image API](https://platform.openai.com/docs/api-reference/images)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+  
+            (defn create-image []
+              (println "Requesting image...")
+              (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
+                    response  (openai/image-create prompt :b64_json
+                                                   :model :dall-e-3
+                                                   :prompt-opts {:quality "hd"})]
+                (if (= (:status response) 200)
+                  (let [data       (:data (:data response))
+                        img-data   (first data) ;; 1st image data   
+                        img        (->> (get img-data :b64_json)
+                                        (str/decode-base64))]
+                    (io/spit "./image-variant-1.png" img)
+                    (println "Saved image \"./image-variant-1.png\"")
+                    img)
+                  (throw (ex :VncException (str "Failed to create image:"  
+                                                (:data response)))))))
+
+            (defn create-image-variant [img]
+              (println "Requesting image variant...")
+              (let [response  (openai/image-variants img
+                                                     :b64_json
+                                                     :model :dall-e-3
+                                                     :prompt-opts {:n 1})]
+                (if (= (:status response) 200)
+                  (let [data       (:data (:data response))
+                        img-data   (first data) ;; 1st image data   
+                        img        (->> (get img-data :b64_json)
+                                        (str/decode-base64))]
+                    (io/spit "./image-variant-2.png" img)
+                    (println "Saved variant \"./image-variant-2.png\"")
+                    img)
+                  (throw (ex :VncException (str "Failed to create image:"  
+                                                (:data response)))))))
+
+            (->> (create-image)            ;; create an image
+                 (create-image-variant)))  ;; create a variant of the image
+          """ )
+     :see-also '( 
+          "openai/image-create"
+          "openai/pretty-print-json"
+          "openai/image-download" ) }
+
+  image-variants [image response-format & options]
+
+  (assert (bytebuf? image))
+  (assert (or (= response-format :url) (= response-format :b64_json))
+          "The response-format value must be :url or :b64_json")
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             (:uri opts "https://api.openai.com/v1/images/variations")
+        model           (to-model (:model opts) :dall-e-2)
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        param-parts     (->> (merge { ;; :model  model   ;; OpenAI rejects a model!!
+                                      :response_format response-format} 
+                                    (or (:prompt-opts opts) {}))
+                             (map-keys name)
+                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+        img-part        { "image"  { :filename  "image.png"
+                                     :mimetype  "image/png"
+                                     :data      image } }
+        multi-parts     (merge img-part param-parts)
+        debug?          (:debug opts false)
+        _               (when debug? (println "\nMultiparts:") (prn multi-parts))
+        response        (hc/upload-multipart 
+                          multi-parts 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+   (assoc result :data  (hc/slurp-response response 
+                                           :json-parse-mode :data 
+                                           :json-key-fn keyword))))
 
 
 
