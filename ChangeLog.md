@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+## [1.12.23] - 2024-05-xx
+
+### Added
+
+- ...
+
+
+
 ## [1.12.22] - 2024-05-20
 
 ### Added
