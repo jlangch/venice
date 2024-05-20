@@ -54,6 +54,7 @@ public class ModuleImagesSection implements ISectionBuilder {
         final DocSection props = new DocSection("Properties", id());
         all.addSection(props);
         props.addItem(diBuilder.getDocItem("images/dimension", false));
+        props.addItem(diBuilder.getDocItem("images/alpha-channel?", false));
 
         final DocSection formats = new DocSection("File Formats", id());
         all.addSection(formats);
@@ -70,6 +71,8 @@ public class ModuleImagesSection implements ISectionBuilder {
         transform.addItem(diBuilder.getDocItem("images/shear", false));
         transform.addItem(diBuilder.getDocItem("images/translate", false));
         transform.addItem(diBuilder.getDocItem("images/apply-ops", false));
+        transform.addItem(diBuilder.getDocItem("images/convert-to-rgba", false));
+        transform.addItem(diBuilder.getDocItem("images/convert-to-rgb", false));
 
         final DocSection g2d = new DocSection("G2D", id());
         all.addSection(g2d);

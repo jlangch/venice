@@ -1869,6 +1869,28 @@
                      (str "Cannot get image dimensions for unknown image " 
                           f))))))))
 
+(defn 
+  ^{ :arglists '(
+          "(alpha-channel? img)") 
+     :doc """
+          Returns true if the image supports an alpha channel. 'f' may 
+          be a `:java.io.File` or a `:java.awt.Image`.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (->> (images/load (io/file "/Users/foo/Desktop/Pink-Forest.jpg"))
+                 (images/alpha-channel?)))
+          """ ) }
+
+  alpha-channel? [img]
+
+  (assert (instance-of? :Image img))
+
+  (== (. img :getTransparency) (. :Transparency :TRANSLUCENT)))
+
+
 
 (defn- read-dimension [img-reader file]
   (try-with [is (. :FileImageInputStream :new file)]
@@ -2331,6 +2353,74 @@
             ;; else
             (throw (ex :VncException 
                       "Internal error: unhandled resize-mode '~{resize-mode}'!"))))))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(convert-to-rgba img)" )
+     :doc """
+          Convert an image to RGBA. 
+
+          Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (let [src (io/file "/Users/foo/Desktop/Pink-Forest.jpg")
+                  dst (io/file "/Users/foo/Desktop/Pink-Forest.png")]
+              (-> (images/load src)
+                  (images/convert-to-rgba)
+                  (images/save "png" dst))))
+           """ )
+     :see-also '(
+          "images/resize-fit" ) }
+
+  convert-to-rgba [img] 
+
+  (assert (instance-of? :Image img))
+
+  (let [width   (long (. img :getWidth))
+        height  (long (. img :getHeight))
+        dest    (. :BufferedImage :new width height TYPE_INT_ARGB)
+        gd      (. dest :getGraphics)]
+    (. gd :drawImage img 0 0 nil)
+    (. gd :dispose)
+    dest))
+
+
+(defn 
+  ^{ :arglists '(
+          "(convert-to-rgb img)" )
+     :doc """
+          Convert an image to RGB. 
+
+          Returns a new image.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :images)
+            (let [src (io/file "/Users/foo/Desktop/Pink-Forest.jpg")
+                  dst (io/file "/Users/foo/Desktop/Pink-Forest.png")]
+              (-> (images/load src)
+                  (images/convert-to-rgba)
+                  (images/save "png" dst))))
+           """ )
+     :see-also '(
+          "images/resize-fit" ) }
+
+  convert-to-rgb [img] 
+
+  (assert (instance-of? :Image img))
+
+  (let [width   (long (. img :getWidth))
+        height  (long (. img :getHeight))
+        dest    (. :BufferedImage :new width height TYPE_INT_RGB)
+        gd      (. dest :getGraphics)]
+    (. gd :drawImage img 0 0 nil)
+    (. gd :dispose)
+    dest))
 
 
 (defn- scale-image [img width height interpolation-hint]
