@@ -1,4 +1,4 @@
-Venice Release 1.12.21
+Venice Release 1.12.22
 
 Copyright (c) 2017-2024 Venice
 
