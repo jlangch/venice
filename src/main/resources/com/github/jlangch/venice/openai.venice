@@ -454,7 +454,8 @@
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         sync?           (:sync opts true)
-        body            (build-chat-prompt model prompt (:prompt-opts opts) nil {:stream true})
+        body            (build-chat-prompt model prompt (:prompt-opts opts) 
+                                           nil nil {:stream true})
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
@@ -557,7 +558,7 @@
                                                  :prompt-opts {:quality "hd"})]
               (if (= (:status response) 200)
                 (println "Response:" (openai/pretty-print-json (:data response)))
-                (println "Error:"   (:data response)))))
+                (println "Error:" (:data response)))))
           """,
           """
           ;; :b64_json => print the full OpenAI response message
@@ -571,7 +572,7 @@
                                                  :prompt-opts {:quality "hd"})]
               (if (= (:status response) 200)
                 (println "Response:" (openai/pretty-print-json (:data response)))
-                (println "Error:"   (:data response)))))
+                (println "Error:" (:data response)))))
           """,
           """
           ;; :url => save the image
@@ -593,7 +594,7 @@
                       file       (str "./" (:name img))]
                   (io/spit file (:data img))
                   (println "Saved image to:" file))
-                (println "Error:"   (:data response)))))
+                (println "Error:" (:data response)))))
           """,
           """
           ;; :b64_json => save the image
@@ -614,7 +615,7 @@
                       file       "./image-2.png"]
                   (io/spit file img)
                   (println "Saved image to:" file))
-                (println "Error:"   (:data response)))))
+                (println "Error:" (:data response)))))
           """ )
      :see-also '( 
           "openai/image-variants"
@@ -890,7 +891,7 @@
                         img        (->> (get img-data :b64_json)
                                         (str/decode-base64))]
                     (io/spit img-file img)
-                    (println "Saved image to: " img-file))
+                    (println "Saved image to:" img-file))
                   (throw (ex :VncException (str "Failed to create image:"  
                                                 (:data response)))))))
   

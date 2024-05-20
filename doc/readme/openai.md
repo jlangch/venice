@@ -523,7 +523,7 @@ See:
         response  (openai/chat-completion-streaming prompt handler :sync true)]
     (println "Status:  " (:status response))
     (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
+    (if (= (:status response) 200)
       (println "Message:" (pr-str (:data response)))
       (println "Error:"   (:data response)))))
 ```
@@ -674,28 +674,54 @@ Return image as URL (response format `:url`) and print the full OpenAI response 
 
 #### Example 2: 
 
+Return image as URL (response format `:url`) JSON and save it to a file
+
+```clojure
+(do
+  (load-module :openai)
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+  (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
+        response  (openai/image-create prompt 
+                                      :url
+                                      :model :dall-e-3
+                                      :prompt-opts {:quality "hd"})]
+    (if (= (:status response) 200)
+      (let [data       (:data (:data response))
+            img-data   (first data) ;; 1st image data
+            url        (:url img-data)
+            _          (println "Downloading image...")
+            img        (openai/image-download url "image-1")
+            file       (str "./" (:name img))]
+        (io/spit file (:data img))
+        (println "Saved image to:" file))
+        (println "Error:" (:data response)))))
+```
+
+
+#### Example 3: 
+
 Return image as Base64 (response format `:b64_json`) JSON and save it to a file
 
 ```clojure
-  (do
-    (load-module :openai)
-    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+(do
+  (load-module :openai)
+  (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
-    (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-          response  (openai/image-create prompt 
-                                         :b64_json   ;; alternatively use :url
-                                         :model :dall-e-3
-                                         :prompt-opts {:quality "hd"})]
-      (if (= (:status response) 200)
-        (let [data       (:data (:data response))
-              img-data   (first data) ;; 1st image data
-              url        (:url img-data)
-              _          (println "Downloading image...")
-              img        (openai/image-download url "image-1")
-              file       (str "./" (:name img))]
-          (io/spit file (:data img))
-          (println "Saved image to:" file))
-        (println "Error:" (:data response)))))
+  (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
+        response  (openai/image-create prompt 
+                                       :b64_json
+                                       :model :dall-e-3
+                                       :prompt-opts {:quality "hd"})]
+    (if (= (:status response) 200)
+      (let [data       (:data (:data response))
+            img-data   (first data) ;; 1st image data   
+            img        (->> (get img-data :b64_json)
+                            (str/decode-base64))
+            file       "./image-2.png"]
+         (io/spit file img)
+         (println "Saved image to:" file))
+         (println "Error:" (:data response)))))
 ```
 
 
@@ -910,7 +936,7 @@ See:
               img        (->> (get img-data :b64_json)
                               (str/decode-base64))]
           (io/spit result-file img)
-          (println "Saved edited image to: " result-file))
+          (println "Saved edited image to:" result-file))
         (throw (ex :VncException (str "Failed to create image:"  
                                       (:data response)))))))
 
