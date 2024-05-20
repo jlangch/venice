@@ -551,7 +551,8 @@
             (load-module :openai)
 
             (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-                  response  (openai/image-create prompt :url
+                  response  (openai/image-create prompt 
+                                                 :url
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
               (if (= (:status response) 200)
@@ -564,7 +565,8 @@
             (load-module :openai)
 
             (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-                  response  (openai/image-create prompt :b64_json
+                  response  (openai/image-create prompt 
+                                                 :b64_json
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
               (if (= (:status response) 200)
@@ -578,7 +580,8 @@
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
             (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-                  response  (openai/image-create prompt :url
+                  response  (openai/image-create prompt 
+                                                 :url
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
               (if (= (:status response) 200)
@@ -599,7 +602,8 @@
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
             (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
-                  response  (openai/image-create prompt :b64_json
+                  response  (openai/image-create prompt 
+                                                 :b64_json
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
               (if (= (:status response) 200)
@@ -675,8 +679,8 @@
 
           | [![width: 15%]]   | [![width: 85%]] |
           | :uri              | An OpenAI chat completion URI. E.g.: \
-                                "https://api.openai.com/v1/images/generations". ¶\
-                                Defaults  to "https://api.openai.com/v1/images/generations" |
+                                "https://api.openai.com/v1/images/variations". ¶\
+                                Defaults  to "https://api.openai.com/v1/images/variations" |
           | :model            | An OpenAI model. E.g.: "dall-e-2". Defaults \
                                 to "dall-e-2". ¶\
                                 The model can also be passed as a keyword. E.g.: \
@@ -686,7 +690,7 @@
           | :prompt-opts      | An optional map of OpenAI chat request prompt options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :size "1024x1024", :n 1 }`. ¶\
-                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/create) |
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createVariation) |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -810,7 +814,7 @@
           
           ¶*Parameter «mask»*
 
-          The mask area.
+          The mask image.
           
           ¶*Parameter «prompt»*
 
@@ -829,8 +833,8 @@
 
           | [![width: 15%]]   | [![width: 85%]] |
           | :uri              | An OpenAI chat completion URI. E.g.: \
-                                "https://api.openai.com/v1/images/generations". ¶\
-                                Defaults  to "https://api.openai.com/v1/images/generations" |
+                                "https://api.openai.com/v1/images/edits". ¶\
+                                Defaults  to "https://api.openai.com/v1/images/edits" |
           | :model            | An OpenAI model. E.g.: "dall-e-2". Defaults \
                                 to "dall-e-2". ¶\
                                 The model can also be passed as a keyword. E.g.: \
@@ -840,7 +844,7 @@
           | :prompt-opts      | An optional map of OpenAI chat request prompt options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :size "1024x1024", :n 1 }`. ¶\
-                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/create) |
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createEdit) |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
