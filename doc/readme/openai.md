@@ -695,7 +695,7 @@ Return image as Base64 (response format `:b64_json`) JSON and save it to a file
               file       (str "./" (:name img))]
           (io/spit file (:data img))
           (println "Saved image to:" file))
-        (println "Error:"   (:data response)))))
+        (println "Error:" (:data response)))))
 ```
 
 
@@ -779,9 +779,9 @@ See:
   (defn create-image-variant [img]
     (println "Requesting image variant...")
     (let [response  (openai/image-variants img
-                                            :b64_json
-                                            :model :dall-e-3
-                                            :prompt-opts {:size "1024x1024", :n 1})]
+                                           :b64_json
+                                           :model :dall-e-3
+                                           :prompt-opts {:size "1024x1024", :n 1})]
       (if (= (:status response) 200)
         (let [data       (:data (:data response))
               img-data   (first data) ;; 1st image data   
@@ -870,9 +870,9 @@ See:
   (defn create-image [prompt img-file]
     (println "Requesting image...")
     (let [response  (openai/image-create prompt 
-                                          :b64_json
-                                          :model :dall-e-3
-                                          :prompt-opts {:size "1024x1024", :quality "hd"})]
+                                         :b64_json
+                                         :model :dall-e-3
+                                         :prompt-opts {:size "1024x1024", :quality "hd"})]
       (if (= (:status response) 200)
         (let [data       (:data (:data response))
               img-data   (first data) ;; 1st image data   
