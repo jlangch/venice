@@ -1162,7 +1162,7 @@
                                 from the environment variable "OPENAI_API_KEY". |
           | :audio-opts       | An optional map of OpenAI audio options \
                                 Map keys can be keywords or strings. ¶\
-                                E.g. `{ :language "English", :temperature 0, :timestamp_granularities "word"}`. ¶\
+                                E.g. `{ :language "en", :temperature 0, :timestamp_granularities "word"}`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranscription) |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
@@ -1204,10 +1204,34 @@
             (let [text       "The quick brown fox jumped over the lazy dog."
                   audio-data (generate-mp3-audio text)
                   response   (openai/audio-speech-transcription audio-data 
-                                                               :mp3 
-                                                               :json)]
+                                                                :mp3 
+                                                                :json)]
               (openai/assert-response-http-ok response)
               (println (:text (:data response)))))
+          """,
+          """
+          (do
+            (load-module :openai)
+
+            (defn generate-mp3-audio [text]
+              (let [response  (openai/audio-speech-generate text
+                                                            :alloy
+                                                            :mp3
+                                                            :model :tts-1)]
+                (openai/assert-response-http-ok response)
+                (:data response)))
+
+            (let [text       "The quick brown fox jumped over the lazy dog."
+                  audio-data (generate-mp3-audio text)
+                  audio-opts { :language "en"
+                               :temperature 0
+                               :timestamp_granularities "word" }
+                  response   (openai/audio-speech-transcription audio-data 
+                                                                :mp3 
+                                                                :verbose_json 
+                                                                :audio-opts audio-opts)]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
           """ )
      :see-also '( 
           "openai/audio-speech-generate"
@@ -1253,6 +1277,8 @@
    (assoc result :data  (hc/slurp-response response 
                                            :json-parse-mode :data 
                                            :json-key-fn keyword))))
+
+
 
 
 ;; -----------------------------------------------------------------------------
