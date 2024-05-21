@@ -31,9 +31,7 @@ Demonstrates OpenAI's vision capabilities to understand images.
 
 Message:
 
-```
-The image depicts a serene landscape with a wooden boardwalk path leading through a lush, green field. The sky above is mostly clear with some scattered clouds, and the horizon features trees and shrubs. The overall scene is bright and peaceful, suggesting a pleasant day in a natural setting.
-```
+*The image depicts a serene landscape with a wooden boardwalk path leading through a lush, green field. The sky above is mostly clear with some scattered clouds, and the horizon features trees and shrubs. The overall scene is bright and peaceful, suggesting a pleasant day in a natural setting.*
 
 
 ### Example 1b
@@ -69,9 +67,7 @@ The image depicts a serene landscape with a wooden boardwalk path leading throug
 
 Message:
 
-```
-The image depicts a scenic landscape with a wooden boardwalk path cutting through a lush green field. The sky above is mostly clear with some scattered clouds, and the horizon features trees and shrubs. The overall atmosphere is serene and inviting, suggesting a natural park or a nature reserve.
-```
+*The image depicts a scenic landscape with a wooden boardwalk path cutting through a lush green field. The sky above is mostly clear with some scattered clouds, and the horizon features trees and shrubs. The overall atmosphere is serene and inviting, suggesting a natural park or a nature reserve.*
 
 
 ### Example 2
@@ -103,9 +99,7 @@ The image depicts a scenic landscape with a wooden boardwalk path cutting throug
 
 Message:
 
-```
-Both images depict a scenic landscape featuring a wooden boardwalk path cutting through a lush green field under a blue sky with scattered clouds. The images appear to be identical, with no noticeable differences between them.
-```
+*Both images depict a scenic landscape featuring a wooden boardwalk path cutting through a lush green field under a blue sky with scattered clouds. The images appear to be identical, with no noticeable differences between them.*
 
 ### Example 3
 
@@ -138,9 +132,7 @@ Controlling the *detail* parameter ("low", "high", "auto")
 
 Message:
 
-```
-The image depicts a scenic landscape with a wooden boardwalk or pathway leading through a lush, green field. The sky above is mostly clear with some scattered clouds, and the overall atmosphere appears to be calm and serene. The pathway seems to invite viewers to walk through the natural setting, suggesting a peaceful and inviting environment.
-```
+*The image depicts a scenic landscape with a wooden boardwalk or pathway leading through a lush, green field. The sky above is mostly clear with some scattered clouds, and the overall atmosphere appears to be calm and serene. The pathway seems to invite viewers to walk through the natural setting, suggesting a peaceful and inviting environment.*
 
 
 ### Example 4
@@ -174,7 +166,5 @@ The image depicts a scenic landscape with a wooden boardwalk or pathway leading 
 
 Message:
 
-```
-In the vast, untamed wilderness, a dramatic scene unfolds. Here, on the open plains, a pack of wolves engages in a high-stakes pursuit of two elk. The wolves, masters of strategy and endurance, work in unison, their eyes locked on their quarry. The elk, powerful and agile, rely on their speed and strength to evade the relentless predators. This is a timeless dance of survival, where every move can mean the difference between life and death. In this raw and unforgiving landscape, nature's eternal struggle for survival is laid bare, a testament to the resilience and tenacity of these magnificent creatures.
-```
+*In the vast, untamed wilderness, a dramatic scene unfolds. Here, on the open plains, a pack of wolves engages in a high-stakes pursuit of two elk. The wolves, masters of strategy and endurance, work in unison, their eyes locked on their quarry. The elk, powerful and agile, rely on their speed and strength to evade the relentless predators. This is a timeless dance of survival, where every move can mean the difference between life and death. In this raw and unforgiving landscape, nature's eternal struggle for survival is laid bare, a testament to the resilience and tenacity of these magnificent creatures.*
 
