@@ -731,7 +731,7 @@
                       img        (->> (get img-data :b64_json)
                                       (str/decode-base64))]
                   (io/spit img-variant-file img)
-                  (println "Saved variant to " img-variant-file))))
+                  (println "Saved variant to:" img-variant-file))))
 
             (create-image "./image-variant-1.png")            ;; create an image
             (create-image-variant "./image-variant-1.png"
@@ -895,7 +895,7 @@
                       img        (->> (get img-data :b64_json)
                                       (str/decode-base64))]
                   (io/spit result-file img)
-                  (println "Saved edited image to: " result-file))))
+                  (println "Saved edited image to:" result-file))))
 
             ;; create the initial image
             (create-image "A sunlit indoor lounge area with a large pool at the center of the image"
