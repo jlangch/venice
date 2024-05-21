@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- :openai module support for audio speech generate
 
 
 

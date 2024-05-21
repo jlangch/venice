@@ -59,6 +59,9 @@
 (def text-embedding-ada-002  "text-embedding-ada-002")   ;; Text embedding, dimension 1'536
 
 
+(defonce audio-voices #{:alloy, :echo, :fable, :onyx, :nova, :shimmer})
+(defonce audio-formats #{:mp3, :opus, :aac, :flac, :wav, :pcm})
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -963,6 +966,146 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; AUDIO
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(audio-speech-generate text voice response-format & options)" )
+     :doc """
+          Generates audio from the input text.
+
+          ¶*Parameter «text»*
+
+          ```
+          "The quick brown fox jumped over the lazy dog."
+          ```
+
+          ¶*Parameter «voice»*
+
+          The voice to use when generating the audio. 
+
+          * `:alloy`
+          * `:echo`
+          * `:fable`
+          * `:onyx`
+          * `:nova`
+          * `:shimmer`
+
+          ¶*Parameter «response-format»*
+
+          The format in which the generated images are returned
+
+          * `:mp3`  (mimetype: audio/mpeg)
+          * `:opus` (mimetype: audio/opus)
+          * `:aac`  (mimetype: audio/aac)
+          * `:flac` (mimetype: audio/flac)
+          * `:wav`  (mimetype: audio/wav)
+          * `:pcm`  (mimetype: audio/pcm)
+
+          ¶*Parameter request «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :uri              | An OpenAI audio speech URI. E.g.: \
+                                "https://api.openai.com/v1/audio/speech". ¶\
+                                Defaults  to "https://api.openai.com/v1/audio/speech" |
+          | :model            | An OpenAI model. E.g.: "tts-1". Defaults \
+                                to "tts-1". ¶\
+                                The model can also be passed as a keyword. E.g.: \
+                                `:tts-1`, `:tts-1-hd`, ...  |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :audio-opts       | An optional map of OpenAI audio options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :speed 1.0 }`. ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createSpeech) |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Image Guide](https://platform.openai.com/docs/guides/images/usage)
+          * [OpenAI Image API](https://platform.openai.com/docs/api-reference/images)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [text      "The quick brown fox jumped over the lazy dog."
+                  response  (openai/audio-speech-generate text
+                                                          :alloy
+                                                          :mp3
+                                                          :model :tts-1
+                                                          :audio-opts { :speed 1.0 })]
+              (openai/assert-response-http-ok response)
+              (let [audio     (:data response)
+                    size      (/ (count audio) 1024.0)
+                    file-ext  (openai/audio-file-ext (:mimetype response))
+                    file      (str "./audio." file-ext)]
+                (printf "Saving audio (%.1fKB) to: %s%n" size file)
+                (io/spit file audio))))
+          """ )
+     :see-also '( 
+          "openai/audio-file-ext" ) }
+
+  audio-speech-generate [text voice response-format & options]
+
+  (assert (string? text)
+          "The 'text' must be a string")
+  (assert (contains? audio-voices voice)
+          "The 'voice' must be one of: ~(pr audio-voices)")
+  (assert (contains? audio-formats response-format)
+          "The 'response-format' must be one of: ~(pr audio-formats)")
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             (:uri opts "https://api.openai.com/v1/audio/speech")
+        model           (to-model (:model opts) :dall-e-3)
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        body            (->> (merge { :model model
+                                      :input text
+                                      :voice voice
+                                      :response_format response-format}
+                                    (get opts :audio-opts {}))
+                             (map-keys name)
+                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+        debug?          (:debug opts false)
+        _               (when debug? (dump-prompt body))
+        response        (hc/send :post 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body (json/write-str body)
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+   (assoc result :data  (hc/slurp-response response 
+                                           :json-parse-mode :data 
+                                           :json-key-fn keyword))))
+
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Public utils
 ;; -----------------------------------------------------------------------------
 
@@ -1476,6 +1619,39 @@
                  (rest fns))        
           (recur (conj results (make-err-missing-fn name)) ;; missing function
                  (rest fns)))))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(audio-file-ext mimetype)")
+     :doc """
+          Returns the file extension for an audio mimetype.
+
+          Examples:
+
+          | mimetype   | file extension |
+          | :--------- | :------------- |
+          | audio/mpeg | "mp3"          |
+          | audio/opus | "opus"         |
+          | audio/aac  | "aac"          |
+          | audio/flac | "flac"         |
+          | audio/wav  | "wav"          |
+          | audio/pcm  | "pcm"          |
+          | else       | "binary"       |
+          """ }
+
+   audio-file-ext [mimetype]
+
+   (assert (string? mimetype))
+   
+   (case mimetype
+      "audio/mpeg"   "mp3"
+      "audio/opus"   "opus"
+      "audio/aac"    "aac"
+      "audio/flac"   "flac"
+      "audio/wav"    "wav"
+      "audio/pcm"    "pcm"
+      "binary"))
 
 
 (defn- get-function-calls [response]

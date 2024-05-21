@@ -47,11 +47,11 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         chat.addItem(diBuilder.getDocItem("openai/chat-completion-streaming", false));
         chat.addItem(diBuilder.getDocItem("openai/chat-process-streaming-events", false));
 
-        final DocSection func = new DocSection("Function", id());
+        final DocSection func = new DocSection("Chat Functions", id());
         all.addSection(func);
         func.addItem(diBuilder.getDocItem("openai/exec-fn", false));
 
-        final DocSection response_chat = new DocSection("Response chat", id());
+        final DocSection response_chat = new DocSection("Chat Response", id());
         all.addSection(response_chat);
         response_chat.addItem(diBuilder.getDocItem("openai/chat-finish-reason", false));
         response_chat.addItem(diBuilder.getDocItem("openai/chat-finish-reason-stop?", false));
@@ -62,17 +62,17 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         response_chat.addItem(diBuilder.getDocItem("openai/chat-extract-response-tool-calls-id", false));
         response_chat.addItem(diBuilder.getDocItem("openai/chat-extract-function-name", false));
 
-
         final DocSection image = new DocSection("Image", id());
         all.addSection(image);
         image.addItem(diBuilder.getDocItem("openai/image-create", false));
         image.addItem(diBuilder.getDocItem("openai/image-variants", false));
         image.addItem(diBuilder.getDocItem("openai/image-edits", false));
+        image.addItem(diBuilder.getDocItem("openai/image-download", false));
 
-
-        final DocSection image_utils = new DocSection("Image Utils", id());
-        all.addSection(image_utils);
-        image_utils.addItem(diBuilder.getDocItem("openai/image-download", false));
+        final DocSection audio = new DocSection("Audio", id());
+        all.addSection(audio);
+        audio.addItem(diBuilder.getDocItem("openai/audio-speech-generate", false));
+        audio.addItem(diBuilder.getDocItem("openai/audio-file-ext", false));
 
 
         final DocSection utils = new DocSection("Utils", id());
