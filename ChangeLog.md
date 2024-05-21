@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - :openai module support for audio speech generate
 - :openai module support for audio speech transcribe
 - :openai module support for audio speech translate
+- openai vision examples
 
 
 
