@@ -1282,7 +1282,6 @@
                                            :json-key-fn keyword))))
 
 
-
 (defn 
   ^{ :arglists '(
           "(audio-speech-translate data audio-type response-format & options)" )
@@ -1422,6 +1421,15 @@
    (assoc result :data  (hc/slurp-response response 
                                            :json-parse-mode :data 
                                            :json-key-fn keyword))))
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; VISION
+;; -----------------------------------------------------------------------------
+
+;; https://platform.openai.com/docs/guides/vision
 
 
 
