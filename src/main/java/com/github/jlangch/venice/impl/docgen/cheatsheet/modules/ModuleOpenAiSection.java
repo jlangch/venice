@@ -72,7 +72,8 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         final DocSection audio = new DocSection("Audio", id());
         all.addSection(audio);
         audio.addItem(diBuilder.getDocItem("openai/audio-speech-generate", false));
-        audio.addItem(diBuilder.getDocItem("openai/audio-speech-transcription", false));
+        audio.addItem(diBuilder.getDocItem("openai/audio-speech-transcribe", false));
+        audio.addItem(diBuilder.getDocItem("openai/audio-speech-translate", false));
         audio.addItem(diBuilder.getDocItem("openai/audio-file-ext", false));
 
 

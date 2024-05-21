@@ -1075,7 +1075,8 @@
                 (io/spit file audio))))
           """ )
      :see-also '( 
-          "openai/audio-speech-transcription"
+          "openai/audio-speech-transcribe"
+          "openai/audio-speech-translate"
           "openai/audio-file-ext" ) }
 
   audio-speech-generate [text voice response-format & options]
@@ -1115,9 +1116,10 @@
                                            :json-parse-mode :data 
                                            :json-key-fn keyword))))
 
+
 (defn 
   ^{ :arglists '(
-          "(audio-speech-transcription data audio-type response-format & options)" )
+          "(audio-speech-transcribe data audio-type response-format & options)" )
      :doc """
           Transcribes audio into the input language.
 
@@ -1203,9 +1205,9 @@
 
             (let [text       "The quick brown fox jumped over the lazy dog."
                   audio-data (generate-mp3-audio text)
-                  response   (openai/audio-speech-transcription audio-data 
-                                                                :mp3 
-                                                                :json)]
+                  response   (openai/audio-speech-transcribe audio-data 
+                                                             :mp3 
+                                                             :json)]
               (openai/assert-response-http-ok response)
               (println (:text (:data response)))))
           """,
@@ -1223,21 +1225,22 @@
 
             (let [text       "The quick brown fox jumped over the lazy dog."
                   audio-data (generate-mp3-audio text)
-                  audio-opts { :language "en"
+                  audio-opts { :language "en"    ;; ISO-639-1 
                                :temperature 0
                                :timestamp_granularities "word" }
-                  response   (openai/audio-speech-transcription audio-data 
-                                                                :mp3 
-                                                                :verbose_json 
-                                                                :audio-opts audio-opts)]
+                  response   (openai/audio-speech-transcribe audio-data 
+                                                             :mp3 
+                                                             :verbose_json 
+                                                             :audio-opts audio-opts)]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
           "openai/audio-speech-generate"
+          "openai/audio-speech-translate"
           "openai/audio-file-ext" ) }
 
-  audio-speech-transcription [data audio-type response-format & options]
+  audio-speech-transcribe [data audio-type response-format & options]
 
   (assert (bytebuf? data)
           "The 'data' must be a bytebuf")
@@ -1249,6 +1252,148 @@
   (let [opts            (apply hash-map options)
         _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/audio/transcriptions")
+        model           (to-model (:model opts) :whisper-1)
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        param-parts     (->> (merge { :model model
+                                      :response_format response-format } 
+                                    (or (:audio-opts opts) {}))
+                             (map-keys name)
+                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+        audio-mimetype  (audio-mimetype audio-type)
+        audio-filext    (audio-file-ext audio-mimetype)
+        file-part       { "file"  { :filename  (str "audio." audio-filext)
+                                    :mimetype  audio-mimetype
+                                    :data      data } }
+        multi-parts     (merge file-part param-parts)
+        debug?          (:debug opts false)
+        _               (when debug? (println "\nMultiparts:") (prn multi-parts))
+        response        (hc/upload-multipart 
+                          multi-parts 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+   (assoc result :data  (hc/slurp-response response 
+                                           :json-parse-mode :data 
+                                           :json-key-fn keyword))))
+
+
+
+(defn 
+  ^{ :arglists '(
+          "(audio-speech-translate data audio-type response-format & options)" )
+     :doc """
+          Translates audio into English.
+
+          ¶*Parameter «data»*
+
+          The audio data (a byte buffer)
+
+          ¶*Parameter «audio-type»*
+
+          The audio type
+
+          * `:flac`   (mimetype: audio/flac)
+          * `:mp3`    (mimetype: audio/mpeg)
+          * `:mp4`    (mimetype: audio/mp4)
+          * `:m4a`    (mimetype: audio/m4a)
+          * `:mpega`  (mimetype: audio/mpega)
+          * `:ogg`    (mimetype: audio/ogg)
+          * `:wav`    (mimetype: audio/wav)
+          * `:webm`   (mimetype: audio/webm)
+
+          ¶*Parameter «response-format»*
+
+          The format in which the transcribed text is returned
+
+          * `:json`
+          * `:text`
+          * `:srt`
+          * `:verbose_json`
+          * `:vtt`
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :uri              | An OpenAI audio speech URI. E.g.: \
+                                "https://api.openai.com/v1/audio/translations". ¶\
+                                Defaults  to "https://api.openai.com/v1/audio/translations" |
+          | :model            | An OpenAI model. E.g.: "whisper-1". Defaults \
+                                to "whisper". ¶\
+                                The model can also be passed as a keyword. E.g.: \
+                                `:whisper-1`,...  |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :audio-opts       | An optional map of OpenAI audio options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :temperature 0, :prompt "....."}`. ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranslation) |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Image Guide](https://platform.openai.com/docs/guides/images/usage)
+          * [OpenAI Image API](https://platform.openai.com/docs/api-reference/images)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (defn generate-mp3-audio [text]
+              (let [response  (openai/audio-speech-generate text
+                                                            :alloy
+                                                            :mp3
+                                                            :model :tts-1)]
+                (openai/assert-response-http-ok response)
+                (:data response)))
+
+            (let [text       "Der schnelle braune Fuchs sprang über den faulen Hund."
+                  audio-data (generate-mp3-audio text)
+                  response   (openai/audio-speech-translate audio-data 
+                                                            :mp3 
+                                                            :json)]
+              (openai/assert-response-http-ok response)
+              (println (:text (:data response)))))
+          """ )
+     :see-also '( 
+          "openai/audio-speech-generate"
+          "openai/audio-speech-transcribe"
+          "openai/audio-file-ext" ) }
+
+  audio-speech-translate [data audio-type response-format & options]
+
+  (assert (bytebuf? data)
+          "The 'data' must be a bytebuf")
+  (assert (keyword? audio-type)
+          "The 'audio-type' must a keyword. E.g.: :mp3")
+  (assert (keyword? response-format)
+          "The 'response-format' must a keyword. E.g.: :json, :verbose_json")
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             (:uri opts "https://api.openai.com/v1/audio/translations")
         model           (to-model (:model opts) :whisper-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
