@@ -32,10 +32,7 @@ Demonstrates OpenAI's vision capabilities to understand images.
 Message:
 
 ```
-The image depicts a serene landscape with a wooden boardwalk path leading through 
-a lush, green field. The sky above is mostly clear with some scattered clouds, and 
-the horizon features trees and shrubs. The overall scene is bright and peaceful, 
-suggesting a pleasant day in a natural setting.
+The image depicts a serene landscape with a wooden boardwalk path leading through a lush, green field. The sky above is mostly clear with some scattered clouds, and the horizon features trees and shrubs. The overall scene is bright and peaceful, suggesting a pleasant day in a natural setting.
 ```
 
 
@@ -73,10 +70,7 @@ suggesting a pleasant day in a natural setting.
 Message:
 
 ```
-The image depicts a scenic landscape with a wooden boardwalk path cutting through 
-a lush green field. The sky above is mostly clear with some scattered clouds, and 
-the horizon features trees and shrubs. The overall atmosphere is serene and inviting, 
-suggesting a natural park or a nature reserve.
+The image depicts a scenic landscape with a wooden boardwalk path cutting through a lush green field. The sky above is mostly clear with some scattered clouds, and the horizon features trees and shrubs. The overall atmosphere is serene and inviting, suggesting a natural park or a nature reserve.
 ```
 
 
@@ -110,9 +104,7 @@ suggesting a natural park or a nature reserve.
 Message:
 
 ```
-Both images depict a scenic landscape featuring a wooden boardwalk path cutting 
-through a lush green field under a blue sky with scattered clouds. The images 
-appear to be identical, with no noticeable differences between them.
+Both images depict a scenic landscape featuring a wooden boardwalk path cutting through a lush green field under a blue sky with scattered clouds. The images appear to be identical, with no noticeable differences between them.
 ```
 
 ### Example 3
@@ -147,10 +139,7 @@ Controlling the *detail* parameter ("low", "high", "auto")
 Message:
 
 ```
-The image depicts a scenic landscape with a wooden boardwalk or pathway leading through 
-a lush, green field. The sky above is mostly clear with some scattered clouds, and the 
-overall atmosphere appears to be calm and serene. The pathway seems to invite viewers 
-to walk through the natural setting, suggesting a peaceful and inviting environment.
+The image depicts a scenic landscape with a wooden boardwalk or pathway leading through a lush, green field. The sky above is mostly clear with some scattered clouds, and the overall atmosphere appears to be calm and serene. The pathway seems to invite viewers to walk through the natural setting, suggesting a peaceful and inviting environment.
 ```
 
 
@@ -164,7 +153,7 @@ to walk through the natural setting, suggesting a peaceful and inviting environm
         prompt      [ { :role    "user"
                         :content [ { :type "text"
                                      :text """
-                                           These is a picture that I want to upload. 
+                                           This is a picture that I want to upload. 
                                            Generate a compelling description in the style of David Attenborough 
                                            that I can upload along with the picture. Only include the narration.
                                            """ }
@@ -186,13 +175,6 @@ to walk through the natural setting, suggesting a peaceful and inviting environm
 Message:
 
 ```
-In the vast, untamed wilderness, a dramatic scene unfolds. Here, on the open plains, 
-a pack of wolves engages in a high-stakes pursuit of two elk. The wolves, masters of 
-strategy and endurance, work in unison, their eyes locked on their quarry. The elk, 
-powerful and agile, rely on their speed and strength to evade the relentless predators. 
-This is a timeless dance of survival, where every move can mean the difference between 
-life and death. In this raw and unforgiving landscape, nature's eternal struggle for 
-survival is laid bare, a testament to the resilience and tenacity of these magnificent 
-creatures.
+In the vast, untamed wilderness, a dramatic scene unfolds. Here, on the open plains, a pack of wolves engages in a high-stakes pursuit of two elk. The wolves, masters of strategy and endurance, work in unison, their eyes locked on their quarry. The elk, powerful and agile, rely on their speed and strength to evade the relentless predators. This is a timeless dance of survival, where every move can mean the difference between life and death. In this raw and unforgiving landscape, nature's eternal struggle for survival is laid bare, a testament to the resilience and tenacity of these magnificent creatures.
 ```
 
