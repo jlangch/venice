@@ -138,13 +138,10 @@ questions due to the missing location.
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)]
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Message:" (-> (:data response)
-                              (:choices)
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Message:" (-> (:data response)
+                            (:choices)
+                            (openai/pretty-print-json)))))
 ```
 
 The OpenAI model answers:
@@ -185,13 +182,10 @@ arguments for us.
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)]
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Choices:" (-> (:data response) 
-                              (:choices)                            
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Choices:" (-> (:data response) 
+                            (:choices)                            
+                            (openai/pretty-print-json)))))
 ```
 
 Returns the message:
@@ -235,28 +229,18 @@ By prompting it differently, we can get it to target the `get_n_day_weather_fore
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)]
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Message:" (-> (:data response)                            
-                              (openai/extract-response-message-content)
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Message:")
+    (println (-> (:data response)                            
+                 (openai/chat-extract-response-message-content)
+                 (openai/pretty-print-json)))))
 ```
 
 
-The OpenAI model answers:
+Answer:
 
-```json
-[{
-  "finish_reason": "stop",
-  "index": 0,
-  "message": {
-    "role": "assistant",
-    "content": "I'm sorry, but I need to know the exact number of days you want the forecast for. Could you please specify?"
-  },
-  "logprobs": null
-}]
+```
+You mentioned "n days" for the weather forecast in Glasgow, Scotland. Could you please specify the number of days you are interested in?
 ```
 
 
@@ -289,13 +273,10 @@ days are required in the forecast.
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)]
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Choices:" (-> (:data response)  
-                              (:choices)                          
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Choices:" (-> (:data response)  
+                            (:choices)                          
+                            (openai/pretty-print-json)))))
 ```
 
 Returns the message:
@@ -348,13 +329,10 @@ Force the model to use "get_n_day_weather_forecast"
                                             ;; force the model to use "get_n_day_weather_forecast"!!
                                             :tool_choice {:type "function", :function {:name "get_n_day_weather_forecast"}}
                                             :prompt-opts prompt-opts)]
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Choices:" (-> (:data response)  
-                              (:choices)                          
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Choices:" (-> (:data response)  
+                            (:choices)                          
+                            (openai/pretty-print-json)))))
 ```
 
 
@@ -399,13 +377,10 @@ If we don't force the model to use "get_n_day_weather_forecast" it answers
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)]
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Choices:" (-> (:data response)  
-                              (:choices)                          
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Choices:" (-> (:data response)  
+                            (:choices)                          
+                            (openai/pretty-print-json)))))
 ```
 
 
@@ -452,13 +427,10 @@ producing a proper function call.
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :tool_choice "none"
                                             :prompt-opts prompt-opts)]
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Choices:" (-> (:data response)  
-                              (:choices)                          
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Choices:" (-> (:data response)  
+                            (:choices)
+                            (openai/pretty-print-json)))))
 ```
 
 Response:
@@ -499,13 +471,10 @@ Actual GPT-3.5-Turbo models can call multiple functions in one turn.
                                             :model "gpt-3.5-turbo"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts)] 
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Choices:" (-> (:data response) 
-                              (:choices)                            
-                              (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Choices:" (-> (:data response) 
+                            (:choices)                            
+                            (openai/pretty-print-json)))))
 ```
 
 Response:
@@ -636,10 +605,10 @@ The OpenAI shall answer questions about the current weather at a given location.
                                           :prompt-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (let [response (:data response)]     
-      ;;(println "Message:" (->> (openai/extract-response-message response)
+      ;;(println "Message:" (->> (openai/chat-extract-response-message response)
       ;;                         (openai/pretty-print-json)))
 
-      (assert (openai/finish-reason-tool-calls?  response))
+      (assert (openai/chat-finish-reason-tool-calls?  response))
       ;; [2] The model returns a function call request
       (println "\nPhase #2: call the requested functions")
       
@@ -651,7 +620,7 @@ The OpenAI shall answer questions about the current weather at a given location.
         (println "\nPhase #3: prompt the model again with additional knowledge")
         ;; [5] Additional prompt message with the function's response
         (let [prompt-fn { :role     "function"
-                          :name     (openai/extract-function-name response)
+                          :name     (openai/chat-extract-function-name response)
                           :content  answer }
                         ;; [6] Ask the model again
               response  (openai/chat-completion (conj prompt prompt-fn)
@@ -659,8 +628,8 @@ The OpenAI shall answer questions about the current weather at a given location.
                                                 :prompt-opts { :temperature 0.1 })]
           (openai/assert-response-http-ok response)
           (let [response (:data response)
-                content  (openai/extract-response-message-content response)] ;; [6] Final answer
-            (assert (openai/finish-reason-stop?  response))
+                content  (openai/chat-extract-response-message-content response)] ;; [6] Final answer
+            (assert (openai/chat-finish-reason-stop?  response))
             (println "\nFinal answer: ~(pr-str content)")))))))
 ```
 
@@ -827,10 +796,10 @@ Then run the full example:
       
       ;; Phase 2: model requests to call the function "ask_database"
       (let [response (:data response)]
-        ;;(println "Message:" (->> (openai/extract-response-message response)
+        ;;(println "Message:" (->> (openai/chat-extract-response-message response)
         ;;                         (openai/pretty-print-json message)))
 
-        (assert (openai/finish-reason-tool-calls?  response))
+        (assert (openai/chat-finish-reason-tool-calls?  response))
         
         ;; call the function "ask_database"
         (let [fn-map     { "ask_database" (partial ask-database conn) }
@@ -843,15 +812,15 @@ Then run the full example:
           ;; Phase 3: Ask the model again with the queried music data obtained
           ;;            from the function "ask_database"
           (let [prompt-fn  { :role     "function"
-                             :name     (openai/extract-function-name response)
+                             :name     (openai/chat-extract-function-name response)
                              :content  answer }
                 response   (openai/chat-completion (conj prompt prompt-fn) 
                                                    :model model
                                                    :prompt-opts { :temperature 0.1 })]
             (openai/assert-response-http-ok response)
             (let [response (:data response)
-                  content  (openai/extract-response-message-content response)]
-              (assert (openai/finish-reason-stop?  response))
+                  content  (openai/chat-extract-response-message-content response)]
+              (assert (openai/chat-finish-reason-stop?  response))
               (println)
               (println "Question: \"Hi, who are the top 5 artists by number of tracks?\"")
               (println)
@@ -895,12 +864,9 @@ To debug requests and responses set enable the debug option at the `openai/chat-
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts
                                             :debug true)]         ;; <======= DEBUGGING ON
-    (println "Status:  " (:status response))
-    (println "Mimetype:" (:mimetype response))
-    (if (=  (:status response) 200)
-      (println "Response:" (-> (:data response) 
-                               (openai/pretty-print-json)))
-      (println "Error:"   (:data response)))))
+    (openai/assert-response-http-ok response)
+    (println "Response:" (-> (:data response) 
+                             (openai/pretty-print-json)))))
 ```
 
 
