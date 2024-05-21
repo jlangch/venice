@@ -216,13 +216,10 @@
                             \"\"\"
                   response  (openai/chat-completion prompt
                                                     :model :gpt-4o)]
-              (println "Status:  " (:status response))
-              (println "Mimetype:" (:mimetype response))
-              (if (=  (:status response) 200)
-                (println "Message:" (-> (:data response)
-                                        (openai/chat-extract-response-message-content)
-                                        (pr-str)))
-                (println "Error:"   (:data response)))))
+              (openai/assert-response-http-ok response)
+              (println "Message:" (-> (:data response)
+                                      (openai/chat-extract-response-message-content)
+                                      (pr-str)))))
           """,
           """
           ;; Dealing with prompt options
@@ -242,13 +239,10 @@
                   response    (openai/chat-completion prompt 
                                                       :model :gpt-4o
                                                       :prompt-opts prompt-opts)]
-              (println "Status:  " (:status response))
-              (println "Mimetype:" (:mimetype response))
-              (if (=  (:status response) 200)
-                (println "Message:" (-> (:data response)
-                                        (openai/chat-extract-response-message-content)
-                                        (openai/pretty-print-json)))
-                (println "Error:"   (:data response)))))
+              (openai/assert-response-http-ok response)
+              (println "Message:" (-> (:data response)
+                                      (openai/chat-extract-response-message-content)
+                                      (openai/pretty-print-json)))))
             """ )
      :see-also '( 
           "openai/chat-completion-streaming"
@@ -406,11 +400,8 @@
                                                               handler 
                                                               :model :gpt-4o
                                                               :sync true)]
-              (println "Status:  " (:status response))
-              (println "Mimetype:" (:mimetype response))
-              (if (=  (:status response) 200)
-                (println "Message:" (pr-str (:data response)))
-                (println "Error:"   (:data response)))))
+              (openai/assert-response-http-ok response)
+              (println "Message:" (pr-str (:data response)))))
           """,
           """
           ;; asynchronous
@@ -433,11 +424,8 @@
                                                               handler 
                                                               :model :gpt-4o
                                                               :sync false)]
-              (println "Status:  " (:status response))
-              (println "Mimetype:" (:mimetype response))
-              (if (=  (:status response) 200)
-                (println "Message:" (pr-str @(:data response)))
-                (println "Error:"   (:data response)))))
+              (openai/assert-response-http-ok response)
+              (println "Message:" (pr-str @(:data response)))))
           """ )
      :see-also '( 
           "openai/chat-completion"
@@ -554,9 +542,8 @@
                                                  :url
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
-              (if (= (:status response) 200)
-                (println "Response:" (openai/pretty-print-json (:data response)))
-                (println "Error:" (:data response)))))
+              (openai/assert-response-http-ok response)
+              (println "Response:" (openai/pretty-print-json (:data response)))))
           """,
           """
           ;; :b64_json => print the full OpenAI response message
@@ -568,9 +555,8 @@
                                                  :b64_json
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
-              (if (= (:status response) 200)
-                (println "Response:" (openai/pretty-print-json (:data response)))
-                (println "Error:" (:data response)))))
+              (openai/assert-response-http-ok response)
+              (println "Response:" (openai/pretty-print-json (:data response)))))
           """,
           """
           ;; :url => save the image
@@ -583,16 +569,15 @@
                                                  :url
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
-              (if (= (:status response) 200)
-                (let [data       (:data (:data response))
-                      img-data   (first data) ;; 1st image data
-                      url        (:url img-data)
-                      _          (println "Downloading image...")
-                      img        (openai/image-download url "image-1")
-                      file       (str "./" (:name img))]
-                  (io/spit file (:data img))
-                  (println "Saved image to:" file))
-                (println "Error:" (:data response)))))
+              (openai/assert-response-http-ok response)
+              (let [data       (:data (:data response))
+                    img-data   (first data) ;; 1st image data
+                    url        (:url img-data)
+                    _          (println "Downloading image...")
+                    img        (openai/image-download url "image-1")
+                    file       (str "./" (:name img))]
+                (io/spit file (:data img))
+                (println "Saved image to:" file))))
           """,
           """
           ;; :b64_json => save the image
@@ -605,15 +590,14 @@
                                                  :b64_json
                                                  :model :dall-e-3
                                                  :prompt-opts {:quality "hd"})]
-              (if (= (:status response) 200)
-                (let [data       (:data (:data response))
-                      img-data   (first data) ;; 1st image data   
-                      img        (->> (get img-data :b64_json)
-                                      (str/decode-base64))
-                      file       "./image-2.png"]
-                  (io/spit file img)
-                  (println "Saved image to:" file))
-                (println "Error:" (:data response)))))
+              (openai/assert-response-http-ok response)
+              (let [data       (:data (:data response))
+                    img-data   (first data) ;; 1st image data   
+                    img        (->> (get img-data :b64_json)
+                                    (str/decode-base64))
+                    file       "./image-2.png"]
+                (io/spit file img)
+                (println "Saved image to:" file))))
           """ )
      :see-also '( 
           "openai/image-variants"
@@ -720,41 +704,38 @@
             (load-module :openai)
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   
-            (defn create-image []
+            (defn create-image [img-file]
               (println "Requesting image...")
               (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
                     response  (openai/image-create prompt :b64_json
                                                    :model :dall-e-3
                                                    :prompt-opts {:size "1024x1024", :quality "hd"})]
-                (if (= (:status response) 200)
-                  (let [data       (:data (:data response))
-                        img-data   (first data) ;; 1st image data   
-                        img        (->> (get img-data :b64_json)
-                                        (str/decode-base64))]
-                    (io/spit "./image-variant-1.png" img)
-                    (println "Saved image \"./image-variant-1.png\"")
-                    img)
-                  (throw (ex :VncException (str "Failed to create image:"  
-                                                (:data response)))))))
+                (openai/assert-response-http-ok response)
+                (let [data       (:data (:data response))
+                      img-data   (first data) ;; 1st image data   
+                      img        (->> (get img-data :b64_json)
+                                      (str/decode-base64))]
+                  (io/spit img-file img)
+                  (println "Saved image to:" img-file))))
 
-            (defn create-image-variant [img]
+            (defn create-image-variant [img-file img-variant-file]
               (println "Requesting image variant...")
-              (let [response  (openai/image-variants img
+              (let [img       (io/slurp img-file :binary true)
+                    response  (openai/image-variants img
                                                      :b64_json
                                                      :model :dall-e-3
                                                      :prompt-opts {:size "1024x1024", :n 1})]
-                (if (= (:status response) 200)
-                  (let [data       (:data (:data response))
-                        img-data   (first data) ;; 1st image data   
-                        img        (->> (get img-data :b64_json)
-                                        (str/decode-base64))]
-                    (io/spit "./image-variant-2.png" img)
-                    (println "Saved variant \"./image-variant-2.png\""))
-                  (throw (ex :VncException (str "Failed to create image:"  
-                                                (:data response)))))))
+                (openai/assert-response-http-ok response)
+                (let [data       (:data (:data response))
+                      img-data   (first data) ;; 1st image data   
+                      img        (->> (get img-data :b64_json)
+                                      (str/decode-base64))]
+                  (io/spit img-variant-file img)
+                  (println "Saved variant to " img-variant-file))))
 
-            (->> (create-image)            ;; create an image
-                 (create-image-variant)))  ;; create a variant of the image
+            (create-image "./image-variant-1.png")            ;; create an image
+            (create-image-variant "./image-variant-1.png"
+                                  "./image-variant-2.png"))  ;; create a variant of the image
           """ )
      :see-also '( 
           "openai/image-create"
@@ -879,15 +860,13 @@
                                                    :b64_json
                                                    :model :dall-e-3
                                                    :prompt-opts {:size "1024x1024", :quality "hd"})]
-                (if (= (:status response) 200)
-                  (let [data       (:data (:data response))
-                        img-data   (first data) ;; 1st image data   
-                        img        (->> (get img-data :b64_json)
-                                        (str/decode-base64))]
-                    (io/spit img-file img)
-                    (println "Saved image to:" img-file))
-                  (throw (ex :VncException (str "Failed to create image:"  
-                                                (:data response)))))))
+                (openai/assert-response-http-ok response)
+                (let [data       (:data (:data response))
+                      img-data   (first data) ;; 1st image data   
+                      img        (->> (get img-data :b64_json)
+                                      (str/decode-base64))]
+                  (io/spit img-file img)
+                  (println "Saved image to:" img-file))))
   
             (defn create-image-mask [img-file mask-file]
               (println "Creating mask...")
@@ -910,15 +889,13 @@
                                                   :b64_json
                                                   :model :dall-e-2
                                                   :prompt-opts {:size "1024x1024", :n 1})]
-                (if (= (:status response) 200)
-                  (let [data       (:data (:data response))
-                        img-data   (first data) ;; 1st image data   
-                        img        (->> (get img-data :b64_json)
-                                        (str/decode-base64))]
-                    (io/spit result-file img)
-                    (println "Saved edited image to: " result-file))
-                  (throw (ex :VncException (str "Failed to create image:"  
-                                                (:data response)))))))
+                (openai/assert-response-http-ok response)
+                (let [data       (:data (:data response))
+                      img-data   (first data) ;; 1st image data   
+                      img        (->> (get img-data :b64_json)
+                                      (str/decode-base64))]
+                  (io/spit result-file img)
+                  (println "Saved edited image to: " result-file))))
 
             ;; create the initial image
             (create-image "A sunlit indoor lounge area with a large pool at the center of the image"
