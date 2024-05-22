@@ -1088,7 +1088,7 @@
           "The 'response-format' must be one of: ~(pr audio-formats)")
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        _               (assert (or (nil? (:audio-opts  opts)) (map? (:audio-opts  opts))))
         uri             (:uri opts "https://api.openai.com/v1/audio/speech")
         model           (to-model (:model opts) :tts-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
@@ -1248,7 +1248,7 @@
           "The 'response-format' must a keyword. E.g.: :json, :verbose_json")
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        _               (assert (or (nil? (:audio-opts  opts)) (map? (:audio-opts  opts))))
         uri             (:uri opts "https://api.openai.com/v1/audio/transcriptions")
         model           (to-model (:model opts) :whisper-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
@@ -1388,7 +1388,7 @@
           "The 'response-format' must a keyword. E.g.: :json, :verbose_json")
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        _               (assert (or (nil? (:audio-opts  opts)) (map? (:audio-opts  opts))))
         uri             (:uri opts "https://api.openai.com/v1/audio/translations")
         model           (to-model (:model opts) :whisper-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
@@ -1498,7 +1498,6 @@
   (assert (string? purpose))
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             "https://api.openai.com/v1/files"
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
@@ -1589,7 +1588,6 @@
   (assert (or (nil? purpose) (string? purpose)))
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (if (nil? purpose)
                           "https://api.openai.com/v1/files"
                           "https://api.openai.com/v1/files?purpose=~(str/encode-url purpose)")
@@ -1666,7 +1664,6 @@
   files-retrieve [file-id & options]
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)"
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
@@ -1743,7 +1740,6 @@
   (assert (string? file-id))
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)"
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
@@ -1823,7 +1819,6 @@
   (assert (string? file-id))
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)/content"
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
@@ -1846,6 +1841,105 @@
 ;; -----------------------------------------------------------------------------
 ;; MODELS
 ;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(models-list options*)" )
+     :doc """
+          Returns a list of the currently available models, and provides basic 
+          information about each one such as the owner and availability.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Files API](https://platform.openai.com/docs/api-reference/models)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/models-list)]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/models-list"
+          "openai/models-retrieve"
+          "openai/models-delete" ) }
+
+  models-list [& options]
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             "https://api.openai.com/v1/models"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :get 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn
+
+  models-retrieve [model & options]
+  
+  ;; Retrieves a model instance, providing basic information about the model 
+  ;; such as the owner and permissioning.
+
+  ;; get https://api.openai.com/v1/models/{model}
+
+  ;; model string, Required
+  ;;       The ID of the model to use for this request
+
+  )
+
+(defn 
+
+  models-delete [model & options]
+  
+  ;; Retrieves a model instance, providing basic information about the model 
+  ;; such as the owner and permissioning.
+
+  ;; delete https://api.openai.com/v1/models/{model}
+
+  ;; model string, Required
+  ;;       The model to delete
+
+  )
 
 
 

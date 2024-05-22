@@ -12,7 +12,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 * [Audio](openai-audio.md)
 * [Images](openai-images.md)
 * [Files](openai-files.md)
-* Models
+* [Models](openai-models.md)
 * Embeddings
 * Assistants
 

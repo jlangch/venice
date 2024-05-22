@@ -84,6 +84,10 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         files.addItem(diBuilder.getDocItem("openai/files-delete", false));
         files.addItem(diBuilder.getDocItem("openai/files-retrieve-content", false));
 
+        final DocSection models = new DocSection("Models", id());
+        all.addSection(models);
+        models.addItem(diBuilder.getDocItem("openai/models-list", false));
+
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
         utils.addItem(diBuilder.getDocItem("openai/assert-response-http-ok", false));
