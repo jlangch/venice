@@ -627,6 +627,15 @@ The weather data function is defined as:
       (json/write-str { :location location
                         :error    "No weather data available for ~{location}!" }))))
 
+(defn- temperature [t format]
+  (if (str/equals-ignore-case? format "fahrenheit")
+    (str/format "%#.1f" (celsius-to-fahrenheit t))
+    (str/format "%#.1f" (double t))))
+
+(defn- celsius-to-fahrenheit [c]
+  (-> (* (double c) 9)
+      (/ 5)
+      (+ 32)))
 ```
 
 
