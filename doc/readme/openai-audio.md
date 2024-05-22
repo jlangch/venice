@@ -73,7 +73,7 @@ The format in which the generated images are returned
 
 ### Example
 
-```Clojure
+```clojure
 (do
   (load-module :openai)
 
@@ -156,7 +156,7 @@ The format in which the transcribed text is returned
 
 ### Example 1
 
-```Clojure
+```clojure
 (do
   (load-module :openai)
 
@@ -179,7 +179,7 @@ The format in which the transcribed text is returned
 
 ### Example 2
 
-```Clojure
+```clojure
 (do
   (load-module :openai)
 
@@ -266,7 +266,7 @@ The format in which the transcribed text is returned
 
 ### Example
 
-```Clojure
+```clojure
 (do
   (load-module :openai)
 

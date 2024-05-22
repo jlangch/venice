@@ -1027,7 +1027,7 @@
                                 `:tts-1`, `:tts-1-hd`, ...  |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
-          | :audio-opts       | An optional map of OpenAI audio options \
+          | :audio-opts       | An optional map of OpenAI audio options. \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :speed 1.0 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createSpeech) |
@@ -1052,8 +1052,7 @@
                               formatted as plain or JSON string. |
 
           See:
-          * [OpenAI Image Guide](https://platform.openai.com/docs/guides/images/usage)
-          * [OpenAI Image API](https://platform.openai.com/docs/api-reference/images)
+          * [OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio)
           """ 
      :examples '(
           """
@@ -1157,12 +1156,12 @@
                                 "https://api.openai.com/v1/audio/transcriptions". ¶\
                                 Defaults  to "https://api.openai.com/v1/audio/transcriptions" |
           | :model            | An OpenAI model. E.g.: "whisper-1". Defaults \
-                                to "whisper". ¶\
+                                to "whisper-1". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:whisper-1`,...  |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
-          | :audio-opts       | An optional map of OpenAI audio options \
+          | :audio-opts       | An optional map of OpenAI audio options. \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :language "en", :temperature 0, :timestamp_granularities "word"}`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranscription) |
@@ -1187,8 +1186,7 @@
                               formatted as plain or JSON string. |
 
           See:
-          * [OpenAI Image Guide](https://platform.openai.com/docs/guides/images/usage)
-          * [OpenAI Image API](https://platform.openai.com/docs/api-reference/images)
+          * [OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio)
           """ 
      :examples '(
           """
@@ -1322,12 +1320,12 @@
                                 "https://api.openai.com/v1/audio/translations". ¶\
                                 Defaults  to "https://api.openai.com/v1/audio/translations" |
           | :model            | An OpenAI model. E.g.: "whisper-1". Defaults \
-                                to "whisper". ¶\
+                                to "whisper-1". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:whisper-1`,...  |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
-          | :audio-opts       | An optional map of OpenAI audio options \
+          | :audio-opts       | An optional map of OpenAI audio options. \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :temperature 0, :prompt "....."}`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranslation) |
@@ -1352,8 +1350,7 @@
                               formatted as plain or JSON string. |
 
           See:
-          * [OpenAI Image Guide](https://platform.openai.com/docs/guides/images/usage)
-          * [OpenAI Image API](https://platform.openai.com/docs/api-reference/images)
+          * [OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio)
           """ 
      :examples '(
           """
@@ -1426,10 +1423,424 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; VISION
+;; FILES
 ;; -----------------------------------------------------------------------------
 
-;; https://platform.openai.com/docs/guides/vision
+(defn 
+  ^{ :arglists '(
+          "(files-upload file-data file-name file-mimetype purpose & options)" )
+     :doc """
+          Upload a file that can be used across various endpoints. Individual 
+          files can be up to 512 MB, and the size of all files uploaded by one
+          organization can be up to 100 GB.
+
+          ¶*Parameters file*
+
+          «file-data»      The file data, a `bytebuf`
+          «file-name»      The file name. E.g.: "product-indo-pdf"
+          «file-mimetype»  The file mimetype. E.g.: "application/pdf"
+          
+          ¶*Parameter «purpose»*
+
+          Purpose is one of "assistants", "vision", "batch", "fine-tune"
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Files API](https://platform.openai.com/docs/api-reference/files)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [file      "https://raw.githubusercontent.com/jlangch/venice/master/doc/pdfs/fonts-example.pdf"
+                  response  (openai/files-upload  (io/download file :binary true)
+                                                  "example.pdf"
+                                                  "application/pdf" 
+                                                  "assistants")]
+              (openai/assert-response-http-ok response)
+              (println (:data response))))
+          """ )
+     :see-also '( 
+          "openai/files-list"
+          "openai/files-retrieve"
+          "openai/files-delete"
+          "openai/files-retrieve-content" ) }
+
+  files-upload [file-data file-name file-mimetype purpose & options]
+
+  (assert (bytebuf? file-data))
+  (assert (string? file-name))
+  (assert (string? file-mimetype))
+  (assert (string? purpose))
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             "https://api.openai.com/v1/files"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        parts           { "file"    { :filename  file-name
+                                      :mimetype  file-mimetype
+                                      :data      file-data }
+                          "purpose" purpose }
+        debug?          (:debug opts false)
+        _               (when debug? (println "\nMultiparts:") (prn parts))
+        response        (hc/upload-multipart 
+                          parts 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(files-list purpose & options)" )
+     :doc """
+          Returns a list of files that belong to the user's organization.
+          
+          ¶*Parameter «purpose»*
+
+          The optional purpose is one of `nil`, "assistants", "vision", "batch", 
+          "fine-tune"
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Files API](https://platform.openai.com/docs/api-reference/files)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/files-list nil)]
+              (openai/assert-response-http-ok response)
+              (println (:data response))))
+          """,
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/files-list "assistants")]
+              (openai/assert-response-http-ok response)
+              (println (:data response))))
+          """ )
+     :see-also '( 
+          "openai/files-upload"
+          "openai/files-retrieve"
+          "openai/files-delete"
+          "openai/files-retrieve-content" ) }
+
+  files-list [purpose & options]
+
+  (assert (or (nil? purpose) (string? purpose)))
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             (if (nil? purpose)
+                          "https://api.openai.com/v1/files"
+                          "https://api.openai.com/v1/files?purpose=~(str/encode-url purpose)")
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :get 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(files-retrieve file-id & options)" )
+     :doc """
+          Returns information about a specific file.
+          
+          ¶*Parameter «file-id»*
+
+          The ID of the file to use for this request.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Files API](https://platform.openai.com/docs/api-reference/files)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/files-retrieve "file-uo1oroO3MMRFwRAypupJX0pO")]
+              (openai/assert-response-http-ok response)
+              (println (:data response))))
+          """ )
+     :see-also '( 
+          "openai/files-upload"
+          "openai/files-list"
+          "openai/files-delete"
+          "openai/files-retrieve-content" ) }
+
+  files-retrieve [file-id & options]
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :get 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(files-delete file-id & options)" )
+     :doc """
+          Delete a file.
+          
+          ¶*Parameter «file-id»*
+
+          The ID of the file to use for this request.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Files API](https://platform.openai.com/docs/api-reference/files)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/files-delete "file-uo1oroO3MMRFwRAypupJX0pO")]
+              (openai/assert-response-http-ok response)
+              (println (:data response))))
+          """ )
+     :see-also '( 
+          "openai/files-upload"
+          "openai/files-list"
+          "openai/files-retrieve"
+          "openai/files-retrieve-content" ) }
+
+  files-delete [file-id & options]
+
+  (assert (string? file-id))
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :delete 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(files-retrieve-content file-id & options)" )
+     :doc """
+          Returns the contents of the specified file.
+          
+          ¶*Parameter «file-id»*
+
+          The ID of the file to use for this request.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message.  ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Files API](https://platform.openai.com/docs/api-reference/files)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/files-retrieve-content "file-uo1oroO3MMRFwRAypupJX0pO")]
+              (openai/assert-response-http-ok response)
+              (let [data       (:data response)
+                    file       "./example.pdf"]
+                (io/spit file data)
+                (println "Saved to:" file))))
+          """ )
+     :see-also '( 
+          "openai/files-upload"
+          "openai/files-list"
+          "openai/files-retrieve"
+          "openai/files-delete" ) }
+
+  files-retrieve-content [file-id & options]
+
+  (assert (string? file-id))
+
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)/content"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :get 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
 
 
 

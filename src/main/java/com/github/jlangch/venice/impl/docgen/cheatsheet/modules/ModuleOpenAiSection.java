@@ -76,6 +76,13 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         audio.addItem(diBuilder.getDocItem("openai/audio-speech-translate", false));
         audio.addItem(diBuilder.getDocItem("openai/audio-file-ext", false));
 
+        final DocSection files = new DocSection("Files", id());
+        all.addSection(files);
+        files.addItem(diBuilder.getDocItem("openai/files-upload", false));
+        files.addItem(diBuilder.getDocItem("openai/files-list", false));
+        files.addItem(diBuilder.getDocItem("openai/files-retrieve", false));
+        files.addItem(diBuilder.getDocItem("openai/files-delete", false));
+        files.addItem(diBuilder.getDocItem("openai/files-retrieve-content", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
