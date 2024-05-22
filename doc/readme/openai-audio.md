@@ -96,7 +96,7 @@ The format in which the generated images are returned
 
 ## Transcribe Speech
 
-Transcribes audio into the input language.
+Transcribes audio into text in the language from the audio.
 
 ### Sending Requests
 
@@ -171,8 +171,8 @@ The format in which the transcribed text is returned
   (let [text       "The quick brown fox jumped over the lazy dog."
         audio-data (generate-mp3-audio text)
         response   (openai/audio-speech-transcribe audio-data 
-                                                    :mp3 
-                                                    :json)]
+                                                   :mp3 
+                                                   :json)]
     (openai/assert-response-http-ok response)
     (println (:text (:data response)))))
 ```
@@ -197,9 +197,9 @@ The format in which the transcribed text is returned
                      :temperature 0
                      :timestamp_granularities "word" }
         response   (openai/audio-speech-transcribe audio-data 
-                                                    :mp3 
-                                                    :verbose_json 
-                                                    :audio-opts audio-opts)]
+                                                   :mp3 
+                                                   :verbose_json 
+                                                   :audio-opts audio-opts)]
     (openai/assert-response-http-ok response)
     (prn (:data response))))
 ```
@@ -207,7 +207,7 @@ The format in which the transcribed text is returned
 
 ## Translate Speech
 
-Translates audio into English.
+Translates audio into English text.
 
 ### Sending Requests
 
@@ -279,8 +279,8 @@ The format in which the transcribed text is returned
       (:data response)))
 
   (let [text       "Der schnelle braune Fuchs sprang über den faulen Hund."
-        audio-data (generate-mp3-audio text)
-        response   (openai/audio-speech-translate audio-data 
+        audio-data (generate-mp3-audio text)                    ;; german audio data
+        response   (openai/audio-speech-translate audio-data    ;; translate to english text
                                                   :mp3 
                                                   :json)]
     (openai/assert-response-http-ok response)
