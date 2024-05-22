@@ -531,7 +531,10 @@ public class DocGenerator {
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
-                new ModuleJdbcCoreSection(diBuilder).section()
+                new ModuleJdbcCoreSection(diBuilder).section(),
+                new ModuleInstallerSection(diBuilder).section(),
+                new ModuleJdbcPostgreSQLSection(diBuilder).section(),
+                new ModuleChinookPostgreSQLSection(diBuilder).section()
                 // new ModuleHttpClientSection(diBuilder).section(),
          );
     }
@@ -560,9 +563,6 @@ public class DocGenerator {
                 new ModuleHttpClientJ8Section(diBuilder).section(),
                 new ModuleOpenAiSection(diBuilder).section(),
                 new ModuleJTokkitSection(diBuilder).section(),
-                new ModuleInstallerSection(diBuilder).section(),
-                new ModuleJdbcPostgreSQLSection(diBuilder).section(),
-                new ModuleChinookPostgreSQLSection(diBuilder).section(),
                 new ModuleImagesSection(diBuilder).section()
         );
     }
