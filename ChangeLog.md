@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 - :openai module support for audio speech api
 - :openai module support for files api
+- :openai module support for models api
 - OpenAI vision examples
 
 
