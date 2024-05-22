@@ -1,5 +1,8 @@
 # Chat Completion
 
+[OpenAI Chat](https://platform.openai.com/docs/api-reference/chat)
+
+
 * [Completion](#completion)
     * [Sending Requests](#sending-requests)
     * [Examples](#examples)

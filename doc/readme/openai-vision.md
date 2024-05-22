@@ -1,5 +1,7 @@
 # Vision
 
+[OpenAI Vision](https://platform.openai.com/docs/guides/vision)
+
 Demonstrates OpenAI's vision capabilities to understand images.
 
 The Vision functionality is based on OpenAI's Chat Completion API. Images can be passed
