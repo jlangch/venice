@@ -1,9 +1,11 @@
 # Modules
 
-[OpenAI Files](https://platform.openai.com/docs/api-reference/files)
+[OpenAI Files](https://platform.openai.com/docs/api-reference/modules)
 
 
 * [Model List](#model-list)
+* [Model Retrieve](#model-retrieve)
+* [Model Delete](#model-delete)
 
 
 
@@ -74,4 +76,10 @@ Result:
   
   :object "list"}
 ```
+
+
+## Model Retrieve
+
+
+## Model Delete
 
