@@ -28,7 +28,7 @@ Upload a file that can be used across various endpoints. Individual files can be
           
 #### Parameter «purpose»
 
-Purpose is one of "assistants", "vision", "batch", "fine-tune"
+*Purpose* is one of "assistants", "vision", "batch", "fine-tune"
 
 
 #### Parameter «options»
@@ -88,7 +88,7 @@ Result:
 
 #### Parameter «purpose»
 
-Purpose is one of "assistants", "vision", "batch", "fine-tune"
+*Purpose* is one of "assistants", "vision", "batch", "fine-tune"
 
 
 #### Parameter «options»
