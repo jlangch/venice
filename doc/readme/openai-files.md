@@ -76,8 +76,7 @@ Result:
   :status_details nil
   :id "file-qvrjsmEk7yPElJzMOegsf0xf" 
   :purpose "assistants" 
-  :object "file"
-}
+  :object "file" }
 ```
 
 
