@@ -578,8 +578,62 @@ The OpenAI shall answer questions about the current weather at a given location.
 6. The model has now all information and returns the final answer
 
 
+**Weather function implementation**
+
+The weather function details are defined in "openai-demo.venice". To see its source code type in a REPL:
+
+```clojure
+(do
+  (load-module :openai-demo)
+  (doc :openai-demo))
+```
+
+
+The weather function map, maps the OpenAI function name to the Venice function name:
+
+```clojure
+(defn demo-weather-function-map []
+  { "get_current_weather"   get-current-weather } )
+```
+
+The weather data function is defined as:
+
+```clojure
+(defn get-current-weather 
+  ([named-args] 
+    (assert map? named-args)
+    ;; argument dispatching
+    (get-current-weather (get named-args "location") 
+                         (get named-args "format")))
+
+  ([location format]
+    (println """
+             Calling fn "get-current-weather" with \
+             location="~{location}", format="~{format}"
+             """)
+    (case location
+      "Glasgow"             (json/write-str
+                              { :location    location
+                                :format      format
+                                :temperature (temperature 16 format)
+                                :general     "sunny" })
+
+      "San Francisco, CA"   (json/write-str
+                              { :location    location
+                                :format      format
+                                :temperature (temperature 12 format)
+                                :general     "rainy" })
+      (json/write-str { :location location
+                        :error    "No weather data available for ~{location}!" }))))
+
+```
+
+
+**Running the weather example**
 
 *Note: for simplicity this example just handles the happy path!*
+
+Run this code in REPL:
 
 ```clojure
 (do
@@ -609,6 +663,7 @@ The OpenAI shall answer questions about the current weather at a given location.
       ;;                         (openai/pretty-print-json)))
 
       (assert (openai/chat-finish-reason-tool-calls?  response))
+      
       ;; [2] The model returns a function call request
       (println "\nPhase #2: call the requested functions")
       
@@ -618,6 +673,7 @@ The OpenAI shall answer questions about the current weather at a given location.
         (println "Fn call result:" (pr-str answer))
 
         (println "\nPhase #3: prompt the model again with additional knowledge")
+        
         ;; [5] Additional prompt message with the function's response
         (let [prompt-fn { :role     "function"
                           :name     (openai/chat-extract-function-name response)
