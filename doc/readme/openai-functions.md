@@ -604,8 +604,7 @@ The weather data function is defined as:
 (defn get-current-weather 
   ([named-args] 
     (assert map? named-args)
-    ;; argument dispatching
-    (get-current-weather (get named-args "location") 
+    (get-current-weather (get named-args "location")   ;; argument dispatching
                          (get named-args "format")))
 
   ([location format]
