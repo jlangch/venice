@@ -3,12 +3,12 @@
 [OpenAI Audio](https://platform.openai.com/docs/api-reference/audio)
 
 
-* [Create](#create)
-* [Transcribe](#transcribe)
-* [Transalte](#translate)
+* [Create Speech](#create-speech)
+* [Transcribe Speech](#transcribe-speech)
+* [Translate Speech](#translate-speech)
 
 
-## Create
+## Create Speech
 
 Generates audio from the input text.
 
@@ -94,7 +94,7 @@ The format in which the generated images are returned
 
 
 
-## Transcribe
+## Transcribe Speech
 
 Transcribes audio into the input language.
 
@@ -104,11 +104,54 @@ Transcribes audio into the input language.
 
 #### Parameter «data»
 
+The audio data (a byte buffer)
+
 #### Parameter «audio-type»
+
+The audio type
+
+* `:flac`   (mimetype: audio/flac)
+* `:mp3`    (mimetype: audio/mpeg)
+* `:mp4`    (mimetype: audio/mp4)
+* `:m4a`    (mimetype: audio/m4a)
+* `:mpega`  (mimetype: audio/mpega)
+* `:ogg`    (mimetype: audio/ogg)
+* `:wav`    (mimetype: audio/wav)
+* `:webm`   (mimetype: audio/webm)
+
 
 #### Parameter «response-format»
 
+The format in which the transcribed text is returned
+
+* `:json`
+* `:text`
+* `:srt`
+* `:verbose_json`
+* `:vtt`
+
+
 #### Parameter «options»
+
+| Option            | Description |
+| :---              | :---        |
+| :uri              | An OpenAI audio speech URI. E.g.: "https://api.openai.com/v1/audio/transcriptions". <br>Defaults  to "https://api.openai.com/v1/audio/transcriptions" |
+| :model            | An OpenAI model. E.g.: "whisper-1". Defaults to "whisper-1".<br>The model can also be passed as a keyword. E.g.: `:whisper-1`,...  |
+| :openai-api-key   | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
+| :audio-opts       | An optional map of OpenAI audio options. Map keys can be keywords or strings.<br>E.g. `{ :language "en", :temperature 0, :timestamp_granularities "word"}`.<br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranscription) |
+| :debug            | An optional debug flag (true/false). Defaults  to false.<br>In debug mode prints the HTTP request and response data |
+ 
+ 
+#### Response value
+
+*The return value is a map with the response data:*
+
+| Field      | Description |
+| :---       | :---        |
+| :status    | The HTTP status (a long)         |
+| :mimetype  | The content type's mimetype      |
+| :headers   | A map of headers. key: header name, value: list of header values |
+| :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
 
 ### Example 1
@@ -162,7 +205,7 @@ Transcribes audio into the input language.
 ```
 
 
-## Translate
+## Translate Speech
 
 Translates audio into English.
 
@@ -172,11 +215,53 @@ Translates audio into English.
 
 #### Parameter «data»
 
+The audio data (a byte buffer)
+
 #### Parameter «audio-type»
+
+The audio type
+
+* `:flac`   (mimetype: audio/flac)
+* `:mp3`    (mimetype: audio/mpeg)
+* `:mp4`    (mimetype: audio/mp4)
+* `:m4a`    (mimetype: audio/m4a)
+* `:mpega`  (mimetype: audio/mpega)
+* `:ogg`    (mimetype: audio/ogg)
+* `:wav`    (mimetype: audio/wav)
+* `:webm`   (mimetype: audio/webm)
 
 #### Parameter «response-format»
 
+The format in which the transcribed text is returned
+
+* `:json`
+* `:text`
+* `:srt`
+* `:verbose_json`
+* `:vtt`
+
+
 #### Parameter «options»
+
+| Option            | Description |
+| :---              | :---        |
+| :uri              | An OpenAI audio speech URI. E.g.: "https://api.openai.com/v1/audio/translations". <br>Defaults  to "https://api.openai.com/v1/audio/translations" |
+| :model            | An OpenAI model. E.g.: "whisper-1". Defaults to "whisper-1".<br>The model can also be passed as a keyword. E.g.: `:whisper-1`,...  |
+| :openai-api-key   | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
+| :audio-opts       | An optional map of OpenAI audio options. Map keys can be keywords or strings.<br>E.g. `{ :temperature 0, :prompt "....."}`.<br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranslation) |
+| :debug            | An optional debug flag (true/false). Defaults  to false.<br>In debug mode prints the HTTP request and response data |
+ 
+ 
+#### Response value
+
+*The return value is a map with the response data:*
+
+| Field      | Description |
+| :---       | :---        |
+| :status    | The HTTP status (a long)         |
+| :mimetype  | The content type's mimetype      |
+| :headers   | A map of headers. key: header name, value: list of header values |
+| :data      | If the response' HTTP status is `HTTP_OK` the data fields contains the chat completion message.<br> If the response' HTTP status is not `HTTP_OK` the data fields contains an error message formatted as plain or JSON string. |
 
 
 ### Example
