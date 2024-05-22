@@ -538,9 +538,11 @@ The OpenAI shall answer questions about the current weather at a given location.
       }]
    }
    ```
-    
 
 3. The client calls the requested function to get the information
+
+      `(openai/exec-fn response fn-map)` is calling the requested function based the model's response.
+   
 
 4. The function returns a JSON object with the current Glasgow weather data
 
@@ -667,8 +669,9 @@ Run this code in REPL:
       ;; [2] The model returns a function call request
       (println "\nPhase #2: call the requested functions")
       
+      ;; [3] Call the requested function (openai/exec-fn ...)
       (let [fn-map  (openai-demo/demo-weather-function-map)
-            results (openai/exec-fn response fn-map)  ;; [3] Call the requested function
+            results (openai/exec-fn response fn-map)
             answer  (:ok (first results))]            ;; [4] The function's returned JSON data
         (println "Fn call result:" (pr-str answer))
 
