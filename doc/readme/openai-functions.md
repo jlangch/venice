@@ -635,7 +635,7 @@ The weather data function is defined as:
 
 *Note: for simplicity this example just handles the happy path!*
 
-Run this code in REPL:
+Run this code in a REPL:
 
 ```clojure
 (do
