@@ -63,7 +63,21 @@ Purpose is one of "assistants", "vision", "batch", "fine-tune"
                                         "application/pdf" 
                                         "assistants")]
     (openai/assert-response-http-ok response)
-    (println (:data response))))
+    (prn (:data response))))
+```
+
+Result:
+
+```clojure
+{ :filename "example.pdf" 
+  :created_at 1716390396 
+  :bytes 35213 
+  :status "processed" 
+  :status_details nil
+  :id "file-qvrjsmEk7yPElJzMOegsf0xf" 
+  :purpose "assistants" 
+  :object "file"
+}
 ```
 
 
@@ -106,7 +120,32 @@ Purpose is one of "assistants", "vision", "batch", "fine-tune"
 
   (let [response  (openai/files-list nil)]
     (openai/assert-response-http-ok response)
-    (println (:data response))))
+    (prn (:data response))))
+```
+
+Result:
+
+```clojure
+{ :data ( 
+    { :filename "example.pdf" 
+      :created_at 1716390396 
+      :bytes 35213 
+      :status "processed" 
+      :status_details nil 
+      :id "file-qvrjsmEk7yPElJzMOegsf0xf" 
+      :purpose "assistants" 
+      :object "file" } 
+    { :filename "example.pdf" 
+      :created_at 1716390348 
+      :bytes 35213 
+      :status "processed" 
+      :status_details nil 
+      :id "file-fGjBnoSJf19KeeUiL0SpDRTC" 
+      :purpose "assistants" 
+      :object "file"}
+  ) 
+  :has_more false 
+  :object "list" }
 ```
 
 ### Example 2
@@ -117,7 +156,7 @@ Purpose is one of "assistants", "vision", "batch", "fine-tune"
 
   (let [response  (openai/files-list "assistants")]
     (openai/assert-response-http-ok response)
-    (println (:data response))))
+    (prn (:data response))))
 ```
 
 
@@ -157,13 +196,26 @@ The ID of the file to use for this request.
 
 ### Example
 
-```Clojure
+```clojure
 (do
   (load-module :openai)
 
   (let [response  (openai/files-retrieve "file-uo1oroO3MMRFwRAypupJX0pO")]
     (openai/assert-response-http-ok response)
-    (println (:data response))))
+    (prn (:data response))))
+```
+
+Result:
+
+```clojure
+{ :filename "example.pdf" 
+  :created_at 1716390396 
+  :bytes 35213 
+  :status "processed" 
+  :status_details nil 
+  :id "file-qvrjsmEk7yPElJzMOegsf0xf" 
+  :purpose "assistants" 
+  :object "file" }
 ```
 
 
@@ -203,15 +255,22 @@ The ID of the file to use for this request.
 
 ### Example
 
-```Clojure
+```clojure
 (do
   (load-module :openai)
 
   (let [response  (openai/files-delete "file-uo1oroO3MMRFwRAypupJX0pO")]
     (openai/assert-response-http-ok response)
-    (println (:data response))))
+    (prn (:data response))))
 ```
 
+Result:
+
+```clojure
+{ :deleted true 
+  :id "file-qvrjsmEk7yPElJzMOegsf0xf"
+  :object "file" }
+```
 
 
 ## File Retrieve Content
@@ -249,7 +308,7 @@ The ID of the file to use for this request.
 
 ### Example
 
-```Clojure
+```clojure
 (do
   (load-module :openai)
 
@@ -259,4 +318,50 @@ The ID of the file to use for this request.
           file       "./example.pdf"]
       (io/spit file data)
       (println "Saved to:" file))))
+```
+
+Response if the file does not exist:
+
+```
+Exception in thread "main" VncException: HTTP response is not HTTP_OK!
+
+HTTP Status: 404
+Mimetype:    application/json
+
+Response:
+{
+  "error": {
+    "code": null,
+    "param": "id",
+    "message": "No such File object: file-qvrjsmEk7yPElJzMOegsf0xf",
+    "type": "invalid_request_error"
+  }
+}
+
+[Callstack]
+    at: ex (openai: line 2006, col 40)
+    at: openai/assert-response-http-ok (user: line 5, col 6)
+```
+
+Response if the file download is rejected:
+
+```
+Exception in thread "main" VncException: HTTP response is not HTTP_OK!
+
+HTTP Status: 400
+Mimetype:    application/json
+
+Response:
+{
+  "error": {
+    "code": null,
+    "param": null,
+    "message": "Not allowed to download files of purpose: assistants",
+    "type": "invalid_request_error"
+  }
+}
+
+[Callstack]
+    at: ex (openai: line 2006, col 40)
+    at: openai/assert-response-http-ok (user: line 5, col 6)
 ```
