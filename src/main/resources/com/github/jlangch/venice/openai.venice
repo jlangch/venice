@@ -1844,7 +1844,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(models-list options*)" )
+          "(models-list & options)" )
      :doc """
           Returns a list of the currently available models, and provides basic 
           information about each one such as the owner and availability.
@@ -1875,7 +1875,7 @@
                               formatted as plain or JSON string. |
 
           See:
-          * [OpenAI Files API](https://platform.openai.com/docs/api-reference/models)
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/models)
           """ 
      :examples '(
           """
@@ -1887,7 +1887,6 @@
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/models-list"
           "openai/models-retrieve"
           "openai/models-delete" ) }
 
@@ -1914,32 +1913,137 @@
 
 
 (defn
+  ^{ :arglists '(
+          "(models-retrieve model & options)" )
+     :doc """
+          Retrieves a model instance, providing basic information about the model 
+          such as the owner and permissioning.
+
+          ¶*Parameter «model»*
+
+          The ID of the model to use for this request
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/models)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/models-retrieve "gpt-4o")]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/models-list"
+          "openai/models-delete" ) }
 
   models-retrieve [model & options]
   
-  ;; Retrieves a model instance, providing basic information about the model 
-  ;; such as the owner and permissioning.
+  (assert (string? model))
 
-  ;; get https://api.openai.com/v1/models/{model}
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             "https://api.openai.com/v1/models/~(str/encode-url model)"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :get 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
 
-  ;; model string, Required
-  ;;       The ID of the model to use for this request
 
-  )
+(defn
+  ^{ :arglists '(
+          "(models-delete model & options)" )
+     :doc """
+          Deletes a model instance.
 
-(defn 
+          ¶*Parameter «model»*
+
+          The ID of the model to use for this request
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/models)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/models-delete "xyz")]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/models-list"
+          "openai/models-retrieve" ) }
 
   models-delete [model & options]
   
-  ;; Retrieves a model instance, providing basic information about the model 
-  ;; such as the owner and permissioning.
+  (assert (string? model))
 
-  ;; delete https://api.openai.com/v1/models/{model}
+  (let [opts            (apply hash-map options)
+        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
+        uri             "https://api.openai.com/v1/models/~(str/encode-url model)"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :delete 
+                          uri
+                          :headers { "Content-Type" "application/json"
+                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
 
-  ;; model string, Required
-  ;;       The model to delete
-
-  )
 
 
 
