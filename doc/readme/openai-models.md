@@ -1,6 +1,6 @@
 # Modules
 
-[OpenAI Files](https://platform.openai.com/docs/api-reference/modules)
+[OpenAI Modules](https://platform.openai.com/docs/api-reference/modules)
 
 
 * [Model List](#model-list)
