@@ -2,6 +2,8 @@
 
 Demonstrates OpenAI's vision capabilities to understand images.
 
+The Vision functionality is based on OpenAI's Chat Completion API. Images can be passed
+along with the prompt as an additional source of information.
 
 
 ### Example 1a
