@@ -42,7 +42,7 @@
 (do
   (load-module :openai)
 
-  (let [response  (openai/models-list nil)]
+  (let [response  (openai/models-list)]
     (openai/assert-response-http-ok response)
     (prn (:data response))))
 ```
