@@ -20,7 +20,7 @@ along with the prompt as an additional source of information.
                                      :image_url { :url img-url } } ] 
                       } ]
         prompt-opts { :temperature 0.1 
-                      :max_tokens 300}
+                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
                                             :prompt-opts prompt-opts)]
@@ -56,7 +56,7 @@ Message:
                                      :image_url { :url "data:image/jpeg;base64,~{base64-img}" } } ] 
                       } ]
         prompt-opts { :temperature 0.1 
-                      :max_tokens 300}
+                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
                                             :prompt-opts prompt-opts)]
@@ -88,7 +88,7 @@ Message:
                                      :image_url { :url img-url } } ] 
                       } ]
         prompt-opts { :temperature 0.1 
-                      :max_tokens 300}
+                      :max_tokens 300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
                                             :prompt-opts prompt-opts)]
@@ -121,7 +121,7 @@ Controlling the *detail* parameter ("low", "high", "auto")
                                           :detail "high" } } ] 
                       } ]
         prompt-opts { :temperature 0.1 
-                      :max_tokens 300}
+                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
                                             :prompt-opts prompt-opts)]
@@ -155,7 +155,7 @@ Message:
                                      :image_url { :url img-url } } ] 
                       } ]
         prompt-opts { :temperature 0.1 
-                      :max_tokens 300}
+                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
                                             :prompt-opts prompt-opts)]
