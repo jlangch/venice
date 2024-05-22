@@ -1421,7 +1421,6 @@
 
 
 
-
 ;; -----------------------------------------------------------------------------
 ;; FILES
 ;; -----------------------------------------------------------------------------
@@ -1483,7 +1482,7 @@
                                                   "application/pdf" 
                                                   "assistants")]
               (openai/assert-response-http-ok response)
-              (println (:data response))))
+              (prn (:data response))))
           """ )
      :see-also '( 
           "openai/files-list"
@@ -1569,7 +1568,7 @@
 
             (let [response  (openai/files-list nil)]
               (openai/assert-response-http-ok response)
-              (println (:data response))))
+              (prn (:data response))))
           """,
           """
           (do
@@ -1577,7 +1576,7 @@
 
             (let [response  (openai/files-list "assistants")]
               (openai/assert-response-http-ok response)
-              (println (:data response))))
+              (prn (:data response))))
           """ )
      :see-also '( 
           "openai/files-upload"
@@ -1656,7 +1655,7 @@
 
             (let [response  (openai/files-retrieve "file-uo1oroO3MMRFwRAypupJX0pO")]
               (openai/assert-response-http-ok response)
-              (println (:data response))))
+              (prn (:data response))))
           """ )
      :see-also '( 
           "openai/files-upload"
@@ -1731,7 +1730,7 @@
 
             (let [response  (openai/files-delete "file-uo1oroO3MMRFwRAypupJX0pO")]
               (openai/assert-response-http-ok response)
-              (println (:data response))))
+              (prn (:data response))))
           """ )
      :see-also '( 
           "openai/files-upload"
@@ -1811,7 +1810,7 @@
               (let [data       (:data response)
                     file       "./example.pdf"]
                 (io/spit file data)
-                (println "Saved to:" file))))
+                (prn "Saved to:" file))))
           """ )
      :see-also '( 
           "openai/files-upload"
@@ -1841,6 +1840,27 @@
      (assoc result :data  (hc/slurp-response response 
                                              :json-parse-mode :data 
                                              :json-key-fn keyword))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; MODELS
+;; -----------------------------------------------------------------------------
+
+
+
+;; -----------------------------------------------------------------------------
+;; ASSISTANTS
+;; -----------------------------------------------------------------------------
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; FINETUNING
+;; -----------------------------------------------------------------------------
+
+
 
 
 
