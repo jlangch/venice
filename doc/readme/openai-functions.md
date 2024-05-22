@@ -903,7 +903,7 @@ The top 5 artists by number of tracks are:
 
 ## Debugging
 
-To debug requests and responses set enable the debug option at the `openai/chat-completion` call:
+To debug requests and responses enable the debug option at the `openai/chat-completion` call:
 
 ```clojure
 (do
