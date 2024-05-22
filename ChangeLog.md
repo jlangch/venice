@@ -11,14 +11,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- :openai module support for audio speech generate
-- :openai module support for audio speech transcribe
-- :openai module support for audio speech translate
-- :openai module support for file upload
-- :openai module support for file list
-- :openai module support for file retrieve
-- :openai module support for file delete
-- :openai module support for file retrieve content
+- :openai module support for audio speech api
+- :openai module support for files api
 - OpenAI vision examples
 
 
