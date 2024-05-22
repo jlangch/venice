@@ -22,7 +22,7 @@ Upload a file that can be used across various endpoints. Individual files can be
 #### Parameters «file»
 
 * «file-data»      The file data, a `bytebuf`
-* «file-name»      The file name. E.g.: "product-indo-pdf"
+* «file-name»      The file name. E.g.: "contract.pdf"
 * «file-mimetype»  The file mimetype. E.g.: "application/pdf"
 
           
