@@ -86,10 +86,10 @@ The simplified weather data function is defined as:
 
 ```clojure
 (defn get-current-weather 
-  ([named-args] 
+  ([dictionary] 
     ;; dispatches a dictionary of arguments to a two-arg function call
-    (get-current-weather (get named-args "location") 
-                         (get named-args "format")))
+    (get-current-weather (get dictionary "location") 
+                         (get dictionary "format")))
 
   ([location format]
     (case location
@@ -176,17 +176,17 @@ Run this code in a REPL:
 
 
   (defn get-current-weather 
-    ([named-args] 
-      (assert map? named-args)
+    ([dictionary] 
+      (assert map? dictionary)
       ;; argument dispatching
-      (get-current-weather (get named-args "location") 
-                          (get named-args "format")))
+      (get-current-weather (get dictionary "location") 
+                           (get dictionary "format")))
 
     ([location format]
       (println """
-              Calling fn "get-current-weather" with \
-              location="~{location}", format="~{format}"
-              """)
+               Calling fn "get-current-weather" with \
+               location="~{location}", format="~{format}"
+               """)
       (case location
         "Glasgow"             (json/write-str
                                 { :location    location
@@ -205,12 +205,12 @@ Run this code in a REPL:
 
 
   (defn get-n-day-weather-forecast 
-    ([named-args]
-      (assert map? named-args)
+    ([dictionary]
+      (assert map? dictionary)
       ;; argument dispatching
-      (get-n-day-weather-forecast (get named-args "location")
-                                  (get named-args "format")
-                                  (get named-args "n_days")))
+      (get-n-day-weather-forecast (get dictionary "location")
+                                  (get dictionary "format")
+                                  (get dictionary "n_days")))
 
     ([location format n-days]
       (println """
