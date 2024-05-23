@@ -1,7 +1,7 @@
 # Weather Example
 
 
-Thi examples demonstrate how to execute functions whose inputs are model-generated and deliver 
+This example demonstrates how to execute functions whose inputs are model-generated and deliver 
 the required knowledge to model for answering questions
 
 

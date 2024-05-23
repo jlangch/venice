@@ -1,8 +1,10 @@
 # Database Example
 
 
-In the following examples we'll use the OpenAI chat completion API to answer questions
-about a database. For simplicity the Chinook sample database will be used. See 
+In the following example we'll use the OpenAI chat completion API to answer questions
+about a database. 
+
+For simplicity the Chinook sample database will be used. See 
 [Venice and Chinook Dataset](database.md#chinook-dataset-overview)
 
 The OpenAI model shall be enabled to answer questions on the dataset like: *Who are the top 5 artists by number of tracks?*
