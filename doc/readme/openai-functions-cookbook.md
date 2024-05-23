@@ -133,11 +133,10 @@ questions due to the missing location.
                                   """ }
                       { :role     "user"
                         :content  "What's the weather like today?" } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)]
+                                            :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (println "Message:" (-> (:data response)
                             (:choices)
@@ -177,11 +176,10 @@ arguments for us.
                         :content  "Sure, I can help with that. Could you please tell me your location" }
                       { :role     "user"
                         :content  "I'm in Glasgow, Scotland." } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)]
+                                            :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (println "Choices:" (-> (:data response) 
                             (:choices)                            
@@ -224,11 +222,10 @@ By prompting it differently, we can get it to target the `get_n_day_weather_fore
                                   """ }
                       { :role     "user"
                         :content  "What is the weather going to be like in Glasgow, Scotland over the next n days" } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)]
+                                            :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (println "Message:")
     (println (-> (:data response)                            
@@ -268,11 +265,10 @@ days are required in the forecast.
                                   """ }
                       { :role     "user"
                         :content  "5 days" } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)]
+                                            :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (println "Choices:" (-> (:data response)  
                             (:choices)                          
@@ -322,13 +318,12 @@ Force the model to use "get_n_day_weather_forecast"
                                   """ }
                       { :role     "user"
                         :content  "Give me a weather report for Toronto, Canada." } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             ;; force the model to use "get_n_day_weather_forecast"!!
                                             :tool_choice {:type "function", :function {:name "get_n_day_weather_forecast"}}
-                                            :prompt-opts prompt-opts)]
+                                            :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (println "Choices:" (-> (:data response)  
                             (:choices)                          
@@ -372,11 +367,10 @@ If we don't force the model to use "get_n_day_weather_forecast" it answers
                                   """ }
                       { :role     "user"
                         :content  "Give me a weather report for Toronto, Canada." } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)]
+                                            :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (println "Choices:" (-> (:data response)  
                             (:choices)                          
@@ -421,12 +415,11 @@ producing a proper function call.
                                   """ }
                       { :role     "user"
                         :content  "Give me the current weather (use Celcius) for Toronto, Canada." } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
                                             :tool_choice "none"
-                                            :prompt-opts prompt-opts)]
+                                            :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (println "Choices:" (-> (:data response)  
                             (:choices)
@@ -466,11 +459,10 @@ Actual GPT-3.5-Turbo models can call multiple functions in one turn.
                                   What is the weather going to be like in San Francisco 
                                   and Glasgow over the next 4 day? Give the temperature in Celsius.
                                   """ } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-3.5-turbo"
                                             :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts)] 
+                                            :chat-opts { :temperature 0.1 })] 
     (openai/assert-response-http-ok response)
     (println "Choices:" (-> (:data response) 
                             (:choices)                            

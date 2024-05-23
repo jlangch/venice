@@ -21,11 +21,10 @@ along with the prompt as an additional source of information.
                                    { :type "image_url"
                                      :image_url { :url img-url } } ] 
                       } ]
-        prompt-opts { :temperature 0.1 
-                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
-                                            :prompt-opts prompt-opts)]
+                                            :image-opts { :temperature 0.1 
+                                                          :max_tokens  300 })]
     (openai/assert-response-http-ok response)
     (println "Message:")
     (println (-> (:data response)
@@ -57,11 +56,10 @@ Message:
                                    { :type "image_url"
                                      :image_url { :url "data:image/jpeg;base64,~{base64-img}" } } ] 
                       } ]
-        prompt-opts { :temperature 0.1 
-                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
-                                            :prompt-opts prompt-opts)]
+                                            :image-opts { :temperature 0.1 
+                                                          :max_tokens  300 })]
     (openai/assert-response-http-ok response)
     (println "Message:")
     (println (-> (:data response)
@@ -89,11 +87,10 @@ Message:
                                    { :type "image_url"
                                      :image_url { :url img-url } } ] 
                       } ]
-        prompt-opts { :temperature 0.1 
-                      :max_tokens 300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
-                                            :prompt-opts prompt-opts)]
+                                            :image-opts { :temperature 0.1 
+                                                          :max_tokens  300 })]
     (openai/assert-response-http-ok response)
     (println "Message:")
     (println (-> (:data response)
@@ -122,11 +119,10 @@ Controlling the *detail* parameter ("low", "high", "auto")
                                           :url img-url 
                                           :detail "high" } } ] 
                       } ]
-        prompt-opts { :temperature 0.1 
-                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
-                                            :prompt-opts prompt-opts)]
+                                            :image-opts { :temperature 0.1 
+                                                          :max_tokens  300 })]
     (openai/assert-response-http-ok response)
     (println "Message:")
     (println (-> (:data response)
@@ -156,11 +152,10 @@ Message:
                                    { :type "image_url"
                                      :image_url { :url img-url } } ] 
                       } ]
-        prompt-opts { :temperature 0.1 
-                      :max_tokens  300 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4o" 
-                                            :prompt-opts prompt-opts)]
+                                            :image-opts { :temperature 0.1 
+                                                          :max_tokens  300 })]
     (openai/assert-response-http-ok response)
     (println "Message:")
     (println (-> (:data response)

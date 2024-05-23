@@ -112,7 +112,7 @@ Then run the full example:
           response    (openai/chat-completion prompt 
                                               :model model
                                               :tools fn-defs
-                                              :prompt-opts { :temperature 0.1 })] 
+                                              :chat-opts { :temperature 0.1 })] 
       (openai/assert-response-http-ok response)
       
       ;; Phase 2: model requests to call the function "ask_database"
@@ -137,7 +137,7 @@ Then run the full example:
                              :content  answer }
                 response   (openai/chat-completion (conj prompt prompt-fn) 
                                                    :model model
-                                                   :prompt-opts { :temperature 0.1 })]
+                                                   :chat-opts { :temperature 0.1 })]
             (openai/assert-response-http-ok response)
             (let [response (:data response)
                   content  (openai/chat-extract-response-message-content response)]

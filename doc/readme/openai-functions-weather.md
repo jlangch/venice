@@ -264,7 +264,7 @@ Run this code in a REPL:
         response  (openai/chat-completion prompt
                                           :model model
                                           :tools (weather-function-defs)
-                                          :prompt-opts { :temperature 0.1 })]
+                                          :chat-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
     (let [response (:data response)]  
       ;; [2] The model returns a function call request   
@@ -289,7 +289,7 @@ Run this code in a REPL:
                         ;; [6] Ask the model again
               response  (openai/chat-completion (conj prompt prompt-fn)
                                                 :model model
-                                                :prompt-opts { :temperature 0.1 })]
+                                                :chat-opts { :temperature 0.1 })]
           (openai/assert-response-http-ok response)
           (let [response (:data response)
                 content  (openai/chat-extract-response-message-content response)] ;; [6] Final answer
@@ -359,11 +359,10 @@ To debug requests and responses enable the debug option at the `openai/chat-comp
                                   """ }
                       { :role     "user"
                         :content  "What's the weather like today in Glasgow, Scotland?" } ]
-        prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
                                             :tools (openai-demo/demo-weather-function-defs)
-                                            :prompt-opts prompt-opts
+                                            :chat-opts { :temperature 0.1 }
                                             :debug true)]         ;; <======= DEBUGGING ON
     (openai/assert-response-http-ok response)
     (println "Response:" (-> (:data response) 

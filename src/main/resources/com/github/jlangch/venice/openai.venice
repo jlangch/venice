@@ -769,10 +769,9 @@
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         image-opts      (or (:image-opts opts) (:prompt-opts opts) {}) ;; deprecated :prompt-opts
-        param-parts     (->> (merge { ;; :model  model   ;; OpenAI rejects a model!!
-                                      :response_format response-format} 
-                                    image-opts)
-                             (map-keys-and-vals))
+        param-parts     (merge { ;; :model  model   ;; OpenAI rejects a model!!
+                                 :response_format response-format} 
+                               image-opts)
         img-part        { "image"  { :filename  "image.png"
                                      :mimetype  "image/png"
                                      :data      image } }
@@ -946,11 +945,10 @@
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         image-opts      (or (:image-opts opts) (:prompt-opts opts) {}) ;; deprecated :prompt-opts
-        param-parts     (->> (merge { ;; :model  model   ;; OpenAI rejects a model!!
-                                      :prompt prompt
-                                      :response_format response-format} 
-                                    image-opts)
-                             (map-keys-and-vals))
+        param-parts     (merge { ;; :model  model   ;; OpenAI rejects a model!!
+                                 :prompt prompt
+                                 :response_format response-format} 
+                                 image-opts)
         img-parts       { "image"  { :filename  "image.png"
                                      :mimetype  "image/png"
                                      :data      image }
@@ -1096,12 +1094,11 @@
         model           (to-model (:model opts) :tts-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
-        body            (->> (merge { :model model
-                                      :input text
-                                      :voice voice
-                                      :response_format response-format}
-                                    (get opts :audio-opts {}))
-                             (map-keys-and-vals))
+        body            (merge { :model model
+                                 :input text
+                                 :voice voice
+                                 :response_format response-format}
+                               (get opts :audio-opts {}))
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
@@ -1257,10 +1254,9 @@
         model           (to-model (:model opts) :whisper-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
-        param-parts     (->> (merge { :model model
-                                      :response_format response-format } 
-                                    (or (:audio-opts opts) {}))
-                             (map-keys-and-vals))
+        param-parts     (merge { :model model
+                                 :response_format response-format } 
+                               (:audio-opts opts))
         audio-mimetype  (audio-mimetype audio-type)
         audio-filext    (audio-file-ext audio-mimetype)
         file-part       { "file"  { :filename  (str "audio." audio-filext)
@@ -1398,10 +1394,9 @@
         model           (to-model (:model opts) :whisper-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
-        param-parts     (->> (merge { :model model
-                                      :response_format response-format } 
-                                    (or (:audio-opts opts) {}))
-                             (map-keys-and-vals))
+        param-parts     (merge { :model model
+                                 :response_format response-format } 
+                               (:audio-opts opts))
         audio-mimetype  (audio-mimetype audio-type)
         audio-filext    (audio-file-ext audio-mimetype)
         file-part       { "file"  { :filename  (str "audio." audio-filext)
@@ -2144,7 +2139,8 @@
                                 the code_interpreter tool requires a list of file IDs, while \
                                 the file_search tool requires a list of vector store IDs. |
           | :assistant-opts   | A map of additional assistant options like "metadata", \
-                                "temperature", "top_p", "response_format" |
+                                "temperature", "top_p", "response_format".¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/assistants/createAssistant)|
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
           | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
@@ -2189,6 +2185,9 @@
 
   assistant-create [model name & options]
 
+  (assert (or (keyword? model) (string? model)))
+  (assert (string? name))
+
   (let [opts            (apply hash-map options)
         uri             "https://api.openai.com/v1/assistants"
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
@@ -2206,9 +2205,8 @@
                           :headers (openai-api-headers "application/json" 
                                                        openai-api-key
                                                        (:headers opts))
-                          :body    (->> (map-keys-and-vals body)
-                                        (json/write-str))
-                          :debug  debug?)
+                          :body    (json/write-str body)
+                          :debug   debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
                           :headers  (:headers response) } ]
@@ -2227,6 +2225,9 @@
           ¶*Parameter «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
+          | :assistant-opts   | A map of additional assistant options like "metadata", \
+                                "temperature", "top_p", "response_format".¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/assistants/listAssistants)|
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
           | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
