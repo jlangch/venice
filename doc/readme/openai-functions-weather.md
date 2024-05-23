@@ -73,7 +73,7 @@ The OpenAI shall answer questions about the current weather at a given location.
 **Weather function implementation**
 
 
-The weather function map, maps the OpenAI function name to the Venice function name:
+The weather function map maps the OpenAI function name to the Venice functions:
 
 ```clojure
 (defn weather-function-map []
@@ -176,7 +176,7 @@ Run this code in a REPL:
         }
     } ] )
 
-  ;; The weather function map maps the OpenAI function names to Venice function names
+  ;; Maps the OpenAI function names to Venice functions
   (defn weather-function-map []
     { "get_current_weather"        get-current-weather
       "get_n_day_weather_forecast" get-n-day-weather-forecast } )

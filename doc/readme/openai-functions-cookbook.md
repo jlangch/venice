@@ -435,7 +435,7 @@ producing a proper function call.
 
 Response:
 
-```josn
+```json
 [{
   "finish_reason": "stop",
   "index": 0,
