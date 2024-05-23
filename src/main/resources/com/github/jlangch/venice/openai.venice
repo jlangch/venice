@@ -769,9 +769,10 @@
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         image-opts      (or (:image-opts opts) (:prompt-opts opts) {}) ;; deprecated :prompt-opts
-        param-parts     (merge { ;; :model  model   ;; OpenAI rejects a model!!
-                                 :response_format response-format} 
-                               image-opts)
+        param-parts     (->> (merge { ;; :model  model   ;; OpenAI rejects a model!!
+                                      :response_format response-format} 
+                                    image-opts)
+                              (map-keys-and-vals-to-string))
         img-part        { "image"  { :filename  "image.png"
                                      :mimetype  "image/png"
                                      :data      image } }
@@ -945,10 +946,11 @@
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         image-opts      (or (:image-opts opts) (:prompt-opts opts) {}) ;; deprecated :prompt-opts
-        param-parts     (merge { ;; :model  model   ;; OpenAI rejects a model!!
-                                 :prompt prompt
-                                 :response_format response-format} 
-                                 image-opts)
+        param-parts     (->> (merge { ;; :model  model   ;; OpenAI rejects a model!!
+                                      :prompt prompt
+                                      :response_format response-format} 
+                                    image-opts)
+                             (map-keys-and-vals-to-string))
         img-parts       { "image"  { :filename  "image.png"
                                      :mimetype  "image/png"
                                      :data      image }
@@ -1254,9 +1256,10 @@
         model           (to-model (:model opts) :whisper-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
-        param-parts     (merge { :model model
-                                 :response_format response-format } 
-                               (:audio-opts opts))
+        param-parts     (->> (merge { :model model
+                                      :response_format response-format } 
+                                    (:audio-opts opts))
+                             (map-keys-and-vals-to-string))
         audio-mimetype  (audio-mimetype audio-type)
         audio-filext    (audio-file-ext audio-mimetype)
         file-part       { "file"  { :filename  (str "audio." audio-filext)
@@ -1394,9 +1397,10 @@
         model           (to-model (:model opts) :whisper-1)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
-        param-parts     (merge { :model model
-                                 :response_format response-format } 
-                               (:audio-opts opts))
+        param-parts     (->> (merge { :model model
+                                      :response_format response-format } 
+                                    (:audio-opts opts))
+                             (map-keys-and-vals-to-string))
         audio-mimetype  (audio-mimetype audio-type)
         audio-filext    (audio-file-ext audio-mimetype)
         file-part       { "file"  { :filename  (str "audio." audio-filext)
@@ -1597,10 +1601,11 @@
   (assert (or (nil? purpose) (string? purpose)))
 
   (let [opts            (apply hash-map options)
-        uri             (:uri opts "https://api.openai.com/v1/files?purpose={purpose}")
-        uri             (str/replace-all uri 
-                                         "{file-id}"
-                                         (str/encode-url (str/trim-to-empty purpose)))
+        purpose         (str/trim-to-nil purpose)
+        uri             (if (some? purpose)   ;; OMG OpenAI - why no empty purpose?
+                           (-> (:uri opts "https://api.openai.com/v1/files?purpose={purpose}")
+                               (str/replace-all "{purpose}" (str/encode-url purpose)))
+                           "https://api.openai.com/v1/files")
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
@@ -2926,7 +2931,7 @@
       "Authorization" (str "Bearer " openai-api-key) })
   
   ([content-type openai-api-key headers]
-    (assert (or (nil headers) (map? headers)))
+    (assert (or (nil? headers) (map? headers)))
     (merge (openai-api-headers content-type openai-api-key)
            headers)))
 
@@ -2959,6 +2964,13 @@
 
 (defn- map-keys-and-vals [dict]
    (let [mapper (fn [v] (if (keyword? v) (name v) v))]
+     (->> dict
+          (map-keys mapper)
+          (map-vals mapper))))
+
+
+(defn- map-keys-and-vals-to-string [dict]
+   (let [mapper (fn [v] (if (keyword? v) (name v) (str v)))]
      (->> dict
           (map-keys mapper)
           (map-vals mapper))))

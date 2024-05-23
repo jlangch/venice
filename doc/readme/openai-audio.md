@@ -177,6 +177,11 @@ The format in which the transcribed text is returned
     (println (:text (:data response)))))
 ```
 
+Result:
+
+*The quick brown fox jumped over the lazy dog.*
+
+
 ### Example 2
 
 ```clojure
@@ -202,6 +207,26 @@ The format in which the transcribed text is returned
                                                    :audio-opts audio-opts)]
     (openai/assert-response-http-ok response)
     (prn (:data response))))
+```
+
+Result:
+
+```json
+{:segments ( 
+  { :start 0.0
+    :avg_logprob -0.5107083320617676 
+    :text " The quick brown fox jumped over the lazy dog." 
+    :compression_ratio 0.8653846383094788 
+    :temperature 0.0 
+    :no_speech_prob 1.3960502110421658E-4 
+    :seek 0 
+    :tokens (50364 440 1702 6292 283 5230 13864 670 264 14847 3000 13 50504) 
+    :end 2.799999952316284 :id 0
+  }) 
+  :task "transcribe" 
+  :text "The quick brown fox jumped over the lazy dog." 
+  :duration 2.799999952316284 
+  :language "english"}
 ```
 
 
@@ -286,3 +311,7 @@ The format in which the transcribed text is returned
     (openai/assert-response-http-ok response)
     (println (:text (:data response)))))
 ```
+
+Result:
+
+*The fast brown fox jumped over the lazy dog.*
