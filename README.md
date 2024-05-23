@@ -89,7 +89,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [EXCEL](doc/readme/excel.md)
 * [ASCII Tables](doc/readme/ascii-tables.md)
 * [HTTP Client (Java 8+)](doc/readme/http-client-j8.md)
-* [Venice meets LLMs](doc/readme/venice-meets-llms.md)
+* [Venice meets LLMs (OpenAI Client / LangChain)](doc/readme/venice-meets-llms.md)
 * [Database (JDBC)](doc/readme/database.md)
 * [Shell Scripts](doc/readme/shell-scripts.md)
 * [Extension modules](doc/readme/extension-modules.md)
