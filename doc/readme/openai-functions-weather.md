@@ -51,9 +51,9 @@ The OpenAI shall answer questions about the current weather at a given location.
    
    ```json
    { 
-     "location": "Glasgow",
-     "format": "celsius",
-     "general": "sunny",
+     "location":    "Glasgow",
+     "format":      "celsius",
+     "general":     "sunny",
      "temperature": "16.0"
    }
    ```
