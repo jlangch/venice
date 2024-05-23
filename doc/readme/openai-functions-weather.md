@@ -113,12 +113,11 @@ Run this code in a REPL:
 ```clojure
 (do
   (load-module :openai)
-  (load-module :openai-demo)
   
   
   ;; Returns a Venice data map with the OpenAI demo function definitions, that corresponds 
   ;; to the OpenAI chat completion request 'tools' JSON data.
-  ;; For better readability the map keys are Venice keyword. Strings would equally work.
+  ;; For better readability the map keys are Venice keyword. Strings would work equally well.
   (defn weather-function-defs [] 
     [ {
         :type "function"
@@ -168,6 +167,7 @@ Run this code in a REPL:
           }
         }
     } ] )
+
 
   ;; Maps the OpenAI function names to Venice functions
   (defn weather-function-map []
