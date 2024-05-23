@@ -2295,8 +2295,8 @@
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/models-retrieve"
-          "openai/models-delete" ) }
+          "openai/assistant-create"
+          "openai/assistant-list" ) }
 
   assistant-list [& options]
 
