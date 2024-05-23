@@ -7,7 +7,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
 * [Chat Completion](openai-chat-completion.md)
-* [Functions Cookbook](openai-functions.md)
+* [Functions](openai-functions.md)
 * [Vision](openai-vision.md)
 * [Audio](openai-audio.md)
 * [Images](openai-images.md)
