@@ -2195,6 +2195,7 @@
      :see-also '( 
           "openai/assistant-create"
           "openai/assistant-list"
+          "openai/assistant-retrieve"
           "openai/assistant-delete" ) }
 
   assistant-create [name model & options]
@@ -2295,6 +2296,7 @@
      :see-also '( 
           "openai/assistant-create"
           "openai/assistant-list"
+          "openai/assistant-retrieve"
           "openai/assistant-delete" ) }
 
   assistant-list [& options]
@@ -2320,6 +2322,208 @@
                                                        (:headers opts))
                           :body nil
                           :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(assistant-retrieve assistant-id & options)" )
+     :doc """
+          Retrieves an assistant.
+
+          ¶*Parameter «assistant-id»*
+
+          The ID of the assistant to retrieve.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/assistants/{assistant-id}". ¶\
+                                Defaults  to "https://api.openai.com/v1/assistants/{assistant-id}" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/assistants)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/assistant-retrieve "asst_abc123"
+                                                       :headers { "OpenAI-Beta" "assistants=v2" })]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/assistant-create"
+          "openai/assistant-list"
+          "openai/assistant-retrieve"
+          "openai/assistant-delete" ) }
+
+  assistant-retrieve [assistant-id & options]
+
+  (assert (string? assistant-id))
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/assistants/{assistant-id}"
+        uri             (str/replace-all uri "{assistant-id}" (str/encode-url assistant-id))
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            nil
+        response        (hc/send :get 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(assistant-modify assistant-id & options)" )
+     :doc """
+          Modifies an assistant.
+
+          ¶*Parameter «name»*
+
+          The name of the assistant. The maximum length is 256 characters.
+
+          ¶*Parameter «model»*
+
+          ID of the model to use. E.g.:  `:gpt-4o`
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :name             | The name of the assistant. The maximum length is \
+                                256 characters. |
+          | :model            | The  ID of the model to use. E.g.: `:gpt-4o` |
+          | :description      | The description of the assistant. The maximum length is \
+                                512 characters. |
+          | :instructions     | The system instructions that the assistant uses. \
+                                The maximum length is 256,000 characters.|
+          | :tools            | A list of tool enabled on the assistant. There can be a \
+                                maximum of 128 tools per assistant. Tools can be of \
+                                types "code_interpreter", "file_search", or "function". |
+          | :tool-resources   | A set of resources that are used by the assistant's tools. \
+                                The resources are specific to the type of tool. For example, \
+                                the code_interpreter tool requires a list of file IDs, while \
+                                the file_search tool requires a list of vector store IDs. |
+          | :assistant-opts   | A map of additional assistant options like "metadata", \
+                                "temperature", "top_p", "response_format".¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/assistants/createAssistant)|
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/assistants". ¶\
+                                Defaults  to "https://api.openai.com/v1/assistants" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/assistants)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/assistant-create 
+                                :instructions \"\"\"
+                                              You are an HR bot, and you have access to files to answer 
+                                              employee questions about company policies. Always 
+                                              response with info from either of the files.
+                                              \"\"\"
+                                :tools [ { "type" "file_search" } ]
+                                :headers { "OpenAI-Beta" "assistants=v2" })]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/assistant-create"
+          "openai/assistant-list"
+          "openai/assistant-retrieve"
+          "openai/assistant-delete" ) }
+
+  assistant-modify [assistant-id & options]
+
+  (assert (string? assistant-id))
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/assistants/{assistant-id}"
+        uri             (str/replace-all uri "{assistant-id}" (str/encode-url assistant-id))
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            (->> (merge { :model           (:model opts)
+                                      :name            (:name opts)
+                                      :description     (:description opts)
+                                      :instructions    (:instructions opts)
+                                      :tools           (:tools opts)
+                                      :tool_resources  (:tool-resources opts) }
+                                     (:assistant-opts opts))
+                             (filter-kv (fn [k v] (not (str/blank? v)))))
+        response        (hc/send :post 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
                           :headers  (:headers response) } ]
@@ -2383,6 +2587,7 @@
      :see-also '( 
           "openai/assistant-create"
           "openai/assistant-list"
+          "openai/assistant-retrieve"
           "openai/assistant-delete" ) }
 
   assistant-delete [assistant-id & options]
