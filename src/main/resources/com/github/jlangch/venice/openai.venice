@@ -2117,17 +2117,17 @@
 
 (defn 
   ^{ :arglists '(
-          "(assistant-create model name & options)" )
+          "(assistant-create name model & options)" )
      :doc """
           Create an assistant with a model and instructions.
-
-          ¶*Parameter «model»*
-
-          ID of the model to use. E.g.:  `:gpt-4o`
 
           ¶*Parameter «name»*
 
           The name of the assistant. The maximum length is 256 characters.
+
+          ¶*Parameter «model»*
+
+          ID of the model to use. E.g.:  `:gpt-4o`
 
           ¶*Parameter «options»*
 
@@ -2180,15 +2180,23 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/models-list)]
+            (let [response  (openai/assistant-create 
+                                "Math Tutor"
+                                :gpt-4o
+                                :instructions \"\"\"
+                                              You are a personal math tutor. When asked a question, 
+                                              write and run Python code to answer the question.
+                                              \"\"\"
+                                :tools [ { "type" "code_interpreter" } ]
+                                :headers { "OpenAI-Beta" "assistants=v2" })]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/models-retrieve"
-          "openai/models-delete" ) }
+          "openai/assistant-create"
+          "openai/assistant-list" ) }
 
-  assistant-create [model name & options]
+  assistant-create [name model & options]
 
   (assert (or (keyword? model) (string? model)))
   (assert (string? name))
@@ -2224,14 +2232,27 @@
   ^{ :arglists '(
           "(assistant-list & options)" )
      :doc """
-          Returns a list of the currently available models, and provides basic 
-          information about each one such as the owner and availability.
+          Returns a list of assistants.
 
           ¶*Parameter «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :assistant-opts   | A map of additional assistant options like "metadata", \
-                                "temperature", "top_p", "response_format".¶\
+          | :limit            | A limit on the number of objects to be returned. \
+                                Limit can range between 1 and 100, and the default is 20. |
+          | :order            | Sort order by the created_at timestamp of the objects. \
+                                "asc" for ascending order and "desc" for descending order. |
+          | :after            | A cursor for use in pagination. after is an object ID that defines \
+                                your place in the list. For instance, if you make a list request \
+                                and receive 100 objects, ending with obj_foo, your subsequent call \
+                                can include after=obj_foo in order to fetch the next page of the \
+                                list. |
+          | :before           | A cursor for use in pagination. before is an object ID that \
+                                defines your place in the list. For instance, if you make a list \
+                                request and receive 100 objects, ending with obj_foo, your \
+                                subsequent call can include before=obj_foo in order to fetch the \
+                                previous page of the list. |
+          | :assistant-opts   | A map of additional assistant options. Currently there are no \
+                                options defined for flisting assistants. \
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/assistants/listAssistants)|
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
@@ -2267,7 +2288,9 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/models-list)]
+            (let [response  (openai/assistant-list :limit 10
+                                                   :order "asc"
+                                                   :headers { "OpenAI-Beta" "assistants=v2" })]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
@@ -2278,14 +2301,24 @@
   assistant-list [& options]
 
   (let [opts            (apply hash-map options)
-        uri             "https://api.openai.com/v1/assistants"
+        query-params    { "limit"  (:limit opts)
+                          "order"  (:order opts)
+                          "after"  (:after opts)
+                          "before" (:before opts) }
+        query-string    (->> (map-vals str query-params)
+                             (filter-kv (fn [k v] (not (str/blank? v))))
+                             (map (fn [[k v]] (str k "=" v)))
+                             (str/join "&"))
+        uri             (str "https://api.openai.com/v1/assistants"
+                             (if (empty? query-string) nil (str "?" query-string)))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
         response        (hc/send :get 
                           uri
                           :headers (openai-api-headers "application/json" 
-                                                       openai-api-key)
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body nil
                           :debug  debug?)
         result          { :status   (:http-status response)
