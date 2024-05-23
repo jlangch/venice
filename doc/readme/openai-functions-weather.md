@@ -266,16 +266,15 @@ Run this code in a REPL:
                                           :tools (weather-function-defs)
                                           :prompt-opts { :temperature 0.1 })]
     (openai/assert-response-http-ok response)
-    (let [response (:data response)]     
+    (let [response (:data response)]  
+      ;; [2] The model returns a function call request   
+      (assert (openai/chat-finish-reason-tool-calls?  response))
+     
       ;;(println "Message:" (->> (openai/chat-extract-response-message response)
       ;;                         (openai/pretty-print-json)))
-
-      (assert (openai/chat-finish-reason-tool-calls?  response))
-      
-      ;; [2] The model returns a function call request
-      (println "\nPhase #2: call the requested functions")
-      
+     
       ;; [3] Call the requested function (openai/exec-fn ...)
+      (println "\nPhase #2: call the requested function")
       (let [fn-map  (weather-function-map)
             results (openai/exec-fn response fn-map)
             answer  (:ok (first results))]            ;; [4] The function's returned JSON data

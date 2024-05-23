@@ -80,13 +80,6 @@
 ;; CHAT COMPLETIONS 
 ;; -----------------------------------------------------------------------------
 
-;; https://platform.openai.com/docs/guides/text-generation
-;; https://platform.openai.com/docs/api-reference/chat/create
-
-(def endpoint-gpt-new "https://api.openai.com/v1/chat/completions")
-(def endpoint-gpt-old "https://api.openai.com/v1/completions")
-
-
 (defn 
   ^{ :arglists '(
           "(chat-completion prompt & options)" )
@@ -125,23 +118,24 @@
           ¶*Parameter request «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI chat completion URI. E.g.: \
-                                "https://api.openai.com/v1/chat/completions". ¶\
-                                Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model            | An OpenAI model. E.g.: "gpt-4o". Defaults \
                                 to "gpt-4o". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:gpt-4o`, `:gpt-4-turbo`, ...  |
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
-          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
-                                Map keys can be keywords or strings. ¶\
-                                E.g. `{ :temperature 0.2 }`. ¶\
-                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :tools            | a list of tools. e.g.: function definitions (see OpenAI api for details) |
           | :tool-choice      | a tool choice. e.g.: function definitions (see OpenAI api for details) ¶\
                                 This forces the model to use a specific function: ¶\
                                 `{:type "function", :function {:name "get_n_day_weather_forecast"}` |
+          | :chat-opts        | An optional map of OpenAI chat request options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :temperature 0.2 }`. ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "chats=v2"} |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/chat/completions". ¶\
+                                Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -248,12 +242,11 @@
                                             \"\"\" }
                                 { :role     "user"
                                   :content  "She no went to the market." } ]
-                  prompt-opts { :temperature 0.7
-                                :max_tokens 64
-                                :top_p 1 }
-                  response    (openai/chat-completion prompt 
+                   response    (openai/chat-completion prompt 
                                                       :model :gpt-4o
-                                                      :prompt-opts prompt-opts)]
+                                                      :chat-opts { :temperature 0.7
+                                                                   :max_tokens 64
+                                                                   :top_p 1 } )]
               (openai/assert-response-http-ok response)
               (println "Message:" (-> (:data response)
                                       (openai/chat-extract-response-message-content)
@@ -267,7 +260,6 @@
   chat-completion [prompt & options]
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/chat/completions")
         model           (to-model (:model opts) :gpt-4o)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
@@ -276,14 +268,16 @@
         _               (validate-tools tools)
         tool-choice     (:tool_choice opts)
         _               (validate-tool-choice tool-choice)
-        body            (build-chat-prompt model prompt (:prompt-opts opts)
+        chat-opts       (or (:chat-opts opts) (:prompt-opts opts)) ;; deprecated :prompt-opts
+        body            (build-chat-prompt model prompt chat-opts
                                            tools tool-choice {:stream false})
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body (json/write-str body)
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -342,15 +336,10 @@
           ¶*Parameter request «options»*
  
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI chat completion URI. E.g.: \
-                                "https://api.openai.com/v1/chat/completions". ¶\
-                                Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :model            | An OpenAI model. E.g.: "gpt-4o". Defaults \
                                 to "gpt-4o". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:gpt-4o`, `:gpt-4-turbo`, ...  |
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
           | :sync             | if *true* runs the request syncronously and waits \
                                 until the full message response is available. ¶\
                                 if *false* runs the request asyncronously and \
@@ -359,10 +348,16 @@
                                 (with an optional timeout) to get the full \
                                 message. ¶\
                                 Defaults to *true* |
-          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+          | :chat-opts        | An optional map of OpenAI chat request options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :temperature 0.2 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "chats=v2"} |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/chat/completions". ¶\
+                                Defaults  to "https://api.openai.com/v1/chat/completions" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -451,20 +446,21 @@
   (assert (fn? handler))
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/chat/completions")
         model           (to-model (:model opts) :gpt-4o)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         sync?           (:sync opts true)
-        body            (build-chat-prompt model prompt (:prompt-opts opts) 
+        chat-opts       (or (:chat-opts opts) (:prompt-opts opts)) ;; deprecated :prompt-opts
+        body            (build-chat-prompt model prompt chat-opts 
                                            nil nil {:stream true})
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body (json/write-str body)
                           :debug debug?)
         result          { :status   (:http-status response)
@@ -509,19 +505,20 @@
           ¶*Parameter request «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI chat completion URI. E.g.: \
-                                "https://api.openai.com/v1/images/generations". ¶\
-                                Defaults  to "https://api.openai.com/v1/images/generations" |
           | :model            | An OpenAI model. E.g.: "dall-e-3". Defaults \
                                 to "dall-e-3". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:dall-e-2`, `:dall-e-3`, ...  |
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
-          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+          | :image-opts       | An optional map of OpenAI image request options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :style "vivid" :size "1024x1024", :quality "hd" :n 1 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/create) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "images=v2"} |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/images/generations". ¶\
+                                Defaults  to "https://api.openai.com/v1/images/generations" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -556,7 +553,7 @@
                   response  (openai/image-create prompt 
                                                  :url
                                                  :model :dall-e-3
-                                                 :prompt-opts {:quality "hd"})]
+                                                 :image-opts {:quality "hd"})]
               (openai/assert-response-http-ok response)
               (println "Response:" (openai/pretty-print-json (:data response)))))
           """,
@@ -569,7 +566,7 @@
                   response  (openai/image-create prompt 
                                                  :b64_json
                                                  :model :dall-e-3
-                                                 :prompt-opts {:quality "hd"})]
+                                                 :image-opts {:quality "hd"})]
               (openai/assert-response-http-ok response)
               (println "Response:" (openai/pretty-print-json (:data response)))))
           """,
@@ -583,7 +580,7 @@
                   response  (openai/image-create prompt 
                                                  :url
                                                  :model :dall-e-3
-                                                 :prompt-opts {:quality "hd"})]
+                                                 :image-opts {:quality "hd"})]
               (openai/assert-response-http-ok response)
               (let [data       (:data (:data response))
                     img-data   (first data) ;; 1st image data
@@ -604,7 +601,7 @@
                   response  (openai/image-create prompt 
                                                  :b64_json
                                                  :model :dall-e-3
-                                                 :prompt-opts {:quality "hd"})]
+                                                 :image-opts {:quality "hd"})]
               (openai/assert-response-http-ok response)
               (let [data       (:data (:data response))
                     img-data   (first data) ;; 1st image data   
@@ -628,19 +625,20 @@
           "The response-format value must be :url or :b64_json")
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/images/generations")
         model           (to-model (:model opts) :dall-e-3)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
-        body            (build-image-prompt model prompt (:prompt-opts opts) 
+        image-opts      (or (:image-opts opts) (:prompt-opts opts) {}) ;; deprecated :prompt-opts
+        body            (build-image-prompt model prompt image-opts
                                             {:response_format response-format})
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body (json/write-str body)
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -676,19 +674,20 @@
           ¶*Parameter request «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI chat completion URI. E.g.: \
-                                "https://api.openai.com/v1/images/variations". ¶\
-                                Defaults  to "https://api.openai.com/v1/images/variations" |
           | :model            | An OpenAI model. E.g.: "dall-e-2". Defaults \
                                 to "dall-e-2". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:dall-e-2`, `:dall-e-3`, ...  |
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
-          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+          | :image-opts       | An optional map of OpenAI image request options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :size "1024x1024", :n 1 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createVariation) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "images=v2"} |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/images/variations". ¶\
+                                Defaults  to "https://api.openai.com/v1/images/variations" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -724,7 +723,7 @@
               (let [prompt    "A portrait of a dog in a library, Sigma 85mm f/1.4"
                     response  (openai/image-create prompt :b64_json
                                                    :model :dall-e-3
-                                                   :prompt-opts {:size "1024x1024", :quality "hd"})]
+                                                   :image-opts {:size "1024x1024", :quality "hd"})]
                 (openai/assert-response-http-ok response)
                 (let [data       (:data (:data response))
                       img-data   (first data) ;; 1st image data   
@@ -739,7 +738,7 @@
                     response  (openai/image-variants img
                                                      :b64_json
                                                      :model :dall-e-3
-                                                     :prompt-opts {:size "1024x1024", :n 1})]
+                                                     :image-opts {:size "1024x1024", :n 1})]
                 (openai/assert-response-http-ok response)
                 (let [data       (:data (:data response))
                       img-data   (first data) ;; 1st image data   
@@ -765,16 +764,15 @@
           "The response-format value must be :url or :b64_json")
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/images/variations")
         model           (to-model (:model opts) :dall-e-2)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
+        image-opts      (or (:image-opts opts) (:prompt-opts opts) {}) ;; deprecated :prompt-opts
         param-parts     (->> (merge { ;; :model  model   ;; OpenAI rejects a model!!
                                       :response_format response-format} 
-                                    (or (:prompt-opts opts) {}))
-                             (map-keys name)
-                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+                                    image-opts)
+                             (map-keys-and-vals))
         img-part        { "image"  { :filename  "image.png"
                                      :mimetype  "image/png"
                                      :data      image } }
@@ -784,8 +782,9 @@
         response        (hc/upload-multipart 
                           multi-parts 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :debug  debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
@@ -825,19 +824,20 @@
           ¶*Parameter request «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI chat completion URI. E.g.: \
-                                "https://api.openai.com/v1/images/edits". ¶\
-                                Defaults  to "https://api.openai.com/v1/images/edits" |
           | :model            | An OpenAI model. E.g.: "dall-e-2". Defaults \
                                 to "dall-e-2". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:dall-e-2`, `:dall-e-3`, ...  |
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
-          | :prompt-opts      | An optional map of OpenAI chat request prompt options \
+          | :image-opts       | An optional map of OpenAI image request options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :size "1024x1024", :n 1 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createEdit) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "images=v2"} |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/images/edits". ¶\
+                                Defaults  to "https://api.openai.com/v1/images/edits" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -874,7 +874,7 @@
               (let [response  (openai/image-create prompt 
                                                    :b64_json
                                                    :model :dall-e-3
-                                                   :prompt-opts {:size "1024x1024", :quality "hd"})]
+                                                   :image-opts {:size "1024x1024", :quality "hd"})]
                 (openai/assert-response-http-ok response)
                 (let [data       (:data (:data response))
                       img-data   (first data) ;; 1st image data   
@@ -903,7 +903,7 @@
                                                   prompt 
                                                   :b64_json
                                                   :model :dall-e-2
-                                                  :prompt-opts {:size "1024x1024", :n 1})]
+                                                  :image-opts {:size "1024x1024", :n 1})]
                 (openai/assert-response-http-ok response)
                 (let [data       (:data (:data response))
                       img-data   (first data) ;; 1st image data   
@@ -941,17 +941,16 @@
           "The response-format value must be :url or :b64_json")
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
         uri             (:uri opts "https://api.openai.com/v1/images/edits")
         model           (to-model (:model opts) :dall-e-2)
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
+        image-opts      (or (:image-opts opts) (:prompt-opts opts) {}) ;; deprecated :prompt-opts
         param-parts     (->> (merge { ;; :model  model   ;; OpenAI rejects a model!!
                                       :prompt prompt
                                       :response_format response-format} 
-                                    (or (:prompt-opts opts) {}))
-                             (map-keys name)
-                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+                                    image-opts)
+                             (map-keys-and-vals))
         img-parts       { "image"  { :filename  "image.png"
                                      :mimetype  "image/png"
                                      :data      image }
@@ -964,8 +963,9 @@
         response        (hc/upload-multipart 
                           multi-parts 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :debug  debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
@@ -1018,9 +1018,6 @@
           ¶*Parameter request «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI audio speech URI. E.g.: \
-                                "https://api.openai.com/v1/audio/speech". ¶\
-                                Defaults  to "https://api.openai.com/v1/audio/speech" |
           | :model            | An OpenAI model. E.g.: "tts-1". Defaults \
                                 to "tts-1". ¶\
                                 The model can also be passed as a keyword. E.g.: \
@@ -1031,6 +1028,12 @@
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :speed 1.0 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createSpeech) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "audio=v2"} |
+          | :uri              | An OpenAI audio speech URI. E.g.: \
+                                "https://api.openai.com/v1/audio/speech". ¶\
+                                Defaults  to "https://api.openai.com/v1/audio/speech" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1098,14 +1101,14 @@
                                       :voice voice
                                       :response_format response-format}
                                     (get opts :audio-opts {}))
-                             (map-keys name)
-                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+                             (map-keys-and-vals))
         debug?          (:debug opts false)
         _               (when debug? (dump-prompt body))
         response        (hc/send :post 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body (json/write-str body)
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -1152,19 +1155,20 @@
           ¶*Parameter «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI audio speech URI. E.g.: \
-                                "https://api.openai.com/v1/audio/transcriptions". ¶\
-                                Defaults  to "https://api.openai.com/v1/audio/transcriptions" |
           | :model            | An OpenAI model. E.g.: "whisper-1". Defaults \
                                 to "whisper-1". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:whisper-1`,...  |
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
           | :audio-opts       | An optional map of OpenAI audio options. \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :language "en", :temperature 0, :timestamp_granularities "word"}`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranscription) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "audio=v2"} |
+          | :uri              | An OpenAI audio speech URI. E.g.: \
+                                "https://api.openai.com/v1/audio/transcriptions". ¶\
+                                Defaults  to "https://api.openai.com/v1/audio/transcriptions" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1256,8 +1260,7 @@
         param-parts     (->> (merge { :model model
                                       :response_format response-format } 
                                     (or (:audio-opts opts) {}))
-                             (map-keys name)
-                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+                             (map-keys-and-vals))
         audio-mimetype  (audio-mimetype audio-type)
         audio-filext    (audio-file-ext audio-mimetype)
         file-part       { "file"  { :filename  (str "audio." audio-filext)
@@ -1269,8 +1272,9 @@
         response        (hc/upload-multipart 
                           multi-parts 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :debug  debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
@@ -1316,19 +1320,20 @@
           ¶*Parameter «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :uri              | An OpenAI audio speech URI. E.g.: \
-                                "https://api.openai.com/v1/audio/translations". ¶\
-                                Defaults  to "https://api.openai.com/v1/audio/translations" |
           | :model            | An OpenAI model. E.g.: "whisper-1". Defaults \
                                 to "whisper-1". ¶\
                                 The model can also be passed as a keyword. E.g.: \
                                 `:whisper-1`,...  |
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
           | :audio-opts       | An optional map of OpenAI audio options. \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :temperature 0, :prompt "....."}`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/audio/createTranslation) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "audio=v2"} |
+          | :uri              | An OpenAI audio speech URI. E.g.: \
+                                "https://api.openai.com/v1/audio/translations". ¶\
+                                Defaults  to "https://api.openai.com/v1/audio/translations" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1396,8 +1401,7 @@
         param-parts     (->> (merge { :model model
                                       :response_format response-format } 
                                     (or (:audio-opts opts) {}))
-                             (map-keys name)
-                             (map-vals (fn [v] (if (keyword? v) (name v) (str v)))))
+                             (map-keys-and-vals))
         audio-mimetype  (audio-mimetype audio-type)
         audio-filext    (audio-file-ext audio-mimetype)
         file-part       { "file"  { :filename  (str "audio." audio-filext)
@@ -1409,8 +1413,9 @@
         response        (hc/upload-multipart 
                           multi-parts 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :debug  debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
@@ -1448,6 +1453,10 @@
           | [![width: 15%]]   | [![width: 85%]] |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "files=v2"} |
+          | :uri              | An OpenAI files URI. E.g.: \
+                                "https://api.openai.com/v1/files". ¶\
+                                Defaults  to "https://api.openai.com/v1/files" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1498,7 +1507,7 @@
   (assert (string? purpose))
 
   (let [opts            (apply hash-map options)
-        uri             "https://api.openai.com/v1/files"
+        uri             (:uri opts "https://api.openai.com/v1/files")
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         parts           { "file"    { :filename  file-name
@@ -1510,8 +1519,9 @@
         response        (hc/upload-multipart 
                           parts 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :debug  debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
@@ -1537,6 +1547,10 @@
           | [![width: 15%]]   | [![width: 85%]] |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "files=v2"} |
+          | :uri              | An OpenAI files URI. E.g.: \
+                                "https://api.openai.com/v1/files?purpose={purpose}". ¶\
+                                Defaults  to "https://api.openai.com/v1/files?purpose={purpose}" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1588,16 +1602,18 @@
   (assert (or (nil? purpose) (string? purpose)))
 
   (let [opts            (apply hash-map options)
-        uri             (if (nil? purpose)
-                          "https://api.openai.com/v1/files"
-                          "https://api.openai.com/v1/files?purpose=~(str/encode-url purpose)")
+        uri             (:uri opts "https://api.openai.com/v1/files?purpose={purpose}")
+        uri             (str/replace-all uri 
+                                         "{file-id}"
+                                         (str/encode-url (str/trim-to-empty purpose)))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
         response        (hc/send :get 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body nil
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -1623,6 +1639,10 @@
           | [![width: 15%]]   | [![width: 85%]] |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "files=v2"} |
+          | :uri              | An OpenAI files URI. E.g.: \
+                                "https://api.openai.com/v1/files/{file-id}". ¶\
+                                Defaults  to "https://api.openai.com/v1/files/{file-id}" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1664,14 +1684,16 @@
   files-retrieve [file-id & options]
 
   (let [opts            (apply hash-map options)
-        uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)"
+        uri             (:uri opts "https://api.openai.com/v1/files/{file-id}")
+        uri             (str/replace-all uri "{file-id}" (str/encode-url file-id))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
         response        (hc/send :get 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body nil
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -1697,6 +1719,10 @@
           | [![width: 15%]]   | [![width: 85%]] |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "files=v2"} |
+          | :uri              | An OpenAI files URI. E.g.: \
+                                "https://api.openai.com/v1/files/{file-id}". ¶\
+                                Defaults  to "https://api.openai.com/v1/files/{file-id}" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1740,14 +1766,16 @@
   (assert (string? file-id))
 
   (let [opts            (apply hash-map options)
-        uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)"
+        uri             (:uri opts "https://api.openai.com/v1/files/{file-id}")
+        uri             (str/replace-all uri "{file-id}" (str/encode-url file-id))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
         response        (hc/send :delete 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body nil
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -1773,6 +1801,10 @@
           | [![width: 15%]]   | [![width: 85%]] |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "files=v2"} |
+          | :uri              | An OpenAI files URI. E.g.: \
+                                "https://api.openai.com/v1/files/{file-id}/content". ¶\
+                                Defaults  to "https://api.openai.com/v1/files/{file-id}/content" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1819,7 +1851,8 @@
   (assert (string? file-id))
 
   (let [opts            (apply hash-map options)
-        uri             "https://api.openai.com/v1/files/~(str/encode-url file-id)/content"
+        uri             (:uri opts "https://api.openai.com/v1/files/{file-id}/content")
+        uri             (str/replace-all uri "{file-id}" (str/encode-url file-id))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
@@ -1854,6 +1887,10 @@
           | [![width: 15%]]   | [![width: 85%]] |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "models=v2"} |
+          | :uri              | An OpenAI models URI. E.g.: \
+                                "https://api.openai.com/v1/models". ¶\
+                                Defaults  to "https://api.openai.com/v1/models" |
           | :debug            | An optional debug flag (true/false). Defaults \
                                 to false. ¶\
                                 In debug mode prints the HTTP request and response data |
@@ -1893,15 +1930,15 @@
   models-list [& options]
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
-        uri             "https://api.openai.com/v1/models"
+        uri             (:uri opts "https://api.openai.com/v1/models")
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
         response        (hc/send :get 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body nil
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -1922,6 +1959,19 @@
           ¶*Parameter «model»*
 
           The ID of the model to use for this request
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "models=v2"} |
+          | :uri              | An OpenAI models URI. E.g.: \
+                                "https://api.openai.com/v1/models/{model}". ¶\
+                                Defaults  to "https://api.openai.com/v1/models/{model}" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
 
           ¶*Return value*
            
@@ -1960,15 +2010,16 @@
   (assert (string? model))
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
-        uri             "https://api.openai.com/v1/models/~(str/encode-url model)"
+        uri             (:uri opts "https://api.openai.com/v1/models/{model}")
+        uri             (str/replace-all uri "{model}" (str/encode-url model))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
         response        (hc/send :get 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body nil
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -1988,6 +2039,18 @@
           ¶*Parameter «model»*
 
           The ID of the model to use for this request
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "models=v2"} |
+          | :uri              | An OpenAI models URI. E.g.: \
+                                "https://api.openai.com/v1/models/{model}". ¶\
+                                Defaults  to "https://api.openai.com/v1/models/{model}" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
 
           ¶*Return value*
            
@@ -2026,15 +2089,16 @@
   (assert (string? model))
 
   (let [opts            (apply hash-map options)
-        _               (assert (or (nil? (:prompt-opts opts)) (map? (:prompt-opts opts))))
-        uri             "https://api.openai.com/v1/models/~(str/encode-url model)"
+        uri             (:uri opts "https://api.openai.com/v1/models/{model}")
+        uri             (str/replace-all uri "{model}" (str/encode-url model))
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
         response        (hc/send :delete 
                           uri
-                          :headers { "Content-Type" "application/json"
-                                     "Authorization" (str "Bearer " openai-api-key)}
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
                           :body nil
                           :debug  debug?)
         result          { :status   (:http-status response)
@@ -2050,6 +2114,180 @@
 ;; -----------------------------------------------------------------------------
 ;; ASSISTANTS
 ;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(assistant-create model name & options)" )
+     :doc """
+          Create an assistant with a model and instructions.
+
+          ¶*Parameter «model»*
+
+          ID of the model to use. E.g.:  `:gpt-4o`
+
+          ¶*Parameter «name»*
+
+          The name of the assistant. The maximum length is 256 characters.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :description      | The description of the assistant. The maximum length is \
+                                512 characters. |
+          | :instructions     | The system instructions that the assistant uses. \
+                                The maximum length is 256,000 characters.|
+          | :tools            | A list of tool enabled on the assistant. There can be a \
+                                maximum of 128 tools per assistant. Tools can be of \
+                                types "code_interpreter", "file_search", or "function". |
+          | :tool-resources   | A set of resources that are used by the assistant's tools. \
+                                The resources are specific to the type of tool. For example, \
+                                the code_interpreter tool requires a list of file IDs, while \
+                                the file_search tool requires a list of vector store IDs. |
+          | :assistant-opts   | A map of additional assistant options like "metadata", \
+                                "temperature", "top_p", "response_format" |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/assistants". ¶\
+                                Defaults  to "https://api.openai.com/v1/assistants" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/assistants)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/models-list)]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/models-retrieve"
+          "openai/models-delete" ) }
+
+  assistant-create [model name & options]
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/assistants"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            (merge { :model           model
+                                 :name            name
+                                 :description     (:description opts)
+                                 :instructions    (:instructions opts)
+                                 :tools           (:tools opts)
+                                 :tool_resources  (:tool-resources opts) }
+                               (:assistant-opts opts))
+        response        (hc/send :post 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (->> (map-keys-and-vals body)
+                                        (json/write-str))
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(assistant-list & options)" )
+     :doc """
+          Returns a list of the currently available models, and provides basic 
+          information about each one such as the owner and availability.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/assistants". ¶\
+                                Defaults  to "https://api.openai.com/v1/assistants" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/assistants)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/models-list)]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/models-retrieve"
+          "openai/models-delete" ) }
+
+  assistant-list [& options]
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/assistants"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        response        (hc/send :get 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key)
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
 
 
 
@@ -2679,6 +2917,19 @@
       (:content)))
 
 
+(defn- openai-api-headers 
+  ([content-type openai-api-key]
+    (assert (string? content-type))
+    (assert (string? openai-api-key))
+    { "Content-Type"  content-type
+      "Authorization" (str "Bearer " openai-api-key) })
+  
+  ([content-type openai-api-key headers]
+    (assert (or (nil headers) (map? headers)))
+    (merge (openai-api-headers content-type openai-api-key)
+           headers)))
+
+
 (defn- openai-api-key-from-env [] 
   (system-env "OPENAI_API_KEY"))
 
@@ -2704,7 +2955,14 @@
          (or prompt-opts {})
          (or overrule-opts {})))
 
-  
+
+(defn- map-keys-and-vals [dict]
+   (let [mapper (fn [v] (if (keyword? v) (name v) v))]
+     (->> dict
+          (map-keys mapper)
+          (map-vals mapper))))
+
+
 (defn- dump-prompt [prompt]
   (println "\nPrompt:")
   (println (json/pretty-print (json/write-str prompt))))

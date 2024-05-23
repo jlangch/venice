@@ -39,7 +39,7 @@ Note: URLs are only valid for 60 minutes after the image has been generated.
 | :uri              | An OpenAI chat completion URI. E.g.: "https://api.openai.com/v1/images/generations". Defaults  to "https://api.openai.com/v1/images/generations" |
 | :model            | An OpenAI model. E.g.: "dall-e-3". Defaults to "dall-e-3".<br>The model can also be passed as a keyword. E.g.: `:dall-e-2`, `:dall-e-3`, ...  |
 | :openai-api-key   | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
-| :prompt-opts      | An optional map of OpenAI chat request prompt options Map keys can be keywords or strings.<br>E.g. `{ :style "vivid" :size "1024x1024", :quality "hd" :n 1 }`. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/create) |
+| :image-opts       | An optional map of OpenAI image request options Map keys can be keywords or strings.<br>E.g. `{ :style "vivid" :size "1024x1024", :quality "hd" :n 1 }`. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/create) |
 | :debug            | An optional debug flag (true/false). Defaults  to false.<br>In debug mode prints the HTTP request and response data |
  
  
@@ -72,7 +72,7 @@ Return image as URL (response format `:url`) and print the full OpenAI response 
         response  (openai/image-create prompt 
                                        :url   ;; alternatively use :b64_json
                                        :model :dall-e-3
-                                       :prompt-opts {:quality "hd"})]
+                                       :image-opts {:quality "hd"})]
     (openai/assert-response-http-ok response)
     (println "Response:" (openai/pretty-print-json (:data response)))))
 ```
@@ -90,7 +90,7 @@ Return image as URL (response format `:url`) JSON and save it to a file
         response  (openai/image-create prompt                 ;; generate image
                                       :url
                                       :model :dall-e-3
-                                      :prompt-opts {:quality "hd"})]
+                                      :image-opts {:quality "hd"})]
     (openai/assert-response-http-ok response)
     (let [data       (:data (:data response))
           img-data   (first data) ;; 1st image data
@@ -116,7 +116,7 @@ Return image as Base64 (response format `:b64_json`) JSON and save it to a file
         response  (openai/image-create prompt          ;; generate image
                                        :b64_json
                                        :model :dall-e-3
-                                       :prompt-opts {:quality "hd"})]
+                                       :image-opts {:quality "hd"})]
     (openai/assert-response-http-ok response)
     (let [data       (:data (:data response))
           img-data   (first data) ;; 1st image data   
@@ -159,7 +159,7 @@ Note: URLs are only valid for 60 minutes after the image has been generated.
 | :uri              | An OpenAI chat completion URI. E.g.: "https://api.openai.com/v1/images/variations". Defaults  to "https://api.openai.com/v1/images/variations" |
 | :model            | n OpenAI model. E.g.: "dall-e-2". Defaults to "dall-e-2".<br>The model can also be passed as a keyword. E.g.: `:dall-e-2`, `:dall-e-3`, ...  |
 | :openai-api-key   | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
-| :prompt-opts      | An optional map of OpenAI chat request prompt options Map keys can be keywords or strings.<br>E.g. `{ :style "vivid" :size "1024x1024", :n 1 }`. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createVariation) |
+| :image-opts      | An optional map of OpenAI image request options Map keys can be keywords or strings.<br>E.g. `{ :style "vivid" :size "1024x1024", :n 1 }`. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createVariation) |
 | :debug            | An optional debug flag (true/false). Defaults  to false.<br>In debug mode prints the HTTP request and response data |
  
  
@@ -193,7 +193,7 @@ See:
           response  (openai/image-create prompt 
                                          :b64_json            ;; generate image
                                          :model :dall-e-3
-                                         :prompt-opts {:size "1024x1024", :quality "hd"})]
+                                         :image-opts {:size "1024x1024", :quality "hd"})]
       (openai/assert-response-http-ok response)
       (let [data       (:data (:data response))
             img-data   (first data) ;; 1st image data   
@@ -208,7 +208,7 @@ See:
           response  (openai/image-variants img  ;; generate image variant
                                            :b64_json
                                            :model :dall-e-3
-                                           :prompt-opts {:size "1024x1024", :n 1})]
+                                           :image-opts {:size "1024x1024", :n 1})]
       (openai/assert-response-http-ok response)
       (let [data       (:data (:data response))
             img-data   (first data) ;; 1st image data   
@@ -263,7 +263,7 @@ Note: URLs are only valid for 60 minutes after the image has been generated.
 | :uri              | An OpenAI chat completion URI. E.g.: "https://api.openai.com/v1/images/edits". Defaults  to "https://api.openai.com/v1/images/edits" |
 | :model            | n OpenAI model. E.g.: "dall-e-2". Defaults to "dall-e-2".<br>The model can also be passed as a keyword. E.g.: `:dall-e-2`, `:dall-e-3`, ...  |
 | :openai-api-key   | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
-| :prompt-opts      | An optional map of OpenAI chat request prompt options Map keys can be keywords or strings.<br>E.g. `{ :style "vivid" :size "1024x1024", :n 1 }`. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createEdit) |
+| :image-opts      | An optional map of OpenAI image request options Map keys can be keywords or strings.<br>E.g. `{ :style "vivid" :size "1024x1024", :n 1 }`. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/images/createEdit) |
 | :debug            | An optional debug flag (true/false). Defaults  to false.<br>In debug mode prints the HTTP request and response data |
  
  
@@ -297,7 +297,7 @@ See:
     (let [response  (openai/image-create prompt               ;; generate image
                                          :b64_json
                                          :model :dall-e-3
-                                         :prompt-opts {:size "1024x1024", :quality "hd"})]
+                                         :image-opts {:size "1024x1024", :quality "hd"})]
       (openai/assert-response-http-ok response)
       (let [data       (:data (:data response))
             img-data   (first data) ;; 1st image data   
@@ -326,7 +326,7 @@ See:
                                         prompt 
                                         :b64_json
                                         :model :dall-e-2
-                                        :prompt-opts {:size "1024x1024", :n 1})]
+                                        :image-opts {:size "1024x1024", :n 1})]
       (openai/assert-response-http-ok response)
       (let [data       (:data (:data response))
             img-data   (first data) ;; 1st image data   
