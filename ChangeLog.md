@@ -7,11 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.24] - 2024-05-xx
+## [1.12.24] - 2024-05-23
 
-### Added
+### Changed
 
-- ...
+- the OpenAI client api slightly to allow the integration of the assistants functionality.
+  Use the actul OpenAI examples from the README with Venice 1.2.24+!
 
 
 
