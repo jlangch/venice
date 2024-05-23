@@ -38,16 +38,16 @@ The OpenAI shall answer questions about the current weather at a given location.
 
 4. The function returns a JSON object with the current Glasgow weather data
 
-   Function arguments:
+   Function arguments (a Venice map):
    
-   ```json
+   ```clojure
    { 
-     "location": "Glasgow",
-     "format": "celsius"
+     "location" "Glasgow",
+     "format"   "celsius"
    }
    ```
    
-   Function return value:
+   Function return value (JSON):
    
    ```json
    { 
@@ -58,7 +58,7 @@ The OpenAI shall answer questions about the current weather at a given location.
    }
    ```
    
-   Note: The function responds with an error if there is no data for a location:
+   Note: The function responds with an error in JSON if there is no data for a location:
    
    ```json
    { 
