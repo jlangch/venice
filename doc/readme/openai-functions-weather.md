@@ -363,7 +363,7 @@ To debug requests and responses enable the debug option at the `openai/chat-comp
         prompt-opts { :temperature 0.1 }
         response    (openai/chat-completion prompt 
                                             :model "gpt-4"
-                                            :tools (demo-weather-function-defs)
+                                            :tools (openai-demo/demo-weather-function-defs)
                                             :prompt-opts prompt-opts
                                             :debug true)]         ;; <======= DEBUGGING ON
     (openai/assert-response-http-ok response)
