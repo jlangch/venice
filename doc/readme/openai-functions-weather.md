@@ -87,7 +87,8 @@ The simplified weather data function is defined as:
 ```clojure
 (defn get-current-weather 
   ([named-args] 
-    (get-current-weather (get named-args "location")   ;; argument dispatching
+    ;; dispatches a dictionary of arguments to a two-arg function call
+    (get-current-weather (get named-args "location") 
                          (get named-args "format")))
 
   ([location format]
