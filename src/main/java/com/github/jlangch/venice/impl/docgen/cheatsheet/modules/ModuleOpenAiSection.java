@@ -94,6 +94,7 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         all.addSection(assistants);
         assistants.addItem(diBuilder.getDocItem("openai/assistant-create", false));
         assistants.addItem(diBuilder.getDocItem("openai/assistant-list", false));
+        assistants.addItem(diBuilder.getDocItem("openai/assistant-delete", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);

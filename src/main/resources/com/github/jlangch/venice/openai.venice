@@ -2194,12 +2194,13 @@
           """ )
      :see-also '( 
           "openai/assistant-create"
-          "openai/assistant-list" ) }
+          "openai/assistant-list"
+          "openai/assistant-delete" ) }
 
   assistant-create [name model & options]
 
-  (assert (or (keyword? model) (string? model)))
   (assert (string? name))
+  (assert (or (keyword? model) (string? model)))
 
   (let [opts            (apply hash-map options)
         uri             "https://api.openai.com/v1/assistants"
@@ -2251,10 +2252,7 @@
                                 request and receive 100 objects, ending with obj_foo, your \
                                 subsequent call can include before=obj_foo in order to fetch the \
                                 previous page of the list. |
-          | :assistant-opts   | A map of additional assistant options. Currently there are no \
-                                options defined for flisting assistants. \
-                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/assistants/listAssistants)|
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+         | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
           | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
           | :uri              | An OpenAI assistants URI. E.g.: \
@@ -2296,7 +2294,8 @@
           """ )
      :see-also '( 
           "openai/assistant-create"
-          "openai/assistant-list" ) }
+          "openai/assistant-list"
+          "openai/assistant-delete" ) }
 
   assistant-list [& options]
 
@@ -2321,6 +2320,89 @@
                                                        (:headers opts))
                           :body nil
                           :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(assistant-delete assistant-id & options)" )
+     :doc """
+          Delete an assistant.
+
+          ¶*Parameter «assistant-id»*
+
+          The ID of the assistant to delete.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/assistants/{assistant-id}". ¶\
+                                Defaults  to "https://api.openai.com/v1/assistants/{assistant-id}" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/assistants)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/assistant-delete "asst_abc123"
+                                                     :headers { "OpenAI-Beta" "assistants=v2" })]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/assistant-create"
+          "openai/assistant-list"
+          "openai/assistant-delete" ) }
+
+  assistant-delete [assistant-id & options]
+
+  (assert (string? assistant-id))
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/assistants/{assistant-id}"
+        uri             (str/replace-all uri "{assistant-id}" (str/encode-url assistant-id))
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            nil
+        response        (hc/send :delete 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
         result          { :status   (:http-status response)
                           :mimetype (:content-type-mimetype response)
                           :headers  (:headers response) } ]
