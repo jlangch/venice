@@ -31,7 +31,9 @@ The OpenAI shall answer questions about the current weather at a given location.
 
 3. The client calls the requested function to get the information
 
-      `(openai/exec-fn response fn-map)` is calling the requested function from the `fn-map` based on the model's response.
+   Venice provides the `(openai/exec-fn response fn-map)` function to call 
+   the requested function based on the model's *response* and a function
+   mapping dictionary *fn-map*.
    
 
 4. The function returns a JSON object with the current Glasgow weather data
