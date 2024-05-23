@@ -244,16 +244,16 @@ Run this code in a REPL:
 
 
   (defn- temperature [t format]
-    (if (str/equals-ignore-case? format "fahrenheit")
-      (str/format "%#.1f" (celsius-to-fahrenheit t))
-      (str/format "%#.1f" (double t))))
+    (str/format "%#.1f" (if (fahrenheit? format) (celsius-to-fahrenheit t) (double t))))
 
+  (defn- fahrenheit? [format]
+    (str/equals-ignore-case? format "fahrenheit"))
 
   (defn- celsius-to-fahrenheit [c]
-    (-> (* (double c) 9)
-        (/ 5)
-        (+ 32)))
+    (-> (double c) (* 9) (/ 5) (+ 32)))
   
+  
+  ;; Running the example
   
   (println "Phase #1: prompt the model")
   (let [model     "gpt-4"
