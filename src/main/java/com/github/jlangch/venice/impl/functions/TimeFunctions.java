@@ -687,6 +687,166 @@ public class TimeFunctions {
         };
 
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Unix timestamp. Seconds since Jan 01 1970 (UTC).
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static VncFunction unix_timestamp =
+        new VncFunction(
+                "time/unix-timestamp",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(time/unix-timestamp)",
+                        "(time/unix-timestamp year month day)",
+                        "(time/unix-timestamp year month day hour minute second)",
+                        "(time/unix-timestamp year month day hour minute second millis)",
+                        "(time/unix-timestamp date)")
+                    .doc(
+                        "Returns a unix timestamp. Seconds since Jan 01 1970 (UTC).\n\n" +
+                        "See: [Unix Timestamp](https://www.unixtimestamp.com/)")
+                    .examples(
+                        "(time/unix-timestamp)",
+                        "(time/unix-timestamp 2018 8 1)",
+                        "(time/unix-timestamp 2018 8 1 14 20 10)",
+                        "(time/unix-timestamp 2018 8 1 14 20 10 200)",
+                        "(time/unix-timestamp \"2018-08-01T14:20:10.200\")",
+                        "(time/unix-timestamp (time/local-date 2018 8 1))",
+                        "(time/unix-timestamp (. :java.util.Date :new))")
+                    .seeAlso(
+                        "time/unix-timestamp-to-local-date-time",
+                        "time/local-date-time",
+                        "time/local-date",
+                        "time/zoned-date-time")
+                     .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0, 1, 3, 6, 7);
+
+                if (args.size() == 0) {
+                    return new VncLong(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+                }
+                else if (args.size() == 1) {
+                    final VncVal val = args.first();
+                    if (Types.isVncJavaObject(val)) {
+                        final Object obj = ((VncJavaObject)val).getDelegate();
+                        if (obj instanceof Date) {
+                            final long millis = ((Date)obj).getTime();
+                            return new VncLong(
+                                            Instant.ofEpochMilli(millis)
+                                                   .atZone(ZoneId.systemDefault())
+                                                   .toLocalDateTime()
+                                                   .toEpochSecond(ZoneOffset.UTC));
+                        }
+                        else if (obj instanceof ZonedDateTime) {
+                            return new VncLong(((ZonedDateTime)obj).toLocalDateTime().toEpochSecond(ZoneOffset.UTC));
+                        }
+                        else if (obj instanceof LocalDateTime) {
+                            return new VncLong(((LocalDateTime)obj).toEpochSecond(ZoneOffset.UTC));
+                        }
+                        else if (obj instanceof LocalDate) {
+                            return new VncLong(((LocalDate)obj).atTime(0,0,0).toEpochSecond(ZoneOffset.UTC));
+                        }
+                        else if (obj instanceof Instant) {
+                            return new VncLong(
+                                    ((Instant)obj).getEpochSecond());
+                        }
+                        else {
+                            throw new VncException(String.format(
+                                    "Function 'time/unix-timestamp' does not allow %s as parameters",
+                                    Types.getType(val)));
+                        }
+                    }
+                    else if (Types.isVncString(val)) {
+                        // ISO local date format "yyyy-mm-ddThh:MM:ss.SSS"
+                        final String s = ((VncString)val).getValue();
+                        return new VncJavaObject(LocalDateTime.parse(s));
+                    }
+                    else if (Types.isVncLong(val)) {
+                        return val;
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'time/unix-timestamp' does not allow %s as parameter",
+                                Types.getType(val)));
+                    }
+                }
+                else if (args.size() == 3) {
+                    return new VncLong(
+                            LocalDateTime
+                                .of(
+                                    Coerce.toVncLong(args.first()).getValue().intValue(),
+                                    Coerce.toVncLong(args.second()).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(2)).getValue().intValue(),
+                                    0, 0, 0, 0)
+                                .toEpochSecond(ZoneOffset.UTC));
+                }
+                else if (args.size() == 6) {
+                    return new VncLong(
+                            LocalDateTime
+                                .of(
+                                    Coerce.toVncLong(args.first()).getValue().intValue(),
+                                    Coerce.toVncLong(args.second()).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(2)).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(3)).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(4)).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(5)).getValue().intValue(),
+                                    0)
+                                .toEpochSecond(ZoneOffset.UTC));
+                }
+                else {
+                    return new VncLong(
+                            LocalDateTime
+                                .of(
+                                    Coerce.toVncLong(args.first()).getValue().intValue(),
+                                    Coerce.toVncLong(args.second()).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(2)).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(3)).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(4)).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(5)).getValue().intValue(),
+                                    Coerce.toVncLong(args.nth(6)).getValue().intValue() * 1_000_000)
+                                .toEpochSecond(ZoneOffset.UTC));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction unix_timestamp_to_local_date_time =
+        new VncFunction(
+                "time/unix-timestamp-to-local-date-time",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(time/unix-timestamp-to-local-date-time seconds-since-epoch)")
+                    .doc(
+                        "Converts a unix timestamp (seconds since Jan 01 1970 (UTC)) to a " +
+                        "java :LocalDateTime.\n\n" +
+                        "See: [Unix Timestamp](https://www.unixtimestamp.com/)")
+                    .examples(
+                        "(time/unix-timestamp-to-local-date-time (time/unix-timestamp))")
+                    .seeAlso(
+                        "time/unix-timestamp")
+                     .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final long seconds = Coerce.toVncLong(args.first()).toJavaLong();
+
+                final LocalDateTime ts = Instant.ofEpochSecond(seconds)
+                                                .atOffset(ZoneOffset.UTC)
+                                                .toLocalDateTime();
+
+                return new VncJavaObject(ts);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
     ///////////////////////////////////////////////////////////////////////////
     // Compare
@@ -1667,6 +1827,7 @@ public class TimeFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
     ///////////////////////////////////////////////////////////////////////////
     // Miscallenous
     ///////////////////////////////////////////////////////////////////////////
@@ -2318,6 +2479,8 @@ public class TimeFunctions {
                     .add(zoned_date_time)
                     .add(zoned_date_time_Q)
                     .add(zoned_date_time_parse)
+                    .add(unix_timestamp)
+                    .add(unix_timestamp_to_local_date_time)
                     .add(with_time)
                     .add(zone_ids)
                     .add(to_millis)

@@ -62,6 +62,11 @@ public class TimeSection implements ISectionBuilder {
         zoned_date_time.addItem(diBuilder.getDocItem("time/zoned-date-time?"));
         zoned_date_time.addItem(diBuilder.getDocItem("time/zoned-date-time-parse"));
 
+        final DocSection unix_time = new DocSection("Unix Timestamp", "time.unix");
+        all.addSection(unix_time);
+        unix_time.addItem(diBuilder.getDocItem("time/unix-timestamp"));
+        unix_time.addItem(diBuilder.getDocItem("time/unix-timestamp-to-local-date-time"));
+
         final DocSection fields = new DocSection("Fields", "time.fields");
         all.addSection(fields);
         fields.addItem(diBuilder.getDocItem("time/year"));
