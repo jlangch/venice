@@ -126,7 +126,7 @@ Result:
 { :created 1715367049 
   :owned_by "system" 
   :id "gpt-4o"
-   :object "model"}
+  :object "model"}
 ```
 
 
