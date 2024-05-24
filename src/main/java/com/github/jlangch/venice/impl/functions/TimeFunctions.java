@@ -711,6 +711,7 @@ public class TimeFunctions {
                         "(time/unix-timestamp 2018 8 1 14 20 10)",
                         "(time/unix-timestamp 2018 8 1 14 20 10 200)",
                         "(time/unix-timestamp \"2018-08-01T14:20:10.200\")",
+                        "(time/unix-timestamp (time/local-date-time))",
                         "(time/unix-timestamp (time/local-date 2018 8 1))",
                         "(time/unix-timestamp (. :java.util.Date :new))")
                     .seeAlso(
