@@ -1431,7 +1431,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(files-upload file-data file-name file-mimetype purpose & options)" )
+          "(file-upload file-data file-name file-mimetype purpose & options)" )
      :doc """
           Upload a file that can be used across various endpoints. Individual 
           files can be up to 512 MB, and the size of all files uploaded by one
@@ -1485,20 +1485,20 @@
             (load-module :openai)
 
             (let [file      "https://raw.githubusercontent.com/jlangch/venice/master/doc/pdfs/fonts-example.pdf"
-                  response  (openai/files-upload  (io/download file :binary true)
-                                                  "example.pdf"
-                                                  "application/pdf" 
-                                                  "assistants")]
+                  response  (openai/file-upload  (io/download file :binary true)
+                                                 "example.pdf"
+                                                 "application/pdf" 
+                                                 "assistants")]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/files-list"
-          "openai/files-retrieve"
-          "openai/files-delete"
-          "openai/files-retrieve-content" ) }
+          "openai/file-list"
+          "openai/file-retrieve"
+          "openai/file-delete"
+          "openai/file-retrieve-content" ) }
 
-  files-upload [file-data file-name file-mimetype purpose & options]
+  file-upload [file-data file-name file-mimetype purpose & options]
 
   (assert (bytebuf? file-data))
   (assert (string? file-name))
@@ -1532,7 +1532,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(files-list purpose & options)" )
+          "(file-list purpose & options)" )
      :doc """
           Returns a list of files that belong to the user's organization.
           
@@ -1578,7 +1578,7 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/files-list nil)]
+            (let [response  (openai/file-list nil)]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """,
@@ -1586,17 +1586,17 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/files-list "assistants")]
+            (let [response  (openai/file-list "assistants")]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/files-upload"
-          "openai/files-retrieve"
-          "openai/files-delete"
-          "openai/files-retrieve-content" ) }
+          "openai/file-upload"
+          "openai/file-retrieve"
+          "openai/file-delete"
+          "openai/file-retrieve-content" ) }
 
-  files-list [purpose & options]
+  file-list [purpose & options]
 
   (assert (or (nil? purpose) (string? purpose)))
 
@@ -1626,7 +1626,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(files-retrieve file-id & options)" )
+          "(file-retrieve file-id & options)" )
      :doc """
           Returns information about a specific file.
           
@@ -1671,17 +1671,17 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/files-retrieve "file-uo1oroO3MMRFwRAypupJX0pO")]
+            (let [response  (openai/file-retrieve "file-uo1oroO3MMRFwRAypupJX0pO")]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/files-upload"
-          "openai/files-list"
-          "openai/files-delete"
-          "openai/files-retrieve-content" ) }
+          "openai/file-upload"
+          "openai/file-list"
+          "openai/file-delete"
+          "openai/file-retrieve-content" ) }
 
-  files-retrieve [file-id & options]
+  file-retrieve [file-id & options]
 
   (let [opts            (apply hash-map options)
         uri             (:uri opts "https://api.openai.com/v1/files/{file-id}")
@@ -1706,7 +1706,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(files-delete file-id & options)" )
+          "(file-delete file-id & options)" )
      :doc """
           Delete a file.
           
@@ -1751,17 +1751,17 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/files-delete "file-uo1oroO3MMRFwRAypupJX0pO")]
+            (let [response  (openai/file-delete "file-uo1oroO3MMRFwRAypupJX0pO")]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/files-upload"
-          "openai/files-list"
-          "openai/files-retrieve"
-          "openai/files-retrieve-content" ) }
+          "openai/file-upload"
+          "openai/file-list"
+          "openai/file-retrieve"
+          "openai/file-retrieve-content" ) }
 
-  files-delete [file-id & options]
+  file-delete [file-id & options]
 
   (assert (string? file-id))
 
@@ -1788,7 +1788,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(files-retrieve-content file-id & options)" )
+          "(file-retrieve-content file-id & options)" )
      :doc """
           Returns the contents of the specified file.
           
@@ -1833,7 +1833,7 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/files-retrieve-content "file-uo1oroO3MMRFwRAypupJX0pO")]
+            (let [response  (openai/file-retrieve-content "file-uo1oroO3MMRFwRAypupJX0pO")]
               (openai/assert-response-http-ok response)
               (let [data       (:data response)
                     file       "./example.pdf"]
@@ -1841,12 +1841,12 @@
                 (prn "Saved to:" file))))
           """ )
      :see-also '( 
-          "openai/files-upload"
-          "openai/files-list"
-          "openai/files-retrieve"
-          "openai/files-delete" ) }
+          "openai/file-upload"
+          "openai/file-list"
+          "openai/file-retrieve"
+          "openai/file-delete" ) }
 
-  files-retrieve-content [file-id & options]
+  file-retrieve-content [file-id & options]
 
   (assert (string? file-id))
 
@@ -1877,7 +1877,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(models-list & options)" )
+          "(model-list & options)" )
      :doc """
           Returns a list of the currently available models, and provides basic 
           information about each one such as the owner and availability.
@@ -1919,15 +1919,15 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/models-list)]
+            (let [response  (openai/model-list)]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/models-retrieve"
-          "openai/models-delete" ) }
+          "openai/model-retrieve"
+          "openai/model-delete" ) }
 
-  models-list [& options]
+  model-list [& options]
 
   (let [opts            (apply hash-map options)
         uri             (:uri opts "https://api.openai.com/v1/models")
@@ -1951,7 +1951,7 @@
 
 (defn
   ^{ :arglists '(
-          "(models-retrieve model & options)" )
+          "(model-retrieve model & options)" )
      :doc """
           Retrieves a model instance, providing basic information about the model 
           such as the owner and permissioning.
@@ -1997,15 +1997,15 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/models-retrieve "gpt-4o")]
+            (let [response  (openai/model-retrieve "gpt-4o")]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/models-list"
-          "openai/models-delete" ) }
+          "openai/model-list"
+          "openai/model-delete" ) }
 
-  models-retrieve [model & options]
+  model-retrieve [model & options]
   
   (assert (string? model))
 
@@ -2032,7 +2032,7 @@
 
 (defn
   ^{ :arglists '(
-          "(models-delete model & options)" )
+          "(model-delete model & options)" )
      :doc """
           Deletes a model instance.
 
@@ -2076,15 +2076,15 @@
           (do
             (load-module :openai)
 
-            (let [response  (openai/models-delete "xyz")]
+            (let [response  (openai/model-delete "xyz")]
               (openai/assert-response-http-ok response)
               (prn (:data response))))
           """ )
      :see-also '( 
-          "openai/models-list"
-          "openai/models-retrieve" ) }
+          "openai/model-list"
+          "openai/model-retrieve" ) }
 
-  models-delete [model & options]
+  model-delete [model & options]
   
   (assert (string? model))
 
@@ -2620,6 +2620,175 @@
 ;; -----------------------------------------------------------------------------
 ;; ASSISTANTS (threads)
 ;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(thread-create & options)" )
+     :doc """
+          Create a thread that assistants can interact with.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :messages         | A list of messages  |
+          | :tool-resources   | A set of resources that are made available to the assistant's \
+                                tools in this thread. The resources are specific to the type of \
+                                tool. For example, the code_interpreter tool requires a list of \
+                                file IDs, while the file_search tool requires a list of vector \
+                                store IDs.|
+          | :metadata         | Set of 16 key-value pairs that can be attached to an object. \
+                                This can be useful for storing additional information about the \
+                                object in a structured format. Keys can be a maximum of 64 \
+                                characters long and values can be a maxium of 512 characters \
+                                long. |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/threads". ¶\
+                                Defaults  to "https://api.openai.com/v1/threads" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/threads)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/thread-create 
+                                :headers { "OpenAI-Beta" "assistants=v2" })]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/thread-create"
+          "openai/thread-retrieve" ) }
+
+  thread-create [& options]
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/assistants"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            { :messages        messages
+                          :tool_resources  (:tool-resources opts)
+                          :metadata        metadata }
+        response        (hc/send :post 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(thread-retrieve thread-id & options)" )
+     :doc """
+          Retrieves a thread.
+
+          ¶*Parameter thread-id»*
+
+          The ID of the thread to retrieve.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/threads/{thread-id}". ¶\
+                                Defaults  to "https://api.openai.com/v1/threads/{thread-id}" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/threads)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/thread-retrieve "thread_abc123"
+                                                    :headers { "OpenAI-Beta" "assistants=v2" })]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/thread-create"
+          "openai/thread-retrieve" ) }
+
+  thread-retrieve [thread-id & options]
+
+  (assert (string? thread-id))
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/threads/{thread-id}"
+        uri             (str/replace-all uri "{thread-id}" (str/encode-url thread-id))
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            nil
+        response        (hc/send :get 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
 
 
 

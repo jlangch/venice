@@ -78,17 +78,17 @@ public class ModuleOpenAiSection implements ISectionBuilder {
 
         final DocSection files = new DocSection("Files", id());
         all.addSection(files);
-        files.addItem(diBuilder.getDocItem("openai/files-upload", false));
-        files.addItem(diBuilder.getDocItem("openai/files-list", false));
-        files.addItem(diBuilder.getDocItem("openai/files-retrieve", false));
-        files.addItem(diBuilder.getDocItem("openai/files-delete", false));
-        files.addItem(diBuilder.getDocItem("openai/files-retrieve-content", false));
+        files.addItem(diBuilder.getDocItem("openai/file-upload", false));
+        files.addItem(diBuilder.getDocItem("openai/file-list", false));
+        files.addItem(diBuilder.getDocItem("openai/file-retrieve", false));
+        files.addItem(diBuilder.getDocItem("openai/file-delete", false));
+        files.addItem(diBuilder.getDocItem("openai/file-retrieve-content", false));
 
         final DocSection models = new DocSection("Models", id());
         all.addSection(models);
-        models.addItem(diBuilder.getDocItem("openai/models-list", false));
-        models.addItem(diBuilder.getDocItem("openai/models-retrieve", false));
-        models.addItem(diBuilder.getDocItem("openai/models-delete", false));
+        models.addItem(diBuilder.getDocItem("openai/model-list", false));
+        models.addItem(diBuilder.getDocItem("openai/model-retrieve", false));
+        models.addItem(diBuilder.getDocItem("openai/model-delete", false));
 
         final DocSection assistants = new DocSection("Assistants", id());
         all.addSection(assistants);
@@ -100,6 +100,8 @@ public class ModuleOpenAiSection implements ISectionBuilder {
 
         final DocSection threads = new DocSection("Threads", id());
         all.addSection(threads);
+        threads.addItem(diBuilder.getDocItem("openai/thread-create", false));
+        threads.addItem(diBuilder.getDocItem("openai/thread-retrieve", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
