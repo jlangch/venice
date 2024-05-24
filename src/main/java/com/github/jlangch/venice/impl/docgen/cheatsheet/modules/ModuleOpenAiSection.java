@@ -98,6 +98,9 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         assistants.addItem(diBuilder.getDocItem("openai/assistant-modify", false));
         assistants.addItem(diBuilder.getDocItem("openai/assistant-delete", false));
 
+        final DocSection threads = new DocSection("Threads", id());
+        all.addSection(threads);
+
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
         utils.addItem(diBuilder.getDocItem("openai/assert-response-http-ok", false));

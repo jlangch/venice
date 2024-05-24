@@ -11,7 +11,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- :openai module support for assistant api
+- :openai module support for assistant threads api (in work)
+- :openai module support for assistant message api (...)
+- :openai module support for assistant run api (...)
+- :openai module support for assistant run steps api (...)
 
 
 
