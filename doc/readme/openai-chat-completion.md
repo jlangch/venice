@@ -11,6 +11,7 @@
         * [Example: Text correction](#example-text-correction)
         * [Example: Text data extraction](#example-text-data-extraction)
         * [Example: Generating SQL](#example-generating-sql)
+        * [Example: Chain of Thought Prompting](#example-chain-of-thought-prompting)
 * [Streaming](#streaming)
     * [Examples Streaming](#examples-streaming)
         * [Example sync](#example-sync)
@@ -327,6 +328,143 @@ results by artist name and counts the number of tracks associated with each arti
 results are ordered in descending order by the number of tracks, and finally, the `LIMIT 5` 
 clause returns only the top 5 artists.
 ```
+
+
+#### Example: Chain of Thought Prompting
+
+##### Prompt 1a
+
+```clojure
+(do
+  (load-module :openai)
+
+  (let [prompt      [ { :role     "user"
+                        :content  """
+                                  I am looking for a name for my new pet, a cat. The cat's fur 
+                                  is reddish and light tabby. Suggest me 5 names that I could 
+                                  give my cat.
+                                  """ } ]
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4o" 
+                                            :chat-opts { :temperature 0.1 })]
+    (openai/assert-response-http-ok response)
+    (println (-> (:data response)
+                 (openai/chat-extract-response-message-content)
+                 (openai/pretty-print-json)))))
+```
+
+**Response:**
+
+Sure, here are five names that might suit your reddish and light tabby cat:
+
+1. **Ginger**
+2. **Rusty**
+3. **Amber**
+4. **Maple**
+5. **Sunny**
+
+I hope one of these names feels just right for your new feline friend!
+
+
+##### Prompt 1b
+
+```clojure
+(do
+  (load-module :openai)
+
+  (let [prompt      [ { :role     "user"
+                        :content  """
+                                  I am looking for a name for my new pet, a cat. The cat's fur 
+                                  is reddish and light tabby. Suggest me 5 names that I could 
+                                  give my cat. 
+                                  
+                                  Explain why you have chosen these names.
+                                  """ } ]
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4o" 
+                                            :chat-opts { :temperature 0.1 })]
+    (openai/assert-response-http-ok response)
+    (println (-> (:data response)
+                 (openai/chat-extract-response-message-content)
+                 (openai/pretty-print-json)))))
+```
+
+**Response:**
+
+Sure, I'd be happy to help you name your new cat! Here are five names that might suit your reddish and light tabby cat, along with explanations for each:
+
+1. **Ginger**: This name is a classic choice for cats with reddish fur. It directly references the color of your cat's coat and has a warm, friendly feel to it.
+
+2. **Rusty**: This name evokes the reddish-brown color of rust, which matches your cat's fur. It's a cute and slightly rugged name that can suit a playful or adventurous cat.
+
+3. **Maple**: Inspired by the warm, reddish hues of autumn leaves, Maple is a sweet and unique name that reflects the color of your cat's fur. It also has a cozy, natural vibe.
+
+4. **Sunny**: This name captures the light, warm tones of your cat's fur and suggests a bright, cheerful personality. It's a happy, uplifting name that can suit a cat with a sunny disposition.
+
+5. **Tawny**: Tawny is a term used to describe a warm, sandy color, which can be a perfect match for a light tabby cat. It's a sophisticated and elegant name that highlights your cat's beautiful coat.
+
+I hope one of these names feels right for your new feline friend!
+
+
+
+##### Prompt 2
+
+```clojure
+(do
+  (load-module :openai)
+
+  (let [prompt      [ { :role     "user"
+                        :content  """
+                                  A farmer with a wolf, a goat, and a cabbage must cross a river 
+                                  with a boat. The boat can carry only the farmer and a single item.
+                                  If left unattended together, the wolf would eat the goat or the
+                                  goat would eat the cabbage. How can they cross the river without
+                                  anything being eaten? 
+                                  
+                                  Describe your reasoning step by step.
+                                  """ } ]
+        response    (openai/chat-completion prompt 
+                                            :model "gpt-4o" 
+                                            :chat-opts { :temperature 0.1 })]
+    (openai/assert-response-http-ok response)
+    (println (-> (:data response)
+                 (openai/chat-extract-response-message-content)
+                 (openai/pretty-print-json)))))
+```
+
+**Response:**
+
+To solve this classic river-crossing puzzle, we need to ensure that at no point are the wolf and the goat left alone together, nor the goat and the cabbage. Here's a step-by-step solution:
+
+1. **First Trip: Farmer takes the Goat across the river.**
+    - On the left bank: Wolf, Cabbage
+    - On the right bank: Farmer, Goat
+
+2. **Farmer returns alone to the left bank.**
+    - On the left bank: Farmer, Wolf, Cabbage
+    - On the right bank: Goat
+
+3. **Second Trip: Farmer takes the Wolf across the river.**
+    - On the left bank: Cabbage
+    - On the right bank: Farmer, Wolf, Goat
+
+4. **Farmer returns with the Goat to the left bank.**
+    - On the left bank: Farmer, Goat, Cabbage
+    - On the right bank: Wolf
+
+5. **Third Trip: Farmer takes the Cabbage across the river.**
+    - On the left bank: Goat
+    - On the right bank: Farmer, Wolf, Cabbage
+
+6. **Farmer returns alone to the left bank.**
+    - On the left bank: Farmer, Goat
+    - On the right bank: Wolf, Cabbage
+
+7. **Fourth Trip: Farmer takes the Goat across the river.**
+    - On the left bank: (empty)
+    - On the right bank: Farmer, Goat, Wolf, Cabbage
+
+By following these steps, the farmer successfully gets all three items across the river without any of them being eaten.
 
 
 
