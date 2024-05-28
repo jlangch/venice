@@ -405,7 +405,8 @@
   (if (repl?)
     (->> (merge { :dir (repl/libs-dir) 
                   :silent false 
-                  :force false }
+                  :force false
+                  :scope :runtime }
                 (apply hash-map opts))
          seq
          flatten)
