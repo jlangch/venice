@@ -54,6 +54,7 @@ public class Modules {
                         "langchain-install",
                         "pdf-install",
                         "postgresql-jdbc-install",
+                        "qdrant-client-install",
                         "qrbill-install",
                         "tomcat-install",
                         "xchart-install",
