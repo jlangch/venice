@@ -332,6 +332,9 @@ clause returns only the top 5 artists.
 
 #### Example: Chain of Thought Prompting
 
+Chain of thought (CoT) is a method that encourages Large Language Models (LLMs) to explain their reasoning. It advices the model to not only seeking an answer but also requiring it to explain its steps to arrive at that answer. CoT can improve the quality of the answer in case the models fails otherwise. 
+
+
 ##### Prompt 1a
 
 ```clojure
