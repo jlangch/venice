@@ -35,10 +35,10 @@
 
 
 (defn libraries []
-  [ "dev.langchain4j:langchain4j:0.30.0" 
-    "dev.langchain4j:langchain4j-open-ai:0.30.0"
-    "dev.langchain4j:langchain4j-hugging-face:0.30.0"
-    "dev.langchain4j:langchain4j-qdrant:0.30.0" ]  )
+  [ "dev.langchain4j:langchain4j:0.31.0" 
+    "dev.langchain4j:langchain4j-open-ai:0.31.0"
+    "dev.langchain4j:langchain4j-hugging-face:0.31.0"
+    "dev.langchain4j:langchain4j-qdrant:0.31.0" ]  )
 
 
 (defn
