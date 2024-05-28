@@ -369,7 +369,7 @@ Sure, here are five names that might suit your reddish and light tabby cat:
 I hope one of these names feels just right for your new feline friend!
 
 
-##### Prompt 1b
+##### Prompt 1b (with explanation)
 
 ```clojure
 (do
@@ -410,7 +410,7 @@ I hope one of these names feels right for your new feline friend!
 
 
 
-##### Prompt 2
+##### Prompt 2 (solving puzzle / reasoning)
 
 ```clojure
 (do
