@@ -38,6 +38,10 @@
   [ "org.postgresql:postgresql:42.7.3" ] )
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

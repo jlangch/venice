@@ -38,6 +38,10 @@
   [ "io.qdrant:client:1.9.0" ] )
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

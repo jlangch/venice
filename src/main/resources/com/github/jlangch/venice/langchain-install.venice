@@ -41,6 +41,10 @@
     "dev.langchain4j:langchain4j-qdrant:0.31.0" ]  )
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

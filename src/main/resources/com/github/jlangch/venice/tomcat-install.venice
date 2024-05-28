@@ -40,6 +40,10 @@
     [ "org.apache.tomcat.embed:tomcat-embed-core:10.1.19" ]))
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

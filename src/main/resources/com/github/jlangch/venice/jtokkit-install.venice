@@ -39,6 +39,10 @@
   [ "com.knuddels:jtokkit:1.0.0" ] )
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

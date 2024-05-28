@@ -35,6 +35,10 @@
   [ "org.apache.ivy:ivy:2.5.2" ] )
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

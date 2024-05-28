@@ -38,6 +38,10 @@
   [ "org.knowm.xchart:xchart:3.8.6" ])
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

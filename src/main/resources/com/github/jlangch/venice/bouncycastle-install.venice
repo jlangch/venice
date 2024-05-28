@@ -45,6 +45,10 @@
     "org.bouncycastle:bcpg-jdk18on:1.77" ] )
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+  
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc

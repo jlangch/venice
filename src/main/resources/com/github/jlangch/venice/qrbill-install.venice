@@ -42,6 +42,10 @@
     "com.github.jai-imageio:jai-imageio-jpeg2000:1.4.0" ] )
 
 
+(defn dependencies []
+  (maven/dependencies (libraries) :scope :runtime))
+
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc
