@@ -1,8 +1,6 @@
 # OpenAI Client
 
 
-*The OpenAI client is in incubation status. The API might undergo changes.*
-
 The OpenAI client runs out-of-the-box without any dependencies on 3rd party libraries.
 
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
@@ -16,6 +14,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 * Embeddings *(in work)*
 * Assistants *(in work)*
 
+*The OpenAI client is in incubation status. The API might undergo changes.*
 
 
 ### Configuring OpenAI API keys
