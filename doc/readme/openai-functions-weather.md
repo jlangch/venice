@@ -319,7 +319,7 @@ prompt-usr  { :role     "user"
                         """ }
 ```
 
-the model responds without halluscinating:
+the model responds without hallucinating:
 
 ```
 Final answer: "I'm sorry, but I currently don't have access to the weather data for London."
