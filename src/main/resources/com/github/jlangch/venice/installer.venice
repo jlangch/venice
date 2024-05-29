@@ -223,7 +223,7 @@
   clean [dir]
 
   (when (io/exists-dir? dir)
-    (->> (io/list-files-glob dir "*.{jar,ttf}")
+    (->> (io/list-files-glob dir "*.{jar,ttf,otf}")
          (filter #(not (jansi-lib? %)))
          (filter #(not (venice-lib? %)))
          (docoll io/delete-file))))

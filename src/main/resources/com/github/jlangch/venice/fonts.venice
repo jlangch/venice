@@ -113,6 +113,7 @@
                 (doseq [[f data] v]
                   (log f) 
                   (io/spit (io/file dir f) data)))
+          (when-not silent (println))
           (catch :VncException e
             (throw (ex :VncException
                       "Failed to extract the font family ~{family-name}!"
@@ -209,7 +210,9 @@
       (println "Loading 'Audiowide' font family...")
       (println " Extracting '~{font-name}'..."))
 
-    (io/spit (io/file dir font-name) (load-font font-name))))
+    (io/spit (io/file dir font-name) (load-font font-name))
+    
+    (when-not silent (println))))
 
 
 (defn- load-font [name]
