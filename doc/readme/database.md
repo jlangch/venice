@@ -54,7 +54,7 @@ To check if *Docker* is available run:
 ```
 
 
-Download and start the PostgreSQL container:
+Download and start the PostgreSQL docker container:
 
 ```clojure
 (do
@@ -73,7 +73,7 @@ Download and start the PostgreSQL container:
 *If the Docker image for PostgreSQL 16.2 is already downloaded `pg/start` will just start the container otherwise it will download the image first.*
 
 
-To stop the PostgreSQL container:
+To stop the PostgreSQL docker container:
 
 ```clojure
 (do
