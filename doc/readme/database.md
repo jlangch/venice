@@ -39,6 +39,21 @@ venice> !restart
 
 ## Start a PostgreSQL Docker Instance
 
+You need to have docker installed.
+
+  * [Install Docker Desktop on Mac](https://docs.docker.com/desktop/install/mac-install/)
+  * [Install Docker Desktop on Windows](https://docs.docker.com/desktop/install/windows-install/)
+  * [Install Docker Desktop on Linux](https://docs.docker.com/desktop/install/linux-install/)
+
+To check if *Docker* is available run:
+
+```clojure
+(do
+  (load-module :docker)
+  (println (docker/version :format :string)))
+```
+
+
 Download and start the PostgreSQL container:
 
 ```clojure
