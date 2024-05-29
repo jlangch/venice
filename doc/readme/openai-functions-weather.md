@@ -98,7 +98,8 @@ The simplified weather data function is defined as:
                        :format      format
                        :temperature 16.0
                        :general     "sunny" })
-
+                       
+      ;; else (unknown location)
       (json/write-str { :location location
                         :error    "No weather data available for ~{location}!" }))))
 ```
@@ -199,7 +200,8 @@ Run this code in a REPL:
                                   :format      format
                                   :temperature (temperature 12 format)
                                   :general     "rainy" })
-        ;; else                         
+
+        ;; else (unknown location)                         
         (json/write-str { :location location
                           :error    "No weather data available for ~{location}!" }))))
 
@@ -231,7 +233,8 @@ Run this code in a REPL:
                                   :n_days      n-days
                                   :temperature (temperature 12 format)
                                   :general     "mostly rainy" })
-        ;; else
+        
+        ;; else (uknown location)
         (json/write-str { :location location
                           :error    "No weather data available for ~{location}!" }))))
 
