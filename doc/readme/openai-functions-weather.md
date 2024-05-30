@@ -2,7 +2,7 @@
 
 
 This example demonstrates how to execute functions whose inputs are model-generated and deliver 
-the required knowledge to model for answering questions
+the required knowledge to the model for answering questions
 
 
 
