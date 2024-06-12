@@ -2152,7 +2152,7 @@
           | :embed-opts       | An optional map of OpenAI embedding request options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :encoding_format :float }`. ¶\
-                                E.g. `{ :dimensions 1536 }. ¶\
+                                E.g. `{ :dimensions 1536 }`. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/embeddings/create) |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |

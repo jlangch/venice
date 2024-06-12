@@ -26,7 +26,7 @@ The input text to embed
 | :uri              | An OpenAI embeddings URI. E.g.: "https://api.openai.com/v1/embeddings". <br>Defaults  to "https://api.openai.com/v1/embeddings" |
 | :model            | An OpenAI model. E.g.: "text-embedding-ada-002". Defaults to "text-embedding-ada-002". <br>The model can also be passed as a keyword. E.g.: `:text-embedding-ada-002`, `:text-embedding-3-small`, `:text-embedding-3-large`  |
 | :openai-api-key   | An optional OpenAI API Key. As default the key is read from the environment variable "OPENAI_API_KEY". |
-| :embed-opts       | An optional map of OpenAI embedding request options Map keys can be keywords or strings. <br>E.g. `{ :encoding_format :float }`. <br>E.g. `{ :dimensions 1536 }. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/embeddings/create) |
+| :embed-opts       | An optional map of OpenAI embedding request options Map keys can be keywords or strings. <br>E.g. `{ :encoding_format :float }`. <br>E.g. `{ :dimensions 1536 }`. <br>See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/embeddings/create) |
 | :debug            | An optional debug flag (true/false). Defaults  to false.<br>In debug mode prints the HTTP request and response data |
  
  
