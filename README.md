@@ -102,8 +102,33 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 
 
+## Getting the latest release
+
+You can can pull it from the central Maven repositories:
+
+```
+<dependency>
+  <groupId>com.github.jlangch</groupId>
+  <artifactId>venice</artifactId>
+  <version>1.12.24</version>
+</dependency>
+```
+
+## Contributing
+
+I accept Pull Requests via GitHub. There are some guidelines which will make applying PRs easier for me:
+
+- No tabs! Please use spaces for indentation.
+- Respect the existing code style for each file.
+- Create minimal diffs - disable on save actions like reformat source code or organize imports. If you feel the source code should be reformatted create a separate PR for this change.
+- Provide JUnit tests for your changes and make sure your changes don't break any existing tests by running gradle.
+
+
+## License
+
+This code is licensed under the Apache License v2.
+
+
 ## 3rd Party Open Source
 
 * [Copyright Notice](doc/readme/3rdparty-lic.md)
-
-
