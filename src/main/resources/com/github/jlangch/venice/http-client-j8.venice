@@ -392,7 +392,8 @@
         opts      (assoc opts :headers headers)
         opts      (assoc opts :body body)]
     (when debug? 
-      (printf "\nUploading file '%s': %d bytes%n" file (io/file-size file)))
+      (debug-header "Uploading file")
+      (printf "Uploading file '%s': %d bytes%n" file (io/file-size file)))
     (apply send :post uri (flatten (seq opts)))))
 
 
@@ -795,6 +796,7 @@
   
   (. :HttpStatus :isRedirectRange status))
 
+
 (defn 
   ^{ :arglists '(
          "(status-client-range? status)")
@@ -831,6 +833,28 @@
   status-server-error-range? [status] 
   
   (. :HttpStatus :isServerErrorRange status))
+
+
+;; -----------------------------------------------------------------------------
+;; Debug
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+         "(debug-header header)")
+     :doc """
+          Prints a debug header
+          """ 
+     :examples '(
+          "(debug-header "HTTP response")" ) }
+
+  debug-header [header]
+
+  (assert (string? header)) 
+  
+  (println)
+  (printf "-- [DEBUG] %s %s-%n" header (str/repeat "-" (count header))))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -877,42 +901,44 @@
 
 
 (defn- spit-string [str charset os debug?]
-  (when debug? (printf "\nSending request with string body. size: %s chars, charset :%s%n" 
-                       (count str) 
-                       (name charset)))
+  (when debug? 
+    (debug-header "Sending request")
+    (printf "Sending request with string body. size: %s chars, charset :%s%n" 
+            (count str) 
+            (name charset)))
   (try-with [pr (io/wrap-os-with-print-writer os charset)]
     (print pr str)
     (flush pr)))
 
 
 (defn- spit-bytebuf [buf os debug?]
-  (when debug? (printf "\nSending request with byte body. size: %s bytes%n" 
-                       (count buf)))
+  (when debug? 
+     (debug-header "Sending request")
+     (printf "Sending request with byte body. size: %s bytes%n" 
+             (count buf)))
   (try-with [os os]
     (io/spit-stream os buf :flush true)))
 
 
 (defn- dump-request [url headers conn-timeout read-timeout use-caches]
-  (println)
-  (println     "Dump request:")
-  (println     "   url:               " url)
-  (println     "   conn-timeout:      " conn-timeout)
-  (println     "   read-timeout:      " read-timeout)
-  (println     "   use-caches:        " use-caches)
-  (println-map "   headers:           " headers))
+  (debug-header "Request")
+  (println     "url:               " url)
+  (println     "conn-timeout:      " conn-timeout)
+  (println     "read-timeout:      " read-timeout)
+  (println     "use-caches:        " use-caches)
+  (println-map "headers:           " headers))
 
 
 (defn- dump-response [res]
-  (println)
-  (println     "Dump response:")
-  (println     "   http-status:           " (:http-status res) (str "(" (:http-status-name res) ")"))
-  (println     "   content-type:          " (:content-type res))
-  (println     "   content-type-mimetype: " (:content-type-mimetype res))
-  (println     "   content-type-charset:  " (:content-type-charset res))
-  (println     "   content-encoding:      " (:content-encoding res))
-  (println     "   content-length:        " (:content-length res))
-  (println     "   effective-url:         " (:effective-url res))
-  (println-map "   headers:               " (:headers res)))
+  (debug-header "Response")
+  (println     "http-status:           " (:http-status res) (str "(" (:http-status-name res) ")"))
+  (println     "content-type:          " (:content-type res))
+  (println     "content-type-mimetype: " (:content-type-mimetype res))
+  (println     "content-type-charset:  " (:content-type-charset res))
+  (println     "content-encoding:      " (:content-encoding res))
+  (println     "content-length:        " (:content-length res))
+  (println     "effective-url:         " (:effective-url res))
+  (println-map "headers:               " (:headers res)))
 
 
 (defn- println-map [head data]
