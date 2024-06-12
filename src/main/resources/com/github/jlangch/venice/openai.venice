@@ -2124,6 +2124,110 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; EMBEDDINGS
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(embedding-create input & options)" )
+     :doc """
+          Creates an embedding vector representing the input text.
+
+          ¶*Parameter «input»*
+
+          The input text to embed
+
+          ¶*Parameter «model»*
+
+          ID of the model to use. E.g.:  `:gpt-4o`
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :model            | An OpenAI model. E.g.: "text-embedding-ada-002". Defaults \
+                                to "text-embedding-ada-002". ¶\
+                                The model can also be passed as a keyword. E.g.: \
+                                `:text-embedding-ada-002`, `:text-embedding-3-small`, \
+                                `:text-embedding-3-large`  |
+          | :embed-opts       | An optional map of OpenAI embedding request options \
+                                Map keys can be keywords or strings. ¶\
+                                E.g. `{ :encoding_format :float }`. ¶\
+                                E.g. `{ :dimensions 1536 }. ¶\
+                                See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/embeddings/create) |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/embeddings". ¶\
+                                Defaults  to "https://api.openai.com/v1/embeddings" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/embeddings)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/embedding-create 
+                                "Happy Christmas ..."
+                                :embed-opts { :model "text-embedding-ada-002" 
+                                              :encoding :float} )]
+              (openai/assert-response-http-ok response)
+              (let [data       (:data response)
+                    embed-vec  (:embedding (first (:data data)))]
+                (prn (:data response)))))
+          """ ) }
+
+  embedding-create [input & options]
+
+  (assert (string? input))
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/embeddings"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            (merge { :input  input
+                                 :model  (:model opts :text-embedding-ada-002) }
+                               (:embed-opts opts))
+        response        (hc/send :post 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+
+
+;; -----------------------------------------------------------------------------
 ;; ASSISTANTS (core)
 ;; -----------------------------------------------------------------------------
 

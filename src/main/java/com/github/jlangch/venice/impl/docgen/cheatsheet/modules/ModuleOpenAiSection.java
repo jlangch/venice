@@ -90,6 +90,10 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         models.addItem(diBuilder.getDocItem("openai/model-retrieve", false));
         models.addItem(diBuilder.getDocItem("openai/model-delete", false));
 
+        final DocSection embedding = new DocSection("Embeddings", id());
+        all.addSection(embedding);
+        embedding.addItem(diBuilder.getDocItem("openai/embedding-create", false));
+
         final DocSection assistants = new DocSection("Assistants", id());
         all.addSection(assistants);
         assistants.addItem(diBuilder.getDocItem("openai/assistant-create", false));
