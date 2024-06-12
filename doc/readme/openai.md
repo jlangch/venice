@@ -11,7 +11,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 * [Images](openai-images.md)
 * [Files](openai-files.md)
 * [Models](openai-models.md)
-* Embeddings *(in work)*
+* [Embeddings](openai-embeddings.md)
 * Assistants *(in work)*
 
 *The OpenAI client is in incubation status. The API might undergo changes.*

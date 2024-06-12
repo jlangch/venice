@@ -4,10 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-
-
-
-## [1.12.25] - 2024-05-xx
+## [1.12.26] - 2024-05-xx
 
 ### Added
 
@@ -17,6 +14,15 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (...)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.25] - 2024-06-12
+
+### Added
+
+- :openai module support for chat completion streaming usage
+- :openai module support for embedding api
 
 
 ### Changed
