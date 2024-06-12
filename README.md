@@ -107,3 +107,19 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Copyright Notice](doc/readme/3rdparty-lic.md)
 
 
+## Contributing
+
+We accept Pull Requests via GitHub. There are some guidelines which will make applying PRs easier for us:
+
+- No tabs! Please use spaces for indentation.
+- Respect the existing code style for each file.
+- Create minimal diffs - disable on save actions like reformat source code or organize imports. If you feel the source code should be reformatted create a separate PR for this change.
+- Provide JUnit tests for your changes and make sure your changes don't break any existing tests by running mvn.
+
+
+## License
+
+This code is licensed under the Apache License v2.
+
+See the NOTICE.txt file for required notices and attributions.
+
