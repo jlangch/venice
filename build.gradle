@@ -579,6 +579,15 @@ task updateReleaseVersion {
             fileset(dir: 'src/main/resources', includes: '**/app.venice')
         }
 
+        println "Updating version ${project.version} -> 'README.md'"
+        ant.replaceregexp(
+                match:   "<version>${version_regex}",
+                replace: "<version>${project.version}",
+                flags:   'g'
+        ) {
+            fileset(dir: '.', includes: 'README.md')
+        }
+
         println "Updating version ${project.version} -> 'readme/*.md'"
         ant.replaceregexp(
                 match:   "venice-${version_regex}[.]jar",
