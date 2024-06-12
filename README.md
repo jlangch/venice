@@ -102,6 +102,18 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 
 
+## Getting the latest release
+
+You can can pull it from the central Maven repositories:
+
+```
+<dependency>
+  <groupId>com.github.jlangch</groupId>
+  <artifactId>venice</artifactId>
+  <version1.2.24</version>
+</dependency>
+```
+
 ## Contributing
 
 We accept Pull Requests via GitHub. There are some guidelines which will make applying PRs easier for us:
