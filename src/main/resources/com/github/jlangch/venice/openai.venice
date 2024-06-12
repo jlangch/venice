@@ -351,6 +351,7 @@
           | :chat-opts        | An optional map of OpenAI chat request options \
                                 Map keys can be keywords or strings. ¶\
                                 E.g. `{ :temperature 0.2 }`. ¶\
+                                E.g. `{ :stream_options { :include_usage true } }. ¶\
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
@@ -374,8 +375,9 @@
           | :message        | The final chat completion message if the OpenAI \
                               server returned the HTTP status `HTTP_OK`, else `nil` |
           | :data           | If the response HTTP status is `HTTP_OK` \
-                              the data fields contains the chat completion \
-                              message.  ¶\
+                              the data field contains the chat completion \
+                              message and token usage:  ¶\
+                              {:message "1234" :usage nil }  ¶\
                               If the response HTTP status is not `HTTP_OK` \
                               the data fields contains an error message \
                               formatted as plain or JSON string. |
@@ -406,12 +408,17 @@
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming prompt 
-                                                              handler 
-                                                              :model :gpt-4o
-                                                              :sync true)]
+                  response  (openai/chat-completion-streaming 
+                                prompt 
+                                handler 
+                                :model :gpt-4o
+                                :sync true
+                                :chat-opts { :temperature 0.1 
+                                             :stream_options { :include_usage true } })]
               (openai/assert-response-http-ok response)
-              (println "Message:" (pr-str (:data response)))))
+              (let [data (:data response)]
+                (println "Usage:  " (pr-str (:usage data)))
+                (println "Message:" (pr-str (:message data))))))
           """,
           """
           ;; asynchronous
@@ -430,12 +437,17 @@
                                 :opened  (println "Started...")
                                 :data    (println "Delta:" (pr-str delta))
                                 :done    (println "Completed.")))
-                  response  (openai/chat-completion-streaming prompt 
-                                                              handler 
-                                                              :model :gpt-4o
-                                                              :sync false)]
+                  response  (openai/chat-completion-streaming 
+                                prompt 
+                                handler 
+                                :model :gpt-4o
+                                :sync false
+                                :chat-opts { :temperature 0.1 
+                                             :stream_options { :include_usage true } } )]
               (openai/assert-response-http-ok response)
-              (println "Message:" (pr-str @(:data response)))))
+              (let [data @(:data response)]
+                (println "Usage:  " (pr-str (:usage data)))
+                (println "Message:" (pr-str (:message data))))))
           """ )
      :see-also '( 
           "openai/chat-completion"
@@ -469,7 +481,7 @@
     (if (and (= "text/event-stream" (:content-type-mimetype response))
              (= (:http-status response) 200))
      
-      (let [fr (openai/chat-process-streaming-events response handler)]
+      (let [fr (openai/chat-process-streaming-events response handler :debug debug?)]
         (assoc result :data (if sync? @fr fr)))
       (assoc result :data (hc/slurp-response response :json-parse-mode :pretty-print)))))
 
@@ -2829,7 +2841,7 @@
 
 (defn 
  ^{ :arglists '(
-          "(chat-process-streaming-events response handler)")
+          "(chat-process-streaming-events response handler & options)")
      :doc """
           Processes OpenAI server side events (SSE) and calls for every event 
           the passed handler function.
@@ -2850,6 +2862,14 @@
                             \u00A0\u00A0 `:opened` - streaming started ¶\
                             \u00A0\u00A0 `:data` - streamed event ¶\
                             \u00A0\u00A0 `:done` - streaming done by the server |
+
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the streaming response data |
           """
      :examples '(
           """
@@ -2874,20 +2894,20 @@
                               :debug false)]
               (println "Status:" (:http-status response))
               (if (= "text/event-stream" (:content-type-mimetype response))
-                (let [text @(openai/chat-process-streaming-events 
+                (let [data @(openai/chat-process-streaming-events 
                                 response
                                 (fn [delta accumulated status]
                                   (case status
                                     :opened  (println "Started...")
                                     :data    (println "Delta:" (pr-str delta))
                                     :done    (println "Completed."))))]
-                  (println "Message:" (pr-str text)))
+                  (println "Message:" (pr-str (message data))))
                 (println (hc/slurp-response response :json-parse-mode :pretty-print)))))
           """ )
      :see-also '( 
           "http-client-j8/slurp-response" ) }
 
-  chat-process-streaming-events [response handler]
+  chat-process-streaming-events [response handler & options]
 
   (assert (some? response))
   (assert (fn? handler))
@@ -2899,27 +2919,40 @@
                 with mimetype 'text/event-stream'!
                 """)))
 
-  ;; return a future
-  (future #(do
-      (let [accumulator (atom "")]
-        ;; process the events
-        (hc/process-server-side-events 
-              response
-              (fn [type event event-count]
-                (case type
-                  :opened (do (handler "" "" :opened)
-                              :ok)
-                  :data   (let [payload (first (:data event))]
-                            (if (= payload "[DONE]")
-                              :stop
-                              (let [delta (extract-streaming-delta-content payload)]
-                                (swap! accumulator str delta)
-                                (handler delta @accumulator :data)
-                                :ok)))
-                  :closed (do (handler "" @accumulator :done)
-                              :ok))))
-        ;; the future returns the accumulated response text
-        @accumulator))))
+  (let [opts    (apply hash-map options)
+        debug?  (:debug opts false)]
+    ;; return a future
+    (future #(do
+        (let [data-accumulator  (atom "")
+              usage-accumulator (atom nil)]
+          ;; process the events
+          (hc/process-server-side-events 
+                response
+                (fn [type event event-count]
+                  (case type
+                    :opened (do (handler "" "" :opened)
+                                :ok)
+                    :data   (let [payload (first (:data event))]
+                              (if (= payload "[DONE]")
+                                :stop
+                                (let [data  (json/read-str payload :key-fn keyword)
+                                      delta (extract-streaming-delta-content data debug?)
+                                      usage (:usage data)]
+                                  (when debug? 
+                                    (hc/debug-header "Streaming response")
+                                    (println data)
+                                    (println))
+                                  (when (some? usage)
+                                    (reset! usage-accumulator usage))
+                                  (when (some? delta)
+                                    (swap! data-accumulator str delta)
+                                    (handler delta @data-accumulator :data))
+                                  :ok)))
+                    :closed (do (handler "" nil :done)
+                                :ok))))
+          ;; the future returns the accumulated response text and the usage
+          { :message  @data-accumulator
+            :usage    @usage-accumulator })))))
 
 
 (defn 
@@ -3431,9 +3464,8 @@
                                     "Invalid OpenAI model data type ~(type model).")))))
   
 
-(defn- extract-streaming-delta-content [payload]
-  (-> (json/read-str payload :key-fn keyword)
-      (:choices)
+(defn- extract-streaming-delta-content [data debug?]
+  (-> (:choices data)
       (first)
       (:delta)
       (:content)))

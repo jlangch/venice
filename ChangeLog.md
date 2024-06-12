@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- :openai module support for chat completion streaming usage
 - :openai module support for assistant api
 - :openai module support for assistant threads api (in work)
 - :openai module support for assistant message api (...)
