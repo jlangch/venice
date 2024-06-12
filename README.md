@@ -110,7 +110,7 @@ You can can pull it from the central Maven repositories:
 <dependency>
   <groupId>com.github.jlangch</groupId>
   <artifactId>venice</artifactId>
-  <version1.12.24</version>
+  <version>1.12.24</version>
 </dependency>
 ```
 
