@@ -2137,10 +2137,6 @@
 
           The input text to embed
 
-          ¶*Parameter «model»*
-
-          ID of the model to use. E.g.:  `:gpt-4o`
-
           ¶*Parameter «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
