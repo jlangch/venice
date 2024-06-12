@@ -55,7 +55,7 @@ The input text to embed
     (openai/assert-response-http-ok response)
     (let [data       (:data response)
           embed-vec  (:embedding (first (:data data)))]
-      (prn (:data response)))))
+      (prn data))))
 ```
 
 Returns:
