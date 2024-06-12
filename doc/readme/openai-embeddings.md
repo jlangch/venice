@@ -51,7 +51,7 @@ The input text to embed
   (let [response  (openai/embedding-create 
                       "Happy Christmas ..."
                       :embed-opts { :model "text-embedding-ada-002" 
-                                    :encoding :float} )]
+                                    :encoding_format :float} )]
     (openai/assert-response-http-ok response)
     (let [data       (:data response)
           embed-vec  (:embedding (first (:data data)))]
