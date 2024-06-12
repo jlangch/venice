@@ -102,11 +102,6 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 
 
-## 3rd Party Open Source
-
-* [Copyright Notice](doc/readme/3rdparty-lic.md)
-
-
 ## Contributing
 
 We accept Pull Requests via GitHub. There are some guidelines which will make applying PRs easier for us:
@@ -121,5 +116,7 @@ We accept Pull Requests via GitHub. There are some guidelines which will make ap
 
 This code is licensed under the Apache License v2.
 
-See the NOTICE.txt file for required notices and attributions.
 
+## 3rd Party Open Source
+
+* [Copyright Notice](doc/readme/3rdparty-lic.md)
