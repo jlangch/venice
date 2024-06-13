@@ -304,6 +304,11 @@ public class VncDouble extends VncNumber {
     }
 
     @Override
+    public float toJavaFloat() {
+        return (float)value;
+    }
+
+    @Override
     public BigInteger toJavaBigInteger() {
         return BigInteger.valueOf((long)value);
     }

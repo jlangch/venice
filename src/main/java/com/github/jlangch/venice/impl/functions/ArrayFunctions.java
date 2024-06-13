@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -688,6 +689,7 @@ public class ArrayFunctions {
                         "(float-array '(1I 2 3.2 3.56M))",
                         "(float-array 10)",
                         "(float-array 10 42.0)")
+                    .seeAlso("java-float-list")
                     .build()
         ) {
             @Override
@@ -715,7 +717,7 @@ public class ArrayFunctions {
                                     "The value at pos %d in the collection is not a number",
                                     ii));
                         }
-                        arr[ii++] = VncDouble.of(v).getValue().floatValue();
+                        arr[ii++] = ((VncNumber)v).toJavaFloat();
                     }
 
                     return new VncJavaObject(arr);
@@ -742,6 +744,7 @@ public class ArrayFunctions {
                         "(double-array '(1I 2 3.2 3.56M))",
                         "(double-array 10)",
                         "(double-array 10 42.0)")
+                    .seeAlso("java-double-list")
                     .build()
         ) {
             @Override
@@ -769,7 +772,7 @@ public class ArrayFunctions {
                                     "The value at pos %d in the collection is not a number",
                                     ii));
                         }
-                        arr[ii++] = VncDouble.of(v).getValue().doubleValue();
+                        arr[ii++] = ((VncNumber)v).toJavaDouble();
                     }
 
                     return new VncJavaObject(arr);

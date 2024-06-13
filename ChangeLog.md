@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- functions `java-float-list` and `java-double-list` to support LLM embedding vectors
 - :openai module support for chat completion streaming usage
 - :openai module support for assistant api
 - :openai module support for assistant threads api (in work)

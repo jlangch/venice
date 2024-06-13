@@ -289,6 +289,11 @@ public class VncBigDecimal extends VncNumber {
     }
 
     @Override
+    public float toJavaFloat() {
+        return value.floatValue();
+    }
+
+    @Override
     public BigInteger toJavaBigInteger() {
         return value.toBigInteger();
     }

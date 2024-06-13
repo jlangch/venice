@@ -67,6 +67,7 @@ public abstract class VncNumber extends VncScalar {
     public abstract int toJavaInteger();
     public abstract long toJavaLong();
     public abstract double toJavaDouble();
+    public abstract float toJavaFloat();
     public abstract BigInteger toJavaBigInteger();
     public abstract BigDecimal toJavaBigDecimal();
     public abstract BigDecimal toJavaBigDecimal(final int scale);

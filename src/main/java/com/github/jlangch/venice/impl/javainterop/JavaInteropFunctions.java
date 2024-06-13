@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor.invokeInstanceMethod;
 
 import java.io.InputStream;
@@ -53,6 +54,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -60,6 +62,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -1170,6 +1173,100 @@ public class JavaInteropFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     };
 
+    public static class JavaFloatListFn extends AbstractJavaFn {
+        public JavaFloatListFn() {
+            super(
+                "java-float-list",
+                VncFunction
+                    .meta()
+                    .arglists("(java-float-list l)")
+                    .doc("Converts a Venice lict/vector to a Java `Float` list")
+                    .examples(
+                        "(java-float-list '(1.0 2.0 3.0))",
+                        "(java-float-list '(1I 2 3.2 3.56M))")
+                    .seeAlso("java-double-list","float-array")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            if (Types.isVncSequence(args.first())) {
+                final VncSequence seq = Coerce.toVncSequence(args.first());
+
+            	final ArrayList<Float> list = new ArrayList<>();
+
+                int ii=0;
+                for(VncVal v : seq) {
+                    if (v == Nil || !Types.isVncNumber(v)) {
+                        throw new VncException(String.format(
+                                "The value at pos %d in the collection is not a number",
+                                ii));
+                    }
+                    list.add(((VncNumber)v).toJavaFloat());
+                }
+
+            	return new VncJavaObject(list);
+            }
+            else {
+                throw new VncException(String.format(
+                        "Function 'java-float-list' does not allow %s as parameter",
+                        Types.getType(args.first())));
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    };
+
+    public static class JavaDoubleListFn extends AbstractJavaFn {
+        public JavaDoubleListFn() {
+            super(
+                "java-double-list",
+                VncFunction
+                    .meta()
+                    .arglists("(java-double-list l)")
+                    .doc("Converts a Venice lict/vector to a Java `Double` list")
+                    .examples(
+                        "(java-double-list '(1.0 2.0 3.0))",
+                        "(java-double-list '(1I 2 3.2 3.56M))")
+                    .seeAlso("java-float-list", "double-array")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            if (Types.isVncSequence(args.first())) {
+                final VncSequence seq = Coerce.toVncSequence(args.first());
+
+            	final ArrayList<Double> list = new ArrayList<>();
+
+                int ii=0;
+                for(VncVal v : seq) {
+                    if (v == Nil || !Types.isVncNumber(v)) {
+                        throw new VncException(String.format(
+                                "The value at pos %d in the collection is not a number",
+                                ii));
+                    }
+                    list.add(((VncNumber)v).toJavaDouble());
+                }
+
+            	return new VncJavaObject(list);
+            }
+            else {
+                throw new VncException(String.format(
+                        "Function 'java-double-list' does not allow %s as parameter",
+                        Types.getType(args.first())));
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    };
+
     public static class JavaObjWrapFn extends AbstractJavaFn {
         public JavaObjWrapFn() {
             super(
@@ -1381,6 +1478,8 @@ public class JavaInteropFunctions {
                     .add(new JavaEnumQFn())
                     .add(new JavaEnumerationToListFn())
                     .add(new JavaIterToListFn())
+                    .add(new JavaFloatListFn())
+                    .add(new JavaDoubleListFn())
                     .add(new JavaObjWrapFn())
                     .add(new JavaObjUnwrapFn())
                     .add(new JavaExStacktraceFn())

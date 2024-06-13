@@ -43,11 +43,16 @@ public class JavaInteropSection implements ISectionBuilder {
         all.addSection(java);
         java.addItem(diBuilder.getDocItem("."));
         java.addItem(diBuilder.getDocItem("import"));
-        java.addItem(diBuilder.getDocItem("java-iterator-to-list"));
-        java.addItem(diBuilder.getDocItem("java-enumeration-to-list"));
         java.addItem(diBuilder.getDocItem("java-unwrap-optional"));
         java.addItem(diBuilder.getDocItem("cast"));
         java.addItem(diBuilder.getDocItem("class"));
+
+        final DocSection coll = new DocSection("Java", "javainterop.collection");
+        all.addSection(coll);
+        coll.addItem(diBuilder.getDocItem("java-float-list"));
+        coll.addItem(diBuilder.getDocItem("java-double-list"));
+        coll.addItem(diBuilder.getDocItem("java-iterator-to-list"));
+        coll.addItem(diBuilder.getDocItem("java-enumeration-to-list"));
 
         final DocSection proxy = new DocSection("Proxify", "javainterop.proxify");
         all.addSection(proxy);
