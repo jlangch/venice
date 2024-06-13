@@ -136,7 +136,7 @@ venice% ./gradlew clean shadowJar
 **On Windows**
 
 ```shell
-venice% gradlew.bat clean shadowJar
+C:\Users\foo\venice> gradlew.bat clean shadowJar
 ```
 
 
