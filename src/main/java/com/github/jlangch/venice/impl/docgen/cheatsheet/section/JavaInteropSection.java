@@ -49,8 +49,11 @@ public class JavaInteropSection implements ISectionBuilder {
 
         final DocSection coll = new DocSection("Java", "javainterop.collection");
         all.addSection(coll);
+        coll.addItem(diBuilder.getDocItem("java-int-list"));
+        coll.addItem(diBuilder.getDocItem("java-long-list"));
         coll.addItem(diBuilder.getDocItem("java-float-list"));
         coll.addItem(diBuilder.getDocItem("java-double-list"));
+        coll.addItem(diBuilder.getDocItem("java-string-list"));
         coll.addItem(diBuilder.getDocItem("java-iterator-to-list"));
         coll.addItem(diBuilder.getDocItem("java-enumeration-to-list"));
 

@@ -31,24 +31,57 @@ import com.github.jlangch.venice.Venice;
 public class JavaInteropFunctionsTest {
 
     @Test
+    public void test_java_string_list() {
+        final Venice venice = new Venice();
+
+        assertEquals("java.util.ArrayList",             venice.eval("(type (java-string-list '(\"ab\")))"));
+
+        assertEquals("[]",                              venice.eval("(java-string-list '())").toString());
+        assertEquals("[ab]",                            venice.eval("(java-string-list '(\"ab\"))").toString());
+        assertEquals("[ab, 1, 2, 3.0, 4.0, 5, null]",   venice.eval("(java-string-list '(\"ab\" 1 2I 3.0 4.0M 5 nil))").toString());
+    }
+
+    @Test
+    public void test_java_int_list() {
+        final Venice venice = new Venice();
+
+        assertEquals("java.util.ArrayList",        venice.eval("(type (java-int-list '(1I)))"));
+
+        assertEquals("[]",                         venice.eval("(java-int-list '())").toString());
+        assertEquals("[1]",                        venice.eval("(java-int-list '(1I))").toString());
+        assertEquals("[1, 2, 3, 4, 5, null]",      venice.eval("(java-int-list '(1 2I 3.0 4.0M 5 nil))").toString());
+    }
+
+    @Test
+    public void test_java_long_list() {
+        final Venice venice = new Venice();
+
+        assertEquals("java.util.ArrayList",        venice.eval("(type (java-long-list '(1)))"));
+
+        assertEquals("[]",                         venice.eval("(java-long-list '())").toString());
+        assertEquals("[1]",                        venice.eval("(java-long-list '(1))").toString());
+        assertEquals("[1, 2, 3, 4, 5, null]",      venice.eval("(java-long-list '(1 2I 3.0 4.0M 5 nil))").toString());
+    }
+
+    @Test
     public void test_java_float_list() {
         final Venice venice = new Venice();
 
-        assertEquals("java.util.ArrayList",       venice.eval("(type (java-float-list '(1.0)))"));
+        assertEquals("java.util.ArrayList",             venice.eval("(type (java-float-list '(1.0)))"));
 
-        assertEquals("[]",                        venice.eval("(java-float-list '())").toString());
-        assertEquals("[1.0]",                     venice.eval("(java-float-list '(1.0))").toString());
-        assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0]", venice.eval("(java-float-list '(1 2I 3.0 4.0M 5))").toString());
+        assertEquals("[]",                              venice.eval("(java-float-list '())").toString());
+        assertEquals("[1.0]",                           venice.eval("(java-float-list '(1.0))").toString());
+        assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, null]", venice.eval("(java-float-list '(1 2I 3.0 4.0M 5 nil))").toString());
     }
 
     @Test
     public void test_java_double_list() {
         final Venice venice = new Venice();
 
-        assertEquals("java.util.ArrayList",       venice.eval("(type (java-double-list '(1.0)))"));
+        assertEquals("java.util.ArrayList",             venice.eval("(type (java-double-list '(1.0)))"));
 
-        assertEquals("[]",                        venice.eval("(java-double-list '())").toString());
-        assertEquals("[1.0]",                     venice.eval("(java-double-list '(1.0))").toString());
-        assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0]", venice.eval("(java-double-list '(1 2I 3.0 4.0M 5))").toString());
+        assertEquals("[]",                              venice.eval("(java-double-list '())").toString());
+        assertEquals("[1.0]",                           venice.eval("(java-double-list '(1.0))").toString());
+        assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, null]", venice.eval("(java-double-list '(1 2I 3.0 4.0M 5 nil))").toString());
     }
 }

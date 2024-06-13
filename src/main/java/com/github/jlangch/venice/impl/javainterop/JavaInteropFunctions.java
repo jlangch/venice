@@ -1066,21 +1066,21 @@ public class JavaInteropFunctions {
                     .meta()
                     .arglists("(enum? class)")
                     .doc(
-                    	"Returns true if class is a Java *enum*.\n" +
-                    	"\n" +
+                        "Returns true if class is a Java *enum*.\n" +
+                        "\n" +
                         "Get all values of a Java *enum*:              \n\n" +
-                		"```                                           \n" +
-                    	"(. :java.time.Month :values)                  \n" +
-                		"```                                           \n\n" +
-                    	"Get a Java *enum* value:                      \n\n" +
-                		"```                                           \n" +
-                		"(let [jan (. :java.time.Month :JANUARY)]      \n" +
-                		"  (. :java.time.LocalDate :of 1994 jan 21))   \n" +
-                		"```                                           \n\n" +
+                        "```                                           \n" +
+                        "(. :java.time.Month :values)                  \n" +
+                        "```                                           \n\n" +
+                        "Get a Java *enum* value:                      \n\n" +
+                        "```                                           \n" +
+                        "(let [jan (. :java.time.Month :JANUARY)]      \n" +
+                        "  (. :java.time.LocalDate :of 1994 jan 21))   \n" +
+                        "```                                           \n\n" +
                         "This can be simplified to:                    \n\n" +
-                		"```                                           \n" +
-                    	"(. :java.time.LocalDate :of 1994 :JANUARY 21) \n" +
-                		"```                                           \n")
+                        "```                                           \n" +
+                        "(. :java.time.LocalDate :of 1994 :JANUARY 21) \n" +
+                        "```                                           \n")
                     .examples("(enum? :java.time.Month)")
                     .build());
         }
@@ -1092,8 +1092,8 @@ public class JavaInteropFunctions {
 
             try {
                 final Class<?> clazz = JavaInteropUtil.toClass(
-						                    args.first(),
-						                    Namespaces.getCurrentNamespace().getJavaImports());
+                                            args.first(),
+                                            Namespaces.getCurrentNamespace().getJavaImports());
                 return VncBoolean.of(clazz.isEnum());
             }
             catch(Exception ex) {
@@ -1173,6 +1173,148 @@ public class JavaInteropFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     };
 
+    public static class JavaStringListFn extends AbstractJavaFn {
+        public JavaStringListFn() {
+            super(
+                "java-string-list",
+                VncFunction
+                    .meta()
+                    .arglists("(java-string-list l)")
+                    .doc("Converts a Venice lict/vector to a Java `String` list")
+                    .examples(
+                        "(java-string-list '(\"ab\" \"cd\" \"ef\"))",
+                        "(java-string-list '(\"ab\" 1I 2 3.2 3.56M))")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            if (Types.isVncSequence(args.first())) {
+                final VncSequence seq = Coerce.toVncSequence(args.first());
+
+                final ArrayList<String> list = new ArrayList<>();
+
+                for(VncVal v : seq) {
+                    list.add(v == Nil ? null : v.toString());
+                }
+
+                return new VncJavaObject(list);
+            }
+            else {
+                throw new VncException(String.format(
+                        "Function 'java-string-list' does not allow %s as parameter",
+                        Types.getType(args.first())));
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    };
+
+    public static class JavaIntListFn extends AbstractJavaFn {
+        public JavaIntListFn() {
+            super(
+                "java-int-list",
+                VncFunction
+                    .meta()
+                    .arglists("(java-int-list l)")
+                    .doc("Converts a Venice lict/vector to a Java `Integer` list")
+                    .examples(
+                        "(java-int-list '(1I 2I 3I))",
+                        "(java-int-list '(1I 2 3.2 3.56M))")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            if (Types.isVncSequence(args.first())) {
+                final VncSequence seq = Coerce.toVncSequence(args.first());
+
+                final ArrayList<Integer> list = new ArrayList<>();
+
+                int ii=0;
+                for(VncVal v : seq) {
+                    if (v == Nil) {
+                        list.add(null);
+                    }
+                    else if (!Types.isVncNumber(v)) {
+                        throw new VncException(String.format(
+                                "The value at pos %d in the collection is not a number",
+                                ii));
+                    }
+                    else {
+                        list.add(((VncNumber)v).toJavaInteger());
+                    }
+                }
+
+                return new VncJavaObject(list);
+            }
+            else {
+                throw new VncException(String.format(
+                        "Function 'java-int-list' does not allow %s as parameter",
+                        Types.getType(args.first())));
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    };
+
+    public static class JavaLongListFn extends AbstractJavaFn {
+        public JavaLongListFn() {
+            super(
+                "java-long-list",
+                VncFunction
+                    .meta()
+                    .arglists("(java-long-list l)")
+                    .doc("Converts a Venice lict/vector to a Java `Long` list")
+                    .examples(
+                        "(java-long-list '(1 2 3))",
+                        "(java-long-list '(1I 2 3.2 3.56M))")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            if (Types.isVncSequence(args.first())) {
+                final VncSequence seq = Coerce.toVncSequence(args.first());
+
+                final ArrayList<Long> list = new ArrayList<>();
+
+                int ii=0;
+                for(VncVal v : seq) {
+                    if (v == Nil) {
+                        list.add(null);
+                    }
+                    else if (!Types.isVncNumber(v)) {
+                        throw new VncException(String.format(
+                                "The value at pos %d in the collection is not a number",
+                                ii));
+                    }
+                    else {
+                        list.add(((VncNumber)v).toJavaLong());
+                    }
+                }
+
+                return new VncJavaObject(list);
+            }
+            else {
+                throw new VncException(String.format(
+                        "Function 'java-long-list' does not allow %s as parameter",
+                        Types.getType(args.first())));
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    };
+
     public static class JavaFloatListFn extends AbstractJavaFn {
         public JavaFloatListFn() {
             super(
@@ -1196,19 +1338,24 @@ public class JavaInteropFunctions {
             if (Types.isVncSequence(args.first())) {
                 final VncSequence seq = Coerce.toVncSequence(args.first());
 
-            	final ArrayList<Float> list = new ArrayList<>();
+                final ArrayList<Float> list = new ArrayList<>();
 
                 int ii=0;
                 for(VncVal v : seq) {
-                    if (v == Nil || !Types.isVncNumber(v)) {
+                    if (v == Nil) {
+                        list.add(null);
+                    }
+                    else if (!Types.isVncNumber(v)) {
                         throw new VncException(String.format(
                                 "The value at pos %d in the collection is not a number",
                                 ii));
                     }
-                    list.add(((VncNumber)v).toJavaFloat());
+                    else {
+                        list.add(((VncNumber)v).toJavaFloat());
+                    }
                 }
 
-            	return new VncJavaObject(list);
+                return new VncJavaObject(list);
             }
             else {
                 throw new VncException(String.format(
@@ -1243,19 +1390,24 @@ public class JavaInteropFunctions {
             if (Types.isVncSequence(args.first())) {
                 final VncSequence seq = Coerce.toVncSequence(args.first());
 
-            	final ArrayList<Double> list = new ArrayList<>();
+                final ArrayList<Double> list = new ArrayList<>();
 
                 int ii=0;
                 for(VncVal v : seq) {
-                    if (v == Nil || !Types.isVncNumber(v)) {
+                    if (v == Nil) {
+                        list.add(null);
+                    }
+                    else if (!Types.isVncNumber(v)) {
                         throw new VncException(String.format(
                                 "The value at pos %d in the collection is not a number",
                                 ii));
                     }
-                    list.add(((VncNumber)v).toJavaDouble());
+                    else {
+                        list.add(((VncNumber)v).toJavaDouble());
+                    }
                 }
 
-            	return new VncJavaObject(list);
+                return new VncJavaObject(list);
             }
             else {
                 throw new VncException(String.format(
@@ -1364,7 +1516,7 @@ public class JavaInteropFunctions {
                             final Type genericType = ReflectionUtil.getTypeArguments(type)[0];
                             final Class<?> formalType = Class.forName(genericType.getTypeName());
                             return JavaInteropUtil.convertToVncVal(val, formalType);
-                     	}
+                         }
                         catch(Exception ex) {
                             throw new VncException(
                                         String.format(
@@ -1478,6 +1630,9 @@ public class JavaInteropFunctions {
                     .add(new JavaEnumQFn())
                     .add(new JavaEnumerationToListFn())
                     .add(new JavaIterToListFn())
+                    .add(new JavaStringListFn())
+                    .add(new JavaIntListFn())
+                    .add(new JavaLongListFn())
                     .add(new JavaFloatListFn())
                     .add(new JavaDoubleListFn())
                     .add(new JavaObjWrapFn())
