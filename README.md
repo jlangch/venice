@@ -119,8 +119,24 @@ You can can pull it from the central Maven repositories:
 
 From a command shell, run `./gradlew shadowJar` in the project home dir, to invoke the Gradle task to build the Venice JAR.
 
+**On MacOS / Linux**
+
+Give `gradlew` execute permission after the initial checkout ...
+
+```shell
+venice% chmod +x ./gradlew
+```
+
+... and build the project
+
 ```shell
 venice% ./gradlew clean shadowJar
+```
+
+**On Windows**
+
+```shell
+venice% ./gradlew.bat clean shadowJar
 ```
 
 
