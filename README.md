@@ -136,7 +136,7 @@ I accept Pull Requests via GitHub. There are some guidelines which will make app
 
 ## License
 
-This code is licensed under the Apache License v2.
+This code is licensed under the [Apache License v2](LICENSE).
 
 
 ## 3rd Party Open Source
