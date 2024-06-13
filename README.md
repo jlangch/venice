@@ -114,6 +114,16 @@ You can can pull it from the central Maven repositories:
 </dependency>
 ```
 
+
+## Building
+
+From a command shell, run `./gradlew shadowJar` in the project home dir, to invoke the Gradle task to build the Venice JAR.
+
+```shell
+venice% ./gradlew clean shadowJar
+```
+
+
 ## Contributing
 
 I accept Pull Requests via GitHub. There are some guidelines which will make applying PRs easier for me:
