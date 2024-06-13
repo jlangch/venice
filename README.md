@@ -121,7 +121,7 @@ From a command shell, run `./gradlew shadowJar` in the project home dir, to invo
 
 **On MacOS / Linux**
 
-Give `gradlew` execute permission after the initial checkout ...
+Give `gradlew` execute permission after cloning the Venice git repository ...
 
 ```shell
 venice% chmod +x ./gradlew
