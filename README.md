@@ -130,7 +130,7 @@ venice% chmod +x ./gradlew
 ... and build the project
 
 ```shell
-venice% ./gradlew clean shadowJar
+venice% gradlew clean shadowJar
 ```
 
 **On Windows**
