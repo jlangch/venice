@@ -474,6 +474,7 @@ public class ArrayFunctions {
                         "(string-array '(\"1\" \"2\" \"3\"))",
                         "(string-array 10)",
                         "(string-array 10 \"42\")")
+                    .seeAlso("java-string-list")
                     .build()
         ) {
             @Override
@@ -581,6 +582,7 @@ public class ArrayFunctions {
                         "(int-array '(1I 2 3.2 3.56M))",
                         "(int-array 10)",
                         "(int-array 10 42I)")
+                    .seeAlso("java-int-list")
                     .build()
         ) {
             @Override
@@ -635,6 +637,7 @@ public class ArrayFunctions {
                         "(long-array '(1I 2 3.2 3.56M))",
                         "(long-array 10)",
                         "(long-array 10 42)")
+                    .seeAlso("java-long-list")
                     .build()
         ) {
             @Override

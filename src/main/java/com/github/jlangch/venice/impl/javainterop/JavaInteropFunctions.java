@@ -1184,6 +1184,7 @@ public class JavaInteropFunctions {
                     .examples(
                         "(java-string-list '(\"ab\" \"cd\" \"ef\"))",
                         "(java-string-list '(\"ab\" 1I 2 3.2 3.56M))")
+                    .seeAlso("string-array")
                     .build());
         }
 
@@ -1224,6 +1225,7 @@ public class JavaInteropFunctions {
                     .examples(
                         "(java-int-list '(1I 2I 3I))",
                         "(java-int-list '(1I 2 3.2 3.56M))")
+                    .seeAlso("int-array")
                     .build());
         }
 
@@ -1275,6 +1277,7 @@ public class JavaInteropFunctions {
                     .examples(
                         "(java-long-list '(1 2 3))",
                         "(java-long-list '(1I 2 3.2 3.56M))")
+                    .seeAlso("long-array")
                     .build());
         }
 
