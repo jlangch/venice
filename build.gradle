@@ -553,11 +553,12 @@ task updateReleaseVersion {
 
         println "Updating version ${project.version} -> 'build-dependencies.md'"
         ant.replaceregexp(
-                match:   "${version_regex}",
-                replace: "${project.version}",
+                match:   "<version>${version_regex}",
+                replace: "<version>${project.version}",
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
+            fileset(dir: '.', includes: 'README.md')
         }
 
         println "Updating version ${project.version} -> 'notice.txt', 'license.txt'"
@@ -577,15 +578,6 @@ task updateReleaseVersion {
                 flags:   'g'
         ) {
             fileset(dir: 'src/main/resources', includes: '**/app.venice')
-        }
-
-        println "Updating version ${project.version} -> 'README.md'"
-        ant.replaceregexp(
-                match:   "<version>${version_regex}",
-                replace: "<version>${project.version}",
-                flags:   'g'
-        ) {
-            fileset(dir: '.', includes: 'README.md')
         }
 
         println "Updating version ${project.version} -> 'readme/*.md'"
