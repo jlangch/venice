@@ -150,7 +150,7 @@ $ ./repl.sh
 
 ## Where to head next
 
-- browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md)
-- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/277936c/cheatsheet.pdf#Documentation) and use it as a quick reference
+- browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md#Documentation)
+- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/277936c/cheatsheet.pdf) and use it as a quick reference
 
 
