@@ -1180,7 +1180,7 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(java-string-list l)")
-                    .doc("Converts a Venice lict/vector to a Java `String` list")
+                    .doc("Converts a Venice list/vector to a Java `String` list")
                     .examples(
                         "(java-string-list '(\"ab\" \"cd\" \"ef\"))",
                         "(java-string-list '(\"ab\" 1I 2 3.2 3.56M))")
@@ -1221,7 +1221,7 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(java-int-list l)")
-                    .doc("Converts a Venice lict/vector to a Java `Integer` list")
+                    .doc("Converts a Venice list/vector to a Java `Integer` list")
                     .examples(
                         "(java-int-list '(1I 2I 3I))",
                         "(java-int-list '(1I 2 3.2 3.56M))")
@@ -1273,7 +1273,7 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(java-long-list l)")
-                    .doc("Converts a Venice lict/vector to a Java `Long` list")
+                    .doc("Converts a Venice list/vector to a Java `Long` list")
                     .examples(
                         "(java-long-list '(1 2 3))",
                         "(java-long-list '(1I 2 3.2 3.56M))")
@@ -1325,7 +1325,7 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(java-float-list l)")
-                    .doc("Converts a Venice lict/vector to a Java `Float` list")
+                    .doc("Converts a Venice list/vector to a Java `Float` list")
                     .examples(
                         "(java-float-list '(1.0 2.0 3.0))",
                         "(java-float-list '(1I 2 3.2 3.56M))")
@@ -1377,7 +1377,7 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(java-double-list l)")
-                    .doc("Converts a Venice lict/vector to a Java `Double` list")
+                    .doc("Converts a Venice list/vector to a Java `Double` list")
                     .examples(
                         "(java-double-list '(1.0 2.0 3.0))",
                         "(java-double-list '(1I 2 3.2 3.56M))")
