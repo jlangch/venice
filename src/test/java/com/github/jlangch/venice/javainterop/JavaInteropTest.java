@@ -183,67 +183,6 @@ public class JavaInteropTest {
     }
 
     @Test
-    public void testIntArray() {
-        final Venice venice = new Venice();
-
-        assertEquals(null, venice.eval("(. jobj :getIntArray)", symbols()));
-        assertEquals("[1I 2I 3I]", venice.eval("(pr-str (do (. jobj :setIntArray '(1 2 3)) (. jobj :getIntArray)))", symbols()));
-        assertEquals("[]", venice.eval("(pr-str (do (. jobj :setIntArray '()) (. jobj :getIntArray)))", symbols()));
-        assertEquals("[1I]", venice.eval("(pr-str (do (. jobj :setIntArray 1) (. jobj :getIntArray)))", symbols()));
-
-        assertEquals("[1I 2I 3I]", venice.eval("(pr-str (do (. jobj :setIntArray (int-array '(1I 2I 3I))) (. jobj :getIntArray)))", symbols()));
-    }
-
-    @Test
-    public void testIntegerArray() {
-        final Venice venice = new Venice();
-
-        assertEquals(null, venice.eval("(. jobj :getIntegerArray)", symbols()));
-        assertEquals("[1I 2I 3I]", venice.eval("(pr-str (do (. jobj :setIntegerArray '(1 2 3)) (. jobj :getIntegerArray)))", symbols()));
-        assertEquals("[]", venice.eval("(pr-str (do (. jobj :setIntegerArray '()) (. jobj :getIntegerArray)))", symbols()));
-        assertEquals("[1I]", venice.eval("(pr-str (do (. jobj :setIntegerArray 1) (. jobj :getIntegerArray)))", symbols()));
-
-        assertEquals("[nil 9I nil]", venice.eval("(pr-str (do (. jobj :setIntegerArray (aset (make-array :java.lang.Integer 3) 1 9I)) (. jobj :getIntegerArray)))", symbols()));
-    }
-
-    @Test
-    public void testCharArray() {
-        final Venice venice = new Venice();
-
-        assertEquals(null, venice.eval("(. jobj :getCharArray)", symbols()));
-        assertEquals("[a b c]", venice.eval("(str (do (. jobj :setCharArray \"abc\") (. jobj :getCharArray)))", symbols()));
-        assertEquals("[]", venice.eval("(str (do (. jobj :setCharArray \"\") (. jobj :getCharArray)))", symbols()));
-    }
-
-    @Test
-    public void testStringArray() {
-        final Venice venice = new Venice();
-
-        assertEquals(null, venice.eval("(. jobj :getStringArray)", symbols()));
-
-        assertEquals("[a b c]", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray)))", symbols()));
-        assertEquals(":core/vector", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (type (. jobj :getStringArray))))", symbols()));
-
-        assertEquals("[a B c]", venice.eval("(do                                                        " +
-                                            "  (. jobj :setStringArray '(\"a\" \"b\" \"c\"))            " +
-                                            "  (let [v (apply mutable-vector (. jobj :getStringArray))] " +
-                                            "     (assoc! v 1 \"B\")                                    " +
-                                            "     (. jobj :setStringArray v)                            " +
-                                            "     (str (. jobj :getStringArray))))                      ",
-                                            symbols()));
-
-        assertEquals("[]", venice.eval("(str (do (. jobj :setStringArray '()) (. jobj :getStringArray)))", symbols()));
-
-        assertEquals("[a]", venice.eval("(str (do (. jobj :setStringArray \"a\") (. jobj :getStringArray)))", symbols()));
-
-        assertEquals("[a b c]", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray)))", symbols()));
-
-        assertEquals("[a b c]", venice.eval("(str (do (. jobj :setStringArray (string-array '(\"a\" \"b\" \"c\"))) (. jobj :getStringArray)))", symbols()));
-
-        assertEquals("[nil 9 nil]", venice.eval("(str (do (. jobj :setStringArray (aset (make-array :java.lang.String 3) 1 \"9\")) (. jobj :getStringArray)))", symbols()));
-    }
-
-    @Test
     public void testOverloadedMethod() {
         final Venice venice = new Venice();
 

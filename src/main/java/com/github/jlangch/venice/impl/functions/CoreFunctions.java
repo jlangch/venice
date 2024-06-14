@@ -1975,6 +1975,81 @@ public class CoreFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     };
 
+    public static VncFunction float_cast =
+        new VncFunction(
+                "float",
+                VncFunction
+                    .meta()
+                    .arglists("(float x)")
+                    .doc("Converts x to `:java.lang.Float`. \n\n" +
+                         "Note: Venice does not have a built-in float type!")
+                    .examples(
+                        "(float 1)",
+                        "(float nil)",
+                        "(float false)",
+                        "(float true)",
+                        "(float 1.2)",
+                        "(float 1.2M)",
+                        "(float \"1.2\")")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal arg = args.first();
+
+                if (arg == Nil) {
+                    return new VncJavaObject(new Float(0.0F));
+                                    }
+                else if (VncBoolean.isFalse(arg)) {
+                    return new VncJavaObject(new Float(0.0F));
+                }
+                else if (VncBoolean.isTrue(arg)) {
+                    return new VncJavaObject(new Float(1.0F));
+                }
+                else if (Types.isVncInteger(arg)) {
+                    return new VncJavaObject(((VncInteger)arg).toJavaFloat());
+                }
+                else if (Types.isVncLong(arg)) {
+                    return new VncJavaObject(((VncLong)arg).toJavaFloat());
+                }
+                else if (Types.isVncDouble(arg)) {
+                    return new VncJavaObject(((VncDouble)arg).toJavaFloat());
+                }
+                else if (Types.isVncBigDecimal(arg)) {
+                    return new VncJavaObject(((VncBigDecimal)arg).toJavaFloat());
+                }
+                else if (Types.isVncBigInteger(arg)) {
+                    return new VncJavaObject(((VncBigInteger)arg).toJavaFloat());
+                }
+                else if (Types.isVncString(arg)) {
+                    final String s = ((VncString)arg).getValue();
+                    try {
+                        return new VncJavaObject(Float.parseFloat(s));
+                    }
+                    catch(Exception ex) {
+                        throw new VncException(String.format(
+                                "Function 'float': the string %s can not be converted to a :java.lang.Float",
+                                s));
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, Double.class)) {
+                    return new VncJavaObject(((Double)((VncJavaObject)arg).getDelegate()).floatValue());
+                 }
+                else if (Types.isVncJavaObject(arg, Float.class)) {
+                    return new VncJavaObject(((VncJavaObject)arg).getDelegate());
+                }
+                else {
+                    throw new VncException(String.format(
+                                "Function 'float' does not allow %s as operand 1",
+                                Types.getType(arg)));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction double_cast =
         new VncFunction(
                 "double",
@@ -10056,6 +10131,7 @@ public class CoreFunctions {
                 .add(char_cast)
                 .add(int_cast)
                 .add(long_cast)
+                .add(float_cast)
                 .add(double_cast)
                 .add(decimal_cast)
                 .add(bigint_cast)

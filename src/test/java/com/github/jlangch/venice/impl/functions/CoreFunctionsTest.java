@@ -997,6 +997,20 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_float() {
+        final Venice venice = new Venice();
+
+        assertEquals(Float.valueOf(0.0F), venice.eval("(float nil)"));
+        assertEquals(Float.valueOf(0.0F), venice.eval("(float false)"));
+        assertEquals(Float.valueOf(1.0F), venice.eval("(float true)"));
+        assertEquals(Float.valueOf(3.0F), venice.eval("(float 3)"));
+        assertEquals(Float.valueOf(3.0F), venice.eval("(float 3.0)"));
+        assertEquals(Float.valueOf(3.0F), venice.eval("(float 3.0M)"));
+        assertEquals(Float.valueOf(3.0F), venice.eval("(float 3N)"));
+        assertEquals(Float.valueOf(3.0F), venice.eval("(float \"3.0\")"));
+    }
+
+    @Test
     public void test_double_Q() {
         final Venice venice = new Venice();
 

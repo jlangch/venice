@@ -522,8 +522,8 @@ public class ArrayFunctions {
                         "(byte-array len)",
                         "(byte-array len byte-val)")
                     .doc(
-                        "Returns an array of Java primitive bytes containing the contents of coll "
-                            + "or returns an array with the given length and optional init value")
+                        "Returns an array of Java primitive bytes containing the contents of coll " +
+                        "or returns an array with the given length and optional init value")
                     .examples(
                         "(byte-array '(1 2 3))",
                         "(byte-array 10)",
@@ -575,8 +575,12 @@ public class ArrayFunctions {
                         "(int-array len)",
                         "(int-array len init-val)")
                     .doc(
-                        "Returns an array of Java primitive ints containing the contents of coll "
-                            + "or returns an array with the given length and optional init value")
+                        "Returns an array of Java primitive ints containing the contents of coll " +
+                        "or returns an array with the given length and optional init value. \n\n" +
+                        "To create an array of :java.lang.Integer use: \n\n" +
+                        "```\n" +
+                        "(make-array :java.lang.Integer 3)\n" +
+                        "```\n")
                     .examples(
                         "(int-array '(1I 2I 3I))",
                         "(int-array '(1I 2 3.2 3.56M))",
@@ -630,8 +634,12 @@ public class ArrayFunctions {
                         "(long-array len)",
                         "(long-array len init-val)")
                     .doc(
-                        "Returns an array of Java primitive longs containing the contents of coll "
-                            + "or returns an array with the given length and optional init value")
+                        "Returns an array of Java primitive longs containing the contents of coll " +
+                        "or returns an array with the given length and optional init value.\n\n" +
+                        "To create an array of :java.lang.Long use: \n\n" +
+                        "```\n" +
+                        "(make-array :java.lang.Long 3)\n" +
+                        "```\n")
                     .examples(
                         "(long-array '(1 2 3))",
                         "(long-array '(1I 2 3.2 3.56M))",
@@ -685,8 +693,12 @@ public class ArrayFunctions {
                         "(float-array len)",
                         "(float-array len init-val)")
                     .doc(
-                        "Returns an array of Java primitive floats containing the contents of coll "
-                            + "or returns an array with the given length and optional init value")
+                        "Returns an array of Java primitive floats containing the contents of coll " +
+                        "or returns an array with the given length and optional init value.\n\n" +
+                        "To create an array of :java.lang.Float use: \n\n" +
+                        "```\n" +
+                        "(make-array :java.lang.Long 3)\n" +
+                        "```\n")
                     .examples(
                         "(float-array '(1.0 2.0 3.0))",
                         "(float-array '(1I 2 3.2 3.56M))",
@@ -740,8 +752,12 @@ public class ArrayFunctions {
                         "(double-array len)",
                         "(double-array len init-val)")
                     .doc(
-                        "Returns an array of Java primitive doubles containing the contents of coll "
-                            + "or returns an array with the given length and optional init value")
+                        "Returns an array of Java primitive doubles containing the contents of coll " +
+                        "or returns an array with the given length and optional init value.\n\n" +
+                        "To create an array of :java.lang.Double use: \n\n" +
+                        "```\n" +
+                        "(make-array :java.lang.Long 3)\n" +
+                        "```\n")
                     .examples(
                         "(double-array '(1.0 2.0 3.0))",
                         "(double-array '(1I 2 3.2 3.56M))",

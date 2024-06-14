@@ -70,6 +70,7 @@ public class PrimitivesSection implements ISectionBuilder {
         numbers.addSection(convert);
         convert.addItem(diBuilder.getDocItem("int"));
         convert.addItem(diBuilder.getDocItem("long"));
+        convert.addItem(diBuilder.getDocItem("float"));
         convert.addItem(diBuilder.getDocItem("double"));
         convert.addItem(diBuilder.getDocItem("decimal"));
         convert.addItem(diBuilder.getDocItem("bigint"));
