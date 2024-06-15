@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- functions `java-float-list`, `java-double-list`, and `java-long-list` to support LLM 
+- 32-bit `float` data type that complements the 64-bit `double` data type
+- functions `java-float-list`, `java-double-list`, and `java-long-list` to support LLM
   embedding vectors with vector databases like *Pinecone* or *Qdrant*
 - :openai module support for assistant api
 - :openai module support for assistant threads api (in work)
