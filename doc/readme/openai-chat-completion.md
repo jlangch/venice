@@ -556,7 +556,8 @@ See:
                       :done    (println "Completed.")))
         response  (openai/chat-completion-streaming prompt handler :sync true)]
     (openai/assert-response-http-ok response)
-    (println "Message:" (pr-str (:data response)))))
+    (let [data (:data response)]
+      (println "Message:" (pr-str (:message data))))))
 ```
 
 ```
@@ -575,12 +576,58 @@ Delta: "4"
 Delta: ","
 Delta: " "
 Delta: "5"
-Delta: nil
 Completed.
-Status:   200
-Mimetype: text/event-stream
 Message: "1, 2, 3, 4, 5"
 ```
+
+To get the usage statistics with the final message add the chat option `{ :stream_options { :include_usage true } }`:
+
+```clojure
+;; synchronous
+;; prints the arriving events asynchronously, the response is only
+;; returned when the final message is available or the request is bad
+(do
+  (load-module :openai)
+
+  (let [prompt    (str "Count to 5, with a comma between each number "
+                       "and no newlines. E.g., 1, 2, 3, ...")
+        handler   (fn [delta accumulated status]
+                    (case status
+                      :opened  (println "Started...")
+                      :data    (println "Delta:" (pr-str delta))
+                      :done    (println "Completed.")))
+        response  (openai/chat-completion-streaming 
+                     prompt 
+                     handler 
+                     :sync true
+                     :chat-opts { :stream_options { :include_usage true } })]                  
+    (openai/assert-response-http-ok response)
+    (let [data (:data response)]
+      (println "Usage:  " (pr-str (:usage data)))
+      (println "Message:" (pr-str (:message data))))))
+```
+
+```
+Started...
+Delta: ""
+Delta: "1"
+Delta: ","
+Delta: " "
+Delta: "2"
+Delta: ","
+Delta: " "
+Delta: "3"
+Delta: ","
+Delta: " "
+Delta: "4"
+Delta: ","
+Delta: " "
+Delta: "5"
+Completed.
+Usage:   {:prompt_tokens 36 :total_tokens 49 :completion_tokens 13}
+Message: "1, 2, 3, 4, 5"
+```
+
 
 #### Example async
 
@@ -601,12 +648,11 @@ Message: "1, 2, 3, 4, 5"
                       :done    (println "Completed.")))
         response  (openai/chat-completion-streaming prompt handler :sync false)]
     (openai/assert-response-http-ok response)
-    (println "Message:" (pr-str @(:data response)))))
+    (let [data @(:data response)]
+      (println "Message:" (pr-str (:message data))))))
 ```
 
 ```
-Status:   200
-Mimetype: text/event-stream
 Started...
 Delta: ""
 Delta: "1"
@@ -622,10 +668,54 @@ Delta: "4"
 Delta: ","
 Delta: " "
 Delta: "5"
-Delta: nil
 Completed.
 Message: "1, 2, 3, 4, 5"
 ```
 
+To get the usage statistics with the final message add the chat option `{ :stream_options { :include_usage true } }`:
 
-        
+```clojure
+;; asynchronous
+;; prints the arriving events asynchronously, returns the response
+;; immediately with the data `(:data response)` as a future that can 
+;; be deref'd to get the final message.
+(do
+  (load-module :openai)
+
+  (let [prompt    (str "Count to 5, with a comma between each number "
+                       "and no newlines. E.g., 1, 2, 3, ...")
+        handler   (fn [delta accumulated status]
+                    (case status
+                      :opened  (println "Started...")
+                      :data    (println "Delta:" (pr-str delta))
+                      :done    (println "Completed.")))
+        response  (openai/chat-completion-streaming 
+                     prompt 
+                     handler 
+                     :sync false
+                     :chat-opts { :stream_options { :include_usage true } })]
+    (openai/assert-response-http-ok response)
+    (let [data @(:data response)]
+      (println "Message:" (pr-str (:message data))))))
+```
+
+```
+Started...
+Delta: ""
+Delta: "1"
+Delta: ","
+Delta: " "
+Delta: "2"
+Delta: ","
+Delta: " "
+Delta: "3"
+Delta: ","
+Delta: " "
+Delta: "4"
+Delta: ","
+Delta: " "
+Delta: "5"
+Completed.
+Message: "1, 2, 3, 4, 5"
+```
+       
