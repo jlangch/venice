@@ -402,7 +402,7 @@ public class VncFloat extends VncNumber {
             if (Float.isInfinite(value)) {
                 return ":Infinite";
             }
-            else if (Double.isNaN(value)) {
+            else if (Float.isNaN(value)) {
                 return ":NaN";
             }
             else {

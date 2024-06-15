@@ -1345,9 +1345,16 @@ public class MathFunctionsTest {
         final Venice venice = new Venice();
 
         assertFalse((Boolean)venice.eval("(infinite? 1.0E300)"));
+        assertTrue((Boolean)venice.eval("(infinite? 1.0E1000)"));
+
+        assertFalse((Boolean)venice.eval("(infinite? 1.0E20F)"));
+        assertTrue((Boolean)venice.eval("(infinite? 1.0E300F)"));
 
         assertTrue((Boolean)venice.eval("(infinite? (* 1.0E300 1.0E100))"));
         assertTrue((Boolean)venice.eval("(infinite? (/ 1.0 0))"));
+
+        assertTrue((Boolean)venice.eval("(infinite? (* 1.0E20F 1.0E20F))"));
+        assertTrue((Boolean)venice.eval("(infinite? (/ 1.0F 0))"));
     }
 
     @Test
