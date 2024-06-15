@@ -127,10 +127,10 @@ public class JavaInteropTest {
         final Venice venice = new Venice();
 
         assertEquals(null, venice.eval("(. jobj :getFloat)", symbols()));
-        assertEquals(100.0D, venice.eval("(do (. jobj :setFloat 100.0) (. jobj :getFloat))", symbols()));
+        assertEquals(100.0F, venice.eval("(do (. jobj :setFloat 100.0F) (. jobj :getFloat))", symbols()));
 
-        assertEquals(0.0D, venice.eval("(. jobj :getPrimitiveFloat)", symbols()));
-        assertEquals(100.0D, venice.eval("(do (. jobj :setPrimitiveFloat 100.0) (. jobj :getPrimitiveFloat))", symbols()));
+        assertEquals(0.0F, venice.eval("(. jobj :getPrimitiveFloat)", symbols()));
+        assertEquals(100.0F, venice.eval("(do (. jobj :setPrimitiveFloat 100.0F) (. jobj :getPrimitiveFloat))", symbols()));
     }
 
     @Test

@@ -123,6 +123,9 @@ public class VncBigDecimal extends VncNumber {
         else if (op instanceof VncDouble) {
             return new VncBigDecimal(value.add(((VncDouble)op).toJavaBigDecimal()));
         }
+        else if (op instanceof VncFloat) {
+            return new VncBigDecimal(value.add(((VncFloat)op).toJavaBigDecimal()));
+        }
         else if (op instanceof VncBigInteger) {
             return new VncBigDecimal(value.add(((VncBigInteger)op).toJavaBigDecimal()));
         }
@@ -146,6 +149,9 @@ public class VncBigDecimal extends VncNumber {
         }
         else if (op instanceof VncDouble) {
             return new VncBigDecimal(value.subtract(((VncDouble)op).toJavaBigDecimal()));
+        }
+        else if (op instanceof VncFloat) {
+            return new VncBigDecimal(value.subtract(((VncFloat)op).toJavaBigDecimal()));
         }
         else if (op instanceof VncBigInteger) {
             return new VncBigDecimal(value.subtract(((VncBigInteger)op).toJavaBigDecimal()));
@@ -171,6 +177,9 @@ public class VncBigDecimal extends VncNumber {
         else if (op instanceof VncDouble) {
             return new VncBigDecimal(value.multiply(((VncDouble)op).toJavaBigDecimal()));
         }
+        else if (op instanceof VncFloat) {
+            return new VncBigDecimal(value.multiply(((VncFloat)op).toJavaBigDecimal()));
+        }
         else if (op instanceof VncBigInteger) {
             return new VncBigDecimal(value.multiply(((VncBigInteger)op).toJavaBigDecimal()));
         }
@@ -195,6 +204,9 @@ public class VncBigDecimal extends VncNumber {
             }
             else if (op instanceof VncDouble) {
                 return new VncBigDecimal(value.divide(((VncDouble)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+            }
+            else if (op instanceof VncFloat) {
+                return new VncBigDecimal(value.divide(((VncFloat)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
             }
             else if (op instanceof VncBigInteger) {
                 return new VncBigDecimal(value.divide(((VncBigInteger)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
@@ -223,6 +235,9 @@ public class VncBigDecimal extends VncNumber {
         }
         else if (other instanceof VncDouble) {
             return VncBoolean.of(value.compareTo(((VncDouble)other).toJavaBigDecimal()) == 0);
+        }
+        else if (other instanceof VncFloat) {
+            return VncBoolean.of(value.compareTo(((VncFloat)other).toJavaBigDecimal()) == 0);
         }
         else if (other instanceof VncBigInteger) {
             return VncBoolean.of(value.compareTo(((VncBigInteger)other).toJavaBigDecimal()) == 0);
@@ -318,6 +333,9 @@ public class VncBigDecimal extends VncNumber {
         }
         else if (Types.isVncDouble(o)) {
             return value.compareTo(((VncDouble)o).toJavaBigDecimal());
+        }
+        else if (Types.isVncFloat(o)) {
+            return value.compareTo(((VncFloat)o).toJavaBigDecimal());
         }
         else if (Types.isVncLong(o)) {
             return value.compareTo(((VncLong)o).toJavaBigDecimal());

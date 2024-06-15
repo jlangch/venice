@@ -125,6 +125,9 @@ public class VncDouble extends VncNumber {
         if (op instanceof VncDouble) {
             return new VncDouble(value + ((VncDouble)op).value);
         }
+        else if (op instanceof VncFloat) {
+            return new VncDouble(value + ((VncFloat)op).toJavaDouble());
+        }
         else if (op instanceof VncLong) {
             return new VncDouble(value + ((VncLong)op).toJavaDouble());
         }
@@ -148,6 +151,9 @@ public class VncDouble extends VncNumber {
     public VncNumber sub(final VncVal op) {
         if (op instanceof VncDouble) {
             return new VncDouble(value - ((VncDouble)op).value);
+        }
+        else if (op instanceof VncFloat) {
+            return new VncDouble(value - ((VncFloat)op).toJavaDouble());
         }
         else if (op instanceof VncLong) {
             return new VncDouble(value - ((VncLong)op).toJavaDouble());
@@ -173,6 +179,9 @@ public class VncDouble extends VncNumber {
         if (op instanceof VncDouble) {
             return new VncDouble(value * ((VncDouble)op).value);
         }
+        else if (op instanceof VncFloat) {
+            return new VncDouble(value * ((VncFloat)op).toJavaDouble());
+        }
         else if (op instanceof VncLong) {
             return new VncDouble(value * ((VncLong)op).toJavaDouble());
         }
@@ -197,6 +206,9 @@ public class VncDouble extends VncNumber {
         try {
             if (op instanceof VncDouble) {
                 return new VncDouble(value / ((VncDouble)op).value);
+            }
+            else if (op instanceof VncFloat) {
+                return new VncDouble(value / ((VncFloat)op).toJavaDouble());
             }
             else if (op instanceof VncLong) {
                 return new VncDouble(value / ((VncLong)op).toJavaDouble());
@@ -225,6 +237,9 @@ public class VncDouble extends VncNumber {
     public VncBoolean equ(final VncVal other) {
         if (other instanceof VncDouble) {
             return VncBoolean.of(value == ((VncDouble)other).value);
+        }
+        else if (other instanceof VncFloat) {
+            return VncBoolean.of(value == ((VncFloat)other).toJavaDouble());
         }
         else if (other instanceof VncLong) {
             return VncBoolean.of(value == ((VncLong)other).toJavaDouble());
@@ -299,13 +314,13 @@ public class VncDouble extends VncNumber {
     }
 
     @Override
-    public double toJavaDouble() {
-        return value;
+    public float toJavaFloat() {
+        return (float)value;
     }
 
     @Override
-    public float toJavaFloat() {
-        return (float)value;
+    public double toJavaDouble() {
+        return value;
     }
 
     @Override
@@ -329,6 +344,10 @@ public class VncDouble extends VncNumber {
             final double other = ((VncDouble)o).value;
             return value < other ? -1 : (value == other ? 0 : 1);
         }
+        else if (Types.isVncFloat(o)) {
+            final double other = ((VncFloat)o).toJavaDouble();
+            return value < other ? -1 : (value == other ? 0 : 1);
+        }
         else if (Types.isVncInteger(o)) {
             final double other = ((VncInteger)o).toJavaDouble();
             return value < other ? -1 : (value == other ? 0 : 1);
@@ -338,12 +357,14 @@ public class VncDouble extends VncNumber {
             return value < other ? -1 : (value == other ? 0 : 1);
         }
         else if (Types.isVncBigDecimal(o)) {
-            final double other = ((VncBigDecimal)o).toJavaDouble();
-            return value < other ? -1 : (value == other ? 0 : 1);
+            final BigDecimal other = ((VncBigDecimal)o).toJavaBigDecimal();
+            final BigDecimal thisVal = toJavaBigDecimal();
+            return thisVal.compareTo(other);
         }
         else if (Types.isVncBigInteger(o)) {
-            final double other = ((VncBigInteger)o).toJavaDouble();
-            return value < other ? -1 : (value == other ? 0 : 1);
+            final BigInteger other = ((VncBigInteger)o).toJavaBigInteger();
+            final BigInteger thisVal = toJavaBigInteger();
+            return thisVal.compareTo(other);
         }
         else if (o == Constants.Nil) {
             return 1;

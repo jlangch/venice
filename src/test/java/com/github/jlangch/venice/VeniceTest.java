@@ -150,13 +150,13 @@ public class VeniceTest {
     }
 
     @Test
-    public void evalWithIntegerAndLong() {
+    public void evalWithNumbers() {
         final Venice venice = new Venice();
 
         assertEquals(7L, venice.eval("(+ 1 x)", Parameters.of("x", (short)6)));
         assertEquals(7L, venice.eval("(+ 1 x)", Parameters.of("x", 6)));
         assertEquals(7L, venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
-        assertEquals(7.2D, (Double)venice.eval("(+ 1 x)", Parameters.of("x", 6.2F)), 0.0001D);
+        assertEquals(7.2F, (Float)venice.eval("(+ 1 x)", Parameters.of("x", 6.2F)), 0.0001F);
         assertEquals(7.2D, (Double)venice.eval("(+ 1 x)", Parameters.of("x", 6.2D)), 0.0001D);
         assertEquals(247L, venice.eval("(+ 1 x)", Parameters.of("x", (byte)-10)));
     }

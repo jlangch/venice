@@ -700,10 +700,10 @@ public class ArrayFunctions {
                         "(make-array :java.lang.Long 3)\n" +
                         "```\n")
                     .examples(
-                        "(float-array '(1.0 2.0 3.0))",
+                        "(float-array '(1.0F 2.0F 3.0F))",
                         "(float-array '(1I 2 3.2 3.56M))",
                         "(float-array 10)",
-                        "(float-array 10 42.0)")
+                        "(float-array 10 42.0F)")
                     .seeAlso("java-float-list")
                     .build()
         ) {
@@ -716,7 +716,8 @@ public class ArrayFunctions {
                 if (Types.isVncLong(arg)) {
                     final float[] arr = new float[((VncLong)arg).getIntValue()];
                     if (args.size() == 2) {
-                        Arrays.fill(arr, VncDouble.of(args.second()).getValue().floatValue());
+                    	final VncNumber n = Coerce.toVncNumber(args.second());
+                        Arrays.fill(arr, n.toJavaFloat());
                     }
                     return new VncJavaObject(arr);
                 }
@@ -775,7 +776,8 @@ public class ArrayFunctions {
                 if (Types.isVncLong(arg)) {
                     final double[] arr = new double[((VncLong)arg).getIntValue()];
                     if (args.size() == 2) {
-                        Arrays.fill(arr, VncDouble.of(args.second()).getValue());
+                    	final VncNumber n = Coerce.toVncNumber(args.second());
+                        Arrays.fill(arr, n.toJavaDouble());
                     }
                     return new VncJavaObject(arr);
                 }

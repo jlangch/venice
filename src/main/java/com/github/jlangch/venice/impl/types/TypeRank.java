@@ -27,7 +27,8 @@ public enum TypeRank {
     BOOLEAN (1),
 
     INTEGER (10),
-    LONG (12),
+    LONG (11),
+    FLOAT (12),
     DOUBLE (13),
     BIGDECIMAL (14),
     BIGINTEGER (15),

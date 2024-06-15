@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFloat;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -329,7 +330,7 @@ public class JavaInteropUtil {
                 return new VncLong((Long)value);
             }
             else if (value instanceof Float) {
-                return new VncDouble((Float)value);
+                return new VncFloat((Float)value);
             }
             else if (value instanceof Double) {
                 return new VncDouble((Double)value);

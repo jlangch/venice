@@ -113,6 +113,9 @@ public class VncLong extends VncNumber {
         else if (op instanceof VncInteger) {
             return new VncLong(value + ((VncInteger)op).toJavaLong());
         }
+        else if (op instanceof VncFloat) {
+            return new VncFloat(value + ((VncFloat)op).toJavaFloat());
+        }
         else if (op instanceof VncDouble) {
             return new VncDouble(value + ((VncDouble)op).toJavaDouble());
         }
@@ -136,6 +139,9 @@ public class VncLong extends VncNumber {
         }
         else if (op instanceof VncInteger) {
             return new VncLong(value - ((VncInteger)op).toJavaLong());
+        }
+        else if (op instanceof VncFloat) {
+            return new VncFloat(value - ((VncFloat)op).toJavaFloat());
         }
         else if (op instanceof VncDouble) {
             return new VncDouble(value - ((VncDouble)op).toJavaDouble());
@@ -161,6 +167,9 @@ public class VncLong extends VncNumber {
         else if (op instanceof VncInteger) {
             return new VncLong(value * ((VncInteger)op).toJavaLong());
         }
+        else if (op instanceof VncFloat) {
+            return new VncFloat(value * ((VncFloat)op).toJavaFloat());
+        }
         else if (op instanceof VncDouble) {
             return new VncDouble(value * ((VncDouble)op).toJavaDouble());
         }
@@ -185,6 +194,9 @@ public class VncLong extends VncNumber {
             }
             else if (op instanceof VncInteger) {
                 return new VncLong(value / ((VncInteger)op).toJavaLong());
+            }
+            else if (op instanceof VncFloat) {
+                return new VncFloat(value / ((VncFloat)op).toJavaFloat());
             }
             else if (op instanceof VncDouble) {
                 return new VncDouble(value / ((VncDouble)op).toJavaDouble());
@@ -213,6 +225,9 @@ public class VncLong extends VncNumber {
         }
         else if (other instanceof VncInteger) {
             return VncBoolean.of(value == ((VncInteger)other).toJavaLong());
+        }
+        else if (other instanceof VncFloat) {
+            return VncBoolean.of(value == ((VncFloat)other).toJavaFloat());
         }
         else if (other instanceof VncDouble) {
             return VncBoolean.of(value == ((VncDouble)other).toJavaDouble());
@@ -318,17 +333,23 @@ public class VncLong extends VncNumber {
             final long other = ((VncInteger)o).toJavaLong();
             return value < other ? -1 : (value == other ? 0 : 1);
         }
+        else if (Types.isVncFloat(o)) {
+            final float other = ((VncFloat)o).toJavaFloat();
+            return value < other ? -1 : (value == other ? 0 : 1);
+        }
         else if (Types.isVncDouble(o)) {
-            final long other = ((VncDouble)o).toJavaLong();
+            final double other = ((VncDouble)o).toJavaDouble();
             return value < other ? -1 : (value == other ? 0 : 1);
         }
         else if (Types.isVncBigDecimal(o)) {
-            final long other = ((VncBigDecimal)o).toJavaLong();
-            return value < other ? -1 : (value == other ? 0 : 1);
+            final BigDecimal other = ((VncBigDecimal)o).toJavaBigDecimal();
+            final BigDecimal thisVal = toJavaBigDecimal();
+            return thisVal.compareTo(other);
         }
         else if (Types.isVncBigInteger(o)) {
-            final long other = ((VncBigInteger)o).toJavaLong();
-            return value < other ? -1 : (value == other ? 0 : 1);
+            final BigInteger other = ((VncBigInteger)o).toJavaBigInteger();
+            final BigInteger thisVal = toJavaBigInteger();
+            return thisVal.compareTo(other);
         }
         else if (o == Constants.Nil) {
             return 1;

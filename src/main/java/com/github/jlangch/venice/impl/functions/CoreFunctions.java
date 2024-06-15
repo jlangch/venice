@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFloat;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -305,6 +306,7 @@ public class CoreFunctions {
                     .doc("Returns true if n is a double")
                     .examples(
                         "(double? 4.0)",
+                        "(double? 4.0F)",
                         "(double? 3)",
                         "(double? 3I)",
                         "(double? 3.0M)",
@@ -318,6 +320,34 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return VncBoolean.of(Types.isVncDouble(args.first()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction float_Q =
+        new VncFunction(
+                "float?",
+                VncFunction
+                    .meta()
+                    .arglists("(float? n)")
+                    .doc("Returns true if n is a float")
+                    .examples(
+                        "(float? 4.0F)",
+                        "(float? 4.0)",
+                        "(float? 3)",
+                        "(float? 3I)",
+                        "(float? 3.0M)",
+                        "(float? true)",
+                        "(float? nil)",
+                        "(float? {})")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                return VncBoolean.of(Types.isVncFloat(args.first()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1837,6 +1867,7 @@ public class CoreFunctions {
                         "(long nil)",
                         "(long false)",
                         "(long true)",
+                        "(long 1.2F)",
                         "(long 1.2)",
                         "(long 1.2M)",
                         "(long \"1\")",
@@ -1863,6 +1894,9 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncInteger(arg)) {
                     return new VncLong(((VncInteger)arg).toJavaLong());
+                }
+                else if (Types.isVncFloat(arg)) {
+                    return new VncLong(((VncFloat)arg).toJavaLong());
                 }
                 else if (Types.isVncDouble(arg)) {
                     return new VncLong(((VncDouble)arg).toJavaLong());
@@ -1913,6 +1947,7 @@ public class CoreFunctions {
                     "(int false)",
                     "(int true)",
                     "(int 1.2)",
+                    "(int 1.2F)",
                     "(int 1.2M)",
                     "(int \"1\")",
                     "(int (char \"A\"))")
@@ -1941,6 +1976,9 @@ public class CoreFunctions {
             }
             else if (Types.isVncDouble(arg)) {
                 return new VncInteger(((VncDouble)arg).toJavaInteger());
+            }
+            else if (Types.isVncFloat(arg)) {
+                return new VncInteger(((VncFloat)arg).toJavaInteger());
             }
             else if (Types.isVncBigDecimal(arg)) {
                 return new VncInteger(((VncBigDecimal)arg).toJavaInteger());
@@ -1984,6 +2022,7 @@ public class CoreFunctions {
                     .doc("Converts x to `:java.lang.Float`. \n\n" +
                          "Note: Venice does not have a built-in float type!")
                     .examples(
+                        "(float 1.2F)",
                         "(float 1)",
                         "(float nil)",
                         "(float false)",
@@ -2000,45 +2039,48 @@ public class CoreFunctions {
                 final VncVal arg = args.first();
 
                 if (arg == Nil) {
-                    return new VncJavaObject(new Float(0.0F));
-                                    }
+                    return new VncFloat(0.0F);
+                }
+                else if (Types.isVncFloat(arg)) {
+                    return arg;
+                }
                 else if (VncBoolean.isFalse(arg)) {
-                    return new VncJavaObject(new Float(0.0F));
+                	return new VncFloat(0.0F);
                 }
                 else if (VncBoolean.isTrue(arg)) {
-                    return new VncJavaObject(new Float(1.0F));
+                	return new VncFloat(1.0F);
                 }
                 else if (Types.isVncInteger(arg)) {
-                    return new VncJavaObject(((VncInteger)arg).toJavaFloat());
+                    return new VncFloat(((VncInteger)arg).toJavaFloat());
                 }
                 else if (Types.isVncLong(arg)) {
-                    return new VncJavaObject(((VncLong)arg).toJavaFloat());
+                    return new VncFloat(((VncLong)arg).toJavaFloat());
                 }
                 else if (Types.isVncDouble(arg)) {
-                    return new VncJavaObject(((VncDouble)arg).toJavaFloat());
+                    return new VncFloat(((VncDouble)arg).toJavaFloat());
                 }
                 else if (Types.isVncBigDecimal(arg)) {
-                    return new VncJavaObject(((VncBigDecimal)arg).toJavaFloat());
+                    return new VncFloat(((VncBigDecimal)arg).toJavaFloat());
                 }
                 else if (Types.isVncBigInteger(arg)) {
-                    return new VncJavaObject(((VncBigInteger)arg).toJavaFloat());
+                    return new VncFloat(((VncBigInteger)arg).toJavaFloat());
                 }
                 else if (Types.isVncString(arg)) {
                     final String s = ((VncString)arg).getValue();
                     try {
-                        return new VncJavaObject(Float.parseFloat(s));
+                        return new VncFloat(Float.parseFloat(s));
                     }
                     catch(Exception ex) {
                         throw new VncException(String.format(
-                                "Function 'float': the string %s can not be converted to a :java.lang.Float",
+                                "Function 'float': the string %s can not be converted to a float",
                                 s));
                     }
                 }
                 else if (Types.isVncJavaObject(arg, Double.class)) {
-                    return new VncJavaObject(((Double)((VncJavaObject)arg).getDelegate()).floatValue());
-                 }
+                    return new VncFloat(((Double)((VncJavaObject)arg).getDelegate()).floatValue());
+                }
                 else if (Types.isVncJavaObject(arg, Float.class)) {
-                    return new VncJavaObject(((VncJavaObject)arg).getDelegate());
+                    return new VncFloat(((Float)((VncJavaObject)arg).getDelegate()).floatValue());
                 }
                 else {
                     throw new VncException(String.format(
@@ -2063,6 +2105,7 @@ public class CoreFunctions {
                         "(double false)",
                         "(double true)",
                         "(double 1.2)",
+                        "(double 1.2F)",
                         "(double 1.2M)",
                         "(double \"1.2\")")
                     .build()
@@ -2076,6 +2119,9 @@ public class CoreFunctions {
                 if (arg == Nil) {
                     return new VncDouble(0.0D);
                 }
+                else if (Types.isVncDouble(arg)) {
+                    return arg;
+                }
                 else if (VncBoolean.isFalse(arg)) {
                     return new VncDouble(0.0D);
                 }
@@ -2088,8 +2134,8 @@ public class CoreFunctions {
                 else if (Types.isVncLong(arg)) {
                     return new VncDouble(((VncLong)arg).toJavaDouble());
                 }
-                else if (Types.isVncDouble(arg)) {
-                    return arg;
+                else if (Types.isVncFloat(arg)) {
+                    return new VncDouble(((VncFloat)arg).toJavaDouble());
                 }
                 else if (Types.isVncBigDecimal(arg)) {
                     return new VncDouble(((VncBigDecimal)arg).toJavaDouble());
@@ -2137,6 +2183,7 @@ public class CoreFunctions {
                         "(decimal 2)",
                         "(decimal 2 3 :HALF_UP)",
                         "(decimal 2.5787 3 :HALF_UP)",
+                        "(decimal 2.5787F 3 :HALF_UP)",
                         "(decimal 2.5787M 3 :HALF_UP)",
                         "(decimal \"2.5787\" 3 :HALF_UP)",
                         "(decimal nil)")
@@ -2201,6 +2248,7 @@ public class CoreFunctions {
                     .examples(
                         "(bigint 2000)",
                         "(bigint 34897.65)",
+                        "(bigint 34897.65F)",
                         "(bigint \"5676000000000\")",
                         "(bigint nil)")
                     .build()
@@ -10084,6 +10132,7 @@ public class CoreFunctions {
                 .add(boolean_Q)
                 .add(int_Q)
                 .add(long_Q)
+                .add(float_Q)
                 .add(double_Q)
                 .add(decimal_Q)
                 .add(bigint_Q)

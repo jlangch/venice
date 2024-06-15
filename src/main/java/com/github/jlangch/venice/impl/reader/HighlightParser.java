@@ -137,6 +137,7 @@ public class HighlightParser {
 
             case INTEGER:
             case LONG:
+            case FLOAT:
             case DOUBLE:
             case DECIMAL:
             case BIGINT:

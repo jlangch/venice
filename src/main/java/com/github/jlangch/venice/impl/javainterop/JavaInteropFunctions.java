@@ -1327,7 +1327,7 @@ public class JavaInteropFunctions {
                     .arglists("(java-float-list l)")
                     .doc("Converts a Venice list/vector to a Java `Float` list")
                     .examples(
-                        "(java-float-list '(1.0 2.0 3.0))",
+                        "(java-float-list '(1.0F 2.0F 3.0F))",
                         "(java-float-list '(1I 2 3.2 3.56M))")
                     .seeAlso("java-double-list","float-array")
                     .build());

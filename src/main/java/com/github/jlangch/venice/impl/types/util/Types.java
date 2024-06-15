@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFloat;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -135,6 +136,10 @@ public class Types {
 
     public static boolean isVncLong(final VncVal val) {
         return val != null && (val instanceof VncLong);
+    }
+
+    public static boolean isVncFloat(final VncVal val) {
+        return val != null && (val instanceof VncFloat);
     }
 
     public static boolean isVncDouble(final VncVal val) {

@@ -27,6 +27,7 @@ public enum AtomType {
     FALSE,          // false
     INTEGER,        // 10I, -10I
     LONG,           // 10, -10
+    FLOAT,          // 10.2F, -10.2F
     DOUBLE,         // 10.2, -10.2
     DECIMAL,        // 10.2M, -10.2M
     BIGINT,         // 10N, -10N

@@ -43,6 +43,7 @@ public class PrimitivesSection implements ISectionBuilder {
         lit.addLiteralItem("Boolean",              "true, false",                             id());
         lit.addLiteralItem("Integer",              "150I, 1_000_000I, 0x1FFI",                id());
         lit.addLiteralItem("Long",                 "1500, 1_000_000, 0x00A055FF",             id());
+        lit.addLiteralItem("Float",                "3.569F, 2.0E+5F",                          id());
         lit.addLiteralItem("Double",               "3.569, 2.0E+10",                          id());
         lit.addLiteralItem("BigDecimal",           "6.897M, 2.345E+10M",                      id());
         lit.addLiteralItem("BigInteger",           "1000N, 1_000_000N",                       id());
@@ -96,6 +97,7 @@ public class PrimitivesSection implements ISectionBuilder {
         test.addItem(diBuilder.getDocItem("number?"));
         test.addItem(diBuilder.getDocItem("int?"));
         test.addItem(diBuilder.getDocItem("long?"));
+        test.addItem(diBuilder.getDocItem("float?"));
         test.addItem(diBuilder.getDocItem("double?"));
         test.addItem(diBuilder.getDocItem("decimal?"));
 

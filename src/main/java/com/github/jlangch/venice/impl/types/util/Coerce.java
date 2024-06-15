@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFloat;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -351,6 +352,22 @@ public class Coerce {
             try (WithCallStack cs = new WithCallStack(callframe(val))) {
                 throw new VncException(String.format(
                         "Cannot coerce value of type %s to long.",
+                        Types.getType(val)));
+            }
+        }
+    }
+
+    public static VncFloat toVncFloat(final VncVal val) {
+        if (val == null) {
+            throw new VncException("Cannot coerce a null value to float.");
+        }
+        else if (Types.isVncFloat(val)) {
+            return (VncFloat)val;
+        }
+        else {
+            try (WithCallStack cs = new WithCallStack(callframe(val))) {
+                throw new VncException(String.format(
+                        "Cannot coerce value of type %s to float.",
                         Types.getType(val)));
             }
         }

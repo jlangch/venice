@@ -164,6 +164,76 @@ public class LiteralsTest {
     }
 
     @Test
+    public void test_float() {
+        final Venice venice = new Venice();
+
+        assertEquals(0F, (Float)venice.eval("0.0F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0F"));
+        assertEquals(10F, (Float)venice.eval("10.0F"));
+
+
+        assertEquals(10F, (Float)venice.eval("10.0e0F"));
+        assertEquals(10F, (Float)venice.eval("10.0E0F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0e0F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0E0F"));
+
+        assertEquals(10F, (Float)venice.eval("10.0e00F"));
+        assertEquals(10F, (Float)venice.eval("10.0E00F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0e00F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0E00F"));
+
+        assertEquals(10F, (Float)venice.eval("10.0e+0F"));
+        assertEquals(10F, (Float)venice.eval("10.0E+0F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0e+0F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0E+0F"));
+
+        assertEquals(10F, (Float)venice.eval("10.0e+00F"));
+        assertEquals(10F, (Float)venice.eval("10.0E+00F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0e+00F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0E+00F"));
+
+        assertEquals(10F, (Float)venice.eval("10.0e-0F"));
+        assertEquals(10F, (Float)venice.eval("10.0E-0F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0e-0F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0E-0F"));
+
+        assertEquals(10F, (Float)venice.eval("10.0e-00F"));
+        assertEquals(10F, (Float)venice.eval("10.0E-00F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0e-00F"));
+        assertEquals(-10F, (Float)venice.eval("-10.0E-00F"));
+
+        assertEquals(1000000F, (Float)venice.eval("10.0e5F"));
+        assertEquals(1000000F, (Float)venice.eval("10.0E5F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0e5F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0E5F"));
+
+        assertEquals(1000000F, (Float)venice.eval("10.0e05F"));
+        assertEquals(1000000F, (Float)venice.eval("10.0E05F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0e05F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0E05F"));
+
+        assertEquals(1000000F, (Float)venice.eval("10.0e+5F"));
+        assertEquals(1000000F, (Float)venice.eval("10.0E+5F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0e+5F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0E+5F"));
+
+        assertEquals(1000000F, (Float)venice.eval("10.0e+05F"));
+        assertEquals(1000000F, (Float)venice.eval("10.0E+05F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0e+05F"));
+        assertEquals(-1000000F, (Float)venice.eval("-10.0E+05F"));
+
+        assertEquals(1.0E-4F, (Float)venice.eval("10.0e-5F"));
+        assertEquals(1.0E-4F, (Float)venice.eval("10.0E-5F"));
+        assertEquals(-1.0E-4F, (Float)venice.eval("-10.0e-5F"));
+        assertEquals(-1.0E-4F, (Float)venice.eval("-10.0E-5F"));
+
+        assertEquals(1.0E-4F, (Float)venice.eval("10.0e-05F"));
+        assertEquals(1.0E-4F, (Float)venice.eval("10.0E-05F"));
+        assertEquals(-1.0E-4F, (Float)venice.eval("-10.0e-05F"));
+        assertEquals(-1.0E-4F, (Float)venice.eval("-10.0E-05F"));
+    }
+
+    @Test
     public void test_bigdecimal() {
         final Venice venice = new Venice();
 

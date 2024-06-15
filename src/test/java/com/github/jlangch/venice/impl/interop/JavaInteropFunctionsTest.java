@@ -70,7 +70,7 @@ public class JavaInteropFunctionsTest {
         assertEquals("java.util.ArrayList",             venice.eval("(type (java-float-list '(1.0)))"));
 
         assertEquals("[]",                              venice.eval("(java-float-list '())").toString());
-        assertEquals("[1.0]",                           venice.eval("(java-float-list '(1.0))").toString());
+        assertEquals("[1.0]",                           venice.eval("(java-float-list '(1.0F))").toString());
         assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, null]", venice.eval("(java-float-list '(1 2I 3.0 4.0M 5 nil))").toString());
     }
 

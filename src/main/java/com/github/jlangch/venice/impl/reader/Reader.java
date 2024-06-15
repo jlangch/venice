@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFloat;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -177,6 +178,11 @@ public class Reader {
                                     : Long.parseLong(sToken.replaceAll("_", "")),
                                 MetaUtil.toMeta(token));
                 }
+
+                case FLOAT:
+                    return new VncFloat(
+                                Float.parseFloat(sToken.replaceAll("_", "")),
+                                MetaUtil.toMeta(token));
 
                 case DOUBLE:
                     return new VncDouble(
@@ -636,6 +642,9 @@ public class Reader {
         final char lastCh = sToken.charAt(sToken.length()-1);
         if (lastCh == 'I') {
             return AtomType.INTEGER;
+        }
+        else if (lastCh == 'F' && !sToken.toLowerCase().startsWith("0x")) {
+            return AtomType.FLOAT;
         }
         else if (lastCh == 'M') {
             return AtomType.DECIMAL;

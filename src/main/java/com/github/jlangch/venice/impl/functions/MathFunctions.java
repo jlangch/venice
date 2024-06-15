@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFloat;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -232,6 +233,9 @@ public class MathFunctions {
                     }
                     else if (Types.isVncDouble(first)) {
                         return new VncDouble(1D).div(first);
+                    }
+                    else if (Types.isVncFloat(first)) {
+                        return new VncFloat(1F).div(first);
                     }
                     else if (Types.isVncBigDecimal(first)) {
                         return new VncBigDecimal(BigDecimal.ONE).div(first);
@@ -470,6 +474,9 @@ public class MathFunctions {
                 if (arg instanceof VncDouble) {
                     return VncBoolean.of(((VncDouble)arg).getValue().isNaN());
                 }
+                else if (arg instanceof VncFloat) {
+                    return VncBoolean.of(((VncFloat)arg).getValue().isNaN());
+                }
                 else {
                     throw new VncException(String.format(
                             "Invalid argument type %s while calling function 'nan?'",
@@ -502,6 +509,9 @@ public class MathFunctions {
                 final VncVal arg = args.first();
                 if (arg instanceof VncDouble) {
                     return VncBoolean.of(((VncDouble)arg).getValue().isInfinite());
+                }
+                else if (arg instanceof VncFloat) {
+                    return VncBoolean.of(((VncFloat)arg).getValue().isInfinite());
                 }
                 else {
                     throw new VncException(String.format(
@@ -680,6 +690,9 @@ public class MathFunctions {
                 else if (Types.isVncDouble(arg)) {
                     return new VncDouble(Math.abs(((VncDouble)arg).getValue().doubleValue()));
                 }
+                else if (Types.isVncFloat(arg)) {
+                    return new VncFloat(Math.abs(((VncFloat)arg).getValue().floatValue()));
+                }
                 else if (Types.isVncBigDecimal(arg)) {
                     return new VncBigDecimal(((VncBigDecimal)arg).getValue().abs());
                 }
@@ -735,6 +748,10 @@ public class MathFunctions {
                 }
                 else if (Types.isVncDouble(arg)) {
                     final double x = ((VncDouble)arg).getValue().doubleValue();
+                    return new VncLong(x < 0.0 ? -1 : (x > 0.0 ? 1 :0));
+                }
+                else if (Types.isVncFloat(arg)) {
+                    final float x = ((VncFloat)arg).getValue().floatValue();
                     return new VncLong(x < 0.0 ? -1 : (x > 0.0 ? 1 :0));
                 }
                 else if (Types.isVncBigDecimal(arg)) {
@@ -817,6 +834,9 @@ public class MathFunctions {
                 else if (Types.isVncDouble(arg)) {
                     return new VncDouble(Math.floor(((VncDouble)arg).getValue().doubleValue()));
                 }
+                else if (Types.isVncFloat(arg)) {
+                    return new VncFloat(Math.floor(((VncFloat)arg).getValue().floatValue()));
+                }
                 else if (Types.isVncBigDecimal(arg)) {
                     BigDecimal val = ((VncBigDecimal)arg).getValue();
                     final int scale = val.scale();
@@ -866,6 +886,9 @@ public class MathFunctions {
                 }
                 else if (Types.isVncDouble(arg)) {
                     return new VncDouble(Math.ceil(((VncDouble)arg).getValue().doubleValue()));
+                }
+                else if (Types.isVncFloat(arg)) {
+                    return new VncFloat(Math.ceil(((VncFloat)arg).getValue().floatValue()));
                 }
                 else if (Types.isVncBigDecimal(arg)) {
                     BigDecimal val = ((VncBigDecimal)arg).getValue();
@@ -954,7 +977,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.sin(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.sin(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -976,7 +1001,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.cos(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.cos(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -998,7 +1025,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.tan(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.tan(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1021,7 +1050,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.asin(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.asin(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1044,7 +1075,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.acos(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.acos(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1067,7 +1100,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.atan(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.atan(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1094,7 +1129,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.toRadians(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.toRadians(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1122,7 +1159,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.toDegrees(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.toDegrees(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1146,7 +1185,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.log(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.log(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1170,9 +1211,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final double n = VncDouble.of(args.first()).getValue();
+                final VncNumber n = Coerce.toVncNumber(args.first());
 
-                final double log2 = Math.log(n) / Math.log(2);
+                final double log2 = Math.log(n.toJavaDouble()) / Math.log(2);
 
                 return new VncDouble(log2);
             }
@@ -1200,7 +1241,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.log10(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.log10(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1224,7 +1267,9 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDouble(Math.exp(VncDouble.of(args.first()).getValue()));
+                final VncNumber n = Coerce.toVncNumber(args.first());
+
+                return new VncDouble(Math.exp(n.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1247,9 +1292,10 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                return new VncDouble(Math.pow(
-                                        VncDouble.of(args.first()).getValue(),
-                                        VncDouble.of(args.second()).getValue()));
+                final VncNumber n1 = Coerce.toVncNumber(args.first());
+                final VncNumber n2 = Coerce.toVncNumber(args.second());
+
+                return new VncDouble(Math.pow(n1.toJavaDouble(), n2.toJavaDouble()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1696,7 +1742,8 @@ public class MathFunctions {
                     .examples(
                         "(zero? 0)",
                         "(zero? 2)",
-                        "(zero? (int 0))",
+                        "(zero? 0I)",
+                        "(zero? 0.0F)",
                         "(zero? 0.0)",
                         "(zero? 0.0M)")
                     .seeAlso("neg?", "pos?")
@@ -1730,7 +1777,8 @@ public class MathFunctions {
                     .examples(
                         "(pos? 3)",
                         "(pos? -3)",
-                        "(pos? (int 3))",
+                        "(pos? 3I)",
+                        "(pos? 3.2F)",
                         "(pos? 3.2)",
                         "(pos? 3.2M)")
                     .seeAlso("zero?", "neg?")
@@ -1764,7 +1812,8 @@ public class MathFunctions {
                     .examples(
                         "(neg? -3)",
                         "(neg? 3)",
-                        "(neg? (int -3))",
+                        "(neg? -3I)",
+                        "(neg? -3.2F)",
                         "(neg? -3.2)",
                         "(neg? -3.2M)")
                     .seeAlso("zero?", "pos?", "negate")
@@ -1798,7 +1847,7 @@ public class MathFunctions {
                     .examples(
                         "(even? 4)",
                         "(even? 3)",
-                        "(even? (int 3))")
+                        "(even? 3I)")
                     .seeAlso("odd?")
                     .build()
         ) {
@@ -1833,7 +1882,7 @@ public class MathFunctions {
                     .examples(
                         "(odd? 3)",
                         "(odd? 4)",
-                        "(odd? (int 4))")
+                        "(odd? 4I)")
                     .seeAlso("even?")
                     .build()
         ) {

@@ -86,15 +86,15 @@ public class JavaInterop_array_Test {
         final Venice venice = new Venice();
 
         assertEquals(null, venice.eval("(. jobj :getFloatArray)", primitive_symbols()));
-        assertEquals("[1.0 2.0 3.0]", venice.eval("(pr-str (do (. jobj :setFloatArray '(1.0 2.0 3.0)) (. jobj :getFloatArray)))", primitive_symbols()));
+        assertEquals("[1.0F 2.0F 3.0F]", venice.eval("(pr-str (do (. jobj :setFloatArray '(1.0F 2.0F 3.0F)) (. jobj :getFloatArray)))", primitive_symbols()));
         assertEquals("[]", venice.eval("(pr-str (do (. jobj :setFloatArray '()) (. jobj :getFloatArray)))", primitive_symbols()));
-        assertEquals("[1.0]", venice.eval("(pr-str (do (. jobj :setFloatArray 1.0) (. jobj :getFloatArray)))", primitive_symbols()));
+        assertEquals("[1.0F]", venice.eval("(pr-str (do (. jobj :setFloatArray 1.0F) (. jobj :getFloatArray)))", primitive_symbols()));
 
-        assertEquals("[1.0 2.0 3.0]", venice.eval(
-                                        "(do                                                    " +
-                                        "  (. jobj :setFloatArray (float-array '(1.0 2.0 3.0))) " +
-                                        "  (pr-str (. jobj :getFloatArray)))                    ",
-                                        primitive_symbols()));
+        assertEquals("[1.0F 2.0F 3.0F]", venice.eval(
+                                            "(do                                                    " +
+                                            "  (. jobj :setFloatArray (float-array '(1.0F 2.0F 3.0F))) " +
+                                            "  (pr-str (. jobj :getFloatArray)))                    ",
+                                           primitive_symbols()));
     }
 
     @Test
@@ -165,15 +165,15 @@ public class JavaInterop_array_Test {
         final Venice venice = new Venice();
 
         assertEquals(null, venice.eval("(. jobj :getFloatArray)", object_symbols()));
-        assertEquals("[1.0 2.0 3.0]", venice.eval("(pr-str (do (. jobj :setFloatArray '(1.0 2.0 3.0)) (. jobj :getFloatArray)))", object_symbols()));
+        assertEquals("[1.0F 2.0F 3.0F]", venice.eval("(pr-str (do (. jobj :setFloatArray '(1.0F 2.0F 3.0F)) (. jobj :getFloatArray)))", object_symbols()));
         assertEquals("[]", venice.eval("(pr-str (do (. jobj :setFloatArray '()) (. jobj :getFloatArray)))", object_symbols()));
-        assertEquals("[1.0]", venice.eval("(pr-str (do (. jobj :setFloatArray 1) (. jobj :getFloatArray)))", object_symbols()));
+        assertEquals("[1.0F]", venice.eval("(pr-str (do (. jobj :setFloatArray 1) (. jobj :getFloatArray)))", object_symbols()));
 
-        assertEquals("[nil 9.0 nil]", venice.eval(
-                                        "(do                                                                            " +
-                                        "  (. jobj :setFloatArray (aset (make-array :java.lang.Float 3) 1 (float 9.0))) " +
-                                        "  (pr-str (. jobj :getFloatArray)))                                            ",
-                                        object_symbols()));
+        assertEquals("[nil 9.0F nil]", venice.eval(
+                                         "(do                                                                            " +
+                                         "  (. jobj :setFloatArray (aset (make-array :java.lang.Float 3) 1 (float 9.0F))) " +
+                                         "  (pr-str (. jobj :getFloatArray)))                                            ",
+                                         object_symbols()));
     }
 
     @Test

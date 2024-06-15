@@ -31,26 +31,35 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncBigInteger extends VncNumber {
+public class VncFloat extends VncNumber {
 
-    public VncBigInteger(final BigInteger v) {
-        this(v, null, Constants.Nil);
+    public VncFloat(final Float v) {
+        super(null, Constants.Nil);
+        value = v;
     }
 
-    public VncBigInteger(final double v) {
-        this(BigInteger.valueOf((long)v), null, Constants.Nil);
+    public VncFloat(final Double v) {
+        super(null, Constants.Nil);
+        value = v.floatValue();
     }
 
-    public VncBigInteger(final long v) {
-        this(BigInteger.valueOf(v), null, Constants.Nil);
+    public VncFloat(final Long v) {
+        super(null, Constants.Nil);
+        value = v.floatValue();
     }
 
-    public VncBigInteger(final BigInteger v, final VncVal meta) {
-        this(v, null, meta);
+    public VncFloat(final Integer v) {
+        super(null, Constants.Nil);
+        value = v.floatValue();
     }
 
-    public VncBigInteger(
-            final BigInteger v,
+    public VncFloat(final Float v, final VncVal meta) {
+        super(null, meta);
+        value = v;
+    }
+
+    public VncFloat(
+            final Float v,
             final VncWrappingTypeDef wrappingTypeDef,
             final VncVal meta
     ) {
@@ -59,26 +68,26 @@ public class VncBigInteger extends VncNumber {
     }
 
 
-    public static VncBigInteger of(final VncVal v) {
+    public static VncFloat of(final VncVal v) {
         if (Types.isVncNumber(v)) {
-            return new VncBigInteger(((VncNumber)v).toJavaBigInteger());
+            return new VncFloat(((VncNumber)v).toJavaFloat());
         }
         else {
             throw new VncException(String.format(
-                    "Cannot convert value of type %s to big integer",
+                    "Cannot convert value of type %s to float",
                     Types.getType(v)));
         }
     }
 
 
     @Override
-    public VncBigInteger withMeta(final VncVal meta) {
-        return new VncBigInteger(value, getWrappingTypeDef(), meta);
+    public VncFloat withMeta(final VncVal meta) {
+        return new VncFloat(value, getWrappingTypeDef(), meta);
     }
 
     @Override
-    public VncBigInteger wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-        return new VncBigInteger(value, wrappingTypeDef, meta);
+    public VncFloat wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncFloat(value, wrappingTypeDef, meta);
     }
 
     @Override
@@ -86,51 +95,50 @@ public class VncBigInteger extends VncNumber {
         return isWrapped() ? new VncKeyword(
                                     getWrappingTypeDef().getType().getQualifiedName(),
                                     MetaUtil.typeMeta(
-                                        new VncKeyword(VncBigInteger.TYPE),
+                                        new VncKeyword(VncFloat.TYPE),
                                         new VncKeyword(VncNumber.TYPE),
                                         new VncKeyword(VncVal.TYPE)))
                            : new VncKeyword(
-                                    VncBigInteger.TYPE,
+                                    VncFloat.TYPE,
                                     MetaUtil.typeMeta(
                                         new VncKeyword(VncNumber.TYPE),
                                         new VncKeyword(VncVal.TYPE)));
     }
 
-
     @Override
-    public VncBigInteger inc() {
-        return new VncBigInteger(value.add(BigInteger.ONE));
+    public VncFloat inc() {
+        return new VncFloat(value + 1.0F);
     }
 
     @Override
-    public VncBigInteger dec() {
-        return new VncBigInteger(value.subtract(BigInteger.ONE));
+    public VncFloat dec() {
+        return new VncFloat(value - 1.0F);
     }
 
     @Override
-    public VncBigInteger negate() {
-        return new VncBigInteger(value.negate());
+    public VncFloat negate() {
+        return new VncFloat(value * -1.0F);
     }
 
     @Override
     public VncNumber add(final VncVal op) {
-        if (op instanceof VncBigInteger) {
-            return new VncBigInteger(value.add(((VncBigInteger)op).toJavaBigInteger()));
-        }
-        else if (op instanceof VncLong) {
-            return new VncBigInteger(value.add(((VncLong)op).toJavaBigInteger()));
-        }
-        else if (op instanceof VncInteger) {
-            return new VncBigInteger(value.add(((VncInteger)op).toJavaBigInteger()));
+        if (op instanceof VncFloat) {
+            return new VncFloat(value + ((VncFloat)op).value);
         }
         else if (op instanceof VncDouble) {
-            return new VncBigDecimal(toJavaBigDecimal().add(((VncDouble)op).toJavaBigDecimal()));
+            return new VncDouble(value + ((VncDouble)op).toJavaDouble());
         }
-        else if (op instanceof VncFloat) {
-            return new VncBigDecimal(toJavaBigDecimal().add(((VncFloat)op).toJavaBigDecimal()));
+        else if (op instanceof VncLong) {
+            return new VncFloat(value + ((VncLong)op).toJavaFloat());
+        }
+        else if (op instanceof VncInteger) {
+            return new VncFloat(value + ((VncInteger)op).toJavaFloat());
         }
         else if (op instanceof VncBigDecimal) {
             return new VncBigDecimal(toJavaBigDecimal().add(((VncBigDecimal)op).toJavaBigDecimal()));
+        }
+        else if (op instanceof VncBigInteger) {
+            return new VncBigDecimal(toJavaBigDecimal().add(((VncBigInteger)op).toJavaBigDecimal()));
         }
         else {
             throw new VncException(String.format(
@@ -141,23 +149,23 @@ public class VncBigInteger extends VncNumber {
 
     @Override
     public VncNumber sub(final VncVal op) {
-        if (op instanceof VncBigInteger) {
-            return new VncBigInteger(value.subtract(((VncBigInteger)op).toJavaBigInteger()));
-        }
-        else if (op instanceof VncLong) {
-            return new VncBigInteger(value.subtract(((VncLong)op).toJavaBigInteger()));
-        }
-        else if (op instanceof VncInteger) {
-            return new VncBigInteger(value.subtract(((VncInteger)op).toJavaBigInteger()));
+        if (op instanceof VncFloat) {
+            return new VncFloat(value - ((VncFloat)op).value);
         }
         else if (op instanceof VncDouble) {
-            return new VncBigDecimal(toJavaBigDecimal().subtract(((VncDouble)op).toJavaBigDecimal()));
+            return new VncDouble(value - ((VncDouble)op).toJavaDouble());
         }
-        else if (op instanceof VncFloat) {
-            return new VncBigDecimal(toJavaBigDecimal().subtract(((VncFloat)op).toJavaBigDecimal()));
+        else if (op instanceof VncLong) {
+            return new VncFloat(value - ((VncLong)op).toJavaFloat());
+        }
+        else if (op instanceof VncInteger) {
+            return new VncFloat(value - ((VncInteger)op).toJavaFloat());
         }
         else if (op instanceof VncBigDecimal) {
             return new VncBigDecimal(toJavaBigDecimal().subtract(((VncBigDecimal)op).toJavaBigDecimal()));
+        }
+        else if (op instanceof VncBigInteger) {
+            return new VncBigDecimal(toJavaBigDecimal().subtract(((VncBigInteger)op).toJavaBigDecimal()));
         }
         else {
             throw new VncException(String.format(
@@ -168,23 +176,23 @@ public class VncBigInteger extends VncNumber {
 
     @Override
     public VncNumber mul(final VncVal op) {
-        if (op instanceof VncBigInteger) {
-            return new VncBigInteger(value.multiply(((VncBigInteger)op).toJavaBigInteger()));
-        }
-        else if (op instanceof VncLong) {
-            return new VncBigInteger(value.multiply(((VncLong)op).toJavaBigInteger()));
-        }
-        else if (op instanceof VncInteger) {
-            return new VncBigInteger(value.multiply(((VncInteger)op).toJavaBigInteger()));
+        if (op instanceof VncFloat) {
+            return new VncFloat(value * ((VncFloat)op).value);
         }
         else if (op instanceof VncDouble) {
-            return new VncBigDecimal(toJavaBigDecimal().multiply(((VncDouble)op).toJavaBigDecimal()));
+            return new VncDouble(value * ((VncDouble)op).toJavaDouble());
         }
-        else if (op instanceof VncFloat) {
-            return new VncBigDecimal(toJavaBigDecimal().multiply(((VncFloat)op).toJavaBigDecimal()));
+        else if (op instanceof VncLong) {
+            return new VncFloat(value * ((VncLong)op).toJavaFloat());
+        }
+        else if (op instanceof VncInteger) {
+            return new VncFloat(value * ((VncInteger)op).toJavaFloat());
         }
         else if (op instanceof VncBigDecimal) {
             return new VncBigDecimal(toJavaBigDecimal().multiply(((VncBigDecimal)op).toJavaBigDecimal()));
+        }
+        else if (op instanceof VncBigInteger) {
+            return new VncBigDecimal(toJavaBigDecimal().multiply(((VncBigInteger)op).toJavaBigDecimal()));
         }
         else {
             throw new VncException(String.format(
@@ -196,23 +204,23 @@ public class VncBigInteger extends VncNumber {
     @Override
     public VncNumber div(final VncVal op) {
         try {
-            if (op instanceof VncBigInteger) {
-                return new VncBigInteger(value.divide(((VncBigInteger)op).toJavaBigInteger()));
-            }
-            else if (op instanceof VncLong) {
-                return new VncBigInteger(value.divide(((VncLong)op).toJavaBigInteger()));
-            }
-            else if (op instanceof VncInteger) {
-                return new VncBigInteger(value.divide(((VncInteger)op).toJavaBigInteger()));
+            if (op instanceof VncFloat) {
+                return new VncFloat(value / ((VncFloat)op).value);
             }
             else if (op instanceof VncDouble) {
-                return new VncBigDecimal(toJavaBigDecimal().divide(((VncDouble)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+                return new VncDouble(value / ((VncDouble)op).toJavaDouble());
             }
-            else if (op instanceof VncFloat) {
-                return new VncBigDecimal(toJavaBigDecimal().divide(((VncFloat)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+           else if (op instanceof VncLong) {
+                return new VncFloat(value / ((VncLong)op).toJavaFloat());
+            }
+            else if (op instanceof VncInteger) {
+                return new VncFloat(value / ((VncInteger)op).toJavaFloat());
             }
             else if (op instanceof VncBigDecimal) {
                 return new VncBigDecimal(toJavaBigDecimal().divide(((VncBigDecimal)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+            }
+            else if (op instanceof VncBigInteger) {
+                return new VncBigDecimal(toJavaBigDecimal().divide(((VncBigInteger)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
             }
             else {
                 throw new VncException(String.format(
@@ -227,23 +235,23 @@ public class VncBigInteger extends VncNumber {
 
     @Override
     public VncBoolean equ(final VncVal other) {
-        if (other instanceof VncBigInteger) {
-            return VncBoolean.of(value.compareTo(((VncBigInteger)other).toJavaBigInteger()) == 0);
-        }
-        else if (other instanceof VncLong) {
-            return VncBoolean.of(value.compareTo(((VncLong)other).toJavaBigInteger()) == 0);
-        }
-        else if (other instanceof VncInteger) {
-            return VncBoolean.of(value.compareTo(((VncInteger)other).toJavaBigInteger()) == 0);
+        if (other instanceof VncFloat) {
+            return VncBoolean.of(value == ((VncFloat)other).value);
         }
         else if (other instanceof VncDouble) {
-            return VncBoolean.of(toJavaBigDecimal().compareTo(((VncDouble)other).toJavaBigDecimal()) == 0);
+            return VncBoolean.of((double)value == ((VncDouble)other).toJavaFloat());
         }
-        else if (other instanceof VncFloat) {
-            return VncBoolean.of(toJavaBigDecimal().compareTo(((VncFloat)other).toJavaBigDecimal()) == 0);
+        else if (other instanceof VncLong) {
+            return VncBoolean.of(value == ((VncLong)other).toJavaFloat());
+        }
+        else if (other instanceof VncInteger) {
+            return VncBoolean.of(value == ((VncInteger)other).toJavaFloat());
         }
         else if (other instanceof VncBigDecimal) {
             return VncBoolean.of(toJavaBigDecimal().compareTo(((VncBigDecimal)other).toJavaBigDecimal()) == 0);
+        }
+        else if (other instanceof VncBigInteger) {
+            return VncBoolean.of(toJavaBigInteger().compareTo(((VncBigInteger)other).toJavaBigInteger()) == 0);
         }
         else {
             throw new VncException(String.format(
@@ -254,36 +262,40 @@ public class VncBigInteger extends VncNumber {
 
     @Override
     public VncBoolean zeroQ() {
-        return VncBoolean.of(value.compareTo(BigInteger.ZERO) == 0);
+        return VncBoolean.of(value == 0F);
     }
 
     @Override
     public VncBoolean posQ() {
-        return VncBoolean.of(value.compareTo(BigInteger.ZERO) > 0);
+        return VncBoolean.of(value > 0F);
     }
 
     @Override
     public VncBoolean negQ() {
-        return VncBoolean.of(value.compareTo(BigInteger.ZERO) < 0);
+        return VncBoolean.of(value < 0F);
     }
 
     @Override
     public VncNumber square() {
-        return new VncBigInteger(value.multiply(value));
+        return new VncFloat(value * value);
     }
 
     @Override
     public VncNumber sqrt() {
-        return new VncBigDecimal(new BigDecimal(Math.sqrt(toJavaDouble())));
+        return new VncFloat(Math.sqrt(value));
     }
 
-    public BigInteger getValue() {
+    public Float getValue() {
         return value;
+    }
+
+    public Float getFloatValue() {
+        return Float.valueOf(value);
     }
 
     @Override
     public TypeRank typeRank() {
-        return TypeRank.BIGDECIMAL;
+        return TypeRank.FLOAT;
     }
 
     @Override
@@ -293,27 +305,27 @@ public class VncBigInteger extends VncNumber {
 
     @Override
     public int toJavaInteger() {
-        return value.intValue();
+        return (int)value;
     }
 
     @Override
     public long toJavaLong() {
-        return value.longValue();
-    }
-
-    @Override
-    public double toJavaDouble() {
-        return value.doubleValue();
+        return (long)value;
     }
 
     @Override
     public float toJavaFloat() {
-        return value.floatValue();
+        return value;
+    }
+
+    @Override
+    public double toJavaDouble() {
+        return value;
     }
 
     @Override
     public BigInteger toJavaBigInteger() {
-        return value;
+        return BigInteger.valueOf((long)value);
     }
 
     @Override
@@ -328,23 +340,31 @@ public class VncBigInteger extends VncNumber {
 
     @Override
     public int compareTo(final VncVal o) {
-        if (Types.isVncBigInteger(o)) {
-            return value.compareTo(((VncBigInteger)o).getValue());
-        }
-        else if (Types.isVncBigDecimal(o)) {
-            return value.compareTo(((VncBigDecimal)o).toJavaBigInteger());
-        }
-        else if (Types.isVncInteger(o)) {
-            return value.compareTo(((VncInteger)o).toJavaBigInteger());
+        if (Types.isVncFloat(o)) {
+            final float other = ((VncFloat)o).value;
+            return value < other ? -1 : (value == other ? 0 : 1);
         }
         else if (Types.isVncDouble(o)) {
-            return value.compareTo(((VncDouble)o).toJavaBigInteger());
+            final double other = ((VncDouble)o).toJavaDouble();
+            return value < other ? -1 : (value == other ? 0 : 1);
         }
-        else if (Types.isVncFloat(o)) {
-            return value.compareTo(((VncFloat)o).toJavaBigInteger());
+        else if (Types.isVncInteger(o)) {
+            final float other = ((VncInteger)o).toJavaFloat();
+            return value < other ? -1 : (value == other ? 0 : 1);
         }
         else if (Types.isVncLong(o)) {
-            return value.compareTo(((VncLong)o).toJavaBigInteger());
+            final float other = ((VncLong)o).toJavaFloat();
+            return value < other ? -1 : (value == other ? 0 : 1);
+        }
+        else if (Types.isVncBigDecimal(o)) {
+            final BigDecimal other = ((VncBigDecimal)o).toJavaBigDecimal();
+            final BigDecimal thisVal = toJavaBigDecimal();
+            return thisVal.compareTo(other);
+        }
+        else if (Types.isVncBigInteger(o)) {
+            final BigInteger other = ((VncBigInteger)o).toJavaBigInteger();
+            final BigInteger thisVal = toJavaBigInteger();
+            return thisVal.compareTo(other);
         }
         else if (o == Constants.Nil) {
             return 1;
@@ -355,7 +375,7 @@ public class VncBigInteger extends VncNumber {
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return Float.hashCode(value);
     }
 
     @Override
@@ -367,24 +387,37 @@ public class VncBigInteger extends VncNumber {
             return false;
         }
         else {
-            return value.equals(((VncBigInteger)obj).value);
+            return value == ((VncFloat)obj).value;
         }
     }
 
     @Override
     public String toString() {
-        return value.toString();
+        return String.valueOf(value);
     }
 
     @Override
-	public String toString(final boolean print_machine_readably) {
-        return print_machine_readably ? value.toString() + "N" : value.toString();
+    public String toString(final boolean print_machine_readably) {
+        if (print_machine_readably) {
+            if (Float.isInfinite(value)) {
+                return ":Infinite";
+            }
+            else if (Double.isNaN(value)) {
+                return ":NaN";
+            }
+            else {
+                return  String.valueOf(value) + "F";
+            }
+        }
+        else {
+            return String.valueOf(value);
+        }
     }
 
 
-    public static final String TYPE = ":core/bigint";
+    public static final String TYPE = ":core/float";
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-    private final BigInteger value;
+    private final float value;
 }

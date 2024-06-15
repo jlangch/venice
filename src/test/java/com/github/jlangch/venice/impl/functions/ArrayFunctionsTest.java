@@ -44,9 +44,9 @@ public class ArrayFunctionsTest {
         assertEquals(20L, ((long[])venice.eval("(aset (long-array '(1 2 3 4 5)) 1 20)"))[1]);
         assertEquals(20L, ((long[])venice.eval("(aset (long-array '(1 2 3 4 5)) 4 20)"))[4]);
 
-        assertEquals(20.1F, ((float[])venice.eval("(aset (float-array '(1.0 2.0 3.0 4.0 5.0)) 0 20.1)"))[0]);
-        assertEquals(20.1F, ((float[])venice.eval("(aset (float-array '(1.0 2.0 3.0 4.0 5.0)) 1 20.1)"))[1]);
-        assertEquals(20.1F, ((float[])venice.eval("(aset (float-array '(1.0 2.0 3.0 4.0 5.0)) 4 20.1)"))[4]);
+        assertEquals(20.1F, ((float[])venice.eval("(aset (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 0 20.1F)"))[0]);
+        assertEquals(20.1F, ((float[])venice.eval("(aset (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 1 20.1F)"))[1]);
+        assertEquals(20.1F, ((float[])venice.eval("(aset (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 4 20.1F)"))[4]);
 
         assertEquals(20.1D, ((double[])venice.eval("(aset (double-array '(1.0 2.0 3.0 4.0 5.0)) 0 20.1)"))[0]);
         assertEquals(20.1D, ((double[])venice.eval("(aset (double-array '(1.0 2.0 3.0 4.0 5.0)) 1 20.1)"))[1]);
@@ -77,9 +77,9 @@ public class ArrayFunctionsTest {
         assertEquals(2L, venice.eval("(aget (long-array '(1 2 3 4 5)) 1)"));
         assertEquals(5L, venice.eval("(aget (long-array '(1 2 3 4 5)) 4)"));
 
-        assertEquals(1.0D, venice.eval("(aget (float-array '(1.0 2.0 3.0 4.0 5.0)) 0)"));
-        assertEquals(2.0D, venice.eval("(aget (float-array '(1.0 2.0 3.0 4.0 5.0)) 1)"));
-        assertEquals(5.0D, venice.eval("(aget (float-array '(1.0 2.0 3.0 4.0 5.0)) 4)"));
+        assertEquals(1.0F, venice.eval("(aget (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 0)"));
+        assertEquals(2.0F, venice.eval("(aget (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 1)"));
+        assertEquals(5.0F, venice.eval("(aget (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 4)"));
 
         assertEquals(1.0D, venice.eval("(aget (double-array '(1.0 2.0 3.0 4.0 5.0)) 0)"));
         assertEquals(2.0D, venice.eval("(aget (double-array '(1.0 2.0 3.0 4.0 5.0)) 1)"));
@@ -109,8 +109,8 @@ public class ArrayFunctionsTest {
         assertEquals(5L, venice.eval("(alength (long-array '(1 2 3 4 5)))"));
 
         assertEquals(0L, venice.eval("(alength (float-array '()))"));
-        assertEquals(1L, venice.eval("(alength (float-array '(1.0)))"));
-        assertEquals(5L, venice.eval("(alength (float-array '(1.0 2.0 3.0 4.0 5.0)))"));
+        assertEquals(1L, venice.eval("(alength (float-array '(1.0F)))"));
+        assertEquals(5L, venice.eval("(alength (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)))"));
 
         assertEquals(0L, venice.eval("(alength (double-array '()))"));
         assertEquals(1L, venice.eval("(alength (double-array '(1.0)))"));
@@ -139,9 +139,9 @@ public class ArrayFunctionsTest {
         assertEquals("[3, 4]",    Arrays.toString((long[])venice.eval("(asub (long-array '(1 2 3 4 5)) 2 2)")));
         assertEquals("[3, 4, 5]", Arrays.toString((long[])venice.eval("(asub (long-array '(1 2 3 4 5)) 2 3)")));
 
-        assertEquals("[3.0]",           Arrays.toString((float[])venice.eval("(asub (float-array '(1.0 2.0 3.0 4.0 5.0)) 2 1)")));
-        assertEquals("[3.0, 4.0]",      Arrays.toString((float[])venice.eval("(asub (float-array '(1.0 2.0 3.0 4.0 5.0)) 2 2)")));
-        assertEquals("[3.0, 4.0, 5.0]", Arrays.toString((float[])venice.eval("(asub (float-array '(1.0 2.0 3.0 4.0 5.0)) 2 3)")));
+        assertEquals("[3.0]",           Arrays.toString((float[])venice.eval("(asub (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 2 1)")));
+        assertEquals("[3.0, 4.0]",      Arrays.toString((float[])venice.eval("(asub (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 2 2)")));
+        assertEquals("[3.0, 4.0, 5.0]", Arrays.toString((float[])venice.eval("(asub (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 2 3)")));
 
         assertEquals("[3.0]",           Arrays.toString((double[])venice.eval("(asub (double-array '(1.0 2.0 3.0 4.0 5.0)) 2 1)")));
         assertEquals("[3.0, 4.0]",      Arrays.toString((double[])venice.eval("(asub (double-array '(1.0 2.0 3.0 4.0 5.0)) 2 2)")));
@@ -168,9 +168,9 @@ public class ArrayFunctionsTest {
         assertEquals("[0, 2, 3, 0, 0, 0, 0, 0]", Arrays.toString((long[])venice.eval("(acopy (long-array '(1 2 3 4 5)) 1 (long-array 8 0) 1 2)")));
         assertEquals("[0, 0, 0, 0, 3, 0, 0, 0]", Arrays.toString((long[])venice.eval("(acopy (long-array '(1 2 3 4 5)) 2 (long-array 8 0) 4 1)")));
 
-        assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 0.0]", Arrays.toString((float[])venice.eval("(acopy (float-array '(1.0 2.0 3.0 4.0 5.0)) 0 (float-array 8 0.0) 0 5)")));
-        assertEquals("[0.0, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0]", Arrays.toString((float[])venice.eval("(acopy (float-array '(1.0 2.0 3.0 4.0 5.0)) 1 (float-array 8 0.0) 1 2)")));
-        assertEquals("[0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0]", Arrays.toString((float[])venice.eval("(acopy (float-array '(1.0 2.0 3.0 4.0 5.0)) 2 (float-array 8 0.0) 4 1)")));
+        assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 0.0]", Arrays.toString((float[])venice.eval("(acopy (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 0 (float-array 8 0.0F) 0 5)")));
+        assertEquals("[0.0, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0]", Arrays.toString((float[])venice.eval("(acopy (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 1 (float-array 8 0.0F) 1 2)")));
+        assertEquals("[0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0]", Arrays.toString((float[])venice.eval("(acopy (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F)) 2 (float-array 8 0.0F) 4 1)")));
 
         assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 0.0]", Arrays.toString((double[])venice.eval("(acopy (double-array '(1.0 2.0 3.0 4.0 5.0)) 0 (double-array 8 0.0) 0 5)")));
         assertEquals("[0.0, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0]", Arrays.toString((double[])venice.eval("(acopy (double-array '(1.0 2.0 3.0 4.0 5.0)) 1 (double-array 8 0.0) 1 2)")));
@@ -191,7 +191,7 @@ public class ArrayFunctionsTest {
 
         assertEquals("[2, 3, 4, 5, 6]", Arrays.toString((int[])venice.eval("(amap (fn [x] (+ 1I x)) (int-array '(1I 2I 3I 4I 5I)))")));
         assertEquals("[2, 3, 4, 5, 6]", Arrays.toString((long[])venice.eval("(amap (fn [x] (+ 1 x)) (long-array '(1 2 3 4 5)))")));
-        assertEquals("[2.0, 3.0, 4.0, 5.0, 6.0]", Arrays.toString((float[])venice.eval("(amap (fn [x] (+ 1.0 x)) (float-array '(1.0 2.0 3.0 4.0 5.0))))")));
+        assertEquals("[2.0, 3.0, 4.0, 5.0, 6.0]", Arrays.toString((float[])venice.eval("(amap (fn [x] (+ 1.0 x)) (float-array '(1.0F 2.0F 3.0F 4.0F 5.0F))))")));
         assertEquals("[2.0, 3.0, 4.0, 5.0, 6.0]", Arrays.toString((double[])venice.eval("(amap (fn [x] (+ 1.0 x)) (double-array '(1.0 2.0 3.0 4.0 5.0))))")));
         assertEquals("[>a, >b, >c, >d, >e]", Arrays.toString((String[])venice.eval("(amap (fn [x] (str \">\" x)) (string-array '(\"a\" \"b\" \"c\" \"d\" \"e\")))")));
         assertEquals("[>a, >b, >c, >d, >e]", Arrays.toString((Object[])venice.eval("(amap (fn [x] (str \">\" x)) (object-array '(\"a\" \"b\" \"c\" \"d\" \"e\")))")));
