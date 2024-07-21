@@ -121,7 +121,90 @@ _TODO_
 
 #### Let and Local Variables
 
+
 #### Filter-Map-Reduce
+
+Filter, map, and reduce are three fundamental operations in functional programming, 
+commonly used to process and transform collections of data. These operations form 
+a powerful pattern for data processing pipelines.
+
+**Filter**
+
+The filter operation processes a collection to produce a new collection containing 
+only the elements that satisfy a given predicate (a function that returns a boolean 
+value).
+
+```clojure
+(filter even? [1, 2, 3, 4, 5, 6])
+```
+
+output: `(2, 4, 6)`
+
+
+**Map**
+
+The map operation transforms a collection by applying a function to each element, 
+producing a new collection of the transformed elements.
+
+```clojure
+(map square [1, 2, 3, 4, 5, 6])
+```
+output: `(1, 4, 9, 16, 25, 36)`
+
+or using a anonymous function
+
+```clojure
+(map #(* % %) [1, 2, 3, 4, 5, 6])
+```
+
+output: `(1, 4, 9, 16, 25, 36)`
+
+
+**Reduce**
+
+The reduce operation combines the elements of a collection into a single value 
+using an associative binary operation. It applies a function cumulatively to the 
+elements of a collection, from left to right, reducing the collection to a single 
+value.
+
+*Adding numbers*
+
+```clojure
+(reduce + [1, 2, 3, 4, 5, 6])
+```
+
+output: `21`
+
+*Using an initial value*
+
+```clojure
+(reduce * 1 [1, 2, 3, 4, 5, 6])
+```
+
+output: `720`
+
+*Using an anonymous reducing function*
+
+```clojure
+(reduce #(+ %1 (inc %2)) [1, 2, 3, 4, 5, 6])
+```
+
+output: `26`
+
+
+**Combining Filter, Map, and Reduce**
+
+These operations can be combined to perform complex data processing tasks in a concise 
+and readable manner. Here’s an example that uses all three operations together:
+
+```clojure
+(->> (filter even? [1, 2, 3, 4, 5, 6])
+     (map square)
+     (reduce +))    
+```
+
+output: `56`
+
 
 #### Control Structures
 
@@ -141,6 +224,7 @@ Functional programming emphasizes declarative over imperative coding, meaning yo
 focus on what to solve rather than how to solve it. By leveraging these principles 
 and techniques, functional programming aims to produce clearer, more concise, and 
 more robust code.
+
 
 
 **Concepts**
