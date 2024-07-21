@@ -143,7 +143,7 @@ and techniques, functional programming aims to produce clearer, more concise, an
 more robust code.
 
 
-**Features**
+**Concepts**
 
 - First-Class and Higher-Order Functions
 - Pure Functions
