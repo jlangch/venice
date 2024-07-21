@@ -253,8 +253,9 @@ results. Common examples include map, filter, and reduce.
 ### Pure Functions
 
 A function is pure if its output is determined only by its input values, without 
-observable side effects. This means the function's behavior is consistent and doesn't 
-rely on or alter the program state.
+observable side effects (e.g. doing I/O, altering global vars, no internal state, ...). 
+This means the function's behavior is consistent and doesn't rely on or alter the 
+program state.
 
 Pure functions are easier to reason about, test, and debug. They also enable better 
 optimization by the compiler.
@@ -265,6 +266,10 @@ optimization by the compiler.
 An expression is referentially transparent if it can be replaced with its value without 
 changing the program's behavior. This property is a direct result of using pure 
 functions.
+
+If there is referential transparency the expression below is valid:
+
+`f(x) + f(x) = 2 * f(x)`
 
 Referential transparency enables more predictable and reliable code, making it easier 
 to refactor and optimize.
