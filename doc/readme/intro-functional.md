@@ -13,7 +13,9 @@ Venice is a Lisp dialect and recognizes two kinds of structures:
 **1. Literal representations of data**
 
 ```clojure
-1                   ; a number
+10                  ; a number of type long (64bit)
+1.45                ; a number of type double (64bit float)
+1.45M               ; a arbitrary precision decimal number 
 "foo"               ; a string
 true                ; a boolean
 ["abc" "de" "fgh"]  ; a vector of strings
@@ -113,13 +115,52 @@ larger blocks that are a single expression.
 
 _TODO_
 
-#### Variables
+### Variables
 
-#### Functions
+Syntax:
 
-#### Immutability
+```clojure
+(def var-name var-value)
+```
 
-#### Let and Local Variables
+Where `var-name` is the name of the variable and `var-value` is the value bound 
+to the variable.
+
+
+*Examples:*
+
+```clojure
+(do
+  (def x 100)
+  (def name "hello")
+  (def status true)
+
+  ;; print the variables
+  (println "x:" x)
+  (println "name:" name)
+  (println "status:" status))
+```
+
+*Naming Variables:*
+
+The name of a variable can be composed of letters, digits, and the underscore 
+character. It must begin with either a letter or an underscore. 
+
+
+### Functions
+
+_TODO_
+
+
+### Immutability
+
+_TODO_
+
+
+### Let and Local Variables
+
+_TODO_
+
 
 
 #### Filter-Map-Reduce
@@ -206,9 +247,14 @@ and readable manner. Here’s an example that uses all three operations together
 output: `56`
 
 
-#### Control Structures
+### Control Structures
 
-#### Loops
+_TODO_
+
+
+### Loops
+
+_TODO_
 
 standard functions:  (apply + [1 2 3 4 5])  (reduce + [1 2 3 4 5])  (filter even? [1 2 3 4 5])
 
