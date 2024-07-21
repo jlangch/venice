@@ -223,7 +223,7 @@ easier.
 *Persistent Data Structures* are a data structures that always preserves the previous 
 version of itself when it is modified. There are efficient implementations for lists, sets
 and maps. E.g. [VAVR](https://github.com/vavr-io/vavr) provides an implementation for JAVA
-is used by *Venice*.
+which used by *Venice*.
 
 
 ### Lazy Evaluation
