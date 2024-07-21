@@ -180,7 +180,29 @@ _TODO_
 
 ### Immutability
 
-_TODO_
+*Venice* data structures like strings, lists, vectors, sets, maps are all immutable, 
+meaning once created, it cannot be changed. Instead of modifying data, new data 
+structures are created. These data structures are effectively immutable, as their 
+operations do not (visibly) update the structure in-place, but instead always yield 
+a new updated structure. 
+
+*Example:*
+
+```clojure
+(do
+  (def digits-1 [1 2 3 4 5 6])
+  
+  ;; add 7 to the digits-1 vector by calling
+  ;;  (conj digits-1 7)
+  ;; this yields a new vector with the digit added
+  (def digits-2 (conj digits-1 7))
+  
+  (println "digits-1: " digits-1)
+  (println "digits-2: " digits-2))
+  
+  ;; => digits-1:  [1 2 3 4 5 6]
+  ;;    digits-2:  [1 2 3 4 5 6 7]
+```
 
 
 ### Let and Local Variables
