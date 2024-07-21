@@ -297,7 +297,7 @@ For some recursive algorithms *memoization* can speed up computation dramaticall
 ```
 
 
-Please not that this naive approach is not working:
+Please note that this naive approach is not working:
 
 ```clojure
 (do

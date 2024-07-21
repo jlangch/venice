@@ -151,6 +151,32 @@ character. It must begin with either a letter or an underscore.
 
 _TODO_
 
+**Defining a Function**
+
+_TODO_
+
+
+**Functions with Multiple Arguments**
+
+_TODO_
+
+
+**Variadic Functions**
+
+_TODO_
+
+
+**Anonymous Functions**
+
+_TODO_
+
+
+**Applying Functions**
+
+_TODO_
+
+
+
 
 ### Immutability
 
