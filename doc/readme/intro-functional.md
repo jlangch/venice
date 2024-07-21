@@ -229,7 +229,7 @@ which used by *Venice*.
 
 ### Lazy Evaluation
 
-Lazy Evaluation is a evaluation strategy which delays the computation of expressions until 
+Lazy Evaluation is an evaluation strategy which delays the computation of expressions until 
 their values are needed. It can help in optimizing performance by avoiding unnecessary 
 calculations.
 
