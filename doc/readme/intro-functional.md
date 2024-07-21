@@ -202,7 +202,7 @@ function h such that `h(x) = g(f(x))`.
 Recursion is the process in which a function calls itself as a subroutine. Recursion is 
 often used in place of traditional looping constructs in *Functional Programming*.
 
-**Tail Recursion** 
+*Tail Recursion:*
 
 A specific form of recursion where the recursive call is the last operation in the 
 function, allowing for optimization by the compiler to prevent stack overflow.
@@ -218,7 +218,7 @@ updated structure.
 Immutability helps avoid side effects and makes concurrent programming much safer and 
 easier.
 
-**Persistent Data Structures**
+*Persistent Data Structures:*
 
 *Persistent Data Structures* are a data structures that always preserves the previous 
 version of itself when it is modified. There are efficient implementations for lists, sets
