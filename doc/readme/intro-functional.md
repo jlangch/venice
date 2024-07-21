@@ -250,3 +250,15 @@ that takes multiple arguments is applied to some of its arguments, producing ano
 function that takes the remaining arguments. This allows you to fix a number of arguments 
 to a function without invoking it completely, creating a new function with a smaller 
 arity (number of arguments).
+
+*Benefits of Partial Application:*
+
+1. Code Reusability: You can create more specific functions from general ones,
+   improving reusability.
+
+2. Code Clarity: By naming partial applications appropriately, you can make code more
+   readable and intention-revealing.
+
+3. Functional Composition: It facilitates composing functions by fixing arguments in 
+   stages, making it easier to build complex functions from simpler ones.
+   
