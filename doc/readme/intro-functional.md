@@ -204,8 +204,9 @@ often used in place of traditional looping constructs in *Functional Programming
 
 *Tail Recursion:*
 
-A specific form of recursion where the recursive call is the last operation in the 
-function, allowing for optimization by the compiler to prevent stack overflow.
+*Tail Recursion* is a specific form of recursion where the recursive call is the last 
+operation in the function, allowing for optimization by the compiler to prevent stack 
+overflow.
 
 
 ### Immutability
