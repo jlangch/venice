@@ -181,7 +181,7 @@ _TODO_
 ### Immutability
 
 *Venice* data structures like strings, lists, vectors, sets, maps are all immutable, 
-meaning once created, it cannot be changed. Instead of modifying data, new data 
+meaning once created, they cannot be changed. Instead of modifying data, new data 
 structures are created. These data structures are effectively immutable, as their 
 operations do not (visibly) update the structure in-place, but instead always yield 
 a new updated structure. 
