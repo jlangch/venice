@@ -60,8 +60,8 @@ In functional parlance Venice is based on symbolic expressions, in-short [s-expr
 ### Control Flow
 
 In Venice, flow control operators are expressions too. `if` and `do` are the two basic 
-control flows. More complex control flows like `case` are based on these fundamental 
-operations.
+control flows. All other more complex control flows like `case` are based on these 
+fundamental operations.
 
 #### if
 
