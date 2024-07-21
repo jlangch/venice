@@ -368,9 +368,9 @@ _Note: all examples run with upfront macro expansion enabled._
   ;; run on MacBook Air M2, with 'macroexpand' enabled
   ;; +----------------------+------------+
   ;; | (fib-simple 30)      |    1.171s  |  
+  ;; | (fib-memoize 30)     |    2.540ms |     
   ;; | (fib-tco 30)         |   31.286µs |   
   ;; | (fib-loop-recur 30)  |   27.946µs |  
-  ;; | (fib-memoize 30)     |    2.54ms  |     
   ;; +----------------------+------------+   
 ```
 
