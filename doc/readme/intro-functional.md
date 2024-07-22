@@ -335,7 +335,10 @@ Create a function with the name *increment* and the argument *x*:
 Functions accept often other functions as arguments. 
 
 
-Increment each element of a collection by passing the built-in `inc` function to the `map` function:
+Example: 
+
+Increment each element of a collection by passing the built-in `inc` 
+function to the `map` function:
 
 ```clojure
 (map inc [1 2 3])  ;; => [2 3 4]
