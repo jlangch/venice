@@ -540,7 +540,7 @@ Venice provides `loop - recur` if explicit loops are required:
 ```clojure
 (do
   (defn sum [n]
-    (loop [cnt n acc 0]
+    (loop [cnt n, acc 0]
       (if (zero? cnt)
         acc
         (recur (dec cnt) (+ acc cnt)))))
