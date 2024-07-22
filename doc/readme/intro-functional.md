@@ -332,7 +332,7 @@ Create a function with the name *increment* and the argument *x*:
 
 #### Anonymous Functions
 
-Functions of accept often other functions as arguments. 
+Functions accept often other functions as arguments. 
 
 
 Increment each element of a collection by passing the built-in `inc` function to the `map` function:
