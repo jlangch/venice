@@ -102,11 +102,14 @@ be a list or a vector.
 
 ```clojure
 (do
+  (apply max [1 5 2 8 3])   ;; same as (max 1 5 2 8 3)
+  
   (apply str '(1 2 3 4))    ;; same as (str 1 2 3 4)
   (apply str 1 '(2 3 4))    ;; same as (str 1 2 3 4)
   (apply str 1 2 '(3 4))    ;; same as (str 1 2 3 4)
-  (apply str 1 2 3 '(4)))   ;; same as (str 1 2 3 4) 
+  (apply str 1 2 3 '(4))    ;; same as (str 1 2 3 4) 
 ```
+
 
 
 ## Locals and Closures
