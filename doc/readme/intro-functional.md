@@ -104,7 +104,7 @@ easier.
 
 *Persistent Data Structures:*
 
-A *Persistent Data Structure* is a data structures that always preserves the previous 
+A *Persistent Data Structure* is a data structure that always preserves the previous 
 version of itself when it is modified. There are efficient implementations for lists, sets
 and maps.
 
