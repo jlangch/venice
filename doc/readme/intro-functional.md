@@ -104,10 +104,10 @@ easier.
 
 *Persistent Data Structures:*
 
-*Persistent Data Structures* are a data structures that always preserves the previous 
+*Persistent Data Structures* are data structures that always preserves the previous 
 version of itself when it is modified. There are efficient implementations for lists, sets
-and maps. E.g. [VAVR](https://github.com/vavr-io/vavr) provides an implementation for JAVA
-which used by *Venice*.
+and maps. E.g. [VAVR](https://github.com/vavr-io/vavr) provides an implementation for *Java*
+which is used by *Venice*.
 
 
 ### Lazy Evaluation
