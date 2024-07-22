@@ -353,7 +353,7 @@ Defining our own increment function for mapping the values:
   (map increment [1 2 3 4]))  ;; => [2 3 4]
 ```
 
-Anonymous `#(+ % 1)` functions simplify the use of small ad-hoc functions:
+Anonymous functions like `#(+ % 1)` simplify the use of small ad-hoc functions:
 
 ```clojure
 (map #(+ % 1) [1 2 3 4])  ;; => [2 3 4]
