@@ -14,7 +14,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 * [Embeddings](openai-embeddings.md)
 * Assistants *(in work)*
    * [x] assistants
-   * [ ] threads
+   * [x] threads
    * [ ] messages
    * [ ] runs
    * [ ] run steps

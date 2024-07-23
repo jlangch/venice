@@ -2312,13 +2312,14 @@
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
-        body            (merge { :model           model
-                                 :name            name
-                                 :description     (:description opts)
-                                 :instructions    (:instructions opts)
-                                 :tools           (:tools opts)
-                                 :tool_resources  (:tool-resources opts) }
-                               (:assistant-opts opts))
+        body            (->> (merge { :model           model
+                                      :name            name
+                                      :description     (:description opts)
+                                      :instructions    (:instructions opts)
+                                      :tools           (:tools opts)
+                                      :tool_resources  (:tool-resources opts) }
+                                    (:assistant-opts opts))
+                             (filter-kv (fn [k v] (not (empty? v)))))
         response        (hc/send :post 
                           uri
                           :headers (openai-api-headers "application/json" 
@@ -2411,7 +2412,7 @@
                           "after"  (:after opts)
                           "before" (:before opts) }
         query-string    (->> (map-vals str query-params)
-                             (filter-kv (fn [k v] (not (str/blank? v))))
+                             (filter-kv (fn [k v] (not (empty? v))))
                              (map (fn [[k v]] (str k "=" v)))
                              (str/join "&"))
         uri             (str "https://api.openai.com/v1/assistants"
@@ -2619,7 +2620,7 @@
                                       :tools           (:tools opts)
                                       :tool_resources  (:tool-resources opts) }
                                      (:assistant-opts opts))
-                             (filter-kv (fn [k v] (not (str/blank? v)))))
+                             (filter-kv (fn [k v] (not (empty? v)))))
         response        (hc/send :post 
                           uri
                           :headers (openai-api-headers "application/json" 
@@ -2790,13 +2791,14 @@
   thread-create [& options]
 
   (let [opts            (apply hash-map options)
-        uri             "https://api.openai.com/v1/assistants"
+        uri             "https://api.openai.com/v1/threads"
         openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
         _               (validate-openai-api-key openai-api-key)
         debug?          (:debug opts false)
-        body            { :messages        messages
-                          :tool_resources  (:tool-resources opts)
-                          :metadata        metadata }
+        body            (->> { :messages        (:messages opts)
+                               :tool_resources  (:tool-resources opts)
+                               :metadata        (:metadata opts) }
+                             (filter-kv (fn [k v] (not (empty? v)))))
         response        (hc/send :post 
                           uri
                           :headers (openai-api-headers "application/json" 
@@ -2880,6 +2882,186 @@
         debug?          (:debug opts false)
         body            nil
         response        (hc/send :get 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+
+(defn 
+  ^{ :arglists '(
+          "(thread-modify thread-id & options)" )
+     :doc """
+          Modify a thread.
+
+          ¶*Parameter thread-id»*
+
+          The ID of the thread to modify.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :tool-resources   | A set of resources that are made available to the assistant's \
+                                tools in this thread. The resources are specific to the type of \
+                                tool. For example, the code_interpreter tool requires a list of \
+                                file IDs, while the file_search tool requires a list of vector \
+                                store IDs.|
+          | :metadata         | Set of 16 key-value pairs that can be attached to an object. \
+                                This can be useful for storing additional information about the \
+                                object in a structured format. Keys can be a maximum of 64 \
+                                characters long and values can be a maxium of 512 characters \
+                                long. |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/threads/{thread-id}". ¶\
+                                Defaults  to "https://api.openai.com/v1/threads/{thread-id}" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/threads)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/thread-modify 
+                                "thread_abc123"
+                                :metadata {
+                                  "modified" "true"
+                                  "user" "abc123"
+                                }
+                                :headers { "OpenAI-Beta" "assistants=v2" })]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/thread-create"
+          "openai/thread-retrieve" ) }
+
+  thread-modify [thread-id & options]
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/threads/{thread-id}"
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            (->> { :messages        (:messages opts)
+                               :tool_resources  (:tool-resources opts)
+                               :metadata        (:metadata opts) }
+                             (filter-kv (fn [k v] (not (empty? v)))))
+        response        (hc/send :post 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body    (json/write-str body)
+                          :debug   debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+     (assoc result :data  (hc/slurp-response response 
+                                             :json-parse-mode :data 
+                                             :json-key-fn keyword))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(thread-delete thread-id & options)" )
+     :doc """
+          Deletes a thread.
+
+          ¶*Parameter thread-id»*
+
+          The ID of the thread to retrieve.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "assistants=v2"} |
+          | :uri              | An OpenAI assistants URI. E.g.: \
+                                "https://api.openai.com/v1/threads/{thread_id}". ¶\
+                                Defaults  to "https://api.openai.com/v1/threads/{thread-id}" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |
+
+          ¶*Return value*
+           
+          Returns a map with the response data:
+
+          | [![width: 15%]] | [![width: 85%]]                  |
+          | :status         | The HTTP status (a long)         |
+          | :mimetype       | The content type's mimetype      |
+          | :headers        | A map of headers. key: header name, value: list \
+                              of header values |
+          | :data           | If the response HTTP status is `HTTP_OK` \
+                              the data fields contains the chat completion \
+                              message. ¶\
+                              If the response HTTP status is not `HTTP_OK` \
+                              the data fields contains an error message \
+                              formatted as plain or JSON string. |
+
+          See:
+          * [OpenAI Models API](https://platform.openai.com/docs/api-reference/threads)
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response  (openai/thread-delete "thread_abc123"
+                                                  :headers { "OpenAI-Beta" "assistants=v2" })]
+              (openai/assert-response-http-ok response)
+              (prn (:data response))))
+          """ )
+     :see-also '( 
+          "openai/thread-create"
+          "openai/thread-retrieve" ) }
+
+  thread-delete [thread-id & options]
+
+  (assert (string? thread-id))
+
+  (let [opts            (apply hash-map options)
+        uri             "https://api.openai.com/v1/threads/{thread-id}"
+        uri             (str/replace-all uri "{thread-id}" (str/encode-url thread-id))
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        body            nil
+        response        (hc/send :delete 
                           uri
                           :headers (openai-api-headers "application/json" 
                                                        openai-api-key
