@@ -276,7 +276,7 @@ Let’s filter a list of numbers, square each number, and then sum them.
 Without `->>`:
 
 ```clojure
-(apply + (map square (filter odd? [1 2 3 4 5])))
+(reduce + (map square (filter odd? [1 2 3 4 5])))
 ```
 
 With `->>`:
@@ -285,7 +285,7 @@ With `->>`:
 (->> [1 2 3 4 5]        ; Start with the list
      (filter odd?)      ; Filter odd numbers
      (map square)       ; Square each number
-     (apply +))         ; Sum the numbers
+     (reduce +))        ; Sum the numbers
 ```
 
 
