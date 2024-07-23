@@ -13,16 +13,16 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 * [Models](openai-models.md)
 * [Embeddings](openai-embeddings.md)
 * Assistants *(in work)*
-   * [x] assistants
-   * [x] threads
-   * [ ] messages
-   * [ ] runs
-   * [ ] run steps
-   * [ ] vector stores
-   * [ ] vector store files
-   * [ ] vector store file batches
+    * [x] assistants
+    * [x] threads
+    * [ ] messages
+    * [ ] runs
+    * [ ] run steps
+    * [ ] vector stores
+    * [ ] vector store files
+    * [ ] vector store file batches
 * Batches *(in work)*
-   * [ ] api
+    * [ ] api
 * [OpenAI API Reference](https://platform.openai.com/docs/api-reference/introduction)
 
 *The OpenAI client is in incubation status. The API might undergo changes.*
