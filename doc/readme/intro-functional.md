@@ -660,7 +660,8 @@ prints: "012345"
 
 #### loop - recur
 
-The loop-recur syntax in Venice is used to create loops with recursion in a way that is efficient and avoids stack overflow errors.
+The loop-recur syntax in Venice is used to create loops with recursion in a way that is efficient 
+and avoids stack overflow errors.
 
 Basics:
 
@@ -683,12 +684,12 @@ Basics:
 ```clojure
 (do
   (defn sum-to-n [n]
-    (loop [i 1            ;; Initialize loop variables: i starts at 1
-           sum 0]         ;; sum starts at 0
-      (if (<= i n)        ;; If i is less than or equal to n
-        (recur (inc i)    ;; Recur with incremented i and updated sum
-               (+ sum i)) ;; Update sum by adding i
-        sum)))            ;; If condition is false, return the sum        
+    (loop [i 1            ; Initialize loop variables: i starts at 1
+           sum 0]         ; sum starts at 0
+      (if (<= i n)        ; If i is less than or equal to n
+        (recur (inc i)    ; Recur with incremented i and updated sum
+               (+ sum i)) ; Update sum by adding i
+        sum)))            ; If condition is false, return the sum        
          
    ;; call the function
    (sum-to-n 10))
