@@ -12,7 +12,9 @@
     * [Closures](#closures)
     * [Partial Function Application](#partial-function-application)
     
-* [Functional Programming Advantages](#functional-programming-advantages)
+* [Functional Programming Advantages / Disadvantages](#functional-programming-advantages-disadvantages)
+    * [Advantages](#advantages)
+    * [Disadvantages](#disadvantages)
 
 * [First Steps in Venice](#first-steps-in-venice)
     * [Literals and Operations](#literals-and-operations)
@@ -148,7 +150,9 @@ arity (number of arguments).
    
 
 
-## Functional Programming Advantages
+## Functional Programming Advantages / Disadvantages
+
+### Advantages
 
 1. Immutability:
     * In FP, data is immutable, meaning once a data structure is created, it cannot 
@@ -204,6 +208,72 @@ arity (number of arguments).
     * FP’s emphasis on pure functions and immutability can lead to more readable and 
       understandable code, especially for complex logic. This makes it easier for new 
       developers to understand and contribute to the codebase.
+	
+12. Smaller Code Base:
+    * Projects using FP produce a smaller code base compared to imperative or 
+      object-oriented programming.
+ 
+
+### Disadvantages
+
+While functional programming (FP) offers numerous advantages, it also has some 
+disadvantages and challenges that developers might face when adopting this paradigm. 
+
+1.	Learning Curve:
+    * Functional programming concepts such as immutability, pure functions, higher-order functions, 
+      and monads can be difficult for developers who are accustomed to imperative or object-oriented 
+      programming.
+
+2.	Performance Overheads:
+    * FP languages often create intermediate data structures due to immutability, 
+      which can lead to higher memory usage and potential performance overheads compared to 
+      in-place modifications in imperative languages.
+
+3.	Limited Libraries and Ecosystem:
+    * Some FP languages have smaller ecosystems and fewer libraries compared to more 
+      established imperative or object-oriented languages. This can limit the availability of tools 
+      and frameworks for certain tasks.
+
+4.	Verbosity and Complexity:
+    * Functional programming can sometimes lead to more verbose code, especially when 
+      dealing with complex data transformations or working around the lack of mutable state.
+
+5.	Debugging and Tracing:
+    * Debugging FP code can be challenging due to the abstraction and composition of functions. 
+      Tracing the flow of data and understanding the sequence of transformations can be more 
+      complex than in imperative code.
+
+6.	Interoperability:
+    * Integrating FP code with existing imperative or object-oriented codebases can 
+      be challenging. Interoperability issues may arise, especially when trying to maintain 
+      immutability and pure functions within a predominantly mutable environment.
+
+7.	Lack of State Management:
+    * While the absence of mutable state is a strength in many ways, it can also be a 
+      limitation when stateful operations are necessary. Managing state in a purely 
+      functional way often requires using monads or other abstractions, which can 
+      add complexity.
+
+8.	Error Handling:
+    * Handling errors in FP can be less straightforward compared to traditional try-catch 
+      mechanisms in imperative languages. Techniques like using Option or Either types can 
+      add complexity and verbosity to the code.<br/>
+      *Venice uses the Java based try-catch mechanism for error handling.*
+
+9.	Tooling and IDE Support:
+    * The tooling and Integrated Development Environment (IDE) support for some functional 
+      languages may not be as mature or feature-rich as for more mainstream imperative 
+      languages. This can affect productivity.
+
+10.	Optimization Challenges:
+    * Writing highly optimized, low-level code in a purely functional style can 
+      be challenging. Certain performance-critical applications might benefit more from 
+      imperative approaches where manual optimizations are easier to implement.
+
+11.	Developer Mindset Shift:
+    * Adopting FP requires a shift in mindset from imperative and object-oriented 
+      thinking. This can be a significant barrier for teams and organizations, requiring 
+      investment in training and education.
 
 
 
