@@ -1,5 +1,9 @@
 # Filter-Map-Reduce
 
+Filter, map, and reduce are three fundamental operations in functional programming, 
+commonly used to process and transform collections of data. These operations form 
+a powerful pattern for data processing pipelines.
+
 
 ## Filter
 
@@ -70,7 +74,11 @@ One with a starting value:
 
 ## Combine Filter-Map-Reduce
 
-Filter, map and reduce are often combined for processing lists of data.
+Filter, map and reduce operations can be combined to perform complex data 
+processing tasks in a concise and readable manner.
+
+
+Combining Filter-Map-Reduce leads to deeply nested operations:
 
 ```clojure
 (reduce + (map #(+ 10 %) (filter even? [1 2 3 4 5 6 7 8])))
