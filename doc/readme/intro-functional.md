@@ -210,7 +210,7 @@ arity (number of arguments).
       developers to understand and contribute to the codebase.
 	
 12. Smaller Code Base:
-    * Projects using FP produce a smaller code base compared to imperative or 
+    * Projects using FP produce smaller code bases compared to imperative or 
       object-oriented programming.
  
 
