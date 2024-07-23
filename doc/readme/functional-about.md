@@ -1,4 +1,4 @@
-# About Functional Programming
+# On Functional Programming
 
 
 * [Functional Concepts](#functional-concepts)
