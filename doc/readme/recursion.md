@@ -1,5 +1,15 @@
 # Recursion
 
+* [Introduction](#introduction)
+* [Simple Recursion](#simple-recursion)
+* [Self-Recursive Calls (loop - recur)](#self-recursive-calls-loop-recur)
+* [Recursion with lazy sequences](#recursion-with-lazy-sequences)
+* [Mutually recursive calls (trampoline)](#mutually-recursive-calls-trampoline)
+* [Tail Call Optimization (TCO)](#tail-call-optimization-tco)
+* [Recursion vs Folding](#recursion-vs-folding)
+* [Recursion and Memoization](#recursion-and-memoization)
+* [Comparing recursion efficiency](#comparing-recursion-efficiency)
+
 
 ## Introduction
 
@@ -341,7 +351,7 @@ where memoization has to raise its arms.
 
 
 
-## Compare recursion efficiency
+## Comparing recursion efficiency
 
 To see how efficient tail call optimization for recursion is we compare 
 simple recursion with self recursion applied to computing Fibonacci numbers. 
