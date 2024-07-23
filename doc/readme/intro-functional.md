@@ -358,6 +358,70 @@ Anonymous functions like `#(+ % 1)` simplify the use of small ad-hoc functions:
 (map #(+ % 1) [1 2 3 4])  ;; => [2 3 4]
 ```
 
+#### Threading macros
+
+Threading macros in Venice are used to make code more readable and to simplify 
+the chaining of operations. They help to “thread” an initial value through a 
+series of functions or forms. There are two main threading macros in Venice:
+
+	1.	-> (thread-first macro)
+	2.	->> (thread-last macro)
+
+
+**Thread first** `->`
+
+Taking an initial value as its first argument, `->` threads it through one or more 
+expressions. Starting with the second form, the macro inserts the first value as 
+its first argument and repeats inserting the result of the form to the first argument
+of the next form. 
+
+*Example*
+
+Let’s say we want to process a map, extract a value, convert it to a string, and then 
+print it.
+
+Without `->`:
+
+```clojure
+(println (str (get {:a 1 :b 2} :a)))
+```
+
+With `->`:
+
+```clojure
+(-> {:a 1 :b 2}   ; Start with the map
+    (get :a)      ; Get the value for key :a
+    str           ; Convert the value to a string
+    println)      ; Print the string
+```
+
+
+**Thread last** `->>`
+
+Taking an initial value as its first argument, `->>` threads it through one or more 
+expressions. Starting with the second form, the macro inserts the first value as 
+its last argument and repeats inserting the result of the form to the last argument
+of the next form. 
+
+*Example*
+
+Let’s filter a list of numbers, square each number, and then sum them.
+
+Without `->>`:
+
+```clojure
+(apply + (map square (filter odd? [1 2 3 4 5])))
+```
+
+With `->>`:
+
+```clojure
+(->> [1 2 3 4 5]        ; Start with the list
+     (filter odd?)      ; Filter odd numbers
+     (map square)       ; Square each number
+     (apply +))         ; Sum the numbers
+```
+
 
 ### Immutability
 

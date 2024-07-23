@@ -429,6 +429,24 @@ functions are executed from right to left.
 
 ## Function threading macros
 
+Threading macros in Venice are used to make code more readable and to simplify 
+the chaining of operations. They help to “thread” an initial value through a 
+series of functions or forms. There are two main threading macros in Venice:
+
+	1.	-> (thread-first macro)
+	2.	->> (thread-last macro)
+
+Practical Use Cases:
+
+	1.	Data Processing Pipelines: Threading macros are ideal for building data 
+	     processing pipelines where each step transforms the data in a clear and 
+	     readable manner.
+	2.	Nested Function Calls: They help in avoiding deeply nested function calls, 
+	     making the code easier to read and maintain.
+	3.	Combining Transformations: When you have a series of transformations to 
+	    apply to data, threading macros keep the sequence of operations clear.
+
+
 **Thread first** `->`
 
 Taking an initial value as its first argument, `->` threads it through one or more 
