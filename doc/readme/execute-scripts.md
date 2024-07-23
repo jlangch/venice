@@ -1,7 +1,15 @@
 # Executing scripts
 
+* [Run a script](#run-a-script)
+* [Load the script from a file and run it](#load-the-script-from-a-file-and-run-it)
+* [Using command line arguments](#using-command-line-arguments)
+* [Passing a load-path](#passing-a-load-path)
+* [Macro Expansion](#macro-expansion)
 
-### Run a script
+
+
+
+## Run a script
 
 ```text
 foo> java -jar venice-1.12.25.jar -script "(+ 1 1)"
@@ -9,7 +17,7 @@ foo> java -jar venice-1.12.25.jar -script "(+ 1 1)"
 ```
 
 
-### Load the script from a file and run it
+## Load the script from a file and run it
 
 File "script.venice":
 
@@ -30,7 +38,7 @@ foo> java -jar venice-1.12.25.jar -file script.venice
 
 
 
-### Using command line arguments
+## Using command line arguments
 
 Venice passes the command line args as **ARGV** vector.
 
@@ -53,7 +61,7 @@ and for security reasons they are not available with embedding Venice in Java!
 
 
 
-### Passing a load-path
+## Passing a load-path
 
 Venice scripts often uses the function `load-file` to load a file with 
 Venice functions. `load-file` loads the files by default from the current working 
