@@ -60,7 +60,8 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 
 * [Getting started](doc/readme/start.md)
 * [REPL](doc/readme/repl.md)
-* [Introduction to Functional Programming](doc/readme/intro-functional.md)
+* [About Functional Programming](doc/readme/functional-about.md)
+* [First Steps in Venice](doc/readme/functional-first-steps.md)
 * [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
