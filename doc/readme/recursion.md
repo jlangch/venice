@@ -145,8 +145,6 @@ number of arguments to prevent you from writing loops.
    (sum-to-n 100000))  ;; => 5000050000
 ```
 
-output: `55`
-
 
 
 **Example 2: Recursively compute the factorial of a number:**
