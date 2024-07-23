@@ -364,8 +364,8 @@ Threading macros in Venice are used to make code more readable and to simplify
 the chaining of operations. They help to “thread” an initial value through a 
 series of functions or forms. There are two main threading macros in Venice:
 
-	1.	-> (thread-first macro)
-	2.	->> (thread-last macro)
+1. `->` (thread-first macro)
+2. `->>` (thread-last macro)
 
 
 **Thread first** `->`
