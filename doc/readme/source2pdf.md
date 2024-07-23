@@ -18,7 +18,7 @@ venice> !source-pdf ./scripts/sudoku.venice
 *Note: The 'sudoku.venice' script is installed at REPL setup time in the REPL 'scripts' directory.*
 
 
-[Sudoku Solver](https://raw.githubusercontent.com/jlangch/venice/master/doc/assets/source-to-pdf/sudoku.venice)  
+[Sudoku Solver Source Code](https://raw.githubusercontent.com/jlangch/venice/master/doc/assets/source-to-pdf/sudoku.venice)  
 
 
 Output Examples:
