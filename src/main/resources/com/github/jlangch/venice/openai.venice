@@ -42,6 +42,7 @@
 ;; see https://platform.openai.com/docs/models/continuous-model-upgrades
 
 (def gpt-4o        "gpt-4o")           ;; GPT-4o, 128'000 tokens
+(def gpt-4o-mini   "gpt-4o-mini")      ;; GPT-4o-mini, 128'000 tokens
 (def gpt-4-turbo   "gpt-4.0-turbo")    ;; GPT-4 Turbo with Vision, 128'000 tokens
 (def gpt-4         "gpt-4")            ;; GPT-4, 8'192 tokens
 (def gpt-3.5-turbo "gpt-3.5-turbo")    ;; GPT-3.5, 16'385 tokens
