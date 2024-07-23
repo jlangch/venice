@@ -676,7 +676,8 @@ Basics:
 
 1.	Define the loop: Start a loop with initial values.
 2.	Perform operations inside the loop: Do the computation or check conditions.
-3.	Use recur to continue the loop: Jump back to the loop with new values or exit the loop if a condition is met.
+3.	Use recur to continue the loop: Jump back to the loop with new values or exit the 
+    loop if a condition is met.
 
 
 *Code Example:*
@@ -700,9 +701,14 @@ output: `55`
 
 **Key Points:**
 
-* Tail Recursion Optimization: `recur` is optimized for tail recursion, meaning it doesn’t add a new frame to the call stack, making it memory efficient.
-* Loop Variable Initialization: Variables initialized in `loop` are re-evaluated with `recur`.
-* Exit Condition: Always ensure there’s a condition to exit the loop, or it will run indefinitely.
+1. Tail Recursion Optimization:
+    * 'recur' is optimized for tail recursion, meaning 
+      it doesn’t add a new frame to the call stack, making it memory efficient.
+2. Loop Variable Initialization:
+    * Variables initialized in 'loop' are re-evaluated with 'recur'.
+3. Exit Condition: 
+    * Always ensure there’s a condition to exit the loop, or it will 
+      run indefinitely.
 
 
 
