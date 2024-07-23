@@ -1,5 +1,15 @@
 # Destructuring
 
+Destructuring in Venice is a powerful feature that allows you to easily 
+extract values from data structures (like lists, vectors, maps, and sequences) 
+and bind them to variables. This makes your code more readable and concise 
+by reducing the need for explicit indexing or lookups.
+
+
+* [Sequential Destructuring](#sequential-destructuring)
+* [Associative Destructuring](#associative-destructuring)
+
+
 ## Sequential Destructuring
 
 Sequential destructuring breaks up a sequential data structure as a Venice 
@@ -116,6 +126,21 @@ The destructured collection must not be of same size as the number of binding na
 ```
 
 
+### Destructuring Function Parameters
+
+Destructuring can be used directly in function parameters, making it easy to pass 
+and work with complex data structures.
+
+```clojure
+(do
+  (defn sum [[x y]]
+    (println "Sum: " (+ x y)))
+
+  (sum [1 2]))
+```
+
+
+
 ## Associative Destructuring
 
 Associative destructuring breaks up an associative (key/value) data structure 
@@ -194,3 +219,16 @@ Associative destructuring can be nested and combined with sequential destructuri
 )
 ```
 
+
+### Destructuring Function Parameters
+
+Destructuring can be used directly in function parameters, making it easy to pass 
+and work with complex data structures.
+
+```clojure
+(do
+  (defn greet [{:keys [name age]}]
+    (println "Hello," name "you are" age "years old."))
+
+  (greet {:name "Charlie" :age 25}))
+```
