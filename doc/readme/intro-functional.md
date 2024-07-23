@@ -12,6 +12,8 @@
     * [Closures](#closures)
     * [Partial Function Application](#partial-function-application)
     
+* [Functional Programming Advantages](#functional-programming-advantages)
+
 * [First Steps in Venice](#first-steps-in-venice)
     * [Literals and Operations](#literals-and-operations)
     * [Control Flow](#control-flow)
@@ -83,11 +85,11 @@ function h such that `h(x) = g(f(x))`.
 ### Recursion
 
 Recursion is the process in which a function calls itself as a subroutine. Recursion is 
-often used in place of traditional looping constructs in *Functional Programming*.
+often used in place of traditional looping constructs in Functional Programming.
 
 *Tail Recursion:*
 
-*Tail Recursion* is a specific form of recursion where the recursive call is the last 
+Tail Recursion is a specific form of recursion where the recursive call is the last 
 operation in the function, allowing for optimization by the compiler to prevent stack 
 overflow.
 
@@ -104,7 +106,7 @@ easier.
 
 *Persistent Data Structures:*
 
-A *Persistent Data Structure* is a data structure that always preserves the previous 
+A Persistent Data Structure is a data structure that always preserves the previous 
 version of itself when it is modified. There are efficient implementations for lists, sets
 and maps.
 
@@ -122,7 +124,7 @@ A closure is a function that captures the bindings of free variables in its lexi
 context. This allows the function to access those variables even when it is invoked outside 
 their scope.
 
-*Closures* are often used to create function factories and for data encapsulation.
+Closures are often used to create function factories and for data encapsulation.
 
 
 ### Partial Function Application
@@ -146,6 +148,63 @@ arity (number of arguments).
    
 
 
+## Functional Programming Advantages
+
+1. Immutability:
+    * In FP, data is immutable, meaning once a data structure is created, it cannot 
+      be changed. This immutability leads to more predictable and less error-prone code, 
+      as there are no side effects from modifying shared data.
+
+2. Pure Functions:
+    * FP emphasizes pure functions, which always produce the same output given the same 
+      input and have no side effects. This makes functions easier to understand, test, 
+      and debug.
+
+3. Modularity:
+    * FP promotes the creation of small, reusable, and composable functions. 
+      These functions can be combined in various ways to build more complex operations, 
+      enhancing modularity and code reuse.
+
+4. Concurrency:
+    * Due to the absence of side effects and immutability, FP is well-suited 
+      for concurrent and parallel programming. Functions can be executed in parallel 
+      without the risk of race conditions or data corruption.
+	
+5. Declarative Nature:
+    * FP allows developers to write code that expresses the logic of computation 
+      without describing its control flow. This declarative style leads to clearer 
+      and more concise code that is easier to reason about.
+	
+6. Lazy Evaluation:
+    * FP languages often support lazy evaluation, where expressions are not evaluated 
+      until their values are needed. This can lead to performance improvements by avoiding 
+      unnecessary computations and enabling the creation of infinite data structures.
+	
+7. Higher-Order Functions:
+    * FP makes extensive use of higher-order functions, which can take other functions 
+      as arguments or return them as results. This enables more abstract and flexible 
+      ways to handle common programming patterns.
+	
+8. Referential Transparency:
+    * Because FP functions are pure, they exhibit referential transparency, meaning that 
+      a function call can be replaced with its result without changing the program’s 
+      behavior. This property simplifies reasoning about the code and enhances its reliability.
+	
+9. Easier Testing and Debugging:
+    * The deterministic nature of pure functions and the absence of side effects 
+      make it easier to test and debug FP code. Unit tests can focus on input-output 
+      pairs without considering the broader program state.
+	
+10. Enhanced Code Maintenance:
+    * The modularity, immutability, and declarative nature of FP lead to code 
+      that is easier to maintain and extend. Changes in one part of the system are less 
+      likely to affect other parts, reducing the risk of introducing bugs.
+	
+11. Improved Readability:
+    * FP’s emphasis on pure functions and immutability can lead to more readable and 
+      understandable code, especially for complex logic. This makes it easier for new 
+      developers to understand and contribute to the codebase.
+
 
 
 ## First Steps in Venice
@@ -168,11 +227,8 @@ true                ; a boolean
 
 **2. Operations, this is how you do things**
 
-All operations take the form `(`, operator, operands, `)` and return always a value:
-
-```clojure
-(operator operand-1 operand-2 ... operand-n)
-```
+All operations take the form `(operator operand-1 operand-2 ... operand-n)` and return 
+always a value.
 
 For example, if you want to add numbers 
 
@@ -275,7 +331,7 @@ output: "ten"
 
 Syntax:
 
-```clojure
+```
 (def var-name var-value)
 ```
 
@@ -307,7 +363,13 @@ character. It must begin with either a letter or an underscore.
 
 #### Defining a Function
 
-Create a function with the name *increment* and the argument *x*:
+Syntax:
+
+```
+(defn fn-name [fn-args] fn-body)
+```
+
+Create a function with the name 'increment' and the argument 'x':
 
 ```clojure
 (do
