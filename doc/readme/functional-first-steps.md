@@ -501,6 +501,11 @@ Basics:
 
 output: `55`
 
+**Note:** This is just an example to demonstrate loop-recur. In real world you would use:
+
+```clojure
+(reduce + (range 11))  ; sum numbers from 1 to 10
+```
 
 **Key Points:**
 
