@@ -103,30 +103,53 @@ a value from. There are no more forms evaluated after the form in the tail
 position is evaluated.
 
 *Remember:*  Venice offers various alternative solutions to recursion to solve
-loops like `(+ 1 2 3 4 5 6)` to sum up a list of numbers or the powerful `reduce` 
+loops, like `(+ 1 2 3 4 5 6)` to sum up a list of numbers or the powerful `reduce` 
 function: `(reduce + [1 2 3 4 5])`. Many Venice functions accept an arbitrary 
 number of arguments to prevent you from writing loops.
 
+*Basics:*
 
-Example 1: Recursively sum up the numbers 0..n:
+1.	`loop`: establishes a point to which `recur` can jump back. 
+2.	`recur`: jumps back to the nearest enclosing loop, re-evaluating it with new values.
+	
+*Key Points:*
+
+* Tail Recursion Optimization: `recur` is optimized for tail recursion, meaning it 
+  doesn’t add a new frame to the call stack, making it memory efficient.
+* Loop Variable Initialization: Variables initialized in `loop` are re-evaluated 
+  with `recur`.
+* Exit Condition: Always ensure there’s a condition to exit the loop, or it will 
+  run indefinitely.
+	
+	
+**Example 1: Summing Numbers from 1 to n**
+	
+*Step-by-Step Explanation:*
+
+1.	Define the loop: Start a loop with initial values.
+2.	Perform operations inside the loop: Do the computation or check conditions.
+3.	Use recur to continue the loop: Jump back to the loop with new values or exit the loop if a condition is met.
+
 
 ```clojure
-;; Definition:
-;;   sum 0 -> 0
-;;   sum n -> n + sum (n - 1)
 (do
-   (defn sum [n]
-      ;; the transformed recursion uses an accumulator for intermediate results
-      (loop [cnt n, acc 0]
-         (if (zero? cnt)
-             acc
-             (recur (dec cnt) (+ acc cnt)))))
-
-   (sum 100000)) ; => 5000050000
+  (defn sum-to-n [n]
+    (loop [i 1            ;; Initialize loop variables: i starts at 1
+           sum 0]         ;; sum starts at 0
+      (if (<= i n)        ;; If i is less than or equal to n
+        (recur (inc i)    ;; Recur with incremented i and updated sum
+               (+ sum i)) ;; Update sum by adding i
+        sum)))            ;; If condition is false, return the sum        
+         
+   ;; call the function
+   (sum-to-n 100000))  ;; => 5000050000
 ```
 
+output: `55`
 
-Example 2: Recursively compute the factorial of a number:
+
+
+**Example 2: Recursively compute the factorial of a number:**
 
 ```clojure
 ;; Definition:
@@ -145,7 +168,7 @@ Example 2: Recursively compute the factorial of a number:
 ```
 
 
-Example 3: Recursively compute the Fibonacci numbers (0 1 1 2 3 5 8 ...):
+**Example 3: Recursively compute the Fibonacci numbers (0 1 1 2 3 5 8 ...):**
 
 ```clojure
 ;; Definition:
