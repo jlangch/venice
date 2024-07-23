@@ -8,6 +8,16 @@ object types byte, short, int, long, float, double, Byte, Short, Integer, Long,
 Float, Double, and BigDecimal.
 
 
+* [Calling Java](#calling-java)
+* [Enum types](#enum-types)
+* [Dealing with static nested classes](#dealing-with-static-nested-classes)
+* [Java Varargs](#java-varargs)
+* [Dynamic Proxies](#dynamic-proxies)
+* [Mixing Venice functions with Java streams](#mixing-venice-functions-with-java-streams)
+* [Filtering Java objects](#filtering-java-objects)
+* [Java 9+](#java-9)
+
+
 ## Calling Java
 
 Java calls follow the patterns:
@@ -328,7 +338,7 @@ use
 _Note:_  this is not the fastest way to filter/map collections
 
 
-## Filtering Java objects:
+## Filtering Java objects
 
 ```clojure
 (do

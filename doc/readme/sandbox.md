@@ -6,8 +6,15 @@ applications that want to provide some degree of scriptability to users,
 without allowing them to read/write files, execute `System.exit(0)`, or any other 
 undesirable operations.
 
+* [Multi-Threading](#multi-threading)
+* [No blacklisting for Java interop](#no-blacklisting-for-java-interop)
+* [Features](#features)
+* [Examples](#examples)
+* [Sandbox with the REPL](#sandbox-with-the-repl)
 
-### Multi-Threading
+
+
+## Multi-Threading
 
 The sandbox is local to a thread. This allows multi-threaded applications to 
 isolate execution properly. 
@@ -21,7 +28,7 @@ these threads have always a restricted sandbox attached rejecting all Java calls
 and Venice I/O functions and prohibiting access to stdin, stdout and stderr.
 
 
-### No blacklisting for Java interop
+## No blacklisting for Java interop
 
 Unlike a sandbox provided by _Java SecurityManager_, this sandboxing is only a 
 skin deep. In other words, even if you prohibit Venice from executing a Java 
@@ -33,7 +40,7 @@ things that are problematic, because you'll never know all the static methods
 that are available to the script in the JVM!
 
 
-### Features
+## Features
 
  - whitelist Java classes down to individual methods and fields
  - whitelist Java system property access down to individual properties
@@ -48,10 +55,10 @@ that are available to the script in the JVM!
  - limiting the execution time of a script
  
 
-### Example
+## Examples
 
 
-#### Customized sandbox
+### Customized sandbox
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -151,7 +158,7 @@ venice.eval("(io/load-classpath-resource "resources/images/img.tiff")");
 ```
 
 
-#### Sandbox rejecting all 'unsafe' functions
+### Sandbox rejecting all 'unsafe' functions
 
 Prohibit all 'unsafe' functions:
 
@@ -197,7 +204,7 @@ venice>
 ```
 
 
-#### Sandbox turned off
+### Sandbox turned off
 
 Run Venice scripts with no restrictions:
 
@@ -209,7 +216,7 @@ final Venice venice = new Venice();
 ...
 ```
 
-#### Creating your own unmanaged threads
+### Creating your own unmanaged threads
 
 As mentioned above you can create your own threads if the configured 
 sandbox allows it. 

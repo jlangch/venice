@@ -1,7 +1,12 @@
 # Multimethods and Protocols
 
+* [Expression Problem](#expression-problem)
+* [Multimethods](#multimethods)
+* [Protocols](#protocols)
 
-### Expression Problem
+
+
+## Expression Problem
 
 The **Expression Problem** refers to the problem of making a language extensible. 
 Software manipulates data types using operations. Sometimes, we want to add 
