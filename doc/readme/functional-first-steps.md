@@ -1,4 +1,4 @@
-# First Steps in Venice
+# First Steps in Venice (A Beginner's Guide)
 
 
 * [Literals and Operations](#literals-and-operations)
@@ -58,7 +58,8 @@ the operands like for `if`, `for`, `case`, ... statements.
 Venice is structurally uniform, no matter which operator you’re using or what kind of data 
 you’re operating on, the structure is the same.
 
-In functional parlance Venice is based on symbolic expressions, in-short [s-expression](https://en.wikipedia.org/wiki/S-expression).
+In functional parlance Venice is based on symbolic expressions, in-short 
+[s-expression](https://en.wikipedia.org/wiki/S-expression).
 
 
 
@@ -468,8 +469,8 @@ and avoids stack overflow errors.
 
 Basics:
 
-1.	`loop`: establishes a point to which `recur` can jump back. 
-2.	`recur`: jumps back to the nearest enclosing loop, re-evaluating it with new values.
+1. `loop`: establishes a point to which `recur` can jump back. 
+2. `recur`: jumps back to the nearest enclosing loop, re-evaluating it with new values.
 	
 	
 	
@@ -477,10 +478,10 @@ Basics:
 	
 *Step-by-Step Explanation:*
 
-1.	Define the loop: Start a loop with initial values.
-2.	Perform operations inside the loop: Do the computation or check conditions.
-3.	Use recur to continue the loop: Jump back to the loop with new values or exit the 
-    loop if a condition is met.
+1. Define the loop: Start a loop with initial values.
+2. Perform operations inside the loop: Do the computation or check conditions.
+3. Use recur to continue the loop: Jump back to the loop with new values or exit the 
+   loop if a condition is met.
 
 
 *Code Example:*
