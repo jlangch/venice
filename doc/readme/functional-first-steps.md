@@ -219,8 +219,12 @@ Anonymous functions like `#(+ %1 1)` simplify the use of small ad-hoc functions:
 (map #(+ %1 1) [1 2 3 4])  ;; => [2 3 4]
 ```
 
-Note: Venice expands `#(+ %1 1)` to `(fn [x] (+ x 1))` while reading the source code.
-`%1` is the first parameter of the anonymous function.
+Note: Venice expands `#(+ %1 1)` to the anonymous function `(fn [%1] (+ %1 1))` while 
+reading the source code. `%1` is the first argument of the anonymous function. The 
+placeholders %1, %2, %3, ... are be used for the positional arguments of the 
+anonymous function.
+
+
 
 
 #### Threading macros
