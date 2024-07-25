@@ -37,7 +37,7 @@ Venice comes with a comprehensive library of 900+ core functions. It's immutable
 persistent data structures together with Clojure style atoms, futures, promises, 
 and agents greatly simplify writing concurrent code. 
 
-Because Venice does not depend on any runtime libraries (other than the JVM) you 
+Venice does not depend on any runtime libraries (other than the JVM). You 
 can easily add it as standalone JAR to your classpath.
 
 Venice requires Java 8 or newer.
