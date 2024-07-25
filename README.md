@@ -38,7 +38,7 @@ persistent data structures together with Clojure style atoms, futures, promises,
 and agents greatly simplify writing concurrent code. 
 
 Venice does not depend on any runtime libraries (other than the JVM). You 
-can easily add it as standalone JAR to your classpath.
+can easily add it as a standalone JAR to your classpath.
 
 Venice requires Java 8 or newer.
 
