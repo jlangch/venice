@@ -20,7 +20,9 @@
 
 ## Functional Concepts
 
-Functional Programming is all about programming with functions.
+Functional Programming is a programming paradigm where programs are constructed 
+by applying and composing functions avoiding shared state, mutable data, and 
+side-effects.
 
 Functional programming emphasizes declarative over imperative coding, meaning you 
 focus on what to solve rather than how to solve it. By leveraging these principles 
