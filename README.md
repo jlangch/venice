@@ -28,18 +28,17 @@ Venice is mainly a functional programming language focusing on immutable,
 persistent data structures.
 
 Venice supports macros, tail-recursion, dynamic code loading, multimethods, 
-protocols and many more. It comes with excellent Java interoperability, and a 
-configurable sandbox that can prevent all sorts of dangerous JVM interactions 
-like reading/writing files, invoking  _System.exit(0)_  or any other malicious 
-action. Venice has been designed from the ground-up with a sandbox making it 
-a first class citizen.
+protocols and many more. It comes with excellent Java interoperability, and
+a configurable sandbox that can prevent all sorts of unwanted JVM and Venice 
+interactions. Venice has been designed from the ground-up with a sandbox making
+it a first class citizen.
 
 Venice comes with a comprehensive library of 900+ core functions. It's immutable 
 persistent data structures together with Clojure style atoms, futures, promises, 
 and agents greatly simplify writing concurrent code. 
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
-can easily add it as standalone .jar to your classpath.
+can easily add it as standalone JAR to your classpath.
 
 Venice requires Java 8 or newer.
 
