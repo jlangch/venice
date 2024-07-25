@@ -200,16 +200,11 @@ Create a function with the name 'increment' and the argument 'x':
 Functions accept often other functions as arguments. 
 
 
-Example: 
+*Example: Increment each element of a collection*
 
-Increment each element of a collection by passing the built-in `inc` 
-function to the `map` function:
-
-```clojure
-(map inc [1 2 3])  ;; => [2 3 4]
-```
-
-Defining our own increment function for mapping the values:
+`map` requires a single argument function to transform each value of the 
+collection. Defining our own increment function for mapping the values is 
+cumbersome for small functions:
 
 ```clojure
 (do
@@ -218,11 +213,15 @@ Defining our own increment function for mapping the values:
   (map increment [1 2 3 4]))  ;; => [2 3 4]
 ```
 
-Anonymous functions like `#(+ % 1)` simplify the use of small ad-hoc functions:
+Anonymous functions like `#(+ %1 1)` simplify the use of small ad-hoc functions:
 
 ```clojure
-(map #(+ % 1) [1 2 3 4])  ;; => [2 3 4]
+(map #(+ %1 1) [1 2 3 4])  ;; => [2 3 4]
 ```
+
+Note: Venice expands `#(+ %1 1)` to `(fn [x] (+ x 1))` while reading the source code.
+`%1` is the first parameter of the anonymous function.
+
 
 #### Threading macros
 

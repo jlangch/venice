@@ -75,24 +75,24 @@
 ;;                  fmap (f . g) == fmap f . fmap g
 ;;                  (fmap (comp f g) functor) == ((comp (partial fmap f) (partial fmap g)) functor)
 ;;
-;; example:   (fmap inc [1 2 3])                             ; => [2 3 4]
-;;            (fmap inc (atom 3))                            ; => (atom 4)
-;;            (fmap (partial + 3) (just 2))                  ; => (just 5)
-;;            (fmap (partial + 3) nil)                       ; => nil
-;;            (fmap (partial + 3) [2 4 6])                   ; => [5 7 9]
-;;            ((fmap (partial + 1) (partial * 2)) 4)         ; => 9
+;; example:   (fam/fmap inc [1 2 3])                             ; => [2 3 4]
+;;            (fam/fmap inc (atom 3))                            ; => (atom 4)
+;;            (fam/fmap (partial + 3) (just 2))                  ; => (just 5)
+;;            (fam/fmap (partial + 3) nil)                       ; => nil
+;;            (fam/fmap (partial + 3) [2 4 6])                   ; => [5 7 9]
+;;            ((fam/fmap (partial + 1) (partial * 2)) 4)         ; => 9
 ;;            (->> (just 2)
-;;                 (fmap (partial + 3))
-;;                 (fmap (partial * 2)))                     ; => (just 10)
+;;                 (fam/fmap (partial + 3))
+;;                 (fam/fmap (partial * 2)))                     ; => (just 10)
 ;;
 ;; functors preserve identity:
-;;            (fmap identity (just 5))                       ; => (just 5)
+;;            (fam/fmap identity (just 5))                       ; => (just 5)
 ;;
 ;; functors preserve composition:
-;;            (fmap (comp (partial + 1) (partial * 2))
-;;                  (just 2))                                ; => (just 5)
-;;            ((comp (partial fmap (partial + 1))
-;;                   (partial fmap (partial * 2))) (just 2)) ; => (just 5)
+;;            (fam/fmap (comp (partial + 1) (partial * 2))
+;;                  (just 2))                                    ; => (just 5)
+;;            ((comp (partial fam/fmap (partial + 1))
+;;                   (partial fam/fmap (partial * 2))) (just 2)) ; => (just 5)
 ;; -----------------------------------------------------------------------------
 
 (defmulti fmap (fn [f functor] (fam/box-type functor)))
@@ -139,10 +139,10 @@
 ;;
 ;; fapply:        takes an applicative and a functor and returns a functor
 ;;
-;; example:       (fapply [inc dec] [1 2 3])                   ; => (2 3 4 0 1 2)
-;;                (fapply (just (partial + 3)) (just 2))       ; => (just 5)
-;;                (fapply (just (partial + 3)) [1 2 3 4])      ; => [4 5 6 7]
-;;                (fapply [(partial * 2) (partial + 3)] [1 2]) ; => [2 4 4 5]
+;; example:       (fam/fapply [inc dec] [1 2 3])                   ; => (2 3 4 0 1 2)
+;;                (fam/fapply (just (partial + 3)) (just 2))       ; => (just 5)
+;;                (fam/fapply (just (partial + 3)) [1 2 3 4])      ; => [4 5 6 7]
+;;                (fam/fapply [(partial * 2) (partial + 3)] [1 2]) ; => [2 4 4 5]
 ;; -----------------------------------------------------------------------------
 
 (defmulti fapply (fn [applicative functor] (fam/box-type applicative)))
@@ -180,13 +180,13 @@
 ;; bind:     takes a monad and a function that returns a monad. bind returns a
 ;;           monad
 ;;
-;; example:  (defn half [x] (if (even? x) (just (/ x 2)) nil)))
+;; example:  (defn half [x] (just (/ x 2)))
+;;           (defn fourth [x] (just (/ x 4)))
 ;;
-;;           (bind (just 3) half)             ; => nil
-;;           (bind (just 4) half)             ; => (just 2)
-;;           (bind nil half)                  ; => nil
-;;           (bind (just 64) half half half)  ; => (just 8)
-;;           (bind (just 20) half half half)  ; => nil
+;;           (fam/bind (just 4) half)                 ; => (just 2)
+;;           (fam/bind nil half)                      ; => nil
+;;           (fam/bind (just 128) half half half)     ; => (just 16)
+;;           (fam/bind (just 128) fourth half half)   ; => (just 8)
 ;; -----------------------------------------------------------------------------
 
 (defmulti bind (fn [monad & fs] (fam/box-type monad)))
