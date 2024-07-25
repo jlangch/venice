@@ -273,7 +273,10 @@ public class Reader {
 
         Token token;
         while ((token = rdr.peek()) != null && token.charAt(0) != end) {
-            items.add(read_form(rdr));
+        	final VncVal form = read_form(rdr);
+        	if (form != null) {
+        		items.add(form);
+        	}
         }
 
         if (token == null) {
@@ -413,6 +416,12 @@ public class Reader {
             // char literal: #\A
             rdr.next();
             return read_char(token);
+        }
+        else if (sToken.charAt(1) == '_') {
+            // skip form reader macro: #_
+            rdr.next();
+            read_form(rdr);  // the form to skip
+            return null;
         }
 
         throw new ParseError(formatParseError(

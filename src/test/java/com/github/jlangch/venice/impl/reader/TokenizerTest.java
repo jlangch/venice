@@ -112,6 +112,44 @@ public class TokenizerTest {
     }
 
     @Test
+    public void test_shebang() {
+        List<Token> tokens = tokenize("#!/bin/sh", "test");
+        assertEquals(0, tokens.size());
+
+        tokens = tokenize(" #!/bin/sh ", "test");
+        assertEquals(0, tokens.size());
+
+        tokens = tokenize("#!/bin/sh \nabc", "test");
+        assertEquals(1, tokens.size());
+        assertEquals("abc", tokens.get(0).getToken());
+    }
+
+    @Test
+    public void test_shebang_as_token() {
+        List<Token> tokens = tokenize_whitespaces("#!/bin/sh", "test");
+        assertEquals(1, tokens.size());
+        assertEquals("#!/bin/sh", tokens.get(0).getToken());
+
+        tokens = tokenize_whitespaces(" #!/bin/sh ", "test");
+        assertEquals(2, tokens.size());
+        assertEquals(" ", tokens.get(0).getToken());
+        assertEquals("#!/bin/sh ", tokens.get(1).getToken());
+
+        tokens = tokenize_whitespaces("#!/bin/sh \nabc", "test");
+        assertEquals(3, tokens.size());
+        assertEquals("#!/bin/sh ", tokens.get(0).getToken());
+        assertEquals("\n", tokens.get(1).getToken());
+        assertEquals("abc", tokens.get(2).getToken());
+
+        tokens = tokenize_whitespaces(" abc #!/bin/sh ", "test");
+        assertEquals(4, tokens.size());
+        assertEquals(" ", tokens.get(0).getToken());
+        assertEquals("abc", tokens.get(1).getToken());
+        assertEquals(" ", tokens.get(2).getToken());
+        assertEquals("#!/bin/sh ", tokens.get(3).getToken());
+    }
+
+    @Test
     public void test_braces() {
         List<Token> tokens = tokenize("(", "test");
         assertEquals(1, tokens.size());

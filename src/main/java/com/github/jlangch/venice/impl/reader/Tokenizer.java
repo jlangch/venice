@@ -105,10 +105,22 @@ public class Tokenizer {
                     reader.consume();
 
                     final int chNext = reader.peek();
-                    if (chNext == '\\') {
+                    if (chNext == '!') {
+                    	// Venice allows shebang lines simply by making #! equivalent to ; comment
+                        // comment:  #! ....  read to EOL
+                        reader.consume();
+                        readComment(pos, "#!");
+                    }
+                    else if (chNext == '\\') {
                         // char reader macro. E.g.: #\A, #\\u03C0", #\space
                         reader.consume();
                         processCharReaderMacro(pos);
+                    }
+                    else if (chNext == '_') {
+                        // skip form reader macro. E.g.: #_
+                        reader.consume();
+                        addToken(ANY, String.valueOf("#_"), pos);
+                        // leave the reader macro processing to the Reader
                     }
                     else {
                         addToken(ANY, String.valueOf('#'), pos);
@@ -157,7 +169,8 @@ public class Tokenizer {
 
                 // - comment:  ; ....  read to EOL ----------------------------
                 else if (ch == ';') {
-                    readComment(pos);
+                    reader.consume();
+                    readComment(pos, ";");
                 }
 
                 // - comma: , (treated like a whitespace) ---------------------
@@ -202,10 +215,9 @@ public class Tokenizer {
         addToken(ANY, sb.toString(), pos);
     }
 
-    private void readComment(final ReaderPos pos) {
-        reader.consume();
+    private void readComment(final ReaderPos pos, final String prefix) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(';');
+        sb.append(prefix);
 
         while(LF != reader.peek() && EOF != reader.peek()) {
             sb.append((char)reader.peek());
