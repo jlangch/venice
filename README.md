@@ -20,9 +20,9 @@ interoperability.
 
 ## Overview
 
-Venice is a Lisp dialect born from the need for a safe, sandboxed general-purpose 
-and scripting language. It shares with Lisp the code-as-data philosophy and a 
-powerful macro system.
+Venice is a Lisp dialect born from the need for a safe, sandboxed, 
+general-purpose, and scripting language. It shares with Lisp the code-as-data 
+philosophy and a powerful macro system.
 
 Venice is mainly a functional programming language focusing on immutable, 
 persistent data structures.
