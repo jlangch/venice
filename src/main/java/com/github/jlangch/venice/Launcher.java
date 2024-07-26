@@ -68,27 +68,27 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *
  *  <p>Launcher command line options:
  *  <pre>
- *  -loadpath path    defines a load path, semi-colon delimited paths
- *                    E.g.: -loadpath "/users/foo/scripts;/users/foo/res"
+ *  -loadpath path     defines a load path, semi-colon delimited paths
+ *                     E.g.: -loadpath "/users/foo/scripts;/users/foo/res"
  *
- *  -macroexpand      turns up-front macro expansion on, resulting in a
- *                    much better performance
+ *  -macroexpand true  turns up-front macro expansion on, resulting in a
+ *                     much better performance
  *
- *  -file script      loads the script to run from a file
- *                    E.g.:  -file ./test.venice
+ *  -file script       loads the script to run from a file
+ *                     E.g.:  -file ./test.venice
  *
- *  -cp-file res      loads the script to run from the classpath
- *                    E.g.:  -cp-file com/github/jlangch/venice/test.venice
+ *  -cp-file res       loads the script to run from the classpath
+ *                     E.g.:  -cp-file com/github/jlangch/venice/test.venice
  *
- *  -script script    run a script
- *                    E.g.:  -script "(+ 1 10)"
+ *  -script script     run a script
+ *                     E.g.:  -script "(+ 1 10)"
  *
- *  -app app          run a Venice app
- *                    E.g.:  -app test-app.zip
+ *  -app app           run a Venice app
+ *                     E.g.:  -app test-app.zip
  *
- *  -repl             start a REPL
+ *  -repl              start a REPL
  *
- *  -help             prints a help
+ *  -help              prints a help
  *  </pre>
  *
  *  <p>Note:
@@ -104,7 +104,7 @@ public class Launcher {
                                             cli.switchValue("-loadpath"),
                                             true);
 
-        final boolean macroexpand = cli.switchPresent("-macroexpand");
+        final boolean macroexpand = isMacroexpand(cli);
 
         try {
             if (cli.switchPresent("-help")) {
@@ -121,11 +121,12 @@ public class Launcher {
 
                 System.out.println(
                         runScript(
-                        	cli.removeSwitch("-file"),
-                        	macroexpand,
-                        	interceptor,
-                        	scriptWrapped,
-                        	new File(file).getName()));
+                            cli.removeSwitch("-file")
+                               .removeSwitch("-macroexpand"),
+                            macroexpand,
+                            interceptor,
+                            scriptWrapped,
+                            new File(file).getName()));
             }
             else if (cli.switchPresent("-cp-file")) {
                 final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
@@ -136,11 +137,12 @@ public class Launcher {
 
                 System.out.println(
                         runScript(
-                        	cli.removeSwitch("-cp-file"),
-                        	macroexpand,
-                        	interceptor,
-                        	script,
-                        	new File(file).getName()));
+                            cli.removeSwitch("-cp-file")
+                               .removeSwitch("-macroexpand"),
+                            macroexpand,
+                            interceptor,
+                            script,
+                            new File(file).getName()));
             }
             else if (cli.switchPresent("-script")) {
                 final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
@@ -150,11 +152,12 @@ public class Launcher {
 
                 System.out.println(
                         runScript(
-                        	cli.removeSwitch("-script"),
-                        	macroexpand,
-                        	interceptor,
-                        	script,
-                        	"script"));
+                            cli.removeSwitch("-script")
+                               .removeSwitch("-macroexpand"),
+                            macroexpand,
+                            interceptor,
+                            script,
+                            "script"));
             }
             else if (cli.switchPresent("-app")) {
                 System.out.println("Launching Venice application ...");
@@ -277,6 +280,16 @@ public class Launcher {
                      .setStdoutPrintStream(new PrintStream(System.out, true))
                      .setStderrPrintStream(new PrintStream(System.err, true))
                      .setStdinReader(new InputStreamReader(System.in));
+    }
+
+    private static boolean isMacroexpand(final CommandLineArgs cli) {
+        if (cli.switchPresent("-macroexpand")) {
+             final String value = cli.switchValue("-macroexpand");
+             return "true".equals(value.toLowerCase());
+        }
+        else {
+            return false;
+        }
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {
