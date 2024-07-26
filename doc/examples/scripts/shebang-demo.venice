@@ -1,15 +1,18 @@
 #!/bin/sh
 
-#_ ( 
+#_ """ 
   
-  #_ Venice Shebang demo script
-  
-  #_ The launcher script "{{INSTALL_PATH}}/run-script.sh"
-  #_ is provided by the installed Venice REPL
-  
-  exec "{{INSTALL_PATH}}/run-script.sh" "$0" "$@"
+  # Venice Shebang demo script
 
-)
+  # The "run-script.sh" is provided by the installed Venice REPL. It
+  # starts a Venice interpreter on the REPL environment and runs this
+  # script.
+  
+  REPL_HOME=/Users/juerg/Desktop/venice/
+
+  exec ${REPL_HOME}/run-script.sh "$0" "$@"
+
+"""
 
 (println "Args:" *ARGV*)
 

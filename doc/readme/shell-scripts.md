@@ -164,14 +164,19 @@ With a little bit of sorcery a Venice script can be run as a Unix Shebang script
 ```clojure
 #!/bin/sh
 
-#_ ( 
-  
-  #_ The launcher script "/Users/juerg/Desktop/venice/repl/run-script.sh"
-  #_ is provided by the installed Venice REPL
-  
-  exec "/Users/juerg/Desktop/venice/repl/run-script.sh" "$0" "$@"
+#_ """ 
 
-)
+  # Venice Shebang demo script
+
+  # The "run-script.sh" is provided by the installed Venice REPL. It
+  # starts a Venice interpreter on the REPL environment and runs this
+  # script.
+  
+  REPL_HOME=/Users/juerg/Desktop/venice/
+
+  exec ${REPL_HOME}/run-script.sh "$0" "$@"
+
+"""
 
 (println "Args:" *ARGV*)
 
