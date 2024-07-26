@@ -166,7 +166,7 @@ With a little bit of sorcery a Venice script can be run as a Unix Shebang script
 #_ ( 
   
   #_ The launcher script "/Users/juerg/Desktop/venice/repl/run-script.sh"
-  #_ is provided by the REPL
+  #_ is provided by the installed Venice REPL
   
   exec "/Users/juerg/Desktop/venice/repl/run-script.sh" "$0" "$@"
 

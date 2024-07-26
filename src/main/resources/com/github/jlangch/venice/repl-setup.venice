@@ -39,6 +39,7 @@
                "expr-parser-2.venice"
                "expr-parser-3.venice"
                "fibonacci.venice"
+               "shebang-demo.venice"
                "sudoku.venice"
                "tomcat-geoip-map.venice"
                "zip-tomcat-logs.venice"
@@ -85,14 +86,19 @@
 
 (defn setup-scripts [dir]
   (println "Extracting example scripts...")
-  (let [load-script (fn [script]
+  (let [repl-path   (str (io/file-path (io/file-canonical ".")))
+        load-script (fn [script]
                       (-<> (io/load-classpath-resource script)
                            (bytebuf-to-string <> :utf-8)
-                           (repl-setup/cr-lf <>)))]
+                           (repl-setup/cr-lf <>)
+                           (str/replace-all <>  "{{INSTALL_PATH}}" repl-path)))]
     (docoll #(io/spit (io/file dir %)
                       (load-script %)
                       :encoding (charset-default-encoding))
-            scripts)))
+            scripts)
+    (when (io/exists-file? (io/file dir "shebang-demo.venice"))
+      (println "Making \"shebang-demo.venice\" executable...")
+      (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir dir))))
 
 
 (defn change-repl-launcher-color [cfg color-mode]
@@ -155,8 +161,8 @@
                           (str (io/file-path (io/file-canonical "."))))
          (change-repl-launcher-color <> color-mode)
          (io/spit "repl.sh" <> :encoding (charset-default-encoding)))
-    (when (io/exists-file? "repl.sh"))
-      (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file "."))))
+    (when (io/exists-file? "repl.sh")
+      (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file ".")))))
 
 
 (defn setup-repl-launcher [color-mode]
@@ -176,8 +182,8 @@
                           "{{INSTALL_PATH}}"
                           (str (io/file-path (io/file-canonical "."))))
          (io/spit "run-script.sh" <> :encoding (charset-default-encoding)))
-    (when (io/exists-file? "run-script.sh"))
-      (sh "/bin/sh" "-c" "chmod u+x run-script.sh" :dir (io/file "."))))
+    (when (io/exists-file? "run-script.sh")
+      (sh "/bin/sh" "-c" "chmod u+x run-script.sh" :dir (io/file ".")))))
 
 
 (defn- setup-runscript-launcher-windows []

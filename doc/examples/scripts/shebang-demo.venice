@@ -1,0 +1,16 @@
+#!/bin/sh
+
+#_ ( 
+  
+  #_ Venice Shebang demo script
+  
+  #_ The launcher script "{{INSTALL_PATH}}/run-script.sh"
+  #_ is provided by the installed Venice REPL
+  
+  exec "{{INSTALL_PATH}}/run-script.sh" "$0" "$@"
+
+)
+
+(println "Args:" *ARGV*)
+
+(println "Time:" (time/local-date-time))
