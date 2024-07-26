@@ -151,7 +151,11 @@ A larger example that zips Tomcat log files on a monthly base:
 
 With a little bit of sorcery a Venice script can be run as a Unix Shebang script.
 
-Note: Requires Venice V1.12.26+
+
+**Prerequisites**
+
+1. The Venice REPL must be installed
+2. The Venice version must be v1.12.26 or higher
 
 
 **Example: script.venice**
@@ -160,14 +164,17 @@ Note: Requires Venice V1.12.26+
 #!/bin/sh
 
 #_ ( 
-
-  exec "/Users/juerg/Desktop/venice/run-script.sh" "$0" "$@"
+  
+  #_ The launcher script "/Users/juerg/Desktop/venice/repl/run-script.sh"
+  #_ is provided by the REPL
+  
+  exec "/Users/juerg/Desktop/venice/repl/run-script.sh" "$0" "$@"
 
 )
 
-(println "Args: " *ARGV*)
+(println "Args:" *ARGV*)
 
-(println 10 )
+(println "Time:" (time/local-date-time))
 ```
 
 Execution:
@@ -175,8 +182,8 @@ Execution:
 ```
 > chmod +x ./script.venice
 > ./script.venice 1 2 3
-Args:  (-c 1 2 3)
-10
+Args: (1 2 3)
+Time: 2024-07-26T14:49:47.963
 nil
 ```
 
