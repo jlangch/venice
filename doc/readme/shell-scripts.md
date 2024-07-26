@@ -159,7 +159,7 @@ With a little bit of sorcery a Venice script can be run as a Unix Shebang script
 3. MacOS or Linux operating systems
 
 
-**Example: script.venice**
+**Example: shebang-demo.venice**
 
 ```clojure
 #!/bin/sh
