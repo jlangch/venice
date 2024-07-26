@@ -178,6 +178,9 @@ With a little bit of sorcery a Venice script can be run as a Unix Shebang script
 
 """
 
+(println "Venice Shebang Demo")
+(println)
+
 (println "Args:" *ARGV*)
 
 (println "Time:" (time/local-date-time))
