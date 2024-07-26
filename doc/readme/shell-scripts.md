@@ -181,8 +181,8 @@ With a little bit of sorcery a Venice script can be run as a Unix Shebang script
 Execution:
 
 ```
-> chmod +x ./script.venice
-> ./script.venice 1 2 3
+> chmod +x ./shebang-demo.venice
+> ./shebang-demo.venice 1 2 3
 Args: (1 2 3)
 Time: 2024-07-26T14:49:47.963
 nil
