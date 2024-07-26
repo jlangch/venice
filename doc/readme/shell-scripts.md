@@ -156,6 +156,7 @@ With a little bit of sorcery a Venice script can be run as a Unix Shebang script
 
 1. The Venice REPL must be installed
 2. The Venice version must be v1.12.26 or higher
+3. MacOS or Linux operating systems
 
 
 **Example: script.venice**
