@@ -21,9 +21,11 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -116,7 +118,6 @@ public class CommandLineArgs {
         return val == null ? defaultValue : val;
     }
 
-
     public String[] switchValues(final String switchName) {
         if (!switchIndexes.containsKey(switchName)) {
         	return new String[0];
@@ -147,6 +148,27 @@ public class CommandLineArgs {
         }
 
         return targetArray;
+    }
+
+    public CommandLineArgs removeSwitch(final String switchName) {
+    	if (switchPresent(switchName)) {
+    		final int switchIndex = switchIndexes.get(switchName);
+
+    		final List<String> args = new ArrayList<String>(Arrays.asList(this.args));
+
+    		if (switchValue(switchName) == null) {
+    			args.remove(switchIndex);
+    		}
+    		else {
+    			args.remove(switchIndex+1);
+    			args.remove(switchIndex);
+    		}
+
+    		return new CommandLineArgs(args.toArray(new String[0]));
+    	}
+    	else {
+    		return this;
+    	}
     }
 
 

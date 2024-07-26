@@ -117,8 +117,15 @@ public class Launcher {
                 final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
                 final String script = new String(FileUtil.load(new File(file)));
 
+                final String scriptWrapped = "(do " + script + ")";
+
                 System.out.println(
-                        runScript(cli, macroexpand, interceptor, script, new File(file).getName()));
+                        runScript(
+                        	cli.removeSwitch("-file"),
+                        	macroexpand,
+                        	interceptor,
+                        	scriptWrapped,
+                        	new File(file).getName()));
             }
             else if (cli.switchPresent("-cp-file")) {
                 final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
@@ -128,7 +135,12 @@ public class Launcher {
                 final String script = new ClassPathResource(file).getResourceAsString();
 
                 System.out.println(
-                        runScript(cli, macroexpand, interceptor, script, new File(file).getName()));
+                        runScript(
+                        	cli.removeSwitch("-cp-file"),
+                        	macroexpand,
+                        	interceptor,
+                        	script,
+                        	new File(file).getName()));
             }
             else if (cli.switchPresent("-script")) {
                 final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
@@ -137,7 +149,12 @@ public class Launcher {
                 final String script = cli.switchValue("-script");
 
                 System.out.println(
-                        runScript(cli, macroexpand, interceptor, script, "script"));
+                        runScript(
+                        	cli.removeSwitch("-script"),
+                        	macroexpand,
+                        	interceptor,
+                        	script,
+                        	"script"));
             }
             else if (cli.switchPresent("-app")) {
                 System.out.println("Launching Venice application ...");
@@ -147,7 +164,8 @@ public class Launcher {
 
                 AppRunner.run(
                     appFile,
-                    cli.argsAsList(),
+                    cli.removeSwitch("-app")
+                       .argsAsList(),
                     loadPaths,
                     new PrintStream(System.out, true),
                     new PrintStream(System.err, true),

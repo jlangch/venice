@@ -381,6 +381,17 @@ public class ReaderTest {
     }
 
     @Test
+    public void test_skip_form_reader_macro_() {
+        assertEquals(1L, new Venice().eval("(do \n1\n#_2)"));
+        assertEquals(2L, new Venice().eval("(do \n#_1\n2)"));
+        assertEquals(null, new Venice().eval("(do \n#_1\n#_2)"));
+
+        assertEquals("[1 2]", new Venice().eval("(str (do \n[1 2]\n#_[3 4]))"));
+        assertEquals("[3 4]", new Venice().eval("(str (do \n#_[1 2]\n[3 4]))"));
+        assertEquals(null, new Venice().eval("(do \n#_[1 2]\n#_[3 4])"));
+    }
+
+    @Test
     public void test_read_core() {
         final String core = ModuleLoader.loadModule("core");
         final String core_ = "(do\n" + core + "\n)";

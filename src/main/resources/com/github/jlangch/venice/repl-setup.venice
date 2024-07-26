@@ -165,6 +165,31 @@
     (setup-repl-launcher-unix color-mode)))
 
 
+(defn- setup-runscript-launcher-unix []
+  (when-not (io/exists-file? "run-script.sh")
+    (println "Setting up 'run-script.sh'...")
+    (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/run-script.sh")
+         (bytebuf-to-string <> :utf-8)
+         (repl-setup/cr-lf <>)
+         (str/replace-all <>
+                          "{{INSTALL_PATH}}"
+                          (str (io/file-path (io/file-canonical "."))))
+         (io/spit "run-script.sh" <> :encoding (charset-default-encoding)))
+    (when (io/exists-file? "run-script.sh"))
+      (sh "/bin/sh" "-c" "chmod u+x run-script.sh" :dir (io/file "."))))
+
+
+(defn- setup-runscript-launcher-windows []
+  )
+
+
+(defn setup-runscript-launcher []
+  (if (os-type? :windows)
+    (setup-runscript-launcher-windows)
+    (setup-runscript-launcher-unix)))
+
+
 (defn copy-venice-jar [dir]
   (let [loc    (java-source-location :com.github.jlangch.venice.Venice)
         name   (when (some? loc) (io/file-name loc))
@@ -249,6 +274,7 @@
     (repl-setup/download-modules-libs "libs" initial-modules silent)
     (repl-setup/setup-repl-config "libs" )
     (repl-setup/setup-repl-launcher color-mode)
+    (repl-setup/setup-runscript-launcher)
     (repl-setup/setup-scripts "scripts")
 
     (print-success-message)

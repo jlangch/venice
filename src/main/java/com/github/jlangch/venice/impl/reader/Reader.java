@@ -90,7 +90,9 @@ public class Reader {
     }
 
     public static VncVal read_str(final String str, final String filename) {
-        return read_form(reader(str, filename));
+    	final Reader r = reader(str, filename);
+
+        return read_form(r);
     }
 
     private static Reader reader(final String str, final String filename) {
@@ -115,6 +117,10 @@ public class Reader {
                             String.format("%d,%d:", t.getLine(), t.getColumn()),
                             t.getToken()))
                 .collect(Collectors.joining("\n"));
+    }
+
+    private boolean hasMoreTokens() {
+        return position < tokens.size();
     }
 
     private Token peek() {

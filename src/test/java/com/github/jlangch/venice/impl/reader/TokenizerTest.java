@@ -70,6 +70,20 @@ public class TokenizerTest {
     }
 
     @Test
+    public void test_do() {
+        List<Token> tokens = tokenize(" (do ) ", "test");
+        assertEquals(3, tokens.size());
+
+        assertEquals("(", tokens.get(0).getToken());
+        assertEquals("do", tokens.get(1).getToken());
+        assertEquals(")", tokens.get(2).getToken());
+
+        assertEquals(TokenType.SPECIAL_CHAR, tokens.get(0).getType());
+        assertEquals(TokenType.ANY, tokens.get(1).getType());
+        assertEquals(TokenType.SPECIAL_CHAR, tokens.get(2).getType());
+   }
+
+    @Test
     public void test_comment() {
         List<Token> tokens = tokenize("; comment ", "test");
         assertEquals(0, tokens.size());

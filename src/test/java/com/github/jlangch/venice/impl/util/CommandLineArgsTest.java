@@ -44,8 +44,13 @@ public class CommandLineArgsTest {
     public void test_2() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-color", "blue");
 
+        assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
+
+        assertTrue(cli.switchPresent("-color"));
         assertEquals("blue", cli.switchValue("-color"));
+
+        assertFalse(cli.switchPresent("-color-unknown"));
         assertEquals(null, cli.switchValue("-color-unknown"));
         assertEquals("green", cli.switchValue("-color-unknown", "green"));
     }
@@ -54,8 +59,13 @@ public class CommandLineArgsTest {
     public void test_3() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-long", "300");
 
+        assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
+
+        assertTrue(cli.switchPresent("-long"));
         assertEquals(300L, cli.switchLongValue("-long"));
+
+        assertFalse(cli.switchPresent("-long-unknown"));
         assertEquals(null, cli.switchLongValue("-long-unknown"));
         assertEquals(400L, cli.switchLongValue("-long-unknown", 400L));
     }
@@ -64,8 +74,13 @@ public class CommandLineArgsTest {
     public void test_4() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-double", "1.5");
 
+        assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
+
+        assertTrue(cli.switchPresent("-double"));
         assertEquals(1.5D, cli.switchDoubleValue("-double"));
+
+        assertFalse(cli.switchPresent("-double-unknown"));
         assertEquals(null, cli.switchDoubleValue("-double-unknown"));
         assertEquals(2.5D, cli.switchDoubleValue("-double-unknown", 2.5D));
     }
@@ -74,7 +89,9 @@ public class CommandLineArgsTest {
     public void test_targets_1() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "1");
 
+        assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
+
         assertArrayEquals(new String[] {"1"}, cli.targets());
     }
 
@@ -82,16 +99,21 @@ public class CommandLineArgsTest {
     public void test_targets_2() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "1", "2");
 
+        assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
-        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+
+       assertArrayEquals(new String[] {"1", "2"}, cli.targets());
     }
 
     @Test
     public void test_targets_3() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-c", "1", "2");
 
+        assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
+
         assertTrue(cli.switchPresent("-c"));
+
         assertArrayEquals(new String[] {"1", "2"}, cli.targets());
     }
 
@@ -109,6 +131,31 @@ public class CommandLineArgsTest {
         final CommandLineArgs cli = CommandLineArgs.of("1", "2");
 
         assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+    }
+
+    @Test
+    public void test_removeSwitch_1() {
+        final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-c", "1", "2")
+        		                                   .removeSwitch("-file");
+
+        assertFalse(cli.switchPresent("-file"));
+
+        assertTrue(cli.switchPresent("-c"));
+
+        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+    }
+
+    @Test
+    public void test_removeSwitch_2() {
+        final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-c", "1", "2")
+        		                                   .removeSwitch("-file")
+        		                                   .removeSwitch("-c");
+
+        assertFalse(cli.switchPresent("-file"));
+
+        assertFalse(cli.switchPresent("-c"));
+
+        assertArrayEquals(new String[] {"2"}, cli.targets());
     }
 
 }
