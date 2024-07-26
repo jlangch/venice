@@ -4,53 +4,19 @@ Venice allows you to write shell scripts without a hassle. The 'io' functions
 are pretty powerful when dealing with files. You're not going to miss Unix tools
 like 'awk, 'sed'.
 
+Venice offers a comprehensive set of file io functions.
+
 The REPL let's you interactively run and test commands.
 
-## Noticeable Functions 
-
-### System functions
-
-- os−type, os−type? 
-- os−arch, os−name, os−version
-- system-env
-- current−time−millis
-- sleep 
-- host−name, host−address
+* [Executing Shell Commands](#executing-shell-commands)
+* [Shell Extension Module](#shell-extension-module)
+* [Example](#example)
+* [Running Venice as a Shebang script](#running-venice-as-a-shebang-script)
+* [Noticeable I/O Functions](#noticeable-i-o-functions)
 
 
-### File I/O
 
-- io/file 
-- io/file−parent, io/file−name
-- io/file−path, io/file−absolute−path, io/file−canonical−path 
-- io/mkdir, io/mkdirs 
-- io/slurp, io/slurp−lines, io/spit 
-- io/copy−file, io/move−file
-- io/delete−file, io/delete−file−tree 
-- io/list−files, io/list−files−glob, io/list−file−tree 
-- io/exists−file?, io/exists−dir?, io/file−can−read?, io/file−can−write?, io/file−can−execute?
-- io/temp−file, io/tmp−dir, io/user−dir, io/user−home−dir 	
-- ...
-
-
-### Zip/Gzip
-
-- io/zip, io/zip−file 
-- io/zip−list, io/zip−list−entry−names 
-- io/zip−append, io/zip−remove
-- io/unzip, io/unzip−to−dir
-- io/unzip−first, io/unzip−all
-- io/gzip, io/gzip−to−stream 
-- io/ungzip, io/ungzip−to−stream
-
-
-### Web download
-
-- io/download 
-- io/internet−avail?
-
-
-### Executing shell commands 
+## Executing Shell Commands 
 
 The `sh` function is the swiss army knife to deal with the native processes of the 
 underlying operating system (see the Venice _cheatsheet_ for details).
@@ -87,7 +53,7 @@ underlying operating system (see the Venice _cheatsheet_ for details).
 ```
 
 
-### Shell Extension Module
+## Shell Extension Module
 
 The [Shell Extension Module ](ext-shell.md) offers OS agnostic functions to manage processes or 
 open files with the platform specific application.
@@ -180,3 +146,81 @@ A larger example that zips Tomcat log files on a monthly base:
             (println "Done."))
          (printf "Error: The Tomcat log dir '%s' does not exist" dir))))
 ```
+
+## Running Venice as a Shebang script
+
+With a little bit of sorcery a Venice script can be run as a Unix Shebang script.
+
+Note: Requires Venice V1.12.26+
+
+
+**Example: script.venice**
+
+```clojure
+#!/bin/sh
+
+#_ ( 
+
+  exec "/Users/juerg/Desktop/venice/run-script.sh" "$0" "$@"
+
+)
+
+(println "Args: " *ARGV*)
+
+(println 10 )
+```
+
+Execution:
+
+```
+> chmod +x ./script.venice
+> ./script.venice 1 2 3
+Args:  (-c 1 2 3)
+10
+nil
+```
+
+
+
+## Noticeable I/O Functions
+
+### System functions
+
+- os−type, os−type? 
+- os−arch, os−name, os−version
+- system-env
+- current−time−millis
+- sleep 
+- host−name, host−address
+
+
+### File I/O
+
+- io/file 
+- io/file−parent, io/file−name
+- io/file−path, io/file−absolute−path, io/file−canonical−path 
+- io/mkdir, io/mkdirs 
+- io/slurp, io/slurp−lines, io/spit 
+- io/copy−file, io/move−file
+- io/delete−file, io/delete−file−tree 
+- io/list−files, io/list−files−glob, io/list−file−tree 
+- io/exists−file?, io/exists−dir?, io/file−can−read?, io/file−can−write?, io/file−can−execute?
+- io/temp−file, io/tmp−dir, io/user−dir, io/user−home−dir 	
+- ...
+
+
+### Zip/Gzip
+
+- io/zip, io/zip−file 
+- io/zip−list, io/zip−list−entry−names 
+- io/zip−append, io/zip−remove
+- io/unzip, io/unzip−to−dir
+- io/unzip−first, io/unzip−all
+- io/gzip, io/gzip−to−stream 
+- io/ungzip, io/ungzip−to−stream
+
+
+### Web download
+
+- io/download 
+- io/internet−avail?
