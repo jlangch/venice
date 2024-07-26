@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 - functions `java-float-list`, `java-double-list`, and `java-long-list` to support LLM
   embedding vectors with vector databases like *Pinecone* or *Qdrant*
 - support for shebang lines. Venice allows shebang lines simply by making `#!` 
-  equivalent to `;` comment
+  equivalent to `;` comments
 - support for `#_` read macro to skip forms
 
 
