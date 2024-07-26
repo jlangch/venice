@@ -3,19 +3,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.27] - 2024-08-xx
 
-## [1.12.26] - 2024-08-xx
+### Added
+
+- :openai module support for assistant api
+- :openai module support for assistant threads api
+- :openai module support for assistant message api (in work)
+- :openai module support for assistant run api (...)
+- :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.26] - 2024-07-26
 
 ### Added
 
 - 32-bit `float` data type that complements the 64-bit `double` data type
 - functions `java-float-list`, `java-double-list`, and `java-long-list` to support LLM
   embedding vectors with vector databases like *Pinecone* or *Qdrant*
-- :openai module support for assistant api
-- :openai module support for assistant threads api
-- :openai module support for assistant message api (in work)
-- :openai module support for assistant run api (...)
-- :openai module support for assistant run steps api (...)
 - support for shebang lines. Venice allows shebang lines simply by making `#!` 
   equivalent to `;` comment
 - support for `#_` read macro to skip forms
