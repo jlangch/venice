@@ -5,7 +5,10 @@ if [ ! -d ${REPL_HOME} ]; then
   exit 1
 fi
 
-[ ! -d ${REPL_HOME}/tmp ] && mkdir ${REPL_HOME}/tmp
+if [ ! -d ${REPL_HOME}/tmp ]; then
+  echo "Error: The REPL tmp dir ${REPL_HOME}/tmp does not exist!"
+  exit 1
+fi
 
 if [ -f ${REPL_HOME}/repl.env ]; then
   source ${REPL_HOME}/repl.env
