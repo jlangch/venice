@@ -191,6 +191,8 @@ Execution:
 ```
 > chmod +x ./shebang-demo.venice
 > ./shebang-demo.venice 1 2 3
+Venice Shebang Demo
+
 Args: (1 2 3)
 Time: 2024-07-26T14:49:47.963
 nil
