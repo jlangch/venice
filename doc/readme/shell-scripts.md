@@ -205,8 +205,9 @@ nil
 
 ### A bare Venice Shebang script
 
-This shebang demo implicitly downloads the Venice interpreter from the Maven 
-repo. 
+This shebang demo implicitly downloads the Venice library from the Maven 
+repo when the script is started and the Venice library is not yet available
+in the install dir.
 
 
 **Example: shebang-demo.venice**
