@@ -176,7 +176,7 @@ access to all the 3rd party libraries installed within the REPL.
   # The "run-script.sh" is provided by the installed Venice REPL. It
   # starts a Venice interpreter on the REPL environment and runs this
   # script.
-  
+
   REPL_HOME=/Users/juerg/Desktop/venice/
 
   exec ${REPL_HOME}/run-script.sh "$0" "$@"
@@ -218,20 +218,20 @@ in the install dir.
 #_ """ 
 
   # Venice Shebang demo script
-  
+
   VERSION=1.12.26                      # Venice version to use
   DIR=/tmp/venice                      # Install dir
   REPO=https://repo1.maven.org/maven2  # Maven repository
 
   JAR=venice-${VERSION}.jar
-  
+
   [ -d ${DIR} ] || mkdir ${DIR}
-  
+
   if [ ! -f ${DIR}/${JAR} ]; then
    echo "Downloading ${JAR} from ${REPO} to ${DIR} ..."
    curl -s "${REPO}/com/github/jlangch/venice/${VERSION}/${JAR}" --output ${DIR}/${JAR}
   fi
-    
+
   exec java -server \
             -XX:-OmitStackTraceInFastThrow \
             -jar "${DIR}/${JAR}" \
