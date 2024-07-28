@@ -224,10 +224,6 @@ repo.
 #_ """ 
 
   # Venice Shebang demo script
-
-  # The "run-script.sh" is provided by the installed Venice REPL. It
-  # starts a Venice interpreter on the REPL environment and runs this
-  # script.
   
   VERSION=1.12.26                      # Venice version to use
   DIR=/tmp/venice                      # Install dir
