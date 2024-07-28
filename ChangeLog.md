@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 - 32-bit `float` data type that complements the 64-bit `double` data type
 - functions `java-float-list`, `java-double-list`, and `java-long-list` to support LLM
   embedding vectors with vector databases like *Pinecone* or *Qdrant*
-- support for shebang lines. Venice allows shebang lines simply by interpreting 
+- support for shebang lines. Venice allows shebang lines simply by implementing 
   `#!` as a reader macro defining a comment like  `;`
 - support for `#_` reader macro to skip forms
 
