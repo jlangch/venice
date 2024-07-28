@@ -205,15 +205,8 @@ nil
 
 ### A bare Venice Shebang script
 
-This shebang demo implicitely downloads the Venice interpreter from the Maven 
+This shebang demo implicitly downloads the Venice interpreter from the Maven 
 repo. 
-
-
-**Prerequisites**
-
-1. The Venice version used within the script must be v1.12.26 or higher
-2. MacOS or Linux operating systems
-
 
 
 **Example: shebang-demo.venice**
@@ -234,7 +227,7 @@ repo.
   [ -d ${DIR} ] || mkdir ${DIR}
   
   if [ ! -f ${DIR}/${JAR} ]; then
-   echo "Downloading ${JAR} from ${REPO} ..."
+   echo "Downloading ${JAR} from ${REPO} to ${DIR} ..."
    curl -s "${REPO}/com/github/jlangch/venice/${VERSION}/${JAR}" --output ${DIR}/${JAR}
   fi
     
