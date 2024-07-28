@@ -152,6 +152,11 @@ A larger example that zips Tomcat log files on a monthly base:
 With a little bit of sorcery a Venice script can be run as a Unix Shebang script.
 
 
+### A Venice Shebang script 
+
+This shebang demo uses the Venice interpreter from an installed Venice REPL, having
+access to all the 3rd party libraries installed within the REPL.
+
 **Prerequisites**
 
 1. The Venice REPL must be installed
@@ -198,6 +203,73 @@ Time: 2024-07-26T14:49:47.963
 nil
 ```
 
+### A bare Venice Shebang script
+
+This shebang demo implicitely downloads the Venice interpreter from the Maven 
+repo. 
+
+
+**Prerequisites**
+
+1. The Venice version used within the script must be v1.12.26 or higher
+2. MacOS or Linux operating systems
+
+
+
+**Example: shebang-demo.venice**
+
+```clojure
+#!/bin/sh
+
+#_ """ 
+
+  # Venice Shebang demo script
+
+  # The "run-script.sh" is provided by the installed Venice REPL. It
+  # starts a Venice interpreter on the REPL environment and runs this
+  # script.
+  
+  VERSION=1.12.26                      # Venice version to use
+  DIR=/tmp/venice                      # Install dir
+  REPO=https://repo1.maven.org/maven2  # Maven repository
+
+  JAR=venice-${VERSION}.jar
+  
+  [ -d ${DIR} ] || mkdir ${DIR}
+  
+  if [ ! -f ${DIR}/${JAR} ]; then
+   echo "Downloading ${JAR} from ${REPO} ..."
+   curl -s "${REPO}/com/github/jlangch/venice/${VERSION}/${JAR}" --output ${DIR}/${JAR}
+  fi
+    
+  exec java -server \
+            -XX:-OmitStackTraceInFastThrow \
+            -jar "${DIR}/${JAR}" \
+            -macroexpand true \
+            -file "$0" \
+            "$@"
+
+"""
+
+(println "Venice Shebang Demo")
+(println)
+
+(println "Args:" *ARGV*)
+
+(println "Time:" (time/local-date-time))
+```
+
+Execution:
+
+```
+> chmod +x ./shebang-demo.venice
+> ./shebang-demo.venice 1 2 3
+Venice Shebang Demo
+
+Args: (1 2 3)
+Time: 2024-07-26T14:49:47.963
+nil
+```
 
 
 ## Noticeable I/O Functions
