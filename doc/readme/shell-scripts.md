@@ -154,8 +154,7 @@ With a little bit of sorcery a Venice script can be run as a Unix Shebang script
 
 ### A Venice Shebang script 
 
-This shebang demo uses the Venice interpreter from an installed Venice REPL, having
-access to all the 3rd party libraries installed within the REPL.
+This shebang demo uses the Venice interpreter from an installed Venice REPL, giving the script access to all the 3rd party libraries installed within the REPL.
 
 **Prerequisites**
 
@@ -233,7 +232,6 @@ in the install dir.
   fi
 
   exec java -server \
-            -XX:-OmitStackTraceInFastThrow \
             -jar "${DIR}/${JAR}" \
             -macroexpand true \
             -file "$0" \
