@@ -23,6 +23,5 @@ ${JAVA_8_HOME}/bin/java \
   -Djava.io.tmpdir=${REPL_HOME}/tmp \
   -cp "${REPL_HOME}/libs:${REPL_HOME}/libs/*" \
   com.github.jlangch.venice.Launcher \
-  -macroexpand true \
   -file ${SCRIPT} \
   "$@"

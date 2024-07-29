@@ -8,49 +8,12 @@ Venice offers a comprehensive set of file io functions.
 
 The REPL let's you interactively run and test commands.
 
-* [Executing Shell Commands](#executing-shell-commands)
 * [Shell Extension Module](#shell-extension-module)
 * [Example](#example)
 * [Running Venice as a Shebang script](#running-venice-as-a-shebang-script)
 * [Noticeable I/O Functions](#noticeable-i-o-functions)
+* [Executing OS Shell Commands](#executing-os-shell-commands)
 
-
-
-## Executing Shell Commands 
-
-The `sh` function is the swiss army knife to deal with the native processes of the 
-underlying operating system (see the Venice _cheatsheet_ for details).
-
-```clojure
-(sh "kill" "-9" 56789 :throw-ex true)
-
-;; printing 
-(println (sh "ls" "-l"))
-(sh "ls" "-l" :out-fn println :err-fn println)
-
-;; run background process
-(println (sh "/bin/sh" "-c" "sleep 30 >/dev/null 2>&1 &")) 
-(println (sh "/bin/sh" "-c" "nohup sleep 30 >/dev/null 2>&1 &"))
-
-;; working directory
-(println (with-sh-dir "/tmp" (sh "ls" "-l") (sh "pwd")))
-(println (sh "pwd" :dir "/tmp"))
-
-;; asynchronously slurping stdout and stderr from a unix shell command
-(sh "/bin/sh" "-c" "for i in {1..5}; do sleep 1; echo \"Hello $i\"; done"
-              :out-fn println
-              :err-fn println)
-
-;; asynchronously slurping stdout and stderr from a unix shell command with timeout
-(sh "/bin/sh" "-c" "for i in {1..5}; do sleep 1; echo \"Hello $i\"; done"
-              :out-fn println
-              :err-fn println
-              :timeout 2500)
-
-;; list files in a directory with a glob pattern
-(->> (io/list-files-glob "." "*.png")
-     (docoll println))
-```
 
 
 ## Shell Extension Module
@@ -298,3 +261,40 @@ nil
 
 - io/download 
 - io/internet−avail?
+
+
+## Executing OS Shell Commands 
+
+The `sh` function is the swiss army knife to deal with the native processes of the 
+underlying operating system (see the Venice _cheatsheet_ for details).
+
+```clojure
+(sh "kill" "-9" 56789 :throw-ex true)
+
+;; printing 
+(println (sh "ls" "-l"))
+(sh "ls" "-l" :out-fn println :err-fn println)
+
+;; run background process
+(println (sh "/bin/sh" "-c" "sleep 30 >/dev/null 2>&1 &")) 
+(println (sh "/bin/sh" "-c" "nohup sleep 30 >/dev/null 2>&1 &"))
+
+;; working directory
+(println (with-sh-dir "/tmp" (sh "ls" "-l") (sh "pwd")))
+(println (sh "pwd" :dir "/tmp"))
+
+;; asynchronously slurping stdout and stderr from a unix shell command
+(sh "/bin/sh" "-c" "for i in {1..5}; do sleep 1; echo \"Hello $i\"; done"
+              :out-fn println
+              :err-fn println)
+
+;; asynchronously slurping stdout and stderr from a unix shell command with timeout
+(sh "/bin/sh" "-c" "for i in {1..5}; do sleep 1; echo \"Hello $i\"; done"
+              :out-fn println
+              :err-fn println
+              :timeout 2500)
+
+;; list files in a directory with a glob pattern
+(->> (io/list-files-glob "." "*.png")
+     (docoll println))
+```
