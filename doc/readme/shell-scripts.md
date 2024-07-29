@@ -231,11 +231,7 @@ in the install dir.
    curl -s "${REPO}/com/github/jlangch/venice/${VERSION}/${JAR}" --output ${DIR}/${JAR}
   fi
 
-  exec java -server \
-            -jar "${DIR}/${JAR}" \
-            -macroexpand true \
-            -file "$0" \
-            "$@"
+  exec java -server -jar "${DIR}/${JAR}" -file "$0" "$@"
 
 """
 

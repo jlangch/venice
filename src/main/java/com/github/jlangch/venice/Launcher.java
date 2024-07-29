@@ -288,7 +288,7 @@ public class Launcher {
              return "true".equals(value.toLowerCase());
         }
         else {
-            return false;
+            return true;  // defaults to true (macroexpand on)
         }
     }
 
