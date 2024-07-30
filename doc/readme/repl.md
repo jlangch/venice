@@ -3,7 +3,30 @@
 A Venice REPL (Read-Eval-Print Loop) is a programming environment which enables 
 you to run and test code interactively.
 
-Start the REPL with `java -jar venice-1.12.26.jar -colors`
+
+## Start a REPL
+
+Install Venice and the REPL following the [Getting started](doc/readme/start.md)
+guide.
+
+From the directory Venice has been installed to, run a REPL by executing the REPL
+start script:
+
+on MacOSX and Linux:
+
+```text
+foo> ./repl.sh
+```
+
+on Windows:
+
+```text
+foo> repl.bat
+```
+
+### Run expressions in the REPL
+
+Type an expression like `(+ 1 1)` followed by a `<CR>`
 
 ```text
 venice> (+ 1 1)
@@ -21,6 +44,8 @@ venice> (sum 1 4)
 venice>
 ```
 
+### REPL commands
+
 Type `!` from the REPL to get the help. Browse through the history expressions 
 with the up/down arrows.
 
@@ -31,6 +56,7 @@ If the REPL colors don't harmonize well with your terminal color schema
 omit the '-colors' option or place a 'repl.json' config file with customized 
 ANSI escape code colors on the working dir. The REPL command `!config` shows
 a sample 'repl.json' that can be modified.
+
 
 
 ## Built-in documentation
