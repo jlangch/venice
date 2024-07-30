@@ -6,7 +6,7 @@ you to run and test code interactively.
 
 ## Start a REPL
 
-Install Venice and the REPL following the [Getting started](doc/readme/start.md)
+Install Venice and the REPL following the [Getting started](start.md)
 guide.
 
 From the directory Venice has been installed to, run a REPL by executing the REPL
