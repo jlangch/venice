@@ -12,19 +12,19 @@ testing code snippets, and debugging.
 Install Venice and the REPL following the [Getting started](start.md)
 guide.
 
-From the directory Venice has been installed, run a REPL in a terminal by executing 
-the REPL start script:
+Open a terminal and run the REPL start script.
 
-on MacOSX and Linux:
 
-```text
-foo> ./repl.sh
+on MacOSX and Linux (e.g.: Venice installed to `/Users/foo/venice`):
+
+```sh
+foo> /Users/foo/venice/repl.sh
 ```
 
-on Windows:
+on Windows (e.g.: Venice installed to `C:\Users\foo\venice`):
 
-```text
-foo> repl.bat
+```sh
+foo> C:\Users\foo\venice\repl.bat
 ```
 
 ### Run expressions in the REPL
