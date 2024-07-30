@@ -1,7 +1,10 @@
 # REPL
 
-A Venice REPL (Read-Eval-Print Loop) is a programming environment which enables 
-you to run and test code interactively.
+
+A Venice REPL (Read-Eval-Print Loop), is an interactive programming environment 
+that takes user inputs (lines of code), executes them, and returns the result 
+to the user. This process allows for real-time feedback and is great for learning, 
+testing code snippets, and debugging.
 
 
 ## Start a REPL
@@ -9,8 +12,8 @@ you to run and test code interactively.
 Install Venice and the REPL following the [Getting started](start.md)
 guide.
 
-From the directory Venice has been installed to, run a REPL by executing the REPL
-start script:
+From the directory Venice has been installed, run a REPL in a terminal by executing 
+the REPL start script:
 
 on MacOSX and Linux:
 
