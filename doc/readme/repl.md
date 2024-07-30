@@ -20,13 +20,13 @@ Open a terminal and run the REPL start script.
 
 on MacOSX and Linux (e.g.: Venice installed to `/Users/foo/venice`):
 
-```sh
-foo> /Users/foo/venice/repl.sh
+```text
+foo% /Users/foo/venice/repl.sh
 ```
 
 on Windows (e.g.: Venice installed to `C:\Users\foo\venice`):
 
-```sh
+```text
 foo> C:\Users\foo\venice\repl.bat
 ```
 
@@ -58,7 +58,7 @@ Type `!` from the REPL to get the help. Browse through the history expressions
 with the up/down arrows.
 
 A history of the last three result values is kept by the REPL, accessible through 
-the symbols `*1`, `*2`, `*3`, `**`.
+the Venice symbols `*1`, `*2`, `*3`, `**`.
 
 If the REPL colors don't harmonize well with your terminal color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 
