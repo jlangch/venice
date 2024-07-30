@@ -165,6 +165,7 @@ public class Launcher {
                 // run the Venice application archive
                 final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 
+                // The app runner has 'macroexpand' implicitly enabled
                 AppRunner.run(
                     appFile,
                     cli.removeSwitch("-app")
