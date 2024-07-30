@@ -7,10 +7,13 @@ to the user. This process allows for real-time feedback and is great for learnin
 testing code snippets, and debugging.
 
 
-## Start a REPL
+## Installing Venice and the REPL
 
-Install Venice and the REPL following the [Getting started](start.md)
-guide.
+Install Venice and the REPL following the [Getting started](start.md) guide.
+
+
+
+## Start a REPL
 
 Open a terminal and run the REPL start script.
 
@@ -26,6 +29,7 @@ on Windows (e.g.: Venice installed to `C:\Users\foo\venice`):
 ```sh
 foo> C:\Users\foo\venice\repl.bat
 ```
+
 
 ### Run expressions in the REPL
 
@@ -46,6 +50,7 @@ venice> (sum 1 4)
 => 5
 venice>
 ```
+
 
 ### REPL commands
 
