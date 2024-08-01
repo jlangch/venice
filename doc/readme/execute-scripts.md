@@ -45,7 +45,7 @@ Venice passes the command line args as **ARGV** vector.
 File "script.venice":
 
 ```clojure
-(+ 1 (long (nth *ARGV* 2)))
+(+ 1 (long (first *ARGV*)))
 ```
 
 run:
@@ -90,7 +90,7 @@ Files:
 ```text
 /users/foo/venice
 ├── script.venice
-├── bin
+├── libs
 │   └── venice-1.12.26.jar
 └── scripts
     └── test.venice
@@ -100,35 +100,9 @@ Run:
 
 ```text
 foo> cd /users/foo/venice
-foo> java -jar bin/venice-1.12.26.jar -file script.venice -loadpath "/users/foo/venice/scripts"
+foo> java -jar libs/venice-1.12.26.jar -file script.venice -loadpath "/users/foo/venice/scripts"
 ```
 
 The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
 
 
-## Macro Expansion
-
-Expanding macros ahead of evaluation can speed up the execution by 
-a factor of 3 to 10.
-
-Upfront macro expansion can be activated with the command line option `-macroexpand` 
-and works for executing scripts or files.
-
-
-**Example**
-
-Run a script without upfront macro expansion:
-
-```text
-foo> java -jar venice-1.12.26.jar -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
-Elapsed time: 271,66 ms
-=> 0
-```
- 
-Run a scrip with upfront macro expansion:
-    
-```text
-foo> java -jar venice-1.12.26.jar -macroexpand -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
-Elapsed time: 26,35 ms
-=> 0
-```
