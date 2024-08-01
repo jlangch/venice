@@ -206,7 +206,8 @@ Example 1: Lazy Fibonacci number sequence computed by a recursive function:
      ([]    (fib 0N 1N))
      ([a b] (cons a #(fib b (+ a b)))))
 
-   (doall (take 7 (fib))))  ; => (0 1 1 2 3 5 8)
+   (doall (take 7 (fib)))      ; => (0 1 1 2 3 5 8)
+   (doall (take 3000 (fib))))  ; => (0N 1N 1N 2N 3N 5N 8N ..... 25377457405898...5102001N)
 ```
 
 
