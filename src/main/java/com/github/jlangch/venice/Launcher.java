@@ -122,7 +122,8 @@ public class Launcher {
                 System.out.println(
                         runScript(
                             cli.removeSwitch("-file")
-                               .removeSwitch("-macroexpand"),
+                               .removeSwitch("-macroexpand")
+                               .removeSwitch("-loadpath"),
                             macroexpand,
                             interceptor,
                             scriptWrapped,
@@ -138,7 +139,8 @@ public class Launcher {
                 System.out.println(
                         runScript(
                             cli.removeSwitch("-cp-file")
-                               .removeSwitch("-macroexpand"),
+                               .removeSwitch("-macroexpand")
+                               .removeSwitch("-loadpath"),
                             macroexpand,
                             interceptor,
                             script,
@@ -153,7 +155,8 @@ public class Launcher {
                 System.out.println(
                         runScript(
                             cli.removeSwitch("-script")
-                               .removeSwitch("-macroexpand"),
+                               .removeSwitch("-macroexpand")
+                               .removeSwitch("-loadpath"),
                             macroexpand,
                             interceptor,
                             script,
@@ -169,6 +172,8 @@ public class Launcher {
                 AppRunner.run(
                     appFile,
                     cli.removeSwitch("-app")
+                       .removeSwitch("-macroexpand")
+                       .removeSwitch("-loadpath")
                        .argsAsList(),
                     loadPaths,
                     new PrintStream(System.out, true),
