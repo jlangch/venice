@@ -37,7 +37,7 @@ Venice comes with a comprehensive library of 900+ core functions. It's immutable
 persistent data structures together with Clojure style atoms, futures, promises, 
 and agents greatly simplify writing concurrent code. 
 
-Have you ever reached your limits with Bash and PowerShell scripts. With Venice
+Have you ever reached the limits with Bash and PowerShell scripts. With Venice
 you write concise and elegant scripts.
 
 Venice does not depend on any runtime libraries (other than the JVM). You 
