@@ -37,15 +37,16 @@ Venice comes with a comprehensive library of 900+ core functions. It's immutable
 persistent data structures together with Clojure style atoms, futures, promises, 
 and agents greatly simplify writing concurrent code. 
 
-Have you ever reached the limits with Bash and PowerShell scripts. With Venice
-you write concise and elegant scripts.
+Have you ever felt limited by Bash or PowerShell scripts? With Venice, you can
+write concise and elegant scripts effortlessly.
 
 Venice does not depend on any runtime libraries (other than the JVM). You 
 can easily add it as a standalone JAR to your classpath.
 
 Venice requires Java 8 or newer.
 
-Want to try Venice in a REPL? [Test it on Gitpod](https://github.com/jlangch/venice/blob/master/doc/readme/start.md#venice-gitpod-workspace)
+Would you like to try Venice in an interactive REPL environment? 
+[Test it on Gitpod](https://github.com/jlangch/venice/blob/master/doc/readme/start.md#venice-gitpod-workspace)
 
 
 
