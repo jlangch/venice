@@ -109,6 +109,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 
 
+
 ## Getting the latest release
 
 You can can pull it from the central Maven repositories:
@@ -165,3 +166,9 @@ This code is licensed under the [Apache License v2](LICENSE).
 ## 3rd Party Open Source
 
 * [Copyright Notice](doc/readme/3rdparty-lic.md)
+
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/jlangch/venice.svg?background=%23FFFFFF&axis=%23989797&line=%230b41d6)](https://starchart.cc/jlangch/venice)
+
