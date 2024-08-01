@@ -4,7 +4,6 @@
 * [Load the script from a file and run it](#load-the-script-from-a-file-and-run-it)
 * [Using command line arguments](#using-command-line-arguments)
 * [Passing a load-path](#passing-a-load-path)
-* [Macro Expansion](#macro-expansion)
 
 
 
