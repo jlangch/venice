@@ -131,31 +131,40 @@ protocols dispatch on the type of the first argument to determine which behavior
 of the function to use.
 
 
-Define a protocol with two polymorphic functions and extend it with `extend`:
+Define a protocol 'XMath' with two polymorphic functions '+' and '-' and extend it 
+with `extend` for the types ':core/long' and ':foo/complex' :
 
 ```clojure
 (do
    (ns foo)
    
-   (deftype :complex [re :long, im :long])
+   ;; Complex number data type
+   ;; implements the protocol 'Object' with the 'toString' method
+   (deftype :complex [re :long, im :long]
+     Object
+      (toString [self] (let [re (:re self)
+                             im (:im self)
+                             op (if (neg? im) "-" "+")]
+                         "(~{re} ~{op} ~(abs im)i)")))
    
    (defprotocol XMath (+ [x y])
                       (- [x y]))
+                              
+   (extend :core/long XMath 
+           (+ [x y] (core/+ x y))
+           (- [x y] (core/- x y))) 
                       
    (extend :foo/complex XMath
            (+ [x y] (complex. (core/+ (:re x) (:re y))
                               (core/+ (:im x) (:im y))))
            (- [x y] (complex. (core/- (:re x) (:re y))
                               (core/- (:im x) (:im y)))))
-                              
-   (extend :core/long XMath 
-           (+ [x y] (core/+ x y))
-           (- [x y] (core/- x y))) 
            
-   ; note: dispatches on the first argument!
-   (println (foo/+ 2 3))    ; => 5
-   (println (foo/+ 2 3.0))  ; => 5.0
-   (println (foo/+ (complex. 1 1) (complex. 4 5))))
+   ;; note: protocol functions dispatch on the first argument!
+   (println (foo/+ 2 3))                              ; => 5
+   (println (foo/- 2 3))                              ; => -1
+   (println (foo/+ (complex. 1 1) (complex. 4 5)))    ; => (5 + 6i)
+   (println (foo/- (complex. 4 1) (complex. 2 5))))   ; => (2 - 4i)
 ```
 
 See: [Complex Number](https://en.wikipedia.org/wiki/Complex_number)
@@ -184,7 +193,7 @@ a *custom type* definition:
 ```
 
 
-Using multiple protocols:
+Using multiple protocols 'Add' and 'Sub' with default implementations:
 
 
 ```clojure
