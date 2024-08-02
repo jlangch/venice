@@ -139,7 +139,7 @@ with `extend` for the types ':core/long' and ':foo/complex' :
    (ns foo)
    
    ;; Complex number data type
-   ;; implements the protocol 'Object' with the 'toString' method
+   ;; Implements the Venice protocol 'Object' with the 'toString' method
    (deftype :complex [re :long, im :long]
      Object
       (toString [self] (let [re (:re self)
