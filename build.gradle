@@ -169,11 +169,16 @@ plugins {
     // note: the shadow plugin does not work for jline3 3.22.0+
     //       jline3 3.22.0+ has a new service file structure under META-INF/services
     // id 'com.github.johnrengelman.shadow' version '8.1.1'
-    
+    //
     // 12.06.2024: The project 'com.github.johnrengelman.shadow' is retired
     //             https://github.com/johnrengelman/shadow/issues/908
-    // See fork:   https://github.com/Goooler/shadow
-    //             https://plugins.gradle.org/plugin/io.github.goooler.shadow
+    //             See fork:
+    //               https://github.com/Goooler/shadow
+    //               https://plugins.gradle.org/plugin/io.github.goooler.shadow
+    // 01.08.2024: https://github.com/Goooler/shadow has been archived!
+    // 02.08.2024: https://github.com/GradleUp/shadow seems the way to go
+    //             but not yet listed on https://plugins.gradle.org/
+    
     id 'io.github.goooler.shadow' version '8.1.7'
 	
 /*
