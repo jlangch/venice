@@ -88,6 +88,46 @@ Type '!' for help.
 venice>
 ```
 
+#### REPL setup directory structure (on MacOS / Linux)
+
+```text
+REPL_HOME
+├── libs
+│   ├── venice-1.12.26.jar
+│   ├── jansi-2.4.1.jar
+│   └── repl.json
+├── tools
+│   └── apache-maven-3.9.6
+│       └── ...
+├── tmp
+│   └── ...
+├── scripts
+│   └── ... (example scripts)
+├── repl.env
+├── repl.sh
+└── run-script.sh
+```
+
+#### REPL setup directory structure (on Windows)
+
+```text
+REPL_HOME
+├── libs
+│   ├── venice-1.12.26.jar
+│   ├── jansi-2.4.1.jar
+│   └── repl.json
+├── tools
+│   └── apache-maven-3.9.6
+│       └── ...
+├── tmp
+│   └── ...
+├── scripts
+│   └── ... (example scripts)
+├── repl.env
+└── repl.bat
+```
+
+
 ### 4. Run expressions in the REPL
 
 Type an expression like `(+ 1 1)` followed by a `<CR>`
