@@ -195,46 +195,6 @@ venice> !reload
 ```
 
 
-## Using a load path for files
-
-Venice code often uses the function `load-file` to load a file with 
-Venice functions. `load-file` loads the files by default from the current working 
-directory. The REPL accepts the command line option "-loadpath" that defines a 
-set of semi-colon separated paths files are searched for.
-
-Changing the REPLs loadpath
-
-1.) Update the LOAD_PATH variable in the REPL start script `repl.sh`:
-
-```text
- export LOAD_PATH="/Users/foo/scripts;/Users/foo/data"
- ```
-
-2.) Stop the REPL and restart it.
-
-*Note: A REPL restart with the command `!restart` is not enough. Stop and restart the REPL shell.*
-
-
-3.) To check the new REPL loadpath run the REPL `!loadpath` command:
-
-```text
-Restricted to load paths: no
-Paths: 
-   /Users/foo/scripts
-   /Users/foo/data
-```
-
-Without any further sandbox restrictions, relative files are loaded primarily from 
-the loadpaths. If not found there they are loaded from their given path that can 
-be anywhere on the filesystem.
-
-The *loadpath* directories and files must exist. The REPL validates this at the REPL 
-startup.
-
-*Note: The Venice sandbox offers an option to load files exclusively from the loadpath and reject any access outside the defined loadpath!*
-
-
-
 ## Sandbox with the REPL
 
 The Venice sandbox can be managed from within the REPL: [managing the sandbox](repl-sandbox.md)
