@@ -212,6 +212,9 @@ Changing the REPLs loadpath
 
 2.) Stop the REPL and restart it.
 
+*Note: A REPL restart with the command `!restart` is not enough. Stop and restart the REPL shell.*
+
+
 3.) To check the new REPL loadpath run the REPL `!loadpath` command:
 
 ```text
