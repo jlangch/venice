@@ -13,6 +13,11 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Fixed
+
+- the MeterRegistry. On M2 Macs some events report with 0ns elapsed time.
+  These 0ns events have been skipped and wrongly not reported with the profiler.
+
 
 
 ## [1.12.26] - 2024-07-26

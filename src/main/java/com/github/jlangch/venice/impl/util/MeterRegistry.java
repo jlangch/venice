@@ -75,7 +75,7 @@ public class MeterRegistry implements Serializable {
     }
 
     public void record(final String name, final long elapsedTime) {
-        if (elapsedTime > 0) {
+        if (elapsedTime >= 0) {
             data.compute(
                     name,
                     (k, v) -> v == null
@@ -85,7 +85,7 @@ public class MeterRegistry implements Serializable {
     }
 
     public void record(final String name, final int arity, final long elapsedTime) {
-        if (elapsedTime > 0) {
+        if (elapsedTime >= 0) {
             final String name_ = name + "[" + arity + "]";
             data.compute(
                     name_,
