@@ -146,31 +146,45 @@ list        list*       list?       list-comp
 ```
 
 
-## REPL with 3rdParty jars
+## Adding 3rdParty JARs to the REPL
 
-To start the REPL with additional 3rdParty .jar files
-
-```text
-> java -server -cp "*" com.github.jlangch.venice.Launcher -colors
-```
-
-or
+3rdParty JARs can be manually copied to REPL's library path `libs`. 
 
 ```text
-> java -server -cp "./libs/*" com.github.jlangch.venice.Launcher -colors
+REPL_HOME
+├── libs
+│   ├── venice-1.12.26.jar
+│   ├── jansi-2.4.1.jar
+│   └── repl.json
+├── tools
+│   └── apache-maven-3.9.6
+│       └── ...
+├── tmp
+│   └── ...
+├── scripts
+│   └── ... (example scripts)
+├── repl.env
+├── repl.sh
+└── run-script.sh
 ```
 
-Start a Java VM with 2GB of memory, disable using preallocated exceptions (stack traces are always generated)
+Just restart the REPL after adding the libraries by running the REPL `!restart` 
+command:
 
 ```text
-> java \
-    -server \
-    -XX:-OmitStackTraceInFastThrow \
-    -Xmx2G \
-    -cp "libs/*" \
-    com.github.jlangch.venice.Launcher \
-    -colors
+venice> !restart
 ```
+
+To check the new REPL classpath run the REPL `!classpath` command:
+
+```text
+venice> !classpath
+REPL classpath:
+  libs
+  libs/jansi-2.4.1.jar
+  libs/venice-1.12.26.jar
+```
+
 
 ## Reload Venice context
 
@@ -188,21 +202,34 @@ Venice functions. `load-file` loads the files by default from the current workin
 directory. The REPL accepts the command line option "-loadpath" that defines a 
 set of semi-colon separated paths files are searched for.
 
-The `load-file` file completion honors the load path.
+Changing the REPLs loadpath
 
-REPL Launcher with "-loadpath" option:
+1.) Update the LOAD_PATH variable in the REPL start script `repl.sh`:
 
 ```text
-> java \
-    -server \
-    -Xmx4G \
-    -XX:-OmitStackTraceInFastThrow \
-    -cp "libs:libs/*" \
-    com.github.jlangch.venice.Launcher \
-    -loadpath "/users/foo/venice/scripts1;/users/foo/venice/scripts2" \
-    -restartable \
-    -colors
+ export LOAD_PATH="/Users/foo/scripts;/Users/foo/data"
+ ```
+
+2.) Stop the REPL and restart it.
+
+3.) To check the new REPL loadpath run the REPL `!loadpath` command:
+
+```text
+Restricted to load paths: no
+Paths: 
+   /Users/foo/scripts
+   /Users/foo/data
 ```
+
+Without any further sandbox restrictions, relative files are loaded primarily from 
+the loadpaths. If not found there they are loaded from their given path that can 
+be anywhere on the filesystem.
+
+The *loadpath* directories and files must exist. The REPL validates this at the REPL 
+startup.
+
+*Note: The Venice sandbox offers an option to load files exclusively from the loadpath and reject any access outside the defined loadpath!*
+
 
 
 ## Sandbox with the REPL

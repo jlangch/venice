@@ -21,6 +21,10 @@
 
 export REPL_HOME={{INSTALL_PATH}}
 
+# REPL load path "/Users/foo/scripts;/Users/foo/images"
+export LOAD_PATH=""
+
+
 if [ ! -d ${REPL_HOME} ]; then
   echo "Error: The REPL home dir ${REPL_HOME} does not exist!"
   sleep 5
@@ -48,7 +52,7 @@ while true; do
     -Dvenice.repl.home=${REPL_HOME} \
     -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
-    -loadpath "" \
+    -loadpath "${LOAD_PATH}" \
     -restartable \
     -colors
 
