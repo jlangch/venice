@@ -148,7 +148,7 @@ list        list*       list?       list-comp
 
 ## Adding 3rdParty JARs to the REPL
 
-3rdParty JARs can be manually copied to REPL's library path `libs`. 
+3rdParty JARs can be manually copied to the REPL's library path `libs`. 
 
 ```text
 REPL_HOME
