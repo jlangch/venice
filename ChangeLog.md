@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 
 - the MeterRegistry. On M2 Macs some events reported with 0ns elapsed time.
   These 0ns events have been skipped resulting in a wrong profiler event
-  count.
+  count under heavy load.
 
 
 
