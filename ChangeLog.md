@@ -21,8 +21,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - the MeterRegistry. On M2 Macs some events report with 0ns elapsed time.
-  These 0ns events have been skipped and wrongly not reported with the profiler
-  resulting in a wrong event count.
+  These 0ns events have been skipped resulting resulting in a wrong profiler
+  event count.
 
 
 
