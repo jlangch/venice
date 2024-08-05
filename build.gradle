@@ -177,6 +177,7 @@ plugins {
     //               https://plugins.gradle.org/plugin/io.github.goooler.shadow
     // 01.08.2024: https://github.com/Goooler/shadow has been archived!
     // 02.08.2024: https://github.com/GradleUp/shadow seems the way to go
+    //               com.gradleup.shadow
     //             but not yet listed on https://plugins.gradle.org/
     
     id 'io.github.goooler.shadow' version '8.1.7'

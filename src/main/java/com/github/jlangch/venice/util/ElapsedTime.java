@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.util;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
@@ -30,27 +32,41 @@ import java.io.Serializable;
 public class ElapsedTime implements Serializable {
     public ElapsedTime(final String name, final long elapsedNanos) {
         this.name = name;
-        this.count = 1;
-        this.elapsedNanos = elapsedNanos;
+        this.count.set(1);
+        this.elapsedNanos.set(elapsedNanos);
     }
 
     public ElapsedTime(final String name, final int count, final long elapsedNanos) {
         this.name = name;
-        this.count = count;
-        this.elapsedNanos = elapsedNanos;
+        this.count.set(count);
+        this.elapsedNanos.set(elapsedNanos);
     }
 
     public String getName() {
         return name;
     }
 
+    public int getCount() {
+        return count.get();
+    }
+
+    public long getElapsedNanos() {
+        return elapsedNanos.get();
+    }
+
     public ElapsedTime add(final long elapsedNanos) {
-        return new ElapsedTime(name, count + 1, this.elapsedNanos + elapsedNanos);
+        this.count.incrementAndGet();
+        this.elapsedNanos.addAndGet(elapsedNanos);
+        return this;
     }
 
     @Override
     public String toString() {
-        return String.format("%s [%d]: %s", name, count, formatNanos(elapsedNanos));
+        return String.format(
+                "%s [%d]: %s",
+                name,
+                count.get(),
+                formatNanos(elapsedNanos.get()));
     }
 
     public static String formatNanos(final long nanos) {
@@ -69,9 +85,9 @@ public class ElapsedTime implements Serializable {
     }
 
 
-    public final String name;
-    public final int count;
-    public final long elapsedNanos;
+    private final String name;
+    private final AtomicInteger count = new AtomicInteger(0);
+    private final AtomicLong elapsedNanos = new AtomicLong(0L);
 
     private static final long serialVersionUID = -1;
 }

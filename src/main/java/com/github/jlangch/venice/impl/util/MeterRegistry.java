@@ -115,18 +115,18 @@ public class MeterRegistry implements Serializable {
                                         ? getTimerData()
                                         : getTimerData()
                                             .stream()
-                                            .filter(t -> !t.name.contains("anonymous-"))
+                                            .filter(t -> !t.getName().contains("anonymous-"))
                                             .collect(Collectors.toList());
 
         final int maxNameLen = data
                                 .stream()
-                                .mapToInt(v -> v.name.length())
+                                .mapToInt(v -> v.getName().length())
                                 .max()
                                 .orElse(10);
 
         final int maxCount = data
                                 .stream()
-                                .mapToInt(v -> v.count)
+                                .mapToInt(v -> v.getCount())
                                 .max()
                                 .orElse(10);
 
@@ -134,7 +134,7 @@ public class MeterRegistry implements Serializable {
 
         final List<String> lines =
                 data.stream()
-                    .sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
+                    .sorted((u,v) -> Long.valueOf(v.getElapsedNanos()).compareTo(u.getElapsedNanos()))
                     .map(v -> format(v, maxNameLen, maxCountLen))
                     .collect(Collectors.toList());
 
@@ -163,17 +163,17 @@ public class MeterRegistry implements Serializable {
     private String format(final ElapsedTime t, final int maxNameLen, final int maxCountLen) {
         return String.format(
                     "%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %11s %11s",
-                    t.name,
-                    t.count,
-                    ElapsedTime.formatNanos(t.elapsedNanos),
-                    t.count == 1 ? "" : ElapsedTime.formatNanos(t.elapsedNanos / t.count));
+                    t.getName(),
+                    t.getCount(),
+                    ElapsedTime.formatNanos(t.getElapsedNanos()),
+                    t.getCount() == 1 ? "" : ElapsedTime.formatNanos(t.getElapsedNanos() / t.getCount()));
     }
 
     private VncMap convertToVncMap(final ElapsedTime timer) {
         return VncHashMap.of(
-                new VncKeyword("name"),  new VncString(timer.name),
-                new VncKeyword("count"), new VncLong(timer.count),
-                new VncKeyword("nanos"), new VncLong(timer.elapsedNanos));
+                new VncKeyword("name"),  new VncString(timer.getName()),
+                new VncKeyword("count"), new VncLong(timer.getCount()),
+                new VncKeyword("nanos"), new VncLong(timer.getElapsedNanos()));
     }
 
 
