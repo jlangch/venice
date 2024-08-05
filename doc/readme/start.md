@@ -24,12 +24,12 @@ The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice i
 
 ### 2. Get the Venice JAR file
 
-Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.26/jar)
+Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.27/jar)
 
 or download it with `curl`:
 
 ```
-curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.26/venice-1.12.26.jar" --output ./venice-1.12.26.jar
+curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.27/venice-1.12.27.jar" --output ./venice-1.12.27.jar
 ```
 
 
@@ -43,7 +43,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 the REPL in setup mode:
 
 ```text
-foo> java -jar venice-1.12.26.jar -setup -colors
+foo> java -jar venice-1.12.27.jar -setup -colors
 ```
 
 For a REPL run in a darkmode terminal use the option `-colors-darkmode` instead 
@@ -79,7 +79,7 @@ foo> repl.bat
 The REPL is started and prompts for input:
 
 ```text
-Venice REPL: V1.12.26
+Venice REPL: V1.12.27
 Java: 1.8.0_392
 Loading configuration from file 'repl.json'
 Using Ansi terminal (light color mode turned on)
@@ -93,7 +93,7 @@ venice>
 ```text
 REPL_HOME
 ├── libs
-│   ├── venice-1.12.26.jar
+│   ├── venice-1.12.27.jar
 │   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
@@ -113,7 +113,7 @@ REPL_HOME
 ```text
 REPL_HOME
 ├── libs
-│   ├── venice-1.12.26.jar
+│   ├── venice-1.12.27.jar
 │   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
