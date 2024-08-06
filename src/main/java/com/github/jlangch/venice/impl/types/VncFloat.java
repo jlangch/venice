@@ -289,10 +289,6 @@ public class VncFloat extends VncNumber {
         return value;
     }
 
-    public Float getFloatValue() {
-        return Float.valueOf(value);
-    }
-
     @Override
     public TypeRank typeRank() {
         return TypeRank.FLOAT;

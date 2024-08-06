@@ -852,7 +852,7 @@ public class PdfFunctions {
             return ((VncInteger)val).getValue().floatValue();
         }
         else if (Types.isVncDouble(val)) {
-            return ((VncDouble)val).getFloatValue();
+            return ((VncDouble)val).toJavaFloat();
         }
         else {
             throw new VncException(

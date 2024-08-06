@@ -275,10 +275,6 @@ public class VncInteger extends VncNumber {
         return value;
     }
 
-    public Long getLongValue() {
-        return Long.valueOf(value);
-    }
-
     @Override
     public TypeRank typeRank() {
         return TypeRank.INTEGER;
