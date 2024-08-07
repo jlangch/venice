@@ -2610,7 +2610,7 @@ public class CoreFunctions {
                     final VncLazySeq lazySeq = (VncLazySeq)seq;
                     if (to == null) {
                         throw new VncException(
-                                "Function 'sublist' requires start and end if a lazy-seq is passed!");
+                                "Function 'sublist' requires start and end values if a lazy-seq is passed!");
                     }
                     else {
                         return lazySeq.slice(from, to);
@@ -2639,8 +2639,8 @@ public class CoreFunctions {
                     .arglists("(replace smap coll)")
                     .doc(
                         "Given a map of replacement pairs and a collection, returns a " +
-                        "collection with any elements that are a key in smap replaced with the " +
-                        "corresponding value in smap.")
+                        "collection with any elements that are a key in smap replaced " +
+                        "with the corresponding value in smap.")
                     .examples(
                             "(replace {2 :two, 4 :four} [4 2 3 4 5 6 2])",
                             "(replace {2 :two, 4 :four} #{1 2 3 4 5})",
