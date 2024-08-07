@@ -168,8 +168,8 @@ nil
 ### A bare Venice Shebang script
 
 This shebang demo implicitly downloads the Venice library from the Maven 
-repo when the script is started and the Venice library is not yet available
-in the install dir.
+repository when the script starts, provided the Venice library is not yet 
+available in the installation directory.
 
 
 **Example: shebang-demo.venice**
@@ -190,8 +190,8 @@ in the install dir.
   [ -d ${DIR} ] || mkdir ${DIR}
 
   if [ ! -f ${DIR}/${JAR} ]; then
-   echo "Downloading ${JAR} from ${REPO} to ${DIR} ..."
-   curl -s "${REPO}/com/github/jlangch/venice/${VERSION}/${JAR}" --output ${DIR}/${JAR}
+    echo "Downloading ${JAR} from ${REPO} to ${DIR} ..."
+    curl -s "${REPO}/com/github/jlangch/venice/${VERSION}/${JAR}" --output ${DIR}/${JAR}
   fi
 
   exec java -server -jar "${DIR}/${JAR}" -file "$0" "$@"
