@@ -30,15 +30,19 @@ persistent data structures.
 Venice supports macros, tail-recursion, dynamic code loading, multimethods, 
 protocols and many more. It comes with excellent Java interoperability, and
 a configurable sandbox that can prevent all sorts of unwanted JVM and Venice 
-interactions. Venice has been designed from the ground-up with a sandbox making
-it a first class citizen.
+interactions. Venice has been designed from the ground-up with a sandbox, 
+making it a first class citizen.
 
-Venice comes with a comprehensive library of 900+ core functions. It's immutable 
-persistent data structures together with Clojure style atoms, futures, promises, 
-and agents greatly simplify writing concurrent code. 
+Venice includes a comprehensive library of over 900 core functions. Its 
+immutable persistent data structures, along with Clojure-style atoms, futures, 
+promises, and agents, greatly simplify the process of writing concurrent code.
 
-Have you ever felt limited by Bash or PowerShell scripts? With Venice, you can
-write concise and elegant scripts effortlessly.
+Venice seamlessly and transparently integrates with Java and any third-party 
+libraries, giving you access to a vast array of libraries, frameworks, and 
+tools.
+
+Have you ever felt limited by Bash or PowerShell scripts? With Venice, you 
+can write concise and elegant scripts effortlessly.
 
 Venice does not depend on any runtime libraries (other than the JVM). You 
 can easily add it as a standalone JAR to your classpath.
