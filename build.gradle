@@ -179,8 +179,7 @@ plugins {
     // 02.08.2024: https://github.com/GradleUp/shadow seems the way to go
     // 09.08.2024: Migrated to 'com.gradleup.shadow' 8.3.0 (see https://plugins.gradle.org/)
     
-    //id 'io.github.goooler.shadow' version '8.1.7'
-    id 'com.gradleup.shadow' version '8.3.0'
+     id 'com.gradleup.shadow' version '8.3.0'
 	
 /*
     // https://github.com/kordamp/jdeps-gradle-plugin
