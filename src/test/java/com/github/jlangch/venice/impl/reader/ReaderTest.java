@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.impl.util.StopWatch.Resolution;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
@@ -397,14 +398,16 @@ public class ReaderTest {
         final String core_ = "(do\n" + core + "\n)";
         final long lines = StringUtil.splitIntoLines(core_).size();
 
-        final StopWatch sw = new StopWatch();
+        final StopWatch sw = new StopWatch(Resolution.NANOS);
         final VncVal ast = Reader.read_str(core_, "core");
         sw.stop();
+
+        long elapsedNanos = sw.elapsedNanos();
 
         System.out.println(String.format(
                 "Reading :core module in %s at %d lines/s",
                 sw.toString(),
-                (lines * 1000L) / sw.elapsedMillis()));
+                (lines * 1_000_000_000L) / elapsedNanos));
 
         assertNotNull(ast);
     }

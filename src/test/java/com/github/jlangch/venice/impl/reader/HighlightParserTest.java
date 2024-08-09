@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.impl.util.StopWatch.Resolution;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.OS;
 
@@ -148,14 +149,16 @@ public class HighlightParserTest {
         final String source_ = "(do\n" + source + "\n)";
         final long lines = StringUtil.splitIntoLines(source_).size();
 
-        final StopWatch sw = new StopWatch();
+        final StopWatch sw = new StopWatch(Resolution.NANOS);
         final List<HighlightItem> items = HighlightParser.parse(source_);
         sw.stop();
+
+        long elapsedNanos = sw.elapsedNanos();
 
         System.out.println(String.format(
                 "Highlighting :core module in %s at %d lines/s",
                 sw.toString(),
-                (lines * 1000L) / sw.elapsedMillis()));
+                (lines * 1_000_000_000L) / elapsedNanos));
 
         final String joined = items.subList(3, items.size()-2)
                                   .stream()
