@@ -15,6 +15,14 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Changed
+
+- the Gradle shadow plugin.
+  The Gradle plugin "io.github.goooler.shadow" has been retired now as well.
+  Migrated to "com.gradleup.shadow" (see https://github.com/GradleUp/shadow).
+  This seems to be the new home for the retired "com.github.johnrengelman.shadow" 
+  plugin.
+
 
 
 ## [1.12.27] - 2024-08-05
