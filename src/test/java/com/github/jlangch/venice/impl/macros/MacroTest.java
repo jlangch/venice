@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.macros;
+package com.github.jlangch.venice.impl.macros;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -650,12 +650,58 @@ public class MacroTest {
         final Venice venice = new Venice();
 
         assertEquals(
-                "(0 1 2 3 4 5 6 7 8 9)",
-                venice.eval("(str (list-comp [x (range 10)] x))"));
+                "(nil)",
+                venice.eval("(str (list-comp [] nil))"));
+
+        assertEquals(
+                "(nil)",
+                venice.eval("(str (list-comp nil nil))"));
+
+        assertEquals(
+                "(nil)",
+                venice.eval("(str (list-comp [nil '()] nil))"));
+
+        assertEquals(
+                "(nil)",
+                venice.eval("(str (list-comp [nil nil] nil))"));
+
+        assertEquals(
+                "()",
+                venice.eval("(str (list-comp [x '()] x))"));
+
+        assertEquals(
+                "()",
+                venice.eval("(str (list-comp [x '(1 2) y '()] [x y]))"));
+
+        assertEquals(
+                "()",
+                venice.eval("(str (list-comp [x '() y '()] [x y]))"));
+
+
+
+        assertEquals(
+                "(0 1 2 3 4)",
+                venice.eval("(str (list-comp [x (range 5)] x))"));
 
         assertEquals(
                 "(0 2 4 6 8)",
                 venice.eval("(str (list-comp [x (range 5)] (* x 2)))"));
+
+
+
+        assertEquals(
+                "([0 0] [0 1] [1 0] [1 1])",
+                venice.eval("(str (list-comp [x (range 2) y (range 2)] [x y]))"));
+
+        assertEquals(
+                "([0 0] [0 4] [2 0] [2 4])",
+                venice.eval("(str (list-comp [x (range 2) y (range 2)] [(* x 2) (* y 4)]))"));
+
+        assertEquals(
+                "([a 0] [a 1] [b 0] [b 1])",
+                venice.eval("(str (list-comp [x (seq \"ab\") y [0 1]] [x y]))"));
+
+
 
         assertEquals(
                 "(1 3 5 7 9)",
@@ -666,8 +712,12 @@ public class MacroTest {
                 venice.eval("(str (list-comp [x (range 10) :when (odd? x)] (* x 2)))"));
 
         assertEquals(
-                "([a 0] [a 1] [a 2] [b 0] [b 1] [b 2] [c 0] [c 1] [c 2])",
-                venice.eval("(str (list-comp [x (seq \"abc\") y [0 1 2]] [x y]))"));
+                "([1 0] [1 1])",
+                venice.eval("(str (list-comp [x '(0 1) y '(0 1) :when (odd? x)] [x y]))"));
+
+        assertEquals(
+                "([1 0] [1 1])",
+                venice.eval("(str (list-comp [x '(0 1) :when (odd? x) y '(0 1)] [x y]))"));
     }
 
     @Test
