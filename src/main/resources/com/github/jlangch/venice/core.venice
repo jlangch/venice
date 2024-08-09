@@ -1092,6 +1092,9 @@
           yields a collection of evaluations of expr.
 
           Supported modifiers are: `:when` predicate
+
+          List comprehensions are used when multiple lists have to be processed
+          down to a single list and some filtering has to be applied.
           """
      :examples '(
           "(list-comp [x (range 10)] x)"
@@ -1099,7 +1102,7 @@
           "(list-comp [x (range 10) :when (odd? x)] x)"
           "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
           "(list-comp [x (seq \"abc\") y [0 1 2]] [x y])")
-     :see-also '("doseq" "dotimes") }
+     :see-also '("mapcat" "doseq" "dotimes") }
 
   list-comp [[binding_ coll-expr & bindings] body-expr]
 
