@@ -111,7 +111,7 @@ public class ShellFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(:out \n" +
+                "(:out \n" +
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\"))";
 
@@ -124,7 +124,7 @@ public class ShellFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(:err \n" +
+                "(:err \n" +
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\"))";
 
@@ -137,7 +137,7 @@ public class ShellFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(:out \n" +
+                "(:out \n" +
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
                 "      :timeout 1500))";
@@ -151,7 +151,7 @@ public class ShellFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(with-out-str \n" +
+                "(with-out-str \n" +
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
                 "      :out-fn println \n" +
@@ -166,7 +166,7 @@ public class ShellFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(with-out-str \n" +
+                "(with-out-str \n" +
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\" \n" +
                 "      :out-fn println \n" +
@@ -181,7 +181,7 @@ public class ShellFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(with-out-str \n" +
+                "(with-out-str \n" +
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
                 "      :out-fn println \n" +

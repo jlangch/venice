@@ -38,6 +38,7 @@ import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 import com.github.jlangch.venice.util.OS;
 
 
@@ -293,6 +294,7 @@ public class IOFunctionsTest {
     }
 
     @Test
+    @EnableOnMacOrLinux
     public void test_io_file_normalize_utf_1() {
         final Venice venice = new Venice();
 
@@ -302,6 +304,7 @@ public class IOFunctionsTest {
     }
 
     @Test
+    @EnableOnMacOrLinux
     public void test_io_file_normalize_utf_2() {
         final Venice venice = new Venice();
 
@@ -316,6 +319,7 @@ public class IOFunctionsTest {
     }
 
     @Test
+    @EnableOnMacOrLinux
     public void test_io_file_normalize_utf_3() {
         final Venice venice = new Venice();
 
@@ -332,6 +336,7 @@ public class IOFunctionsTest {
     }
 
     @Test
+    @EnableOnMacOrLinux
     public void test_io_file_normalize_utf_4() {
         final Venice venice = new Venice();
 
