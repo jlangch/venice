@@ -23,7 +23,8 @@ All notable changes to this project will be documented in this file.
   This seems to be the final new home for the retired 
   "com.github.johnrengelman.shadow" plugin.
 - the Gradle CI workflow to build and test on Ubuntu and Windows using 
-  JDK 8, 17 and 21
+  JDK 8, 17 and 21. Due to the limited Github action minutes/month CI is
+  currently restricted to Ubuntu with JDK 8 and 21.
 
 
 
