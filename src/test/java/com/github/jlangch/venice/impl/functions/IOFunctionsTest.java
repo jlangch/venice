@@ -158,7 +158,9 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-            assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:/tmp/test/x.txt\"))"));
+        	System.out.println("Path: " + venice.eval("(io/file-path (io/file \"C:\" \"tmp\" \"test\" \"x.txt\"))"));
+
+        	assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:/tmp/test/x.txt\"))"));
             assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:\" \"tmp\" \"test\" \"x.txt\"))"));
         }
         else {
@@ -172,6 +174,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
+        	System.out.println("Path: " + venice.eval("(io/file-path-slashify (io/file \"C:\" \"tmp\" \"test\" \"x.txt\"))"));
             assertEquals("C:/tmp/test/x.txt", venice.eval("(io/file-path-slashify (io/file \"C:\" \"tmp\" \"test\" \"x.txt\"))"));
         }
         else {

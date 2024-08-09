@@ -166,11 +166,6 @@ public class HighlightParserTest {
                                   .collect(Collectors.joining());
 
         if (OS.isWindows()) {
-        	System.out.println("Source: >" + source.substring(0, 10));
-        	System.out.println("      : >" + source.substring(source.length()-10, source.length()));
-        	System.out.println("Joined: >" + joined.substring(0, 10));
-        	System.out.println("      : >" + joined.substring(joined.length()-10, joined.length()));
-
             assertEquals(to_lf(source).trim().length(), to_lf(joined).trim().length());
             assertEquals(to_lf(source.trim()), to_lf(joined.trim()));
         }
