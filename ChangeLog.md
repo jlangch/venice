@@ -20,8 +20,10 @@ All notable changes to this project will be documented in this file.
 - the Gradle shadow plugin.
   The Gradle plugin "io.github.goooler.shadow" has been retired now as well.
   Migrated to "com.gradleup.shadow" (see https://github.com/GradleUp/shadow).
-  This seems to be the new home for the retired "com.github.johnrengelman.shadow" 
-  plugin.
+  This seems to be the final new home for the retired 
+  "com.github.johnrengelman.shadow" plugin.
+- the Gradle CI workflow to build and test on Ubuntu and Windows using 
+  JDK 8, 17 and 21
 
 
 
