@@ -72,7 +72,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *                     E.g.: -loadpath "/users/foo/scripts;/users/foo/res"
  *
  *  -macroexpand true  turns up-front macro expansion on, resulting in a
- *                     much better performance
+ *                     much better performance.
  *
  *  -file script       loads the script to run from a file
  *                     E.g.:  -file ./test.venice
@@ -229,27 +229,27 @@ public class Launcher {
              "       -colors \n" +
              "\n\n" +
              "Launcher command line options: \n" +
-             "  -loadpath path    defines a load path \n" +
-             "                    E.g.: -loadpath \"/users/foo/scripts;/users/foo/res\" \n" +
+             "  -loadpath path     defines a load path \n" +
+             "                     E.g.: -loadpath \"/users/foo/scripts;/users/foo/res\" \n" +
              "\n" +
-             "  -macroexpand      turns up-front macro expansion on, resulting in a \n" +
-             "                    much better performance \n" +
+             "  -macroexpand true  turns up-front macro expansion on, resulting in a \n" +
+             "                     much better performance \n" +
              "\n" +
-             "  -file script      loads the script to run from a file \n" +
-             "                    E.g.:  -file ./test.venice \n" +
+             "  -file script       loads the script to run from a file \n" +
+             "                     E.g.:  -file ./test.venice \n" +
              "\n" +
-             "  -cp-file res      loads the script to run from the classpath \n" +
-             "                    E.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
+             "  -cp-file res       loads the script to run from the classpath \n" +
+             "                     E.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
              "\n" +
-             "  -script script    run a script \n" +
-             "                    E.g.:  -script \"(+ 1 10)\" \n" +
+             "  -script script     run a script \n" +
+             "                     E.g.:  -script \"(+ 1 10)\" \n" +
              "\n" +
-             "  -app app          run a Venice app  \n" +
-             "                    E.g.:  -app test-app.zip \n" +
+             "  -app app           run a Venice app  \n" +
+             "                     E.g.:  -app test-app.zip \n" +
              "\n" +
-             "  -repl             start a REPL \n" +
+             "  -repl              start a REPL \n" +
              "\n" +
-             "  -help             prints a help \n" +
+             "  -help              prints a help \n" +
              "\n" +
              "Note: \n" +
              "  The options '-file', '-cp-file', '-script', '-app', and '-repl' exclude \n" +
