@@ -98,17 +98,17 @@ public class TraceModuleTest {
         final Map<String,Object> params = Parameters.of("*out*", cps);
 
         final String script1 =
-                "(do                                              \n" +
-                "          (load-module :trace ['trace :as 't])   \n" +
-                "                                                 \n" +
-                "          (defn foo [x] (+ x 2))                 \n" +
-                "          (defn bar [x] (foo x))                 \n" +
-                "                                                 \n" +
-                "          (t/trace-var +)                        \n" +
-                "          (t/trace-var foo)                      \n" +
-                "          (t/trace-var bar)                      \n" +
-                "                                                 \n" +
-                "          (bar 5))                               ";
+                "(do                                       \n" +
+                "   (load-module :trace ['trace :as 't])   \n" +
+                "                                          \n" +
+                "   (defn foo [x] (+ x 2))                 \n" +
+                "   (defn bar [x] (foo x))                 \n" +
+                "                                          \n" +
+                "   (t/trace-var +)                        \n" +
+                "   (t/trace-var foo)                      \n" +
+                "   (t/trace-var bar)                      \n" +
+                "                                          \n" +
+                "   (bar 5))                               ";
 
         assertEquals(7L, venice.eval(script1, params));
 
@@ -131,17 +131,17 @@ public class TraceModuleTest {
         final Map<String,Object> params = Parameters.of("*out*", cps);
 
         final String script1 =
-                "(do                                              \n" +
-                "          (load-module :trace ['trace :as 't])   \n" +
-                "                                                 \n" +
-                "          (defn foo [x] (/ x 0))                 \n" +
-                "          (defn bar [x] (foo x))                 \n" +
-                "                                                 \n" +
-                "          (t/trace-var /)                        \n" +
-                "          (t/trace-var foo)                      \n" +
-                "          (t/trace-var bar)                      \n" +
-                "                                                 \n" +
-                "          (bar 5))                               ";
+                "(do                                       \n" +
+                "   (load-module :trace ['trace :as 't])   \n" +
+                "                                          \n" +
+                "   (defn foo [x] (/ x 0))                 \n" +
+                "   (defn bar [x] (foo x))                 \n" +
+                "                                          \n" +
+                "   (t/trace-var /)                        \n" +
+                "   (t/trace-var foo)                      \n" +
+                "   (t/trace-var bar)                      \n" +
+                "                                          \n" +
+                "   (bar 5))                               ";
 
         assertThrows(VncException.class, () -> venice.eval(script1, params));
 
@@ -299,14 +299,14 @@ public class TraceModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                          \n" +
-                "  (load-module :trace)                       \n" +
-                "  (with-out-str                              \n" +
-                "    (-> 5                                    \n" +
-                "       (+ 3)                                 \n" +
-                "       (/ 2)                                 \n" +
-                "       (trace/tee-> #(print \"trace:\" %))   \n" +
-                "       (- 1))))                                ";
+                "(do                                           \n" +
+                "  (load-module :trace)                        \n" +
+                "  (with-out-str                               \n" +
+                "    (-> 5                                     \n" +
+                "        (+ 3)                                 \n" +
+                "        (/ 2)                                 \n" +
+                "        (trace/tee-> #(print \"trace:\" %))   \n" +
+                "        (- 1))))                                ";
 
         assertEquals("trace: 4", venice.eval(script));
     }
@@ -316,14 +316,14 @@ public class TraceModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                           \n" +
-                "  (load-module :trace)                        \n" +
-                "  (with-out-str                               \n" +
-                "    (->> 5                                    \n" +
-                "        (+ 3)                                 \n" +
-                "        (/ 32)                                \n" +
-                "        (trace/tee->> #(print \"trace:\" %))  \n" +
-                "        (- 1))))                                ";
+                "(do                                            \n" +
+                "  (load-module :trace)                         \n" +
+                "  (with-out-str                                \n" +
+                "    (->> 5                                     \n" +
+                "         (+ 3)                                 \n" +
+                "         (/ 32)                                \n" +
+                "         (trace/tee->> #(print \"trace:\" %))  \n" +
+                "         (- 1))))                                ";
 
         assertEquals("trace: 4", venice.eval(script));
     }
@@ -333,14 +333,14 @@ public class TraceModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                           \n" +
-                "  (load-module :trace)                        \n" +
-                "  (with-out-str                               \n" +
-                "    (->> 5                                    \n" +
-                "        (+ 3)                                 \n" +
-                "        (/ 32)                                \n" +
-                "        trace/tee                             \n" +
-                "        (- 1))))                                ";
+                "(do                                            \n" +
+                "  (load-module :trace)                         \n" +
+                "  (with-out-str                                \n" +
+                "    (->> 5                                     \n" +
+                "         (+ 3)                                 \n" +
+                "         (/ 32)                                \n" +
+                "         trace/tee                             \n" +
+                "         (- 1))))                                ";
 
         // Must run on *nix and Windows (convert crlf)
         assertEquals("trace: 4\n", StringUtil.crlf_to_lf((String)venice.eval(script)));
