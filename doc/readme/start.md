@@ -123,7 +123,7 @@ REPL_HOME
 │   └── ...
 ├── scripts
 │   └── ... (example scripts)
-├── repl.env
+├── repl.env.bat
 └── repl.bat
 ```
 
