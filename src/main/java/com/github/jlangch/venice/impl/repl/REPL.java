@@ -181,7 +181,7 @@ public class REPL implements IRepl {
 
             replDirs = ReplDirs.create();
 
-        	repl(cli, macroexpand);
+            repl(cli, macroexpand);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -190,18 +190,18 @@ public class REPL implements IRepl {
 
     public static boolean unattendedReplSetup(final String[] args) {
         try {
-        	final IInterceptor interceptor = new AcceptAllInterceptor();
+            final IInterceptor interceptor = new AcceptAllInterceptor();
 
             ThreadContext.setInterceptor(interceptor);
 
-        	final CommandLineArgs cli = new CommandLineArgs(args);
-        	final ReplConfig config = ReplConfig.load(cli);
+            final CommandLineArgs cli = new CommandLineArgs(args);
+            final ReplConfig config = ReplConfig.load(cli);
 
             // Use the unattended setup mode if the setup is run from a non system
             // terminal. E.g. through an automated setup or unit testing the setup
             // from a test framework
             System.out.println("Unattended Venice REPL setup...");
-            System.out.println("Venice REPL setup: V" + Venice.getVersion());
+            System.out.println("Venice REPL: V" + Venice.getVersion());
             System.out.println("Java: " + System.getProperty("java.version"));
 
             final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
@@ -223,24 +223,23 @@ public class REPL implements IRepl {
 
             final String sColorMode = ":" + colorMode.name().toLowerCase();
 
-            final String script =
-                String.format(
-                    "(do                                          \n" +
-                    "  (load-module :repl-setup)                  \n" +
-                    "  (repl-setup/setup :color-mode %s           \n" +
-                    "                    :ansi-terminal false))   ",
-                    sColorMode);
+            final String script = String.format(
+                                    "(do                                          \n" +
+                                    "  (load-module :repl-setup)                  \n" +
+                                    "  (repl-setup/setup :color-mode %s           \n" +
+                                    "                    :ansi-terminal false))   ",
+                                    sColorMode);
 
             venice.RE(script, "setup", env);
 
-        	return true;
+            return true;
         }
         catch (Exception ex) {
             ex.printStackTrace(System.err);
             System.err.println();
             System.err.println("REPL setup failed!");
 
-        	return false;
+            return false;
         }
     }
 

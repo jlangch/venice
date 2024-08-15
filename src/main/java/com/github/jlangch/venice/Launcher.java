@@ -88,11 +88,16 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *
  *  -repl              start a REPL
  *
+ *  -setup             setup a REPL
+ *                     E.g.:  java -jar venice-1.12.28.jar -setup -colors \n" +
+ *                     For an unattended setup, pass the option '-unattended' \n" +
+ *                     E.g.:  java -jar venice-1.12.28.jar -setup -unattended -colors \n" +
+ *
  *  -help              prints a help
  *  </pre>
  *
  *  <p>Note:
- *  The options '-file', '-cp-file', '-script', '-app', and '-repl' exclude each
+ *  The options '-file', '-cp-file', '-script', '-app', '-repl', and '-setup' exclude each
  *  other
  */
 public class Launcher {
@@ -190,7 +195,7 @@ public class Launcher {
             }
             else if (cli.switchPresent("-setup") && cli.switchPresent("-unattended")) {
                 if (!REPL.unattendedReplSetup(args)) {
-                	System.exit(99);
+                    System.exit(99);
                 }
             }
             else {
