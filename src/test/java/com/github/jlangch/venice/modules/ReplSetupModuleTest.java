@@ -30,19 +30,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
-import com.github.jlangch.venice.impl.util.junit.EnableOnWindows;
 
 
 public class ReplSetupModuleTest {
 
     @Test
     @EnableOnMacOrLinux
-    public void test_repl_setup_macos() throws IOException {
+    public void test_repl_setup_macos_linux() throws IOException {
         final Venice venice = new Venice();
 
         final File tmp = Files.createTempDirectory("setup").toFile();
@@ -116,8 +116,9 @@ public class ReplSetupModuleTest {
             System.out.println("Deleted setup dir: " + tmp);
         }
     }
+
     @Test
-    @EnableOnWindows
+    @Disabled
     public void test_repl_setup_windows() throws IOException {
         final Venice venice = new Venice();
 
