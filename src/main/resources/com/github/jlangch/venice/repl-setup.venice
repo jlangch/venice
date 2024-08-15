@@ -96,9 +96,12 @@
                       (load-script %)
                       :encoding (charset-default-encoding))
             scripts)
-    (when (io/exists-file? (io/file scripts-dir "shebang-demo.venice"))
-      (println "Making \"scripts/shebang-demo.venice\" executable...")
-      (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir repl-path))))
+    ;; Shebang demo
+    (if (os-type? :windows) 
+      (io/delete-file (io/file scripts-dir "shebang-demo.venice"))
+      (when (io/exists-file? (io/file scripts-dir "shebang-demo.venice"))
+        (println "Making \"scripts/shebang-demo.venice\" executable...")
+        (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir repl-path)))))
 
 
 (defn change-repl-launcher-color [cfg color-mode]
