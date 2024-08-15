@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -96,6 +97,7 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "scripts/webapp").isDirectory());
                 assertTrue(new File(tmp, "scripts/webapp/demo-webapp.venice").isFile());
                 assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
+                assertTrue(new File(tmp, "scripts/shebang-demo.venice").isFile());
 
                 assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
                 assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
@@ -170,6 +172,7 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "scripts/webapp").isDirectory());
                 assertTrue(new File(tmp, "scripts/webapp/demo-webapp.venice").isFile());
                 assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
+                assertFalse(new File(tmp, "scripts/shebang-demo.venice").isFile());
 
                 assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
                 assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
