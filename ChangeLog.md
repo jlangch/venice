@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Updated dependencies:
+
+- Bump Gradle from 8.3 to 8.9
+
 
 
 ## [1.12.28] - 2024-08-15
