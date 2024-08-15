@@ -209,7 +209,7 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "tmp").isDirectory());
                 assertTrue(new File(tmp, "tools").isDirectory());
 
-                assertTrue(new File(tmp, "repl.bat.env").isFile());
+                assertTrue(new File(tmp, "repl.env.bat").isFile());
                 assertTrue(new File(tmp, "repl.bat").isFile());
 
                 assertTrue(new File(tmp, "libs/repl.json").isFile());
