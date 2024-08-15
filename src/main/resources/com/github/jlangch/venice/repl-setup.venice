@@ -67,10 +67,10 @@
   (str/cr-lf text (if (os-type? :windows) :cr-lf :lf)))
 
 
-(defn install-maven []
+(defn install-maven [dir]
   (println "Installing Maven ~{maven/maven-version} locally in the REPL/tools ...")
   (if (io/internet-avail?)
-    (maven/install maven/maven-version "./tools")
+    (maven/install maven/maven-version dir)
     (println *err* "Internet is not available!"))
   (println))
 
@@ -84,21 +84,21 @@
   (println))
 
 
-(defn setup-scripts [dir]
+(defn setup-scripts [scripts-dir]
   (println "Extracting example scripts...")
-  (let [repl-path   (str (io/file-path (io/file-canonical ".")))
+  (let [repl-path   (io/file-path scripts-dir)
         load-script (fn [script]
                       (-<> (io/load-classpath-resource script)
                            (bytebuf-to-string <> :utf-8)
                            (repl-setup/cr-lf <>)
                            (str/replace-all <>  "{{INSTALL_PATH}}" repl-path)))]
-    (docoll #(io/spit (io/file dir %)
+    (docoll #(io/spit (io/file scripts-dir %)
                       (load-script %)
                       :encoding (charset-default-encoding))
             scripts)
-    (when (io/exists-file? (io/file dir "shebang-demo.venice"))
-      (println "Making \"shebang-demo.venice\" executable...")
-      (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir dir))))
+    (when (io/exists-file? (io/file scripts-dir "shebang-demo.venice"))
+      (println "Making \"scripts/shebang-demo.venice\" executable...")
+      (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir repl-path))))
 
 
 (defn change-repl-launcher-color [cfg color-mode]
@@ -123,7 +123,7 @@
            (io/spit config <> :encoding (charset-default-encoding))))))
 
 
-(defn- setup-repl-launcher-windows [color-mode]
+(defn- setup-repl-launcher-windows [install-dir color-mode]
   (when-not (io/exists-file? "repl.env.bat")
     (println "Setting up 'repl.env.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.win.env")
@@ -132,18 +132,15 @@
          (io/spit "repl.env.bat" <> :encoding (charset-default-encoding))))
   (when-not (io/exists-file? "repl.bat")
     (println "Setting up 'repl.bat'...")
-    (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
-         (str/replace-all <>
-                          "{{INSTALL_PATH}}"
-                          (str (io/file-path (io/file-canonical "."))))
+         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
          (change-repl-launcher-color <> color-mode)
          (io/spit "repl.bat" <> :encoding (charset-default-encoding)))))
 
 
-(defn- setup-repl-launcher-unix [color-mode]
+(defn- setup-repl-launcher-unix [install-dir color-mode]
   (when-not (io/exists-file? "repl.env")
     (println "Setting up 'repl.env'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.unix.env")
@@ -156,50 +153,45 @@
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
-         (str/replace-all <>
-                          "{{INSTALL_PATH}}"
-                          (str (io/file-path (io/file-canonical "."))))
+         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
          (change-repl-launcher-color <> color-mode)
          (io/spit "repl.sh" <> :encoding (charset-default-encoding)))
     (when (io/exists-file? "repl.sh")
-      (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file ".")))))
+      (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file-path install-dir)))))
 
 
-(defn setup-repl-launcher [color-mode]
+(defn setup-repl-launcher [install-dir color-mode]
   (if (os-type? :windows)
-    (setup-repl-launcher-windows color-mode)
-    (setup-repl-launcher-unix color-mode)))
+    (setup-repl-launcher-windows install-dir color-mode)
+    (setup-repl-launcher-unix install-dir color-mode)))
 
 
-(defn- setup-runscript-launcher-unix []
+(defn- setup-runscript-launcher-unix [install-dir]
   (when-not (io/exists-file? "run-script.sh")
     (println "Setting up 'run-script.sh'...")
-    (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/run-script.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
-         (str/replace-all <>
-                          "{{INSTALL_PATH}}"
-                          (str (io/file-path (io/file-canonical "."))))
+         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
          (io/spit "run-script.sh" <> :encoding (charset-default-encoding)))
     (when (io/exists-file? "run-script.sh")
-      (sh "/bin/sh" "-c" "chmod u+x run-script.sh" :dir (io/file ".")))))
+      (sh "/bin/sh" "-c" "chmod u+x run-script.sh" :dir (io/file-path install-dir)))))
 
 
-(defn- setup-runscript-launcher-windows []
+(defn- setup-runscript-launcher-windows [install-dir]
   )
 
 
-(defn setup-runscript-launcher []
+(defn setup-runscript-launcher [install-dir]
   (if (os-type? :windows)
-    (setup-runscript-launcher-windows)
-    (setup-runscript-launcher-unix)))
+    (setup-runscript-launcher-windows install-dir)
+    (setup-runscript-launcher-unix install-dir)))
 
 
-(defn copy-venice-jar [dir]
+(defn copy-venice-jar [libs-dir]
   (let [loc    (java-source-location :com.github.jlangch.venice.Venice)
         name   (when (some? loc) (io/file-name loc))
-        target (io/file dir name)]
+        target (io/file libs-dir name)]
     (when (str/ends-with? name ".jar")
        (try
          (println (str "Copying Venice JAR '" name "' to libs"))
@@ -213,11 +205,11 @@
              (println *err*(str "Failed to copy '" name "' to libs!"))))))))
 
 
-(defn check-jansi-installed [dir]
+(defn check-jansi-installed [libs-dir]
   (when (os-type? :windows)
     (let [lib-jansi          (first (jansi-install/libraries))
           jansi-name         (maven/artifact-filename lib-jansi ".jar")
-          jansi-jar          (io/file dir jansi-name)]
+          jansi-jar          (io/file libs-dir jansi-name)]
       (if (io/exists-file? jansi-jar)
         (println "Checking ~{jansi-jar} ... OK")
         (do
@@ -248,41 +240,58 @@
   (let [options       (apply hash-map options)
         color-mode    (:color-mode options :none)      ;; {:none :light :dark}
         silent        (not (:ansi-terminal options false))   ;; {true false}
-        charset       (name (charset-default-encoding))]
-    (when-not (io/exists-dir? "./libs")
-      (io/mkdirs "./libs"))
-
-    (when-not (io/exists-dir? "./scripts")
-      (io/mkdirs "./scripts"))
-
-    (when-not (io/exists-dir? "./scripts/pdf")
-      (io/mkdirs "./scripts/pdf"))
-
-    (when-not (io/exists-dir? "./scripts/webapp")
-      (io/mkdirs "./scripts/webapp"))
-
-    (when-not (io/exists-dir? "./tmp")
-      (io/mkdirs "./tmp"))
-
-    (when-not (io/exists-dir? "./tools")
-      (io/mkdirs "./tools"))
-
+        charset       (name (charset-default-encoding))
+        install-dir   (io/file-canonical (io/file (:install-dir  options ".")))
+        libs-dir      (io/file install-dir "libs")
+        scripts-dir   (io/file install-dir "scripts")
+        tmp-dir       (io/file install-dir "tmp")
+        tools-dir     (io/file install-dir "tools")]
     (println)
     (println (str "Setting up the REPL on '" (os-name) "' " (os-version)))
+    (println "Install dir: " install-dir)
     (println "Using the platforms's default charset" charset)
     (println)
-    (let [{version :version, vendor :vendor} (java-version-info)]
-      (println (str "Running on Java VM: " version " (" vendor ")"))
-      (println))
 
-    (repl-setup/copy-venice-jar "libs")
-    (repl-setup/install-maven)
-    (repl-setup/download-modules-libs "libs" initial-modules silent)
-    (repl-setup/setup-repl-config "libs" )
-    (repl-setup/setup-repl-launcher color-mode)
-    (repl-setup/setup-runscript-launcher)
-    (repl-setup/setup-scripts "scripts")
+    (when-not (io/exists-dir? install-dir)
+      (print-msg-box :warn
+                """
+                The install dir '~{install-dir}' does not exist! \
+                REPL not installed!
+                """))
 
-    (print-success-message)
+    (when (io/exists-dir? install-dir)
+      (when-not (io/exists-dir? libs-dir)
+        (io/mkdirs libs-dir))
 
-    (check-jansi-installed "libs")))
+      (when-not (io/exists-dir? scripts-dir)
+        (io/mkdirs scripts-dir))
+
+      (when-not (io/exists-dir? (io/file scripts-dir "pdf"))
+       (io/mkdirs  (io/file scripts-dir "pdf")))
+
+      (when-not (io/exists-dir? (io/file scripts-dir "webapp"))
+        (io/mkdirs (io/file scripts-dir "webapp")))
+
+      (when-not (io/exists-dir? tmp-dir)
+        (io/mkdirs tmp-dir))
+
+      (when-not (io/exists-dir? tools-dir)
+        (io/mkdirs tools-dir))
+
+      (let [{version :version, vendor :vendor} (java-version-info)]
+        (println (str "Running on Java VM: " version " (" vendor ")"))
+        (println))
+
+      (repl-setup/copy-venice-jar libs-dir)
+      (repl-setup/install-maven tools-dir)
+      (repl-setup/download-modules-libs libs-dir initial-modules silent)
+      (repl-setup/setup-repl-config libs-dir)
+      (repl-setup/setup-repl-launcher install-dir color-mode)
+      (repl-setup/setup-runscript-launcher install-dir)
+      (repl-setup/setup-scripts scripts-dir)
+
+      (print-success-message)
+
+      (check-jansi-installed libs-dir)
+      
+      "Successfully installed at " (io/file-path install-dir))))
