@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - an unattended setup option for installing the Venice REPL. 
-  (this allows the setup to be unit tested)
+  This allows for automated setups or unit testing the setup.
 
 ### Changed
 
