@@ -249,10 +249,15 @@ public class Launcher {
              "\n" +
              "  -repl              start a REPL \n" +
              "\n" +
+             "  -setup             setup a REPL (a system terminal is required for the setup) \n" +
+             "                     E.g.:  java -jar venice-1.12.27.jar -setup -colors \n" +
+             "                     For an unattended setup pass the option '-unattended' \n" +
+             "                     E.g.:  java -jar venice-1.12.27.jar -setup -unattended -colors \n" +
+             "\n" +
              "  -help              prints a help \n" +
              "\n" +
              "Note: \n" +
-             "  The options '-file', '-cp-file', '-script', '-app', and '-repl' exclude \n" +
+             "  The options '-file', '-cp-file', '-script', '-app', '-repl', and '-setup' exclude \n" +
              "  each other \n");
     }
 

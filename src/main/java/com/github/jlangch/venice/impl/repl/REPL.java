@@ -162,25 +162,48 @@ public class REPL implements IRepl {
                 }
             }
 
-            System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
-            System.out.println("Java: " + System.getProperty("java.version"));
-            System.out.println("Loading configuration from " + config.getConfigSource());
-            if (loadpaths.active()) {
-                System.out.print("Load paths: ");
-                System.out.println(loadpaths.isUnlimitedAccess() ? "unrestricted > " : "retricted > ");
-                loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
-            }
-            System.out.println(getTerminalInfo());
-            if (macroexpand) {
-                System.out.println("Macro expansion enabled");
-            }
-            if (!setupMode) {
-                System.out.println("Type '!' for help.");
-            }
 
-            replDirs = ReplDirs.create();
+            if (isUnattendedSetupMode(cli)) {
+            	System.out.println("Unattended Venice REPL setup...");
+                System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+                System.out.println("Java: " + System.getProperty("java.version"));
 
-            repl(cli, macroexpand);
+                final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+
+                final Env env = venice.createEnv(false, false, RunMode.SCRIPT)
+                                      .setGlobal(new Var(
+                                                      new VncSymbol("*ARGV*"),
+                                                      VncList.empty(),
+                                                      false,
+                                                      Var.Scope.Global))
+                                      .setStdoutPrintStream(System.out)
+                                      .setStderrPrintStream(System.err)
+                                      .setStdinReader(null);
+
+                handleSetupCommand(venice, env, null);
+            }
+            else {
+                System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+                System.out.println("Java: " + System.getProperty("java.version"));
+                System.out.println("Loading configuration from " + config.getConfigSource());
+                if (loadpaths.active()) {
+                    System.out.print("Load paths: ");
+                    System.out.println(loadpaths.isUnlimitedAccess() ? "unrestricted > " : "retricted > ");
+                    loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
+                }
+
+                System.out.println(getTerminalInfo());
+                if (macroexpand) {
+                    System.out.println("Macro expansion enabled");
+                }
+                if (!setupMode) {
+                    System.out.println("Type '!' for help.");
+                }
+
+                replDirs = ReplDirs.create();
+
+            	repl(cli, macroexpand);
+            }
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -697,8 +720,14 @@ public class REPL implements IRepl {
             venice.RE(script, "user", env);
         }
         catch(Exception ex) {
-            printer.printex("error", ex);
-            printer.println("error", "REPL setup failed!");
+        	if (printer != null) {
+	            printer.printex("error", ex);
+	            printer.println("error", "REPL setup failed!");
+        	}
+        	else {
+        		ex.printStackTrace(System.err);
+        		System.err.println("REPL setup failed!");
+        	}
         }
     }
 
@@ -1342,6 +1371,10 @@ public class REPL implements IRepl {
 
     private boolean isSetupMode(final CommandLineArgs cli) {
         return cli.switchPresent("-setup");
+    }
+
+    private boolean isUnattendedSetupMode(final CommandLineArgs cli) {
+        return cli.switchPresent("-setup") && cli.switchPresent("-unattended");
     }
 
     private boolean isRestartable(final CommandLineArgs cli) {

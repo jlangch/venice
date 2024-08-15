@@ -119,6 +119,82 @@ public class ReplSetupModuleTest {
         }
     }
 
+//    @Test
+//    @EnableOnMacOrLinux
+//    public void test_repl_setup_macos_linux_2() throws IOException {
+//        final Venice venice = new Venice();
+//
+//        final File tmp = Files.createTempDirectory("setup").toFile();
+//
+//        try {
+//            final String script =
+//                    "(do                                                                          \n" +
+//                    "   (load-module :repl-setup)                                                 \n" +
+//                    "                                                                             \n" +
+//                    "   (if (io/internet-avail?)                                                  \n" +
+//                    "     (do                                                                     \n" +
+//                    "       (println \"Downloading Venice jar\")                                  \n" +
+//                    "       (-<> (repl-setup/venice-maven-url \"1.12.17\")                        \n" +
+//                    "            (io/download <> :binary true)                                    \n" +
+//                    "            (io/spit (io/file setup-dir \"venice-1.12.17.jar\") <>))         \n" +
+//                    "                                                                             \n" +
+//                    "       (sh \"/bin/sh\" \"-c\"                                                \n" +
+//                    "           \"java -jar venice-1.12.17.jar -setup -unattended -colors\"       \n" +
+//                    "           :dir setup-dir :throw-ex true :out-fn println :err-fn println)    \n" +
+//                    "       :installed)                                                           \n" +
+//                    "     :no-internet))                                                          \n";
+//
+//            final String result = (String)venice.eval(
+//                                            script,
+//                                            Parameters.of("setup-dir", tmp));
+//            if (result.equals("no-internet")) {
+//                assertTrue(true);
+//            }
+//            else if (result.equals("installed")) {
+//                assertTrue(new File(tmp, "venice-1.12.17.jar").isFile());
+//
+//                assertTrue(new File(tmp, "libs").isDirectory());
+//                assertTrue(new File(tmp, "scripts").isDirectory());
+//                assertTrue(new File(tmp, "tmp").isDirectory());
+//                assertTrue(new File(tmp, "tools").isDirectory());
+//
+//                assertTrue(new File(tmp, "repl.env").isFile());
+//                assertTrue(new File(tmp, "repl.sh").isFile());
+//                assertTrue(new File(tmp, "repl.sh").canExecute());
+//                assertTrue(new File(tmp, "run-script.sh").isFile());
+//                assertTrue(new File(tmp, "run-script.sh").canExecute());
+//
+//                assertTrue(new File(tmp, "libs/repl.json").isFile());
+//                assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
+//                assertTrue(new File(tmp, "libs/venice-1.12.17.jar").isFile());
+//
+//                assertTrue(new File(tmp, "scripts/pdf").isDirectory());
+//                assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
+//                assertTrue(new File(tmp, "scripts/webapp").isDirectory());
+//                assertTrue(new File(tmp, "scripts/webapp/demo-webapp.venice").isFile());
+//                assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
+//                assertTrue(new File(tmp, "scripts/shebang-demo.venice").isFile());
+//
+//                assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
+//                assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+//            }
+//            else {
+//                fail("got " + result);
+//            }
+//        }
+//        catch(Exception ex) {
+//            throw ex;
+//        }
+//        finally {
+//            Files.walk(tmp.toPath())
+//                 .sorted(Comparator.reverseOrder())
+//                 .map(Path::toFile)
+//                 .forEach(File::delete);
+//
+//            System.out.println("Deleted setup dir: " + tmp);
+//        }
+//    }
+
     @Test
     @Disabled
     public void test_repl_setup_windows() throws IOException {
