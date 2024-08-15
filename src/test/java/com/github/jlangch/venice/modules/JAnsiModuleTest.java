@@ -34,13 +34,11 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 
 
 public class JAnsiModuleTest {
 
     @Test
-    @EnableOnMac
     public void test_install_jansi() throws IOException {
         final Venice venice = new Venice();
 
