@@ -589,27 +589,24 @@
     (maven/install version (io/file (repl/home-dir) "tools")))
 
   ([version dir]
-    (when-not (repl?)
-      (throw (ex :VncException "Apache Maven can be installed from a REPL only!")))
-      
     (let [uri             (maven-download-uri version)
-          repl-tools-dir  (io/file dir)
+          install-dir     (io/file dir)
           progress-fn     (maven/progress-bar false)
           zip-name        (last (str/split uri "/"))
-          zip             (io/file repl-tools-dir zip-name)
-          maven-dir       (io/file repl-tools-dir (str/strip-end zip-name "-bin.zip"))]
-      (when-not (io/exists-dir? repl-tools-dir)
-        (io/mkdir repl-tools-dir))
+          zip             (io/file install-dir zip-name)
+          maven-dir       (io/file install-dir (str/strip-end zip-name "-bin.zip"))]
+      (when-not (io/exists-dir? install-dir)
+        (io/mkdir install-dir))
 
       (if (io/exists-dir? maven-dir)
         (println "Maven ~{version} is already installed at ~{maven-dir}")
         (do
           ;; download Maven binary zip
-          (maven/download-artifact-file uri repl-tools-dir zip-name false progress-fn)
+          (maven/download-artifact-file uri install-dir zip-name false progress-fn)
           
           ;; unpack Maven binary zip
           (println "Unzipping ~{zip-name}...")
-          (zipvault/extract-all zip repl-tools-dir)
+          (zipvault/extract-all zip install-dir)
           
           ;; remove downloaded Maven binary zip
           (io/delete-file zip)

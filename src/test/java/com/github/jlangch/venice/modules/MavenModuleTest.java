@@ -29,11 +29,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 
 
 public class MavenModuleTest {
@@ -200,5 +203,56 @@ public class MavenModuleTest {
             fail("got " + result);
         }
     }
+
+    @Test
+    @EnableOnMac
+    public void test_install_maven() throws IOException {
+        final Venice venice = new Venice();
+
+        final File tmp = Files.createTempDirectory("maven").toFile();
+
+        try {
+            final String script =
+                    "(do                                             \n" +
+                    "   (load-module :maven)                         \n" +
+                    "                                                \n" +
+                    "   (if (io/internet-avail?)                     \n" +
+                    "     (do                                        \n" +
+                    "       (maven/install mvn-version mvn-dir)      \n" +
+                    "       :installed)                              \n" +
+                    "     :no-internet))                             \n";
+
+            final String result = (String)venice.eval(
+            								script,
+            								Parameters.of("mvn-dir", tmp,
+            										      "mvn-version", "3.9.6"));
+            if (result.equals("no-internet")) {
+                assertTrue(true);
+            }
+            else if (result.equals("installed")) {
+                final File dir = new File(tmp, "apache-maven-3.9.6");
+                assertTrue(dir.isDirectory());
+
+                final File file = new File(tmp, "apache-maven-3.9.6/bin/mvn");
+                assertTrue(file.isFile());
+           }
+            else {
+                fail("got " + result);
+            }
+        }
+        catch(Exception ex) {
+
+        	throw ex;
+        }
+        finally {
+            Files.walk(tmp.toPath())
+                 .sorted(Comparator.reverseOrder())
+                 .map(Path::toFile)
+                 .forEach(File::delete);
+
+            System.out.println("Deleted " + tmp);
+        }
+    }
+
 }
 
