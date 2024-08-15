@@ -223,9 +223,9 @@ public class MavenModuleTest {
                     "     :no-internet))                             \n";
 
             final String result = (String)venice.eval(
-            								script,
-            								Parameters.of("mvn-dir", tmp,
-            										      "mvn-version", "3.9.6"));
+                                            script,
+                                            Parameters.of("mvn-dir", tmp,
+                                                          "mvn-version", "3.9.6"));
             if (result.equals("no-internet")) {
                 assertTrue(true);
             }
@@ -242,7 +242,7 @@ public class MavenModuleTest {
         }
         catch(Exception ex) {
 
-        	throw ex;
+            throw ex;
         }
         finally {
             Files.walk(tmp.toPath())

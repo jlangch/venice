@@ -58,8 +58,8 @@ public class JAnsiModuleTest {
                     "     :no-internet))                                          \n";
 
             final String result = (String)venice.eval(
-            								script,
-            								Parameters.of("jansi-dir", tmp));
+                                            script,
+                                            Parameters.of("jansi-dir", tmp));
             if (result.equals("no-internet")) {
                 assertTrue(true);
             }
@@ -73,7 +73,7 @@ public class JAnsiModuleTest {
         }
         catch(Exception ex) {
 
-        	throw ex;
+            throw ex;
         }
         finally {
             Files.walk(tmp.toPath())
