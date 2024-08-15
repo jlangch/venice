@@ -113,50 +113,59 @@
         (str/replace-last cfg "-colors" color-switch)))))
 
 
-(defn setup-repl-config [dir]
-  (let [config (io/file dir "repl.json")]
-    (when-not (io/exists-file? config)
-      (println "Setting up 'repl.json'...")
-      (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
-           (bytebuf-to-string <> :utf-8)
-           (repl-setup/cr-lf <>)
-           (io/spit config <> :encoding (charset-default-encoding))))))
+(defn setup-repl-config [libs-dir]
+  (when-not (io/exists-file? (io/file libs-dir "repl.json"))
+    (println "Setting up 'repl.json'...")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
+         (bytebuf-to-string <> :utf-8)
+         (repl-setup/cr-lf <>)
+         (io/spit (io/file libs-dir "repl.json") 
+                  <> 
+                  :encoding (charset-default-encoding)))))
 
 
 (defn- setup-repl-launcher-windows [install-dir color-mode]
-  (when-not (io/exists-file? "repl.env.bat")
+  (when-not (io/exists-file? (io/file install-dir "repl.env.bat"))
     (println "Setting up 'repl.env.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.win.env")
-         (bytebuf-to-string <> :utf-8)
-         (repl-setup/cr-lf <>)
-         (io/spit "repl.env.bat" <> :encoding (charset-default-encoding))))
-  (when-not (io/exists-file? "repl.bat")
+        (bytebuf-to-string <> :utf-8)
+        (repl-setup/cr-lf <>)
+        (io/spit (io/file install-dir "repl.env.bat") 
+                  <> 
+                  :encoding (charset-default-encoding))))
+  (when-not (io/exists-file? (io/file install-dir "repl.bat"))
     (println "Setting up 'repl.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
-         (bytebuf-to-string <> :utf-8)
-         (repl-setup/cr-lf <>)
-         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
-         (change-repl-launcher-color <> color-mode)
-         (io/spit "repl.bat" <> :encoding (charset-default-encoding)))))
+        (bytebuf-to-string <> :utf-8)
+        (repl-setup/cr-lf <>)
+        (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
+        (change-repl-launcher-color <> color-mode)
+        (io/spit (io/file install-dir "repl.bat") 
+                 <> 
+                 :encoding (charset-default-encoding)))))
 
 
 (defn- setup-repl-launcher-unix [install-dir color-mode]
-  (when-not (io/exists-file? "repl.env")
+  (when-not (io/exists-file? (io/file install-dir "repl.env"))
     (println "Setting up 'repl.env'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.unix.env")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
-         (io/spit "repl.env" <> :encoding (charset-default-encoding))))
-  (when-not (io/exists-file? "repl.sh")
+         (io/spit (io/file install-dir "repl.env") 
+                  <> 
+                  :encoding (charset-default-encoding))))
+  (when-not (io/exists-file? (io/file install-dir "repl.sh"))
     (println "Setting up 'repl.sh'...")
-    (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
+    (println "REPL install dir:" (io/file-path install-dir))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
          (change-repl-launcher-color <> color-mode)
-         (io/spit "repl.sh" <> :encoding (charset-default-encoding)))
-    (when (io/exists-file? "repl.sh")
+         (io/spit (io/file install-dir "repl.sh") 
+                  <> 
+                  :encoding (charset-default-encoding)))
+    (when (io/exists-file? (io/file install-dir "repl.sh"))
       (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file-path install-dir)))))
 
 
@@ -167,14 +176,14 @@
 
 
 (defn- setup-runscript-launcher-unix [install-dir]
-  (when-not (io/exists-file? "run-script.sh")
+  (when-not (io/exists-file? (io/file install-dir "run-script.sh"))
     (println "Setting up 'run-script.sh'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/run-script.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
-         (io/spit "run-script.sh" <> :encoding (charset-default-encoding)))
-    (when (io/exists-file? "run-script.sh")
+         (io/spit (io/file install-dir "run-script.sh") <> :encoding (charset-default-encoding)))
+    (when (io/exists-file? (io/file install-dir "run-script.sh"))
       (sh "/bin/sh" "-c" "chmod u+x run-script.sh" :dir (io/file-path install-dir)))))
 
 
@@ -234,6 +243,10 @@
 
                    !!! Start the REPL with ~{launch-script}
                    """)))
+
+
+(defn venice-maven-url [version]
+  "https://repo1.maven.org/maven2/com/github/jlangch/venice/~{version}/venice-~{version}.jar")
 
 
 (defn setup [& options]

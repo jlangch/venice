@@ -239,7 +239,6 @@ public class MavenModuleTest {
             }
         }
         catch(Exception ex) {
-
             throw ex;
         }
         finally {
@@ -248,7 +247,7 @@ public class MavenModuleTest {
                  .map(Path::toFile)
                  .forEach(File::delete);
 
-            System.out.println("Deleted " + tmp);
+            System.out.println("Deleted install dir: " + tmp);
         }
     }
 
