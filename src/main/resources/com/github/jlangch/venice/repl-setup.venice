@@ -234,7 +234,7 @@
           (println))))))
 
 
-(defn print-success-message []
+(defn- print-success-message [install-dir]
   (let [launch-script (if (os-type? :windows) "repl.bat" "./repl.sh")]
     (println )
     (print-msg-box :info
@@ -249,7 +249,15 @@
 
 
 (defn venice-maven-url [version]
-  "https://repo1.maven.org/maven2/com/github/jlangch/venice/~{version}/venice-~{version}.jar")
+  (str maven/repo
+       "/com/github/jlangch/venice/~{version}/venice-~{version}.jar"))
+
+
+(defn download-venice-jar [version dir]
+  (let [jar-name (str "venice-" version ".jar")
+        url      (venice-maven-url version)]
+    (->> (io/download url :binary true)
+         (io/spit (io/file dir jar-name)))))
 
 
 (defn setup [& options]
@@ -306,7 +314,7 @@
       (repl-setup/setup-runscript-launcher install-dir)
       (repl-setup/setup-scripts scripts-dir)
 
-      (print-success-message)
+      (print-success-message install-dir)
 
       (check-jansi-installed libs-dir)
       
