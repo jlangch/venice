@@ -106,7 +106,7 @@ public class REPL implements IRepl {
         this.interceptor = interceptor;
     }
 
-    public void run(final String[] args) {
+    public void runOrSetup(final String[] args) {
         ThreadContext.setInterceptor(interceptor);
 
         if (terminal != null) {
@@ -162,54 +162,85 @@ public class REPL implements IRepl {
                 }
             }
 
-
-            if (isUnattendedSetupMode(cli)) {
-            	// Use the unattended setup mode if the setup is run from a non system
-            	// terminal. E.g. through an automated setup or unit testing the setup
-            	// from a test framework
-            	System.out.println("Unattended Venice REPL setup...");
-                System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
-                System.out.println("Java: " + System.getProperty("java.version"));
-
-                final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
-
-                final Env env = venice.createEnv(false, false, RunMode.SCRIPT)
-                                      .setGlobal(new Var(
-                                                      new VncSymbol("*ARGV*"),
-                                                      VncList.empty(),
-                                                      false,
-                                                      Var.Scope.Global))
-                                      .setStdoutPrintStream(System.out)
-                                      .setStderrPrintStream(System.err)
-                                      .setStdinReader(null);
-
-                handleSetupCommand(venice, env, null);
+            System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+            System.out.println("Java: " + System.getProperty("java.version"));
+            System.out.println("Loading configuration from " + config.getConfigSource());
+            if (loadpaths.active()) {
+                System.out.print("Load paths: ");
+                System.out.println(loadpaths.isUnlimitedAccess() ? "unrestricted > " : "retricted > ");
+                loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
             }
-            else {
-                System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
-                System.out.println("Java: " + System.getProperty("java.version"));
-                System.out.println("Loading configuration from " + config.getConfigSource());
-                if (loadpaths.active()) {
-                    System.out.print("Load paths: ");
-                    System.out.println(loadpaths.isUnlimitedAccess() ? "unrestricted > " : "retricted > ");
-                    loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
-                }
 
-                System.out.println(getTerminalInfo());
-                if (macroexpand) {
-                    System.out.println("Macro expansion enabled");
-                }
-                if (!setupMode) {
-                    System.out.println("Type '!' for help.");
-                }
-
-                replDirs = ReplDirs.create();
-
-            	repl(cli, macroexpand);
+            System.out.println(getTerminalInfo());
+            if (macroexpand) {
+                System.out.println("Macro expansion enabled");
             }
+            if (!setupMode) {
+                System.out.println("Type '!' for help.");
+            }
+
+            replDirs = ReplDirs.create();
+
+        	repl(cli, macroexpand);
         }
         catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public static boolean unattendedReplSetup(final String[] args) {
+        try {
+        	final IInterceptor interceptor = new AcceptAllInterceptor();
+
+            ThreadContext.setInterceptor(interceptor);
+
+        	final CommandLineArgs cli = new CommandLineArgs(args);
+        	final ReplConfig config = ReplConfig.load(cli);
+
+            // Use the unattended setup mode if the setup is run from a non system
+            // terminal. E.g. through an automated setup or unit testing the setup
+            // from a test framework
+            System.out.println("Unattended Venice REPL setup...");
+            System.out.println("Venice REPL setup: V" + Venice.getVersion());
+            System.out.println("Java: " + System.getProperty("java.version"));
+
+            final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+
+            final Env env = venice.createEnv(false, false, RunMode.SCRIPT)
+                                  .setGlobal(new Var(
+                                                  new VncSymbol("*ARGV*"),
+                                                  VncList.empty(),
+                                                  false,
+                                                  Var.Scope.Global))
+                                  .setStdoutPrintStream(System.out)
+                                  .setStderrPrintStream(System.err)
+                                  .setStdinReader(null);
+
+            // on Windows enforce dark mode
+            final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
+                                            ? ColorMode.Dark
+                                            : config.getColorMode();
+
+            final String sColorMode = ":" + colorMode.name().toLowerCase();
+
+            final String script =
+                String.format(
+                    "(do                                          \n" +
+                    "  (load-module :repl-setup)                  \n" +
+                    "  (repl-setup/setup :color-mode %s           \n" +
+                    "                    :ansi-terminal false))   ",
+                    sColorMode);
+
+            venice.RE(script, "setup", env);
+
+        	return true;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            System.err.println();
+            System.err.println("REPL setup failed!");
+
+        	return false;
         }
     }
 
@@ -723,14 +754,8 @@ public class REPL implements IRepl {
             venice.RE(script, "user", env);
         }
         catch(Exception ex) {
-        	if (printer != null) {
-	            printer.printex("error", ex);
-	            printer.println("error", "REPL setup failed!");
-        	}
-        	else {
-        		ex.printStackTrace(System.err);
-        		System.err.println("REPL setup failed!");
-        	}
+            printer.printex("error", ex);
+            printer.println("error", "REPL setup failed!");
         }
     }
 
@@ -1374,10 +1399,6 @@ public class REPL implements IRepl {
 
     private boolean isSetupMode(final CommandLineArgs cli) {
         return cli.switchPresent("-setup");
-    }
-
-    private boolean isUnattendedSetupMode(final CommandLineArgs cli) {
-        return cli.switchPresent("-setup") && cli.switchPresent("-unattended");
     }
 
     private boolean isRestartable(final CommandLineArgs cli) {

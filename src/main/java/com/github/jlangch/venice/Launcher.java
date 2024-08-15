@@ -188,13 +188,14 @@ public class Launcher {
 
                 new CustomREPL(interceptor, new File(file)).run(args);
             }
-            else if (cli.switchPresent("-repl")) {
-                // run the Venice repl
-                new REPL(new AcceptAllInterceptor(loadPaths)).run(args);
+            else if (cli.switchPresent("-setup") && cli.switchPresent("-unattended")) {
+                if (!REPL.unattendedReplSetup(args)) {
+                	System.exit(99);
+                }
             }
             else {
-                // run the Venice repl
-                new REPL(new AcceptAllInterceptor(loadPaths)).run(args);
+                // run or setup the Venice REPL
+                new REPL(new AcceptAllInterceptor(loadPaths)).runOrSetup(args);
             }
 
             System.exit(SystemFunctions.SYSTEM_EXIT_CODE.get());
