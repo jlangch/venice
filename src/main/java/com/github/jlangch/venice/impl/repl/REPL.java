@@ -164,6 +164,9 @@ public class REPL implements IRepl {
 
 
             if (isUnattendedSetupMode(cli)) {
+            	// Use the unattended setup mode if the setup is run from a non system
+            	// terminal. E.g. through an automated setup or unit testing the setup
+            	// from a test framework
             	System.out.println("Unattended Venice REPL setup...");
                 System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
                 System.out.println("Java: " + System.getProperty("java.version"));
