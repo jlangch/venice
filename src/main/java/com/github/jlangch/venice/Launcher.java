@@ -52,7 +52,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  * <p>The launcher is configured as the Venice JAR's main-class.
  *
  * <p>Running scripts:
- * <pre>java -jar venice-1.12.27.jar -script "(+ 1 1)"</pre>
+ * <pre>java -jar venice-1.12.28.jar -script "(+ 1 1)"</pre>
  *
  * <p>Running a REPL:
  * <pre>
@@ -216,7 +216,7 @@ public class Launcher {
              "The launcher is configured as the Venice JAR's main-class. \n" +
              "\n" +
              "Running scripts: \n" +
-             "    java -jar venice-1.12.27.jar -script \"(+ 1 1)\" \n" +
+             "    java -jar venice-1.12.28.jar -script \"(+ 1 1)\" \n" +
              "\n" +
              "Running a REPL:  \n" +
              "    java \\ \n" +
@@ -250,9 +250,9 @@ public class Launcher {
              "  -repl              start a REPL \n" +
              "\n" +
              "  -setup             setup a REPL (a system terminal is required for the setup) \n" +
-             "                     E.g.:  java -jar venice-1.12.27.jar -setup -colors \n" +
+             "                     E.g.:  java -jar venice-1.12.28.jar -setup -colors \n" +
              "                     For an unattended setup pass the option '-unattended' \n" +
-             "                     E.g.:  java -jar venice-1.12.27.jar -setup -unattended -colors \n" +
+             "                     E.g.:  java -jar venice-1.12.28.jar -setup -unattended -colors \n" +
              "\n" +
              "  -help              prints a help \n" +
              "\n" +
