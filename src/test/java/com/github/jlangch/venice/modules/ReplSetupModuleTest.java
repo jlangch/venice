@@ -172,7 +172,7 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "scripts/webapp").isDirectory());
                 assertTrue(new File(tmp, "scripts/webapp/demo-webapp.venice").isFile());
                 assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
-                assertFalse(new File(tmp, "scripts/shebang-demo.venice").isFile());
+                assertFalse(new File(tmp, "scripts/shebang-demo.venice").exists());
 
                 assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
                 assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
