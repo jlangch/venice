@@ -56,15 +56,15 @@ public class ReplSetupModuleTest {
                     "   (if (io/internet-avail?)                                            \n" +
                     "     (do                                                               \n" +
                     "       (println \"Downloading Venice jar\")                            \n" +
-                    "       (-<> (repl-setup/venice-maven-url \"1.12.17\")                  \n" +
+                    "       (-<> (repl-setup/venice-maven-url \"1.12.27\")                  \n" +
                     "            (io/download <> :binary true)                              \n" +
-                    "            (io/spit (io/file setup-dir \"venice-1.12.17.jar\") <>))   \n" +
+                    "            (io/spit (io/file setup-dir \"venice-1.12.27.jar\") <>))   \n" +
                     "                                                                       \n" +
                     "       (repl-setup/setup :install-dir setup-dir)                       \n" +
                     "                                                                       \n" +
                     "       ;; we are not installing from a Venice JAR -> copy manually     \n" +
-                    "       (io/copy-file (io/file setup-dir \"venice-1.12.17.jar\")        \n" +
-                    "                     (io/file setup-dir \"libs/venice-1.12.17.jar\"))  \n" +
+                    "       (io/copy-file (io/file setup-dir \"venice-1.12.27.jar\")        \n" +
+                    "                     (io/file setup-dir \"libs/venice-1.12.27.jar\"))  \n" +
                     "       :installed)                                                     \n" +
                     "     :no-internet))                                                    \n";
 
@@ -75,7 +75,7 @@ public class ReplSetupModuleTest {
                 assertTrue(true);
             }
             else if (result.equals("installed")) {
-                assertTrue(new File(tmp, "venice-1.12.17.jar").isFile());
+                assertTrue(new File(tmp, "venice-1.12.27.jar").isFile());
 
                 assertTrue(new File(tmp, "libs").isDirectory());
                 assertTrue(new File(tmp, "scripts").isDirectory());
@@ -90,7 +90,7 @@ public class ReplSetupModuleTest {
 
                 assertTrue(new File(tmp, "libs/repl.json").isFile());
                 assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(tmp, "libs/venice-1.12.17.jar").isFile());
+                assertTrue(new File(tmp, "libs/venice-1.12.27.jar").isFile());
 
                 assertTrue(new File(tmp, "scripts/pdf").isDirectory());
                 assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
@@ -121,7 +121,9 @@ public class ReplSetupModuleTest {
 
 //    @Test
 //    @EnableOnMacOrLinux
-//    public void test_repl_setup_macos_linux_2() throws IOException {
+//    public void test_repl_setup_macos_linux_automated() throws IOException {
+//        // Unattended Venice REPL setup is possible with Venice 1.12.28+
+//
 //        final Venice venice = new Venice();
 //
 //        final File tmp = Files.createTempDirectory("setup").toFile();
@@ -134,12 +136,12 @@ public class ReplSetupModuleTest {
 //                    "   (if (io/internet-avail?)                                                  \n" +
 //                    "     (do                                                                     \n" +
 //                    "       (println \"Downloading Venice jar\")                                  \n" +
-//                    "       (-<> (repl-setup/venice-maven-url \"1.12.17\")                        \n" +
+//                    "       (-<> (repl-setup/venice-maven-url \"1.12.28\")                        \n" +
 //                    "            (io/download <> :binary true)                                    \n" +
-//                    "            (io/spit (io/file setup-dir \"venice-1.12.17.jar\") <>))         \n" +
+//                    "            (io/spit (io/file setup-dir \"venice-1.12.28.jar\") <>))         \n" +
 //                    "                                                                             \n" +
 //                    "       (sh \"/bin/sh\" \"-c\"                                                \n" +
-//                    "           \"java -jar venice-1.12.17.jar -setup -unattended -colors\"       \n" +
+//                    "           \"java -jar venice-1.12.28.jar -setup -unattended -colors\"       \n" +
 //                    "           :dir setup-dir :throw-ex true :out-fn println :err-fn println)    \n" +
 //                    "       :installed)                                                           \n" +
 //                    "     :no-internet))                                                          \n";
@@ -151,7 +153,7 @@ public class ReplSetupModuleTest {
 //                assertTrue(true);
 //            }
 //            else if (result.equals("installed")) {
-//                assertTrue(new File(tmp, "venice-1.12.17.jar").isFile());
+//                assertTrue(new File(tmp, "venice-1.12.28.jar").isFile());
 //
 //                assertTrue(new File(tmp, "libs").isDirectory());
 //                assertTrue(new File(tmp, "scripts").isDirectory());
@@ -166,7 +168,7 @@ public class ReplSetupModuleTest {
 //
 //                assertTrue(new File(tmp, "libs/repl.json").isFile());
 //                assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
-//                assertTrue(new File(tmp, "libs/venice-1.12.17.jar").isFile());
+//                assertTrue(new File(tmp, "libs/venice-1.12.28.jar").isFile());
 //
 //                assertTrue(new File(tmp, "scripts/pdf").isDirectory());
 //                assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
@@ -210,15 +212,15 @@ public class ReplSetupModuleTest {
                     "   (if (io/internet-avail?)                                            \n" +
                     "     (do                                                               \n" +
                     "       (println \"Downloading Venice jar\")                            \n" +
-                    "       (-<> (repl-setup/venice-maven-url \"1.12.17\")                  \n" +
+                    "       (-<> (repl-setup/venice-maven-url \"1.12.27\")                  \n" +
                     "            (io/download <> :binary true)                              \n" +
-                    "            (io/spit (io/file setup-dir \"venice-1.12.17.jar\") <>))   \n" +
+                    "            (io/spit (io/file setup-dir \"venice-1.12.27.jar\") <>))   \n" +
                     "                                                                       \n" +
                     "       (repl-setup/setup :install-dir setup-dir)                       \n" +
                     "                                                                       \n" +
                     "       ;; we are not installing from a Venice JAR -> copy manually     \n" +
-                    "       (io/copy-file (io/file setup-dir \"venice-1.12.17.jar\")        \n" +
-                    "                     (io/file setup-dir \"libs/venice-1.12.17.jar\"))  \n" +
+                    "       (io/copy-file (io/file setup-dir \"venice-1.12.27.jar\")        \n" +
+                    "                     (io/file setup-dir \"libs/venice-1.12.27.jar\"))  \n" +
                     "       :installed)                                                     \n" +
                     "     :no-internet))                                                    \n";
 
@@ -229,7 +231,7 @@ public class ReplSetupModuleTest {
                 assertTrue(true);
             }
             else if (result.equals("installed")) {
-                assertTrue(new File(tmp, "venice-1.12.17.jar").isFile());
+                assertTrue(new File(tmp, "venice-1.12.27.jar").isFile());
 
                 assertTrue(new File(tmp, "libs").isDirectory());
                 assertTrue(new File(tmp, "scripts").isDirectory());
@@ -241,7 +243,7 @@ public class ReplSetupModuleTest {
 
                 assertTrue(new File(tmp, "libs/repl.json").isFile());
                 assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(tmp, "libs/venice-1.12.17.jar").isFile());
+                assertTrue(new File(tmp, "libs/venice-1.12.27.jar").isFile());
 
                 assertTrue(new File(tmp, "scripts/pdf").isDirectory());
                 assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
