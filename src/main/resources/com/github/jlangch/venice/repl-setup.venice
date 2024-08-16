@@ -71,7 +71,7 @@
   (println "Installing Maven ~{maven/maven-version} locally in the REPL/tools ...")
   (if (io/internet-avail?)
     (maven/install maven/maven-version dir)
-    (println *err* "Internet is not available!"))
+    (println *err* "Internet is not available! Maven cannot be downloaded!"))
   (println))
 
 
@@ -80,7 +80,7 @@
     (println "Downloading modules Java 3rdparty libraries...")
     (if (io/internet-avail?)
        (docoll #(installer/install-module % :dir dir :silent silent) modules_)
-       (println *err* "Internet is not available!")))
+       (println *err* "Internet is not available! Jansi lib cannot be installed!")))
   (println))
 
 
@@ -217,27 +217,17 @@
              (println *err*(str "Failed to copy '" name "' to libs!"))))))))
 
 
-(defn check-jansi-installed [libs-dir]
-  (when (os-type? :windows)
-    (let [lib-jansi          (first (jansi-install/libraries))
-          jansi-name         (maven/artifact-filename lib-jansi ".jar")
-          jansi-jar          (io/file libs-dir jansi-name)]
-      (if (io/exists-file? jansi-jar)
-        (println "Checking ~{jansi-jar} ... OK")
-        (do
-          (println )
-          (print-msg-box :warn
-                        """
-                        The Jansi JAR could not be downloaded. Without this \
-                        JAR the REPL has limited features!
-                        """)
-          (println))))))
+(defn jansi-available? [libs-dir]
+  (let [lib-jansi    (first (jansi-install/libraries))
+        jansi-name   (maven/artifact-filename lib-jansi ".jar")
+        jansi-jar    (io/file libs-dir jansi-name)]
+    (io/exists-file? jansi-jar)))
 
 
 (defn- print-success-message [install-dir]
   (let [launch-script (if (os-type? :windows) "repl.bat" "./repl.sh")]
     (println )
-    (print-msg-box :info
+     (print-msg-box :info
                    """
                    The Venice REPL has been successfully configured and setup. \
                    The original Venice JAR is not needed anymore, it has been \
@@ -246,6 +236,33 @@
 
                    !!! Start the REPL with ~{launch-script}
                    """)))
+
+
+(defn- warn-internet-not-available []
+  (print-msg-box :warn "Internet is not available! REPL not installed!"))
+
+
+(defn- warn-install-dir-not-exist [install-dir]
+  (print-msg-box :warn
+                  """
+                  The install dir '~{install-dir}' does not exist! \
+                  REPL not installed!
+                  """))
+
+
+(defn- warn-jansi-not-available []
+  (print-msg-box :warn
+                  """
+                  The Jansi JAR could not be downloaded. Without \
+                  this JAR the REPL is not fully functional!
+                  """))
+
+
+(defn- warn-internal-error [msg]
+  (print-msg-box :warn
+                  """
+                  Internal error '~{msg}'. REPL not sucessfully installed!
+                  """))
 
 
 (defn venice-maven-url [version]
@@ -276,14 +293,13 @@
     (println "Using the platforms's default charset" charset)
     (println)
 
-    (when-not (io/exists-dir? install-dir)
-      (print-msg-box :warn
-                """
-                The install dir '~{install-dir}' does not exist! \
-                REPL not installed!
-                """))
+    (try 
+      (when-not (io/internet-avail?)
+        (throw :internet-not-available))
 
-    (when (io/exists-dir? install-dir)
+      (when-not (io/exists-dir? install-dir)
+        (throw :install-dir-not-exist))
+
       (when-not (io/exists-dir? libs-dir)
         (io/mkdirs libs-dir))
 
@@ -314,8 +330,25 @@
       (repl-setup/setup-runscript-launcher install-dir)
       (repl-setup/setup-scripts scripts-dir)
 
-      (print-success-message install-dir)
+      (when-not (jansi-available? libs-dir)
+        (throw :jansi-not-available))
 
-      (check-jansi-installed libs-dir)
-      
-      "Successfully installed at " (io/file-path install-dir))))
+      (println)
+      (print-success-message install-dir)
+      :success
+
+      ;; handle errors
+      (catch :ValueException e
+        (println)
+        (case (ex-value e)
+          :internet-not-available 
+             (do (warn-internet-not-available) (ex-value e))
+          :install-dir-not-exist 
+             (do (warn-install-dir-not-exist install-dir) (ex-value e))
+          :jansi-not-available 
+             (do (warn-jansi-not-available) (ex-value e))
+          (do (warn-internal-error (ex-value e)) :internal-error)))
+      (catch :Exception e)
+        (println)
+        (warn-internal-error (ex-message e))
+        :internal-error)))

@@ -50,22 +50,17 @@ public class ReplSetupModuleTest {
 
         try {
             final String script =
-                    "(do                                                                    \n" +
-                    "   (load-module :repl-setup)                                           \n" +
-                    "                                                                       \n" +
-                    "   (if (io/internet-avail?)                                            \n" +
-                    "     (do                                                               \n" +
-                    "       (repl-setup/setup :install-dir setup-dir)                       \n" +
-                    "       :installed)                                                     \n" +
-                    "     :no-internet))                                                    \n";
+                    "(do                                             \n" +
+                    "   (load-module :repl-setup)                    \n" +
+                     "   (repl-setup/setup :install-dir setup-dir))    ";
 
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("setup-dir", tmp));
-            if (result.equals("no-internet")) {
+            if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
-            else if (result.equals("installed")) {
+            else if (result.equals("success")) {
                 assertTrue(new File(tmp, "libs").isDirectory());
                 assertTrue(new File(tmp, "scripts").isDirectory());
                 assertTrue(new File(tmp, "tmp").isDirectory());
@@ -188,22 +183,17 @@ public class ReplSetupModuleTest {
 
         try {
             final String script =
-                    "(do                                                                    \n" +
-                    "   (load-module :repl-setup)                                           \n" +
-                    "                                                                       \n" +
-                    "   (if (io/internet-avail?)                                            \n" +
-                    "     (do                                                               \n" +
-                    "       (repl-setup/setup :install-dir setup-dir)                       \n" +
-                    "       :installed)                                                     \n" +
-                    "     :no-internet))                                                    \n";
+                    "(do                                            \n" +
+                    "   (load-module :repl-setup)                   \n" +
+                    "   (repl-setup/setup :install-dir setup-dir))  ";
 
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("setup-dir", tmp));
-            if (result.equals("no-internet")) {
+            if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
-            else if (result.equals("installed")) {
+            else if (result.equals("success")) {
                 assertTrue(new File(tmp, "libs").isDirectory());
                 assertTrue(new File(tmp, "scripts").isDirectory());
                 assertTrue(new File(tmp, "tmp").isDirectory());
