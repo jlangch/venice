@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import java.io.File;
-import java.nio.file.Files;
-
 import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.Venice;
@@ -55,10 +52,8 @@ public class ReplInstaller {
 
             final CommandLineArgs cli = new CommandLineArgs(args);
             final ReplConfig config = ReplConfig.load(cli);
-            File installDir = new File(cli.switchValue("-dir", "."));
-            installDir = Files.createDirectories(installDir.toPath())
-                              .toFile()
-                              .getCanonicalFile();
+            final String installDir = cli.switchValue("-dir", ".")
+            		                     .replace('\\', '/'); // prevent escaping in text!!
 
             final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -84,7 +79,7 @@ public class ReplInstaller {
                                     "                    :ansi-terminal false   \n" +
                                     "                    :install-dir \"%s\"))  ",
                                     colorMode.name().toLowerCase(),
-                                    installDir.getAbsolutePath());
+                                    installDir);
 
             venice.RE(script, "setup", env);
 
