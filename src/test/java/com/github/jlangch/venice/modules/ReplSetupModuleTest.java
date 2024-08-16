@@ -276,6 +276,8 @@ public class ReplSetupModuleTest {
         final File stage = Files.createTempDirectory("stage").toFile();
         final File setup = Files.createTempDirectory("setup").toFile();
 
+        System.out.println("Setup dir: " + setup.getPath());
+
         try {
             final String script =
                     "(do                                                                                 \n" +

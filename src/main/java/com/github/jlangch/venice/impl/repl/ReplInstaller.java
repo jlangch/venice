@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
@@ -88,6 +89,15 @@ public class ReplInstaller {
             venice.RE(script, "setup", env);
 
             return true;
+        }
+        catch (VncException ex) {
+            ex.printStackTrace(System.err);
+            System.err.println();
+        	System.err.println(ex.getCallStackAsString(""));
+            System.err.println();
+            System.err.println("REPL setup failed!");
+
+            return false;
         }
         catch (Exception ex) {
             ex.printStackTrace(System.err);
