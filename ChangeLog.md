@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- a bug in the Venice REPL setup on Windows
+- a bug in the Venice REPL setup on Windows with canonical path conversion.
 
 
 

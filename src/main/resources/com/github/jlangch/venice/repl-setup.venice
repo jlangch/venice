@@ -159,7 +159,6 @@
                   :encoding (charset-default-encoding))))
   (when-not (io/exists-file? (io/file install-dir "repl.sh"))
     (println "Setting up 'repl.sh'...")
-    (println "REPL install dir:" (io/file-path install-dir))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
