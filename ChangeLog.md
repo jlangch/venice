@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.30] - 2024-08-xx
+## [1.12.31] - 2024-08-xx
 
 ### Added
 
@@ -13,6 +13,14 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.30] - 2024-08-16
+
+### Fixed
+
+- a bug in the Venice REPL setup on Windows
 
 
 
