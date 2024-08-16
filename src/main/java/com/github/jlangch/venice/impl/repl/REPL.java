@@ -162,7 +162,7 @@ public class REPL implements IRepl {
                 }
             }
 
-            System.out.println("REPL: " + Venice.getVersion() + (setupMode ? " (setup mode)" : ""));
+            System.out.println("Venice: " + Venice.getVersion() + (setupMode ? " (setup mode)" : ""));
             System.out.println("REPL Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
             System.out.println("Loading configuration from " + config.getConfigSource());
