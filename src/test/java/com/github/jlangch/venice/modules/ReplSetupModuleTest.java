@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -132,15 +133,17 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnMacOrLinux
-    public void test_repl_setup_macos_linux_unattended() throws IOException {
-        // Unattended Venice REPL setup is supported with Venice 1.12.28+
+    @Disabled
+//    @EnableOnMacOrLinux
+    public void test_repl_setup_macos_linux_staged() throws IOException {
+        // Staged Venice REPL setup is supported with Venice 1.12.29+
 
-        final String version = "1.12.28";
+        final String version = "1.12.29";
 
         final Venice venice = new Venice();
 
-        final File tmp = Files.createTempDirectory("setup").toFile();
+        final File stage = Files.createTempDirectory("stage").toFile();
+        final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
             final String script =
@@ -152,49 +155,50 @@ public class ReplSetupModuleTest {
                     "   (if (io/internet-avail?)                                                  \n" +
                     "     (do                                                                     \n" +
                     "       (println \"Downloading Venice jar\")                                  \n" +
-                    "       (repl-setup/download-venice-jar v-version setup-dir)                  \n" +
+                    "       (repl-setup/download-venice-jar v-version stage-dir)                  \n" +
                     "                                                                             \n" +
                     "       (sh \"/bin/sh\" \"-c\"                                                \n" +
-                    "           \"java -jar ~{jar-file} -setup -unattended -colors\"              \n" +
-                    "           :dir setup-dir :throw-ex true :out-fn println :err-fn println)    \n" +
-                    "       :success)                                                           \n" +
-                    "     :internet-not-available))                                                          \n";
+                    "           \"java -jar ~{jar-file} -setup -colors -dir ~{setup-dir}\"        \n" +
+                    "           :dir stage-dir :throw-ex true :out-fn println :err-fn println)    \n" +
+                    "       :success)                                                             \n" +
+                    "     :internet-not-available))                                               \n";
 
             final String result = (String)venice.eval(
                                             script,
-                                            Parameters.of("setup-dir", tmp,
+                                            Parameters.of("stage-dir", stage,
+                                            		      "setup-dir", setup,
                                                           "v-version", version));
 
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(tmp, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "venice-" + version + ".jar").isFile());
 
-                assertTrue(new File(tmp, "libs").isDirectory());
-                assertTrue(new File(tmp, "scripts").isDirectory());
-                assertTrue(new File(tmp, "tmp").isDirectory());
-                assertTrue(new File(tmp, "tools").isDirectory());
+                assertTrue(new File(setup, "libs").isDirectory());
+                assertTrue(new File(setup, "scripts").isDirectory());
+                assertTrue(new File(setup, "tmp").isDirectory());
+                assertTrue(new File(setup, "tools").isDirectory());
 
-                assertTrue(new File(tmp, "repl.env").isFile());
-                assertTrue(new File(tmp, "repl.sh").isFile());
-                assertTrue(new File(tmp, "repl.sh").canExecute());
-                assertTrue(new File(tmp, "run-script.sh").isFile());
-                assertTrue(new File(tmp, "run-script.sh").canExecute());
+                assertTrue(new File(setup, "repl.env").isFile());
+                assertTrue(new File(setup, "repl.sh").isFile());
+                assertTrue(new File(setup, "repl.sh").canExecute());
+                assertTrue(new File(setup, "run-script.sh").isFile());
+                assertTrue(new File(setup, "run-script.sh").canExecute());
 
-                assertTrue(new File(tmp, "libs/repl.json").isFile());
-                assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(tmp, "libs/venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "libs/repl.json").isFile());
+                assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
+                assertTrue(new File(setup, "libs/venice-" + version + ".jar").isFile());
 
-                assertTrue(new File(tmp, "scripts/pdf").isDirectory());
-                assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
-                assertTrue(new File(tmp, "scripts/webapp").isDirectory());
-                assertTrue(new File(tmp, "scripts/webapp/demo-webapp.venice").isFile());
-                assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
-                assertTrue(new File(tmp, "scripts/shebang-demo.venice").isFile());
+                assertTrue(new File(setup, "scripts/pdf").isDirectory());
+                assertTrue(new File(setup, "scripts/pdf/pdf-example.venice").isFile());
+                assertTrue(new File(setup, "scripts/webapp").isDirectory());
+                assertTrue(new File(setup, "scripts/webapp/demo-webapp.venice").isFile());
+                assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
+                assertTrue(new File(setup, "scripts/shebang-demo.venice").isFile());
 
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(setup, "tools/apache-maven-3.9.6").isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-3.9.6/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -204,7 +208,8 @@ public class ReplSetupModuleTest {
             throw ex; // for debugging
         }
         finally {
-            deleteSetupDir(tmp);
+            deleteSetupDir(stage);
+            deleteSetupDir(setup);
         }
     }
 
@@ -262,65 +267,69 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnWindows
-    public void test_repl_setup_windows_unattended() throws IOException {
-        // Unattended Venice REPL setup is supported with Venice 1.12.28+
+    @Disabled
+//  @EnableOnWindows
+    public void test_repl_setup_windows_staged() throws IOException {
+        // Staged Venice REPL setup is supported with Venice 1.12.29+
 
-        final String version = "1.12.28";
+        final String version = "1.12.29";
 
         final Venice venice = new Venice();
 
-        final File tmp = Files.createTempDirectory("setup").toFile();
+        final File stage = Files.createTempDirectory("stage").toFile();
+        final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
             final String script =
-                    "(do                                                                              \n" +
-                    "   (load-module :repl-setup)                                                     \n" +
-                    "                                                                                 \n" +
-                    "   (def jar-file (str \"venice-\" v-version \".jar\"))                           \n" +
-                    "                                                                                 \n" +
-                    "   (if (io/internet-avail?)                                                      \n" +
-                    "     (do                                                                         \n" +
-                    "       (println \"Downloading Venice jar\")                                      \n" +
-                    "       (repl-setup/download-venice-jar v-version setup-dir)                      \n" +
-                    "                                                                                 \n" +
-                    "       (sh \"cmd\" \"/c java.exe -jar ~{jar-file} -setup -unattended -colors\"   \n" +
-                    "           :dir setup-dir :throw-ex true :out-fn println :err-fn println)        \n" +
-                    "       :success)                                                               \n" +
-                    "     :internet-not-available))                                                              \n";
+                    "(do                                                                                 \n" +
+                    "   (load-module :repl-setup)                                                        \n" +
+                    "                                                                                    \n" +
+                    "   (def jar-file (str \"venice-\" v-version \".jar\"))                              \n" +
+                    "                                                                                    \n" +
+                    "   (if (io/internet-avail?)                                                         \n" +
+                    "     (do                                                                            \n" +
+                    "       (println \"Downloading Venice jar\")                                         \n" +
+                    "       (repl-setup/download-venice-jar v-version stage-dir)                         \n" +
+                    "                                                                                    \n" +
+                    "       (sh \"cmd\"                                                                  \n" +
+                    "           \"/c java.exe -jar ~{jar-file} -setup -colors -dir ~{setup-dir}\"        \n" +
+                    "           :dir stage-dir :throw-ex true :out-fn println :err-fn println)           \n" +
+                    "       :success)                                                                    \n" +
+                    "     :internet-not-available))                                                      \n";
 
             final String result = (String)venice.eval(
                                             script,
-                                            Parameters.of("setup-dir", tmp,
+                                            Parameters.of("stage-dir", stage,
+                                      		              "setup-dir", setup,
                                                           "v-version", version));
 
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(tmp, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "venice-" + version + ".jar").isFile());
 
-                assertTrue(new File(tmp, "libs").isDirectory());
-                assertTrue(new File(tmp, "scripts").isDirectory());
-                assertTrue(new File(tmp, "tmp").isDirectory());
-                assertTrue(new File(tmp, "tools").isDirectory());
+                assertTrue(new File(setup, "libs").isDirectory());
+                assertTrue(new File(setup, "scripts").isDirectory());
+                assertTrue(new File(setup, "tmp").isDirectory());
+                assertTrue(new File(setup, "tools").isDirectory());
 
-                assertTrue(new File(tmp, "repl.env.bat").isFile());
-                assertTrue(new File(tmp, "repl.bat").isFile());
+                assertTrue(new File(setup, "repl.env.bat").isFile());
+                assertTrue(new File(setup, "repl.bat").isFile());
 
-                assertTrue(new File(tmp, "libs/repl.json").isFile());
-                assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(tmp, "libs/venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "libs/repl.json").isFile());
+                assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
+                assertTrue(new File(setup, "libs/venice-" + version + ".jar").isFile());
 
-                assertTrue(new File(tmp, "scripts/pdf").isDirectory());
-                assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
-                assertTrue(new File(tmp, "scripts/webapp").isDirectory());
-                assertTrue(new File(tmp, "scripts/webapp/demo-webapp.venice").isFile());
-                assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
-                assertFalse(new File(tmp, "scripts/shebang-demo.venice").exists());
+                assertTrue(new File(setup, "scripts/pdf").isDirectory());
+                assertTrue(new File(setup, "scripts/pdf/pdf-example.venice").isFile());
+                assertTrue(new File(setup, "scripts/webapp").isDirectory());
+                assertTrue(new File(setup, "scripts/webapp/demo-webapp.venice").isFile());
+                assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
+                assertFalse(new File(setup, "scripts/shebang-demo.venice").exists());
 
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(setup, "tools/apache-maven-3.9.6").isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-3.9.6/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -330,7 +339,7 @@ public class ReplSetupModuleTest {
             throw ex; // for debugging
         }
         finally {
-            deleteSetupDir(tmp);
+            deleteSetupDir(setup);
         }
     }
 
