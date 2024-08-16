@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.29] - 2024-08-xx
+## [1.12.30] - 2024-08-xx
 
 ### Added
 
@@ -13,13 +13,20 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.29] - 2024-08-16
+
+### Added
+
 - support for an explicit install directory (other than the current working 
   directory) to the REPL installer 
 - better error messages to the REPL installer 
 
 ### Updated dependencies:
 
-- Bump Gradle from 8.3 to 8.9
+- Bumped Gradle from 8.3 to 8.9
 
 
 

@@ -154,7 +154,7 @@ public class ReplSetupModuleTest {
                     "                                                                             \n" +
                     "   (if (io/internet-avail?)                                                  \n" +
                     "     (do                                                                     \n" +
-                    "       (println \"Downloading Venice jar\")                                  \n" +
+                    "       (println \"Downloading Venice jar to staging dir...\")                \n" +
                     "       (repl-setup/download-venice-jar v-version stage-dir)                  \n" +
                     "                                                                             \n" +
                     "       (sh \"/bin/sh\" \"-c\"                                                \n" +
@@ -173,7 +173,7 @@ public class ReplSetupModuleTest {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(setup, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(stage, "venice-" + version + ".jar").isFile());
 
                 assertTrue(new File(setup, "libs").isDirectory());
                 assertTrue(new File(setup, "scripts").isDirectory());
@@ -288,7 +288,7 @@ public class ReplSetupModuleTest {
                     "                                                                                    \n" +
                     "   (if (io/internet-avail?)                                                         \n" +
                     "     (do                                                                            \n" +
-                    "       (println \"Downloading Venice jar\")                                         \n" +
+                    "       (println \"Downloading Venice jar to staging dir...\")                       \n" +
                     "       (repl-setup/download-venice-jar v-version stage-dir)                         \n" +
                     "                                                                                    \n" +
                     "       (sh \"cmd\"                                                                  \n" +
@@ -307,7 +307,7 @@ public class ReplSetupModuleTest {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(setup, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(stage, "venice-" + version + ".jar").isFile());
 
                 assertTrue(new File(setup, "libs").isDirectory());
                 assertTrue(new File(setup, "scripts").isDirectory());
