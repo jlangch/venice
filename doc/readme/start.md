@@ -79,10 +79,10 @@ foo> repl.bat
 The REPL is started and prompts for input:
 
 ```text
-Venice REPL: 1.12.28
-Home: /Users/foo/tools/repl
+Venice REPL: 1.12.30
+Home: /Users/juerg/Desktop/test
 Java: 1.8.0_392
-Loading configuration from file 'repl.json'
+Loading configuration from classpath custom 'repl.json'
 Using Ansi terminal (light color mode turned on)
 Use the commands !lightmode or !darkmode to adapt to the terminal's colors
 Type '!' for help.
