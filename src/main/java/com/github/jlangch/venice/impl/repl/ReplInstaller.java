@@ -52,8 +52,9 @@ public class ReplInstaller {
 
             final CommandLineArgs cli = new CommandLineArgs(args);
             final ReplConfig config = ReplConfig.load(cli);
+            // slashify to prevent escaping when passing as text in script!!
             final String installDir = cli.switchValue("-dir", ".")
-            		                     .replace('\\', '/'); // prevent escaping in text!!
+            		                     .replace('\\', '/');
 
             final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
