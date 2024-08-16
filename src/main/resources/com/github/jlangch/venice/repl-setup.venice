@@ -284,7 +284,10 @@
         color-mode    (:color-mode options :none)      ;; {:none :light :dark}
         silent        (not (:ansi-terminal options false))   ;; {true false}
         charset       (name (charset-default-encoding))
-        install-dir   (io/file-canonical (io/file (:install-dir  options ".")))
+        install-dir   (io/file (:install-dir options "."))
+        install-dir   (if (io/file-absolute? install-dir) 
+                          install-dir
+                          (io/file-absolute install-dir))
         libs-dir      (io/file install-dir "libs")
         scripts-dir   (io/file install-dir "scripts")
         tmp-dir       (io/file install-dir "tmp")
