@@ -48,9 +48,6 @@ public class ReplInstaller {
             final CommandLineArgs cli = new CommandLineArgs(args);
             final ReplConfig config = ReplConfig.load(cli);
 
-            // Use the unattended setup mode if the setup is run from a non system
-            // terminal. E.g. through an automated setup or unit testing the setup
-            // from a test framework
             System.out.println("Venice REPL setup...");
             System.out.println("Venice REPL: V" + Venice.getVersion());
             System.out.println("Java: " + System.getProperty("java.version"));
@@ -72,14 +69,12 @@ public class ReplInstaller {
                                             ? ColorMode.Dark
                                             : config.getColorMode();
 
-            final String sColorMode = ":" + colorMode.name().toLowerCase();
-
             final String script = String.format(
                                     "(do                                          \n" +
                                     "  (load-module :repl-setup)                  \n" +
-                                    "  (repl-setup/setup :color-mode %s           \n" +
+                                    "  (repl-setup/setup :color-mode :%s          \n" +
                                     "                    :ansi-terminal false))   ",
-                                    sColorMode);
+                                    colorMode.name().toLowerCase());
 
             venice.RE(script, "setup", env);
 

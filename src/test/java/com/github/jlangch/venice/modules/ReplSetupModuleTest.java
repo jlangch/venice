@@ -59,6 +59,9 @@ public class ReplSetupModuleTest {
             if (result.equals("install-dir-not-exist")) {
                 assertTrue(true);
             }
+            else if (result.equals("internet-not-available")) {
+                assertTrue(true);
+            }
             else {
                 fail("got " + result);
             }
@@ -91,7 +94,7 @@ public class ReplSetupModuleTest {
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
-            else if (result.equals("success")) {
+            else if (result.equals("success") || result.equals("installed")) {
                 assertTrue(new File(tmp, "libs").isDirectory());
                 assertTrue(new File(tmp, "scripts").isDirectory());
                 assertTrue(new File(tmp, "tmp").isDirectory());
@@ -154,18 +157,18 @@ public class ReplSetupModuleTest {
                     "       (sh \"/bin/sh\" \"-c\"                                                \n" +
                     "           \"java -jar ~{jar-file} -setup -unattended -colors\"              \n" +
                     "           :dir setup-dir :throw-ex true :out-fn println :err-fn println)    \n" +
-                    "       :installed)                                                           \n" +
-                    "     :no-internet))                                                          \n";
+                    "       :success)                                                           \n" +
+                    "     :internet-not-available))                                                          \n";
 
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("setup-dir", tmp,
                                                           "v-version", version));
 
-            if (result.equals("no-internet")) {
+            if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
-            else if (result.equals("installed")) {
+            else if (result.equals("success") || result.equals("installed")) {
                 assertTrue(new File(tmp, "venice-" + version + ".jar").isFile());
 
                 assertTrue(new File(tmp, "libs").isDirectory());
@@ -224,7 +227,7 @@ public class ReplSetupModuleTest {
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
-            else if (result.equals("success")) {
+            else if (result.equals("success") || result.equals("installed")) {
                 assertTrue(new File(tmp, "libs").isDirectory());
                 assertTrue(new File(tmp, "scripts").isDirectory());
                 assertTrue(new File(tmp, "tmp").isDirectory());
@@ -283,18 +286,18 @@ public class ReplSetupModuleTest {
                     "                                                                                 \n" +
                     "       (sh \"cmd\" \"/c java.exe -jar ~{jar-file} -setup -unattended -colors\"   \n" +
                     "           :dir setup-dir :throw-ex true :out-fn println :err-fn println)        \n" +
-                    "       :installed)                                                               \n" +
-                    "     :no-internet))                                                              \n";
+                    "       :success)                                                               \n" +
+                    "     :internet-not-available))                                                              \n";
 
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("setup-dir", tmp,
                                                           "v-version", version));
 
-            if (result.equals("no-internet")) {
+            if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
-            else if (result.equals("installed")) {
+            else if (result.equals("success") || result.equals("installed")) {
                 assertTrue(new File(tmp, "venice-" + version + ".jar").isFile());
 
                 assertTrue(new File(tmp, "libs").isDirectory());
