@@ -231,10 +231,12 @@
                    """
                    The Venice REPL has been successfully configured and setup. \
                    The original Venice JAR is not needed anymore, it has been \
-                   copied to the 'libs' directory that holds all JAR files and \
-                   resources.
+                   copied to the REPL's 'libs' directory that holds all JAR \
+                   files and resources.
 
-                   !!! Start the REPL with ~{launch-script}
+                   Start the REPL with:
+                   $ cd ~{install-dir}
+                   $ ~{launch-script}
                    """)))
 
 
@@ -333,6 +335,7 @@
       (when-not (jansi-available? libs-dir)
         (throw :jansi-not-available))
 
+      (println "Venice REPL setup completed.")
       (println)
       (print-success-message install-dir)
       :success
