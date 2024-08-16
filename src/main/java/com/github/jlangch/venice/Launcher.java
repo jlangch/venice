@@ -93,6 +93,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *                     E.g.:  java -jar venice-1.12.28.jar -setup -colors \n" +
  *                            java -jar venice-1.12.28.jar -setup -colors-light \n" +
  *                            java -jar venice-1.12.28.jar -setup -colors-dark \n" +
+ *                            java -jar venice-1.12.28.jar -setup -colors -dir /Users/foo/repl \n" +
  *
  *  -help              prints a help
  *  </pre>
@@ -260,6 +261,7 @@ public class Launcher {
              "                     E.g.:  java -jar venice-1.12.28.jar -setup -colors \n" +
              "                            java -jar venice-1.12.28.jar -setup -colors-light \n" +
              "                            java -jar venice-1.12.28.jar -setup -colors-dark \n" +
+             "                            java -jar venice-1.12.28.jar -setup -colors -dir /Users/foo/repl \n" +
             "\n" +
              "  -help              prints a help \n" +
              "\n" +

@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+- support for an explicit install directory (other than the current working 
+  directory) to the REPL installer 
 - better error messages to the REPL installer 
 
 ### Updated dependencies:

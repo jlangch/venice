@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.io.File;
+import java.nio.file.Files;
+
 import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.Venice;
@@ -45,12 +48,16 @@ public class ReplInstaller {
 
             ThreadContext.setInterceptor(interceptor);
 
-            final CommandLineArgs cli = new CommandLineArgs(args);
-            final ReplConfig config = ReplConfig.load(cli);
-
             System.out.println("Venice REPL setup...");
             System.out.println("Venice REPL: V" + Venice.getVersion());
             System.out.println("Java: " + System.getProperty("java.version"));
+
+            final CommandLineArgs cli = new CommandLineArgs(args);
+            final ReplConfig config = ReplConfig.load(cli);
+            File installDir = new File(cli.switchValue("-dir", "."));
+            installDir = Files.createDirectories(installDir.toPath())
+                              .toFile()
+                              .getCanonicalFile();
 
             final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -70,11 +77,13 @@ public class ReplInstaller {
                                             : config.getColorMode();
 
             final String script = String.format(
-                                    "(do                                          \n" +
-                                    "  (load-module :repl-setup)                  \n" +
-                                    "  (repl-setup/setup :color-mode :%s          \n" +
-                                    "                    :ansi-terminal false))   ",
-                                    colorMode.name().toLowerCase());
+                                    "(do                                        \n" +
+                                    "  (load-module :repl-setup)                \n" +
+                                    "  (repl-setup/setup :color-mode :%s        \n" +
+                                    "                    :ansi-terminal false   \n" +
+                                    "                    :install-dir \"%s\"))  ",
+                                    colorMode.name().toLowerCase(),
+                                    installDir.getAbsolutePath());
 
             venice.RE(script, "setup", env);
 
