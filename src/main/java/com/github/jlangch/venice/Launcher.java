@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
+import com.github.jlangch.venice.impl.repl.ReplInstaller;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -90,8 +91,8 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *
  *  -setup             setup a REPL
  *                     E.g.:  java -jar venice-1.12.28.jar -setup -colors \n" +
- *                     For an unattended setup, pass the option '-unattended' \n" +
- *                     E.g.:  java -jar venice-1.12.28.jar -setup -unattended -colors \n" +
+ *                            java -jar venice-1.12.28.jar -setup -colors-light \n" +
+ *                            java -jar venice-1.12.28.jar -setup -colors-dark \n" +
  *
  *  -help              prints a help
  *  </pre>
@@ -114,6 +115,11 @@ public class Launcher {
         try {
             if (cli.switchPresent("-help")) {
                 printHelp();
+            }
+            else if (cli.switchPresent("-setup")) {
+                if (!ReplInstaller.install(args)) {
+                    System.exit(99);  // setup was not successful
+                }
             }
             else if (cli.switchPresent("-file")) {
                 final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
@@ -193,14 +199,9 @@ public class Launcher {
 
                 new CustomREPL(interceptor, new File(file)).run(args);
             }
-            else if (cli.switchPresent("-setup") && cli.switchPresent("-unattended")) {
-                if (!REPL.unattendedReplSetup(args)) {
-                    System.exit(99);
-                }
-            }
             else {
-                // run or setup the Venice REPL
-                new REPL(new AcceptAllInterceptor(loadPaths)).runOrSetup(args);
+                // run the Venice REPL
+                new REPL(new AcceptAllInterceptor(loadPaths)).run(args);
             }
 
             System.exit(SystemFunctions.SYSTEM_EXIT_CODE.get());
@@ -255,11 +256,11 @@ public class Launcher {
              "\n" +
              "  -repl              start a REPL \n" +
              "\n" +
-             "  -setup             setup a REPL (a system terminal is required for the setup) \n" +
+             "  -setup             setup a REPL \n" +
              "                     E.g.:  java -jar venice-1.12.28.jar -setup -colors \n" +
-             "                     For an unattended setup pass the option '-unattended' \n" +
-             "                     E.g.:  java -jar venice-1.12.28.jar -setup -unattended -colors \n" +
-             "\n" +
+             "                            java -jar venice-1.12.28.jar -setup -colors-light \n" +
+             "                            java -jar venice-1.12.28.jar -setup -colors-dark \n" +
+            "\n" +
              "  -help              prints a help \n" +
              "\n" +
              "Note: \n" +

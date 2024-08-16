@@ -106,7 +106,7 @@ public class REPL implements IRepl {
         this.interceptor = interceptor;
     }
 
-    public void runOrSetup(final String[] args) {
+    public void run(final String[] args) {
         ThreadContext.setInterceptor(interceptor);
 
         if (terminal != null) {
@@ -122,8 +122,6 @@ public class REPL implements IRepl {
             config = ReplConfig.load(cli);
 
             initJLineLogger(config);
-
-            final boolean setupMode = isSetupMode(cli);
 
             restartable = isRestartable(cli);
 
@@ -152,7 +150,7 @@ public class REPL implements IRepl {
                 if (jansiVersion != null) {
                     System.out.println("Using Jansi V" + jansiVersion);
                 }
-                else if (!setupMode) {
+                else {
                     System.out.print(
                             "--------------------------------------------------------------------\n" +
                             "The Venice REPL requires the JAnsi library on Windows.              \n" +
@@ -162,7 +160,7 @@ public class REPL implements IRepl {
                 }
             }
 
-            System.out.println("Venice REPL: " + Venice.getVersion() + (setupMode ? " (setup mode)" : ""));
+            System.out.println("Venice REPL: " + Venice.getVersion());
             System.out.println("Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
             System.out.println("Loading configuration from " + config.getConfigSource());
@@ -176,9 +174,7 @@ public class REPL implements IRepl {
             if (macroexpand) {
                 System.out.println("Macro expansion enabled");
             }
-            if (!setupMode) {
-                System.out.println("Type '!' for help.");
-            }
+            System.out.println("Type '!' for help.");
 
             replDirs = ReplDirs.create();
 
@@ -186,61 +182,6 @@ public class REPL implements IRepl {
         }
         catch (Exception ex) {
             ex.printStackTrace();
-        }
-    }
-
-    public static boolean unattendedReplSetup(final String[] args) {
-        try {
-            final IInterceptor interceptor = new AcceptAllInterceptor();
-
-            ThreadContext.setInterceptor(interceptor);
-
-            final CommandLineArgs cli = new CommandLineArgs(args);
-            final ReplConfig config = ReplConfig.load(cli);
-
-            // Use the unattended setup mode if the setup is run from a non system
-            // terminal. E.g. through an automated setup or unit testing the setup
-            // from a test framework
-            System.out.println("Unattended Venice REPL setup...");
-            System.out.println("Venice REPL: V" + Venice.getVersion());
-            System.out.println("Java: " + System.getProperty("java.version"));
-
-            final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
-
-            final Env env = venice.createEnv(false, false, RunMode.SCRIPT)
-                                  .setGlobal(new Var(
-                                                  new VncSymbol("*ARGV*"),
-                                                  VncList.empty(),
-                                                  false,
-                                                  Var.Scope.Global))
-                                  .setStdoutPrintStream(System.out)
-                                  .setStderrPrintStream(System.err)
-                                  .setStdinReader(null);
-
-            // on Windows enforce dark mode
-            final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
-                                            ? ColorMode.Dark
-                                            : config.getColorMode();
-
-            final String sColorMode = ":" + colorMode.name().toLowerCase();
-
-            final String script = String.format(
-                                    "(do                                          \n" +
-                                    "  (load-module :repl-setup)                  \n" +
-                                    "  (repl-setup/setup :color-mode %s           \n" +
-                                    "                    :ansi-terminal false))   ",
-                                    sColorMode);
-
-            venice.RE(script, "setup", env);
-
-            return true;
-        }
-        catch (Exception ex) {
-            ex.printStackTrace(System.err);
-            System.err.println();
-            System.err.println("REPL setup failed!");
-
-            return false;
         }
     }
 
@@ -316,11 +257,6 @@ public class REPL implements IRepl {
         // load the core functions without macro expansion! ==> check this!
         env = loadEnv(venice, cli, terminal, out, err, in, false);
         venice.setMacroExpandOnLoad(macroexpand);
-
-        if (isSetupMode(cli)) {
-            setupRepl(cli, venice, env, printer);
-            return; // we stop here
-        }
 
         if (!scriptExec.runInitialLoadFile(
                 config.getLoadFile(), venice, env, printer, resultPrefix)
@@ -675,7 +611,6 @@ public class REPL implements IRepl {
                     case "light":         handleColorModeCommand(ColorMode.Light); break;
                     case "lightmode":     handleColorModeCommand(ColorMode.Light); break;
                     case "restartable":   handleRestartableCommand(); break;
-                    case "setup":         handleSetupCommand(venice, env, printer); break;
                     case "classpath":     handleReplClasspathCommand(); break;
                     case "cp":            handleReplClasspathCommand(); break;
                     case "loadpath":      handleLoadPathsCommand(interceptor.getLoadPaths()); break;
@@ -727,36 +662,6 @@ public class REPL implements IRepl {
 
     private void handleDebugHelpCommand() {
         ReplDebugClient.pringHelp(printer);
-    }
-
-    private void handleSetupCommand(
-            final IVeniceInterpreter venice,
-            final Env env,
-            final TerminalPrinter printer
-    ) {
-        try {
-            // on Windows enforce dark mode
-            final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
-                                            ? ColorMode.Dark
-                                            : config.getColorMode();
-
-            final String sColorMode = ":" + colorMode.name().toLowerCase();
-
-            final String script =
-                String.format(
-                    "(do                                     \n" +
-                    "  (load-module :repl-setup)             \n" +
-                    "  (repl-setup/setup :color-mode %s      \n" +
-                    "                    :ansi-terminal %s))   ",
-                    sColorMode,
-                    ansiTerminal ? "true" : "false");
-
-            venice.RE(script, "user", env);
-        }
-        catch(Exception ex) {
-            printer.printex("error", ex);
-            printer.println("error", "REPL setup failed!");
-        }
     }
 
     private void handleLauncherCommand() {
@@ -1369,18 +1274,6 @@ public class REPL implements IRepl {
         }
     }
 
-    private void setupRepl(
-            final CommandLineArgs cli,
-            final IVeniceInterpreter venice,
-            final Env env,
-            final TerminalPrinter printer
-    ) {
-        if (cli.switchPresent("-setup")) {
-            handleSetupCommand(venice, env, printer);
-            return; // we stop here
-        }
-    }
-
     private void handleReplClasspathCommand() {
         printer.println("stdout", "REPL classpath:");
         Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
@@ -1395,10 +1288,6 @@ public class REPL implements IRepl {
                   .sorted()
                   .forEach(u -> printer.println("stdout", "  " + u));
         }
-    }
-
-    private boolean isSetupMode(final CommandLineArgs cli) {
-        return cli.switchPresent("-setup");
     }
 
     private boolean isRestartable(final CommandLineArgs cli) {
