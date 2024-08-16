@@ -46,22 +46,22 @@ the REPL in setup mode:
 foo> java -jar venice-1.12.28.jar -setup -colors
 ```
 
-For a REPL run in a darkmode terminal use the option `-colors-darkmode` instead 
-of `-colors`. This can also be changed later on by modifying the generated launcher 
-shell script.
+For a REPL run in a darkmode terminal use the option `-colors-dark` instead of
+`-colors`. This can also be changed later on by modifying the generated REPL 
+launcher shell script `repl.bat` or `repl.sh` respectively.
 
 The `-setup` option will cause the Venice setup to:
-  - create a `libs`, `tmp`, `tools`, and `scripts` directory
-  - download the Jansi library from the Maven repository
+  - create a `libs`, `tmp`, `tools`, and `scripts` directory in the current working dir
+  - download the Jansi library from the Maven repository to the `libs` dir
   - install Maven locally to the REPL in the `tools` dir
-  - extract some example Venice scripts
+  - extract some example Venice scripts to the `scripts` dir
   - create a launcher shell script `repl.bat` for Windows and `repl.sh` for all other OS
  
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png" width="500">
 
  
-Now the Venice REPL can be started simply by executing the launcher.
+Now the Venice REPL can be started simply by executing the REPL launcher.
 
 on MacOSX and Linux:
 
@@ -79,7 +79,8 @@ foo> repl.bat
 The REPL is started and prompts for input:
 
 ```text
-Venice REPL: V1.12.28
+Venice REPL: 1.12.28
+Home: /Users/foo/tools/repl
 Java: 1.8.0_392
 Loading configuration from file 'repl.json'
 Using Ansi terminal (light color mode turned on)
