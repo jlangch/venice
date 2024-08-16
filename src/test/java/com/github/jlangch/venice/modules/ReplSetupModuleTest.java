@@ -31,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -133,8 +132,7 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @Disabled
-//    @EnableOnMacOrLinux
+    @EnableOnMacOrLinux
     public void test_repl_setup_macos_linux_staged() throws IOException {
         // Staged Venice REPL setup is supported with Venice 1.12.29+
 
@@ -267,8 +265,7 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @Disabled
-//  @EnableOnWindows
+    @EnableOnWindows
     public void test_repl_setup_windows_staged() throws IOException {
         // Staged Venice REPL setup is supported with Venice 1.12.29+
 
