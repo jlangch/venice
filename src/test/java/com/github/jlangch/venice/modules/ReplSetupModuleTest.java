@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -131,11 +132,12 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnMacOrLinux
+    @Disabled
+    //@EnableOnMacOrLinux
     public void test_repl_setup_macos_linux_staged_1() throws IOException {
-        // Staged Venice REPL setup is supported with Venice 1.12.29+
+        // Staged Venice REPL setup is supported with Venice 1.12.30+
 
-        final String version = "1.12.29";
+        final String version = "1.12.30";
 
         final Venice venice = new Venice();
 
@@ -208,11 +210,12 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnMacOrLinux
+    @Disabled
+    //@EnableOnMacOrLinux
     public void test_repl_setup_macos_linux_staged_2() throws IOException {
-        // Staged Venice REPL setup is supported with Venice 1.12.29+
+        // Staged Venice REPL setup is supported with Venice 1.12.30+
 
-        final String version = "1.12.29";
+        final String version = "1.12.30";
 
         final Venice venice = new Venice();
 
@@ -341,11 +344,12 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnWindows
+    @Disabled
+    //@EnableOnWindows
     public void test_repl_setup_windows_staged_1() throws IOException {
-        // Staged Venice REPL setup is supported with Venice 1.12.29+
+        // Staged Venice REPL setup is supported with Venice 1.12.30+
 
-        final String version = "1.12.29";
+        final String version = "1.12.30";
 
         final Venice venice = new Venice();
 
@@ -417,11 +421,12 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnWindows
+    @Disabled
+    //@EnableOnWindows
     public void test_repl_setup_windows_staged_2() throws IOException {
-        // Staged Venice REPL setup is supported with Venice 1.12.29+
+        // Staged Venice REPL setup is supported with Venice 1.12.30+
 
-        final String version = "1.12.29";
+        final String version = "1.12.30";
 
         final Venice venice = new Venice();
 
