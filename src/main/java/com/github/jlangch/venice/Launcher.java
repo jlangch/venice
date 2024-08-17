@@ -99,8 +99,8 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *  </pre>
  *
  *  <p>Note:
- *  The options '-file', '-cp-file', '-script', '-app', '-repl', and '-setup' exclude each
- *  other
+ *  The options '-file', '-cp-file', '-script', '-app', '-repl, '-app-repl', and '-setup'
+ *  exclude each other
  */
 public class Launcher {
 
@@ -294,6 +294,9 @@ public class Launcher {
              "  -repl              start a REPL \n" +
              "                     E.g.:  -repl \n" +
              "\n" +
+             "  -app-repl          start a custom REPL \n" +
+             "                     E.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
+             "\n" +
              "  -setup             setup a REPL \n" +
              "                     E.g.:  java -jar venice-1.12.30.jar -setup -colors \n" +
              "                            java -jar venice-1.12.30.jar -setup -colors-light \n" +
@@ -303,8 +306,8 @@ public class Launcher {
              "  -help              prints a help \n" +
              "\n" +
              "Note: \n" +
-             "  The options '-file', '-cp-file', '-script', '-app', '-repl', and '-setup' exclude \n" +
-             "  each other \n");
+             "  The options '-file', '-cp-file', '-script', '-app', '-repl', '-app-repl', \n" +
+             "  and '-setup' exclude each other \n");
     }
 
     private static String runScript(
