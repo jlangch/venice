@@ -41,6 +41,10 @@ import com.github.jlangch.venice.impl.util.junit.EnableOnWindows;
 
 public class ReplSetupModuleTest {
 
+    // The Venice version to download from Maven, for staged REPL setup tests
+    private static final String VERSION = "1.12.30";
+
+
     @Test
     public void test_repl_setup_no_install_dir() throws IOException {
         final Venice venice = new Venice();
@@ -135,8 +139,6 @@ public class ReplSetupModuleTest {
     public void test_repl_setup_macos_linux_staged_1() throws IOException {
         // Staged Venice REPL setup is supported with Venice 1.12.30+
 
-        final String version = "1.12.30";
-
         final Venice venice = new Venice();
 
         final File setup = Files.createTempDirectory("setup").toFile();
@@ -162,13 +164,13 @@ public class ReplSetupModuleTest {
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("setup-dir", setup,
-                                                          "v-version", version));
+                                                          "v-version", VERSION));
 
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(setup, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "libs").isDirectory());
                 assertTrue(new File(setup, "scripts").isDirectory());
@@ -183,7 +185,7 @@ public class ReplSetupModuleTest {
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
                 assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(setup, "libs/venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
                 assertTrue(new File(setup, "scripts/pdf/pdf-example.venice").isFile());
@@ -212,8 +214,6 @@ public class ReplSetupModuleTest {
     public void test_repl_setup_macos_linux_staged_2() throws IOException {
         // Staged Venice REPL setup is supported with Venice 1.12.30+
 
-        final String version = "1.12.30";
-
         final Venice venice = new Venice();
 
         final File stage = Files.createTempDirectory("stage").toFile();
@@ -241,13 +241,13 @@ public class ReplSetupModuleTest {
                                             script,
                                             Parameters.of("stage-dir", stage,
                                             		      "setup-dir", setup,
-                                                          "v-version", version));
+                                                          "v-version", VERSION));
 
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(stage, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(stage, "venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "libs").isDirectory());
                 assertTrue(new File(setup, "scripts").isDirectory());
@@ -262,7 +262,7 @@ public class ReplSetupModuleTest {
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
                 assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(setup, "libs/venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
                 assertTrue(new File(setup, "scripts/pdf/pdf-example.venice").isFile());
@@ -345,8 +345,6 @@ public class ReplSetupModuleTest {
     public void test_repl_setup_windows_staged_1() throws IOException {
         // Staged Venice REPL setup is supported with Venice 1.12.30+
 
-        final String version = "1.12.30";
-
         final Venice venice = new Venice();
 
         final File setup = Files.createTempDirectory("setup").toFile();
@@ -374,13 +372,13 @@ public class ReplSetupModuleTest {
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("setup-dir", setup,
-                                                          "v-version", version));
+                                                          "v-version", VERSION));
 
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(setup, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "libs").isDirectory());
                 assertTrue(new File(setup, "scripts").isDirectory());
@@ -392,7 +390,7 @@ public class ReplSetupModuleTest {
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
                 assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(setup, "libs/venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
                 assertTrue(new File(setup, "scripts/pdf/pdf-example.venice").isFile());
@@ -420,8 +418,6 @@ public class ReplSetupModuleTest {
     @EnableOnWindows
     public void test_repl_setup_windows_staged_2() throws IOException {
         // Staged Venice REPL setup is supported with Venice 1.12.30+
-
-        final String version = "1.12.30";
 
         final Venice venice = new Venice();
 
@@ -452,13 +448,13 @@ public class ReplSetupModuleTest {
                                             script,
                                             Parameters.of("stage-dir", stage,
                                       		              "setup-dir", setup,
-                                                          "v-version", version));
+                                                          "v-version", VERSION));
 
             if (result.equals("internet-not-available")) {
                 assertTrue(true);
             }
             else if (result.equals("success") || result.equals("installed")) {
-                assertTrue(new File(stage, "venice-" + version + ".jar").isFile());
+                assertTrue(new File(stage, "venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "libs").isDirectory());
                 assertTrue(new File(setup, "scripts").isDirectory());
@@ -470,7 +466,7 @@ public class ReplSetupModuleTest {
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
                 assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
-                assertTrue(new File(setup, "libs/venice-" + version + ".jar").isFile());
+                assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
                 assertTrue(new File(setup, "scripts/pdf/pdf-example.venice").isFile());
