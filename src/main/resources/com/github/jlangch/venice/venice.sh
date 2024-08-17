@@ -4,7 +4,7 @@
 # Starts a Venice shell (REPL), loads 'venice.venice' and runs it.            #
 #                                                                             #
 # Layout:                                                                     #
-#    scripts                                                                  #
+#    REPL_HOME                                                                #
 #      +--libs                                                                #
 #      |   +-- venice-x.y.z.jar                                               #
 #      |   +-- jansi-2.4.1.jar                                                #
@@ -47,10 +47,9 @@ cd ${VENICE_SHELL_HOME}
 
 ${JAVA_8_HOME}/bin/java \
   -server \
-  -cp "lib:libs/*" com.github.jlangch.venice.Launcher \
+  -cp "libs:libs/*" com.github.jlangch.venice.Launcher \
   -Xmx2G \
   -XX:-OmitStackTraceInFastThrow \
   -Dvenice.repl.home=${VENICE_SHELL_HOME} \
   -colors \
-  -macroexpand \
   -app-repl venice.venice

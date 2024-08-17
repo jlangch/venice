@@ -73,8 +73,6 @@
 (defonce java-8-home (str/strip-end (system-env :JAVA_8_HOME) "/"))
 (defonce java-home java-8-home)
 
-(defonce sonatype-user "xxxxxx")
-
 (defonce cmd-line-prompt (str "vshell> "))
 
 (defonce gradle-std-options ["--warning-mode=all" 
@@ -104,10 +102,10 @@
     (io/delete-files-glob  repl-libs-dir "venice-*.jar")
     (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar")))
  
-(defn publish [pgp-key sonatype-pwd]
+(defn publish [pgp-key sonatype-user sonatype-pwd]
   (assert (some? pgp-key) "Please provide the PGP key ID (e.g. 0000AAAA)!")
+  (assert (some? sonatype-user) "Please provide the Sonatype user!")
   (assert (some? sonatype-pwd) "Please provide the Sonatype password!")
-  (assert (not-match? sonatype-user "[x?]*") "Please configure the Sonatype user!")
   (gradle-tasks "clean" 
                 "shadowJar" 
                 "publish"
@@ -188,21 +186,21 @@
     ----------------------------------------------------------------------------
     Help
     ----------------------------------------------------------------------------
-    b|build        build the Venice project
-    r|rebuild      build, deploy, and start a Venice console
-    s|start        start the Venice console
-    T|tests        run the Venice unit tests
-    t|task t1 tN   run one or more Venice project Gradle tasks
-    c|cheatsheet   generate the Venice cheatsheet
-    P|pdfdoc       show the cheat sheet PDF
-    d|dependencies list the Venice dependencies
-    e|eclipse      update the Eclipse project classpath
-    p|publish k p  publish Venice artefacts, requires pgp-key & password
-    C|colors       print the color theme
-    i|info         display the configuration
-    h|!|help       display the help
-    q|quit         quit the shell
-    x|exit         quit the shell
+    b|build          build the Venice project
+    r|rebuild        build, deploy, and start a Venice console
+    s|start          start the Venice console
+    T|tests          run the Venice unit tests
+    t|task t1 tN     run one or more Venice project Gradle tasks
+    c|cheatsheet     generate the Venice cheatsheet
+    P|pdfdoc         show the cheat sheet PDF
+    d|dependencies   list the Venice dependencies
+    e|eclipse        update the Eclipse project classpath
+    p|publish k u p  publish Venice artefacts, requires pgp-key, user & password
+    C|colors         print the color theme
+    i|info           display the configuration
+    h|!|help         display the help
+    q|quit           quit the shell
+    x|exit          quit the shell
 
     """))
 
@@ -245,7 +243,7 @@
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
     (match? cmd "e|eclipse")      (gradle-tasks "eclipse")
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
-    (match? cmd "p|publish")      (publish (first args) (second args))
+    (match? cmd "p|publish")      (publish (first args) (second args) (third args))
     (match? cmd "t|task")         (apply gradle-tasks args)
     (match? cmd "C|colors")       (show-color-theme)
     (match? cmd "i|info")         (display-info)

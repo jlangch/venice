@@ -70,9 +70,9 @@ public class CustomREPL implements IRepl {
     public void run(final String[] args) {
         ThreadContext.setInterceptor(interceptor);
 
-    	if (terminal != null) {
-    		throw new VncException("The REPL is already running!");
-    	}
+        if (terminal != null) {
+            throw new VncException("The REPL is already running!");
+        }
 
 
         final CommandLineArgs cli = new CommandLineArgs(args);
@@ -83,8 +83,6 @@ public class CustomREPL implements IRepl {
 
             initJLineLogger(config);
 
-            macroexpand = isMacroexpand(cli);
-
             ansiTerminal = isAnsiTerminal(cli, config);
 
             if (OSUtils.IS_WINDOWS) {
@@ -94,11 +92,11 @@ public class CustomREPL implements IRepl {
                 }
                 else {
                     System.out.print(
-                            "--------------------------------------------------------------------\n" +
-                            "The Venice REPL requires the jansi library on Windows.              \n" +
-                            "Please download the jar artifact 'org.fusesource.jansi:jansi:2.4.1' \n" +
-                            "from a Maven repo and put it on the classpath.                      \n" +
-                            "--------------------------------------------------------------------\n\n");
+                        "--------------------------------------------------------------------\n" +
+                        "The Venice REPL requires the jansi library on Windows.              \n" +
+                        "Please download the jar artifact 'org.fusesource.jansi:jansi:2.4.1' \n" +
+                        "from a Maven repo and put it on the classpath.                      \n" +
+                        "--------------------------------------------------------------------\n\n");
                 }
             }
 
@@ -112,9 +110,6 @@ public class CustomREPL implements IRepl {
                 loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
             }
             System.out.println(getTerminalInfo());
-            if (macroexpand) {
-                System.out.println("Macro expansion enabled");
-            }
 
             System.out.println("Type '!' for help.");
 
@@ -242,21 +237,21 @@ public class CustomREPL implements IRepl {
             final PrintStream err,
             final BufferedReader in
     ) {
-    	final Env env =
-               venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
+        final Env env =
+               venice.createEnv(true, ansiTerminal, RunMode.REPL)
                      .setGlobal(new Var(
-		                    		 new VncSymbol("*ARGV*"),
-		                    		 cli.argsAsList(),
-		                    		 false,
-		                    		 Var.Scope.Global))
+                                     new VncSymbol("*ARGV*"),
+                                     cli.argsAsList(),
+                                     false,
+                                     Var.Scope.Global))
                      .setStdoutPrintStream(out)
                      .setStderrPrintStream(err)
                      .setStdinReader(in);
 
         return ReplFunctions.register(
-        			env,
-        			this, terminal, config,
-        			macroexpand, ReplDirs.create());
+                    env,
+                    this, terminal, config,
+                    true, ReplDirs.create());
     }
 
     private PrintStream createPrintStream(final String context, final Terminal terminal) {
@@ -290,8 +285,8 @@ public class CustomREPL implements IRepl {
         final String jansiVersion = config.getJansiVersion();
 
         final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
-                            || cli.switchPresent("-dumb")
-                            || config.isJLineDumbTerminal();
+                                        || cli.switchPresent("-dumb")
+                                        || config.isJLineDumbTerminal();
 
         return !dumbTerminal;
     }
@@ -310,7 +305,7 @@ public class CustomREPL implements IRepl {
     ) {
         try {
             if (app != null) {
-                printer.println("stdout", "Loading file: '" + app.getPath() + "'");
+                printer.println("stdout", "Loading custom REPL file: '" + app.getPath() + "'");
                 venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
             }
             return true;
@@ -320,10 +315,6 @@ public class CustomREPL implements IRepl {
             printer.println("error", "Stopped REPL");
             return false; // stop the REPL
         }
-    }
-
-    private boolean isMacroexpand(final CommandLineArgs cli) {
-        return cli.switchPresent("-macroexpand");
     }
 
 
@@ -339,6 +330,5 @@ public class CustomREPL implements IRepl {
     private Consumer<String> cmdHandler;
     private ReplConfig config;
     private IInterceptor interceptor;
-    private boolean macroexpand = false;
     private boolean ansiTerminal = false;
 }
