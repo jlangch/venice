@@ -83,8 +83,6 @@ public class CustomREPL implements IRepl {
 
             initJLineLogger(config);
 
-            final boolean setupMode = isSetupMode(cli);
-
             macroexpand = isMacroexpand(cli);
 
             ansiTerminal = isAnsiTerminal(cli, config);
@@ -94,7 +92,7 @@ public class CustomREPL implements IRepl {
                 if (jansiVersion != null) {
                     System.out.println("Using Jansi V" + jansiVersion);
                 }
-                else if (!setupMode) {
+                else {
                     System.out.print(
                             "--------------------------------------------------------------------\n" +
                             "The Venice REPL requires the jansi library on Windows.              \n" +
@@ -104,7 +102,8 @@ public class CustomREPL implements IRepl {
                 }
             }
 
-            System.out.println("Venice custom REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+            System.out.println("Venice custom REPL: " + Venice.getVersion());
+            System.out.println("Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
             System.out.println("Loading configuration from " + config.getConfigSource());
             if (loadpaths.active()) {
@@ -116,9 +115,8 @@ public class CustomREPL implements IRepl {
             if (macroexpand) {
                 System.out.println("Macro expansion enabled");
             }
-            if (!setupMode) {
-                System.out.println("Type '!' for help.");
-            }
+
+            System.out.println("Type '!' for help.");
 
             repl(cli);
         }
@@ -189,11 +187,6 @@ public class CustomREPL implements IRepl {
 
         final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
         final Env env = loadEnv(venice, cli, out, err, in);
-
-        if (isSetupMode(cli)) {
-            setupRepl(cli, venice, env, printer);
-            return; // we stop here
-        }
 
         if (!runApp(venice, env, printer)) {
             return; // stop REPL
@@ -276,36 +269,6 @@ public class CustomREPL implements IRepl {
         return new BufferedReader(terminal.reader());
     }
 
-    private void handleSetupCommand(
-            final IVeniceInterpreter venice,
-            final Env env,
-            final TerminalPrinter printer
-    ) {
-        try {
-            // on Windows enforce dark mode
-            final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
-                                            ? ColorMode.Dark
-                                            : config.getColorMode();
-
-            final String sColorMode = ":" + colorMode.name().toLowerCase();
-
-            final String script =
-                String.format(
-                    "(do                                     \n" +
-                    "  (load-module :repl-setup)             \n" +
-                    "  (repl-setup/setup :color-mode %s      \n" +
-                    "                    :ansi-terminal %s))   ",
-                    sColorMode,
-                    ansiTerminal ? "true" : "false");
-
-            venice.RE(script, "user", env);
-        }
-        catch(Exception ex) {
-            printer.printex("error", ex);
-            printer.println("error", "REPL setup failed!");
-        }
-    }
-
     private String getTerminalInfo() {
         if (ansiTerminal) {
             if (config.getColorMode() == ColorMode.None) {
@@ -359,26 +322,8 @@ public class CustomREPL implements IRepl {
         }
     }
 
-    private boolean isSetupMode(final CommandLineArgs cli) {
-        return cli.switchPresent("-setup")
-                || cli.switchPresent("-setup-ext")
-                || cli.switchPresent("-setup-extended");
-    }
-
     private boolean isMacroexpand(final CommandLineArgs cli) {
         return cli.switchPresent("-macroexpand");
-    }
-
-    private void setupRepl(
-            final CommandLineArgs cli,
-            final IVeniceInterpreter venice,
-            final Env env,
-            final TerminalPrinter printer
-    ) {
-        if (cli.switchPresent("-setup")) {
-            handleSetupCommand(venice, env, printer);
-            return; // we stop here
-        }
     }
 
 
