@@ -171,6 +171,14 @@ public class CommandLineArgs {
     	}
     }
 
+    public CommandLineArgs removeSwitches(final String... switchNames) {
+    	CommandLineArgs args = this;
+    	for(final String name : switchNames) {
+    		args = args.removeSwitch(name);
+    	}
+    	return args;
+    }
+
 
     private static Long parseOptionalLong(final String val) {
         return val == null ? null : Long.parseLong(val);

@@ -105,13 +105,16 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 public class Launcher {
 
     public static void main(final String[] args) {
+        final int exitCode = run(args);
+        System.exit(exitCode);
+    }
+
+    public static int run(final String[] args) {
         final CommandLineArgs cli = new CommandLineArgs(args);
 
         final ILoadPaths loadPaths = LoadPathsFactory.parseDelimitedLoadPath(
                                             cli.switchValue("-loadpath"),
                                             true);
-
-        final boolean macroexpand = isMacroexpand(cli);
 
         try {
             if (cli.switchPresent("-help")) {
@@ -119,102 +122,135 @@ public class Launcher {
             }
             else if (cli.switchPresent("-setup")) {
                 if (!ReplInstaller.install(args)) {
-                    System.exit(99);  // setup was not successful
+                    return 99;  // setup was not successful
                 }
             }
             else if (cli.switchPresent("-file")) {
-                final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-
-                // run the file from the filesystem
-                final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
-                final String script = new String(FileUtil.load(new File(file)));
-
-                final String scriptWrapped = "(do " + script + ")";
-
-                System.out.println(
-                        runScript(
-                            cli.removeSwitch("-file")
-                               .removeSwitch("-macroexpand")
-                               .removeSwitch("-loadpath"),
-                            macroexpand,
-                            interceptor,
-                            scriptWrapped,
-                            new File(file).getName()));
+                runFileCmd(loadPaths, cli);
             }
             else if (cli.switchPresent("-cp-file")) {
-                final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-
-                // run the file from the classpath
-                final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
-                final String script = new ClassPathResource(file).getResourceAsString();
-
-                System.out.println(
-                        runScript(
-                            cli.removeSwitch("-cp-file")
-                               .removeSwitch("-macroexpand")
-                               .removeSwitch("-loadpath"),
-                            macroexpand,
-                            interceptor,
-                            script,
-                            new File(file).getName()));
+                runClasspathFileCmd(loadPaths, cli);
             }
             else if (cli.switchPresent("-script")) {
-                final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-
-                // run the script passed as command line argument
-                final String script = cli.switchValue("-script");
-
-                System.out.println(
-                        runScript(
-                            cli.removeSwitch("-script")
-                               .removeSwitch("-macroexpand")
-                               .removeSwitch("-loadpath"),
-                            macroexpand,
-                            interceptor,
-                            script,
-                            "script"));
+                runScriptCmd(loadPaths, cli);
             }
             else if (cli.switchPresent("-app")) {
-                System.out.println("Launching Venice application ...");
-
-                // run the Venice application archive
-                final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
-
-                // The app runner has 'macroexpand' implicitly enabled
-                AppRunner.run(
-                    appFile,
-                    cli.removeSwitch("-app")
-                       .removeSwitch("-macroexpand")
-                       .removeSwitch("-loadpath")
-                       .argsAsList(),
-                    loadPaths,
-                    new PrintStream(System.out, true),
-                    new PrintStream(System.err, true),
-                    new InputStreamReader(System.in));
+                runAppCmd(loadPaths, cli);
             }
             else if (cli.switchPresent("-app-repl")) {
-                final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-
-                // run a custom application repl
-                final String file = cli.switchValue("-app-repl");
-
-                new CustomREPL(interceptor, new File(file)).run(args);
+                runCustomReplCmd(loadPaths, cli);
             }
             else {
                 // run the Venice REPL
                 new REPL(new AcceptAllInterceptor(loadPaths)).run(args);
             }
 
-            System.exit(SystemFunctions.SYSTEM_EXIT_CODE.get());
+            return SystemFunctions.SYSTEM_EXIT_CODE.get();
         }
         catch (VncException ex) {
             ex.printVeniceStackTrace();
-            System.exit(99);
+            return 99;
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(99);
+            return 99;
         }
+    }
+
+    private static void runFileCmd(
+            final ILoadPaths loadPaths,
+            final CommandLineArgs cli
+    ) {
+        final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+
+        final boolean macroexpand = isMacroexpand(cli);
+
+        // run the file from the filesystem
+        final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
+        final String script = new String(FileUtil.load(new File(file)));
+
+        final String scriptWrapped = "(do " + script + ")";
+
+        System.out.println(
+                runScript(
+                    cli.removeSwitches("-file", "-macroexpand", "-loadpath"),
+                    macroexpand,
+                    interceptor,
+                    scriptWrapped,
+                    new File(file).getName()));
+    }
+
+    private static void runClasspathFileCmd(
+            final ILoadPaths loadPaths,
+            final CommandLineArgs cli
+    ) {
+        final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+
+        final boolean macroexpand = isMacroexpand(cli);
+
+        // run the file from the classpath
+        final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
+        final String script = new ClassPathResource(file).getResourceAsString();
+
+        System.out.println(
+                runScript(
+                    cli.removeSwitches("-cp-file", "-macroexpand", "-loadpath"),
+                    macroexpand,
+                    interceptor,
+                    script,
+                    new File(file).getName()));
+    }
+
+    private static void runScriptCmd(
+            final ILoadPaths loadPaths,
+            final CommandLineArgs cli
+    ) {
+        final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+
+        final boolean macroexpand = isMacroexpand(cli);
+
+        // run the script passed as command line argument
+        final String script = cli.switchValue("-script");
+
+        System.out.println(
+                runScript(
+                    cli.removeSwitches("-script", "-macroexpand", "-loadpath"),
+                    macroexpand,
+                    interceptor,
+                    script,
+                    "script"));
+    }
+
+    private static void runAppCmd(
+            final ILoadPaths loadPaths,
+            final CommandLineArgs cli
+    ) {
+        System.out.println("Launching Venice application ...");
+
+        // run the Venice application archive
+        final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
+
+        // The app runner has 'macroexpand' implicitly enabled
+        AppRunner.run(
+            appFile,
+            cli.removeSwitches("-app", "-macroexpand", "-loadpath")
+               .argsAsList(),
+            loadPaths,
+            new PrintStream(System.out, true),
+            new PrintStream(System.err, true),
+            new InputStreamReader(System.in));
+    }
+
+    private static void runCustomReplCmd(
+            final ILoadPaths loadPaths,
+            final CommandLineArgs cli
+    ) {
+        final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+
+        // run a custom application repl
+        final String file = cli.switchValue("-app-repl");
+
+        new CustomREPL(interceptor, new File(file)).run(cli.args());
     }
 
     private static void printHelp() {
