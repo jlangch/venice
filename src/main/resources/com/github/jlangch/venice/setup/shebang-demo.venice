@@ -1,0 +1,22 @@
+#!/bin/sh
+
+#_ """ 
+  
+  # Venice Shebang demo script
+
+  # The "run-script.sh" is provided by the installed Venice REPL. It
+  # starts a Venice interpreter on the REPL environment and runs this
+  # script.
+  
+  REPL_HOME={{INSTALL_PATH}}
+
+  exec ${REPL_HOME}/run-script.sh "$0" "$@"
+
+"""
+
+(println "Venice Shebang Demo")
+(println)
+
+(println "Args:" *ARGV*)
+
+(println "Time:" (time/local-date-time))

@@ -39,7 +39,6 @@
                "expr-parser-2.venice"
                "expr-parser-3.venice"
                "fibonacci.venice"
-               "shebang-demo.venice"
                "sudoku.venice"
                "tomcat-geoip-map.venice"
                "zip-tomcat-logs.venice"
@@ -61,6 +60,8 @@
                "pdf/pdf-text2pdf.venice"
                "pdf/pdf-merge.venice"
                "pdf/pdf-copy.venice" ])
+
+;;                "shebang-demo.venice"
 
 
 (defn- cr-lf [text]
@@ -86,22 +87,29 @@
 
 (defn setup-scripts [scripts-dir]
   (println "Extracting example scripts...")
-  (let [repl-path   (io/file-path scripts-dir)
-        load-script (fn [script]
+  (let [load-script (fn [script]
                       (-<> (io/load-classpath-resource script)
                            (bytebuf-to-string <> :utf-8)
-                           (repl-setup/cr-lf <>)
-                           (str/replace-all <>  "{{INSTALL_PATH}}" repl-path)))]
+                           (repl-setup/cr-lf <>)))]
     (docoll #(io/spit (io/file scripts-dir %)
                       (load-script %)
                       :encoding (charset-default-encoding))
-            scripts)
-    ;; Shebang demo
-    (if (os-type? :windows) 
-      (io/delete-file (io/file scripts-dir "shebang-demo.venice"))
-      (when (io/exists-file? (io/file scripts-dir "shebang-demo.venice"))
-        (println "Making \"scripts/shebang-demo.venice\" executable...")
-        (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir repl-path)))))
+            scripts)))
+
+        
+(defn setup-shebang-demo-script [install-dir scripts-dir]
+  (when-not (os-type? :windows) 
+    (println "Setting up 'shebang-demo.venice'...")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/shebang-demo.venice")
+         (bytebuf-to-string <> :utf-8)
+         (repl-setup/cr-lf <>)
+         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
+         (io/spit (io/file scripts-dir "shebang-demo.venice") 
+                  <> 
+                  :encoding (charset-default-encoding)))
+    (when (io/exists-file? (io/file scripts-dir "shebang-demo.venice"))
+      (println "Making \"scripts/shebang-demo.venice\" executable...")
+      (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir scripts-dir))))
 
 
 (defn change-repl-launcher-color [cfg color-mode]
@@ -119,7 +127,7 @@
 (defn setup-repl-config [libs-dir]
   (when-not (io/exists-file? (io/file libs-dir "repl.json"))
     (println "Setting up 'repl.json'...")
-    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.json")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (io/spit (io/file libs-dir "repl.json") 
@@ -130,7 +138,7 @@
 (defn- setup-repl-launcher-windows [install-dir color-mode]
   (when-not (io/exists-file? (io/file install-dir "repl.env.bat"))
     (println "Setting up 'repl.env.bat'...")
-    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.win.env")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.win.env")
         (bytebuf-to-string <> :utf-8)
         (repl-setup/cr-lf <>)
         (io/spit (io/file install-dir "repl.env.bat") 
@@ -138,20 +146,20 @@
                   :encoding (charset-default-encoding))))
   (when-not (io/exists-file? (io/file install-dir "repl.bat"))
     (println "Setting up 'repl.bat'...")
-    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
-        (bytebuf-to-string <> :utf-8)
-        (repl-setup/cr-lf <>)
-        (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
-        (change-repl-launcher-color <> color-mode)
-        (io/spit (io/file install-dir "repl.bat") 
-                 <> 
-                 :encoding (charset-default-encoding)))))
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.bat")
+         (bytebuf-to-string <> :utf-8)
+         (repl-setup/cr-lf <>)
+         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
+         (change-repl-launcher-color <> color-mode)
+         (io/spit (io/file install-dir "repl.bat") 
+                  <> 
+                  :encoding (charset-default-encoding)))))
 
 
 (defn- setup-repl-launcher-unix [install-dir color-mode]
   (when-not (io/exists-file? (io/file install-dir "repl.env"))
     (println "Setting up 'repl.env'...")
-    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.unix.env")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.unix.env")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (io/spit (io/file install-dir "repl.env") 
@@ -159,7 +167,7 @@
                   :encoding (charset-default-encoding))))
   (when-not (io/exists-file? (io/file install-dir "repl.sh"))
     (println "Setting up 'repl.sh'...")
-    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
@@ -180,7 +188,7 @@
 (defn- setup-runscript-launcher-unix [install-dir]
   (when-not (io/exists-file? (io/file install-dir "run-script.sh"))
     (println "Setting up 'run-script.sh'...")
-    (-<> (io/load-classpath-resource "com/github/jlangch/venice/run-script.sh")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/run-script.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
@@ -332,6 +340,7 @@
       (repl-setup/setup-repl-launcher install-dir color-mode)
       (repl-setup/setup-runscript-launcher install-dir)
       (repl-setup/setup-scripts scripts-dir)
+      (repl-setup/setup-shebang-demo-script install-dir scripts-dir)
 
       (when-not (jansi-available? libs-dir)
         (throw :jansi-not-available))

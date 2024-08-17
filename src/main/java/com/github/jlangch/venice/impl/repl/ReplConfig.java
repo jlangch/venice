@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.Tuple2;
@@ -263,7 +262,7 @@ public class ReplConfig {
     }
 
     public static String getDefaultClasspathConfig() {
-        return new ClassPathResource(Venice.class.getPackage(), "repl.json")
+        return new ClassPathResource("com/github/jlangch/venice/setup/repl.json")
                         .getResourceAsString("UTF-8");
     }
 
@@ -272,7 +271,7 @@ public class ReplConfig {
     }
 
     public static String getDefaultClasspathLauncherScript() {
-        return new ClassPathResource(Venice.class.getPackage(), getLauncherScriptName())
+        return new ClassPathResource("com/github/jlangch/venice/setup/" + getLauncherScriptName())
                         .getResourceAsString("UTF-8");
     }
 
