@@ -7,6 +7,9 @@
   # The "run-script.sh" is provided by the installed Venice REPL. It
   # starts a Venice interpreter on the REPL environment and runs this
   # script.
+  #
+  # > chmod +x ./shebang-demo.venice
+  # > ./shebang-demo.venice 1 2 3
   
   REPL_HOME={{INSTALL_PATH}}
 
