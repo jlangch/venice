@@ -52,9 +52,7 @@ public class ReplInstaller {
 
             final CommandLineArgs cli = new CommandLineArgs(args);
             final ReplConfig config = ReplConfig.load(cli);
-            // slashify to prevent escaping when passing as text in script!!
-            final String installDir = cli.switchValue("-dir", ".")
-            		                     .replace('\\', '/');
+            final String installDir = cli.switchValue("-dir", ".");
 
             final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -73,6 +71,8 @@ public class ReplInstaller {
                                             ? ColorMode.Dark
                                             : config.getColorMode();
 
+            // slashify 'installDir' to prevent char escaping for windows paths when
+            // passing as text parameter to repl-setup/setup script!!
             final String script = String.format(
                                     "(do                                        \n" +
                                     "  (load-module :repl-setup)                \n" +
@@ -80,7 +80,7 @@ public class ReplInstaller {
                                     "                    :ansi-terminal false   \n" +
                                     "                    :install-dir \"%s\"))  ",
                                     colorMode.name().toLowerCase(),
-                                    installDir);
+                                    slashifyFilePath(installDir));
 
             venice.RE(script, "setup", env);
 
@@ -102,5 +102,13 @@ public class ReplInstaller {
 
             return false;
         }
+        finally {
+        	ThreadContext.remove();
+        }
+    }
+
+
+    private static String slashifyFilePath(final String path) {
+    	return  path.replace('\\', '/');
     }
 }

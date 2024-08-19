@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -107,16 +108,16 @@ public class REPL implements IRepl {
     }
 
     public void run(final String[] args) {
-        ThreadContext.setInterceptor(interceptor);
-
-        if (terminal != null) {
+        if (!semaphore.tryAcquire()) {
             throw new VncException("The REPL is already running!");
         }
 
-        final CommandLineArgs cli = new CommandLineArgs(args);
-        final ILoadPaths loadpaths = interceptor.getLoadPaths();
-
         try {
+            ThreadContext.setInterceptor(interceptor);
+
+            final CommandLineArgs cli = new CommandLineArgs(args);
+            final ILoadPaths loadpaths = interceptor.getLoadPaths();
+
             boolean macroexpand = false;
 
             config = ReplConfig.load(cli);
@@ -182,6 +183,10 @@ public class REPL implements IRepl {
         }
         catch (Exception ex) {
             ex.printStackTrace();
+        }
+        finally {
+            semaphore.release();
+            ThreadContext.remove();
         }
     }
 
@@ -1431,6 +1436,9 @@ public class REPL implements IRepl {
 
 
     private final static String HISTORY_FILE = ".repl.history";
+
+
+    private final Semaphore semaphore = new Semaphore(1);
 
     private Terminal terminal;
 

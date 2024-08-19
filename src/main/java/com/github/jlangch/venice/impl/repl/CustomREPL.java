@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.repl;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,17 +69,16 @@ public class CustomREPL implements IRepl {
     }
 
     public void run(final String[] args) {
-        ThreadContext.setInterceptor(interceptor);
-
-        if (terminal != null) {
-            throw new VncException("The REPL is already running!");
+        if (!semaphore.tryAcquire()) {
+            throw new VncException("The custom REPL is already running!");
         }
 
-
-        final CommandLineArgs cli = new CommandLineArgs(args);
-        final ILoadPaths loadpaths = interceptor.getLoadPaths();
-
         try {
+            ThreadContext.setInterceptor(interceptor);
+
+            final CommandLineArgs cli = new CommandLineArgs(args);
+            final ILoadPaths loadpaths = interceptor.getLoadPaths();
+
             config = ReplConfig.load(cli);
 
             initJLineLogger(config);
@@ -118,6 +118,10 @@ public class CustomREPL implements IRepl {
         catch (Exception ex) {
             ex.printStackTrace();
         }
+        finally {
+            semaphore.release();
+            ThreadContext.remove();
+        }
     }
 
     @Override
@@ -146,6 +150,7 @@ public class CustomREPL implements IRepl {
     public int getTerminalHeight() {
         return terminal.getHeight();
     }
+
 
     private void repl(final CommandLineArgs cli) throws Exception {
         setPrompt(config.getPrompt(), ansiTerminal ? config.getSecondaryPrompt() : "");
@@ -320,6 +325,8 @@ public class CustomREPL implements IRepl {
 
     private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";
     private static final String DEFAULT_PROMPT_SECONDARY = "      | ";
+
+    private final Semaphore semaphore = new Semaphore(1);
 
     private final File app;
 
