@@ -300,8 +300,9 @@
         tools-dir     (io/file install-dir "tools")]
     (println)
     (println (str "Setting up the REPL on '" (os-name) "' " (os-version)))
-    (println "Install dir: " install-dir)
-    (println "Using the platforms's default charset" charset)
+    (println "Install dir:" install-dir)
+    (println "Color mode:" color-mode)
+    (println "Charset:" charset "(platform default)")
     (println)
 
     (try 
