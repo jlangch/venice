@@ -586,3 +586,7 @@ static field: `(. :class :field)`
 ```
 
 
+## Where to head next
+
+- browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md#documentation)
+- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/277936c/cheatsheet.pdf) and use it as a quick reference
