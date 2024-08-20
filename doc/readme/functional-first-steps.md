@@ -28,8 +28,8 @@ Venice is a Lisp dialect and recognizes two kinds of structures:
 true                ; a boolean
 (1 2 3)             ; a list of long numbers
 ["abc" "de" "fgh"]  ; a vector of strings
-{"a" 100 "b" 200 }  ; a map with strings as keys and numbers as values
-#{"a" "b" "c" }     ; a set of strings
+{"a" 100 "b" 200}   ; a map with strings as keys and numbers as values
+#{"a" "b" "c"}      ; a set of strings 
 ```
 
 **2. Operations, this is how you do things**
