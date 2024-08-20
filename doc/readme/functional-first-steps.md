@@ -214,13 +214,13 @@ cumbersome for small functions:
 (do
   (defn increment [x] (+ x 1))
   
-  (map increment [1 2 3 4]))  ;; => [2 3 4]
+  (map increment [1 2 3 4]))  ;; => [2 3 4 5]
 ```
 
 Anonymous functions like `#(+ %1 1)` simplify the use of small ad-hoc functions:
 
 ```clojure
-(map #(+ %1 1) [1 2 3 4])  ;; => [2 3 4]
+(map #(+ %1 1) [1 2 3 4])  ;; => [2 3 4 5]
 ```
 
 Note: Venice expands `#(+ %1 1)` to the anonymous function `(fn [%1] (+ %1 1))` while 
@@ -447,6 +447,7 @@ The standard functions mostly accept an arbitrary numbers of arguments and
 thus prevent the need for looping constructs like *for*, *while*, ...
 
 ```clojure
+(do
   (+ 1 2 3 4)                 ;; => 10
   
   (max 1 2 3 4)               ;; => 4
@@ -458,6 +459,7 @@ thus prevent the need for looping constructs like *for*, *while*, ...
   (map inc [1 2 3 4])         ;; => (2 3 4 5)
   
   (reduce + [1 2 3 4])        ;; => 10
+)
 ```
 
 
