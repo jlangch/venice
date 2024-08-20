@@ -579,7 +579,7 @@ static field: `(. :class :field)`
    (-> (. :java.time.LocalDate :now) 
        (. :plusDays 5))
 
-   ;; using imports (avoids to use simple class names)
+   ;; using imports (avoids the use of qualified class names)
    (import :java.time.LocalDate)
    (. :LocalDate :now) 
 )
