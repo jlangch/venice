@@ -9,6 +9,7 @@
 * [Let and Local Variables](#let-and-local-variables)
 * [Filter-Map-Reduce](#filter-map-reduce)
 * [Loops](#loops)
+* [Java Interop](#java-interop)
     
 
 
@@ -23,9 +24,12 @@ Venice is a Lisp dialect and recognizes two kinds of structures:
 1.45                ; a number of type double (64bit float)
 1.45M               ; a arbitrary precision decimal number 
 "foo"               ; a string
+#\π                 ; a character
 true                ; a boolean
+(1 2 3)             ; a list of long numbers
 ["abc" "de" "fgh"]  ; a vector of strings
 {"a" 100 "b" 200 }  ; a map with strings as keys and numbers as values
+#{"a" "b" "c" }     ; a set of strings
 ```
 
 **2. Operations, this is how you do things**
@@ -221,9 +225,12 @@ Anonymous functions like `#(+ %1 1)` simplify the use of small ad-hoc functions:
 
 Note: Venice expands `#(+ %1 1)` to the anonymous function `(fn [%1] (+ %1 1))` while 
 reading the source code. `%1` is the first argument of the anonymous function. The 
-placeholders %1, %2, %3, ... are be used for the positional arguments of the 
-anonymous function.
+placeholders %1, %2, %3, ... are used for the positional arguments of the anonymous 
+function.
 
+Note: Because single argument functions are ubiquitous, the argument placeholder 
+`%` is a synonym for `%1` allowing to write `#(+ % 1)` to further simplify anonymous 
+functions.
 
 
 
@@ -522,5 +529,60 @@ output: `55`
     * Always ensure there’s a condition to exit the loop, or it will 
       run indefinitely.
 
+
+
+## Java Interop
+
+Venice supports calling Java constructors, static and instance methods as well as accessing 
+static class and instance fields.
+
+
+## Calling Java
+
+Java calls follow the patterns:
+
+constructor: `(. :class :new arg1 arg2 ...)`
+
+instance method: `(. object :method arg1 arg2 ...)`
+
+static method: `(. :class :method arg1 arg2 ...)`
+
+static field: `(. :class :field)`
+
+
+```clojure
+(do
+   ;; constructor no args
+   (. :java.awt.Point :new)
+   
+   ;; constructor with two arguments
+   (. :java.awt.Point :new 10 20)
+   
+   ;; instance method
+   (let [r (. :java.awt.Rectangle :new 100 200)]
+      (. r :translate 10 10)
+      r)
+
+   ;; instance no arg methods
+   (let [r (. :java.awt.Rectangle :new 100 200)]
+      (. r :isEmpty)   ; isEmpty()
+      (. r :getWidth)  ; getWidth()
+      (. r :getX))     ; getX()
+ 
+   ;; static field
+   (. :java.lang.Math :PI)
+
+   ;; static method
+   (. :java.lang.Math :min 20 30)
+
+   ;; constructor and instance method
+   (-> (. :java.time.LocalDate :now) 
+       (. :plusDays 5))
+
+   ;; using imports (avoids to use simple class names)
+   (import :java.time.LocalDate)
+   (. :LocalDate :now) 
+)
+```
 
 
