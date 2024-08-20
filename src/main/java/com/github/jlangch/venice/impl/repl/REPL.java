@@ -104,7 +104,7 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 public class REPL implements IRepl {
 
     public REPL(final IInterceptor interceptor) {
-        this.interceptor = interceptor;
+        this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
     }
 
     public void run(final String[] args) {

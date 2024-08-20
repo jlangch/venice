@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 
@@ -64,7 +65,7 @@ public class CustomREPL implements IRepl {
             final IInterceptor interceptor,
             final File app
     ) {
-        this.interceptor = interceptor;
+        this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
         this.app = app;
     }
 
@@ -309,7 +310,10 @@ public class CustomREPL implements IRepl {
             final TerminalPrinter printer
     ) {
         try {
-            if (app != null) {
+            if (app == null) {
+                printer.println("stdout", "No custom REPL app file supplied!");
+            }
+            else {
                 printer.println("stdout", "Loading custom REPL file: '" + app.getPath() + "'");
                 venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
             }
