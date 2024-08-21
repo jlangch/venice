@@ -146,24 +146,23 @@ public class REPL implements IRepl {
                 }
             }
 
-            if (OSUtils.IS_WINDOWS) {
-                final String jansiVersion = config.getJansiVersion();
-                if (jansiVersion != null) {
-                    System.out.println("Using Jansi V" + jansiVersion);
-                }
-                else {
-                    System.out.print(
-                            "--------------------------------------------------------------------\n" +
-                            "The Venice REPL requires the JAnsi library on Windows.              \n" +
-                            "Please download the jar artifact 'org.fusesource.jansi:jansi:2.4.1' \n" +
-                            "from a Maven repo and put it on the classpath.                      \n" +
-                            "--------------------------------------------------------------------\n\n");
-                }
+            final String jansiVersion = config.getJansiVersion();
+
+            if (OSUtils.IS_WINDOWS && jansiVersion == null) {
+                System.out.print(
+                    "--------------------------------------------------------------------\n" +
+                    "The Venice REPL requires the JAnsi library on Windows.              \n" +
+                    "Please download the jar artifact 'org.fusesource.jansi:jansi:2.4.1' \n" +
+                    "from a Maven repo and put it on the REPL classpath.                 \n" +
+                    "                                                                    \n" +
+                    "> curl https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/2.4.1/jansi-2.4.1.jar --output jansi-2.4.1.jar \n" +
+                    "--------------------------------------------------------------------\n\n");
             }
 
             System.out.println("Venice REPL: " + Venice.getVersion());
             System.out.println("Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
+            System.out.println("JAnsi: " + (jansiVersion == null ? "not detected" : jansiVersion));
             System.out.println("Loading configuration from " + config.getConfigSource());
             if (loadpaths.active()) {
                 System.out.print("Load paths: ");
