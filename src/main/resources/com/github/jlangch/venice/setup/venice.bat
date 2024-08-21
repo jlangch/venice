@@ -2,10 +2,10 @@
 REM ############################################################################
 REM # Venice shell                                                             #
 REM # -------------------------------------------------------------------------#
-REM # Starts a Venice shell (REPL), loads 'venice.venice' and runs it.         #
+REM # Starts a Venice shell (custom REPL), loads 'venice.venice' and runs it.  #
 REM #                                                                          #
 REM # Layout:                                                                  #
-REM #    scripts                                                               #
+REM #    VENICE_SHELL_HOME                                                     #
 REM #      +--libs                                                             #
 REM #      |   +-- venice-x.y.z.jar                                            #
 REM #      |   +-- jansi-2.4.1.jar                                             #
@@ -20,19 +20,19 @@ set VENICE_REPL_HOME=C:\Users\juerg\Desktop\venice
 
 if not exist %VENICE_SHELL_HOME% (
   echo Error: The Venice shell home dir %VENICE_SHELL_HOME% does not exist!
-  pause
+  timeout /t 5
   exit 2
 )
 
 if not exist %VENICE_SHELL_HOME%\libs (
   echo Error: The Venice shell libs dir %VENICE_SHELL_HOME%\libs does not exist!
-  pause
+  timeout /t 5
   exit 2
 )
 
 if not exist %JAVA_8_HOME%\libs (
   echo Error: The Java 8 home dir %JAVA_8_HOME% does not exist!
-  pause
+  timeout /t 5
   exit 2
 )
 
@@ -47,6 +47,5 @@ cd %VENICE_SHELL_HOME%
   com.github.jlangch.venice.Launcher ^
   -Dvenice.repl.home=%VENICE_SHELL_HOME% ^
   -colors-darkmode ^
-  -macroexpand ^
   -app-repl venice.venice
  

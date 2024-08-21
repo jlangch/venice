@@ -1,10 +1,10 @@
 ###############################################################################
 # Venice shell                                                                #
 # ----------------------------------------------------------------------------#
-# Starts a Venice shell (REPL), loads 'venice.venice' and runs it.            #
+# Starts a Venice shell (custom REPL), loads 'venice.venice' and runs it.     #
 #                                                                             #
 # Layout:                                                                     #
-#    REPL_HOME                                                                #
+#    VENICE_SHELL_HOME                                                        #
 #      +--libs                                                                #
 #      |   +-- venice-x.y.z.jar                                               #
 #      |   +-- jansi-2.4.1.jar                                                #

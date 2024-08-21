@@ -250,7 +250,9 @@ public class Launcher {
         // run a custom application repl
         final String file = cli.switchValue("-app-repl");
 
-        new CustomREPL(interceptor, new File(file)).run(cli.args());
+        // The custom REPL has 'macroexpand' implicitly enabled
+        new CustomREPL(interceptor, new File(file))
+               .run(cli.removeSwitches("-macroexpand").args());
     }
 
     private static void printHelp() {
