@@ -91,7 +91,7 @@ public class CustomREPL implements IRepl {
             if (OSUtils.IS_WINDOWS && jansiVersion == null) {
                 System.out.print(
                     "--------------------------------------------------------------------\n" +
-                    "The Venice REPL requires the JAnsi library on Windows.              \n" +
+                    "The Venice REPL requires the Jansi library on Windows.              \n" +
                     "Please download the jar artifact 'org.fusesource.jansi:jansi:2.4.1' \n" +
                     "from a Maven repo and put it on the REPL classpath.                 \n" +
                     "                                                                    \n" +
@@ -102,15 +102,14 @@ public class CustomREPL implements IRepl {
             System.out.println("Venice custom REPL: " + Venice.getVersion());
             System.out.println("Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
-            System.out.println("JAnsi: " + (jansiVersion == null ? "not detected" : jansiVersion));
+            System.out.println("Jansi: " + (jansiVersion == null ? "not detected" : jansiVersion));
             System.out.println("Loading configuration from " + config.getConfigSource());
             if (loadpaths.active()) {
                 System.out.print("Load paths: ");
                 System.out.println(loadpaths.isUnlimitedAccess() ? "unrestricted > " : "retricted > ");
-                loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
+                loadpaths.getPaths().forEach(p -> System.out.println("   " + p));
             }
             System.out.println(getTerminalInfo());
-
             System.out.println("Type '!' for help.");
 
             repl(cli);

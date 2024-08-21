@@ -170,6 +170,8 @@ plugins {
     //       jline3 3.22.0+ has a new service file structure under META-INF/services
     // id 'com.github.johnrengelman.shadow' version '8.1.1'
     //
+    // https://github.com/GradleUp/shadow/issues/685
+    //
     // 12.06.2024: The project 'com.github.johnrengelman.shadow' is retired
     //             https://github.com/johnrengelman/shadow/issues/908
     //             See fork:
