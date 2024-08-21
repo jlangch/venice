@@ -119,9 +119,9 @@ public class Reader {
                 .collect(Collectors.joining("\n"));
     }
 
-    private boolean hasMoreTokens() {
-        return position < tokens.size();
-    }
+//    private boolean hasMoreTokens() {
+//        return position < tokens.size();
+//    }
 
     private Token peek() {
         return position >= tokens.size() ? null : tokens.get(position);

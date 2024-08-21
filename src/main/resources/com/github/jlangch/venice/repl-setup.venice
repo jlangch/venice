@@ -347,8 +347,8 @@
         (throw :jansi-not-available))
 
       (println "Venice REPL setup completed.")
-      (println)
       (print-success-message install-dir)
+      (println)
       :success
 
       ;; handle errors
