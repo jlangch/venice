@@ -2,6 +2,8 @@
 
 Running the *Sudoku* solver script in the REPL will print the initial board and the solution
 
+</br>
+
 <table>
 <tr>
 <td>Sudoku</td>
