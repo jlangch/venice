@@ -85,7 +85,7 @@
 ```
 
 
-Prints the initial board
+Running the script in the REPL will print the initial board
 
 ```
 7 8 · | 4 · · | 1 2 ·
