@@ -73,7 +73,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [REPL](doc/readme/repl.md)
 * [On Functional Programming](doc/readme/functional-about.md)
 * [First Steps in Venice](doc/readme/functional-first-steps.md)
-* [Example Sudoku Solver](doc/readme/sudoku-solver.md)
+* [Example: Sudoku Solver](doc/readme/sudoku-solver.md)
 * [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
