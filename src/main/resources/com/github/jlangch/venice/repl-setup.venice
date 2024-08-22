@@ -61,8 +61,6 @@
                "pdf/pdf-merge.venice"
                "pdf/pdf-copy.venice" ])
 
-;;                "shebang-demo.venice"
-
 
 (defn- cr-lf [text]
   (str/cr-lf text (if (os-type? :windows) :cr-lf :lf)))

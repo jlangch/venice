@@ -41,8 +41,9 @@ Venice seamlessly and transparently integrates with Java and any third-party
 libraries, giving you access to a vast array of libraries, frameworks, and 
 tools.
 
-Have you ever felt limited by Bash or PowerShell scripts? With Venice, you 
-can write concise and elegant scripts effortlessly.
+Venice's strength is making complex scripting tasks easy. Have you ever 
+felt limited by Bash or PowerShell scripts? With Venice, you can write 
+concise and elegant platform independent scripts effortlessly.
 
 Venice does not depend on any runtime libraries (other than the JVM). You 
 can easily add it as a standalone JAR to your classpath.
