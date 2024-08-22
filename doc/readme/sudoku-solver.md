@@ -30,10 +30,6 @@
                   (partition 9)
                   (map vector*))))
 
-  (defn read-boards [file]
-    (->> (io/slurp-lines file)
-         (map read-board)))
-
   (defn print-board [board]
     (println)
     (->> (postwalk-replace {0 "·"} board)
