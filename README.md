@@ -75,6 +75,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [First Steps in Venice](doc/readme/functional-first-steps.md)
 * [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
+* [Example Sudoku Solver](doc/readme/sudoku-solver.md)
 * [Datatypes](doc/readme/datatypes.md)
 * [Custom Datatypes](doc/readme/datatypes-custom.md)
 * [Lazy Sequences](doc/readme/lazy-seq.md)
