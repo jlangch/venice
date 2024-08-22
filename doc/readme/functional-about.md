@@ -73,8 +73,8 @@ the output of one function as the input to another.
 
 `h(x) = (g ∘ f)(x) = g(f(x))`
 
-The composition operator `∘` can be looked at as *after*. The function `g` is applied 
-after applying `f` to `x`.
+The composition operator `∘` can be understood at as *after*. In other words, the function
+`g` is applied after the function `f` has been applied to `x`.
 
 If you have two functions `f` and `g`, function composition allows you to create a new 
 function `h` such that `h(x) = g(f(x))`.
