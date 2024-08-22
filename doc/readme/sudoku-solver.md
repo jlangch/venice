@@ -72,7 +72,7 @@
   (when-not (macroexpand-on-load?)
     (print-msg-box :warn
                    """
-                   macroexpand-on-load is not activated. To get a better
+                   macroexpand-on-load is not activated. To get best
                    performance activate it before loading this script.
 
                    From the REPL run the command: !macroexpand
