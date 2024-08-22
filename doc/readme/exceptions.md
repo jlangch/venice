@@ -8,6 +8,9 @@ runtime errors so that the normal flow of the application can be maintained.
 Venice's exception handling is built on Java exceptions thus providing 
 seamless interoperability with existing Java code.
 
+1. Exceptions must **never** be used for flow control. 
+2. Exceptions are used when one **can't** continue.
+
 A few exception types are imported implicitly to simplify usage:
 
   * `:java.lang.Exception`
