@@ -657,6 +657,8 @@ task updateReadMeCheatsheetRef {
                 flags:   'g'
         ) {
             fileset(dir: '.', includes: 'README.md')
+            fileset(dir: 'doc/readme', includes: 'start.md')
+            fileset(dir: 'doc/readme', includes: 'sudoku-solver.md')
         }
     }
 }

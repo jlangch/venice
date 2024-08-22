@@ -84,13 +84,6 @@ The Sudoku solver:
                 [0 0 0 4 1 9 0 0 5]
                 [0 0 0 0 8 0 0 7 9]])
 
-  (defn read-board [s]
-    (vector* (->> (seq s)
-                  (replace {#\. #\0})
-                  (map #(- (long %) (long #\0)))
-                  (partition 9)
-                  (map vector*))))
-
   (defn print-board [board]
     (println)
     (->> (postwalk-replace {0 "·"} board)
