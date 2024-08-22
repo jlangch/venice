@@ -16,12 +16,12 @@ The upfront macro expansion is applied to typed scripts and files loaded from
 filesystem or classpath.
 
 
-An example:
+An example (on an MacBook Air M2):
 
 ```text
 venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
                              (range -10000 10001))))
-Elapsed time: 150.26ms
+Elapsed time: 110.38ms
 => 0
 ```
      
@@ -29,7 +29,7 @@ Elapsed time: 150.26ms
 venice> !macroexpand
 venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
                              (range -10000 10001))))
-Elapsed time: 11.95ms
+Elapsed time: 12.14ms
 => 0
 ```
 

@@ -36,7 +36,7 @@ curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.30/venice-1.
 ### 3. Setup the Venice REPL
 
 This automated setup will create a REPL launcher script with the Java *classpath*
-correctly setup, will download the JAnsi library from Maven, and add some example 
+correctly setup, will download the *Jansi* library from Maven, and add some example 
 Venice scripts. The setups works on MacOS, Linux, and Windows.
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
