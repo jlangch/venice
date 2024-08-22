@@ -1,6 +1,15 @@
 # Example: Sudoku Solver
 
-Running the *Sudoku* solver script in the REPL will print the initial board
+Running the *Sudoku* solver script in the REPL will print the initial board and the solution
+
+<table>
+<tr>
+<td>Without Header & Footer</td>
+<td>Header</td>
+<td>Header & Footer</td>
+</tr>
+<tr>
+<td>
 
 ```
 7 8 · | 4 · · | 1 2 ·
@@ -16,7 +25,8 @@ Running the *Sudoku* solver script in the REPL will print the initial board
 · 4 9 | 2 · 6 | · · 7
 ```
 
-with the solution
+</td>
+<td>
 
 ```
 7 8 5 | 4 3 9 | 1 2 6
@@ -31,6 +41,11 @@ with the solution
 1 2 6 | 5 8 7 | 4 9 3
 3 4 9 | 2 1 6 | 8 5 7
 ```
+
+</td>
+</tr>
+</table>
+
 
 <br/>
 <br/>
