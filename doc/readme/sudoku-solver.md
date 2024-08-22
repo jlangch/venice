@@ -4,9 +4,8 @@ Running the *Sudoku* solver script in the REPL will print the initial board and 
 
 <table>
 <tr>
-<td>Without Header & Footer</td>
-<td>Header</td>
-<td>Header & Footer</td>
+<td>Sudoku</td>
+<td>Solved</td>
 </tr>
 <tr>
 <td>
