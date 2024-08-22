@@ -1,13 +1,14 @@
 # Example: Sudoku Solver
 
-Running the *Sudoku* solver script in the REPL will print the initial board and the solution
+Running the following Sudoku solver script in the REPL will display both the 
+initial board and the solved puzzle
 
 </br>
 
 <table>
 <tr>
-<td>Sudoku</td>
-<td>Solved</td>
+<td>Initial Puzzle</td>
+<td>Solved Puzzle</td>
 </tr>
 <tr>
 <td>
