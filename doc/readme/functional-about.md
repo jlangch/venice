@@ -43,7 +43,8 @@ results. Common examples include map, filter, and reduce.
 ### Pure Functions
 
 A function is pure if its output is determined only by its input values, without 
-observable side effects (e.g. doing I/O, altering global vars, no internal state, ...). 
+observable side effects (e.g. doing I/O, throwing exceptions, modifying global vars, 
+...). Pure functions do not have an internal state.
 This means the function's behavior is consistent and doesn't rely on or alter the 
 program state.
 
@@ -70,10 +71,13 @@ to refactor and optimize.
 Building complex functions by combining simpler ones. Functions are composed by passing 
 the output of one function as the input to another.
 
-*Example:*
+`h(x) = (g ∘ f)(x) = g(f(x))`
 
-If you have two functions f and g, function composition allows you to create a new 
-function h such that `h(x) = g(f(x))`.
+The composition operator `∘` can be looked at as *after*. The function `g` is applied 
+after applying `f` to `x`.
+
+If you have two functions `f` and `g`, function composition allows you to create a new 
+function `h` such that `h(x) = g(f(x))`.
 
 
 ### Recursion

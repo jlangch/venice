@@ -8179,10 +8179,22 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(comp f*)")
                     .doc(
-                        "Takes a set of functions and returns a fn that is the composition " +
-                        "of those fns. The returned fn takes a variable number of args, " +
-                        "applies the rightmost of fns to the args, the next " +
-                        "fn (right-to-left) to the result, etc. ")
+                        "Takes a set of functions and returns a function that is the composition " +
+                        "of those functions. The returned function takes a variable number of args, " +
+                        "applies the rightmost of the functions to the args, applies the next " +
+                        "function (right-to-left) to the result, etc. " +
+                        "\n\n" +
+                        "Functions composition builds complex functions by combining simpler ones. " +
+                        "Functions are composed by passing the output of one function as the input " +
+                        "to another." +
+                        "\n\n" +
+                        "`h(x) = (g ° f)(x) = g(f(x))`" +
+                        "\n\n" +
+                        "The composition operator `°` can be looked at as *after*. The function `g` " +
+                        "is applied after applying `f` to `x`." +
+                        "\n\n" +
+                        "If you have two functions `f` and `g`, function composition allows you to " +
+                        "create a new function `h` such that `h(x) = g(f(x))`.")
                     .examples(
                         "((comp str +) 8 8 8)",
                         "(map (comp - (partial + 3) (partial * 2)) [1 2 3 4])",
