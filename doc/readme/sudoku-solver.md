@@ -89,7 +89,7 @@
 ```
 
 
-Prints
+Prints the initial board
 
 ```
 7 8 · | 4 · · | 1 2 ·
