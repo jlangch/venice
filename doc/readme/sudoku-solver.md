@@ -1,7 +1,15 @@
 # Example: Sudoku Solver
 
+*Constraints for a 9x9 Sudoku:*
+
+  1. Each cell should be filled with a single value between 1 and 9
+  2. Each row should contain every number from 1 to 9 once
+  3. Each column should contain every number from 1 to 9 once
+  4. Each 3x3 grid, starting from top left, should contain every number from 1 to 9 once
+
+
 Running the following Sudoku solver script in the REPL will display both the 
-initial board and the solved puzzle
+initial board and the solved puzzle.
 
 </br>
 
