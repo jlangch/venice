@@ -105,7 +105,7 @@ The Sudoku solver:
     (first (list-comp [x (range 9)
                        y (range 9)
                        :when (== 0 (get-in board [y x]))]
-                      [x y])))
+             [x y])))
 
   (defn value-not-used? [val coll]
     (nil? (some #{val} coll)))
@@ -126,7 +126,7 @@ The Sudoku solver:
   (defn solve [board]
     (if-let [[x y] (first-empty-cell board)]
       (list-comp [v (range 1 10) :when (possible? board x y v)]
-                 (solve (assoc-in board [y x] v)))
+        (solve (assoc-in board [y x] v)))
       (print-board board)))
 
 
