@@ -145,4 +145,10 @@ The Sudoku solver:
     (println)))
 ```
 
+<br/>
+<br/>
+
+------
+
+The documentation for the functions used in the Sudoku solver can be found in the Venice [cheatsheet](https://cdn.rawgit.com/jlangch/venice/277936c/cheatsheet.pdf).
 
