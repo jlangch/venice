@@ -22,6 +22,23 @@ each sub-form, uses f's return value in place of the original.
          '(1 2 {:a 1 :b [5 6]}))
 ```
 
+yields:
+
+```
+Walked: 1
+Walked: 2
+Walked: :a
+Walked: 1
+Walked: [:a 1]
+Walked: :b
+Walked: 5
+Walked: 6
+Walked: [5 6]
+Walked: [:b [5 6]]
+Walked: {:a 1 :b [5 6]}
+Walked: (1 2 {:a 1 :b [5 6]})
+=> (1 2 {:a 1 :b [5 6]})
+```
 
 ### Prewalk
 
@@ -35,6 +52,24 @@ each sub-form, uses f's return value in place of the original.
 ```clojure
 (prewalk (fn [x] (println "Walked:" (pr-str x)) x)
          '(1 2 {:a 1 :b [5 6]}))
+```
+
+yields:
+
+```
+Walked: (1 2 {:a 1 :b [5 6]})
+Walked: 1
+Walked: 2
+Walked: {:a 1 :b [5 6]}
+Walked: [:a 1]
+Walked: :a
+Walked: 1
+Walked: [:b [5 6]]
+Walked: :b
+Walked: [5 6]
+Walked: 5
+Walked: 6
+=> (1 2 {:a 1 :b [5 6]})
 ```
 
 
@@ -55,6 +90,9 @@ Recursively transforms all map keys from strings to keywords.
   (keywordize-keys '(1 2 {"a" 1 "b" 2})))
 ```
 
+```
+=> (1 2 {:a 1 :b 2})
+```
 
 ### stringify-keys
 
@@ -70,6 +108,10 @@ Recursively transforms all map keys from keywords to strings.
    (stringify-keys '(1 2 {:a 1 :b 2})))
 ```
 
+```
+=> (1 2 {"a" 1 "b" 2})
+```
+
 
 ### replace (prewalk)
 
@@ -82,8 +124,11 @@ their values. Does replacement at the root of the tree first.
      (prewalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
   (prewalk-replace {:a :A :b :B} '(1 2 :a :b))
+  ;; => (1 2 :A :B)
 
-  (prewalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2})))
+  (prewalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2}))
+  ;; => (1 2 {:A 1 :B 2})
+)
 ```
 
 
@@ -98,6 +143,9 @@ their values. Does replacement at the leaves of the tree first.
      (postwalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
   (postwalk-replace {:a :A :b :B} '(1 2 :a :b))
+  ;; => (1 2 :A :B)
 
-  (postwalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2})))
+  (postwalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2}))
+  ;; => (1 2 {:A 1 :B 2})
+)
 ```

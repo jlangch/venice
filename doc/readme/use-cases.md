@@ -9,9 +9,10 @@ custom shells
 
 
 
-## AdHoc creation of PDF and Excel reports 
+## Ad Hoc creation of PDF and Excel reports 
 
 
+## Ad Hoc creation of charts 
 
 
 
@@ -33,11 +34,10 @@ defined like:
 (let [event-name  (. event :getEventName)
       event-type  (. event :getEventType)
       event-key1  (. event :getEventKey1)]
-  (or
-    (match? event-name "webapp[.](started|stopped)")
-    (and (== event-name "login") (== event-key1  "superuser"))
-    (== event-type "ALERT")
-    (str/starts-with? event-name "login.foreign.country.")))
+  (or (match? event-name "webapp[.](started|stopped)")
+      (and (== event-name "login") (== event-key1  "superuser"))
+      (== event-type "ALERT")
+      (str/starts-with? event-name "login.foreign.country.")))
 ```
 
 The audit notifier using the filter to send notifications:
@@ -92,22 +92,23 @@ The rule is stored in the application's configuration database and is
 defined like:
 
 ```clojure
-(defn calculate [cart coupon]
-  (case coupon
-    ;; "10% Off Coupon"
-    "SUMMER10"    { :discount  10.0, :freeship  false }
+(do
+  (defn calculate [cart coupon]
+    (case coupon
+      ;; "10% Off Coupon"
+      "SUMMER10"    { :discount  10.0, :freeship  false }
     
-    ;; "Free Shipping Coupon"
-    "FREESHIP"    { :discount  0.0, :freeship  true }
+      ;; "Free Shipping Coupon"
+      "FREESHIP"    { :discount  0.0, :freeship  true }
       
-    ;; "Buy Many Get 30% Off"
-    "BMGOF"       (if (>= (. cart :getCount) 2) 
-                    { :discount 30.0, :freeship  false }
-                    { :discount 0.0, :freeship  false })
+      ;; "Buy Many Get 30% Off"
+      "BMGOF"       (if (>= (. cart :getCount) 2) 
+                      { :discount 30.0, :freeship  false }
+                      { :discount 0.0, :freeship  false })
     
-    { :discount  0.0, :freeship  false } )
+      { :discount  0.0, :freeship  false } )
     
-(calculate cart coupon)
+  (calculate cart coupon))
 ```
 
 Computing discounts:
@@ -166,7 +167,7 @@ public class DiscountRules {
 
 
 
-## Zippping Tomcat logs for archiving
+## Zipping Tomcat logs for archiving
 
 
 
