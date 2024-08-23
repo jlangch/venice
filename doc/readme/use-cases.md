@@ -158,9 +158,6 @@ public class DiscountRules {
 ```
 
 
-https://www.nected.ai/blog/json-rules-engine
-
-
 
 ## Scriptable Applications
 
