@@ -64,15 +64,25 @@ public class AuditNotifier {
 }
 ```
 
+
+
 ## Simple Rule Engine
 
-Example: Discount Coupon Rules
+Rules engines the definition of business rules in a simplified language 
+apart from the application implementation.
 
-we are defining some rules for applying discounts based on coupon codes. These are the three rules we are defining here:
+For simple rules rule engines like *Drools* are often to heavy weight and
+Venice is a viable alternative to define simple lightweight rules.
 
-1. 10% Off Coupon: Applies a 10% discount if the coupon code is "SUMMER10".
-2. Free Shipping Coupon: Provides free shipping if the coupon code is "FREESHIP".
-3. Buy Many Get 30% Off: Offers a 30% discount on the entire order if the coupon code is "BMGOF" and the cart contains at least two items.
+
+**Example: Discount Coupon Rules**
+
+Define some rules for applying discounts based on coupon codes. These are 
+the three rules we are defining:
+
+1. **10% Off Coupon**: Applies a 10% discount if the coupon code is "SUMMER10".
+2. **Free Shipping Coupon**: Provides free shipping if the coupon code is "FREESHIP".
+3. **Buy Many Get 30% Off**: Offers a 30% discount on the entire order if the coupon code is "BMGOF" and the cart contains at least two items.
 
 When a customer enters a coupon code during checkout, the Rules Engine can 
 evaluate the rules and apply the appropriate discounts.
@@ -82,39 +92,25 @@ The rule is stored in the application's configuration database and is
 defined like:
 
 ```clojure
-(defn discount [cart coupon]
+(defn calculate [cart coupon]
   (case coupon
     ;; "10% Off Coupon"
-    "SUMMER10"    10.0
+    "SUMMER10"    { :discount  10.0, :freeship  false }
     
     ;; "Free Shipping Coupon"
-    "FREESHIP"    0.0
+    "FREESHIP"    { :discount  0.0, :freeship  true }
       
     ;; "Buy Many Get 30% Off"
-    "BMGOF"       (if (>= (. cart :getCount) 2) 30.0 0.0)
+    "BMGOF"       (if (>= (. cart :getCount) 2) 
+                    { :discount 30.0, :freeship  false }
+                    { :discount 0.0, :freeship  false })
     
-    0.0))  
+    { :discount  0.0, :freeship  false } )
     
-(defn freeship? [cart coupon]
-  (case coupon
-    ;; "10% Off Coupon"
-    "SUMMER10"    false
-    
-    ;; "Free Shipping Coupon"
-    "FREESHIP"   true
-      
-    ;; "Buy Many Get 30% Off"
-    "BMGOF"       false
-    
-    false))  
-    
-    
-;; apply discount rules
-{ :discount  (discount cart coupon)
-  :freeship  (freeship? cart coupon) }              
+(calculate cart coupon)
 ```
 
-Computing discounts
+Computing discounts:
 
 ```java
 public class Discount {
@@ -142,11 +138,13 @@ public class DiscountRules {
                                           Parameters.of("cart", cart, 
                                                         "coupon", coupon));
                                                         
-        return new Discount(event.get("discount"), event.get("freeship"))
+        return new Discount(
+                     event.get("discount"),
+                     event.get("freeship"))
     }
     
     private IPreCompiled compileRule(Configuration config) {
-        String ruleFn = config.getProperty("rules.discount");
+        String ruleFn = config.getProperty("rules.cart.discount");
         return venice.precompile("rule", ruleFn, true);
     }
     
