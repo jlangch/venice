@@ -4,8 +4,8 @@ Through extension modules Venice provides specific functionality
 that not all application require thus keeping load time and 
 resource usage low if the modules are not used.
 
-Extension Modules are plain Venice scripts and must be loaded 
-explicitly `(load-module :name)`. Venice tracks the modules loaded
+Extension Modules are plain, built-in Venice scripts and must be loaded 
+explicitly with `(load-module :name)`. Venice tracks the modules loaded
 and loads a module only once and skips subsequent load attempts.
 
 * [Kira Template Engine](ext-kira.md)
