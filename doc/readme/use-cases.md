@@ -31,12 +31,12 @@ The filter is stored in the application's configuration database and is
 defined like:
 
 ```clojure
-(let [event-name  (. event :getEventName)
-      event-type  (. event :getEventType)
-      event-key   (. event :getEventKey)]
+(let [event-name  (. event :getName)
+      event-type  (. event :getType)
+      event-key   (. event :getKey)]
   (or (match? event-name "webapp[.](started|stopped)")
       (and (== event-name "login") (== event-key "superuser"))
-      (== event-type "ALERT")
+      (== (str event-type) "ALERT")
       (str/starts-with? event-name "login.foreign.country.")))
 ```
 
@@ -63,6 +63,8 @@ public class AuditNotifier {
     private final Venice venice;
 }
 ```
+
+*The example can be found at "src/main/java/com/github/jlangch/venice/examples/Embed_14_ExtensionPoint.java"*
 
 
 
