@@ -52,7 +52,9 @@ public class Embed_14_ExtensionPoint {
     	// Setup services
     	final Configuration config = new Configuration();
     	config.setValue(
+    			// id
     			"audit.notification.filter",
+    			// script
 		    	"(let [event-name  (. event :getName)                                \n" +
 		    	"      event-type  (. event :getType)                                \n" +
 		    	"      event-key   (. event :getKey)]                                \n" +
