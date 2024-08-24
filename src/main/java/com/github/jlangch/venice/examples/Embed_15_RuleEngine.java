@@ -87,7 +87,9 @@ public class Embed_15_RuleEngine {
         System.out.println("Discount #1: " + rules.calculate(cart, "SUMMER10"));
         System.out.println("Discount #2: " + rules.calculate(cart, "FREESHIP"));
         System.out.println("Discount #3: " + rules.calculate(cart, "BMGOF"));
+        System.out.println("Discount #4: " + rules.calculate(cart, null));
     }
+
 
 
     public static class Configuration {
@@ -103,10 +105,6 @@ public class Embed_15_RuleEngine {
 
         private final HashMap<String,String> config = new HashMap<>();
     }
-
-
-
-
 
     public static class Product {
         public Product(final String name, final double price) {
