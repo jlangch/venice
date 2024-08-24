@@ -33,9 +33,9 @@ defined like:
 ```clojure
 (let [event-name  (. event :getEventName)
       event-type  (. event :getEventType)
-      event-key1  (. event :getEventKey1)]
+      event-key   (. event :getEventKey)]
   (or (match? event-name "webapp[.](started|stopped)")
-      (and (== event-name "login") (== event-key1  "superuser"))
+      (and (== event-name "login") (== event-key "superuser"))
       (== event-type "ALERT")
       (str/starts-with? event-name "login.foreign.country.")))
 ```
@@ -51,7 +51,7 @@ public class AuditNotifier {
     }
 
     public void process(Event event) {
-         String filter = config.getProperty("audit.notification.filter");
+         String filter = config.getValue("audit.notification.filter");
     		Boolean match = (Boolean)venice.eval(filter, Parameters.of("event", event));
     		if (Boolean.TRUE.equals(match)) {
     			notifSvc.sendAuditEventEmail(event);
