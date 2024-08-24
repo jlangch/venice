@@ -125,7 +125,7 @@ Computing discounts:
 ```java
 public class Discount {
     public Discount(double discounPercentage, boolean freeshipping) {
-        this.discount = discount;
+        this.discounPercentage = discounPercentage;
         this.freeshipping = freeshipping;
     }
     
@@ -164,6 +164,8 @@ public class DiscountRules {
     private final IPreCompiled rule;
 }
 ```
+
+*The example can be found at "src/main/java/com/github/jlangch/venice/examples/Embed_15_RuleEngine.java"*
 
 
 
