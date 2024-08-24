@@ -47,15 +47,22 @@ public class AuditNotifier {
     public AuditNotifier(Configuration config, NotificationService notifSvc) {
         this.config = config;
         this.notifSvc = notifSvc;
-        this.venice = new Venice();
+        // depending on the security requirements, it might by necessary
+        // to add a sandbox (SandboxInterceptor) to limit what the
+        // extension point script is allowed to do!
+        this.venice = new Venice(new SandboxRules()
+                                        .rejectAllUnsafeFunctions()
+                                        .withClasses("com.github.jlangch.venice.examples.*:*")
+                                        .whitelistVeniceFunctions(".")
+                                        .sandbox());
     }
 
     public void process(Event event) {
-         String filter = config.getValue("audit.notification.filter");
-    		Boolean match = (Boolean)venice.eval(filter, Parameters.of("event", event));
-    		if (Boolean.TRUE.equals(match)) {
-    			notifSvc.sendAuditEventEmail(event);
-    		}
+        String filter = config.getValue("audit.notification.filter");
+        Boolean match = (Boolean)venice.eval(filter, Parameters.of("event", event));
+        if (Boolean.TRUE.equals(match)) {
+            notifSvc.sendAuditEventEmail(event);
+        }
     }
     
     private final Configuration config;

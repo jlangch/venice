@@ -121,14 +121,10 @@ public class Embed_14_ExtensionPoint {
             // to add a sandbox (SandboxInterceptor) to limit what the
             // extension point script is allowed to do!
             this.venice = new Venice(new SandboxRules()
-						                    .rejectAllIoFunctions()
-						                    .rejectAllConcurrencyFunctions()
-						                    .rejectAllSystemFunctions()
-						                    .rejectAllJavaInteropFunctions()
-						                    .rejectAllSenstiveSpecialForms()
-						                    .withClasses("com.github.jlangch.venice.examples.*:*")
-						                    .whitelistVeniceFunctions(".")
-						                    .sandbox());
+                                            .rejectAllUnsafeFunctions()
+                                            .withClasses("com.github.jlangch.venice.examples.*:*")
+                                            .whitelistVeniceFunctions(".")
+                                            .sandbox());
         }
 
         public void process(Event event) {
