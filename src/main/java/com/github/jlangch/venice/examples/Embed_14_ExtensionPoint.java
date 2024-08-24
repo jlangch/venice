@@ -29,7 +29,7 @@ import java.util.List;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class Embed_14_ExtensionPoint {
@@ -120,7 +120,15 @@ public class Embed_14_ExtensionPoint {
             // depending on the security requirements, it might by necessary
             // to add a sandbox (SandboxInterceptor) to limit what the
             // extension point script is allowed to do!
-            this.venice = new Venice(new AcceptAllInterceptor());
+            this.venice = new Venice(new SandboxRules()
+						                    .rejectAllIoFunctions()
+						                    .rejectAllConcurrencyFunctions()
+						                    .rejectAllSystemFunctions()
+						                    .rejectAllJavaInteropFunctions()
+						                    .rejectAllSenstiveSpecialForms()
+						                    .withClasses("com.github.jlangch.venice.examples.*:*")
+						                    .whitelistVeniceFunctions(".")
+						                    .sandbox());
         }
 
         public void process(Event event) {

@@ -67,45 +67,46 @@ import com.github.jlangch.venice.javainterop.*;
 // for details see javadoc of class "com.github.jlangch.venice.javainterop.SandboxRules"
 final IInterceptor interceptor =
         new SandboxRules()
-              // Java interop: whitelist rules
-              .withStandardSystemProperties()
-              .withSystemProperties("db.name", "db.port")
-              .withSystemEnvs("SHELL", "HOME")
-              .withClasspathResources("resources/images/*.png")
-              .withClasses(
-                  "java.lang.Math:PI",
-                  "java.lang.Math:min", 
-                  "java.time.ZonedDateTime:*", 
-                  "java.awt.**:*", 
-                  "java.util.ArrayList:new",
-                  "java.util.ArrayList:add")
+                    // Venice functions: blacklist all unsafe functions
+                    .rejectAllUnsafeFunctions()
 
-              // Venice extension modules: whitelist rules
-              .withVeniceModules(
-                  "crypt", 
-                  "kira", 
-                  "math")
+                    // Venice functions:  blacklist additional functions
+                    .rejectVeniceFunctions(
+                        "time/date",
+                        "time/zone-ids")
 
-              // Venice functions: blacklist group rules
-              .rejectAllIoFunctions()
-              .rejectAllConcurrencyFunctions()
-              .rejectAllSystemFunctions()
-              .rejectAllSenstiveSpecialForms()
+                    // Venice functions: whitelist rules for print functions to offset
+                    // blacklist rules by individual functions
+                    .whitelistVeniceFunctions("*print*")
 
-              // Venice functions: blacklist rule for individual functions
-              .rejectVeniceFunctions(
-                  "time/date",
-                  "time/zone-ids")
-                
-              // Venice functions: whitelist rules for print functions to offset
-              // blacklist rules by individual functions
-              .whitelistVeniceFunctions("*print*")
+                    // Venice functions: whitelist Java calls offsets the black list
+                    // rule for java interop from SandboxRules::rejectAllUnsafeFunctions()
+                    .whitelistVeniceFunctions(".")
 
-              // Generic rules	
-              .withMaxFutureThreadPoolSize(20)
-              .withMaxExecTimeSeconds(5)
+                    // Java interop: whitelist rules
+                    .withStandardSystemProperties()
+                    .withSystemProperties("db.name", "db.port")
+                    .withSystemEnvs("SHELL", "HOME")
+                    .withClasspathResources("resources/images/*.png")
+                    .withClasses(
+                        "java.lang.Math:PI",
+                        "java.lang.Math:min",
+                        "java.time.ZonedDateTime:*",
+                        "java.awt.**:*",
+                        "java.util.ArrayList:new",
+                        "java.util.ArrayList:add")
 
-              .sandbox();
+                    // Venice extension modules: whitelist rules
+                    .withVeniceModules(
+                        "crypt",
+                        "kira",
+                        "math")
+
+                    // Generic rules
+                    .withMaxFutureThreadPoolSize(20)
+                    .withMaxExecTimeSeconds(3)
+
+                    .sandbox();
 
 final Venice venice = new Venice(interceptor);
 
@@ -156,6 +157,27 @@ venice.eval("(system-env \"USER\")");
 // => FAIL (accessing non whitelisted classpath resources)
 venice.eval("(io/load-classpath-resource "resources/images/img.tiff")"); 
 ```
+
+Note: 
+
+```
+new SandboxRules()
+      .rejectAllUnsafeFunctions()
+      .sandbox()
+```
+
+ is equivalent to all
+
+```
+new SandboxRules()
+     .rejectAllIoFunctions()
+     .rejectAllConcurrencyFunctions()
+     .rejectAllSystemFunctions()
+     .rejectAllSenstiveSpecialForms()
+     .rejectAllJavaInteropFunctions()
+     .sandbox
+```
+
 
 
 ### Sandbox rejecting all 'unsafe' functions
