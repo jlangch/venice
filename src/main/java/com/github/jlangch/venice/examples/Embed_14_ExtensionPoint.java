@@ -149,8 +149,8 @@ public class Embed_14_ExtensionPoint {
                 final Configuration config
         ) {
             return venice.precompile(
-                      "rule",
-                      config.getValue("rules.cart.discount"),
+                      "filter",
+                      config.getValue("audit.notification.filter"),
                       true);
         }
 
