@@ -105,17 +105,17 @@ defined like:
   (defn calculate [cart coupon]
     (case coupon
       ;; "10% Off Coupon"
-      "SUMMER10"    { :discount  10.0, :freeship  false }
+      "SUMMER10"    { :discount 10.0, :freeship false }
     
       ;; "Free Shipping Coupon"
-      "FREESHIP"    { :discount  0.0, :freeship  true }
+      "FREESHIP"    { :discount 0.0, :freeship true }
       
       ;; "Buy Many Get 30% Off"
       "BMGOF"       (if (>= (. cart :getCount) 2) 
-                      { :discount 30.0, :freeship  false }
-                      { :discount 0.0, :freeship  false })
+                      { :discount 30.0, :freeship false }
+                      { :discount  0.0, :freeship false })
     
-      { :discount  0.0, :freeship  false } )
+      { :discount 0.0, :freeship false } )
     
   (calculate cart coupon))
 ```
