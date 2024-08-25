@@ -40,15 +40,12 @@ public class Embed_15_RuleEngine {
     public static void main(final String[] args) {
         try {
             run();
-            System.exit(0);
         }
         catch(VncException ex) {
             ex.printVeniceStackTrace();
-            System.exit(1);
         }
         catch(RuntimeException ex) {
             ex.printStackTrace();
-            System.exit(1);
         }
     }
 
