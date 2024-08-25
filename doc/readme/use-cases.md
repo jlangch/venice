@@ -165,7 +165,7 @@ public class DiscountRules {
 }
 ```
 
-*The example can be found at [Embed_14_ExtensionPoint](https://github.com/jlangch/venice/blob/master/src/main/java/com/github/jlangch/venice/examples/Embed_15_ExtensionPoint.java)*
+*The example can be found at [Embed_15_ExtensionPoint](https://github.com/jlangch/venice/blob/master/src/main/java/com/github/jlangch/venice/examples/Embed_15_ExtensionPoint.java)*
 
 
 
