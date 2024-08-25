@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.IPreCompiled;
 import com.github.jlangch.venice.Parameters;
@@ -80,8 +81,9 @@ public class Embed_15_RuleEngine {
         final Cart cart = new Cart();
         cart.addIem(new CartItem(new Product("Bottle of water", 1.4), 1));
 
-        // rules
+        // create the discount rules engine
         final DiscountRules rules = new DiscountRules(config);
+        rules.refresh();  // whenever config "rules.cart.discount" has changed
 
         // Check
         System.out.println("Discount #1: " + rules.calculate(cart, "SUMMER10"));
@@ -174,6 +176,7 @@ public class Embed_15_RuleEngine {
 
     public static class DiscountRules {
         public DiscountRules(final Configuration config) {
+            this.config = config;
             // depending on the security requirements, it might by necessary
             // to add a sandbox (SandboxInterceptor) to limit what the
             // extension point script is allowed to do!
@@ -182,19 +185,23 @@ public class Embed_15_RuleEngine {
                                             .withClasses("com.github.jlangch.venice.examples.*:*")
                                             .whitelistVeniceFunctions(".")
                                             .sandbox());
-            this.rule = compileRule(this.venice, config);
+            this.rule.set(compileRule(venice, config));
         }
 
         public Discount calculate(final Cart cart, final String coupon) {
             @SuppressWarnings("unchecked")
             final Map<String,Object> event = (Map<String,Object>)venice.eval(
-                                                rule,
+                                                rule.get(),
                                                 Parameters.of("cart", cart,
                                                               "coupon", coupon));
 
             return new Discount(
                          (double)event.get("discount"),
                          (boolean)event.get("freeship"));
+        }
+
+        public void refresh() {
+            rule.set(compileRule(venice, config));
         }
 
         private static IPreCompiled compileRule(
@@ -207,7 +214,8 @@ public class Embed_15_RuleEngine {
                       true);
         }
 
+        private final Configuration config;
         private final Venice venice;
-        private final IPreCompiled rule;
+        private final AtomicReference<IPreCompiled> rule = new AtomicReference<>();
     }
 }

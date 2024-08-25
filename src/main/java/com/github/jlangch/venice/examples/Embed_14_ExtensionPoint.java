@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.IPreCompiled;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -68,6 +70,7 @@ public class Embed_14_ExtensionPoint {
 
         // Create the not AuditNotifier extension point
         final AuditNotifier notifier = new AuditNotifier(config, notficationService);
+        notifier.refresh();  // whenever config "audit.notification.filter" has changed
 
         // Process a few events
         notifier.process(new Event(EventType.INFO, "webapp.started", "system", "WebApp started"));
@@ -125,19 +128,37 @@ public class Embed_14_ExtensionPoint {
                                             .withClasses("com.github.jlangch.venice.examples.*:*")
                                             .whitelistVeniceFunctions(".")
                                             .sandbox());
+            this.filter.set(compileFilter(venice, config));
         }
 
-        public void process(Event event) {
-            String filter = config.getValue("audit.notification.filter");
-            Boolean match = (Boolean)venice.eval(filter, Parameters.of("event", event));
+        public void process(final Event event) {
+            final Boolean match = (Boolean)venice.eval(
+                                        filter.get(),
+                                        Parameters.of("event", event));
             if (Boolean.TRUE.equals(match)) {
                 notifSvc.sendAuditEventEmail(event);
             }
         }
 
+        public void refresh() {
+            filter.set(compileFilter(venice, config));
+        }
+
+        private static IPreCompiled compileFilter(
+                final Venice venice,
+                final Configuration config
+        ) {
+            return venice.precompile(
+                      "rule",
+                      config.getValue("rules.cart.discount"),
+                      true);
+        }
+
+
         private final Configuration config;
         private final NotificationService notifSvc;
         private final Venice venice;
+        private final AtomicReference<IPreCompiled> filter = new AtomicReference<>();
     }
 
     public static enum EventType {
