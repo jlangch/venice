@@ -203,7 +203,17 @@ public class ExcelSheet {
                 }
             }
         }
-   }
+    }
+
+    public void insertEmptyRow(final int row) {
+        final int lastRowNum = sheet.getLastRowNum();
+
+        // Shift rows from the specified row index down by 1 row to make space for the new row
+        sheet.shiftRows(row, lastRowNum, 1);
+
+        // Create a new empty row at the specified index
+        sheet.createRow(row);
+    }
 
     public Object getValue(final int row, final int col) {
         final Cell cell = getCell(row, col);

@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run steps api (...)
 - function `delete-row` to :excel module to delete a row in sheet
 - function `copy-row-to-end` to :excel module to copy a row to the end of a sheet
+- function `insert-empty-row` to :excel module to insert an empty row to a sheet
 
 
 ## [1.12.30] - 2024-08-16

@@ -91,6 +91,10 @@ public class ExcelSheetWriter<T> {
         sheet.copyRowToEndOfSheet(row1-1, copyValues, copyStyles);
     }
 
+    public void insertEmptyRow(final int row1) {
+        sheet.insertEmptyRow(row1-1);
+    }
+
     public ExcelSheetWriter<T> noHeader() {
         this.noHeader = true;
         return this;
