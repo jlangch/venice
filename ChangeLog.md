@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
-- delete row function to :excel module
+- function `delete-row` to :excel module
 
 
 ## [1.12.30] - 2024-08-16
