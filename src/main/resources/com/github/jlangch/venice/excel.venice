@@ -522,6 +522,39 @@
 
 
 (defn
+  ^{ :arglists '("(insert-empty-row sheet row)")
+     :doc "Inserts an empty row to a sheet."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-value sheet 1 1 "John")
+            (excel/write-value sheet 1 2 "Doe")
+            (excel/write-value sheet 1 3 28)
+            (excel/write-value sheet 2 1 "Sue")
+            (excel/write-value sheet 2 2 "Ford")
+            (excel/write-value sheet 2 3 26)
+            (excel/insert-empty-row sheet 2)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  insert-empty-row [sheet row]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row)  (pos? row)] }
+    (. sheet :insertEmptyRow row))
+
+
+(defn
   ^{ :arglists '(
         "(add-image sheet row col data type)",
         "(add-image sheet row col data type scale-X scale-Y)")

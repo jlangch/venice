@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - function `insert-empty-row` to :excel module to insert an empty row to a sheet
 
 
+
 ## [1.12.30] - 2024-08-16
 
 ### Fixed
