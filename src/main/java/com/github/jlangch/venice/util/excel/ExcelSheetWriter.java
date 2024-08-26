@@ -83,6 +83,10 @@ public class ExcelSheetWriter<T> {
         return n; // no correction
     }
 
+    public void deleteRow(final int row1) {
+        sheet.deleteRow(row1-1);
+    }
+
     public ExcelSheetWriter<T> noHeader() {
         this.noHeader = true;
         return this;

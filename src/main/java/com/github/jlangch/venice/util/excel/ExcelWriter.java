@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *
  * <p><b>Example 1:</b>
  * <pre>
- *    final byte[] data = ExcelBuilder
+ *    final byte[] data = ExcelWriter
  *                           .createXlsx()
  *                           .withSheet("Persons", Person.class)
  *                             .withColumn("FirstName", Person::getFirstName)
@@ -45,7 +45,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *
  * <p><b>Example 2 (header row format):</b>
  * <pre>
- *    final byte[] data = ExcelBuilder
+ *    final byte[] data = ExcelWriter
  *                           .createXlsx()
  *                           .withFont("bold").bold().end()
  *                           .withFont("italic").italic().end()
@@ -65,7 +65,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  * <p><b>Example 3 (footer SUM):</b>
  * <pre>
  *    final List&lt;DataRecord&gt; persons = persons();
- *    final byte[] data = ExcelBuilder
+ *    final byte[] data = ExcelWriter
  *                           .createXlsx()
  *                           .withSheet("Persons", Person.class)
  *                              .withColumn("FirstName")
@@ -88,7 +88,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  * <p><b>Example 4 (footer SUM with styles):</b>
  * <pre>
  *    final List&lt;DataRecord&gt; persons = persons();
- *    final byte[] data = ExcelBuilder
+ *    final byte[] data = ExcelWriter
  *                           .createXlsx()
  *                           .withFont("bold").bold().end()
  *                           .withFont("bold-blue").bold().color(IndexedColors.BLUE).end()

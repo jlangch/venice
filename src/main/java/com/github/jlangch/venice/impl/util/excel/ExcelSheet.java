@@ -146,6 +146,19 @@ public class ExcelSheet {
         }
     }
 
+    public void deleteRow(final int row) {
+        final int lastRowNum = sheet.getLastRowNum();
+        if (row >= 0 && row < lastRowNum) {
+            sheet.shiftRows(row + 1, lastRowNum, -1);
+        }
+        if (row == lastRowNum) {
+            Row lastRow = sheet.getRow(row);
+            if (lastRow != null) {
+                sheet.removeRow(lastRow);
+            }
+        }
+    }
+
     public Object getValue(final int row, final int col) {
         final Cell cell = getCell(row, col);
         return getValue(cell);
