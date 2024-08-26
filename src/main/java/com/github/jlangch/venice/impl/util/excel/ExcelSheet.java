@@ -159,6 +159,52 @@ public class ExcelSheet {
         }
     }
 
+    public void copyRowToEndOfSheet(final int row, final boolean copyValues, final boolean copyStyles) {
+        final Row sourceRow = sheet.getRow(row);
+        if (sourceRow == null) {
+             return;
+        }
+
+        final int lastRowNum = sheet.getLastRowNum();
+        final Row newRow = sheet.createRow(lastRowNum + 1);
+
+        // Copy each cell from the source row to the new row
+        for (int ii = 0; ii < sourceRow.getLastCellNum(); ii++) {
+            final Cell oldCell = sourceRow.getCell(ii);
+            final Cell newCell = newRow.createCell(ii);
+
+            if (oldCell != null) {
+                // Copy style
+                if (copyStyles) {
+                    newCell.setCellStyle(oldCell.getCellStyle());
+                }
+
+                // Copy value based on cell type
+                if (copyValues) {
+                    switch (oldCell.getCellType()) {
+                        case STRING:
+                            newCell.setCellValue(oldCell.getStringCellValue());
+                            break;
+                        case NUMERIC:
+                            newCell.setCellValue(oldCell.getNumericCellValue());
+                            break;
+                        case BOOLEAN:
+                            newCell.setCellValue(oldCell.getBooleanCellValue());
+                            break;
+                        case FORMULA:
+                            newCell.setCellFormula(oldCell.getCellFormula());
+                            break;
+                        case BLANK:
+                            newCell.setBlank();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+   }
+
     public Object getValue(final int row, final int col) {
         final Cell cell = getCell(row, col);
         return getValue(cell);
@@ -317,17 +363,17 @@ public class ExcelSheet {
             final List<LineDataSeries> series
     ) {
         new ExcelCharts(sheet).addLineChart(
-				                title,
-				                areaCellRangeAddr,
-				                legendPosition,
-				                categoryAxisTitle,
-				                categoryAxisPosition,
-				                valueAxisTitle,
-				                valueAxisPosition,
-				                threeDimensional,
-				                varyColors,
-				                categoriesCellRangeAddr,
-				                series);
+                                title,
+                                areaCellRangeAddr,
+                                legendPosition,
+                                categoryAxisTitle,
+                                categoryAxisPosition,
+                                valueAxisTitle,
+                                valueAxisPosition,
+                                threeDimensional,
+                                varyColors,
+                                categoriesCellRangeAddr,
+                                series);
     }
 
     public void addBarChart(
@@ -346,19 +392,19 @@ public class ExcelSheet {
             final List<BarDataSeries> series
     ) {
         new ExcelCharts(sheet).addBarChart(
-					                title,
-					                areaCellRangeAddr,
-					                legendPosition,
-					                categoryAxisTitle,
-					                categoryAxisPosition,
-					                valueAxisTitle,
-					                valueAxisPosition,
-					                threeDimensional,
-					                directionBar,
-					                grouping,
-					                varyColors,
-					                categoriesCellRangeAddr,
-					                series);
+                                    title,
+                                    areaCellRangeAddr,
+                                    legendPosition,
+                                    categoryAxisTitle,
+                                    categoryAxisPosition,
+                                    valueAxisTitle,
+                                    valueAxisPosition,
+                                    threeDimensional,
+                                    directionBar,
+                                    grouping,
+                                    varyColors,
+                                    categoriesCellRangeAddr,
+                                    series);
     }
 
     public void addAreaChart(
@@ -374,16 +420,16 @@ public class ExcelSheet {
             final List<AreaDataSeries> series
     ) {
         new ExcelCharts(sheet).addAreaChart(
-	        		title,
-	                areaCellRangeAddr,
-	                legendPosition,
-	                categoryAxisTitle,
-	                categoryAxisPosition,
-	                valueAxisTitle,
-	                valueAxisPosition,
-	                threeDimensional,
-	                categoriesCellRangeAddr,
-	                series);
+                    title,
+                    areaCellRangeAddr,
+                    legendPosition,
+                    categoryAxisTitle,
+                    categoryAxisPosition,
+                    valueAxisTitle,
+                    valueAxisPosition,
+                    threeDimensional,
+                    categoriesCellRangeAddr,
+                    series);
     }
 
     public void addPieChart(
@@ -396,13 +442,13 @@ public class ExcelSheet {
             final List<PieDataSeries> series
     ) {
         new ExcelCharts(sheet).addPieChart(
-				                title,
-				                areaCellRangeAddr,
-				                legendPosition,
-				                threeDimensional,
-				                varyColors,
-				                categoriesCellRangeAddr,
-				                series);
+                                title,
+                                areaCellRangeAddr,
+                                legendPosition,
+                                threeDimensional,
+                                varyColors,
+                                categoriesCellRangeAddr,
+                                series);
     }
 
     public void setColumnWidthInPoints(final int col, final int width) {

@@ -123,7 +123,7 @@
 (defn
   ^{ :arglists '("(writer type)")
      :doc """
-          Creates a new Excel builder for the given type :xls or :xlsx.
+          Creates a new Excel writer for the given type :xls or :xlsx.
           """
      :examples '(
         """
@@ -486,6 +486,39 @@
     { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row)  (pos? row)] }
     (. sheet :deleteRow row))
+
+
+(defn
+  ^{ :arglists '("(copy-row-to-end sheet row)")
+     :doc "Copies a specific row from a sheet to end of the sheet."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-value sheet 1 1 "John")
+            (excel/write-value sheet 1 2 "Doe")
+            (excel/write-value sheet 1 3 28)
+            (excel/write-value sheet 2 1 "Sue")
+            (excel/write-value sheet 2 2 "Ford")
+            (excel/write-value sheet 2 3 26)
+            (excel/copy-row-to-end sheet 1)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  copy-row-to-end [sheet row]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row)  (pos? row)] }
+    (. sheet :copyRowToEndOfSheet row true true))
 
 
 (defn

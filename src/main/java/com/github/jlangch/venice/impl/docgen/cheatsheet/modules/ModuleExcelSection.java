@@ -62,6 +62,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_data.addItem(diBuilder.getDocItem("excel/write-item", false));
         wr_data.addItem(diBuilder.getDocItem("excel/write-value", false));
         wr_data.addItem(diBuilder.getDocItem("excel/delete-row", false));
+        wr_data.addItem(diBuilder.getDocItem("excel/copy-row-to-end", false));
 
         final DocSection wr_io = new DocSection("Writer I/O", id());
         all.addSection(wr_io);

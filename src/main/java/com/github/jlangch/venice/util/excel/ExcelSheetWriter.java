@@ -87,6 +87,10 @@ public class ExcelSheetWriter<T> {
         sheet.deleteRow(row1-1);
     }
 
+    public void copyRowToEndOfSheet(final int row1, final boolean copyValues, final boolean copyStyles) {
+        sheet.copyRowToEndOfSheet(row1-1, copyValues, copyStyles);
+    }
+
     public ExcelSheetWriter<T> noHeader() {
         this.noHeader = true;
         return this;
