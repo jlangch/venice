@@ -171,7 +171,7 @@
             :xls  (. :ExcelWriter :createXls)
             :xlsx (. :ExcelWriter :createXlsx)
                     (throw (ex :VncException
-                      (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
+                      (str "Invalid Excel type " type ". Use :xls or :xlsx"))))
 
     (string? source)                    
           (. :ExcelWriter :open (io/file-in-stream source))
@@ -247,7 +247,7 @@
 
 
 (defn
-  ^{ :arglists '("(write->bytebuf wbook os)")
+  ^{ :arglists '("(write->bytebuf wbook)")
      :doc "Writes the excel to a bytebuf. Returns the bytebuf."
      :examples '(
         """
@@ -513,6 +513,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
+        "excel/copy-row-to-end", "excel/insert-empty-row",
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
@@ -546,6 +547,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
+        "excel/delete-row", "excel/insert-empty-row",
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
@@ -579,7 +581,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
-        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/delete-row", "excel/copy-row-to-end",
+         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
@@ -2303,8 +2306,8 @@
   ^{ :arglists '("(sheet wbook ref)")
      :doc
         """
-        Returns a sheet from the Excel reader referenced by its name or
-        sheet index.
+        Returns a sheet from the Excel reader or writer referenced by its name 
+        or sheet index.
         """
      :examples '(
         """
