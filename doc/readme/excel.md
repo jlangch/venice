@@ -324,7 +324,7 @@ The function `excel/write-value` writes values to cells. The row and col numbers
 
 </br>
 
-The function `excel/write-values` writes multiple values to consecutive cells in row. The row and col numbers are 1-based!
+The function `excel/write-values` writes multiple values to consecutive cells in row starting at at a col. The row and col numbers are 1-based!
 
 ```clojure
 (do
@@ -334,8 +334,8 @@ The function `excel/write-values` writes multiple values to consecutive cells in
 
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
-    (excel/write-value sheet 1 1 "John" "Doe" 28)
-    (excel/write-value sheet 2 1 "Sue" "Ford" 26)
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Sue" "Ford" 26)
     (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
     (excel/write->file wbook "sample.xlsx")))
 ```
@@ -357,16 +357,9 @@ The function `excel/write-values` writes multiple values to consecutive cells in
   (defn create-excel []
     (let [wbook (excel/writer :xlsx)
           sheet (excel/add-sheet wbook "Sheet 1")]
-      (excel/write-value sheet 1 1 "John")
-      (excel/write-value sheet 1 2 "Doe")
-      (excel/write-value sheet 1 3 28)
-      (excel/write-value sheet 2 1 "Sue")
-      (excel/write-value sheet 2 2 "Ford")
-      (excel/write-value sheet 2 3 26)
-      (excel/write-value sheet 3 1 "Peter")
-      (excel/write-value sheet 3 2 "Adams")
-      (excel/write-value sheet 3 3 45)
-      (excel/write-value sheet 3 4 "Teacher")
+      (excel/write-values sheet 1 1 "John" "Doe" 28)
+      (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+      (excel/write-values sheet 3 1 "Peter" "Adams" 45"Teacher")
       (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
       (excel/write->file wbook "sample.xlsx")))
      
