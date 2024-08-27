@@ -21,7 +21,11 @@
  */
 package com.github.jlangch.venice.util.excel;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 import com.github.jlangch.venice.impl.util.excel.Excel;
 
@@ -122,8 +126,25 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  */
 public class ExcelWriter {
 
-    public ExcelWriter(final Excel managedExcel) {
-        this.managedExcel = managedExcel;
+    public ExcelWriter(final Excel excel) {
+        this.excel = excel;
+    }
+
+
+    public static ExcelWriter open(final byte[] document) {
+        return new ExcelWriter(Excel.open(new ByteArrayInputStream(document)));
+    }
+
+    public static ExcelWriter open(final ByteBuffer document) {
+        return new ExcelWriter(Excel.open(new ByteArrayInputStream(document.array())));
+    }
+
+    public static ExcelWriter open(final File file) {
+        return new ExcelWriter(Excel.open(file));
+    }
+
+    public static ExcelWriter open(final InputStream is) {
+        return new ExcelWriter(Excel.open(is));
     }
 
 
@@ -135,55 +156,64 @@ public class ExcelWriter {
         return new ExcelWriter(Excel.createXlsx());
     }
 
-    public ExcelFontBuilder withFont(final String name) {
-        return new ExcelFontBuilder(this, managedExcel, name);
-    }
-
-    public ExcelCellStyleBuilder withCellStyle(final String name) {
-        return new ExcelCellStyleBuilder(this, managedExcel, name);
-    }
-
-    public <T> ExcelSheetWriter<T> withSheet(final String name, final Class<T> type) {
-        return new ExcelSheetWriter<T>(this, managedExcel.createSheet(name));
-    }
 
     public int getNumberOfSheets() {
-        return managedExcel.getNumberOfSheets();
+        return excel.getNumberOfSheets();
     }
 
     public void evaluateAllFormulas() {
-        managedExcel.evaluateAllFormulas();
+        excel.evaluateAllFormulas();
     }
 
-    public Excel toExcel() {
-        return managedExcel;
+
+    public ExcelFontBuilder withFont(final String name) {
+        return new ExcelFontBuilder(this, excel, name);
+    }
+
+    public ExcelCellStyleBuilder withCellStyle(final String name) {
+        return new ExcelCellStyleBuilder(this, excel, name);
+    }
+
+    public <T> ExcelSheetWriter<T> withSheet(final String name, final Class<T> type) {
+        return new ExcelSheetWriter<T>(this, excel.createSheet(name));
+    }
+
+
+    public void write(final File file) {
+        excel.write(file);
     }
 
     public void write(final OutputStream outputStream) {
-        managedExcel.write(outputStream);
+        excel.write(outputStream);
     }
 
     public byte[] writeToBytes() {
-        return managedExcel.writeToBytes();
+        return excel.writeToBytes();
     }
 
     public ExcelReader reader() {
-        managedExcel.close();
-        return new ExcelReader(managedExcel);
+        excel.close();
+        return new ExcelReader(excel);
     }
 
     public ExcelWriter end() {
-        managedExcel.close();
+        excel.close();
         return this;
     }
 
+
     public <T> ExcelSheetWriter<T> getSheet(final String name) {
-        return new ExcelSheetWriter<T>(this, managedExcel.getSheet(name));
+        return new ExcelSheetWriter<T>(this, excel.getSheet(name));
     }
 
     public <T> ExcelSheetWriter<T> getSheetAt(final int sheetIdx) {
-        return new ExcelSheetWriter<T>(this, managedExcel.getSheetAt(sheetIdx-1));
+        return new ExcelSheetWriter<T>(this, excel.getSheetAt(sheetIdx-1));
     }
 
-    private final Excel managedExcel;
+
+    public Excel toExcel() {
+        return excel;
+    }
+
+    private final Excel excel;
 }

@@ -150,23 +150,23 @@ public class Excel implements Closeable {
     }
 
     public ExcelSheet getSheet(final String name) {
-    	final Sheet sheet = workbook.getSheet(name);
-    	if (sheet == null) {
-    		throw new ExcelException(String.format("The sheet '%s' does not exist", name));
-    	}
-    	else {
-    		return new ExcelSheet(sheet, cellDataStyles, evaluator);
-    	}
+        final Sheet sheet = workbook.getSheet(name);
+        if (sheet == null) {
+            throw new ExcelException(String.format("The sheet '%s' does not exist", name));
+        }
+        else {
+            return new ExcelSheet(sheet, cellDataStyles, evaluator);
+        }
     }
 
     public ExcelSheet getSheetAt(final int sheetIdx) {
-    	final Sheet sheet = workbook.getSheetAt(sheetIdx);
-    	if (sheet == null) {
-    		throw new ExcelException(String.format("The sheet at the index '%d' does not exist", sheetIdx+1));
-    	}
-    	else {
-    		return new ExcelSheet(sheet, cellDataStyles, evaluator);
-    	}
+        final Sheet sheet = workbook.getSheetAt(sheetIdx);
+        if (sheet == null) {
+            throw new ExcelException(String.format("The sheet at the index '%d' does not exist", sheetIdx+1));
+        }
+        else {
+            return new ExcelSheet(sheet, cellDataStyles, evaluator);
+        }
     }
 
     public int getNumberOfSheets() {
@@ -279,6 +279,23 @@ public class Excel implements Closeable {
         cellDataStyles.registerCellFormat(
                 id, format, fontRefName, bgColor, wrapText, hAlign, vAlign, rotation,
                 borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
+    }
+
+    public void write(final File file) {
+        if (file == null) {
+            close();
+            throw new IllegalArgumentException("An 'file' must not be null");
+        }
+
+        try(FileOutputStream fos = new FileOutputStream(file)) {
+            this.workbook.write(fos);
+        }
+        catch(Exception ex) {
+            throw new ExcelException("Failed to write the Excel document to the file " + file, ex);
+        }
+        finally {
+            close();
+        }
     }
 
     public void write(final OutputStream outputStream) {
