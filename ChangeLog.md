@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.31] - 2024-08-xx
+## [1.12.31] - 2024-08-27
 
 ### Added
 
@@ -24,7 +24,7 @@ All notable changes to this project will be documented in this file.
 - function `copy-row` to :excel module to copy a row to another row in a sheet
 - function `copy-row-to-end` to :excel module to copy a row to the end of a sheet
 - function `insert-empty-row` to :excel module to insert an empty row in a sheet
-- function `delete-row` to :excel module to clear a row in a sheet
+- function `clear-row` to :excel module to clear a row's cells in a sheet
 
 
 

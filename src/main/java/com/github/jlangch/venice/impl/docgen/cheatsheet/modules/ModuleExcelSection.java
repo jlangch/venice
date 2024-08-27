@@ -56,6 +56,12 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
         wr.addItem(diBuilder.getDocItem("excel/sheet", false));
 
+        final DocSection wr_io = new DocSection("Writer I/O", id());
+        all.addSection(wr_io);
+        wr_io.addItem(diBuilder.getDocItem("excel/write->file", false));
+        wr_io.addItem(diBuilder.getDocItem("excel/write->stream", false));
+        wr_io.addItem(diBuilder.getDocItem("excel/write->bytebuf", false));
+
         final DocSection wr_data = new DocSection("Writer Data", id());
         all.addSection(wr_data);
         wr_data.addItem(diBuilder.getDocItem("excel/write-data", false));
@@ -68,12 +74,6 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_data.addItem(diBuilder.getDocItem("excel/copy-row", false));
         wr_data.addItem(diBuilder.getDocItem("excel/copy-row-to-end", false));
         wr_data.addItem(diBuilder.getDocItem("excel/insert-empty-row", false));
-
-        final DocSection wr_io = new DocSection("Writer I/O", id());
-        all.addSection(wr_io);
-        wr_io.addItem(diBuilder.getDocItem("excel/write->file", false));
-        wr_io.addItem(diBuilder.getDocItem("excel/write->stream", false));
-        wr_io.addItem(diBuilder.getDocItem("excel/write->bytebuf", false));
 
         final DocSection wr_util = new DocSection("Writer Util", id());
         all.addSection(wr_util);
