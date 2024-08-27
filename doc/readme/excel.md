@@ -105,7 +105,7 @@ the `.xls` file name extension.
 
 #### Create New Excel
 
-Creating a new Excel from scratch.
+Creating a new Excel from scratch (create-modify-write).
 
 
 ```clojure
@@ -130,7 +130,7 @@ Creating a new Excel from scratch.
 
 #### Modify Existing Excel
 
-Modify an existing Excel
+Modify an existing Excel (read-modify-write).
 
 ```clojure
 (do
