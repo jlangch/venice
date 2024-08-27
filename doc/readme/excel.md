@@ -151,7 +151,7 @@ Modify an existing Excel
   ;; load the Excel from "sample.xlsx" and modify and save it as "sample1.xlsx"
   (let [wbook (excel/writer "sample.xlsx")
         sheet (excel/sheet wbook 1)]        
-    (excel/write-value sheet 1 3 38)  ;; corrrect John Doe's age
+    (excel/write-value sheet 1 3 38)  ;; correct John Doe's age 28 -> 38
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample1.xlsx")))
 ```
