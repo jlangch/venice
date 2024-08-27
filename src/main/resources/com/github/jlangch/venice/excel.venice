@@ -513,7 +513,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
-        "excel/copy-row-to-end", "excel/insert-empty-row",
+        "excel/clear-row", "excel/copy-row", "excel/copy-row-to-end",
+        "excel/insert-empty-row",
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
@@ -547,7 +548,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
-        "excel/delete-row", "excel/insert-empty-row",
+        "excel/clear-row", "excel/delete-row", 
+        "excel/copy-row", "excel/insert-empty-row",
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
@@ -556,6 +558,77 @@
     { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row)  (pos? row)] }
     (. sheet :copyRowToEndOfSheet row true true))
+
+
+(defn
+  ^{ :arglists '("(copy-row sheet row-from row-to)")
+     :doc "Copies a specific row in a sheet."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-value sheet 1 1 "John")
+            (excel/write-value sheet 1 2 "Doe")
+            (excel/write-value sheet 1 3 28)
+            (excel/write-value sheet 2 1 "Sue")
+            (excel/write-value sheet 2 2 "Ford")
+            (excel/write-value sheet 2 3 26)
+            (excel/copy-row sheet 1 2)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/clear-row", "excel/delete-row", 
+        "excel/copy-row-to-end", "excel/insert-empty-row",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  copy-row [sheet row-from row-to]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row-from)  (pos? row-from)
+            (long? row-to)  (pos? row-to)] }
+    (. sheet :copyRow row-from row-to true true))
+
+(defn
+  ^{ :arglists '("(clear-row sheet row)")
+     :doc "Clears the values in a specific row in a sheet."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-value sheet 1 1 "John")
+            (excel/write-value sheet 1 2 "Doe")
+            (excel/write-value sheet 1 3 28)
+            (excel/write-value sheet 2 1 "Sue")
+            (excel/write-value sheet 2 2 "Ford")
+            (excel/write-value sheet 2 3 26)
+            (excel/clear-row sheet 2)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/delete-row", 
+        "excel/copy-row", "excel/copy-row-to-end",
+        "excel/insert-empty-row",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  clear-row [sheet row]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row)  (pos? row)] }
+    (. sheet :clearRow row))
 
 
 (defn
@@ -581,8 +654,9 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
-        "excel/delete-row", "excel/copy-row-to-end",
-         "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/clear-row", "excel/delete-row", 
+        "excel/copy-row", "excel/copy-row-to-end",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
