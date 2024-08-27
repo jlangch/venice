@@ -30,6 +30,9 @@ libraries:
 
 1. [Writing Excel files](#writing-excel-files)
     * [Introduction Example](#introduction-example)
+    * [Create vs Modify](#create-vs-modify)
+       * [Create New Excel](#create-new-excel)
+       * [Modify Existing Excel](#modify-existing-excel)
     * [Examples](#write-examples)
        * [Write to an output stream](#write-to-an-output-stream)
        * [Write to a byte buffer](#write-to-a-byte-buffer)
@@ -57,8 +60,6 @@ libraries:
     * [Open Excel](#open-excel)
     * [Reading Cell Metadata](#reading-cell-metadata)
     * [Reading Cells](#reading-cells)
-3. [Modifying Excel files](#modifying-excel-files)
-    * [Example](#modify-example)
 
 
 
@@ -99,7 +100,69 @@ the `.xls` file name extension.
 [top](#content)
 
 
+
+### Create vs Modify
+
+#### Create New Excel
+
+Creating a new Excel from scratch.
+
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  ;; create a new Excel and save it as "sample.xlsx"
+  (let [wbook  (excel/writer :xlsx)
+        sheet1 (excel/add-sheet wbook "Data1")
+        sheet2 (excel/add-sheet wbook "Data2")]
+    (excel/write-values sheet1 1 1 "John" "Doe" 28)
+    (excel/write-values sheet1 2 1 "Sue" "Ford" 26)
+    (excel/write-values sheet2 1 1 "France" "Paris")
+    (excel/write-values sheet2 2 1 "Italy" "Rome")
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+[top](#content)
+
+
+#### Modify Existing Excel
+
+Modify an existing Excel
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  ;; create a new Excel and save it as "sample.xlsx"
+  (let [wbook  (excel/writer :xlsx)
+        sheet1 (excel/add-sheet wbook "Data1")
+        sheet2 (excel/add-sheet wbook "Data2")]
+    (excel/write-values sheet1 1 1 "John" "Doe" 28)
+    (excel/write-values sheet1 2 1 "Sue" "Ford" 26)
+    (excel/write-values sheet2 1 1 "France" "Paris")
+    (excel/write-values sheet2 2 1 "Italy" "Rome")
+    (excel/write->file wbook "sample.xlsx")))
+
+  ;; load the Excel from "sample.xlsx" and modify and save it as "sample1.xlsx"
+  (let [wbook (excel/writer "sample.xlsx")
+        sheet (excel/sheet wbook 1)]        
+    (excel/write-value sheet 1 3 38)  ;; corrrect John Doe's age
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample1.xlsx")))
+```
+
+[top](#content)
+
+
+
+
 ### Write Examples
+
 
 #### Write to an output stream
 
@@ -1368,37 +1431,5 @@ Cell (1,9): nil
 
 
 
-## Modifying Excel files
-
-To modify an existing Excel: open it and convert the workbook for writing.
-
-
-### Modify Example
-
-```clojure
-(do
-  (ns test)
-
-  (load-module :excel)
-  
-  (defn create-excel []
-    (let [wbook  (excel/writer :xlsx)
-          sheet1 (excel/add-sheet wbook "Data1")
-          sheet2 (excel/add-sheet wbook "Data2")]
-      (excel/write-data sheet1 [[100 101]])
-      (excel/write-data sheet2 [[300 301 302] [400 401 402]])
-      (excel/write->file wbook "sample.xlsx")))
-      
-  (create-excel)
-  
-  (let [wbook-rd  (excel/open "sample.xlsx")
-        wbook-wr  (excel/convert->writer wbook-rd)
-        sheet-wr  (excel/sheet wbook-wr 1) ]
-    (excel/write-value sheet-wr 1 1 "foo")
-    (excel/auto-size-columns sheet-wr)
-    (excel/write->file wbook-wr "sample.xlsx")))
-```
-
-[top](#content)
 
 
