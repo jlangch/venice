@@ -91,6 +91,14 @@ public class ExcelSheetWriter<T> {
         sheet.copyRowToEndOfSheet(row1-1, copyValues, copyStyles);
     }
 
+    public void clearRow(final int row1) {
+        sheet.clearRow(row1-1);
+    }
+
+    public void copyRow(final int row1From, final int row1To,  final boolean copyValues, final boolean copyStyles) {
+        sheet.copyRow(row1From-1, row1To-1, copyValues, copyStyles);
+    }
+
     public void insertEmptyRow(final int row1) {
         sheet.insertEmptyRow(row1-1);
     }
@@ -385,24 +393,24 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-	public ExcelSheetWriter<T> hideColumn(final String colID) {
-		if (colID != null) {
-			int colNr1 = 1;
-			for(ExcelColumnDef<T> colDef : columnDefs) {
-				if (colID.equals(colDef.id)) {
-					hideColumn(colNr1);
-					break;
-				}
-				colNr1++;
-			}
-		}
-		return this;
-	}
+    public ExcelSheetWriter<T> hideColumn(final String colID) {
+        if (colID != null) {
+            int colNr1 = 1;
+            for(ExcelColumnDef<T> colDef : columnDefs) {
+                if (colID.equals(colDef.id)) {
+                    hideColumn(colNr1);
+                    break;
+                }
+                colNr1++;
+            }
+        }
+        return this;
+    }
 
-	public ExcelSheetWriter<T> hideColumns(final String... colIDs) {
-		for(String id : colIDs) hideColumn(id);
-		return this;
-	}
+    public ExcelSheetWriter<T> hideColumns(final String... colIDs) {
+        for(String id : colIDs) hideColumn(id);
+        return this;
+    }
 
     public ExcelSheetWriter<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
         sheet.addMergedRegion(rowFrom1-1, rowTo1-1, colFrom1-1, colTo1-1);

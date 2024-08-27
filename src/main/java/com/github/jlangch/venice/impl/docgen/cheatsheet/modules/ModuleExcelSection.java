@@ -62,7 +62,9 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_data.addItem(diBuilder.getDocItem("excel/write-items", false));
         wr_data.addItem(diBuilder.getDocItem("excel/write-item", false));
         wr_data.addItem(diBuilder.getDocItem("excel/write-value", false));
+        wr_data.addItem(diBuilder.getDocItem("excel/clear-row", false));
         wr_data.addItem(diBuilder.getDocItem("excel/delete-row", false));
+        wr_data.addItem(diBuilder.getDocItem("excel/copy-row", false));
         wr_data.addItem(diBuilder.getDocItem("excel/copy-row-to-end", false));
         wr_data.addItem(diBuilder.getDocItem("excel/insert-empty-row", false));
 

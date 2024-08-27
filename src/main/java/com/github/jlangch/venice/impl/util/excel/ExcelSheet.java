@@ -27,6 +27,8 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -159,10 +161,28 @@ public class ExcelSheet {
         }
     }
 
+    public void clearRow(final int row) {
+        final Row sourceRow = sheet.getRow(row);
+        if (sourceRow == null) {
+            return;
+        }
+
+        final List<Cell> cells = new ArrayList<>();
+        for (int ii = 0; ii < sourceRow.getLastCellNum(); ii++) {
+            final Cell cell = sourceRow.getCell(ii);
+            if (cell != null) {
+                cells.add(cell);
+            }
+        }
+
+        Collections.reverse(cells);
+        cells.forEach(c -> sourceRow.removeCell(c));
+    }
+
     public void copyRowToEndOfSheet(final int row, final boolean copyValues, final boolean copyStyles) {
         final Row sourceRow = sheet.getRow(row);
         if (sourceRow == null) {
-             return;
+            return;
         }
 
         final int lastRowNum = sheet.getLastRowNum();
@@ -179,26 +199,46 @@ public class ExcelSheet {
                     newCell.setCellStyle(oldCell.getCellStyle());
                 }
 
-                // Copy value based on cell type
+                // Copy value
                 if (copyValues) {
-                    switch (oldCell.getCellType()) {
-                        case STRING:
-                            newCell.setCellValue(oldCell.getStringCellValue());
-                            break;
-                        case NUMERIC:
-                            newCell.setCellValue(oldCell.getNumericCellValue());
-                            break;
-                        case BOOLEAN:
-                            newCell.setCellValue(oldCell.getBooleanCellValue());
-                            break;
-                        case FORMULA:
-                            newCell.setCellFormula(oldCell.getCellFormula());
-                            break;
-                        case BLANK:
-                            newCell.setBlank();
-                            break;
-                        default:
-                            break;
+                    copyCellValue(oldCell, newCell);
+                }
+            }
+        }
+    }
+
+    public void copyRow(final int rowFrom, final int rowTo, final boolean copyValues, final boolean copyStyles) {
+        final int lastRowNum = sheet.getLastRowNum();
+
+        if (rowTo > lastRowNum) {
+            copyRowToEndOfSheet(rowFrom, copyValues, copyStyles);
+        }
+        else {
+            final Row sourceRow = sheet.getRow(rowFrom);
+            if (sourceRow == null) {
+                 return;
+            }
+            final Row destRow = sheet.getRow(rowTo);
+            if (destRow == null) {
+                 return;
+            }
+
+            clearRow(rowTo);
+
+            // Copy each cell from the source row to the dest row
+            for (int ii = 0; ii < sourceRow.getLastCellNum(); ii++) {
+                final Cell oldCell = sourceRow.getCell(ii);
+                final Cell destCell = destRow.getCell(ii, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+                if (oldCell != null) {
+                    // Copy style
+                    if (copyStyles) {
+                        destCell.setCellStyle(oldCell.getCellStyle());
+                    }
+
+                    // Copy value
+                    if (copyValues) {
+                        copyCellValue(oldCell, destCell);
                     }
                 }
             }
@@ -335,6 +375,10 @@ public class ExcelSheet {
 
     public void setDate(final int row, final int col, final ZonedDateTime value) {
         setCellValue(getCellCreate(row, col), value, "date");
+    }
+
+    public void setBlank(final int row, final int col) {
+        getCellCreate(row, col).setBlank();
     }
 
     public void addImage(
@@ -919,6 +963,27 @@ public class ExcelSheet {
         }
     }
 
+    private void copyCellValue(final Cell from, final Cell to) {
+        switch (from.getCellType()) {
+            case STRING:
+                to.setCellValue(from.getStringCellValue());
+                break;
+            case NUMERIC:
+                to.setCellValue(from.getNumericCellValue());
+                break;
+            case BOOLEAN:
+                to.setCellValue(from.getBooleanCellValue());
+                break;
+            case FORMULA:
+                to.setCellFormula(from.getCellFormula());
+                break;
+            case BLANK:
+                to.setBlank();
+                break;
+            default:
+                break;
+        }
+    }
 
 
 
