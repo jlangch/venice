@@ -103,6 +103,10 @@ public class ExcelSheetWriter<T> {
         sheet.insertEmptyRow(row1-1);
     }
 
+    public void insertEmptyRows(final int row1, final int count) {
+        sheet.insertEmptyRows(row1-1, count);
+    }
+
     public ExcelSheetWriter<T> noHeader() {
         this.noHeader = true;
         return this;

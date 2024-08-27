@@ -649,8 +649,10 @@
 
 
 (defn
-  ^{ :arglists '("(insert-empty-row sheet row)")
-     :doc "Inserts an empty row to a sheet."
+  ^{ :arglists '(
+        "(insert-empty-row sheet row)",
+        "(insert-empty-row sheet row count)")
+     :doc "Inserts an empty row or multiple empty rows to a sheet."
      :examples '(
         """
         (do
@@ -674,10 +676,18 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  insert-empty-row [sheet row]
+  insert-empty-row 
+  
+  ([sheet row]
     { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row)  (pos? row)] }
     (. sheet :insertEmptyRow row))
+  
+  ([sheet row count]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row)  (pos? row)
+            (long? count)  (pos? count)] }
+    (. sheet :insertEmptyRows row count)))
 
 
 (defn

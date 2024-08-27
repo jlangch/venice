@@ -255,6 +255,18 @@ public class ExcelSheet {
         sheet.createRow(row);
     }
 
+    public void insertEmptyRows(final int row, final int count) {
+        for(int ii=0; ii<count; ii++) {
+            final int lastRowNum = sheet.getLastRowNum();
+
+            // Shift rows from the specified row index down by 1 row to make space for the new row
+            sheet.shiftRows(row, lastRowNum, 1);
+
+            // Create a new empty row at the specified index
+            sheet.createRow(row);
+        }
+    }
+
     public Object getValue(final int row, final int col) {
         final Cell cell = getCell(row, col);
         return getValue(cell);
