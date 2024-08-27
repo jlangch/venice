@@ -38,7 +38,7 @@ libraries:
        * [Supported data types](#supported-data-types)
        * [Writing 2D vector data](#writing-2d-tabular-data)
        * [Writing to individual cells](#writing-to-individual-cells)
-       * [Insert, Copy and Delete Rows](#insert-copy-and-delete-rows)
+       * [Insert, Copy, Clear and Delete Rows](#insert-copy-clear-and-delete-rows)
        * [Merge Cells](#merge-cells)
        * [Using formulas](#using-formulas)
        * [Images](#images)
@@ -326,7 +326,7 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 
 
 
-#### Insert, Copy and Delete Rows
+#### Insert, Copy, Clear and Delete Rows
 
 ```clojure
 (do
@@ -343,6 +343,10 @@ The functions `excel/write-value` To write values to cells. The row and col numb
       (excel/write-value sheet 2 1 "Sue")
       (excel/write-value sheet 2 2 "Ford")
       (excel/write-value sheet 2 3 26)
+      (excel/write-value sheet 3 1 "Peter")
+      (excel/write-value sheet 3 2 "Adams")
+      (excel/write-value sheet 3 3 45)
+      (excel/write-value sheet 3 4 "Teacher")
       (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
       (excel/write->file wbook "sample.xlsx")))
      
@@ -353,8 +357,10 @@ The functions `excel/write-value` To write values to cells. The row and col numb
      (excel/copy-row-to-end sheet 1)
      (excel/copy-row-to-end sheet 1)
      (excel/copy-row-to-end sheet 1)
-     (excel/insert-empty-row sheet 2)
-     (excel/delete-row sheet 3)
+     (excel/copy-row sheet 2 3)
+     (excel/clear-row sheet 4)
+     (excel/delete-row sheet 5)
+     (excel/insert-empty-row sheet 2)    
      (excel/write->file wbook "sample1.xlsx")))
 ```
 
