@@ -300,7 +300,7 @@ Write the data of a 2D vector to an excel sheet.
 
 #### Writing to individual cells
 
-The functions `excel/write-value` To write values to cells. The row and col numbers are 1-based!
+The function `excel/write-value` writes values to cells. The row and col numbers are 1-based!
 
 ```clojure
 (do
@@ -316,6 +316,26 @@ The functions `excel/write-value` To write values to cells. The row and col numb
     (excel/write-value sheet 2 1 "Sue")
     (excel/write-value sheet 2 2 "Ford")
     (excel/write-value sheet 2 3 26)
+    (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
+
+</br>
+
+The function `excel/write-values` writes multiple values to consecutive cells in row. The row and col numbers are 1-based!
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/write-value sheet 1 1 "John" "Doe" 28)
+    (excel/write-value sheet 2 1 "Sue" "Ford" 26)
     (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
     (excel/write->file wbook "sample.xlsx")))
 ```

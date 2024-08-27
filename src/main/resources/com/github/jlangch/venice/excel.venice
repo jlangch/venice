@@ -425,7 +425,9 @@
 
 
 (defn
-  ^{ :arglists '("(write-value sheet row col val)")
+  ^{ :arglists '(
+        "(write-value sheet row col val)",
+        "(write-value sheet row col val style)")
      :doc "Writes a value to a specific cell given by its row and col."
      :examples '(
         """
@@ -433,9 +435,6 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :field :first })
-            (excel/add-column sheet "Last Name" { :field :last })
-            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John")
             (excel/write-value sheet 1 2 "Doe")
             (excel/write-value sheet 1 3 28)
@@ -454,9 +453,6 @@
             (excel/add-font wbook :bold { :bold true })
             (excel/add-style wbook :italic { :font :italic })
             (excel/add-style wbook :bold { :font :bold })
-            (excel/add-column sheet "First Name" { :field :first })
-            (excel/add-column sheet "Last Name" { :field :last })
-            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John" :italic)
             (excel/write-value sheet 1 2 "Doe"  :italic)
             (excel/write-value sheet 1 3 28     :bold)
@@ -491,6 +487,37 @@
 
 
 (defn
+  ^{ :arglists '("(write-values sheet row col & vals)")
+     :doc """
+          Writes multiples value to a row starting at col and incrementing col
+          for each value
+          """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  write-values
+
+  [sheet row col & vals]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row) (long? col) (pos? row) (pos? col)] }
+    (docoll #(write-value sheet row (first %) (second %))
+            (map vector (lazy-seq col inc) vals)))
+
+
+(defn
   ^{ :arglists '("(delete-row sheet row)")
      :doc "Deletes a specific row from a sheet."
      :examples '(
@@ -499,9 +526,6 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :field :first })
-            (excel/add-column sheet "Last Name" { :field :last })
-            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John")
             (excel/write-value sheet 1 2 "Doe")
             (excel/write-value sheet 1 3 28)
@@ -534,9 +558,6 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :field :first })
-            (excel/add-column sheet "Last Name" { :field :last })
-            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John")
             (excel/write-value sheet 1 2 "Doe")
             (excel/write-value sheet 1 3 28)
@@ -569,9 +590,6 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :field :first })
-            (excel/add-column sheet "Last Name" { :field :last })
-            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John")
             (excel/write-value sheet 1 2 "Doe")
             (excel/write-value sheet 1 3 28)
@@ -604,9 +622,6 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :field :first })
-            (excel/add-column sheet "Last Name" { :field :last })
-            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John")
             (excel/write-value sheet 1 2 "Doe")
             (excel/write-value sheet 1 3 28)
@@ -640,9 +655,6 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :field :first })
-            (excel/add-column sheet "Last Name" { :field :last })
-            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John")
             (excel/write-value sheet 1 2 "Doe")
             (excel/write-value sheet 1 3 28)
