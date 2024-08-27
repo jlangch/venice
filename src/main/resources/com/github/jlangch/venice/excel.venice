@@ -463,6 +463,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
+        "excel/write-values", 
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
@@ -504,6 +505,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
+        "excel/write-value", 
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
