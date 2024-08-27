@@ -428,7 +428,11 @@
   ^{ :arglists '(
         "(write-value sheet row col val)",
         "(write-value sheet row col val style)")
-     :doc "Writes a value to a specific cell given by its row and col."
+     :doc 
+        """
+        Writes a value with an optional to a specific cell given by its 
+        row and col.
+        """
      :examples '(
         """
         (do
