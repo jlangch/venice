@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.31] - 2024-08-xx
+## [1.12.32] - 2024-08-xx
 
 ### Added
 
@@ -13,6 +13,13 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.31] - 2024-08-xx
+
+### Added
+
 - function `delete-row` to :excel module to delete a row in a sheet
 - function `copy-row` to :excel module to copy a row to another row in a sheet
 - function `copy-row-to-end` to :excel module to copy a row to the end of a sheet
