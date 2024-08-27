@@ -38,6 +38,7 @@ libraries:
        * [Supported data types](#supported-data-types)
        * [Writing 2D vector data](#writing-2d-tabular-data)
        * [Writing to individual cells](#writing-to-individual-cells)
+       * [Insert, Copy and Delete Rows](#insert-copy-and-delete-rows)
        * [Merge Cells](#merge-cells)
        * [Using formulas](#using-formulas)
        * [Images](#images)
@@ -320,6 +321,46 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
+
+[top](#content)
+
+
+
+#### Insert, Copy and Delete Rows
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  (defn create-excel []
+    (let [wbook (excel/writer :xlsx)
+          sheet (excel/add-sheet wbook "Sheet 1")]
+      (excel/write-value sheet 1 1 "John")
+      (excel/write-value sheet 1 2 "Doe")
+      (excel/write-value sheet 1 3 28)
+      (excel/write-value sheet 2 1 "Sue")
+      (excel/write-value sheet 2 2 "Ford")
+      (excel/write-value sheet 2 3 26)
+      (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
+      (excel/write->file wbook "sample.xlsx")))
+     
+   (create-excel)
+    
+   (let [wbook (excel/writer "sample.xlsx")
+         sheet (excel/sheet wbook "Sheet 1")]        
+     (excel/copy-row-to-end sheet 1)
+     (excel/copy-row-to-end sheet 1)
+     (excel/copy-row-to-end sheet 1)
+     (excel/insert-empty-row sheet 2)
+     (excel/delete-row sheet 3)
+     (excel/write->file wbook "sample1.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-024.png" width="400">
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-025.png" width="400">
 
 [top](#content)
 

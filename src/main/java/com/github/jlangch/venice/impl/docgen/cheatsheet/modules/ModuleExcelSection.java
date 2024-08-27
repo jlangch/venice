@@ -54,6 +54,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr.addItem(diBuilder.getDocItem("excel/add-column", false));
         wr.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         wr.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
+        wr.addItem(diBuilder.getDocItem("excel/sheet", false));
 
         final DocSection wr_data = new DocSection("Writer Data", id());
         all.addSection(wr_data);
