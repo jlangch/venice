@@ -121,9 +121,13 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(writer type)")
+  ^{ :arglists '("(writer type)", "(writer source)")
      :doc """
-          Creates a new Excel writer for the given type :xls or :xlsx.
+          Creates a new Excel writer for the given type :xls or :xlsx or opens
+          an existing Excel to modify it.
+
+          Supported sources are string file path, bytebuf, `:java.io.File`,
+          or `:java.io.InputStream`.
           """
      :examples '(
         """
@@ -139,19 +143,50 @@
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
+        """,
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer "sample.xlsx")
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
         "excel/add-sheet", "excel/add-font", "excel/add-style",
         "excel/write->file", "excel/write->stream", "excel/write->bytebuf",
         "excel/evaluate-formulas" )}
 
-  writer [type]
+  writer [source]
 
-  (case type
-    :xls  (. :ExcelWriter :createXls)
-    :xlsx (. :ExcelWriter :createXlsx)
-    (throw (ex :VncException
-               (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
+  (cond
+    (keyword? source)                     
+          (case source
+            :xls  (. :ExcelWriter :createXls)
+            :xlsx (. :ExcelWriter :createXlsx)
+                    (throw (ex :VncException
+                      (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
+
+    (string? source)                    
+          (. :ExcelWriter :open (io/file-in-stream source))
+
+    (bytebuf? source)                   
+          (. :ExcelWriter :open (io/bytebuf-in-stream source))
+
+    (io/file? source)                   
+          (. :ExcelWriter :open (io/file-in-stream source))
+
+    (instance-of? :InputStream source)  
+          (. :ExcelWriter :open source)
+
+    :else (throw (ex :VncException
+                     (str "Invalid Excel open source " (type source) )))))
 
 
 (defn
