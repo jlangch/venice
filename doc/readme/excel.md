@@ -387,7 +387,7 @@ The function `excel/write-value` writes values to cells. The row and col numbers
 
 </br>
 
-The function `excel/write-values` writes multiple values to consecutive cells in row starting at at a col. The row and col numbers are 1-based!
+The function `excel/write-values` writes multiple values to consecutive cells in row starting at a column. The row and col numbers are 1-based!
 
 ```clojure
 (do
