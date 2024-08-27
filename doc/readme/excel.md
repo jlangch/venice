@@ -24,7 +24,7 @@ libraries:
   (repl/restart))
 ```
 
-
+</br>
 
 ## Content
 
@@ -61,7 +61,7 @@ libraries:
     * [Reading Cell Metadata](#reading-cell-metadata)
     * [Reading Cells](#reading-cells)
 
-
+</br>
 
 ## Writing Excel files
 
@@ -1170,6 +1170,8 @@ Freeze the top row:
 
 [top](#content)
 
+
+</br>
 
 
 ## Reading Excel files
