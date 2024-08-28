@@ -43,6 +43,8 @@ libraries:
        * [Writing to individual cells](#writing-to-individual-cells)
        * [Insert, Copy, Clear and Delete Rows](#insert-copy-clear-and-delete-rows)
        * [Merge Cells](#merge-cells)
+       * [Row / Col Ranges](#row-col-ranges)
+       * [Print Cell Style Inof](#print-cell-style-info)
        * [Using formulas](#using-formulas)
        * [Images](#images)
        * [Charts](#charts)
@@ -476,6 +478,90 @@ The function `excel/write-values` writes multiple values to consecutive cells in
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-010.png" width="400">
 
 [top](#content)
+
+
+
+#### Row / Col Ranges
+
+**Row range**
+
+```clojure
+(do
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Mary" "Smith" 28)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx"))
+
+  (let [wbook (excel/open "sample.xlsx")
+        sheet (excel/sheet wbook "Sheet 1")]
+    (excel/sheet-row-range sheet)))
+```
+
+Prints: `[1 2]`
+
+
+**Col range**
+
+```clojure
+(do
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Mary" "Smith" 28)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx"))
+
+  (let [wbook (excel/open "sample.xlsx")
+        sheet (excel/sheet wbook "Sheet 1")]
+    (excel/sheet-col-range sheet 1)))
+```
+
+Prints: `[1 3]`
+
+
+
+#### Print Cell Style Info
+
+```clojure
+(do
+  (load-module :excel)
+
+  (defn print-cell-meta [sheet row col]
+    (println (str (excel/addr->string row col) ">  "
+                  "type: " (name (excel/cell-type sheet row col))
+                  ", empty: " (excel/cell-empty? sheet row col)
+                  ", locked: " (excel/cell-locked? sheet row col)
+                  ", hidden: " (excel/cell-hidden? sheet row col))))
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Mary" "Smith" 28)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx"))
+
+  (let [wbook     (excel/open "sample.xlsx")
+        sheet     (excel/sheet wbook "Sheet 1")
+        row       1
+        col-range (excel/sheet-col-range sheet 1)
+        col-list  (range (first col-range) (inc (second col-range)))]
+        (docoll #(print-cell-meta sheet (first %) (second %))
+                (map vector (repeat row) col-list))))
+```
+
+Prints style info for row 1:
+
+```
+A1>  type: string, empty: false, locked: true, hidden: false
+B1>  type: string, empty: false, locked: true, hidden: false
+C1>  type: numeric, empty: false, locked: true, hidden: false
+```
 
 
 
