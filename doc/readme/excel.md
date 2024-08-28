@@ -30,7 +30,7 @@ libraries:
 
 1. [Writing Excel files](#writing-excel-files)
     * [Introduction Example](#introduction-example)
-    * [Create & Modify](#create-modify)
+    * [Create/Modify](#create-modify)
        * [Create New Excel](#create-new-excel)
        * [Modify Existing Excel](#modify-existing-excel)
     * [Examples](#write-examples)
@@ -43,7 +43,7 @@ libraries:
        * [Writing to individual cells](#writing-to-individual-cells)
        * [Insert, Copy, Clear and Delete Rows](#insert-copy-clear-and-delete-rows)
        * [Merge Cells](#merge-cells)
-       * [Row / Col Ranges](#row-col-ranges)
+       * [Row/Col Ranges](#row-col-ranges)
        * [Print Cell Style Inof](#print-cell-style-info)
        * [Using formulas](#using-formulas)
        * [Images](#images)
@@ -103,7 +103,7 @@ the `.xls` file name extension.
 
 
 
-### Create & Modify
+### Create/Modify
 
 #### Create New Excel
 
@@ -481,7 +481,7 @@ The function `excel/write-values` writes multiple values to consecutive cells in
 
 
 
-#### Row / Col Ranges
+#### Row/Col Ranges
 
 **Row range**
 
