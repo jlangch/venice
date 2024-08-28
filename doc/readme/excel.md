@@ -30,7 +30,7 @@ libraries:
 
 1. [Writing Excel files](#writing-excel-files)
     * [Introduction Example](#introduction-example)
-    * [Create / Modify](#create-modify)
+    * [Create & Modify](#create-modify)
        * [Create New Excel](#create-new-excel)
        * [Modify Existing Excel](#modify-existing-excel)
     * [Examples](#write-examples)
@@ -103,7 +103,7 @@ the `.xls` file name extension.
 
 
 
-### Create / Modify
+### Create & Modify
 
 #### Create New Excel
 
