@@ -307,6 +307,16 @@ public class ExcelSheet {
         return getErrorCode(cell);
     }
 
+    public boolean isLocked(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        return isLocked(cell);
+    }
+
+    public boolean isHidden(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        return isHidden(cell);
+    }
+
     public void setString(
         final int row, final int col, final String value, final String styleName
     ) {
@@ -949,6 +959,24 @@ public class ExcelSheet {
         else {
             return null;
         }
+    }
+
+    private boolean isLocked(final Cell cell) {
+        if (cell == null) {
+            return false;
+        }
+
+        final CellStyle style = cell.getCellStyle();
+        return style == null ? false : style.getLocked();
+    }
+
+    private boolean isHidden(final Cell cell) {
+        if (cell == null) {
+            return false;
+        }
+
+        final CellStyle style = cell.getCellStyle();
+        return style == null ? false : style.getHidden();
     }
 
     public String getCellType(final CellType type) {

@@ -119,6 +119,14 @@ public class ExcelSheetReader {
          return sheet.getErrorCode(row1-1, col1-1);
     }
 
+    public boolean isLocked(final int row1, final int col1) {
+         return sheet.isLocked(row1-1, col1-1);
+    }
+
+    public boolean isHidden(final int row1, final int col1) {
+         return sheet.isHidden(row1-1, col1-1);
+    }
+
     public void evaluateAllFormulas() {
         sheet.evaluateAllFormulas();
     }

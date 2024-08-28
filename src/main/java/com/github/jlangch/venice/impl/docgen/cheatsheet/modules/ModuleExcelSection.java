@@ -43,14 +43,14 @@ public class ModuleExcelSection implements ISectionBuilder {
                               "```\n";
 
         final DocSection section = new DocSection(
-        								"Excel",
-        								"Read/Write Excel files. \n\n" +
-        								"Venice is compatible with Apache POI 4.1.x and 5.3.x. " +
-        								"To use charts with Excel documents Apache POI 5.2.0 or " +
-        								"newer is required.",
-        								"modules.excel",
-        								null,
-        								footer);
+                                        "Excel",
+                                        "Read/Write Excel files. \n\n" +
+                                        "Venice is compatible with Apache POI 4.1.x and 5.3.x. " +
+                                        "To use charts with Excel documents Apache POI 5.2.0 or " +
+                                        "newer is required.",
+                                        "modules.excel",
+                                        null,
+                                        footer);
 
         final DocSection all = new DocSection("(load-module :excel)", id());
         section.addSection(all);
@@ -90,6 +90,10 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_util.addItem(diBuilder.getDocItem("excel/sheet-index", false));
         wr_util.addItem(diBuilder.getDocItem("excel/sheet-row-range", false));
         wr_util.addItem(diBuilder.getDocItem("excel/sheet-col-range", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/cell-empty?", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/cell-locked?", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/cell-hidden?", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/cell-type", false));
         wr_util.addItem(diBuilder.getDocItem("excel/convert->reader", false));
         wr_util.addItem(diBuilder.getDocItem("excel/col->string", false));
         wr_util.addItem(diBuilder.getDocItem("excel/addr->string", false));
@@ -155,6 +159,8 @@ public class ModuleExcelSection implements ISectionBuilder {
         rd_util.addItem(diBuilder.getDocItem("excel/sheet-col-range", false));
         rd_util.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-empty?", false));
+        rd_util.addItem(diBuilder.getDocItem("excel/cell-locked?", false));
+        rd_util.addItem(diBuilder.getDocItem("excel/cell-hidden?", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-type", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-formula-result-type", false));
         rd_util.addItem(diBuilder.getDocItem("excel/convert->writer", false));

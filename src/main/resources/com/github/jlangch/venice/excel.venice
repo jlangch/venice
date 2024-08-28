@@ -2522,14 +2522,15 @@
         (do
           (load-module :excel)
 
-          (defn test-xls []
-            (let [wbook (excel/writer :xlsx)
-                  sheet (excel/add-sheet wbook "Data")]
-              (excel/write-data sheet [[100 101 102] [200 201 202]])
-              (excel/write->bytebuf wbook)))
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Mary" "Smith" 28)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx"))
 
-          (let [wbook (excel/open (test-xls))
-                sheet (excel/sheet wbook "Data")]
+          (let [wbook (excel/open "sample.xlsx")
+                sheet (excel/sheet wbook "Sheet 1")]
             (excel/sheet-row-range sheet)))
         """ )
      :see-also '("excel/sheet-col-range")}
@@ -2555,16 +2556,44 @@
         (do
           (load-module :excel)
 
-          (defn test-xls []
-            (let [wbook (excel/writer :xlsx)
-                  sheet (excel/add-sheet wbook "Data")]
-              (excel/write-data sheet [[100 101 102] [200 201 202]])
-              (excel/write->bytebuf wbook)))
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Mary" "Smith" 28)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx"))
 
-          (let [wbook (excel/open (test-xls))
-                sheet (excel/sheet wbook "Data")]
+          (let [wbook (excel/open "sample.xlsx")
+                sheet (excel/sheet wbook "Sheet 1")]
             (excel/sheet-col-range sheet 1)))
+        """,
+        """
+        (do
+          (load-module :excel)
+
+          (defn print-cell-meta [sheet row col]
+            (println (str (excel/addr->string row col) ">  "
+                          "type: " (name (excel/cell-type sheet row col))
+                          ", empty: " (excel/cell-empty? sheet row col)
+                          ", locked: " (excel/cell-locked? sheet row col)
+                          ", hidden: " (excel/cell-hidden? sheet row col))))
+
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Mary" "Smith" 28)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx"))
+
+          (let [wbook     (excel/open "sample.xlsx")
+                sheet     (excel/sheet wbook "Sheet 1")
+                row       1
+                col-range (excel/sheet-col-range sheet 1)
+                col-list  (range (first col-range) (inc (second col-range)))]
+            (docoll #(print-cell-meta sheet (first %) (second %))
+                    (map vector (repeat row) col-list))))
         """ )
+
      :see-also '("excel/sheet-row-range")}
 
   sheet-col-range [sheet row]
@@ -2600,6 +2629,7 @@
              (excel/cell-empty? sheet 3 1)]))
         """ )
      :see-also '(
+        "excel/cell-hidden?", "excel/cell-locked?", 
         "excel/cell-type", "excel/read-string-val",
         "excel/read-boolean-val", "excel/read-long-val",
         "excel/read-double-val", "excel/read-date-val",
@@ -2607,7 +2637,8 @@
 
   cell-empty? [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isCellEmpty row col))
@@ -2649,13 +2680,15 @@
         """ )
      :see-also '(
         "excel/cell-formula-result-type", "excel/cell-empty?",
+        "excel/cell-hidden?", "excel/cell-locked?", 
         "excel/read-string-val", "excel/read-boolean-val",
         "excel/read-long-val", "excel/read-double-val",
         "excel/read-date-val", "excel/read-datetime-val") }
 
   cell-type [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (case (. sheet :getCellType row col)
@@ -2954,7 +2987,6 @@
   (time/local-date (. sheet :getDate row col)))
 
 
-
 (defn
   ^{ :arglists '("(read-datetime-val sheet row col)")
      :doc
@@ -3024,7 +3056,74 @@
 
   read-error-code [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getErrorCode row col))
+
+
+(defn
+  ^{ :arglists '("(cell-locked? sheet row col)")
+     :doc
+        """
+        Returns true if the sheet cell is locked else false.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx"))
+
+          (let [wbook (excel/open "sample.xlsx")
+                sheet (excel/sheet wbook "Sheet 1")]
+            (excel/cell-locked? sheet 1 1)))
+        """ )
+     :see-also '(
+        "excel/cell-hidden?", "excel/cell-empty?", "excel/cell-type" ) }
+
+  cell-locked? [sheet row col]
+
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
+          (long? row) (long? col) (pos? row) (pos? col)] }
+
+  (. sheet :isLocked row col))
+
+
+(defn
+  ^{ :arglists '("(cell-hidden? sheet row col)")
+     :doc
+        """
+        Returns true if the sheet cell is hidden else false.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx"))
+
+          (let [wbook (excel/open "sample.xlsx")
+                sheet (excel/sheet wbook "Sheet 1")]
+            (excel/cell-hidden? sheet 1 1)))
+        """ )
+     :see-also '(
+       "excel/cell-locked?", "excel/cell-empty?", "excel/cell-type" ) }
+
+  cell-hidden? [sheet row col]
+
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
+          (long? row) (long? col) (pos? row) (pos? col)] }
+
+  (. sheet :isHidden row col))

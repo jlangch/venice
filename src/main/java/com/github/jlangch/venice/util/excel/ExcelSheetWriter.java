@@ -83,6 +83,26 @@ public class ExcelSheetWriter<T> {
         return n; // no correction
     }
 
+    public boolean isCellEmpty(final int row1, final int col1) {
+        return sheet.isCellEmpty(row1-1, col1-1);
+    }
+
+    public String getCellType(final int row1, final int col1) {
+        return sheet.getCellType(row1-1, col1-1);
+    }
+
+    public boolean isLocked(final int row1, final int col1) {
+         return sheet.isLocked(row1-1, col1-1);
+    }
+
+    public boolean isHidden(final int row1, final int col1) {
+         return sheet.isHidden(row1-1, col1-1);
+    }
+
+    public String getFormula(final int row1, final int col1) {
+        return sheet.getFormula(row1-1, col1-1);
+    }
+
     public void deleteRow(final int row1) {
         sheet.deleteRow(row1-1);
     }
