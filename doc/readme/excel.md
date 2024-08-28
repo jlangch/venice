@@ -535,7 +535,8 @@ Prints: `[1 3]`
   (defn print-cell-meta [sheet row col]
     (println (str (excel/addr->string row col) ">  "
                   "type: " (name (excel/cell-type sheet row col))
-                  ", empty: " (excel/cell-empty? sheet row col)
+                  ", format: " (excel/cell-data-format-string sheet row col)
+                   ", empty: " (excel/cell-empty? sheet row col)
                   ", locked: " (excel/cell-locked? sheet row col)
                   ", hidden: " (excel/cell-hidden? sheet row col))))
 

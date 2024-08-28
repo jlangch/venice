@@ -307,6 +307,11 @@ public class ExcelSheet {
         return getErrorCode(cell);
     }
 
+    public String getDataFormatString(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        return getDataFormatString(cell);
+    }
+
     public boolean isLocked(final int row, final int col) {
         final Cell cell = getCell(row, col);
         return isLocked(cell);
@@ -315,6 +320,10 @@ public class ExcelSheet {
     public boolean isHidden(final int row, final int col) {
         final Cell cell = getCell(row, col);
         return isHidden(cell);
+    }
+
+    public boolean isColumnHidden(final int col) {
+        return sheet.isColumnHidden(col);
     }
 
     public void setString(
@@ -959,6 +968,19 @@ public class ExcelSheet {
         else {
             return null;
         }
+    }
+
+    private String getDataFormatString(final Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+
+        final CellStyle style = cell.getCellStyle();
+        if (style == null) {
+        	return null;
+        }
+
+        return style.getDataFormatString();
     }
 
     private boolean isLocked(final Cell cell) {

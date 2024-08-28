@@ -99,8 +99,16 @@ public class ExcelSheetWriter<T> {
          return sheet.isHidden(row1-1, col1-1);
     }
 
+    public boolean isColumnHidden(final int col1) {
+        return sheet.isColumnHidden(col1-1);
+    }
+
     public String getFormula(final int row1, final int col1) {
         return sheet.getFormula(row1-1, col1-1);
+    }
+
+    public String getDataFormatString(final int row1, final int col1) {
+        return sheet.getDataFormatString(row1-1, col1-1);
     }
 
     public void deleteRow(final int row1) {

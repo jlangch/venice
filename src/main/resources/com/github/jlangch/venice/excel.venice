@@ -2574,6 +2574,7 @@
           (defn print-cell-meta [sheet row col]
             (println (str (excel/addr->string row col) ">  "
                           "type: " (name (excel/cell-type sheet row col))
+                          ", format: " (excel/cell-data-format-string sheet row col)
                           ", empty: " (excel/cell-empty? sheet row col)
                           ", locked: " (excel/cell-locked? sheet row col)
                           ", hidden: " (excel/cell-hidden? sheet row col))))
@@ -2701,6 +2702,43 @@
     "error"     :error
     "unknown"   :unknown
     :unknown))
+
+
+(defn
+  ^{ :arglists '("(cell-data-format-string sheet row col)")
+     :doc
+        """
+        Returns the sheet cell data format string
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx"))
+
+          (let [wbook (excel/open "sample.xlsx")
+                sheet (excel/sheet wbook "Sheet 1")]
+            (excel/cell-data-format-string sheet 1 3)))
+        """ )
+     :see-also '(
+        "excel/cell-formula-result-type", "excel/cell-empty?",
+        "excel/cell-hidden?", "excel/cell-locked?", 
+        "excel/read-string-val", "excel/read-boolean-val",
+        "excel/read-long-val", "excel/read-double-val",
+        "excel/read-date-val", "excel/read-datetime-val") }
+
+  cell-data-format-string [sheet row col]
+
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
+          (long? row) (long? col) (pos? row) (pos? col)] }
+
+  (. sheet :getDataFormatString row col))
 
 
 (defn
@@ -3127,3 +3165,36 @@
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isHidden row col))
+
+
+(defn
+  ^{ :arglists '("(col-hidden? sheet row col)")
+     :doc
+        """
+        Returns true if the sheet column is hidden else false.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx"))
+
+          (let [wbook (excel/open "sample.xlsx")
+                sheet (excel/sheet wbook "Sheet 1")]
+            (excel/col-hidden? sheet 1)))
+        """ )
+     :see-also '(
+       "excel/cell-locked?", "excel/cell-empty?", "excel/cell-type" ) }
+
+  col-hidden? [sheet row col]
+
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
+          (long? row) (long? col) (pos? row) (pos? col)] }
+
+  (. sheet :isColumnHidden col))

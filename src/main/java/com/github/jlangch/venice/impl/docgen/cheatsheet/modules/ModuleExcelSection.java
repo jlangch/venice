@@ -94,8 +94,10 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_util.addItem(diBuilder.getDocItem("excel/cell-locked?", false));
         wr_util.addItem(diBuilder.getDocItem("excel/cell-hidden?", false));
         wr_util.addItem(diBuilder.getDocItem("excel/cell-type", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/cell-data-format-string", false));
         wr_util.addItem(diBuilder.getDocItem("excel/convert->reader", false));
         wr_util.addItem(diBuilder.getDocItem("excel/col->string", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/col-hidden?", false));
         wr_util.addItem(diBuilder.getDocItem("excel/addr->string", false));
 
         final DocSection wr_fromula = new DocSection("Writer Formulas", id());
@@ -162,7 +164,9 @@ public class ModuleExcelSection implements ISectionBuilder {
         rd_util.addItem(diBuilder.getDocItem("excel/cell-locked?", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-hidden?", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-type", false));
+        rd_util.addItem(diBuilder.getDocItem("excel/cell-data-format-string", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-formula-result-type", false));
+        rd_util.addItem(diBuilder.getDocItem("excel/col-hidden?", false));
         rd_util.addItem(diBuilder.getDocItem("excel/convert->writer", false));
 
         return section;
