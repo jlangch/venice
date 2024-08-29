@@ -271,7 +271,9 @@ To omit the header row pass the option `:no-header-row true` to the excel sheet:
     (excel/write->file wbook "sample.xlsx")))
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-026a.png" width="400">
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-026b.png" width="400">
 
 [top](#content)
 
