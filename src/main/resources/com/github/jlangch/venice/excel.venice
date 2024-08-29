@@ -725,9 +725,9 @@
   clear-row 
   
   ([sheet row]
-    (clear-row row true true))
+    (clear-row sheet row true true))
 
-  ([sheet row clear-valus clear-style]
+  ([sheet row clear-value clear-style]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row)  (pos? row)
             (boolean? clear-value)  (boolean? clear-style)] }
@@ -767,8 +767,8 @@
   
   ([sheet row count]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row)  (pos? row)
-            (long? count)  (pos? count)] }
+            (long? row)   (pos? row)
+            (long? count) (pos? count)] }
     (. sheet :insertEmptyRows row count)))
 
 
@@ -798,10 +798,10 @@
   copy-cell-style [sheet cell-from-row cell-from-col cell-to-row cell-to-col]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
-          (long? cell-from-row)  (pos? cell-from-row)
-          (long? cell-from-col)  (pos? cell-from-col)
-          (long? cell-to-row)  (pos? cell-to-row)
-          (long? cell-to-col)  (pos? cell-to-col)] }
+          (long? cell-from-row) (pos? cell-from-row)
+          (long? cell-from-col) (pos? cell-from-col)
+          (long? cell-to-row)   (pos? cell-to-row)
+          (long? cell-to-col)   (pos? cell-to-col)] }
 
   (. sheet :copyCellStyle cell-from-row cell-from-col cell-to-row cell-to-col))
  
@@ -852,7 +852,8 @@
 
   ([sheet row col data type]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)
+            (long? row) (pos? row)
+            (long? col) (pos? col)
             (bytebuf? data)
             (keyword? type) (or (== :PNG type) (== :JPEG type))] }
       (. sheet :image row col data type nil nil))
