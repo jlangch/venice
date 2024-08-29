@@ -27,8 +27,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -161,22 +159,23 @@ public class ExcelSheet {
         }
     }
 
-    public void clearRow(final int row) {
+    public void clearRow(final int row, final boolean clearValues, final boolean clearStyles) {
         final Row sourceRow = sheet.getRow(row);
         if (sourceRow == null) {
             return;
         }
 
-        final List<Cell> cells = new ArrayList<>();
         for (int ii = 0; ii < sourceRow.getLastCellNum(); ii++) {
             final Cell cell = sourceRow.getCell(ii);
             if (cell != null) {
-                cells.add(cell);
+                if (clearValues) {
+                	cell.setBlank();
+                }
+                else if (clearStyles) {
+                	cell.setCellStyle(null);
+                }
             }
         }
-
-        Collections.reverse(cells);
-        cells.forEach(c -> sourceRow.removeCell(c));
     }
 
     public void copyRowToEndOfSheet(final int row, final boolean copyValues, final boolean copyStyles) {
@@ -223,7 +222,7 @@ public class ExcelSheet {
                  return;
             }
 
-            clearRow(rowTo);
+            clearRow(rowTo, true, copyStyles);
 
             // Copy each cell from the source row to the dest row
             for (int ii = 0; ii < sourceRow.getLastCellNum(); ii++) {
@@ -264,6 +263,22 @@ public class ExcelSheet {
 
             // Create a new empty row at the specified index
             sheet.createRow(row);
+        }
+    }
+
+    public void copyCellStyle(
+            final int cellRowFrom,
+            final int cellColFrom,
+            final int cellRowTo,
+            final int cellColTo
+    ) {
+        final Cell cellFrom = getCell(cellRowFrom, cellColFrom);
+
+        if (cellFrom != null) {
+	        final Cell cellTo = getCellOrCreate(cellRowTo, cellColTo);
+
+	        final CellStyle style = cellFrom.getCellStyle();
+	        cellTo.setCellStyle(style);
         }
     }
 
@@ -329,87 +344,87 @@ public class ExcelSheet {
     public void setString(
         final int row, final int col, final String value, final String styleName
     ) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setString(final int row, final int col, final String value) {
-        setCellValue(getCellCreate(row, col), value, "string");
+        setCellValue(getCellOrCreate(row, col), value, "string");
     }
 
     public void setBoolean(final int row, final int col, final Boolean value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setBoolean(final int row, final int col, final Boolean value) {
-        setCellValue(getCellCreate(row, col), value, "boolean");
+        setCellValue(getCellOrCreate(row, col), value, "boolean");
     }
 
     public void setInteger(final int row, final int col, final Integer value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setInteger(final int row, final int col, final Integer value ) {
-        setCellValue(getCellCreate(row, col), value, "integer");
+        setCellValue(getCellOrCreate(row, col), value, "integer");
     }
 
     public void setInteger(final int row, final int col, final Long value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setInteger(final int row, final int col, final Long value ) {
-        setCellValue(getCellCreate(row, col), value, "integer");
+        setCellValue(getCellOrCreate(row, col), value, "integer");
     }
 
     public void setFloat(final int row, final int col, final Float value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setFloat(final int row, final int col, final Float value) {
-        setCellValue(getCellCreate(row, col), value, "float");
+        setCellValue(getCellOrCreate(row, col), value, "float");
     }
 
     public void setFloat(final int row, final int col, final Double value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setFloat(final int row, final int col, final Double value) {
-        setCellValue(getCellCreate(row, col), value, "float");
+        setCellValue(getCellOrCreate(row, col), value, "float");
     }
 
     public void setDate(final int row, final int col, final Date value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setDate(final int row, final int col, final LocalDate value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setDate(final int row, final int col, final LocalDateTime value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setDate(final int row, final int col, final ZonedDateTime value, final String styleName) {
-        setCellValue(getCellCreate(row, col), value, styleName);
+        setCellValue(getCellOrCreate(row, col), value, styleName);
     }
 
     public void setDate(final int row, final int col, final Date value) {
-        setCellValue(getCellCreate(row, col), value, "date");
+        setCellValue(getCellOrCreate(row, col), value, "date");
     }
 
     public void setDate(final int row, final int col, final LocalDate value) {
-        setCellValue(getCellCreate(row, col), value, "date");
+        setCellValue(getCellOrCreate(row, col), value, "date");
     }
 
     public void setDate(final int row, final int col, final LocalDateTime value) {
-        setCellValue(getCellCreate(row, col), value, "date");
+        setCellValue(getCellOrCreate(row, col), value, "date");
     }
 
     public void setDate(final int row, final int col, final ZonedDateTime value) {
-        setCellValue(getCellCreate(row, col), value, "date");
+        setCellValue(getCellOrCreate(row, col), value, "date");
     }
 
     public void setBlank(final int row, final int col) {
-        getCellCreate(row, col).setBlank();
+        getCellOrCreate(row, col).setBlank();
     }
 
     public void addImage(
@@ -571,6 +586,27 @@ public class ExcelSheet {
         }
     }
 
+    public void setValueKeepCellStyle(final int row, final int col, final Object value) {
+        if (value == null) {
+            setCellValue(getCellCreate(row, col), null, null);
+        }
+        else {
+            if (value instanceof String)             setString(row, col,  (String)value,                     null);
+            else if (value instanceof Boolean)       setBoolean(row, col, (Boolean)value,                    null);
+            else if (value instanceof Integer)       setInteger(row, col, (Integer)value,                    null);
+            else if (value instanceof Long)          setInteger(row, col, (Long)value,                       null);
+            else if (value instanceof Float)         setFloat(row, col,   (Float)value,                      null);
+            else if (value instanceof Double)        setFloat(row, col,   (Double)value,                     null);
+            else if (value instanceof BigDecimal)    setFloat(row, col,   ((BigDecimal)value).doubleValue(), null);
+            else if (value instanceof BigInteger)    setInteger(row, col, ((BigInteger)value).longValue(),   null);
+            else if (value instanceof LocalDate)     setDate(row, col,    (LocalDate)value,                  null);
+            else if (value instanceof LocalDateTime) setDate(row, col,    (LocalDateTime)value,              null);
+            else if (value instanceof ZonedDateTime) setDate(row, col,    (ZonedDateTime)value,              null);
+            else if (value instanceof Date)          setDate(row, col,    (Date)value,                       null);
+            else throw new IllegalArgumentException("Invalid value type " + value.getClass().getSimpleName());
+        }
+    }
+
     public void setBgColor(final int row, final int col, final Color bgColor) {
         final Cell cell = getCellOrCreate(row, col);
         if (cell != null) {
@@ -668,9 +704,11 @@ public class ExcelSheet {
     }
 
     private void setCellValue(final Cell cell, final Object value, final String styleName) {
-        final CellStyle style = cellStyles.getCellStyle(styleName);
-        if (style != null) {
-            cell.setCellStyle(style);
+        if (styleName != null) {
+            final CellStyle style = cellStyles.getCellStyle(styleName);
+            if (style != null) {
+                cell.setCellStyle(style);
+            }
         }
 
         if (value == null) {
@@ -718,7 +756,7 @@ public class ExcelSheet {
 
     private Cell getCell(final int row, final int col) {
         final Row r = sheet.getRow(row);
-        return r == null ? null : r.getCell(col, MissingCellPolicy.RETURN_BLANK_AS_NULL);
+        return r == null ? null : r.getCell(col, MissingCellPolicy.RETURN_NULL_AND_BLANK);
     }
 
     private Cell getCellCreate(final int row, final int col) {
@@ -727,7 +765,7 @@ public class ExcelSheet {
 
     private Cell getCellOrCreate(final int row, final int col) {
         final Row r = getRowCreate(row);
-        final Cell cell = r.getCell(col);
+        final Cell cell = r.getCell(col, MissingCellPolicy.RETURN_NULL_AND_BLANK);
         return cell == null ? r.createCell(col) : cell;
     }
 
@@ -977,7 +1015,7 @@ public class ExcelSheet {
 
         final CellStyle style = cell.getCellStyle();
         if (style == null) {
-        	return null;
+            return null;
         }
 
         return style.getDataFormatString();

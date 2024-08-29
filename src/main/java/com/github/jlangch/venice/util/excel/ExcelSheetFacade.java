@@ -130,16 +130,16 @@ public class ExcelSheetFacade<T> {
         sheet.deleteRow(row1-1);
     }
 
+    public void copyRow(final int row1From, final int row1To,  final boolean copyValues, final boolean copyStyles) {
+        sheet.copyRow(row1From-1, row1To-1, copyValues, copyStyles);
+    }
+
     public void copyRowToEndOfSheet(final int row1, final boolean copyValues, final boolean copyStyles) {
         sheet.copyRowToEndOfSheet(row1-1, copyValues, copyStyles);
     }
 
-    public void clearRow(final int row1) {
-        sheet.clearRow(row1-1);
-    }
-
-    public void copyRow(final int row1From, final int row1To,  final boolean copyValues, final boolean copyStyles) {
-        sheet.copyRow(row1From-1, row1To-1, copyValues, copyStyles);
+    public void clearRow(final int row1, final boolean clearValues, final boolean clearStyles) {
+        sheet.clearRow(row1-1, clearValues, clearStyles);
     }
 
     public void insertEmptyRow(final int row1) {
@@ -148,6 +148,15 @@ public class ExcelSheetFacade<T> {
 
     public void insertEmptyRows(final int row1, final int count) {
         sheet.insertEmptyRows(row1-1, count);
+    }
+
+    public void copyCellStyle(
+            final int cellRowFrom1,
+            final int cellColFrom1,
+            final int cellRowTo1,
+            final int cellColTo1
+    ) {
+        sheet.copyCellStyle(cellRowFrom1-1, cellColFrom1-1, cellRowTo1-1, cellColTo1-1);
     }
 
     public ExcelSheetFacade<T> noHeader() {
@@ -220,6 +229,11 @@ public class ExcelSheetFacade<T> {
 
     public ExcelSheetFacade<T> value(final int row1, final int col1, final Object value, final String stylename) {
         sheet.setValue(row1-1, col1-1, value, stylename);
+        return this;
+    }
+
+    public ExcelSheetFacade<T> valueKeepCellStyle(final int row1, final int col1, final Object value) {
+        sheet.setValueKeepCellStyle(row1-1, col1-1, value);
         return this;
     }
 

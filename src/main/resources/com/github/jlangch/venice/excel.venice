@@ -453,6 +453,19 @@
         """
         Writes a value with an optional to a specific cell given by its 
         row and col.
+
+        If style is not passed or is `nil` uses a default style to render the 
+        value according to its data type:
+
+           * string: no format
+           * boolean: no format
+           * integer: #,###0
+           * double: #,##0.00
+           * date: d.m.yyyy
+           * datetime: d.m.yyyy hh:mm:ss
+
+        To use the existing cell's style without changing it when modifying the
+        cell's value pass `:keep-style` as style!
         """
      :examples '(
         """
@@ -488,7 +501,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
-        "excel/write-values", 
+        "excel/write-values", "excel/write-values-keep-style",
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
@@ -509,7 +522,9 @@
             (keyword? style)] }
     (if (and (map? val) (contains? val :formula))
       (cell-formula sheet row col (:formula val) style)
-      (. sheet :value row col val (name style)))))
+      (if (== :keep-style style)
+        (. sheet :valueKeepCellStyle row col val)
+        (. sheet :value row col val (name style))))))
 
 
 (defn
@@ -530,7 +545,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
-        "excel/write-value", 
+        "excel/write-value", "excel/write-values-keep-style",
         "excel/write-items", "excel/write-item", "excel/cell-formula",
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
@@ -545,8 +560,42 @@
 
 
 (defn
-  ^{ :arglists '("(delete-row sheet row)")
-     :doc "Deletes a specific row from a sheet."
+  ^{ :arglists '("(write-values-keep-style sheet row col & vals)")
+     :doc """
+          Writes multiples value to a row starting at col and incrementing col
+          for each value. Keeps the existing cell styles.
+          """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/write-value", "excel/write-values",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  write-values-keep-style
+
+  [sheet row col & vals]
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
+            (long? row) (long? col) (pos? row) (pos? col)] }
+    (docoll #(write-value sheet row (first %) (second %) :keep-style)
+            (map vector (lazy-seq col inc) vals)))
+
+
+(defn
+  ^{ :arglists '(
+       "(delete-row sheet row)")
+     :doc 
+       "Deletes a specific row from a sheet."
      :examples '(
         """
         (do
@@ -573,8 +622,11 @@
 
 
 (defn
-  ^{ :arglists '("(copy-row-to-end sheet row)")
-     :doc "Copies a specific row from a sheet to end of the sheet."
+  ^{ :arglists '(
+        "(copy-row-to-end sheet row)"
+        "(copy-row-to-end sheet row copy-value copy-style)")
+     :doc 
+        "Copies a specific row from a sheet to end of the sheet."
      :examples '(
         """
         (do
@@ -594,15 +646,24 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  copy-row-to-end [sheet row]
+  copy-row-to-end 
+  
+  ([sheet row ]
+    (copy-row-to-end sheet row true true))
+  
+  ([sheet row copy-value copy-style]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row)  (pos? row)] }
-    (. sheet :copyRowToEndOfSheet row true true))
+            (long? row)  (pos? row)
+            (boolean? copy-value)  (boolean? copy-style)] }
+    (. sheet :copyRowToEndOfSheet row copy-value copy-style)))
 
 
 (defn
-  ^{ :arglists '("(copy-row sheet row-from row-to)")
-     :doc "Copies a specific row in a sheet."
+  ^{ :arglists '(
+       "(copy-row sheet row-from row-to)"
+       "(copy-row sheet row copy-value copy-style)")
+     :doc 
+       "Copies a specific row in a sheet."
      :examples '(
         """
         (do
@@ -622,15 +683,25 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  copy-row [sheet row-from row-to]
+  copy-row 
+  
+  ([sheet row-from row-to ]
+    (copy-row sheet row-from row-to true true))
+  
+  ([sheet row-from row-to copy-value copy-style ]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row-from)  (pos? row-from)
-            (long? row-to)  (pos? row-to)] }
-    (. sheet :copyRow row-from row-to true true))
+            (long? row-to)    (pos? row-to)
+            (boolean? copy-value)  (boolean? copy-style)] }
+    (. sheet :copyRow row-from row-to copy-value copy-style)))
+
 
 (defn
-  ^{ :arglists '("(clear-row sheet row)")
-     :doc "Clears the values in a specific row in a sheet."
+  ^{ :arglists '(
+       "(clear-row sheet row)"
+       "(clear-row sheet row clear-value clear-style)")
+     :doc 
+       "Clears the values and/or styles in a specific row in a sheet."
      :examples '(
         """
         (do
@@ -651,10 +722,16 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  clear-row [sheet row]
+  clear-row 
+  
+  ([sheet row]
+    (clear-row row true true))
+
+  ([sheet row clear-valus clear-style]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row)  (pos? row)] }
-    (. sheet :clearRow row))
+            (long? row)  (pos? row)
+            (boolean? clear-value)  (boolean? clear-style)] }
+    (. sheet :clearRow row clear-value clear-style)))
 
 
 (defn
@@ -694,6 +771,40 @@
             (long? count)  (pos? count)] }
     (. sheet :insertEmptyRows row count)))
 
+
+(defn
+  ^{ :arglists '(
+        "(copy-cell-style sheet cell-from-row cell-from-col cell-to-row cell-to-col)")
+     :doc "Copies the style from cell-from to cell-to"
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/copy-cell-style sheet 1 1 2 1)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/clear-row", "excel/delete-row", 
+        "excel/copy-row", "excel/copy-row-to-end",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  copy-cell-style [sheet cell-from-row cell-from-col cell-to-row cell-to-col]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (long? cell-from-row)  (pos? cell-from-row)
+          (long? cell-from-col)  (pos? cell-from-col)
+          (long? cell-to-row)  (pos? cell-to-row)
+          (long? cell-to-col)  (pos? cell-to-col)] }
+
+  (. sheet :copyCellStyle cell-from-row cell-from-col cell-to-row cell-to-col))
+ 
 
 
 ;; -----------------------------------------------------------------------------

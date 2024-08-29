@@ -86,6 +86,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         cells.addItem(diBuilder.getDocItem("excel/cell-hidden?", false));
         cells.addItem(diBuilder.getDocItem("excel/cell-type", false));
         cells.addItem(diBuilder.getDocItem("excel/cell-data-format-string", false));
+        cells.addItem(diBuilder.getDocItem("excel/copy-cell-style", false));
         cells.addItem(diBuilder.getDocItem("excel/addr->string", false));
 
         final DocSection rows = new DocSection("Rows", id());
@@ -110,6 +111,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_data.addItem(diBuilder.getDocItem("excel/write-item", false));
         wr_data.addItem(diBuilder.getDocItem("excel/write-value", false));
         wr_data.addItem(diBuilder.getDocItem("excel/write-values", false));
+        wr_data.addItem(diBuilder.getDocItem("excel/write-values-keep-style", false));
 
         final DocSection rd_data = new DocSection("Read Cells", id());
         all.addSection(rd_data);
