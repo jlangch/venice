@@ -150,6 +150,8 @@
     (throw (ex :VncException
       (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
 
+(def writer create) ;; alias for backward compatibility
+
 
 (defn
   ^{ :arglists '("(open source)")

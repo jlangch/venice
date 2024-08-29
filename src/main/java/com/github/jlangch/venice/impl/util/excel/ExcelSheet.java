@@ -875,6 +875,9 @@ public class ExcelSheet {
         }
 
         final CellValue cellValue = evaluator.evaluate(cell);
+        if (cellValue == null) {
+        	return null;
+        }
 
         switch (cellValue.getCellType()) {
             case BLANK:
@@ -903,6 +906,9 @@ public class ExcelSheet {
         }
 
         final CellValue cellValue = evaluator.evaluate(cell);
+        if (cellValue == null) {
+        	return null;
+        }
 
         switch (cellValue.getCellType()) {
             case BLANK:
@@ -929,6 +935,9 @@ public class ExcelSheet {
         }
 
         final CellValue cellValue = evaluator.evaluate(cell);
+        if (cellValue == null) {
+        	return null;
+        }
 
         if (cellValue.getCellType() == CellType.BLANK) {
             return NULL_BOOLEAN;  // fooling 'Find Bugs' :-)
@@ -950,6 +959,9 @@ public class ExcelSheet {
         }
 
         final CellValue cellValue = evaluator.evaluate(cell);
+        if (cellValue == null) {
+        	return null;
+        }
 
         if (cellValue.getCellType() == CellType.BLANK) {
             return null;
@@ -971,6 +983,9 @@ public class ExcelSheet {
         }
 
         final CellValue cellValue = evaluator.evaluate(cell);
+        if (cellValue == null) {
+        	return null;
+        }
 
         if (cellValue.getCellType() == CellType.BLANK) {
             return null;
