@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.excel;
 
 import java.awt.Color;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -111,6 +112,20 @@ public class ExcelSheetWriter<T> {
         return sheet.getDataFormatString(row1-1, col1-1);
     }
 
+    public ExcelSheetWriter<T> evaluateAllFormulas() {
+        sheet.evaluateAllFormulas();
+        return this;
+    }
+
+    public ExcelWriter end() {
+        return parentBuilder;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Writer functions
+    // ------------------------------------------------------------------------
+
     public void deleteRow(final int row1) {
         sheet.deleteRow(row1-1);
     }
@@ -184,11 +199,9 @@ public class ExcelSheetWriter<T> {
         renderHeader();
 
         final int bodyRowStart = currRow0;
-
         items.forEach(v -> renderBodyItem(v));
 
         final int bodyRowEnd = currRow0 - 1;
-
         renderFooter(bodyRowStart, bodyRowEnd);
 
         return this;
@@ -449,11 +462,6 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> evaluateAllFormulas() {
-        sheet.evaluateAllFormulas();
-        return this;
-    }
-
     public ExcelSheetWriter<T> displayZeros(final boolean value) {
         sheet.setDisplayZeros(value);
         return this;
@@ -475,15 +483,49 @@ public class ExcelSheetWriter<T> {
         return sheet.getCellAddress_A1_style(row1-1, col1-1);
     }
 
-    public ExcelWriter end() {
-        return parentBuilder;
+
+
+
+    // ------------------------------------------------------------------------
+    // Reader functions
+    // ------------------------------------------------------------------------
+
+
+    public String getCellFormulaResultType(final int row1, final int col1) {
+        return sheet.getCellFormulaResultType(row1-1, col1-1);
     }
 
-
-    public ExcelSheetReader reader() {
-        return new ExcelSheetReader(parentBuilder.reader(), sheet);
+    public String getCellAddress_A1_style(final int row1, final int col1) {
+        return sheet.getCellAddress_A1_style(row1-1, col1-1);
     }
 
+    public Object getValue(final int row1, final int col1) {
+        return sheet.getValue(row1-1, col1-1);
+    }
+
+    public String getString(final int row1, final int col1) {
+        return sheet.getString(row1-1, col1-1);
+    }
+
+    public Boolean getBoolean(final int row1, final int col1) {
+        return sheet.getBoolean(row1-1, col1-1);
+    }
+
+    public Long getInteger(final int row1, final int col1) {
+        return sheet.getInteger(row1-1, col1-1);
+    }
+
+    public Double getFloat(final int row1, final int col1) {
+        return sheet.getFloat(row1-1, col1-1);
+    }
+
+    public LocalDateTime getDate(final int row1, final int col1) {
+        return sheet.getDate(row1-1, col1-1);
+    }
+
+    public String getErrorCode(final int row1, final int col1) {
+         return sheet.getErrorCode(row1-1, col1-1);
+    }
 
     private String getColumnHeaderStyle(final int col0) {
         final String style = col0 < 0 || (col0 > columnDefs.size()-1) ? null : columnDefs.get(col0).headerStyle;

@@ -19,11 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.excel;
+package com.github.jlangch.venice.util.excel.old;
 
 import java.time.LocalDateTime;
 
 import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
+import com.github.jlangch.venice.util.excel.DataRecord;
+import com.github.jlangch.venice.util.excel.ExcelSheetWriter;
 
 
 /**
@@ -79,6 +81,18 @@ public class ExcelSheetReader {
         return sheet.getCellType(row1-1, col1-1);
     }
 
+    public boolean isLocked(final int row1, final int col1) {
+         return sheet.isLocked(row1-1, col1-1);
+    }
+
+    public boolean isHidden(final int row1, final int col1) {
+         return sheet.isHidden(row1-1, col1-1);
+    }
+
+    public boolean isColumnHidden(final int col1) {
+        return sheet.isColumnHidden(col1-1);
+    }
+
     public String getCellFormulaResultType(final int row1, final int col1) {
         return sheet.getCellFormulaResultType(row1-1, col1-1);
     }
@@ -121,18 +135,6 @@ public class ExcelSheetReader {
 
     public String getDataFormatString(final int row1, final int col1) {
         return sheet.getDataFormatString(row1-1, col1-1);
-    }
-
-    public boolean isLocked(final int row1, final int col1) {
-         return sheet.isLocked(row1-1, col1-1);
-    }
-
-    public boolean isHidden(final int row1, final int col1) {
-         return sheet.isHidden(row1-1, col1-1);
-    }
-
-    public boolean isColumnHidden(final int col1) {
-        return sheet.isColumnHidden(col1-1);
     }
 
     public void evaluateAllFormulas() {

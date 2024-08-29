@@ -83,7 +83,7 @@ a table data set and map the sheet columns to the map keys in the table.
 
   (let [data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-column sheet "First Name" { :field :first })
     (excel/add-column sheet "Last Name" { :field :last })
@@ -95,7 +95,7 @@ a table data set and map the sheet columns to the map keys in the table.
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-001.png" width="400">
 
-To create an XLSX use `(excel/writer :xlsx)` to create a workbook. To create an 
+To create an XLSX use `(excel/create :xlsx)` to create a workbook. To create an 
 old style XLS use `(excel/writer :xls)` and ensure it is written to a file with 
 the `.xls` file name extension.
 
@@ -117,7 +117,7 @@ Creating a new Excel from scratch (create-modify-write).
   (load-module :excel)
   
   ;; create a new Excel and save it as "sample.xlsx"
-  (let [wbook  (excel/writer :xlsx)
+  (let [wbook  (excel/create :xlsx)
         sheet1 (excel/add-sheet wbook "Data1")
         sheet2 (excel/add-sheet wbook "Data2")]
     (excel/write-values sheet1 1 1 "John" "Doe" 28)
@@ -141,17 +141,17 @@ Modify an existing Excel (read-modify-write).
   (load-module :excel)
   
   ;; create a new Excel and save it as "sample.xlsx"
-  (let [wbook  (excel/writer :xlsx)
+  (let [wbook  (excel/create :xlsx)
         sheet1 (excel/add-sheet wbook "Data1")
         sheet2 (excel/add-sheet wbook "Data2")]
     (excel/write-values sheet1 1 1 "John" "Doe" 28)
     (excel/write-values sheet1 2 1 "Sue" "Ford" 26)
     (excel/write-values sheet2 1 1 "France" "Paris")
     (excel/write-values sheet2 2 1 "Italy" "Rome")
-    (excel/write->file wbook "sample.xlsx")))
+    (excel/write->file wbook "sample.xlsx"))
 
   ;; load the Excel from "sample.xlsx" and modify and save it as "sample1.xlsx"
-  (let [wbook (excel/writer "sample.xlsx")
+  (let [wbook (excel/open "sample.xlsx")
         sheet (excel/sheet wbook 1)]        
     (excel/write-value sheet 1 3 38)  ;; correct John Doe's age 28 -> 38
     (excel/auto-size-columns sheet)
@@ -177,7 +177,7 @@ Modify an existing Excel (read-modify-write).
   (let [os    (io/file-out-stream "sample.xlsx")
         data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-column sheet "First Name" { :field :first })
     (excel/add-column sheet "Last Name" { :field :last })
@@ -201,7 +201,7 @@ Modify an existing Excel (read-modify-write).
 
   (let [data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-column sheet "First Name" { :field :first })
     (excel/add-column sheet "Last Name" { :field :last })
@@ -227,7 +227,7 @@ To omit the header row pass the option `:no-header-row true` to the excel sheet:
 
   (let [data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
     (excel/add-column sheet "First Name" { :field :first })
     (excel/add-column sheet "Last Name" { :field :last })
@@ -255,7 +255,7 @@ To omit the header row pass the option `:no-header-row true` to the excel sheet:
                  {:first "Sue"  :last "Ford"  :age 26 } ]
         data2  [ {:first "Mark" :last "Smith" :age 40 }
                  {:first "Mary" :last "Jones" :age 42 } ]
-        wbook  (excel/writer :xlsx)
+        wbook  (excel/create :xlsx)
         sheet1 (excel/add-sheet wbook "Sheet 1")
         sheet2 (excel/add-sheet wbook "Sheet 2")]
     (excel/add-column sheet1 "First Name" { :field :first })
@@ -302,7 +302,7 @@ The Excel writer supports the Venice data types:
                  :t-bool true 
                  :t-date (time/local-date 2021 1 1)
                  :t-datetime (time/local-date-time 2021 1 1 15 30 45) } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-column sheet "string" { :field :t-str })
     (excel/add-column sheet "integer" { :field :t-int })
@@ -330,7 +330,7 @@ Write the data of a 2D vector to an excel sheet.
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Data")
         dt    (time/local-date 2021 1 1)
         ts    (time/local-date-time 2021 1 1 15 30 45)
@@ -349,7 +349,7 @@ Write the data of a 2D vector to an excel sheet.
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Data")]
     (excel/write-data sheet [[100 101 102] [200 201 203]])
     (excel/write-data sheet [[300 301 302] [400 401 403]] 3 4)
@@ -373,7 +373,7 @@ The function `excel/write-value` writes values to cells. The row and col numbers
 
   (load-module :excel)
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/write-value sheet 1 1 "John")
     (excel/write-value sheet 1 2 "Doe")
@@ -397,7 +397,7 @@ The function `excel/write-values` writes multiple values to consecutive cells in
 
   (load-module :excel)
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/write-values sheet 1 1 "John" "Doe" 28)
     (excel/write-values sheet 2 1 "Sue" "Ford" 26)
@@ -420,7 +420,7 @@ The function `excel/write-values` writes multiple values to consecutive cells in
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)
+    (let [wbook (excel/create :xlsx)
           sheet (excel/add-sheet wbook "Sheet 1")]
       (excel/write-values sheet 1 1 "John" "Doe" 28)
       (excel/write-values sheet 2 1 "Sue" "Ford" 26)
@@ -430,7 +430,7 @@ The function `excel/write-values` writes multiple values to consecutive cells in
      
    (create-excel)
     
-   (let [wbook (excel/writer "sample.xlsx")
+   (let [wbook (excel/open "sample.xlsx")
          sheet (excel/sheet wbook "Sheet 1")]        
      (excel/copy-row-to-end sheet 1)
      (excel/copy-row-to-end sheet 1)
@@ -458,10 +458,10 @@ The function `excel/write-values` writes multiple values to consecutive cells in
 
   (load-module :excel)
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Population")]
-    (excel/column-width sheet 2 70)
-    (excel/column-width sheet 3 70)
+    (excel/col-width sheet 2 70)
+    (excel/col-width sheet 3 70)
     (excel/add-merge-region sheet 2 2 2 3)
     (excel/write-value sheet 2 2 "Contry Population")
     (excel/write-value sheet 3 2 "Country")
@@ -489,7 +489,7 @@ The function `excel/write-values` writes multiple values to consecutive cells in
 (do
   (load-module :excel)
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/write-values sheet 1 1 "John" "Doe" 28)
     (excel/write-values sheet 2 1 "Mary" "Smith" 28)
@@ -510,7 +510,7 @@ Prints: `[1 2]`
 (do
   (load-module :excel)
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/write-values sheet 1 1 "John" "Doe" 28)
     (excel/write-values sheet 2 1 "Mary" "Smith" 28)
@@ -540,7 +540,7 @@ Prints: `[1 3]`
                   ", locked: " (excel/cell-locked? sheet row col)
                   ", hidden: " (excel/cell-hidden? sheet row col))))
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/write-values sheet 1 1 "John" "Doe" 28)
     (excel/write-values sheet 2 1 "Mary" "Smith" 28)
@@ -577,7 +577,7 @@ C1>  type: numeric, empty: false, locked: true, hidden: false
   (let [data  [ {:a 100 :b 200 }
                 {:a 101 :b 201 }
                 {:a 102 :b 202 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
     (excel/add-column sheet "A" { :field :a })
     (excel/add-column sheet "B" { :field :b })
@@ -602,7 +602,7 @@ This can be further simplified to:
   (let [data  [ {:a 100, :b 200, :c {:formula "SUM(A1,B1)"}}
                 {:a 101, :b 201, :c {:formula "SUM(A2,B2)"}}
                 {:a 102, :b 202, :c {:formula "SUM(A3,B3)"}} ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
     (excel/add-column sheet "A" { :field :a })
     (excel/add-column sheet "B" { :field :b })
@@ -627,7 +627,7 @@ for formulas:
   (let [data  [ {:a 100 :b 200 }
                 {:a 101 :b 201 }
                 {:a 102 :b 202 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })
         sum   #(str/format "SUM(%s,%s)" 
                            (excel/addr->string (first %1) (second %1))
@@ -653,7 +653,7 @@ for formulas:
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")
         image "com/github/jlangch/venice/images/venice.png"
         data  (io/load-classpath-resource image)]
@@ -675,7 +675,7 @@ for formulas:
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")
         data  [[""       "Bears" "Dolphins" "Whales"]
                ["2017"        8        150       80 ]
@@ -724,7 +724,7 @@ for formulas:
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")
         data  [[""       "Bears" "Dolphins" "Whales"]
                ["2017"        8        150       80 ]
@@ -769,7 +769,7 @@ for formulas:
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")
         data  [[""       "Bears" "Dolphins" "Whales"]
                ["2017"        8        150       80 ]
@@ -805,7 +805,7 @@ for formulas:
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")
         data  [[""       "Bears" "Dolphins" "Whales"]
                ["2017"        8        150       80 ]
@@ -850,7 +850,7 @@ Set the height of individual rows:
 
   (let [data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-column sheet "First Name" { :field :first })
     (excel/add-column sheet "Last Name" { :field :last })
@@ -882,7 +882,7 @@ Set the width of individual columns:
   (let [os    (io/file-out-stream "sample.xlsx")
         data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)
+        wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-column sheet "First Name" { :field :first })
     (excel/add-column sheet "Last Name" { :field :last })
@@ -931,7 +931,7 @@ Define a named font with optional attributes on the workbook.
 
   (let [data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)]
+        wbook (excel/create :xlsx)]
         
     ;; define a font ':header-font'
     (excel/add-font wbook :header-font { :height 12
@@ -1013,7 +1013,7 @@ Available border styles:
 
   (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
                 {:first "Sue"  :last "Ford"  :weight 54.2 } ]
-        wbook (excel/writer :xlsx)]
+        wbook (excel/create :xlsx)]
 
     ;; define a font ':header-font'
     (excel/add-font wbook :header-font { :bold true })
@@ -1054,7 +1054,7 @@ Available border styles:
 
   (load-module :excel)
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Population")]
     
     (excel/add-font wbook :title       { :bold true 
@@ -1071,8 +1071,8 @@ Available border styles:
 
     (excel/row-height sheet 2 20)
     (excel/row-height sheet 3 7)
-    (excel/column-width sheet 2 70)
-    (excel/column-width sheet 3 70)
+    (excel/col-width sheet 2 70)
+    (excel/col-width sheet 3 70)
     (excel/add-merge-region sheet 2 2 2 3)
     
     ;; write values to cell with associated cell style
@@ -1102,7 +1102,7 @@ Available border styles:
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Data")]
 
     ;; single cells
@@ -1134,7 +1134,7 @@ Available border styles:
 
   (load-module :excel)
 
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Data")]
     (excel/write-data sheet [[100 101 102 nil 103 104 105]
                              [200 201 202 nil 203 204 205]
@@ -1162,7 +1162,7 @@ Available border styles:
   
   (load-module :excel)
   
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-font wbook :bold { :bold true
                                   :color "#54039c" })
@@ -1206,7 +1206,7 @@ Available border styles:
           
   (load-module :excel)
           
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-style wbook :style { :bg-color "#cae1fa"
                                     :h-align :center
@@ -1242,7 +1242,7 @@ Freeze the top row:
   
   (load-module :excel)
   
-  (let [wbook (excel/writer :xlsx)
+  (let [wbook (excel/create :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
       (excel/write-data sheet [(map #(str "Col " %) (range 1 11))])
       (excel/write-data sheet (partition 10 (range 100 500)) 2 1)
@@ -1282,7 +1282,7 @@ The file is specified by:
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook  (excel/writer :xlsx)
+    (let [wbook  (excel/create :xlsx)
           sheet1 (excel/add-sheet wbook "Data1")
           sheet2 (excel/add-sheet wbook "Data2")]
       (excel/write-data sheet1 [[100 101]])
@@ -1355,7 +1355,7 @@ Each cell has one of the predefined cell data types:
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)
+    (let [wbook (excel/create :xlsx)
           sheet (excel/add-sheet wbook "Data")]
       (excel/write-data sheet [["foo" 
                                 false 
@@ -1426,7 +1426,7 @@ If the Excel document contains formulas call `excel/evaluate-formulas` before re
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)
+    (let [wbook (excel/create :xlsx)
           sheet (excel/add-sheet wbook "Data")]
       (excel/write-data sheet [["foo" 
                                 false 
@@ -1479,7 +1479,7 @@ The Excel module provides the function `excel/read-val` to read the generic raw 
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)
+    (let [wbook (excel/create :xlsx)
           sheet (excel/add-sheet wbook "Data")]
       (excel/write-data sheet [["foo" 
                                 false 

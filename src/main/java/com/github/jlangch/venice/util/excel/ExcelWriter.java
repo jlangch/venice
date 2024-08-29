@@ -191,11 +191,6 @@ public class ExcelWriter {
         return excel.writeToBytes();
     }
 
-    public ExcelReader reader() {
-        excel.close();
-        return new ExcelReader(excel);
-    }
-
     public ExcelWriter end() {
         excel.close();
         return this;
