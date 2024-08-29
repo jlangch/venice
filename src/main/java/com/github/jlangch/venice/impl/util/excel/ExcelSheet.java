@@ -159,7 +159,11 @@ public class ExcelSheet {
         }
     }
 
-    public void clearRow(final int row, final boolean clearValues, final boolean clearStyles) {
+    public void clearRow(
+            final int row,
+            final boolean clearValues,
+            final boolean clearStyles
+    ) {
         final Row sourceRow = sheet.getRow(row);
         if (sourceRow == null) {
             return;
@@ -169,16 +173,20 @@ public class ExcelSheet {
             final Cell cell = sourceRow.getCell(ii);
             if (cell != null) {
                 if (clearValues) {
-                	cell.setBlank();
+                    cell.setBlank();
                 }
                 else if (clearStyles) {
-                	cell.setCellStyle(null);
+                    cell.setCellStyle(null);
                 }
             }
         }
     }
 
-    public void copyRowToEndOfSheet(final int row, final boolean copyValues, final boolean copyStyles) {
+    public void copyRowToEndOfSheet(
+            final int row,
+            final boolean copyValues,
+            final boolean copyStyles
+    ) {
         final Row sourceRow = sheet.getRow(row);
         if (sourceRow == null) {
             return;
@@ -206,7 +214,12 @@ public class ExcelSheet {
         }
     }
 
-    public void copyRow(final int rowFrom, final int rowTo, final boolean copyValues, final boolean copyStyles) {
+    public void copyRow(
+            final int rowFrom,
+            final int rowTo,
+            final boolean copyValues,
+            final boolean copyStyles
+    ) {
         final int lastRowNum = sheet.getLastRowNum();
 
         if (rowTo > lastRowNum) {
@@ -275,10 +288,10 @@ public class ExcelSheet {
         final Cell cellFrom = getCell(cellRowFrom, cellColFrom);
 
         if (cellFrom != null) {
-	        final Cell cellTo = getCellOrCreate(cellRowTo, cellColTo);
+            final Cell cellTo = getCellOrCreate(cellRowTo, cellColTo);
 
-	        final CellStyle style = cellFrom.getCellStyle();
-	        cellTo.setCellStyle(style);
+            final CellStyle style = cellFrom.getCellStyle();
+            cellTo.setCellStyle(style);
         }
     }
 
