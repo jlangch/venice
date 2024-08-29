@@ -78,6 +78,9 @@ public class ModuleExcelSection implements ISectionBuilder {
         sheet.addItem(diBuilder.getDocItem("excel/add-column", false));
         sheet.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         sheet.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
+        sheet.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
+        sheet.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
+        sheet.addItem(diBuilder.getDocItem("excel/hide-columns", false));
 
         final DocSection cells = new DocSection("Cells", id());
         all.addSection(cells);
@@ -132,7 +135,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         formulas.addItem(diBuilder.getDocItem("excel/sum-formula", false));
         formulas.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
 
-        final DocSection style = new DocSection("Styling", id());
+        final DocSection style = new DocSection("Styles", id());
         all.addSection(style);
         style.addItem(diBuilder.getDocItem("excel/add-font", false));
         style.addItem(diBuilder.getDocItem("excel/add-style", false));
@@ -141,10 +144,6 @@ public class ModuleExcelSection implements ISectionBuilder {
         style.addItem(diBuilder.getDocItem("excel/col-width", false));
         style.addItem(diBuilder.getDocItem("excel/cell-style", false));
         style.addItem(diBuilder.getDocItem("excel/bg-color", false));
-        style.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
-        style.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
-        style.addItem(diBuilder.getDocItem("excel/hide-columns", false));
-        style.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
 
         final DocSection image = new DocSection("Images", id());
         all.addSection(image);
