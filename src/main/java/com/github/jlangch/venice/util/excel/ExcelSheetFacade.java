@@ -44,10 +44,10 @@ import com.github.jlangch.venice.util.pdf.HtmlColor;
 
 
 
-public class ExcelSheetWriter<T> {
+public class ExcelSheetFacade<T> {
 
-    public ExcelSheetWriter(
-            final ExcelWriter excelBuilder,
+    public ExcelSheetFacade(
+            final ExcelFacade excelBuilder,
             final ExcelSheet sheet
     ) {
         this.parentBuilder = excelBuilder;
@@ -112,12 +112,12 @@ public class ExcelSheetWriter<T> {
         return sheet.getDataFormatString(row1-1, col1-1);
     }
 
-    public ExcelSheetWriter<T> evaluateAllFormulas() {
+    public ExcelSheetFacade<T> evaluateAllFormulas() {
         sheet.evaluateAllFormulas();
         return this;
     }
 
-    public ExcelWriter end() {
+    public ExcelFacade end() {
         return parentBuilder;
     }
 
@@ -150,27 +150,27 @@ public class ExcelSheetWriter<T> {
         sheet.insertEmptyRows(row1-1, count);
     }
 
-    public ExcelSheetWriter<T> noHeader() {
+    public ExcelSheetFacade<T> noHeader() {
         this.noHeader = true;
         return this;
     }
 
-    public ExcelSheetWriter<T> createFreezePane(final int cols, final int rows) {
+    public ExcelSheetFacade<T> createFreezePane(final int cols, final int rows) {
         sheet.createFreezePane(Math.max(0, cols), Math.max(0, rows));
         return this;
     }
 
-    public ExcelSheetWriter<T> defaultHeaderStyle(final String style) {
+    public ExcelSheetFacade<T> defaultHeaderStyle(final String style) {
         this.defaultHeaderStyle = style;
         return this;
     }
 
-    public ExcelSheetWriter<T> defaultBodyStyle(final String style) {
+    public ExcelSheetFacade<T> defaultBodyStyle(final String style) {
         this.defaultBodyStyle = style;
         return this;
     }
 
-    public ExcelSheetWriter<T> defaultFooterStyle(final String style) {
+    public ExcelSheetFacade<T> defaultFooterStyle(final String style) {
         this.defaultFooterStyle = style;
         return this;
     }
@@ -195,7 +195,7 @@ public class ExcelSheetWriter<T> {
                     .colMapper(e -> ((DataRecord)e).get(fieldName));
     }
 
-    public ExcelSheetWriter<T> renderItems(final List<T> items) {
+    public ExcelSheetFacade<T> renderItems(final List<T> items) {
         renderHeader();
 
         final int bodyRowStart = currRow0;
@@ -207,23 +207,23 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> renderItem(final T item) {
+    public ExcelSheetFacade<T> renderItem(final T item) {
         renderHeader();
         renderBodyItem(item);
         return this;
     }
 
-    public ExcelSheetWriter<T> value(final int row1, final int col1, final Object value) {
+    public ExcelSheetFacade<T> value(final int row1, final int col1, final Object value) {
         sheet.setValue(row1-1, col1-1, value);
         return this;
     }
 
-    public ExcelSheetWriter<T> value(final int row1, final int col1, final Object value, final String stylename) {
+    public ExcelSheetFacade<T> value(final int row1, final int col1, final Object value, final String stylename) {
         sheet.setValue(row1-1, col1-1, value, stylename);
         return this;
     }
 
-    public ExcelSheetWriter<T> image(
+    public ExcelSheetFacade<T> image(
             final int row1,
             final int col1,
             final byte[] data,
@@ -235,7 +235,7 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> lineChart(
+    public ExcelSheetFacade<T> lineChart(
             final String title,
             final CellRangeAddr areaCellRangeAddr,
             final Position legendPosition,
@@ -270,7 +270,7 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> barChart(
+    public ExcelSheetFacade<T> barChart(
             final String title,
             final CellRangeAddr areaCellRangeAddr,
             final Position legendPosition,
@@ -309,7 +309,7 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> areaChart(
+    public ExcelSheetFacade<T> areaChart(
             final String title,
             final CellRangeAddr areaCellRangeAddr,
             final Position legendPosition,
@@ -342,7 +342,7 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> pieChart(
+    public ExcelSheetFacade<T> pieChart(
             final String title,
             final CellRangeAddr areaCellRangeAddr,
             final Position legendPosition,
@@ -369,32 +369,32 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula) {
+    public ExcelSheetFacade<T> formula(final int row1, final int col1, final String formula) {
         sheet.setFormula(row1-1, col1-1, formula);
         return this;
     }
 
-    public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula, final String stylename) {
+    public ExcelSheetFacade<T> formula(final int row1, final int col1, final String formula, final String stylename) {
         sheet.setFormula(row1-1, col1-1, formula, stylename);
         return this;
     }
 
-    public ExcelSheetWriter<T> style(final int row1, final int col1, final String stylename) {
+    public ExcelSheetFacade<T> style(final int row1, final int col1, final String stylename) {
         sheet.setStyle(row1-1, col1-1, stylename);
         return this;
     }
 
-    public ExcelSheetWriter<T> bgColor(final int row1, final int col1, final Color bgColor) {
+    public ExcelSheetFacade<T> bgColor(final int row1, final int col1, final Color bgColor) {
         sheet.setBgColor(row1-1, col1-1, bgColor);
         return this;
     }
 
-    public ExcelSheetWriter<T> bgColor(final int row1, final int col1, final String bgColorHtml) {
+    public ExcelSheetFacade<T> bgColor(final int row1, final int col1, final String bgColorHtml) {
         sheet.setBgColor(row1-1, col1-1, HtmlColor.getColor(bgColorHtml));
         return this;
     }
 
-    public ExcelSheetWriter<T> bgColor(final int row1, final int col1, final short bgColor) {
+    public ExcelSheetFacade<T> bgColor(final int row1, final int col1, final short bgColor) {
         sheet.setBgColorIndex(row1-1, col1-1, bgColor);
         return this;
     }
@@ -403,42 +403,42 @@ public class ExcelSheetWriter<T> {
         return new ExcelSumFormulaBuilder<T>(this, sheet, row1, col1);
     }
 
-    public ExcelSheetWriter<T> skipRows(final int count) {
+    public ExcelSheetFacade<T> skipRows(final int count) {
         skipRows = Math.max(0, count);
         return this;
     }
 
-    public ExcelSheetWriter<T> rowHeightInPoints(final int row1, final int height) {
+    public ExcelSheetFacade<T> rowHeightInPoints(final int row1, final int height) {
         sheet.setRowHeightInPoints(row1-1, height);
         return this;
     }
 
-    public ExcelSheetWriter<T> colWidthInPoints(final int row1, final int width) {
+    public ExcelSheetFacade<T> colWidthInPoints(final int row1, final int width) {
         sheet.setColumnWidthInPoints(row1-1, width);
         return this;
     }
 
-    public ExcelSheetWriter<T> autoSizeColumns() {
+    public ExcelSheetFacade<T> autoSizeColumns() {
         sheet.autoSizeColumns();
         return this;
     }
 
-    public ExcelSheetWriter<T> autoSizeColumn(final int col1) {
+    public ExcelSheetFacade<T> autoSizeColumn(final int col1) {
         sheet.autoSizeColumn(col1-1);
         return this;
     }
 
-    public ExcelSheetWriter<T> hideColumn(final int col1) {
+    public ExcelSheetFacade<T> hideColumn(final int col1) {
         sheet.setColumnHidden(col1-1, true);
         return this;
     }
 
-    public ExcelSheetWriter<T> hideColumns(final int... col1s) {
+    public ExcelSheetFacade<T> hideColumns(final int... col1s) {
         for(int c : col1s) hideColumn(c);
         return this;
     }
 
-    public ExcelSheetWriter<T> hideColumn(final String colID) {
+    public ExcelSheetFacade<T> hideColumn(final String colID) {
         if (colID != null) {
             int colNr1 = 1;
             for(ExcelColumnDef<T> colDef : columnDefs) {
@@ -452,22 +452,22 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> hideColumns(final String... colIDs) {
+    public ExcelSheetFacade<T> hideColumns(final String... colIDs) {
         for(String id : colIDs) hideColumn(id);
         return this;
     }
 
-    public ExcelSheetWriter<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
+    public ExcelSheetFacade<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
         sheet.addMergedRegion(rowFrom1-1, rowTo1-1, colFrom1-1, colTo1-1);
         return this;
     }
 
-    public ExcelSheetWriter<T> displayZeros(final boolean value) {
+    public ExcelSheetFacade<T> displayZeros(final boolean value) {
         sheet.setDisplayZeros(value);
         return this;
     }
 
-    public ExcelSheetWriter<T> setDefaultColumnWidthInPoints(final int width) {
+    public ExcelSheetFacade<T> setDefaultColumnWidthInPoints(final int width) {
         columnWidth = width;
         return this;
     }
@@ -694,7 +694,7 @@ public class ExcelSheetWriter<T> {
 
     public static final int DEFAULT_FONT_SIZE = XSSFFont.DEFAULT_FONT_SIZE;
 
-    private final ExcelWriter parentBuilder;
+    private final ExcelFacade parentBuilder;
     private final ExcelSheet sheet;
     private final List<ExcelColumnDef<T>> columnDefs = new ArrayList<>();
     private boolean noHeader = false;

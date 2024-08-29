@@ -29,8 +29,8 @@
 
 (ns excel)
 
-(import :com.github.jlangch.venice.util.excel.ExcelWriter)
-(import :com.github.jlangch.venice.util.excel.ExcelSheetWriter)
+(import :com.github.jlangch.venice.util.excel.ExcelFacade)
+(import :com.github.jlangch.venice.util.excel.ExcelSheetFacade)
 (import :com.github.jlangch.venice.util.excel.ExcelFontBuilder)
 (import :com.github.jlangch.venice.util.excel.ExcelCellStyleBuilder)
 (import :com.github.jlangch.venice.util.excel.ExcelColumnBuilder)
@@ -109,7 +109,7 @@
 
 ;; #############################################################################
 ;;
-;;                                Excel Writer
+;;                                Excel
 ;;
 ;; #############################################################################
 
@@ -144,8 +144,8 @@
   { :pre [(keyword? type) ] }
 
   (case type
-    :xls  (. :ExcelWriter :createXls)
-    :xlsx (. :ExcelWriter :createXlsx)
+    :xls  (. :ExcelFacade :createXls)
+    :xlsx (. :ExcelFacade :createXlsx)
     
     (throw (ex :VncException
       (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
@@ -188,16 +188,16 @@
 
   (cond
     (string? source)                    
-          (. :ExcelWriter :open (io/file-in-stream source))
+          (. :ExcelFacade :open (io/file-in-stream source))
 
     (bytebuf? source)                   
-          (. :ExcelWriter :open (io/bytebuf-in-stream source))
+          (. :ExcelFacade :open (io/bytebuf-in-stream source))
 
     (io/file? source)                   
-          (. :ExcelWriter :open (io/file-in-stream source))
+          (. :ExcelFacade :open (io/file-in-stream source))
 
     (instance-of? :InputStream source)  
-          (. :ExcelWriter :open source)
+          (. :ExcelFacade :open source)
 
     :else (throw (ex :VncException
                      (str "Invalid Excel open source " (type source) )))))
@@ -229,7 +229,7 @@
 
   write->file [wbook f]
 
-  { :pre [(instance-of? :ExcelWriter wbook)
+  { :pre [(instance-of? :ExcelFacade wbook)
           (or (string? f) (io/file? f)) ] }
 
   (. wbook :write (io/file-out-stream f)))
@@ -258,7 +258,7 @@
 
   write->stream [wbook os]
 
-  { :pre [(instance-of? :ExcelWriter wbook)
+  { :pre [(instance-of? :ExcelFacade wbook)
           (instance-of? :OutputStream os)] }
 
   (. wbook :write os))
@@ -286,7 +286,7 @@
 
   write->bytebuf [wbook]
 
-  { :pre [(instance-of? :ExcelWriter wbook)] }
+  { :pre [(instance-of? :ExcelFacade wbook)] }
 
   (. wbook :writeToBytes))
 
@@ -317,8 +317,8 @@
 
   evaluate-formulas [it]
 
-  { :pre [(or (instance-of? :ExcelWriter it)
-              (instance-of? :ExcelSheetWriter it))] }
+  { :pre [(or (instance-of? :ExcelFacade it)
+              (instance-of? :ExcelSheetFacade it))] }
 
   (. it :evaluateAllFormulas))
 
@@ -371,7 +371,7 @@
     (write-data sheet data 1 1))
 
   ([sheet data row col]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (pos? row) (pos? col)] }
 
     (let [cell (fn [r c val] (excel/write-value sheet (+ r row) (+ c col) val))]
@@ -408,7 +408,7 @@
 
   write-items [sheet items]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
   (->> (map #(. :DataRecord :of %) items)
        (into! (. :java.util.ArrayList :new))
@@ -439,7 +439,7 @@
 
   write-item [sheet item]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet) (map? item)] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet) (map? item)] }
 
   (->> (. :DataRecord :of item)
        (. sheet :renderItem)))
@@ -496,14 +496,14 @@
   write-value
 
   ([sheet row col val]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)] }
     (if (and (map? val) (contains? val :formula))
       (cell-formula sheet row col (:formula val))
       (. sheet :value row col val)))
 
   ([sheet row col val style]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col)
             (pos? row) (pos? col)
             (keyword? style)] }
@@ -538,7 +538,7 @@
   write-values
 
   [sheet row col & vals]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)] }
     (docoll #(write-value sheet row (first %) (second %))
             (map vector (lazy-seq col inc) vals)))
@@ -567,7 +567,7 @@
         "excel/row-height") }
 
   delete-row [sheet row]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row)  (pos? row)] }
     (. sheet :deleteRow row))
 
@@ -595,7 +595,7 @@
         "excel/row-height") }
 
   copy-row-to-end [sheet row]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row)  (pos? row)] }
     (. sheet :copyRowToEndOfSheet row true true))
 
@@ -623,7 +623,7 @@
         "excel/row-height") }
 
   copy-row [sheet row-from row-to]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row-from)  (pos? row-from)
             (long? row-to)  (pos? row-to)] }
     (. sheet :copyRow row-from row-to true true))
@@ -652,7 +652,7 @@
         "excel/row-height") }
 
   clear-row [sheet row]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row)  (pos? row)] }
     (. sheet :clearRow row))
 
@@ -684,12 +684,12 @@
   insert-empty-row 
   
   ([sheet row]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row)  (pos? row)] }
     (. sheet :insertEmptyRow row))
   
   ([sheet row count]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row)  (pos? row)
             (long? count)  (pos? count)] }
     (. sheet :insertEmptyRows row count)))
@@ -740,14 +740,14 @@
   add-image
 
   ([sheet row col data type]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)
             (bytebuf? data)
             (keyword? type) (or (== :PNG type) (== :JPEG type))] }
       (. sheet :image row col data type nil nil))
 
   ([sheet row col data type scale-x scale-y]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)
             (bytebuf? data)
             (keyword? type) (or (== :PNG type) (== :JPEG type))] }
@@ -850,7 +850,7 @@
                         categories-addr-range
                         series]
 
-    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+    { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
     (. sheet :lineChart chart-title
                         chart-addr-range
@@ -958,7 +958,7 @@
                        categories-addr-range
                        series]
 
-    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+    { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
     (. sheet :barChart chart-title
                        chart-addr-range
@@ -1050,7 +1050,7 @@
                         categories-addr-range
                         series]
 
-    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+    { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
     (. sheet :areaChart chart-title
                         chart-addr-range
@@ -1126,7 +1126,7 @@
                        categories-addr-range
                        series]
 
-    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+    { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
     (. sheet :pieChart chart-title
                        chart-addr-range
@@ -1287,13 +1287,13 @@
   cell-formula
 
   ([sheet row col formula]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)
             (string? formula)] }
     (. sheet :formula row col formula))
 
   ([sheet row col formula style]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)
             (string? formula) (keyword? style)] }
     (. sheet :formula row col formula (name style))))
@@ -1326,7 +1326,7 @@
 
   sum-formula [sheet row-from row-to col-from col-to]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row-from) (long? row-to)
           (long? col-from) (long? col-to)
           (pos? row-from) (pos? row-to)
@@ -1364,7 +1364,7 @@
 
   cell-address [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :cellAddress_A1_style row col))
@@ -1410,7 +1410,7 @@
 
   auto-size-columns [sheet]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
   (. sheet :autoSizeColumns))
 
@@ -1441,7 +1441,7 @@
 
   auto-size-column [sheet col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? col) (pos? col)] }
 
   (. sheet :autoSizeColumn col))
@@ -1489,7 +1489,7 @@
 
   hide-columns [sheet & columns]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
   (let [valid?       (fn [c] (or (int? c) (long? c) (string? c)))
         invalid-cols (filter #(not (valid? %)) columns)]
@@ -1526,7 +1526,7 @@
 
   row-height [sheet row height]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (pos? row)] }
 
   (. sheet :rowHeightInPoints row height))
@@ -1560,7 +1560,7 @@
 
   col-width [sheet col width]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? col) (pos? col)] }
 
   (. sheet :colWidthInPoints col width))
@@ -1648,7 +1648,7 @@
     (add-sheet wbook title {}))
 
   ([wbook title options]
-    { :pre [(instance-of? :ExcelWriter wbook)
+    { :pre [(instance-of? :ExcelFacade wbook)
             (string? title)] }
     (let [sheet (. wbook :withSheet (name title) (class :DataRecord))]
       (when-let [x (:no-header-row options)]
@@ -1699,7 +1699,7 @@
 
   add-merge-region [sheet row-from row-to col-from col-to]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row-from) (long? row-to)
           (long? col-from) (long? col-to)
           (pos? row-from) (pos? row-to)
@@ -1737,7 +1737,7 @@
 
   freeze-pane [sheet rows cols ]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? rows) (long? cols)
           (>= rows 0) (>= cols 0)] }
 
@@ -1797,7 +1797,7 @@
     (add-font wbook font-key {}))
 
   ([wbook font-id options]
-    { :pre [(instance-of? :ExcelWriter wbook)
+    { :pre [(instance-of? :ExcelFacade wbook)
             (keyword? font-id)] }
     (let [font-builder (. wbook :withFont (name font-id))]
       (when-let [x (:height options)] (. font-builder :heightInPoints x))
@@ -1893,7 +1893,7 @@
     (add-style wbook style-id {}))
 
   ([wbook style-id options]
-    { :pre [(instance-of? :ExcelWriter wbook)
+    { :pre [(instance-of? :ExcelFacade wbook)
             (keyword? style-id)] }
     (let [cell-style-builder (. wbook :withCellStyle (name style-id))]
       (when-let [x (:format options)]
@@ -2023,13 +2023,13 @@
   cell-style
 
   ([sheet row col style-id]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)] }
 
     (. sheet :style row col style-id))
 
   ([sheet row-from row-to col-from col-to style-id]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row-from) (long? row-to) (long? col-from) (long? col-to)
             (pos? row-from) (pos? row-to) (pos? col-from) (pos? col-to)] }
 
@@ -2089,12 +2089,12 @@
   bg-color
 
   ([sheet row col color]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col) (pos? row) (pos? col)] }
     (. sheet :bgColor row col color))
 
   ([sheet row col-start col-end color]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row) (long? col-start) (long? col-end)
             (pos? row) (pos? col-start) (pos? col-end)
             (<= col-start col-end)] }
@@ -2103,7 +2103,7 @@
       (run! #(. sheet :bgColor row % color) (range col-start (inc col-end)))))
 
   ([sheet row-start row-end col-start col-end color & colors]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (long? row-start) (long? row-end)
             (long? col-start) (long? col-end)
             (pos? row-start) (pos? row-end)
@@ -2252,7 +2252,7 @@
     (add-columnn sheet title {}))
 
   ([sheet title options]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
+    { :pre [(instance-of? :ExcelSheetFacade sheet)
             (string? title)] }
     (let [col-builder (. sheet :withColumn title)]
       (when-let [x (:field options)]
@@ -2323,10 +2323,10 @@
   open [source]
 
   (cond
-    (string? source)                    (. :ExcelWriter :open (io/file-in-stream source))
-    (bytebuf? source)                   (. :ExcelWriter :open (io/bytebuf-in-stream source))
-    (io/file? source)                   (. :ExcelWriter :open (io/file-in-stream source))
-    (instance-of? :InputStream source)  (. :ExcelWriter :open source)
+    (string? source)                    (. :ExcelFacade :open (io/file-in-stream source))
+    (bytebuf? source)                   (. :ExcelFacade :open (io/bytebuf-in-stream source))
+    (io/file? source)                   (. :ExcelFacade :open (io/file-in-stream source))
+    (instance-of? :InputStream source)  (. :ExcelFacade :open source)
     :else (throw (ex :VncException
                      (str "Invalid Excel open source " (type source) )))))
 
@@ -2352,7 +2352,7 @@
 
   sheet-count [wbook]
 
-  { :pre [(or (instance-of? :ExcelWriter wbook))] }
+  { :pre [(or (instance-of? :ExcelFacade wbook))] }
 
   (long (. wbook :getNumberOfSheets)))
 
@@ -2361,8 +2361,7 @@
   ^{ :arglists '("(sheet wbook ref)")
      :doc
         """
-        Returns a sheet from the Excel reader or writer referenced by its name 
-        or sheet index.
+        Returns a sheet from the Excelreferenced by its name or sheet index.
         """
      :examples '(
         """
@@ -2393,7 +2392,7 @@
 
   sheet [wbook s]
 
-  { :pre [(or (instance-of? :ExcelWriter wbook))] }
+  { :pre [(or (instance-of? :ExcelFacade wbook))] }
 
   (cond
     (string? s)  (. wbook :getSheet s)
@@ -2426,7 +2425,7 @@
 
   sheet-index [sheet]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))] }
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))] }
 
   (long (. sheet :getIndex)))
 
@@ -2455,7 +2454,7 @@
 
     sheet-name [sheet]
 
-    { :pre [(or (instance-of? :ExcelSheetWriter sheet))] }
+    { :pre [(or (instance-of? :ExcelSheetFacade sheet))] }
 
     (. sheet :getName))
 
@@ -2487,7 +2486,7 @@
 
   sheet-row-range [sheet]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))] }
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))] }
 
   [(long (. sheet :getFirstRowNum)) (long (. sheet :getLastRowNum))])
 
@@ -2548,7 +2547,7 @@
 
   sheet-col-range [sheet row]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? row) (pos? row)] }
 
   [(long (. sheet :getFirstCellNum row)) (long (. sheet :getLastCellNum row))])
@@ -2586,7 +2585,7 @@
 
   cell-empty? [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isCellEmpty row col))
@@ -2635,7 +2634,7 @@
 
   cell-type [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (case (. sheet :getCellType row col)
@@ -2680,7 +2679,7 @@
 
   cell-data-format-string [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getDataFormatString row col))
@@ -2721,7 +2720,7 @@
 
   cell-formula-result-type [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (case (. sheet :getCellFormulaResultType row col)
@@ -2768,7 +2767,7 @@
 
   read-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getValue row col))
@@ -2803,7 +2802,7 @@
 
   read-string-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getString row col))
@@ -2838,7 +2837,7 @@
 
   read-boolean-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getBoolean row col))
@@ -2892,7 +2891,7 @@
 
   read-long-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (long (. sheet :getInteger row col)))
@@ -2926,7 +2925,7 @@
 
   read-double-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getFloat row col))
@@ -2964,7 +2963,7 @@
 
   read-date-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (time/local-date (. sheet :getDate row col)))
@@ -3002,7 +3001,7 @@
 
   read-datetime-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetWriter sheet)
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getDate row col))
@@ -3039,7 +3038,7 @@
 
   read-error-code [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getErrorCode row col))
@@ -3071,7 +3070,7 @@
 
   cell-locked? [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isLocked row col))
@@ -3103,7 +3102,7 @@
 
   cell-hidden? [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isHidden row col))
@@ -3135,7 +3134,7 @@
 
   col-hidden? [sheet col]
 
-  { :pre [(or (instance-of? :ExcelSheetWriter sheet))
+  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
           (long? col) (pos? col)] }
 
   (. sheet :isColumnHidden col))

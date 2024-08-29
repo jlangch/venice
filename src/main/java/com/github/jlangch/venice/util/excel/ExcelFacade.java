@@ -124,36 +124,36 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *
  * @author juerg
  */
-public class ExcelWriter {
+public class ExcelFacade {
 
-    public ExcelWriter(final Excel excel) {
+    public ExcelFacade(final Excel excel) {
         this.excel = excel;
     }
 
 
-    public static ExcelWriter open(final byte[] document) {
-        return new ExcelWriter(Excel.open(new ByteArrayInputStream(document)));
+    public static ExcelFacade open(final byte[] document) {
+        return new ExcelFacade(Excel.open(new ByteArrayInputStream(document)));
     }
 
-    public static ExcelWriter open(final ByteBuffer document) {
-        return new ExcelWriter(Excel.open(new ByteArrayInputStream(document.array())));
+    public static ExcelFacade open(final ByteBuffer document) {
+        return new ExcelFacade(Excel.open(new ByteArrayInputStream(document.array())));
     }
 
-    public static ExcelWriter open(final File file) {
-        return new ExcelWriter(Excel.open(file));
+    public static ExcelFacade open(final File file) {
+        return new ExcelFacade(Excel.open(file));
     }
 
-    public static ExcelWriter open(final InputStream is) {
-        return new ExcelWriter(Excel.open(is));
+    public static ExcelFacade open(final InputStream is) {
+        return new ExcelFacade(Excel.open(is));
     }
 
 
-    public static ExcelWriter createXls() {
-        return new ExcelWriter(Excel.createXls());
+    public static ExcelFacade createXls() {
+        return new ExcelFacade(Excel.createXls());
     }
 
-    public static ExcelWriter createXlsx() {
-        return new ExcelWriter(Excel.createXlsx());
+    public static ExcelFacade createXlsx() {
+        return new ExcelFacade(Excel.createXlsx());
     }
 
 
@@ -174,8 +174,8 @@ public class ExcelWriter {
         return new ExcelCellStyleBuilder(this, excel, name);
     }
 
-    public <T> ExcelSheetWriter<T> withSheet(final String name, final Class<T> type) {
-        return new ExcelSheetWriter<T>(this, excel.createSheet(name));
+    public <T> ExcelSheetFacade<T> withSheet(final String name, final Class<T> type) {
+        return new ExcelSheetFacade<T>(this, excel.createSheet(name));
     }
 
 
@@ -191,18 +191,18 @@ public class ExcelWriter {
         return excel.writeToBytes();
     }
 
-    public ExcelWriter end() {
+    public ExcelFacade end() {
         excel.close();
         return this;
     }
 
 
-    public <T> ExcelSheetWriter<T> getSheet(final String name) {
-        return new ExcelSheetWriter<T>(this, excel.getSheet(name));
+    public <T> ExcelSheetFacade<T> getSheet(final String name) {
+        return new ExcelSheetFacade<T>(this, excel.getSheet(name));
     }
 
-    public <T> ExcelSheetWriter<T> getSheetAt(final int sheetIdx) {
-        return new ExcelSheetWriter<T>(this, excel.getSheetAt(sheetIdx-1));
+    public <T> ExcelSheetFacade<T> getSheetAt(final int sheetIdx) {
+        return new ExcelSheetFacade<T>(this, excel.getSheetAt(sheetIdx-1));
     }
 
 

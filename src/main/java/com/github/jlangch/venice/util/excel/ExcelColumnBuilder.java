@@ -30,7 +30,7 @@ import com.github.jlangch.venice.impl.util.excel.ExcelColumnDef;
 public class ExcelColumnBuilder<T> {
 
     public ExcelColumnBuilder(
-            final ExcelSheetWriter<T> excelSheetBuilder,
+            final ExcelSheetFacade<T> excelSheetBuilder,
             final List<ExcelColumnDef<T>> columnDefs,
             final String name
     ) {
@@ -116,7 +116,7 @@ public class ExcelColumnBuilder<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> end() {
+    public ExcelSheetFacade<T> end() {
         if (!skipped) {
             columnDefs.add(
                 new ExcelColumnDef<T>(
@@ -128,7 +128,7 @@ public class ExcelColumnBuilder<T> {
     }
 
 
-    private final ExcelSheetWriter<T> parentBuilder;
+    private final ExcelSheetFacade<T> parentBuilder;
     private final List<ExcelColumnDef<T>> columnDefs;
     private Function<? super T, ?> mapper;
     private String name;
