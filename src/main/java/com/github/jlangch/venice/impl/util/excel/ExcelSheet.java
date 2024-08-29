@@ -28,7 +28,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -41,6 +43,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
@@ -653,6 +656,41 @@ public class ExcelSheet {
         if (style != null) {
             cell.setCellStyle(style);
         }
+    }
+
+    public Map<String,Object> getCellStyleInfo(final int row, final int col) {
+        final Map<String,Object> info = new HashMap<>();
+
+        final Cell cell = getCell(row, col);
+
+        if (cell != null) {
+            final CellStyle style = cell.getCellStyle();
+            if (style != null) {
+                // Font details
+                final Font font = cellStyles.getFont(style);
+                info.put("font.name",   font.getFontName());
+                info.put("font.size",   font.getFontHeightInPoints());
+                info.put("font.bold",   font.getBold());
+                info.put("font.italic", font.getItalic());
+
+                // Alignment details
+                info.put("h-align", style.getAlignment().name().toLowerCase());
+                info.put("v-align", style.getVerticalAlignment().name().toLowerCase());
+
+                // Border details
+                info.put("border.top",    style.getBorderTop().name().toLowerCase());
+                info.put("border.bottom", style.getBorderBottom().name().toLowerCase());
+                info.put("border.left",   style.getBorderLeft().name().toLowerCase());
+                info.put("border.right",  style.getBorderRight().name().toLowerCase());
+
+                // Fill details
+                info.put("fill.bg.color", style.getFillBackgroundColor());
+                info.put("fill.fg.color", style.getFillForegroundColor());
+                info.put("fill.pattern",  style.getFillPattern().name().toLowerCase());
+            }
+        }
+
+        return info;
     }
 
     public void addMergedRegion(final int rowFrom, final int rowTo, final int colFrom, final int colTo) {

@@ -143,6 +143,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         style.addItem(diBuilder.getDocItem("excel/row-height", false));
         style.addItem(diBuilder.getDocItem("excel/col-width", false));
         style.addItem(diBuilder.getDocItem("excel/cell-style", false));
+        style.addItem(diBuilder.getDocItem("excel/cell-style-info", false));
         style.addItem(diBuilder.getDocItem("excel/bg-color", false));
 
         final DocSection image = new DocSection("Images", id());

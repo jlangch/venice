@@ -192,6 +192,10 @@ public class ExcelCellStyles {
         return (name != null) ? cellStyles.get(name) : null;
     }
 
+    public Font getFont(final CellStyle style) {
+    	return style == null ? null : workbook.getFontAt(style.getFontIndex());
+    }
+
     private void registerStandardFormats() {
         getStandardFormats()
             .entrySet()

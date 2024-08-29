@@ -2230,6 +2230,43 @@
               (range col-start (inc col-end)))))))
 
 
+
+
+(defn
+  ^{ :arglists '(
+       "(cell-style-info sheet row col)")
+     :doc
+        """
+        Returns a map with the cell's styles.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/cell-style-info sheet 1 1)))
+        """)
+     :see-also '(
+       "excel/add-style", "excel/add-font", "excel/cell-style" ) }
+
+  cell-style-info [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] } 
+  (let [m1 (into {} (. sheet :getCellStyleInfo row col))
+        m2 (select-keys m1 [ "h-align", "v-align", 
+                             "border.top", "border.bottom", 
+                             "border.left", "border.right",
+                             "fill.pattern" ])
+        m3 (map-vals keyword m2)
+        m4 (merge m1 m3)
+        m5 (map-keys keyword m4)]
+    m5)) 
+
+
+
 ;; -----------------------------------------------------------------------------
 ;; Cell addresses
 ;; -----------------------------------------------------------------------------
