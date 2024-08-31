@@ -158,8 +158,14 @@
      :doc """
           Opens an existing Excel for reading or modifying.
 
-          Supported sources are string file path, bytebuf, `:java.io.File`,
+          Supported sources are *string file path*, `bytebuf`, `:java.io.File`,
           or `:java.io.InputStream`.
+
+          * *string file path* -> `(excel/open "/Users/foo/data/test.xlsx")`
+          * *classpath* -> `(excel/open (io/load-classpath-resource "org/foo/data/test.xlsx"))`
+          * *:java.io.File* -> `(excel/open (io/file "/Users/foo/data/test.xlsx"))`
+          * *:java.io.InputStream* -> `(excel/open (io/file-in-stream "/Users/foo/data/test.xlsx"))`
+          * *bytebuf* -> `(excel/open (io/slurp "/Users/foo/data/test.xlsx" :binary true))`
           """
      :examples '(
         """
@@ -2462,36 +2468,6 @@
 ;;                                Excel Reader
 ;;
 ;; #############################################################################
-
-(defn
-  ^{ :arglists '("(open source)")
-     :doc
-        """
-        Opens an Excel from a source and returns an Excel reader.
-
-        Supported sources are string file path, bytebuf, `:java.io.File`,
-        or `:java.io.InputStream`.
-        """
-     :examples '(
-        """
-        (do
-          (load-module :excel)
-
-          (let [wbook (excel/open "sample.xlsx")]
-            (println "Sheet count: " (excel/sheet-count wbook))))
-        """ )
-     :see-also '(
-        "excel/sheet-count", "excel/sheet", "excel/evaluate-formulas") }
-
-  open [source]
-
-  (cond
-    (string? source)                    (. :ExcelFacade :open (io/file-in-stream source))
-    (bytebuf? source)                   (. :ExcelFacade :open (io/bytebuf-in-stream source))
-    (io/file? source)                   (. :ExcelFacade :open (io/file-in-stream source))
-    (instance-of? :InputStream source)  (. :ExcelFacade :open source)
-    :else (throw (ex :VncException
-                     (str "Invalid Excel open source " (type source) )))))
 
 
 (defn
