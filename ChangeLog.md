@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Updated dependencies:
+
+- Bumped Apache POI from 5.2.3 to 5.3
+
 
 
 ## [1.12.32] - 2024-08-29
