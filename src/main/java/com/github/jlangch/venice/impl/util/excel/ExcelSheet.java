@@ -28,7 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -659,13 +659,18 @@ public class ExcelSheet {
     }
 
     public Map<String,Object> getCellStyleInfo(final int row, final int col) {
-        final Map<String,Object> info = new HashMap<>();
+        final Map<String,Object> info = new LinkedHashMap<>();
 
         final Cell cell = getCell(row, col);
 
         if (cell != null) {
             final CellStyle style = cell.getCellStyle();
             if (style != null) {
+            	// Cell type
+                info.put("cell.type", getCellType(cell.getCellType()));
+                info.put("cell.col", col);
+                info.put("cell.row", row);
+
                 // Font details
                 final Font font = cellStyles.getFont(style);
                 info.put("font.name",   font.getFontName());

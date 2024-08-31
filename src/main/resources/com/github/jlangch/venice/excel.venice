@@ -512,15 +512,16 @@
 
   ([sheet row col val]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)] }
+            (long? row) (pos? row)
+            (long? col) (pos? col)] }
     (if (and (map? val) (contains? val :formula))
       (cell-formula sheet row col (:formula val))
       (. sheet :value row col val)))
 
   ([sheet row col val style]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col)
-            (pos? row) (pos? col)
+            (long? row) (pos? row) 
+            (long? col)(pos? col)
             (keyword? style)] }
     (if (and (map? val) (contains? val :formula))
       (cell-formula sheet row col (:formula val) style)
@@ -556,7 +557,8 @@
 
   [sheet row col & vals]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)] }
+            (long? row) (pos? row) 
+            (long? col) (pos? col)] }
     (docoll #(write-value sheet row (first %) (second %))
             (map vector (lazy-seq col inc) vals)))
 
@@ -588,7 +590,8 @@
 
   [sheet row col & vals]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)] }
+            (long? row) (pos? row) 
+            (long? col) (pos? col)] }
     (docoll #(write-value sheet row (first %) (second %) :keep-style)
             (map vector (lazy-seq col inc) vals)))
 
@@ -862,7 +865,8 @@
 
   ([sheet row col data type scale-x scale-y]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)
+            (long? row) (pos? row) 
+            (long? col) (pos? col)
             (bytebuf? data)
             (keyword? type) (or (== :PNG type) (== :JPEG type))] }
       (. sheet :image row col data type scale-x scale-y)))
@@ -1402,14 +1406,17 @@
 
   ([sheet row col formula]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)
+            (long? row) (pos? row) 
+            (long? col) (pos? col)
             (string? formula)] }
     (. sheet :formula row col formula))
 
   ([sheet row col formula style]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)
-            (string? formula) (keyword? style)] }
+            (long? row) (pos? row) 
+            (long? col) (pos? col)
+            (string? formula) 
+            (keyword? style)] }
     (. sheet :formula row col formula (name style))))
 
 
@@ -1462,7 +1469,7 @@
                 wbook (excel/create :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })
                 addr  #(excel/cell-address sheet %1 %2)
-                sum   #(str "SUM\u0028" %1 "," %2 ")")]
+                sum   #(str "SUM\u0028" %1 "," %2 "\u0029")]
             (excel/add-column sheet "A" { :field :a })
             (excel/add-column sheet "B" { :field :b })
             (excel/add-column sheet "C" { :field :c })
@@ -1479,7 +1486,8 @@
   cell-address [sheet row col]
 
   { :pre [(instance-of? :ExcelSheetFacade sheet)
-          (long? row) (long? col) (pos? row) (pos? col)] }
+          (long? row) (pos? row) 
+          (pos? col) (long? col) ] }
 
   (. sheet :cellAddress_A1_style row col))
 
@@ -2138,14 +2146,17 @@
 
   ([sheet row col style-id]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row) (long? col) (pos? row) (pos? col)] }
+            (long? row) (pos? row) 
+            (long? col) (pos? col)] }
 
     (. sheet :style row col style-id))
 
   ([sheet row-from row-to col-from col-to style-id]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (long? row-from) (long? row-to) (long? col-from) (long? col-to)
-            (pos? row-from) (pos? row-to) (pos? col-from) (pos? col-to)] }
+            (long? row-from)  (pos? row-from)
+            (long? row-to)    (pos? row-to) 
+            (long? col-from)  (pos? col-from)
+            (long? col-to)    (pos? col-to)] }
 
     (list-comp [r (range row-from (inc row-to))
                 c (range col-from (inc col-to))]
@@ -2258,7 +2269,8 @@
   { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] } 
   (let [m1 (into {} (. sheet :getCellStyleInfo row col))
-        m2 (select-keys m1 [ "h-align", "v-align", 
+        m2 (select-keys m1 [ "cell.type"
+                             "h-align", "v-align", 
                              "border.top", "border.bottom", 
                              "border.left", "border.right",
                              "fill.pattern" ])
@@ -2512,7 +2524,7 @@
   ^{ :arglists '("(sheet wbook ref)")
      :doc
         """
-        Returns a sheet from the Excelreferenced by its name or sheet index.
+        Returns a sheet from the Excel referenced by its name or sheet index.
         """
      :examples '(
         """
@@ -2576,7 +2588,7 @@
 
   sheet-index [sheet]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
   (long (. sheet :getIndex)))
 
@@ -2605,7 +2617,7 @@
 
     sheet-name [sheet]
 
-    { :pre [(or (instance-of? :ExcelSheetFacade sheet))] }
+    { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
     (. sheet :getName))
 
@@ -2637,7 +2649,7 @@
 
   sheet-row-range [sheet]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
   [(long (. sheet :getFirstRowNum)) (long (. sheet :getLastRowNum))])
 
@@ -2698,7 +2710,7 @@
 
   sheet-col-range [sheet row]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (pos? row)] }
 
   [(long (. sheet :getFirstCellNum row)) (long (. sheet :getLastCellNum row))])
@@ -2736,7 +2748,7 @@
 
   cell-empty? [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isCellEmpty row col))
@@ -2785,7 +2797,7 @@
 
   cell-type [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (case (. sheet :getCellType row col)
@@ -2830,7 +2842,7 @@
 
   cell-data-format-string [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getDataFormatString row col))
@@ -3189,7 +3201,7 @@
 
   read-error-code [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getErrorCode row col))
@@ -3221,7 +3233,7 @@
 
   cell-locked? [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isLocked row col))
@@ -3253,7 +3265,7 @@
 
   cell-hidden? [sheet row col]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isHidden row col))
@@ -3285,7 +3297,7 @@
 
   col-hidden? [sheet col]
 
-  { :pre [(or (instance-of? :ExcelSheetFacade sheet))
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
           (long? col) (pos? col)] }
 
   (. sheet :isColumnHidden col))
