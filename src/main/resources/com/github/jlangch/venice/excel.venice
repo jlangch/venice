@@ -672,7 +672,7 @@
 (defn
   ^{ :arglists '(
        "(copy-row sheet row-from row-to)"
-       "(copy-row sheet row copy-value copy-style)")
+       "(copy-row sheet row-from row-to copy-value copy-style)")
      :doc 
        "Copies a specific row in a sheet."
      :examples '(
@@ -816,6 +816,36 @@
 
   (. sheet :copyCellStyle cell-from-row cell-from-col cell-to-row cell-to-col))
  
+
+(defn
+  ^{ :arglists '(
+        "(conditional-bg-color sheet rule region bg-color-html)")
+     :doc "Conditional background color"
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/conditional-bg-color sheet "ISBLANK(B1)" "B1:B99" "#CC636A")
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/clear-row", "excel/delete-row", 
+        "excel/copy-row", "excel/copy-row-to-end",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  conditional-bg-color [sheet rule region bg-color-html]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
+
+  (. sheet :conditionalBackgroundColor rule region bg-color-html))
+
 
 
 ;; -----------------------------------------------------------------------------

@@ -160,6 +160,14 @@ public class ExcelSheetFacade<T> {
         sheet.copyCellStyle(cellRowFrom1-1, cellColFrom1-1, cellRowTo1-1, cellColTo1-1);
     }
 
+    public void conditionalBackgroundColor(
+            final String condRule,    // "ISBLANK(A1)"
+            final String condRegion,  // "A1:B1"
+            final String bgColorHtml  // "#CC636A"
+    ) {
+        sheet.conditionalBackgroundColor(condRule, condRegion, bgColorHtml);
+    }
+
     public ExcelSheetFacade<T> noHeader() {
         this.noHeader = true;
         return this;

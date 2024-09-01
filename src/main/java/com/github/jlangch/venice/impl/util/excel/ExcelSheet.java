@@ -39,16 +39,19 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.ConditionalFormattingRule;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.PatternFormatting;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -68,6 +71,7 @@ import com.github.jlangch.venice.util.excel.chart.ImageType;
 import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
 import com.github.jlangch.venice.util.excel.chart.PieDataSeries;
 import com.github.jlangch.venice.util.excel.chart.Position;
+import com.github.jlangch.venice.util.pdf.HtmlColor;
 
 
 /**
@@ -296,6 +300,34 @@ public class ExcelSheet {
             final CellStyle style = cellFrom.getCellStyle();
             cellTo.setCellStyle(style);
         }
+    }
+
+    public void conditionalBackgroundColor(
+            final String condRule,    // "ISBLANK(A1)"
+            final String condRegion,  // "A1:B1"
+            final String bgColorHtml  // "#CC636A"
+    ) {
+        // Create a conditional formatting rule for blank cells
+        final SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
+
+        // Define a conditional formatting rule using a formula (ISBLANK(A1))
+        final ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(condRule);
+
+        // Create a pattern formatting object
+        final PatternFormatting fill = rule.createPatternFormatting();
+
+        final Color bg = HtmlColor.getColor(bgColorHtml);
+        byte[] rgb = new byte[]{(byte)bg.getRed(), (byte)bg.getGreen(), (byte)bg.getBlue()};
+
+        fill.setFillBackgroundColor(new XSSFColor(rgb, null));
+        fill.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
+
+
+        // Define the range of cells to apply the rule
+        final CellRangeAddress[] regions = { CellRangeAddress.valueOf(condRegion) };
+
+        // Apply the conditional formatting rule to the sheet
+        sheetCF.addConditionalFormatting(regions, rule);
     }
 
     public Object getValue(final int row, final int col) {
@@ -666,7 +698,7 @@ public class ExcelSheet {
         if (cell != null) {
             final CellStyle style = cell.getCellStyle();
             if (style != null) {
-            	// Cell type
+                // Cell type
                 info.put("cell.type", getCellType(cell.getCellType()));
                 info.put("cell.col", col);
                 info.put("cell.row", row);
@@ -881,7 +913,7 @@ public class ExcelSheet {
 
         final CellValue cellValue = evaluator.evaluate(cell);
         if (cellValue == null) {
-        	return null;
+            return null;
         }
 
         switch (cellValue.getCellType()) {
@@ -912,7 +944,7 @@ public class ExcelSheet {
 
         final CellValue cellValue = evaluator.evaluate(cell);
         if (cellValue == null) {
-        	return null;
+            return null;
         }
 
         switch (cellValue.getCellType()) {
@@ -941,7 +973,7 @@ public class ExcelSheet {
 
         final CellValue cellValue = evaluator.evaluate(cell);
         if (cellValue == null) {
-        	return null;
+            return null;
         }
 
         if (cellValue.getCellType() == CellType.BLANK) {
@@ -965,7 +997,7 @@ public class ExcelSheet {
 
         final CellValue cellValue = evaluator.evaluate(cell);
         if (cellValue == null) {
-        	return null;
+            return null;
         }
 
         if (cellValue.getCellType() == CellType.BLANK) {
@@ -989,7 +1021,7 @@ public class ExcelSheet {
 
         final CellValue cellValue = evaluator.evaluate(cell);
         if (cellValue == null) {
-        	return null;
+            return null;
         }
 
         if (cellValue.getCellType() == CellType.BLANK) {
