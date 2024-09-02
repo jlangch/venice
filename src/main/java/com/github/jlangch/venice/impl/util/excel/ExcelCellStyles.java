@@ -29,6 +29,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
@@ -194,6 +195,12 @@ public class ExcelCellStyles {
 
     public Font getFont(final CellStyle style) {
     	return style == null ? null : workbook.getFontAt(style.getFontIndex());
+    }
+
+    public short createDataFormat(final String format) {
+    	// cellStyle.setDataFormat(createDataFormat("dd.MM.yyyy"));
+        final CreationHelper creationHelper = workbook.getCreationHelper();
+        return creationHelper.createDataFormat().getFormat(format);
     }
 
     private void registerStandardFormats() {
