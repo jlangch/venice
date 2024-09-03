@@ -310,7 +310,7 @@ public class ExcelSheet {
         }
     }
 
-    public void conditionalBackgroundColor(
+    public void addConditionalBackgroundColor(
             final String condRule,     // "ISBLANK(A1)"
             final String bgColorHtml,  // "#CC636A"
             final int regionFirstRow,

@@ -168,7 +168,7 @@ public class ExcelSheetFacade<T> {
             final int regionFirstCol1,
             final int regionLastCol1
     ) {
-        sheet.conditionalBackgroundColor(
+        sheet.addConditionalBackgroundColor(
                 condRule,
                 bgColorHtml,
                 regionFirstRow1-1,
