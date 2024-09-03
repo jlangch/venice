@@ -819,10 +819,15 @@
 
 (defn
   ^{ :arglists '(
-        "(add-conditional-bg-color sheet
-                               rule bg-color-html
-                               region-first-row region-last-row
-    		                       region-first-col region-last-col)")
+        """
+        (add-conditional-bg-color sheet
+                                  rule 
+                                  bg-color-html
+                                  region-first-row
+                                  region-last-row
+                                  region-first-col
+                                  region-last-col)
+        """)
      :doc "Add a conditional background color"
      :examples '(
         """
@@ -862,13 +867,17 @@
 
 (defn
   ^{ :arglists '(
-        "(add-text-data-validation sheet 
-                                   strings 
-                                   empty-cell-allowed
-                                   err-title 
-                                   err-text
-                                   region-first-row region-last-row,
-    		                           region-first-col, region-last-col)")
+        """
+        (add-text-data-validation sheet 
+                                  strings 
+                                  empty-cell-allowed?
+                                  err-title
+                                  err-text
+                                  region-first-row 
+                                  region-last-row
+                                  region-first-col 
+                                  region-last-col)
+        """)
      :doc "Adds a text enumeration validation to a cell region in a sheet"
      :examples '(
         """
@@ -895,7 +904,7 @@
         "excel/row-height") }
 
   add-text-data-validation [sheet 
-                            strings empty-cell-allowed
+                            strings empty-cell-allowed?
                             err-title err-text
                             region-first-row region-last-row
     		                    region-first-col region-last-col]
@@ -903,7 +912,7 @@
   { :pre [(instance-of? :ExcelSheetFacade sheet)
           (sequential? strings)
           (every? string? strings)
-          (boolean? empty-cell-allowed)
+          (boolean? empty-cell-allowed?)
           (or (nil? err-title) (string? err-title))
           (or (nil? err-text) (string? err-text))
           (long? region-first-row) (pos? region-first-row)
@@ -911,7 +920,7 @@
           (long? region-first-col) (pos? region-first-col)
           (long? region-last-col)  (pos? region-last-col)] }
 
-  (. sheet :addTextDataValidation strings empty-cell-allowed
+  (. sheet :addTextDataValidation strings empty-cell-allowed?
                                   err-title err-text
                                   region-first-row region-last-row
     		                          region-first-col region-last-col))
@@ -985,17 +994,19 @@
 
 (defn
   ^{ :arglists '(
-        "(add-line-chart sheet chart-title
-                               chart-addr-range
-                               legend-position
-                               category-axis-title
-                               category-axis-position
-                               value-axis-title
-                               value-axis-position
-                               three-dimensional?
-                               vary-colors?
-                               categories-addr-range
-                               series)")
+        """
+        (add-line-chart sheet chart-title
+                              chart-addr-range
+                              legend-position
+                              category-axis-title
+                              category-axis-position
+                              value-axis-title
+                              value-axis-position
+                              three-dimensional?
+                              vary-colors?
+                              categories-addr-range
+                              series)
+        """)
      :doc
         """
         Adds a line chart.
@@ -1091,19 +1102,21 @@
 
 (defn
   ^{ :arglists '(
-        "(add-bar-chart sheet chart-title
-                              chart-addr-range
-                              legend-position
-                              category-axis-title
-                              category-axis-position
-                              value-axis-title
-                              value-axis-position
-                              three-dimensional?
-                              direction-bar?
-                              grouping
-                              vary-colors?
-                              categories-addr-range
-                              series)")
+        """
+        (add-bar-chart sheet chart-title
+                             chart-addr-range
+                             legend-position
+                             category-axis-title
+                             category-axis-position
+                             value-axis-title
+                             value-axis-position
+                             three-dimensional?
+                             direction-bar?
+                             grouping
+                             vary-colors?
+                             categories-addr-range
+                             series)
+        """)
      :doc
         """
         Adds a bar chart.
@@ -1201,16 +1214,18 @@
 
 (defn
   ^{ :arglists '(
-        "(add-area-chart sheet chart-title
-                               chart-addr-range
-                               legend-position
-                               category-axis-title
-                               category-axis-position
-                               value-axis-title
-                               value-axis-position
-                               three-dimensional?
-                               categories-addr-range
-                               series)")
+        """
+        (add-area-chart sheet chart-title
+                              chart-addr-range
+                              legend-position
+                              category-axis-title
+                              category-axis-position
+                              value-axis-title
+                              value-axis-position
+                              three-dimensional?
+                              categories-addr-range
+                              series)
+        """)
      :doc
         """
         Adds an area chart.
@@ -1290,13 +1305,15 @@
 
 (defn
   ^{ :arglists '(
-        "(add-pie-chart sheet chart-title
-                               chart-addr-range
-                               legend-position
-                               three-dimensional?
-                               vary-colors?
-                               categories-addr-range
-                               series)")
+        """
+        (add-pie-chart sheet chart-title
+                             chart-addr-range
+                             legend-position
+                             three-dimensional?
+                             vary-colors?
+                             categories-addr-range
+                             series)
+        """)
      :doc
         """
         Adds a pie chart.
