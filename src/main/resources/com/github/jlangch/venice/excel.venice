@@ -845,6 +845,63 @@
   { :pre [(instance-of? :ExcelSheetFacade sheet)] }
 
   (. sheet :conditionalBackgroundColor rule region bg-color-html))
+ 
+
+(defn
+  ^{ :arglists '(
+        "(add-text-data-validation sheet 
+                                   strings 
+                                   empty-cell-allowed
+                                   err-title 
+                                   err-text
+                                   region-first-row region-last-row,
+    		                           region-first-col, region-last-col)")
+     :doc "Adds a text enumeration validation to a cell region in a sheet"
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" "male" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" "female" 26)
+            (excel/add-text-data-validation sheet 
+                                            ["male" "female" "unknown"] 
+                                            true  ;; allow empty cell
+                                            "Invalid gender"
+                                            "Use one of: 'male', 'female', 'unknown'"
+                                            1 2 3 3)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/clear-row", "excel/delete-row", 
+        "excel/copy-row", "excel/copy-row-to-end",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  add-text-data-validation [sheet 
+                            strings empty-cell-allowed
+                            err-title err-text
+                            region-first-row region-last-row
+    		                    region-first-col region-last-col]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (sequential? strings)
+          (every? string? strings)
+          (boolean? empty-cell-allowed)
+          (or (nil? err-title) (string? err-title))
+          (or (nil? err-text) (string? err-text))
+          (long? region-first-row) (pos? region-first-row)
+          (long? region-last-row)  (pos? region-last-row)
+          (long? region-first-col) (pos? region-first-col)
+          (long? region-last-col)  (pos? region-last-col)] }
+
+  (. sheet :addTextDataValidation strings empty-cell-allowed
+                                  err-title err-text
+                                  region-first-row region-last-row
+    		                          region-first-col region-last-col))
 
 
 

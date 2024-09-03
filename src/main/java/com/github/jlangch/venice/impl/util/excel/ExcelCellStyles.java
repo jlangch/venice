@@ -219,8 +219,8 @@ public class ExcelCellStyles {
         cellDataFormats.put("boolean", null);
         cellDataFormats.put("integer", "#,###0");
         cellDataFormats.put("float", "#,##0.00");
-        cellDataFormats.put("date", "d.m.yyyy");
-        cellDataFormats.put("datetime", "d.m.yyyy hh:mm:ss");
+        cellDataFormats.put("date", "dd.MM.yyyy");
+        cellDataFormats.put("datetime", "dd.MM.yyyy hh:mm:ss");
         return cellDataFormats;
     }
 

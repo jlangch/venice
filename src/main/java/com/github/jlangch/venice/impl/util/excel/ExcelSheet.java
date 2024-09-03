@@ -32,6 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,6 +43,9 @@ import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.ConditionalFormattingRule;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataValidation;
+import org.apache.poi.ss.usermodel.DataValidationConstraint;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -55,9 +60,12 @@ import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.github.jlangch.venice.ExcelException;
@@ -328,6 +336,43 @@ public class ExcelSheet {
 
         // Apply the conditional formatting rule to the sheet
         sheetCF.addConditionalFormatting(regions, rule);
+    }
+
+    public void addTextDataValidation(
+            final List<String> validValues,
+            final boolean emptyCellAllowed,
+            final String errTitle,
+            final String errText,
+            final int regionFirstRow,
+            final int regionLastRow,
+            final int regionFirstCol,
+            final int regionLastCol
+    ) {
+        final DataValidationHelper validationHelper = sheet instanceof XSSFSheet
+                                                        ? new XSSFDataValidationHelper((XSSFSheet)sheet)
+                                                        : new HSSFDataValidationHelper((HSSFSheet)sheet);
+
+        // Create a constraint for the dropdown list
+        final DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(
+                                                         validValues.toArray(new String[0]));
+
+        // Define the cell range for which this validation applies
+        final CellRangeAddressList addressList = new CellRangeAddressList(
+                                                         regionFirstRow, regionLastRow,
+                                                         regionFirstCol, regionLastCol);
+
+        // Create the data validation object
+        final DataValidation dataValidation = validationHelper.createValidation(constraint, addressList);
+        dataValidation.setEmptyCellAllowed(emptyCellAllowed);
+        if (errTitle != null || errText != null) {
+            dataValidation.setShowErrorBox(true);
+            dataValidation.createErrorBox(
+                    errTitle == null ? "" : errTitle,
+                    errText == null ? "" : errText);
+        }
+
+        // Add the data validation to the sheet
+        sheet.addValidationData(dataValidation);
     }
 
     public Object getValue(final int row, final int col) {

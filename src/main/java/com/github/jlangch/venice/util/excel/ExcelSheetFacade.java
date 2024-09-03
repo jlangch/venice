@@ -168,6 +168,27 @@ public class ExcelSheetFacade<T> {
         sheet.conditionalBackgroundColor(condRule, condRegion, bgColorHtml);
     }
 
+    public void addTextDataValidation(
+            final List<String> validValues,
+            final boolean emptyCellAllowed,
+            final String errTitle,
+            final String errText,
+            final int regionFirstRow1,
+            final int regionLastRow1,
+            final int regionFirstCol1,
+            final int regionLastCol1
+    ) {
+        sheet.addTextDataValidation(
+                validValues,
+                emptyCellAllowed,
+                errTitle,
+                errText,
+                regionFirstRow1-1,
+                regionLastRow1-1,
+                regionFirstCol1-1,
+                regionLastCol1-1);
+    }
+
     public ExcelSheetFacade<T> noHeader() {
         this.noHeader = true;
         return this;
