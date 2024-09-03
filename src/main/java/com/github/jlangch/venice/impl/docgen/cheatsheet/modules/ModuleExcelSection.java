@@ -143,6 +143,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         style.addItem(diBuilder.getDocItem("excel/add-font", false));
         style.addItem(diBuilder.getDocItem("excel/add-style", false));
         style.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
+        style.addItem(diBuilder.getDocItem("excel/add-conditional-bg-color", false));
         style.addItem(diBuilder.getDocItem("excel/row-height", false));
         style.addItem(diBuilder.getDocItem("excel/col-width", false));
         style.addItem(diBuilder.getDocItem("excel/cell-style", false));

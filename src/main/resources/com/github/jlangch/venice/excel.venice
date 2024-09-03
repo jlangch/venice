@@ -823,7 +823,7 @@
                                rule bg-color-html
                                region-first-row region-last-row
     		                       region-first-col region-last-col)")
-     :doc "Conditional background color"
+     :doc "Add a conditional background color"
      :examples '(
         """
         (do
