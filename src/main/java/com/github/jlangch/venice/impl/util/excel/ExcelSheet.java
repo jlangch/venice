@@ -311,9 +311,12 @@ public class ExcelSheet {
     }
 
     public void conditionalBackgroundColor(
-            final String condRule,    // "ISBLANK(A1)"
-            final String condRegion,  // "A1:B1"
-            final String bgColorHtml  // "#CC636A"
+            final String condRule,     // "ISBLANK(A1)"
+            final String bgColorHtml,  // "#CC636A"
+            final int regionFirstRow,
+            final int regionLastRow,
+            final int regionFirstCol,
+            final int regionLastCol
     ) {
         // Create a conditional formatting rule for blank cells
         final SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
@@ -331,7 +334,9 @@ public class ExcelSheet {
         fill.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
 
         // Define the range of cells to apply the rule
-        final CellRangeAddress[] regions = { CellRangeAddress.valueOf(condRegion) };
+        final CellRangeAddress[] regions = { new CellRangeAddress(
+                                                regionFirstRow, regionLastRow,
+                                                regionFirstCol, regionLastCol) };
 
         // Apply the conditional formatting rule to the sheet
         sheetCF.addConditionalFormatting(regions, rule);

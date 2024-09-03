@@ -161,11 +161,20 @@ public class ExcelSheetFacade<T> {
     }
 
     public void conditionalBackgroundColor(
-            final String condRule,    // "ISBLANK(A1)"
-            final String condRegion,  // "A1:B1"
-            final String bgColorHtml  // "#CC636A"
+            final String condRule,     // "ISBLANK(A1)"
+            final String bgColorHtml,  // "#CC636A"
+            final int regionFirstRow1,
+            final int regionLastRow1,
+            final int regionFirstCol1,
+            final int regionLastCol1
     ) {
-        sheet.conditionalBackgroundColor(condRule, condRegion, bgColorHtml);
+        sheet.conditionalBackgroundColor(
+                condRule,
+                bgColorHtml,
+                regionFirstRow1-1,
+                regionLastRow1-1,
+                regionFirstCol1-1,
+                regionLastCol1-1);
     }
 
     public void addTextDataValidation(

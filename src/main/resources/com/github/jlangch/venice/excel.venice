@@ -819,7 +819,10 @@
 
 (defn
   ^{ :arglists '(
-        "(conditional-bg-color sheet rule region bg-color-html)")
+        "(conditional-bg-color sheet
+                               rule bg-color-html
+                               region-first-row region-last-row
+    		                       region-first-col region-last-col)")
      :doc "Conditional background color"
      :examples '(
         """
@@ -829,7 +832,7 @@
                 sheet (excel/add-sheet wbook "Sheet 1")]
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
-            (excel/conditional-bg-color sheet "ISBLANK(B1)" "B1:B99" "#CC636A")
+            (excel/conditional-bg-color sheet "ISBLANK(B1)" "#CC636A" 1 2 2 2)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
         """ )
@@ -840,11 +843,21 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  conditional-bg-color [sheet rule region bg-color-html]
+  conditional-bg-color [sheet 
+                        rule bg-color-html
+                        region-first-row region-last-row
+    		                region-first-col region-last-col]
   
-  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (long? region-first-row) (pos? region-first-row)
+          (long? region-last-row)  (pos? region-last-row)
+          (long? region-first-col) (pos? region-first-col)
+          (long? region-last-col)  (pos? region-last-col)] }
 
-  (. sheet :conditionalBackgroundColor rule region bg-color-html))
+  (. sheet :conditionalBackgroundColor rule 
+                                       bg-color-html
+                                       region-first-row region-last-row
+    		                               region-first-col region-last-col))
  
 
 (defn
