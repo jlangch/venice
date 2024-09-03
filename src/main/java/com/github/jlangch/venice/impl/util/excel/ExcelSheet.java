@@ -330,7 +330,6 @@ public class ExcelSheet {
         fill.setFillBackgroundColor(new XSSFColor(rgb, null));
         fill.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
 
-
         // Define the range of cells to apply the rule
         final CellRangeAddress[] regions = { CellRangeAddress.valueOf(condRegion) };
 
