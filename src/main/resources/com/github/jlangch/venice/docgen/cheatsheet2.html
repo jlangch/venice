@@ -686,6 +686,11 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                       <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                       ${ (when (:subtitle s1) }$<h3>${= (kira/escape-xml (:subtitle s1)) }$</h3>${ ) }$
                     </div>
+                    ${ (when-not (empty? (:headerXmlStyled s1)) }$
+                    <div class="header">
+                      ${= (:headerXmlStyled s1) }$
+                    </div>
+                    ${ ) }$                 
                     ${ (doseq [s2 (:sections s1)] }$
                     ${ (when (:title s2) }$<div class="sub-header-module" id="${= (:id s2) }$">${= (kira/escape-xml (:formattedTitle s2)) }$</div>${ ) }$
                     <table>

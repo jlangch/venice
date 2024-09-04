@@ -4,7 +4,9 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.33] - 2024-08-xx
+
+
+## [1.12.34] - 2024-09-xx
 
 ### Added
 
@@ -13,6 +15,20 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.33] - 2024-09-xx
+
+### Added
+
+- function `add-conditional-bg-color` to :excel module
+- function `add-text-data-validation` to :excel module
+
+### Fixed
+
+- a bug in the Venice PDF cheatsheet generation where the doc section header was 
+  not rendered in the right doc section column.
 
 ### Updated dependencies:
 

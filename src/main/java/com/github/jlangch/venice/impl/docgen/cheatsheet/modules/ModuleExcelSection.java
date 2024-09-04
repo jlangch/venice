@@ -44,12 +44,11 @@ public class ModuleExcelSection implements ISectionBuilder {
 
         final DocSection section = new DocSection(
                                         "Excel",
-                                        "Read/Write Excel files. \n\n" +
-                                        "Venice is compatible with Apache POI 4.1.x and 5.3.x. " +
+                                        "Read/Write Excel files",
+                                        "modules.excel",
+                                        "Venice is compatible with Apache POI 4.1.x and 5.3.x.\n\n" +
                                         "To use charts with Excel documents Apache POI 5.2.0 or " +
                                         "newer is required.",
-                                        "modules.excel",
-                                        null,
                                         footer);
 
         final DocSection all = new DocSection("(load-module :excel)", id());
@@ -78,6 +77,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         sheet.addItem(diBuilder.getDocItem("excel/add-column", false));
         sheet.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         sheet.addItem(diBuilder.getDocItem("excel/add-conditional-bg-color", false));
+        sheet.addItem(diBuilder.getDocItem("excel/add-conditional-font-color", false));
         sheet.addItem(diBuilder.getDocItem("excel/add-text-data-validation", false));
         sheet.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
         sheet.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
@@ -144,6 +144,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         style.addItem(diBuilder.getDocItem("excel/add-style", false));
         style.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         style.addItem(diBuilder.getDocItem("excel/add-conditional-bg-color", false));
+        style.addItem(diBuilder.getDocItem("excel/add-conditional-font-color", false));
         style.addItem(diBuilder.getDocItem("excel/row-height", false));
         style.addItem(diBuilder.getDocItem("excel/col-width", false));
         style.addItem(diBuilder.getDocItem("excel/cell-style", false));
