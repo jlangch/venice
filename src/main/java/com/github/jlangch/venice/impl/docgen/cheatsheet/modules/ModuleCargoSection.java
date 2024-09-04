@@ -37,7 +37,14 @@ public class ModuleCargoSection implements ISectionBuilder {
         final DocSection section = new DocSection(
                                         "Cargo",
                                         "Docker Testcontainers",
-                                        "modules.cargo");
+                                        "modules.cargo",
+                                        "Greatly simplifies starting/stopping docker containers. " +
+                                        "Depending on the state of the container pulls a new image, " +
+                                        "starts or runs the container and checks the logs if it has " +
+                                        "successfully started up, all this in one single command.\n\n" +
+                                        "It's the base module for cargo modules like Cargo/ArangoDB, " +
+                                        "Cargo/PostgreSQL, and Cargo/Qdrant.",
+                                        null);
 
         final DocSection all = new DocSection("(load-module :cargo)", id());
         section.addSection(all);
