@@ -162,7 +162,7 @@ public class ExcelSheetFacade<T> {
 
     public void addConditionalBackgroundColor(
             final String condRule,     // "ISBLANK(A1)"
-            final String bgColorHtml,  // "#CC636A"
+            final String colorHtml,    // "#CC636A"
             final int regionFirstRow1,
             final int regionLastRow1,
             final int regionFirstCol1,
@@ -170,7 +170,24 @@ public class ExcelSheetFacade<T> {
     ) {
         sheet.addConditionalBackgroundColor(
                 condRule,
-                bgColorHtml,
+                colorHtml,
+                regionFirstRow1-1,
+                regionLastRow1-1,
+                regionFirstCol1-1,
+                regionLastCol1-1);
+    }
+
+    public void addConditionalFontColor(
+            final String condRule,     // "$A$1 > 5"
+            final String colorHtml,    // "#CC636A"
+            final int regionFirstRow1,
+            final int regionLastRow1,
+            final int regionFirstCol1,
+            final int regionLastCol1
+    ) {
+        sheet.addConditionalFontColor(
+                condRule,
+                colorHtml,
                 regionFirstRow1-1,
                 regionLastRow1-1,
                 regionFirstCol1-1,

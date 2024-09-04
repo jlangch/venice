@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.util.FunctionExecutionMeter;
@@ -118,6 +119,9 @@ public class Venice {
             throw new IllegalArgumentException("A 'script' must not be blank");
         }
 
+
+        final String scriptEff = resolveScript(script);
+
         final long startTime = System.currentTimeMillis();
 
         final ThreadContext tc = ThreadContext.get();
@@ -133,7 +137,7 @@ public class Venice {
                                   .setStderrPrintStream(null)
                                   .setStdinReader(null);
 
-            VncVal ast = venice.READ(script, scriptName);
+            VncVal ast = venice.READ(scriptEff, scriptName);
             if (macroexpand) {
                 ast = venice.MACROEXPAND(ast, env);
             }
@@ -146,7 +150,7 @@ public class Venice {
 
             return new PreCompiled(
                         scriptName,
-                        script,
+                        scriptEff,
                         ast,
                         macroexpand,  // remember for runtime
                         nsRegistry,
@@ -311,6 +315,7 @@ public class Venice {
             throw new IllegalArgumentException("A 'script' must not be blank");
         }
 
+        final String scriptEff = resolveScript(script);
 
         final long nanos = System.nanoTime();
 
@@ -329,7 +334,7 @@ public class Venice {
                 meterRegistry.reset();  // no metrics for creating env and loading modules
                 meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 
-                final VncVal result = venice.RE(script, scriptName, env);
+                final VncVal result = venice.RE(scriptEff, scriptName, env);
                 final Object jResult = result.convertToJavaObject();
 
                 meterRegistry.record("venice.total", System.nanoTime() - nanos);
@@ -579,8 +584,17 @@ public class Venice {
         }
 
         return symbols;
-     }
+    }
 
+    private String resolveScript(final String script) {
+        if (script.startsWith("classpath:")) {
+            return new ClassPathResource(script.substring("classpath:".length()))
+                          .getResourceAsString("UTF-8");
+        }
+        else {
+            return script;
+        }
+    }
 
     private static ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-timeout-pool", 100);

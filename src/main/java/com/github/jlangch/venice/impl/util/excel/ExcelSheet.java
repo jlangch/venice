@@ -50,6 +50,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FontFormatting;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.PatternFormatting;
 import org.apache.poi.ss.usermodel.Picture;
@@ -312,31 +313,68 @@ public class ExcelSheet {
 
     public void addConditionalBackgroundColor(
             final String condRule,     // "ISBLANK(A1)"
-            final String bgColorHtml,  // "#CC636A"
+            final String colorHtml,    // "#CC636A"
             final int regionFirstRow,
             final int regionLastRow,
             final int regionFirstCol,
             final int regionLastCol
     ) {
+    	if (!(sheet instanceof XSSFSheet)) {
+    		throw new RuntimeException("conditional background colors are available for XLSX documents only!");
+    	}
         // Create a conditional formatting rule for blank cells
         final SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
 
-        // Define a conditional formatting rule using a formula (ISBLANK(A1))
+        // Define a conditional formatting rule using a formula "ISBLANK(A1)"
         final ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(condRule);
 
         // Create a pattern formatting object
         final PatternFormatting fill = rule.createPatternFormatting();
 
-        final Color bg = HtmlColor.getColor(bgColorHtml);
-        byte[] rgb = new byte[]{(byte)bg.getRed(), (byte)bg.getGreen(), (byte)bg.getBlue()};
+        final Color color = HtmlColor.getColor(colorHtml);
+        byte[] rgbColor = new byte[]{(byte)color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()};
 
-        fill.setFillBackgroundColor(new XSSFColor(rgb, null));
+        fill.setFillBackgroundColor(new XSSFColor(rgbColor, null));
         fill.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
 
         // Define the range of cells to apply the rule
         final CellRangeAddress[] regions = { new CellRangeAddress(
-                                                regionFirstRow, regionLastRow,
-                                                regionFirstCol, regionLastCol) };
+                                                   regionFirstRow, regionLastRow,
+                                                   regionFirstCol, regionLastCol) };
+
+        // Apply the conditional formatting rule to the sheet
+        sheetCF.addConditionalFormatting(regions, rule);
+    }
+
+    public void addConditionalFontColor(
+            final String condRule,       // "$A$1 > 5"
+            final String colorHtml,      // "#CC636A"
+            final int regionFirstRow,
+            final int regionLastRow,
+            final int regionFirstCol,
+            final int regionLastCol
+    ) {
+    	if (!(sheet instanceof XSSFSheet)) {
+    		throw new RuntimeException("conditional font colors are available for XLSX documents only!");
+    	}
+
+        // Create a conditional formatting rule for blank cells
+        final SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
+
+        // Define a conditional formatting rule using a formula "$A$1 > 5"
+        final ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(condRule);
+
+        FontFormatting fontFmt = rule.createFontFormatting();
+
+        final Color color = HtmlColor.getColor(colorHtml);
+        byte[] rgbColor = new byte[]{(byte)color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()};
+
+        fontFmt.setFontColor(new XSSFColor(rgbColor, null));
+
+        // Define the range of cells to apply the rule
+        final CellRangeAddress[] regions = { new CellRangeAddress(
+                                                   regionFirstRow, regionLastRow,
+                                                   regionFirstCol, regionLastCol) };
 
         // Apply the conditional formatting rule to the sheet
         sheetCF.addConditionalFormatting(regions, rule);
