@@ -23,6 +23,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - function `add-conditional-bg-color` to :excel module
+- function `add-conditional-font-color` to :excel module
+- function `add-conditional-border` to :excel module
 - function `add-text-data-validation` to :excel module
 
 ### Fixed
