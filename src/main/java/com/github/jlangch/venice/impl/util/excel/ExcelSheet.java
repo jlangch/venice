@@ -36,6 +36,8 @@ import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderFormatting;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -319,9 +321,9 @@ public class ExcelSheet {
             final int regionFirstCol,
             final int regionLastCol
     ) {
-    	if (!(sheet instanceof XSSFSheet)) {
-    		throw new RuntimeException("conditional background colors are available for XLSX documents only!");
-    	}
+        if (!(sheet instanceof XSSFSheet)) {
+            throw new RuntimeException("conditional background colors are available for XLSX documents only!");
+        }
         // Create a conditional formatting rule for blank cells
         final SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
 
@@ -331,10 +333,7 @@ public class ExcelSheet {
         // Create a pattern formatting object
         final PatternFormatting fill = rule.createPatternFormatting();
 
-        final Color color = HtmlColor.getColor(colorHtml);
-        byte[] rgbColor = new byte[]{(byte)color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()};
-
-        fill.setFillBackgroundColor(new XSSFColor(rgbColor, null));
+        fill.setFillBackgroundColor(toXSSFColor(colorHtml));
         fill.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
 
         // Define the range of cells to apply the rule
@@ -354,9 +353,9 @@ public class ExcelSheet {
             final int regionFirstCol,
             final int regionLastCol
     ) {
-    	if (!(sheet instanceof XSSFSheet)) {
-    		throw new RuntimeException("conditional font colors are available for XLSX documents only!");
-    	}
+        if (!(sheet instanceof XSSFSheet)) {
+            throw new RuntimeException("conditional font colors are available for XLSX documents only!");
+        }
 
         // Create a conditional formatting rule for blank cells
         final SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
@@ -364,12 +363,71 @@ public class ExcelSheet {
         // Define a conditional formatting rule using a formula "$A$1 > 5"
         final ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(condRule);
 
-        FontFormatting fontFmt = rule.createFontFormatting();
+        final FontFormatting fontFmt = rule.createFontFormatting();
 
-        final Color color = HtmlColor.getColor(colorHtml);
-        byte[] rgbColor = new byte[]{(byte)color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()};
+        fontFmt.setFontColor(toXSSFColor(colorHtml));
 
-        fontFmt.setFontColor(new XSSFColor(rgbColor, null));
+        // Define the range of cells to apply the rule
+        final CellRangeAddress[] regions = { new CellRangeAddress(
+                                                   regionFirstRow, regionLastRow,
+                                                   regionFirstCol, regionLastCol) };
+
+        // Apply the conditional formatting rule to the sheet
+        sheetCF.addConditionalFormatting(regions, rule);
+    }
+
+    public void addConditionalBorder(
+            final String condRule,       // "$A$1 > 5"
+            final BorderStyle borderTopStyle,
+            final BorderStyle borderRightStyle,
+            final BorderStyle borderBottomStyle,
+            final BorderStyle borderLeftStyle,
+            final String borderTopColorHtml,   // "#CC636A"
+            final String borderRightColorHtml,
+            final String borderBottomColorHtml,
+            final String borderLeftColorHtml,
+            final int regionFirstRow,
+            final int regionLastRow,
+            final int regionFirstCol,
+            final int regionLastCol
+    ) {
+        if (!(sheet instanceof XSSFSheet)) {
+            throw new RuntimeException("conditional font colors are available for XLSX documents only!");
+        }
+
+        // Create a conditional formatting rule for blank cells
+        final SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
+
+        // Define a conditional formatting rule using a formula "$A$1 > 5"
+        final ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(condRule);
+
+        final BorderFormatting fmt = rule.createBorderFormatting();
+
+        if (borderTopStyle != null) {
+            fmt.setBorderTop(borderTopStyle);
+        }
+        if (borderRightStyle != null) {
+            fmt.setBorderRight(borderRightStyle);
+        }
+        if (borderBottomStyle != null) {
+            fmt.setBorderBottom(borderBottomStyle);
+        }
+        if (borderLeftStyle != null) {
+            fmt.setBorderLeft(borderLeftStyle);
+        }
+
+        if (borderTopColorHtml != null) {
+            fmt.setTopBorderColor(toXSSFColor(borderTopColorHtml));
+        }
+        if (borderRightColorHtml != null) {
+            fmt.setRightBorderColor(toXSSFColor(borderRightColorHtml));
+        }
+        if (borderBottomColorHtml != null) {
+            fmt.setBottomBorderColor(toXSSFColor(borderBottomColorHtml));
+        }
+        if (borderLeftColorHtml != null) {
+            fmt.setLeftBorderColor(toXSSFColor(borderLeftColorHtml));
+        }
 
         // Define the range of cells to apply the rule
         final CellRangeAddress[] regions = { new CellRangeAddress(
@@ -1275,6 +1333,12 @@ public class ExcelSheet {
         }
     }
 
+    private XSSFColor toXSSFColor(final String colorHtml) {
+        final Color color = HtmlColor.getColor(colorHtml);
+        byte[] rgbColor = new byte[]{(byte)color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()};
+
+        return new XSSFColor(rgbColor, null);
+    }
 
 
     // The Excel's magic conversion factor

@@ -850,8 +850,10 @@
 
   add-conditional-bg-color [sheet 
                             rule color-html
-                            region-first-row region-last-row
-    		                    region-first-col region-last-col]
+                            region-first-row 
+                            region-last-row
+    		                    region-first-col 
+                            region-last-col]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
           (string? rule)
@@ -863,8 +865,10 @@
 
   (. sheet :addConditionalBackgroundColor rule 
                                           color-html
-                                          region-first-row region-last-row
-    		                                  region-first-col region-last-col))
+                                          region-first-row 
+                                          region-last-row
+    		                                  region-first-col 
+                                          region-last-col))
  
 
 (defn
@@ -916,6 +920,96 @@
                                     color-html
                                     region-first-row region-last-row
     		                            region-first-col region-last-col))
+ 
+
+(defn
+  ^{ :arglists '(
+        """
+        (add-conditional-border sheet
+                                rule 
+                                border-top-style
+                                border-right-style
+                                border-bottom-style
+                                border-left-style
+                                border-top-color-html
+                                border-right-color-html
+                                border-bottom-color-html
+                                border-left-color-html
+                                region-first-row
+                                region-last-row
+                                region-first-col
+                                region-last-col)
+    """)
+     :doc "Add a conditional border"
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 45)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/add-conditional-border sheet "C1 > 30" 
+                                          :thin :thin :thin :thin  
+                                          nil nil nil nil  
+                                          1 1 3 3)
+            (excel/add-conditional-border sheet "C2 > 30" 
+                                          :thin :thin :thin :thin  
+                                          nil nil nil nil  
+                                          2 2 3 3)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/clear-row", "excel/delete-row", 
+        "excel/copy-row", "excel/copy-row-to-end",
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  add-conditional-border [sheet 
+                          rule
+                          border-top-style
+                          border-right-style
+                          border-bottom-style
+                          border-left-style
+                          border-top-color-html
+                          border-right-color-html
+                          border-bottom-color-html
+                          border-left-color-html
+                          region-first-row 
+                          region-last-row
+                          region-first-col 
+                          region-last-col]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (string? rule)
+          (keyword? border-top-style)
+          (keyword? border-right-style)
+          (keyword? border-bottom-style)
+          (keyword? border-left-style)
+          (or (nil? border-top-color-html) (string? border-top-color-html))
+          (or (nil? border-right-color-html) (string? border-right-color-html))
+          (or (nil? border-bottom-color-html) (string? border-bottom-color-html))
+          (or (nil? border-left-color-html) (string? border-left-color-html))
+          (long? region-first-row) (pos? region-first-row)
+          (long? region-last-row)  (pos? region-last-row)
+          (long? region-first-col) (pos? region-first-col)
+          (long? region-last-col)  (pos? region-last-col)] }
+
+  (. sheet :addConditionalBorder rule 
+                                 (map-border-style border-top-style)
+                                 (map-border-style border-right-style)
+                                 (map-border-style border-bottom-style)
+                                 (map-border-style border-left-style)
+                                 border-top-color-html
+                                 border-right-color-html
+                                 border-bottom-color-html
+                                 border-left-color-html
+                                 region-first-row 
+                                 region-last-row
+                                 region-first-col 
+                                 region-last-col))
  
 
 (defn
@@ -2241,6 +2335,7 @@
 
 (defn- map-border-style [style]
   (case style
+    nil                   nil
     :none                 :NONE
     :thin                 :THIN
     :medium               :MEDIUM

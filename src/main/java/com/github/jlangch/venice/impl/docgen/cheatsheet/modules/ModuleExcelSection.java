@@ -78,6 +78,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         sheet.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         sheet.addItem(diBuilder.getDocItem("excel/add-conditional-bg-color", false));
         sheet.addItem(diBuilder.getDocItem("excel/add-conditional-font-color", false));
+        sheet.addItem(diBuilder.getDocItem("excel/add-conditional-border", false));
         sheet.addItem(diBuilder.getDocItem("excel/add-text-data-validation", false));
         sheet.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
         sheet.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
@@ -145,6 +146,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         style.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         style.addItem(diBuilder.getDocItem("excel/add-conditional-bg-color", false));
         style.addItem(diBuilder.getDocItem("excel/add-conditional-font-color", false));
+        style.addItem(diBuilder.getDocItem("excel/add-conditional-border", false));
         style.addItem(diBuilder.getDocItem("excel/row-height", false));
         style.addItem(diBuilder.getDocItem("excel/col-width", false));
         style.addItem(diBuilder.getDocItem("excel/cell-style", false));

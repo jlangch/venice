@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 
@@ -188,6 +189,37 @@ public class ExcelSheetFacade<T> {
         sheet.addConditionalFontColor(
                 condRule,
                 colorHtml,
+                regionFirstRow1-1,
+                regionLastRow1-1,
+                regionFirstCol1-1,
+                regionLastCol1-1);
+    }
+
+    public void addConditionalBorder(
+            final String condRule,       // "$A$1 > 5"
+            final BorderStyle borderTopStyle,
+            final BorderStyle borderRightStyle,
+            final BorderStyle borderBottomStyle,
+            final BorderStyle borderLeftStyle,
+            final String borderTopColorHtml,   // "#CC636A"
+            final String borderRightColorHtml,
+            final String borderBottomColorHtml,
+            final String borderLeftColorHtml,
+            final int regionFirstRow1,
+            final int regionLastRow1,
+            final int regionFirstCol1,
+            final int regionLastCol1
+    ) {
+        sheet.addConditionalBorder(
+                condRule,
+                borderTopStyle,
+                borderRightStyle,
+                borderBottomStyle,
+                borderLeftStyle,
+                borderTopColorHtml,
+                borderRightColorHtml,
+                borderBottomColorHtml,
+                borderLeftColorHtml,
                 regionFirstRow1-1,
                 regionLastRow1-1,
                 regionFirstCol1-1,
