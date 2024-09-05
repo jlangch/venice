@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.33] - 2024-09-xx
+## [1.12.33] - 2024-09-05
 
 ### Added
 
