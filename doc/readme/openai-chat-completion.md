@@ -17,7 +17,9 @@
         * [Example sync](#example-sync)
         * [Example async](#example-async)
         
-        
+ > [!NOTE] 
+For well designed prompts it might be worth to have a look at [Fabric](https://github.com/danielmiessler/fabric).
+   
         
 ## Completion
 
