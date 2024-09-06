@@ -16,9 +16,6 @@
     * [Examples Streaming](#examples-streaming)
         * [Example sync](#example-sync)
         * [Example async](#example-async)
-        
- > [!NOTE] 
-For well designed prompts it might be worth to have a look at [Fabric](https://github.com/danielmiessler/fabric).
    
         
 ## Completion
@@ -61,6 +58,10 @@ Using prompt roles:
 | *system*    | Allows you to specify the way the model answers questions. <br>Classic example: "You are a helpful assistant." |
 | *user*      | Equivalent to the queries made by the user. |
 | *assistant* | Assistent roles are the model’s responses, based on the user messages |
+
+        
+ > [!NOTE] 
+For well designed prompts it might be worth to have a look at [Fabric](https://github.com/danielmiessler/fabric).
 
 
 #### Parameter «options»
