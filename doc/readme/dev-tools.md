@@ -61,6 +61,20 @@ Fire up a Venice [Gitpod](https://gitpod.io/) workspace in your browser by openi
 VSCodium uses [Open VSX Registry](https://open-vsx.org/) as its marketplace.
 
 
+### Install & Upgrade
+
+If you are on a Mac and have [Homebrew](https://brew.sh/) installed:
+
+```
+brew install --cask vscodium
+```
+
+```
+brew upgrade --cask vscodium
+```
+
+
+
 ### Tips to start with
    
 **Adjust VSCodium "settings.json" to support Venice files**
