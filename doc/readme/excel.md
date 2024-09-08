@@ -45,7 +45,8 @@ libraries:
        * [Merge Cells](#merge-cells)
        * [Row and Col Ranges](#row-and-col-ranges)
        * [Print Cell Style Inof](#print-cell-style-info)
-       * [Using formulas](#using-formulas)
+       * [Formulas](#formulas)
+       * [Hyperlinks](#hyperlinks)
        * [Images](#images)
        * [Charts](#charts)
     * [Styling](#styling)
@@ -568,7 +569,7 @@ C1>  type: numeric, empty: false, locked: true, hidden: false
 
 
 
-#### Using formulas
+#### Formulas
 
 ```clojure
 (do
@@ -648,6 +649,56 @@ for formulas:
 
 [top](#content)
 
+
+
+#### Hyperlinks
+
+**URLs**
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-font wbook :hyperlink { :underline true
+                                       :color :BLUE })
+    (excel/add-style wbook :hyperlink { :font :hyperlink })
+    (excel/write-values sheet 1 1 "John" "Doe")
+    (excel/write-values sheet 2 1 "Sue" "Ford")
+    (excel/add-url-hyperlink sheet 1 3 "https://john.doe.org/" "https://john.doe.org/")
+    (excel/add-url-hyperlink sheet 2 3 "https://sue.ford.org/" "https://sue.ford.org/")
+    (excel/cell-style sheet 1 3 :hyperlink)
+    (excel/cell-style sheet 2 3 :hyperlink)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-027.png" width="400">
+
+**EMails**
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-font wbook :hyperlink { :underline true
+                                       :color :BLUE })
+    (excel/add-style wbook :hyperlink { :font :hyperlink })
+    (excel/write-values sheet 1 1 "John" "Doe")
+    (excel/write-values sheet 2 1 "Sue" "Ford")
+    (excel/add-email-hyperlink sheet 1 3 "john.doe@foo.org" "john.doe@foo.org")
+    (excel/add-email-hyperlink sheet 2 3 "sue.ford@foo.org" "sue.ford@foo.org")
+    (excel/cell-style sheet 1 3 :hyperlink)
+    (excel/cell-style sheet 2 3 :hyperlink)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-028.png" width="400">
+
+
+[top](#content)
 
 
 #### Images
