@@ -653,7 +653,7 @@ for formulas:
 
 #### Hyperlinks
 
-**URLs**
+*URLs*
 
 ```clojure
 (do
@@ -675,7 +675,7 @@ for formulas:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-027.png" width="400">
 
-**EMails**
+*EMails*
 
 ```clojure
 (do
