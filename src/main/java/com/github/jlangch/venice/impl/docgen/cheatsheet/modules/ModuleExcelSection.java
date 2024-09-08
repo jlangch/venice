@@ -138,6 +138,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         formulas.addItem(diBuilder.getDocItem("excel/cell-formula", false));
         formulas.addItem(diBuilder.getDocItem("excel/sum-formula", false));
         formulas.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
+        formulas.addItem(diBuilder.getDocItem("excel/remove-formula", false));
 
         final DocSection style = new DocSection("Styles", id());
         all.addSection(style);
@@ -156,6 +157,14 @@ public class ModuleExcelSection implements ISectionBuilder {
         final DocSection image = new DocSection("Images", id());
         all.addSection(image);
         image.addItem(diBuilder.getDocItem("excel/add-image", false));
+
+        final DocSection comments = new DocSection("Comments", id());
+        all.addSection(comments);
+        comments.addItem(diBuilder.getDocItem("excel/remove-comment", false));
+
+        final DocSection hyperlink = new DocSection("Hyperlinks", id());
+        all.addSection(hyperlink);
+        hyperlink.addItem(diBuilder.getDocItem("excel/remove-hyperlink", false));
 
         final DocSection charts = new DocSection("Charts", id());
         all.addSection(charts);

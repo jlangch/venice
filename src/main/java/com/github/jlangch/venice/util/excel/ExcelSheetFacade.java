@@ -589,6 +589,18 @@ public class ExcelSheetFacade<T> {
         return sheet.getCellStyleInfo(row1-1, col1-1);
     }
 
+    public void removeFormula(final int row1, final int col1) {
+    	sheet.removeFormula(row1-1, col1-1);
+    }
+
+    public void removeHyperlink(final int row1, final int col1) {
+    	sheet.removeHyperlink(row1-1, col1-1);
+    }
+
+    public void removeComment(final int row1, final int col1) {
+    	sheet.removeComment(row1-1, col1-1);
+    }
+
 
     // ------------------------------------------------------------------------
     // Reader functions

@@ -835,6 +835,27 @@ public class ExcelSheet {
         }
     }
 
+    public void removeFormula(final int row, final int col) {
+    	final Cell cell = getCell(row, col);
+    	if (cell != null) {
+    		cell.removeFormula();
+    	}
+    }
+
+    public void removeHyperlink(final int row, final int col) {
+    	final Cell cell = getCell(row, col);
+    	if (cell != null) {
+    		cell.removeHyperlink();
+    	}
+    }
+
+    public void removeComment(final int row, final int col) {
+    	final Cell cell = getCell(row, col);
+    	if (cell != null) {
+    		cell.removeCellComment();
+    	}
+    }
+
     public Map<String,Object> getCellStyleInfo(final int row, final int col) {
         final Map<String,Object> info = new LinkedHashMap<>();
 
