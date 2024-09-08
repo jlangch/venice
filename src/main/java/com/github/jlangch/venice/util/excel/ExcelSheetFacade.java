@@ -119,6 +119,10 @@ public class ExcelSheetFacade<T> {
         return this;
     }
 
+    public void evaluateCell(final int row1, final int col1) {
+        sheet.evaluateCell(row1-1, col1-1);
+    }
+
     public ExcelFacade end() {
         return parentBuilder;
     }

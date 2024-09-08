@@ -952,6 +952,13 @@ public class ExcelSheet {
         evaluator.evaluateAll();
     }
 
+    public void evaluateCell(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        if (cell != null) {
+           evaluator.evaluate(cell);
+        }
+    }
+
     private void setImage(
             final CellAddr anchorAddr,
             final byte[] data,

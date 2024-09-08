@@ -134,6 +134,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         final DocSection formulas = new DocSection("Formulas", id());
         all.addSection(formulas);
         formulas.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
+        formulas.addItem(diBuilder.getDocItem("excel/evaluate-formula", false));
         formulas.addItem(diBuilder.getDocItem("excel/cell-formula-result-type", false));
         formulas.addItem(diBuilder.getDocItem("excel/cell-formula", false));
         formulas.addItem(diBuilder.getDocItem("excel/sum-formula", false));

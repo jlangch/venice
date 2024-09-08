@@ -305,8 +305,8 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(evaluate-formulas it)")
-     :doc "Evaluate all formulas in the Excel."
+  ^{ :arglists '("(evaluate-formulas wbook-or-sheet)")
+     :doc "Evaluate all formulas in a workbook or a sheet."
      :examples '(
         """
         (do
@@ -321,14 +321,56 @@
           (let [wbook (excel/open (test-xls))]
             (excel/evaluate-formulas wbook)))
         """ )
-     :see-also '("excel/open") }
+     :see-also '(
+        "excel/evaluate-formula"
+        "excel/cell-formula"
+        "excel/remove-formula") }
 
-  evaluate-formulas [it]
+  evaluate-formulas [wbook-or-sheet]
 
-  { :pre [(or (instance-of? :ExcelFacade it)
-              (instance-of? :ExcelSheetFacade it))] }
+  { :pre [(or (instance-of? :ExcelFacade wbook-or-sheet)
+              (instance-of? :ExcelSheetFacade wbook-or-sheet))] }
 
-  (. it :evaluateAllFormulas))
+  (. wbook-or-sheet :evaluateAllFormulas))
+
+
+(defn
+  ^{ :arglists '("(evaluate-formula sheet row col)")
+     :doc "Evaluate the formula a sheet cell."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:a 100 :b 200 }
+                        {:a 101 :b 201 }
+                        {:a 102 :b 202 } ]
+                wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
+            (excel/add-column sheet "A" { :field :a })
+            (excel/add-column sheet "B" { :field :b })
+            (excel/add-column sheet "C" { :field :c })
+            (excel/write-items sheet data)
+            (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
+            (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
+            (excel/cell-formula sheet 3 3 "SUM(A3,B3)")
+            (excel/evaluate-formula sheet 1 3)
+            (excel/evaluate-formula sheet 2 3)
+            (excel/evaluate-formula sheet 3 3)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/evaluate-formulas"
+        "excel/cell-formula"
+        "excel/remove-formula") }
+
+  evaluate-formula [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (long? row) (pos? row)
+          (long? col) (pos? col)] }
+ 
+  (. sheet :evaluateCell row col))
 
 
 
