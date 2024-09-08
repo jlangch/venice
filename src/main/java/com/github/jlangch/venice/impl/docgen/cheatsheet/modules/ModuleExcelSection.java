@@ -164,6 +164,8 @@ public class ModuleExcelSection implements ISectionBuilder {
 
         final DocSection hyperlink = new DocSection("Hyperlinks", id());
         all.addSection(hyperlink);
+        hyperlink.addItem(diBuilder.getDocItem("excel/add-url-hyperlink", false));
+        hyperlink.addItem(diBuilder.getDocItem("excel/add-email-hyperlink", false));
         hyperlink.addItem(diBuilder.getDocItem("excel/remove-hyperlink", false));
 
         final DocSection charts = new DocSection("Charts", id());

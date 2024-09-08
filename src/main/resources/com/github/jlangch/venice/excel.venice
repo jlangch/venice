@@ -1801,6 +1801,78 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
+  ^{ :arglists '("(add-url-hyperlink sheet row col text url)")
+     :doc "Adds an URL hyperlink to a cell"
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-font wbook :hyperlink { :underline true
+                                               :color :BLUE })
+            (excel/add-style wbook :hyperlink { :font :hyperlink })
+            (excel/write-values sheet 1 1 "John" "Doe")
+            (excel/write-values sheet 2 1 "Sue" "Ford")
+            (excel/add-url-hyperlink sheet 1 3 "https://john.doe.org/" "https://john.doe.org/")
+            (excel/add-url-hyperlink sheet 2 3 "https://sue.ford.org/" "https://sue.ford.org/")
+            (excel/cell-style sheet 1 3 :hyperlink)
+            (excel/cell-style sheet 2 3 :hyperlink)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/remove-hyperlink"
+        "excel/add-email-hyperlink") }
+
+  add-url-hyperlink [sheet row col text url]
+
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (long? row) (long? row)
+          (long? col) (long? col)
+          (string? text) 
+          (string? url)] }
+
+  (. sheet :setUrlHyperlink row col text url))
+
+
+(defn
+  ^{ :arglists '("(add-email-hyperlink sheet row col text url)")
+     :doc "Adds an email hyperlink to a cell"
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-font wbook :hyperlink { :underline true
+                                               :color :BLUE })
+            (excel/add-style wbook :hyperlink { :font :hyperlink })
+            (excel/write-values sheet 1 1 "John" "Doe")
+            (excel/write-values sheet 2 1 "Sue" "Ford")
+            (excel/add-email-hyperlink sheet 1 3 "john.doe@foo.org" "john.doe@foo.org")
+            (excel/add-email-hyperlink sheet 2 3 "sue.ford@foo.org" "sue.ford@foo.org")
+            (excel/cell-style sheet 1 3 :hyperlink)
+            (excel/cell-style sheet 2 3 :hyperlink)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/remove-hyperlink"
+        "excel/add-url-hyperlink") }
+
+  add-email-hyperlink [sheet row col text email]
+
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (long? row) (long? row)
+          (long? col) (long? col)
+          (string? text) 
+          (string? email)] }
+
+  (. sheet :setEmailHyperlink row col text email))
+
+
+(defn
   ^{ :arglists '("(remove-hyperlink sheet row col)")
      :doc "Remove a cell comment"
      :examples '(
@@ -1816,6 +1888,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
+        "excel/add-url-hyperlink"
+        "excel/add-email-hyperlink"
         "excel/remove-comment"
         "excel/remove-formula") }
 
@@ -2257,13 +2331,14 @@
 
         Options:
 
-        | :name s   | font name, e.g. 'Arial' |
-        | :height n | height in points, e.g. 12 |
-        | :bold b   | bold, e.g. true, false |
-        | :italic b | italic, e.g. true, false |
-        | :color c  | color, either an Excel indexed color or a HTML \
-                      color, e.g. :BLUE, "#00FF00" \
-                      note: only XLSX supports 24 bit colors |
+        | :name s      | font name, e.g. 'Arial' |
+        | :height n    | height in points, e.g. 12 |
+        | :bold b      | bold, e.g. true, false |
+        | :italic b    | italic, e.g. true, false |
+        | :underline b | underline, e.g. true, false |
+        | :color c     | color, either an Excel indexed color or a HTML \
+                         color, e.g. :BLUE, "#00FF00" \
+                         note: only XLSX supports 24 bit colors |
         """
      :examples '(
         """
@@ -2275,6 +2350,7 @@
             (excel/add-font wbook :header { :height 12
                                             :bold true
                                             :italic false
+                                            :underline false
                                             :color :BLUE })
             (excel/add-style wbook :header { :font :header })
 
@@ -2299,14 +2375,15 @@
     { :pre [(instance-of? :ExcelFacade wbook)
             (keyword? font-id)] }
     (let [font-builder (. wbook :withFont (name font-id))]
-      (when-let [x (:height options)] (. font-builder :heightInPoints x))
-      (when-let [x (:bold options)]   (. font-builder :bold))
-      (when-let [x (:italic options)] (. font-builder :italic))
-      (when-let [x (:color options)]  (cond
-                                        (string? x)  (. font-builder :colorHtml x)
-                                        (keyword? x) (. font-builder :color (x colors))
-                                        (long? x)    (. font-builder :color x))
-                                        :else        (ex :VncException "Invalid font color"))
+      (when-let [x (:height options)]    (. font-builder :heightInPoints x))
+      (when-let [x (:bold options)]      (. font-builder :bold))
+      (when-let [x (:italic options)]    (. font-builder :italic))
+      (when-let [x (:underline options)] (. font-builder :underline))
+      (when-let [x (:color options)]     (cond
+                                           (string? x)  (. font-builder :colorHtml x)
+                                           (keyword? x) (. font-builder :color (x colors))
+                                           (long? x)    (. font-builder :color x))
+                                           :else        (ex :VncException "Invalid font color"))
 
       (. font-builder :end)
       font-builder)))

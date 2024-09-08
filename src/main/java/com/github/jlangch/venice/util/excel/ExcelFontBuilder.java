@@ -63,6 +63,11 @@ public class ExcelFontBuilder {
         return this;
     }
 
+    public ExcelFontBuilder underline() {
+        this.underline = true;
+        return this;
+    }
+
     public ExcelFontBuilder color(final IndexedColors color) {
         this.colorIndex = color.index;
         return this;
@@ -85,13 +90,13 @@ public class ExcelFontBuilder {
 
     public ExcelFacade end() {
         if (colorIndex != null) {
-            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, colorIndex);
+            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, underline, colorIndex);
         }
         else if (color != null) {
-            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, color);
+            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, underline, color);
         }
         else {
-            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, (Short)null);
+            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, underline, (Short)null);
         }
 
         return parentBuilder;
@@ -105,6 +110,7 @@ public class ExcelFontBuilder {
     private Integer heightInPoints;
     private boolean bold;
     private boolean italic;
+    private boolean underline;
     private Short colorIndex;
     private Color color;
 }

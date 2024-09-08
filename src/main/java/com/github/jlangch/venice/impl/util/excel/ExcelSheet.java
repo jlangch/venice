@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -54,6 +55,7 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FontFormatting;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.PatternFormatting;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
@@ -836,24 +838,42 @@ public class ExcelSheet {
     }
 
     public void removeFormula(final int row, final int col) {
-    	final Cell cell = getCell(row, col);
-    	if (cell != null) {
-    		cell.removeFormula();
-    	}
+        final Cell cell = getCell(row, col);
+        if (cell != null) {
+            cell.removeFormula();
+        }
+    }
+
+    public void setUrlHyperlink(final int row, final int col, final String text, final String urlAddress) {
+        final Hyperlink link = sheet.getWorkbook().getCreationHelper().createHyperlink(HyperlinkType.URL);
+        link.setAddress(urlAddress);
+
+        final Cell cell = getCellOrCreate(row, col);
+        cell.setCellValue(text);
+        cell.setHyperlink(link);
+    }
+
+    public void setEmailHyperlink(final int row, final int col, final String text, final String emailAddress) {
+        final Hyperlink link = sheet.getWorkbook().getCreationHelper().createHyperlink(HyperlinkType.EMAIL);
+        link.setAddress("mailto:" + emailAddress);
+
+        final Cell cell = getCellOrCreate(row, col);
+        cell.setCellValue(text);
+        cell.setHyperlink(link);
     }
 
     public void removeHyperlink(final int row, final int col) {
-    	final Cell cell = getCell(row, col);
-    	if (cell != null) {
-    		cell.removeHyperlink();
-    	}
+        final Cell cell = getCell(row, col);
+        if (cell != null) {
+            cell.removeHyperlink();
+        }
     }
 
     public void removeComment(final int row, final int col) {
-    	final Cell cell = getCell(row, col);
-    	if (cell != null) {
-    		cell.removeCellComment();
-    	}
+        final Cell cell = getCell(row, col);
+        if (cell != null) {
+            cell.removeCellComment();
+        }
     }
 
     public Map<String,Object> getCellStyleInfo(final int row, final int col) {

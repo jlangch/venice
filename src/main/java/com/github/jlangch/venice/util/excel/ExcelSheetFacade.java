@@ -581,12 +581,12 @@ public class ExcelSheetFacade<T> {
                 sheet.getCellAddress_A1_style(rowTo1-1, colTo1-1));
     }
 
-    public String cellAddress_A1_style(final int row1, final int col1) {
-        return sheet.getCellAddress_A1_style(row1-1, col1-1);
+    public void setUrlHyperlink(final int row1, final int col1, final String text, final String urlAddress) {
+        sheet.setUrlHyperlink(row1-1, col1-1, text, urlAddress);
     }
 
-    public Map<String,Object> getCellStyleInfo(final int row1, final int col1) {
-        return sheet.getCellStyleInfo(row1-1, col1-1);
+    public void setEmailHyperlink(final int row1, final int col1, final String text, final String emailAddress) {
+        sheet.setEmailHyperlink(row1-1, col1-1, text, emailAddress);
     }
 
     public void removeFormula(final int row1, final int col1) {
@@ -599,6 +599,15 @@ public class ExcelSheetFacade<T> {
 
     public void removeComment(final int row1, final int col1) {
     	sheet.removeComment(row1-1, col1-1);
+    }
+
+
+    public Map<String,Object> getCellStyleInfo(final int row1, final int col1) {
+        return sheet.getCellStyleInfo(row1-1, col1-1);
+    }
+
+    public String cellAddress_A1_style(final int row1, final int col1) {
+        return sheet.getCellAddress_A1_style(row1-1, col1-1);
     }
 
 

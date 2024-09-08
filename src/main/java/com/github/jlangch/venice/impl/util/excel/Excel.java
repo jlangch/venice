@@ -183,7 +183,7 @@ public class Excel implements Closeable {
             final String fontName,
             final int heightInPoints
     ) {
-        registerFont(id, fontName, heightInPoints, false, false, (Short)null);
+        registerFont(id, fontName, heightInPoints, false, false, false, (Short)null);
     }
 
     public void registerFont(
@@ -192,6 +192,7 @@ public class Excel implements Closeable {
             final Integer heightInPoints,
             final boolean bold,
             final boolean italic,
+            final boolean underline,
             final Short colorIndex
     ) {
         final Font font = workbook.createFont();
@@ -203,6 +204,7 @@ public class Excel implements Closeable {
         }
         font.setBold(bold);
         font.setItalic(italic);
+        font.setUnderline(underline ? Font.U_SINGLE : Font.U_NONE);
         if (colorIndex != null) {
             font.setColor(colorIndex);
         }
@@ -215,6 +217,7 @@ public class Excel implements Closeable {
             final Integer heightInPoints,
             final boolean bold,
             final boolean italic,
+            final boolean underline,
             final Color color
     ) {
         final Font font = workbook.createFont();
@@ -226,6 +229,7 @@ public class Excel implements Closeable {
         }
         font.setBold(bold);
         font.setItalic(italic);
+        font.setUnderline(underline ? Font.U_SINGLE : Font.U_NONE);
         if (color != null) {
             if (font instanceof XSSFFont) {
                 ((XSSFFont)font).setColor(new XSSFColor(color, null));
