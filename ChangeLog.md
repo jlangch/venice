@@ -39,7 +39,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updated dependencies:
 
-- Bumped Apache POI from 5.2.3 to 5.3
+- Bumped Apache POI from 5.2.3 to 5.3.0
 
 
 
