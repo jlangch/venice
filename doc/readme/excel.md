@@ -9,7 +9,7 @@ with Excel documents Apache POI 5.2.0 or newer is required.
 *Note:* Use Venice 1.12.34+ or newer to have all features demonstrated here
 available.
 
-Run this script from the REPL to download the newest Apache POI 5.2.x 
+Run this script from the REPL to download the Apache POI 5.3.0 
 libraries:
 
 ```clojure
@@ -44,7 +44,7 @@ libraries:
        * [Insert, Copy, Clear and Delete Rows](#insert-copy-clear-and-delete-rows)
        * [Merge Cells](#merge-cells)
        * [Row and Col Ranges](#row-and-col-ranges)
-       * [Print Cell Style Inof](#print-cell-style-info)
+       * [Print Cell Style Info](#print-cell-style-info)
        * [Formulas](#formulas)
        * [Hyperlinks](#hyperlinks)
        * [Images](#images)
