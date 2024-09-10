@@ -134,6 +134,12 @@ public class ExcelSheet {
         sheet.createFreezePane(colSplit, rowSplit);
     }
 
+    public void protectSheet(final String password) {
+        // Protect the sheet (optional if the sheet is protected)
+        // This will ensure that locked cells remain locked and unlocked cells are editable.
+    	sheet.protectSheet(password);
+    }
+
     public boolean isCellEmpty(final int row, final int col) {
         final Cell cell = getCell(row, col);
         return cell == null || cell.getCellType() == CellType.BLANK;

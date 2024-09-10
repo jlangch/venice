@@ -84,6 +84,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         sheet.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
         sheet.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
         sheet.addItem(diBuilder.getDocItem("excel/hide-columns", false));
+        sheet.addItem(diBuilder.getDocItem("excel/protect-sheet", false));
 
 
         final DocSection cells = new DocSection("Cells", id());

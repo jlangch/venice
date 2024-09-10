@@ -2255,7 +2255,9 @@
               (excel/write->file wbook "sample.xlsx"))))
         """ )
      :see-also '(
-       "excel/add-column", "excel/add-merge-region") }
+       "excel/add-column", 
+       "excel/protect-sheet"
+       "excel/add-merge-region") }
 
   add-sheet
 
@@ -2283,6 +2285,38 @@
 
       (. sheet :end)
       sheet)))
+
+
+(defn
+  ^{ :arglists '("(protect-sheet sheet password)")
+     :doc
+        """
+        Protect the sheet.
+
+        This will ensure that locked cells remain locked and unlocked cells 
+        are editable.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/auto-size-columns sheet)
+            (excel/protect-sheet sheet "password")
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/add-sheet" ) }
+
+  protect-sheet  [sheet password]
+
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (string? password)] }
+
+  (. sheet :protectSheet password))
 
 
 (defn
