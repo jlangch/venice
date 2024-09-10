@@ -522,14 +522,32 @@ public class ExcelSheet {
         return getDataFormatString(cell);
     }
 
+    public void lock(final int row, final int col, final boolean locked) {
+        final Cell cell = getCell(row, col);
+        if (cell != null) {
+            final CellStyle lockedCellStyle = cellStyles.createCellStyle();
+            lockedCellStyle.cloneStyleFrom(cell.getCellStyle());
+            lockedCellStyle.setLocked(locked);
+            cell.setCellStyle(lockedCellStyle);
+        }
+    }
+
     public boolean isLocked(final int row, final int col) {
         final Cell cell = getCell(row, col);
-        return isLocked(cell);
+        if (cell == null) {
+            return false;
+        }
+        final CellStyle style = cell.getCellStyle();
+        return style == null ? false : style.getLocked();
     }
 
     public boolean isHidden(final int row, final int col) {
         final Cell cell = getCell(row, col);
-        return isHidden(cell);
+        if (cell == null) {
+            return false;
+        }
+        final CellStyle style = cell.getCellStyle();
+        return style == null ? false : style.getHidden();
     }
 
     public boolean isColumnHidden(final int col) {
@@ -1315,24 +1333,6 @@ public class ExcelSheet {
         }
 
         return style.getDataFormatString();
-    }
-
-    private boolean isLocked(final Cell cell) {
-        if (cell == null) {
-            return false;
-        }
-
-        final CellStyle style = cell.getCellStyle();
-        return style == null ? false : style.getLocked();
-    }
-
-    private boolean isHidden(final Cell cell) {
-        if (cell == null) {
-            return false;
-        }
-
-        final CellStyle style = cell.getCellStyle();
-        return style == null ? false : style.getHidden();
     }
 
     public String getCellType(final CellType type) {

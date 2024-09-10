@@ -94,6 +94,10 @@ public class ExcelSheetFacade<T> {
         return sheet.getCellType(row1-1, col1-1);
     }
 
+    public void lock(final int row1, final int col1, final boolean locked) {
+        sheet.lock(row1-1, col1-1, locked);
+    }
+
     public boolean isLocked(final int row1, final int col1) {
          return sheet.isLocked(row1-1, col1-1);
     }

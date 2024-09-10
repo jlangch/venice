@@ -89,6 +89,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         final DocSection cells = new DocSection("Cells", id());
         all.addSection(cells);
         cells.addItem(diBuilder.getDocItem("excel/cell-empty?", false));
+        cells.addItem(diBuilder.getDocItem("excel/cell-lock", false));
         cells.addItem(diBuilder.getDocItem("excel/cell-locked?", false));
         cells.addItem(diBuilder.getDocItem("excel/cell-hidden?", false));
         cells.addItem(diBuilder.getDocItem("excel/cell-type", false));

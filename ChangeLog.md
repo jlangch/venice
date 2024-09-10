@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.34] - 2024-09-xx
+## [1.12.35] - 2024-09-xx
 
 ### Added
 
@@ -16,10 +16,18 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+
+
+
+## [1.12.34] - 2024-09-10
+
+### Added
+
 - function `add-url-hyperlink` to :excel module
 - function `add-email-hyperlink` to :excel module
 - function `remove-hyperlink` to :excel module
 - function `remove-formula` to :excel module
+- function `cell-lock` to :excel module
 
 
 
