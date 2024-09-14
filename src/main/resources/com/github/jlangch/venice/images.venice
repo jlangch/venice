@@ -150,7 +150,7 @@
 ;; Load / Save
 ;; -----------------------------------------------------------------------------
 
-(defn 
+(defn
   ^{ :arglists '(
           "(load file)") 
      :doc """
@@ -181,7 +181,7 @@
       (throw (ex :VncException "Faled to load image" e)))))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(save img format-name f)") 
      :doc """
@@ -225,7 +225,7 @@
 ;; Create Image
 ;; -----------------------------------------------------------------------------
 
-(defn 
+(defn
   ^{ :arglists '(
           "(create width height type)"
           "(create width height type color)") 
@@ -277,7 +277,7 @@
         (throw (ex :VncException "Faled to create image" e))))))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(copy img)") 
      :doc """
@@ -824,7 +824,7 @@
   (. g2d :getTransform))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(transform g2d tx)")
      :doc """
@@ -868,7 +868,7 @@
   (. g2d :transform tx))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(tx-identity )")
      :doc """
@@ -908,7 +908,7 @@
   (. :AffineTransform :new))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(tx-translate x y)")
      :doc """
@@ -952,7 +952,7 @@
   (. :AffineTransform :getTranslateInstance x y))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(tx-scale s)"
           "(tx-scale sx sy)")
@@ -1005,7 +1005,7 @@
     (. :AffineTransform :getScaleInstance sx sy)))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(tx-shear sx sy)")
      :doc """
@@ -1050,7 +1050,7 @@
   (. :AffineTransform :getShearInstance sx sy))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(tx-rotate angle)"
           "(tx-rotate angle anchor-x anchor-y)")
@@ -1835,7 +1835,7 @@
 ;; Image properties
 ;; -----------------------------------------------------------------------------
 
-(defn 
+(defn
   ^{ :arglists '(
           "(dimension f)") 
      :doc """
@@ -1871,7 +1871,7 @@
                      (str "Cannot get image dimensions for unknown image " 
                           f))))))))
 
-(defn 
+(defn
   ^{ :arglists '(
           "(alpha-channel? img)") 
      :doc """
@@ -1909,7 +1909,7 @@
 ;; Rotate / Flip
 ;; -----------------------------------------------------------------------------
 
-(defn 
+(defn
   ^{ :arglists '(
           "(rotate img angle)") 
      :doc """
@@ -1954,7 +1954,7 @@
       img)))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(flip img mode)") 
      :doc """
@@ -1989,7 +1989,7 @@
       img)))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(shear img shx shy)"
           "(shear img shx shy color)") 
@@ -2022,7 +2022,7 @@
       (transform-img img tx width height color))))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(translate img x y)"
           "(translate img x y color)") 
@@ -2079,7 +2079,7 @@
 ;; Crop / Pad / Resize
 ;; -----------------------------------------------------------------------------
 
-(defn 
+(defn
   ^{ :arglists '(
           "(crop img x y width height)") 
      :doc """
@@ -2118,7 +2118,7 @@
       dest)))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(pad img padding color)"
           "(pad img pad-top pad-right pad-bottom pad-left color)") 
@@ -2177,7 +2177,7 @@
       dest)))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(resize-fit img size fit-mode)"
           "(resize img size fit-mode resize-mode)" )
@@ -2269,7 +2269,7 @@
                     "Internal error: unhandled fit-mode '~{fit-mode}'!"))))))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(resize img width height)"
           "(resize img width height resize-mode)" )
@@ -2357,7 +2357,7 @@
                       "Internal error: unhandled resize-mode '~{resize-mode}'!"))))))))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(convert-to-rgba img)" )
      :doc """
@@ -2391,7 +2391,7 @@
     dest))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(convert-to-rgb img)" )
      :doc """
@@ -2443,7 +2443,7 @@
       :else             :performance)))
 
 
-(defn scale [size factor]
+(defn- scale [size factor]
   (long (* (double size) (double factor))))
 
 
@@ -2452,7 +2452,7 @@
 ;; Apply image OPs
 ;; -----------------------------------------------------------------------------
 
-(defn 
+(defn
   ^{ :arglists '(
           "(apply-ops img ops)") 
      :doc """
@@ -2545,7 +2545,7 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn 
+(defn
   ^{ :arglists '(
           "(format-names)") 
      :doc """
@@ -2563,7 +2563,7 @@
   (. :ImageIO :getWriterFormatNames))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(point x y)") 
      :doc """
@@ -2584,7 +2584,7 @@
   (. :java.awt.Point :new x y))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(rectangle x y width height)") 
      :doc """
@@ -2607,7 +2607,7 @@
   (. :java.awt.Rectangle :new x y width height))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(polygon points)") 
      :doc """
@@ -2633,7 +2633,7 @@
         (recur poly (rest points))))))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(hexagon-poly)") 
      :doc """
@@ -2659,7 +2659,7 @@
       [cos-60°           (negate sin-60°)]]))
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(rectangle-poly x y width height)") 
      :doc """
@@ -2680,7 +2680,7 @@
     [x              (+ y height) ] ])
 
 
-(defn 
+(defn
   ^{ :arglists '(
           "(square-poly x y length)") 
      :doc """
@@ -2701,7 +2701,7 @@
     [x              (+ y length) ] ])
 
 
-(defn 
+(defn
   ^{ :arglists '(
         "(scale-points factor points)"
         "(scale-points factor-x factor-y points)") 
@@ -2728,7 +2728,7 @@
          (translate-points anchor-x anchor-y))))
 
 
-(defn 
+(defn
   ^{ :arglists '(
         "(translate-points dx dy points)") 
     :doc """
@@ -2747,7 +2747,7 @@
   (map (fn [[x y]] [(+ x dx) (+ y dy)]) points))
 
 
-(defn 
+(defn
   ^{ :arglists '(
         "(rotate-points angle points)"
         "(rotate-points angle anchor-x anchor-y points)") 
