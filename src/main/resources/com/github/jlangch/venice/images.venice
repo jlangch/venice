@@ -824,11 +824,11 @@
   (. g2d :getTransform))
 
 
-(defn transform [g2d tx]
+(defn 
   ^{ :arglists '(
           "(transform g2d tx)")
      :doc """
-          Add a affine transformer to the Graphics2D context.
+          Add an affine transformer to the Graphics2D context.
 
           **Note: The last specified transform on the graphics context is applied first!**
           """
@@ -861,6 +861,8 @@
           "images/tx-rotate"
           "images/tx-shear" ) }
 
+  transform [g2d tx]
+  
   (assert (instance-of? :Graphics2D g2d))
   (assert (instance-of? :AffineTransform tx))
   (. g2d :transform tx))
