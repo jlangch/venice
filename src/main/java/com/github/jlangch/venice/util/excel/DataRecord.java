@@ -50,6 +50,7 @@ public class DataRecord {
             fields.put(key, value);
         }
     }
+
     public Object get(final String fieldName) {
         return fields.get(fieldName);
     }
