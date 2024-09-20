@@ -33,18 +33,19 @@ libraries:
     * [Create and Modify](#create-and-modify)
        * [Create New Excel](#create-new-excel)
        * [Modify Existing Excel](#modify-existing-excel)
+    * [Writing Modes](#writing-modes)
+       * [Write tabular data](#write-tabular-data)
+       * [Write single cell values](#write-single-cell-values)
+       * [Write raw 2D vector data](#write-raw-2d-vector-data)
     * [Examples](#write-examples)
        * [Write to an output stream](#write-to-an-output-stream)
        * [Write to a byte buffer](#write-to-a-byte-buffer)
        * [Omit the header row](#omit-the-header-row)
        * [Write to multiple sheets](#write-to-multiple-sheets)
        * [Supported data types](#supported-data-types)
-       * [Writing 2D vector data](#writing-2d-tabular-data)
-       * [Writing to individual cells](#writing-to-individual-cells)
        * [Insert, Copy, Clear and Delete Rows](#insert-copy-clear-and-delete-rows)
        * [Merge Cells](#merge-cells)
        * [Row and Col Ranges](#row-and-col-ranges)
-       * [Print Cell Style Info](#print-cell-style-info)
        * [Formulas](#formulas)
        * [Hyperlinks](#hyperlinks)
        * [Images](#images)
@@ -62,6 +63,7 @@ libraries:
 2. [Reading Excel files](#reading-excel-files)
     * [Open Excel](#open-excel)
     * [Reading Cell Metadata](#reading-cell-metadata)
+    * [Reading Cell Data Type](#reading-cell-data-type)
     * [Reading Cells](#reading-cells)
 
 </br>
@@ -110,14 +112,13 @@ the `.xls` file name extension.
 
 Creating a new Excel from scratch (create-modify-write).
 
-
 ```clojure
 (do
   (ns test)
 
   (load-module :excel)
   
-  ;; create a new Excel and save it as "sample.xlsx"
+  ;; create a new Excel, modify and save it as "sample.xlsx"
   (let [wbook  (excel/create :xlsx)
         sheet1 (excel/add-sheet wbook "Data1")
         sheet2 (excel/add-sheet wbook "Data2")]
@@ -151,7 +152,7 @@ Modify an existing Excel (read-modify-write).
     (excel/write-values sheet2 2 1 "Italy" "Rome")
     (excel/write->file wbook "sample.xlsx"))
 
-  ;; load the Excel from "sample.xlsx" and modify and save it as "sample1.xlsx"
+  ;; load the Excel from "sample.xlsx", modify, and save it as "sample1.xlsx"
   (let [wbook (excel/open "sample.xlsx")
         sheet (excel/sheet wbook 1)]        
     (excel/write-value sheet 1 3 38)  ;; correct John Doe's age 28 -> 38
@@ -161,6 +162,134 @@ Modify an existing Excel (read-modify-write).
 
 [top](#content)
 
+
+### Writing Modes
+
+The Excel module supports three writing modes:
+ 
+   * [Write tabular data](#write-tabular-data)
+   * [Write single cell values](#write-single-cell-values)
+   * [Write raw 2D vector data](#write-raw-2d-vector-data)
+
+All writing modes support cell styling.
+
+
+#### Write tabular data
+
+The tabular data is passed as a sequence of maps. Each sequence item is written to an Excel
+row and the item is written to column cells in the row. The columns are explicitly defined.
+
+> [!NOTE] 
+If your date does not come in the required data format just apply `filter` and `map` to convert your data
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [os    (io/file-out-stream "sample.xlsx")
+        data  [ {:first "John" :last "Doe"   :age 28 }
+                {:first "Sue"  :last "Ford"  :age 26 } ]
+        wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-column sheet "First Name" { :field :first })
+    (excel/add-column sheet "Last Name" { :field :last })
+    (excel/add-column sheet "Age" { :field :age })
+    (excel/write-items sheet data)
+    (excel/auto-size-columns sheet)
+    (excel/write->stream wbook os)))
+```
+
+[top](#content)
+
+ 
+#### Write single cell values
+
+The function `excel/write-value` writes values to cells. The row and col numbers are 1-based!
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/write-value sheet 1 1 "John")
+    (excel/write-value sheet 1 2 "Doe")
+    (excel/write-value sheet 1 3 28)
+    (excel/write-value sheet 2 1 "Sue")
+    (excel/write-value sheet 2 2 "Ford")
+    (excel/write-value sheet 2 3 26)
+    (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
+
+</br>
+
+The function `excel/write-values` writes multiple values to consecutive cells in row starting at a column. The row and col numbers are 1-based!
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+    (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
+
+[top](#content)
+
+
+#### Write raw 2D vector data
+ 
+Write the data of a 2D vector to an excel sheet.
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Data")
+        dt    (time/local-date 2021 1 1)
+        ts    (time/local-date-time 2021 1 1 15 30 45)
+        data  [[100  101  102  103  104  105]
+               [200  "ab" 1.23 dt   ts   false]]]
+    (excel/write-data sheet data)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-005.png" width="400">
+
+[top](#content)
+
+
+Write the data starting at a row/col offset:
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Data")]
+    (excel/write-data sheet [[100 101 102] [200 201 203]])
+    (excel/write-data sheet [[300 301 302] [400 401 403]] 3 4)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-012.png" width="400">
+
+[top](#content)
 
 
 
@@ -323,94 +452,7 @@ The Excel writer supports the Venice data types:
 
 [top](#content)
 
- 
 
-
-#### Writing 2D tabular data
-
-Write the data of a 2D vector to an excel sheet.
-
-```clojure
-(do
-  (load-module :excel)
-  (let [wbook (excel/create :xlsx)
-        sheet (excel/add-sheet wbook "Data")
-        dt    (time/local-date 2021 1 1)
-        ts    (time/local-date-time 2021 1 1 15 30 45)
-        data  [[100  101  102  103  104  105]
-               [200  "ab" 1.23 dt   ts   false]]]
-    (excel/write-data sheet data)
-    (excel/auto-size-columns sheet)
-    (excel/write->file wbook "sample.xlsx")))
-```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-005.png" width="400">
-
-[top](#content)
-
-
-```clojure
-(do
-  (load-module :excel)
-  (let [wbook (excel/create :xlsx)
-        sheet (excel/add-sheet wbook "Data")]
-    (excel/write-data sheet [[100 101 102] [200 201 203]])
-    (excel/write-data sheet [[300 301 302] [400 401 403]] 3 4)
-    (excel/auto-size-columns sheet)
-    (excel/write->file wbook "sample.xlsx")))
-```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-012.png" width="400">
-
-[top](#content)
-
-
-
-#### Writing to individual cells
-
-The function `excel/write-value` writes values to cells. The row and col numbers are 1-based!
-
-```clojure
-(do
-  (ns test)
-
-  (load-module :excel)
-
-  (let [wbook (excel/create :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1")]
-    (excel/write-value sheet 1 1 "John")
-    (excel/write-value sheet 1 2 "Doe")
-    (excel/write-value sheet 1 3 28)
-    (excel/write-value sheet 2 1 "Sue")
-    (excel/write-value sheet 2 2 "Ford")
-    (excel/write-value sheet 2 3 26)
-    (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
-    (excel/write->file wbook "sample.xlsx")))
-```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
-
-</br>
-
-The function `excel/write-values` writes multiple values to consecutive cells in row starting at a column. The row and col numbers are 1-based!
-
-```clojure
-(do
-  (ns test)
-
-  (load-module :excel)
-
-  (let [wbook (excel/create :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1")]
-    (excel/write-values sheet 1 1 "John" "Doe" 28)
-    (excel/write-values sheet 2 1 "Sue" "Ford" 26)
-    (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
-    (excel/write->file wbook "sample.xlsx")))
-```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
-
-[top](#content)
 
 
 
@@ -529,43 +571,6 @@ Prints: `[1 3]`
 
 
 
-#### Print Cell Style Info
-
-```clojure
-(do
-  (load-module :excel)
-
-  (defn print-cell-meta [sheet row col]
-    (println (str (excel/addr->string row col) ">  "
-                  "type: " (name (excel/cell-type sheet row col))
-                  ", format: " (excel/cell-data-format-string sheet row col)
-                   ", empty: " (excel/cell-empty? sheet row col)
-                  ", locked: " (excel/cell-locked? sheet row col)
-                  ", hidden: " (excel/cell-hidden? sheet row col))))
-
-  (let [wbook (excel/create :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1")]
-    (excel/write-values sheet 1 1 "John" "Doe" 28)
-    (excel/write-values sheet 2 1 "Mary" "Smith" 28)
-    (excel/auto-size-columns sheet)
-    (excel/write->file wbook "sample.xlsx"))
-
-  (let [wbook     (excel/open "sample.xlsx")
-        sheet     (excel/sheet wbook "Sheet 1")
-        row       1
-        col-range (excel/sheet-col-range sheet 1)
-        col-list  (range (first col-range) (inc (second col-range)))]
-        (docoll #(print-cell-meta sheet (first %) (second %))
-                (map vector (repeat row) col-list))))
-```
-
-Prints style info for row 1:
-
-```
-A1>  type: string, empty: false, locked: true, hidden: false
-B1>  type: string, empty: false, locked: true, hidden: false
-C1>  type: numeric, empty: false, locked: true, hidden: false
-```
 
 
 
@@ -1386,8 +1391,48 @@ Sheet "Data2" (referenced by index):
 [top](#content)
 
 
-
 ### Reading Cell Metadata
+
+Reading cell type, format, empty, locked and hidden status.
+
+```clojure
+(do
+  (load-module :excel)
+
+  (defn print-cell-meta [sheet row col]
+    (println (str (excel/addr->string row col) ">  "
+                  "type: " (name (excel/cell-type sheet row col))
+                  ", format: " (excel/cell-data-format-string sheet row col)
+                  ", empty: " (excel/cell-empty? sheet row col)
+                  ", locked: " (excel/cell-locked? sheet row col)
+                  ", hidden: " (excel/cell-hidden? sheet row col))))
+
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Mary" "Smith" 28)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx"))
+
+  (let [wbook     (excel/open "sample.xlsx")
+        sheet     (excel/sheet wbook "Sheet 1")
+        row       1
+        col-range (excel/sheet-col-range sheet 1)
+        col-list  (range (first col-range) (inc (second col-range)))]
+        (docoll #(print-cell-meta sheet (first %) (second %))
+                (map vector (repeat row) col-list))))
+```
+
+Prints style info for row 1:
+
+```
+A1>  type: string, empty: false, locked: true, hidden: false
+B1>  type: string, empty: false, locked: true, hidden: false
+C1>  type: numeric, empty: false, locked: true, hidden: false
+```
+
+
+### Reading Cell Data Type
 
 Each cell has one of the predefined cell data types:
 
