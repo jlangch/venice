@@ -37,6 +37,7 @@ libraries:
        * [Write tabular data](#write-tabular-data)
        * [Write single cell values](#write-single-cell-values)
        * [Write raw 2D vector data](#write-raw-2d-vector-data)
+    * [Write to file, stream, bytes](#write-to-file-stream-bytes)
     * [Examples](#write-examples)
        * [Write to an output stream](#write-to-an-output-stream)
        * [Write to a byte buffer](#write-to-a-byte-buffer)
@@ -293,7 +294,29 @@ Write the data starting at a row/col offset:
 
 
 
-### Write Examples
+### Write to file, stream, bytes
+
+#### Write to a file
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                {:first "Sue"  :last "Ford"  :age 26 } ]
+        wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-column sheet "First Name" { :field :first })
+    (excel/add-column sheet "Last Name" { :field :last })
+    (excel/add-column sheet "Age" { :field :age })
+    (excel/write-items sheet data)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+[top](#content)
 
 
 #### Write to an output stream
@@ -320,7 +343,6 @@ Write the data starting at a row/col offset:
 [top](#content)
 
 
-
 #### Write to a byte buffer
 
 ```clojure
@@ -343,6 +365,8 @@ Write the data starting at a row/col offset:
 
 [top](#content)
 
+
+### Write Examples
 
 
 #### Omit the header row
@@ -1168,11 +1192,11 @@ Available border styles:
     (excel/bg-color sheet 1 2 "#52be80")
     (excel/bg-color sheet 1 3 "#7dcea0")
 
-    ;; range of cells in row 1
-    (excel/bg-color sheet 1 4 6 "#3498db")
+    ;; range of cells in a row
+    (excel/bg-color sheet 1 4 6 "#3498db") ;; row 1, col 4-6
 
-    ;; area of cells
-    (excel/bg-color sheet 1 6 7 9 "#aed6f1")
+    ;; area of cells with alternating row colors
+    (excel/bg-color sheet 1 6 7 9 "#aed6f1")  ;; row 1-6,  col 7-9
     (excel/bg-color sheet 1 6 10 12 "#bb8fce" "#d2b4de")
     (excel/bg-color sheet 1 6 13 15 "#f1c40f" "#f4d03f" "#f7dc6f")
     (excel/write->file wbook "sample.xlsx")))
@@ -1512,7 +1536,9 @@ Cell (1,9) empty: true
 
 ### Reading Cells
 
-If the Excel document contains formulas call `excel/evaluate-formulas` before reading the cells to get the evaluated formula values, otherwise the cell returns the formula itself!
+If the Excel document contains formulas, call `excel/evaluate-formulas` before reading 
+the cells to get the evaluated formula values, otherwise the cell returns the 
+formula itself!
 
 
 **Reading typed values:**
