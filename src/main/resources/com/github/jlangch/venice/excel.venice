@@ -422,7 +422,8 @@
 
   ([sheet data row col]
     { :pre [(instance-of? :ExcelSheetFacade sheet)
-            (pos? row) (pos? col)] }
+            (long? row) (pos? row) 
+            (long? col) (pos? col)] }
 
     (let [cell (fn [r c val] (excel/write-value sheet (+ r row) (+ c col) val))]
       (map-indexed (fn [r rv] (map-indexed (fn [c cv] (cell r c cv)) rv))
@@ -440,8 +441,8 @@
         """
         (do
           (load-module :excel)
-          (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                        {:first "Sue"  :last "Ford"  :age 26 } ]
+          (let [data  [ {:first "John" :last "Doe"  :age 28 }
+                        {:first "Sue"  :last "Ford" :age 26 } ]
                 wbook (excel/create :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
             (excel/add-column sheet "First Name" { :field :first })
@@ -458,7 +459,9 @@
 
   write-items [sheet items]
 
-  { :pre [(instance-of? :ExcelSheetFacade sheet)] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (sequential? items)
+          (every? map? items)] }
 
   (->> (map #(. :DataRecord :of %) items)
        (into! (. :java.util.ArrayList :new))
@@ -489,7 +492,8 @@
 
   write-item [sheet item]
 
-  { :pre [(instance-of? :ExcelSheetFacade sheet) (map? item)] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet) 
+          (map? item)] }
 
   (->> (. :DataRecord :of item)
        (. sheet :renderItem)))
@@ -511,8 +515,8 @@
            * boolean: no format
            * integer: #,###0
            * double: #,##0.00
-           * date: d.m.yyyy
-           * datetime: d.m.yyyy hh:mm:ss
+           * date: dd.mm.yyyy
+           * datetime: dd.mm.yyyy hh:mm:ss
 
         To use the existing cell's style without changing it when modifying the
         cell's value pass `:keep-style` as style!
