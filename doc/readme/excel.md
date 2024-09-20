@@ -39,7 +39,7 @@ libraries:
        * [Write raw 2D vector data](#write-raw-2d-vector-data)
     * [Write to file, stream, bytes](#write-to-file-stream-bytes)
        * [Write to a file](#write-to-a-file)
-       * [Write to an output stream file](#write-to-an-output-stream)
+       * [Write to an output stream](#write-to-an-output-stream)
        * [Write to a byte buffer](#write-to-a-byte-buffer)
     * [Examples](#write-examples)
        * [Omit the header row](#omit-the-header-row)
