@@ -25,10 +25,6 @@
 (ns qrref)
 
 
-(def- qr-ref-len 27)       ;; number of QR reference digits, checksum digit included
-
-(def- qr-ref-raw-len 26)   ;; number of QR reference digits, checksum digit excluded
-
 (def- checksum-table [0, 9, 4, 6, 8, 2, 7, 1, 3, 5])
 
 
@@ -36,13 +32,6 @@
 
 
 (defn- digit->char [c] (char (+ c (long #\0))))    ;; 2 -> #\2
-
-
-(defn- remove-leading-zeroes [s]
-  (loop [s s]
-    (if (and (> (count s) 1) (str/starts-with? s "0"))
-      (recur (str/rest s))
-      s)))
 
 
 (defn- remove-whitespaces [s]
@@ -53,89 +42,34 @@
   (match? s #"[0-9]+"))
 
 
-(defn- qr-ref-raw [ref]
-  (let [padding-zeros (- qr-ref-raw-len (count ref))]
+(defn- pad-with-leading-zeroes [ref]
+  (let [padding-zeros (- 26 (count ref))]
     (if (neg? padding-zeros)
       (throw (ex :VncException "The QR-Reference ref number is too long!"))
       (str (str/repeat "0" padding-zeros) ref))))
 
 
-(defn checksum [s]
-  ^{ :arglists '("(checksum ref)")
-     :doc """
-          Calculates the checksum for a raw reference. The reference may 
-          contain spaces.
-          """
-     :examples '(
-         """
-         (do
-           (load-module :qrref ['qrref :as 'qr])
-           (qr/checksum "230 55361 34663 9301")
-           (qr/checksum "23055361346639301")
-           (qr/checksum "00 00000 00230 55361 34663 9301")
-           (qr/checksum "00000000023055361346639301"))
-         """ )
-     :see-also '("qrref/create", "qrref/valid?", "qrref/format") }
-
-  (let [s (remove-whitespaces s)]
-    (if-not (numeric? s)
-      (throw (ex :VncException "Invalid character in reference (digits allowed only)"))
-      (loop [carry 0, digits (seq s)]
-        (if (empty? digits)
-          (mod (- 10 carry) 10)
-          (let [digit (digit->long (first digits))
-                carry (get checksum-table (mod (+ carry digit) 10))]
-            (recur carry (rest digits))))))))
-
-
-(defn valid? [ref]
-  ^{ :arglists '("(valid? ref)")
-     :doc """
-          Returns true if ref is a valid QR reference else false.
-          The reference may contain spaces.
-          """
-     :examples '(
-         """
-         (do
-           (load-module :qrref ['qrref :as 'qr])
-           (qr/valid? "000000000230553613466393013")
-           (qr/valid? "00 00000 00230 55361 34663 93013"))
-         """ )
-     :see-also '("qrref/create", "qrref/format", "qrref/checksum") }
-
-  (let [r (remove-whitespaces ref)]
-    (if-not (numeric? r)
-      false
-      (if-not (== qr-ref-len (count r))
-        false
-        (== 0 (checksum r))))))
-
-
-
 (defn
-  ^{ :arglists '("(format s)")
-     :doc "Format a QR reference."
-     :examples '(
-         """
-         (do
-           (load-module :qrref ['qrref :as 'qr])
-           (qr/format "000000000230553613466393013"))
-         """ )
-     :see-also '("qrref/create", "qrref/valid?", "qrref/checksum") }
-
-  format [s]
-
-  (->> (seq s)
-       (reverse)
-       (partition-all 5)
-       (map #(apply str (reverse %)))
-       (reverse)
-       (str/join " ")))
-
-(defn
-  ^{ :arglists '("(create ref)")
+  ^{ :arglists '("(create ref-raw)")
      :doc """
           Creates a QR reference according to the Swiss payment standards.
+
+          A QR reference has 27 digits. The raw reference plus a checksum digit
+          as the last digit.
+          
+          The raw reference passed must not have more than 26 digits. With less 
+          than 26 digits leading '0' will be used to fill up to 26 digits.
+
+          Raw reference:  "23055361346639301"
+
+          QR reference:  "000000000230553613466393013"
+
+          The QR reference can be formatted to "00 00000 00230 55361 34663 93013" 
+          using:
+
+          ```
+          (qrref/format "000000000230553613466393013")
+          ```
 
           [Swiss Payment Standards / de](https://www.paymentstandards.ch/dam/downloads/ig-qr-bill-de.pdf)
 
@@ -150,12 +84,98 @@
          """ )
      :see-also '("qrref/valid?", "qrref/format", "qrref/checksum") }
 
-  create[ref-raw]
+  create [ref-raw]
 
   (let [r (remove-whitespaces ref-raw)]
-    (if-not (match? r #"[0-9]+")
-      (throw (ex :VncException "Invalid character in reference (digits allowed only)"))
-      (if (> (count r) 26)
-        (throw (ex :VncException "Reference number is longer than 26 digits!"))
-        (let [r (qr-ref-raw r)]
-          (str r (digit->char (checksum r))))))))
+    (when-not (numeric? r)
+      (throw (ex :VncException "Invalid character in reference (digits allowed only)")))
+    (when (> (count r) 26)
+      (throw (ex :VncException "A raw QR reference must not have more than 26 digits")))
+
+    (let [padded      (pad-with-leading-zeroes r)
+          check-digit (digit->char (checksum padded))]
+      (str padded check-digit))))
+
+
+(defn
+  ^{ :arglists '("(format ref)")
+     :doc "Format a QR reference."
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/format "000000000230553613466393013"))
+         """ )
+     :see-also '("qrref/create", "qrref/valid?", "qrref/checksum") }
+
+  format [ref]
+
+  (->> (seq ref)
+       (reverse)
+       (partition-all 5)
+       (map #(apply str (reverse %)))
+       (reverse)
+       (str/join " ")))
+
+
+(defn 
+  ^{ :arglists '("(valid? ref)")
+     :doc """
+          Returns true if ref is a valid QR reference else false.
+          The reference may contain spaces.
+
+          A valid QR reference must have 27 digits and the checksum must be
+          correct. The last digit is the checksum digits for the first 26 digits.
+          """
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/valid? "000000000230553613466393013")
+           (qr/valid? "00 00000 00230 55361 34663 93013"))
+         """ )
+     :see-also '("qrref/create", "qrref/format", "qrref/checksum") }
+
+  valid? [ref]
+
+  (let [r (remove-whitespaces ref)]
+    (if (and (numeric? r) (== 27 (count r)))
+      (== 0 (checksum r))
+      false)))
+
+
+(defn 
+  ^{ :arglists '("(checksum ref)")
+     :doc """
+          Computes the checksum for a raw reference. 
+
+          The passed ref my be a raw QR reference or a QR reference with a
+          checksum digit. It may contain spaces.
+
+          Returns the computed checksum digit 0..9. 
+          
+          If the passed ref is a QR reference with a correct checksum digit the 
+          computed checksum digit will always be 0. This fact is used for QR 
+          reference validation!
+          """
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/checksum "230 55361 34663 9301")
+           (qr/checksum "23055361346639301")
+           (qr/checksum "00 00000 00230 55361 34663 9301")
+           (qr/checksum "00000000023055361346639301"))
+         """ )
+     :see-also '("qrref/create", "qrref/valid?", "qrref/format") }
+
+  checksum [ref]
+
+  (let [r (remove-whitespaces ref)]
+    (when-not (numeric? r)
+      (throw (ex :VncException "Invalid character in reference (digits allowed only)")))
+
+    (let [carry (reduce (fn [carry digit] (get checksum-table (mod (+ carry digit) 10))) 
+                        0 
+                        (map digit->long (seq r)))]
+      (mod (- 10 carry) 10))))

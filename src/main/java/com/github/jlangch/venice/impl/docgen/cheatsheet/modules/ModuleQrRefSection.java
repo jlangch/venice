@@ -45,9 +45,10 @@ public class ModuleQrRefSection implements ISectionBuilder {
 
         final DocSection main = new DocSection("QR Ref", id());
         all.addSection(main);
-        main.addItem(diBuilder.getDocItem("qrref/qr-ref", true));
-        main.addItem(diBuilder.getDocItem("qrref/parse", true));
+        main.addItem(diBuilder.getDocItem("qrref/create", true));
         main.addItem(diBuilder.getDocItem("qrref/format", true));
+        main.addItem(diBuilder.getDocItem("qrref/valid?", true));
+        main.addItem(diBuilder.getDocItem("qrref/checksum", true));
 
         return section;
     }
