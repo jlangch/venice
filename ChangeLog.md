@@ -16,6 +16,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Improved
+
+- the module :qrref that manages QR references according to the Swiss payment 
+  standards.
 
 
 

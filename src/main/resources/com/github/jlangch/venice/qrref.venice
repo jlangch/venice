@@ -25,36 +25,17 @@
 (ns qrref)
 
 
-(def bill-types { :bill        0
-                  :reminder-1  1
-                  :reminder-2  2
-                  :reminder-3  3 })
+(def- qr-ref-len 27)       ;; number of QR reference digits, checksum digit included
 
-
-;; the number of meta digits in the QR reference:
-;;    - bill type digit
-;;    - version digit
-;;    - checksum digit
-(def- num-meta-chars 3)
-
-(def- qr-ref-len 27)
+(def- qr-ref-raw-len 26)   ;; number of QR reference digits, checksum digit excluded
 
 (def- checksum-table [0, 9, 4, 6, 8, 2, 7, 1, 3, 5])
 
 
-(defn- digit->long [c] (- (long c) (long #\0)))
+(defn- digit->long [c] (- (long c) (long #\0)))    ;; #\2 -> 2
 
 
-(defn- long->bill-type [n]
-  (if-let [t (get (map-invert bill-types) n)]
-    t
-    (throw (ex :VncException (str "Invalid bill type index '" n "'!")))))
-
-
-(defn- bill-type->long [t]
-  (if-let [n (get bill-types t)]
-    n
-    (throw (ex :VncException (str "Invalid bill type '" (pr-str t) "'!")))))
+(defn- digit->char [c] (char (+ c (long #\0))))    ;; 2 -> #\2
 
 
 (defn- remove-leading-zeroes [s]
@@ -64,22 +45,71 @@
       s)))
 
 
-(defn mod-10-checksum [s]
-  (if-not (match? s #"[ 0-9]+")
-    (throw (ex :VncException "The string must only contain spaces and digits!"))
-    (reduce (fn [carry d] (get checksum-table (mod (+ carry (digit->long d)) 10)))
-            0
-            (filter str/digit? (seq s)))))
+(defn- remove-whitespaces [s]
+  (apply str (filter #(not (str/whitespace? %)) (seq s))))
 
 
-(defn- qr-ref-raw [version bill-type bill-nr]
-  (let [padding-zeros (- qr-ref-len num-meta-chars (count bill-nr))]
+(defn- numeric? [s]
+  (match? s #"[0-9]+"))
+
+
+(defn- qr-ref-raw [ref]
+  (let [padding-zeros (- qr-ref-raw-len (count ref))]
     (if (neg? padding-zeros)
-      (throw (ex :VncException "The QR-Reference bill number is too long!"))
-      (str (str/repeat "0" padding-zeros)
-           bill-nr
-           (bill-type->long bill-type)
-           version))))
+      (throw (ex :VncException "The QR-Reference ref number is too long!"))
+      (str (str/repeat "0" padding-zeros) ref))))
+
+
+(defn checksum [s]
+  ^{ :arglists '("(checksum ref)")
+     :doc """
+          Calculates the checksum for a raw reference. The reference may 
+          contain spaces.
+          """
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/checksum "230 55361 34663 9301")
+           (qr/checksum "23055361346639301")
+           (qr/checksum "00 00000 00230 55361 34663 9301")
+           (qr/checksum "00000000023055361346639301"))
+         """ )
+     :see-also '("qrref/create", "qrref/valid?", "qrref/format") }
+
+  (let [s (remove-whitespaces s)]
+    (if-not (numeric? s)
+      (throw (ex :VncException "Invalid character in reference (digits allowed only)"))
+      (loop [carry 0, digits (seq s)]
+        (if (empty? digits)
+          (mod (- 10 carry) 10)
+          (let [digit (digit->long (first digits))
+                carry (get checksum-table (mod (+ carry digit) 10))]
+            (recur carry (rest digits))))))))
+
+
+(defn valid? [ref]
+  ^{ :arglists '("(valid? ref)")
+     :doc """
+          Returns true if ref is a valid QR reference else false.
+          The reference may contain spaces.
+          """
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/valid? "000000000230553613466393013")
+           (qr/valid? "00 00000 00230 55361 34663 93013"))
+         """ )
+     :see-also '("qrref/create", "qrref/format", "qrref/checksum") }
+
+  (let [r (remove-whitespaces ref)]
+    (if-not (numeric? r)
+      false
+      (if-not (== qr-ref-len (count r))
+        false
+        (== 0 (checksum r))))))
+
 
 
 (defn
@@ -89,14 +119,9 @@
          """
          (do
            (load-module :qrref ['qrref :as 'qr])
-           (qr/format "000000000000000000001234011"))
-         """,
-         """
-         (do
-           (load-module :qrref ['qrref :as 'qr])
-           (qr/format (qr/qr-ref 1 :bill "1234")))
+           (qr/format "000000000230553613466393013"))
          """ )
-     :see-also '("qrref/qr-ref", "qrref/parse") }
+     :see-also '("qrref/create", "qrref/valid?", "qrref/checksum") }
 
   format [s]
 
@@ -108,13 +133,9 @@
        (str/join " ")))
 
 (defn
-  ^{ :arglists '("(qr-ref version bill-type bill-nr)")
+  ^{ :arglists '("(create ref)")
      :doc """
           Creates a QR reference according to the Swiss payment standards.
-
-          &ensp; - *version*, an integer [1..9]¶
-          &ensp; - *bill-type*, one of {:bill, :reminder-1, :reminder-2, :reminder-3}¶
-          &ensp; - *bill-nr*, a string with up to 24 digits '0'..'9'
 
           [Swiss Payment Standards / de](https://www.paymentstandards.ch/dam/downloads/ig-qr-bill-de.pdf)
 
@@ -124,69 +145,17 @@
          """
          (do
            (load-module :qrref ['qrref :as 'qr])
-           (qr/qr-ref 1 :bill "1234"))
+           (qr/create "1234")
+           (qr/create "23055361346639301"))
          """ )
-     :see-also '("qrref/parse", "qrref/format") }
+     :see-also '("qrref/valid?", "qrref/format", "qrref/checksum") }
 
-  qr-ref [version bill-type bill-nr]
+  create[ref-raw]
 
-  (when-not (< 0 version 10)
-    (throw (ex :VncException
-               (str/format "Unsupported QR-Reference version %d! Must be [1..9]."
-                           version))))
-
-  (let [ref (qr-ref-raw version bill-type bill-nr)]
-    (str ref (mod-10-checksum ref))))
-
-
-(defn
-  ^{ :arglists '("(parse ref)")
-     :doc "Parse a QR reference. The reference may be formatted."
-     :examples '(
-         """
-         (do
-           (load-module :qrref ['qrref :as 'qr])
-           (qr/parse (qr/qr-ref 1 :bill "1234")))
-         """,
-         """
-         (do
-           (load-module :qrref ['qrref :as 'qr])
-           (qr/parse "000000000000000000001234011"))
-         """,
-         """
-         (do
-           (load-module :qrref ['qrref :as 'qr])
-           (qr/parse "00 00000 00000 00000 00012 34011"))
-         """ )
-     :see-also '("qrref/qr-ref", "qrref/format") }
-
-  parse [ref]
-
-  (when (str/blank? ref)
-    (throw (ex :VncException "A QR-Reference must not be blank!")))
-
-  (when-not (match? ref #"[ 0-9]+")
-    (throw (ex :VncException
-               "A QR-Reference must be built from spaces and digits only!")))
-
-  (let [ref-norm (str/replace-all ref " " "")]
-    (when (< (count ref-norm) 10)
-      (throw (ex :VncException "A QR-Reference must have more than 10 digits!")))
-
-    (let [meta      (str/nlast ref-norm 3)
-          type      (digit->long (first meta))
-          version   (digit->long (second meta))
-          check     (digit->long (third meta))
-          raw-ref   (str/butlast ref-norm)
-          check-eff (mod-10-checksum raw-ref)
-          bill-nr   (str/butnlast ref-norm 3)]
-      (when-not (= check check-eff)
-        (throw (ex :VncException
-                   (str/format (str "Invalid QR-Reference checksum '%d' for ref "
-                                    "'%s'. The effective checksum is '%d'!")
-                   check
-                   raw-ref
-                   check-eff))))
-     { :version  version
-       :bill-typ (long->bill-type type)
-       :bill-nr  (remove-leading-zeroes bill-nr) })))
+  (let [r (remove-whitespaces ref-raw)]
+    (if-not (match? r #"[0-9]+")
+      (throw (ex :VncException "Invalid character in reference (digits allowed only)"))
+      (if (> (count r) 26)
+        (throw (ex :VncException "Reference number is longer than 26 digits!"))
+        (let [r (qr-ref-raw r)]
+          (str r (digit->char (checksum r))))))))
