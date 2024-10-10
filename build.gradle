@@ -108,6 +108,7 @@
 //   [5] REPL Setup Test
 //       - As soon as the new package is publicly available change the Venice
 //         version in "ReplSetupModuleTest.java" for staged REPL setup tests 
+//         Test availability: curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.34/venice-1.12.34.jar" --output ./venice-1.12.34.jar
 //
 // -----------------------------------------------------------------------------
 // Gradle wrapper
