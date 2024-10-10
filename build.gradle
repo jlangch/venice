@@ -105,6 +105,10 @@
 //       - Add an empty ChangeLog entry for the new version
 //       - Commit with message "opened new dev cycle"
 //
+//   [5] REPL Setup Test
+//       - As soon as the new package is publicly available change the Venice
+//         version in "ReplSetupModuleTest.java" for staged REPL setup tests 
+//
 // -----------------------------------------------------------------------------
 // Gradle wrapper
 //
