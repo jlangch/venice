@@ -37,7 +37,7 @@
 (load-module :ansi)
 
 
-(def-dynamic tc-archive "http://archive.apache.org/dist/tomcat")
+(def-dynamic tc-archive "https://archive.apache.org/dist/tomcat")
 (def-dynamic tc-pid-file "catalina.pid")
 
 

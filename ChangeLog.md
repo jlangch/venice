@@ -4,9 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-
-
-## [1.12.35] - 2024-09-xx
+## [1.12.36] - 2024-10-xx
 
 ### Added
 
@@ -15,6 +13,14 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+## [1.12.35] - 2024-10-10
+
+### Changed
+
+- the Tomcat download URL in the :tomcat-util module to use HTTPS instead of
+  HTTP. The new official archive URL is: `https://archive.apache.org/dist/tomcat`
 
 ### Improved
 
