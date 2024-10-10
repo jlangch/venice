@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.36] - 2024-10-xx
+## [1.12.35] - 2024-10-xx
 
 ### Added
 
@@ -16,7 +16,15 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.35] - 2024-10-10
+## [1.12.34] - 2024-10-10
+
+### Added
+
+- function `add-url-hyperlink` to :excel module
+- function `add-email-hyperlink` to :excel module
+- function `remove-hyperlink` to :excel module
+- function `remove-formula` to :excel module
+- function `cell-lock` to :excel module
 
 ### Changed
 
@@ -27,18 +35,6 @@ All notable changes to this project will be documented in this file.
 
 - the module :qrref that manages QR references according to the Swiss payment 
   standards.
-
-
-
-## [1.12.34] - 2024-09-10
-
-### Added
-
-- function `add-url-hyperlink` to :excel module
-- function `add-email-hyperlink` to :excel module
-- function `remove-hyperlink` to :excel module
-- function `remove-formula` to :excel module
-- function `cell-lock` to :excel module
 
 
 
