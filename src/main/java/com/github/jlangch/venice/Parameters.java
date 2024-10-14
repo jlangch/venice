@@ -182,6 +182,88 @@ public class Parameters {
     }
 
     /**
+     * Returns a map containing a three mappings.
+     *
+     * @param key1 the first mapping's key
+     * @param val1 the first mapping's value
+     * @param key2 the second mapping's key
+     * @param val2 the second mapping's value
+     * @param key3 the third mapping's key
+     * @param val3 the third mapping's value
+     * @param key4 the fourth mapping's key
+     * @param val4 the fourth mapping's value
+     * @param key5 the fifth mapping's key
+     * @param val5 the fifth mapping's value
+     * @param key6 the sixth mapping's key
+     * @param val6 the sixth mapping's value
+     * @param key7 the sixth mapping's key
+     * @param val7 the sixth mapping's value
+     * @return a Map containing the specified mappings
+     */
+    public static Map<String,Object> of(
+            final String key1, final Object val1,
+            final String key2, final Object val2,
+            final String key3, final Object val3,
+            final String key4, final Object val4,
+            final String key5, final Object val5,
+            final String key6, final Object val6,
+            final String key7, final Object val7
+    ) {
+        return new Parameters()
+                    .put(key1, val1)
+                    .put(key2, val2)
+                    .put(key3, val3)
+                    .put(key4, val4)
+                    .put(key5, val5)
+                    .put(key6, val6)
+                    .put(key7, val7)
+                    .toMap();
+    }
+
+    /**
+     * Returns a map containing a three mappings.
+     *
+     * @param key1 the first mapping's key
+     * @param val1 the first mapping's value
+     * @param key2 the second mapping's key
+     * @param val2 the second mapping's value
+     * @param key3 the third mapping's key
+     * @param val3 the third mapping's value
+     * @param key4 the fourth mapping's key
+     * @param val4 the fourth mapping's value
+     * @param key5 the fifth mapping's key
+     * @param val5 the fifth mapping's value
+     * @param key6 the sixth mapping's key
+     * @param val6 the sixth mapping's value
+     * @param key7 the sixth mapping's key
+     * @param val7 the sixth mapping's value
+     * @param key8 the sixth mapping's key
+     * @param val8 the sixth mapping's value
+     * @return a Map containing the specified mappings
+     */
+    public static Map<String,Object> of(
+            final String key1, final Object val1,
+            final String key2, final Object val2,
+            final String key3, final Object val3,
+            final String key4, final Object val4,
+            final String key5, final Object val5,
+            final String key6, final Object val6,
+            final String key7, final Object val7,
+            final String key8, final Object val8
+    ) {
+        return new Parameters()
+                    .put(key1, val1)
+                    .put(key2, val2)
+                    .put(key3, val3)
+                    .put(key4, val4)
+                    .put(key5, val5)
+                    .put(key6, val6)
+                    .put(key7, val7)
+                    .put(key8, val8)
+                    .toMap();
+    }
+
+    /**
      * Fluent builder: add a single mapping.
      *
      * @param key the mapping's key
