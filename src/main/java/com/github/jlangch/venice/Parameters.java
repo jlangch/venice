@@ -196,8 +196,8 @@ public class Parameters {
      * @param val5 the fifth mapping's value
      * @param key6 the sixth mapping's key
      * @param val6 the sixth mapping's value
-     * @param key7 the sixth mapping's key
-     * @param val7 the sixth mapping's value
+     * @param key7 the seventh mapping's key
+     * @param val7 the seventh mapping's value
      * @return a Map containing the specified mappings
      */
     public static Map<String,Object> of(
@@ -235,10 +235,10 @@ public class Parameters {
      * @param val5 the fifth mapping's value
      * @param key6 the sixth mapping's key
      * @param val6 the sixth mapping's value
-     * @param key7 the sixth mapping's key
-     * @param val7 the sixth mapping's value
-     * @param key8 the sixth mapping's key
-     * @param val8 the sixth mapping's value
+     * @param key7 the seventh mapping's key
+     * @param val7 the seventh mapping's value
+     * @param key8 the eight mapping's key
+     * @param val8 the eight mapping's value
      * @return a Map containing the specified mappings
      */
     public static Map<String,Object> of(
