@@ -99,6 +99,7 @@ public class Modules {
                         "jetty",
                         "jsonl",
                         "jtokkit",
+                        "keystores",
                         "kira",
                         "langchain",
                         "math",

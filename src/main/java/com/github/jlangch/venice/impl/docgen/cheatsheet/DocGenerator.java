@@ -151,7 +151,7 @@ public class DocGenerator {
                         "cargo-postgresql",
                         "installer",     "mimetypes",           "multipart",        "images",
                         "tomcat",        "jetty",               "http-client",       "http-client-j8",
-                        "openai",        "jtokkit",
+                        "openai",        "jtokkit",             "keystores",
                         "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",     "server-side-events",  "pretty-print"));
