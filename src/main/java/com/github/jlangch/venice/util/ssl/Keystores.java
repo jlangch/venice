@@ -29,6 +29,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -37,48 +40,73 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 public class Keystores {
 
-	public static KeyStore load(
-			final InputStream is,
-			final String password
-	) throws KeyStoreException,
-			 NoSuchAlgorithmException,
-			 CertificateException,
-			 IOException
-	{
-		final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-		keystore.load(is,password.toCharArray());
+    public static KeyStore load(
+            final InputStream is,
+            final String password
+    ) throws KeyStoreException,
+             NoSuchAlgorithmException,
+             CertificateException,
+             IOException
+    {
+        final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+        keystore.load(is, password.toCharArray());
 
-		return keystore;
-	}
+        return keystore;
+    }
 
-	public static KeyStore load(
-			final byte[] ks,
-			final String password
-	) throws KeyStoreException,
-			 NoSuchAlgorithmException,
-			 CertificateException,
-			 IOException {
-		try(ByteArrayInputStream is = new ByteArrayInputStream(ks)) {
-			return load(is, password);
-		}
-	}
+    public static KeyStore load(
+            final byte[] ks,
+            final String password
+    ) throws KeyStoreException,
+             NoSuchAlgorithmException,
+             CertificateException,
+             IOException {
+        try(ByteArrayInputStream is = new ByteArrayInputStream(ks)) {
+            return load(is, password);
+        }
+    }
 
-	public List<String> aliases(final KeyStore keystore) throws KeyStoreException {
-		return CollectionUtil.toList(keystore.aliases());
-	}
+    public static List<String> aliases(final KeyStore keystore) throws KeyStoreException {
+        return CollectionUtil.toList(keystore.aliases());
+    }
 
-	public Date expiryDate(final KeyStore keystore, final String alias) throws KeyStoreException {
-		return ((X509Certificate)keystore.getCertificate(alias)).getNotAfter();
-	}
+    public static X509Certificate certificate(final KeyStore keystore, final String alias) throws KeyStoreException {
+        return ((X509Certificate)keystore.getCertificate(alias));
+    }
 
-	public Date expiryDate(final KeyStore keystore) throws KeyStoreException {
-		Date expiryDate = null;
+    public static String subjectDN(final KeyStore keystore, final String alias) throws KeyStoreException {
+        return certificate(keystore, alias).getSubjectDN().getName();
+    }
 
-		for(String alias: aliases(keystore)) {
-			expiryDate = ((X509Certificate)keystore.getCertificate(alias)).getNotAfter();
-		}
+    public static String issuerDN(final KeyStore keystore, final String alias) throws KeyStoreException {
+        return certificate(keystore, alias).getIssuerDN().getName();
+    }
 
-		return expiryDate;
-	}
+    public static LocalDateTime expiryDate(final KeyStore keystore, final String alias) throws KeyStoreException {
+        return toLocalDateTime(certificate(keystore, alias).getNotAfter());
+    }
 
+    public static LocalDateTime expiryDate(final KeyStore keystore) throws KeyStoreException {
+        Date expiryDate = null;
+
+        for(String alias: aliases(keystore)) {
+            expiryDate = ((X509Certificate)keystore.getCertificate(alias)).getNotAfter();
+        }
+
+        return toLocalDateTime(expiryDate);
+    }
+
+
+    private static LocalDateTime toLocalDateTime(final Date date) {
+            if (date == null) {
+                return null;
+            }
+            else {
+                final long millis = date.getTime();
+
+                return Instant.ofEpochMilli(millis)
+                              .atZone(ZoneId.systemDefault())
+                              .toLocalDateTime();
+            }
+    }
 }

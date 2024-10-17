@@ -66,6 +66,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJdbcCoreSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJdbcPostgreSQLSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKeystoresSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
@@ -371,6 +372,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("ZipVault", "modules.zipvault"));
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
+        extmod.addSection(new DocSection("Keystores", "modules.keystores"));
         extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
         extmod.addSection(new DocSection("Matrix", "modules.matrix"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
@@ -514,6 +516,7 @@ public class DocGenerator {
         return Arrays.asList(
                 new ModuleKiraSection(diBuilder).section(),
                 new ModuleCryptographySection(diBuilder).section(),
+                new ModuleKeystoresSection(diBuilder).section(),
                 new ModuleJsonlSection(diBuilder).section(),
                 new ModuleZipVaultSection(diBuilder).section(),
                 new ModuleXmlSection(diBuilder).section(),
