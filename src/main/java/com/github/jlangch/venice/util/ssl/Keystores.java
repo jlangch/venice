@@ -82,6 +82,10 @@ public class Keystores {
         return certificate(keystore, alias).getIssuerDN().getName();
     }
 
+    public static boolean hasExpired(final KeyStore keystore, final String alias) throws KeyStoreException {
+        return expiryDate(keystore, alias).isBefore(LocalDateTime.now());
+    }
+
     public static LocalDateTime expiryDate(final KeyStore keystore, final String alias) throws KeyStoreException {
         return toLocalDateTime(certificate(keystore, alias).getNotAfter());
     }
