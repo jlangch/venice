@@ -289,23 +289,6 @@ Server side events are passed as maps to the handler. E.g. :
            "GOAL Manchester United 3 - 3 Manchester City" ] }
 ```
 
-**Warning:**
-  
-When not used over HTTP/2, SSE suffers from a limitation to
-the maximum number of open connections, which can be especially
-painful when opening multiple tabs, as the limit is per browser and
-is set to a very low number (6). The issue has been marked as
-"Won't fix" in Chrome and Firefox. This limit is per browser + domain,
-which means that you can open 6 SSE connections across all of the
-tabs. 
-  
-When using HTTP/2, the maximum number of simultaneous HTTP streams
-is negotiated between the server and the client (defaults to 100).
-
-The Java 8 Http Client does not support HTTP/2!
-
-
-
 
 ## Examples
 
