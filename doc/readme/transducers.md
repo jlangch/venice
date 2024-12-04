@@ -21,8 +21,8 @@ Transducer example:
 (do
   (def xform
     (comp
-      (filter odd?)        ;; returns a transducer that filters odd
-      (map #(* 100 %))))   ;; returns a mapping transducer for multiplying by 100
+      (filter odd?)        ;; returns a transducer that filters odd values
+      (map #(* 100 %))))   ;; returns a mapping transducer for multiplying values by 100
     
   (transduce xform conj (range 0 1000)))  
   
