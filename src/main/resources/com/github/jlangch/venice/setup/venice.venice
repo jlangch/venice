@@ -71,6 +71,7 @@
 ;; Java 8 is mandatory for "./gradlew eclipse", the Eclipse Venice project must
 ;; be based on Java 8!
 (defonce java-8-home (str/strip-end (system-env :JAVA_8_HOME) "/"))
+(defonce java-17-home (str/strip-end (system-env :JAVA_17_HOME) "/"))
 (defonce java-home java-8-home)
 
 (defonce cmd-line-prompt (str "vshell> "))
@@ -214,7 +215,7 @@
        Working dir:      ~(io/user-dir)
        Project home:     ~{proj-home}
        Build Java 8:     ~{java-8-home}
-       Build Java 11:    ~{java-11-home}
+       Build Java 17:    ~{java-17-home}
        Color theme:      ~(repl/color-theme)
        Terminal:         [~(repl/term-cols) x ~(repl/term-rows)]
 
