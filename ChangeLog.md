@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.35] - 2024-10-xx
+## [1.12.36] - 2024-12-xx
 
 ### Added
 
@@ -13,7 +13,15 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.35] - 2024-12-04
+
+### Added
+
 - module :keystores to deal with certificates (PKCS12, ...)
+
 
 
 ## [1.12.34] - 2024-10-10
