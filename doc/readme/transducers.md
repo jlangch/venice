@@ -24,6 +24,7 @@ Transducer example:
       (filter odd?)        ;; returns a transducer that filters odd values
       (map #(* 100 %))))   ;; returns a mapping transducer for multiplying values by 100
     
+  ;; apply the transducers
   (transduce xform conj (range 0 1000)))  
   
   ; => [100 300 500 700 900 ....  99900]
