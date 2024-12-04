@@ -51,6 +51,7 @@ public class ModuleKeystoresSection implements ISectionBuilder {
         certs.addItem(diBuilder.getDocItem("keystores/certificate", false));
         certs.addItem(diBuilder.getDocItem("keystores/subject-dn", false));
         certs.addItem(diBuilder.getDocItem("keystores/issuer-dn", false));
+        certs.addItem(diBuilder.getDocItem("keystores/parse-dn", false));
         certs.addItem(diBuilder.getDocItem("keystores/expiry-date", false));
         certs.addItem(diBuilder.getDocItem("keystores/expired?", false));
 

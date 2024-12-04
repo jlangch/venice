@@ -33,7 +33,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 
@@ -78,9 +83,36 @@ public class Keystores {
         return certificate(keystore, alias).getSubjectDN().getName();
     }
 
+	public static Map<String,Object> parseSubjectDN(final KeyStore keystore, final String alias) {
+		try {
+			return parseDN(subjectDN(keystore, alias));
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
     public static String issuerDN(final KeyStore keystore, final String alias) throws KeyStoreException {
         return certificate(keystore, alias).getIssuerDN().getName();
     }
+
+	public static Map<String,Object> parseIssuerDN(final KeyStore keystore, final String alias) {
+		try {
+			return parseDN(issuerDN(keystore, alias));
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static Map<String,Object> parseDN(final String dn) {
+		try {
+			return parse(new LdapName(dn));
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
 
     public static boolean hasExpired(final KeyStore keystore, final String alias) throws KeyStoreException {
         return expiryDate(keystore, alias).isBefore(LocalDateTime.now());
@@ -113,4 +145,16 @@ public class Keystores {
                               .toLocalDateTime();
             }
     }
+
+	private static Map<String,Object> parse(final LdapName ln) {
+		final Map<String,Object> elements = new HashMap<>();
+
+		for(int ii=0; ii<ln.size(); ii++) {
+			final Rdn rdn = ln.getRdn(ii);
+			elements.put(rdn.getType(), rdn.getValue());
+		}
+
+		return elements;
+	}
+
 }
