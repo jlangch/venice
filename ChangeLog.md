@@ -14,6 +14,11 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Notes
+
+- reenabled GitHub Code Scanning worklow. GitHub deactivated after 60 days
+  of inactivity
+
 
 
 ## [1.12.35] - 2024-12-04
