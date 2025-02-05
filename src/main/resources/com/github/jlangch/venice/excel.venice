@@ -387,11 +387,11 @@
 
         Arguments:
 
-        | paper-size    | `:A4_PAPERSIZE`, `:LETTER_PAPERSIZE`, ...    |
-        | orientation   | `:PORTARIT` or `:LANDSACPE`                  |
-        | fit-with?     | fit with page width {`true` or `false`}      |
-        | header-margin | header margin (in inches)                    |
-        | footer-margin | footer margin (in inches)                    |
+        | paper-size    | `:A4`, `:A5`, `:LETTER`, `:LETTER_SMALL`, ...    |
+        | orientation   | `:PORTARIT` or `:LANDSACPE`                      |
+        | fit-with?     | fit with page width {`true` or `false`}          |
+        | header-margin | header margin (in inches)                        |
+        | footer-margin | footer margin (in inches)                        |
 
         ```
                +--- 1)                                                      +--- 2)
@@ -427,7 +427,7 @@
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
             (excel/auto-size-columns sheet)
-            (excel/print-layout sheet :LANDSCAPE true 1.25 1.25)
+            (excel/print-layout sheet :A4 :LANDSCAPE true 1.25 1.25)
             (excel/page-margins sheet 1.25 1.25 2.5 2.5)
             (excel/header sheet "H/LEFT" :LEFT 24 true)
             (excel/header sheet "H/CENTER" :CENTER 24 true)
