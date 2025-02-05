@@ -30,6 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 
@@ -64,6 +65,55 @@ public class ExcelSheetFacade<T> {
     public int getIndex() {
         return sheet.getIndex() + 1;  // 1-based
     }
+
+
+    // ------------------------------------------------------------------------
+    // Sheet print layout, page margins, header, footer
+    // ------------------------------------------------------------------------
+
+	public void setPrintLayout(
+			final boolean landscape,
+			final boolean fitWidth,
+			final double headerMarginInches,
+			final double footerMarginInches
+	) {
+		sheet.setPrintLayout(
+				landscape,
+				fitWidth,
+				PrintSetup.A4_PAPERSIZE,
+				headerMarginInches,
+				footerMarginInches);
+	}
+
+	public void setPageMargins(
+			final double leftInches,
+			final double rightInches,
+			final double topInches,
+			final double bottomInches
+	) {
+        sheet.setPageMargins(leftInches, rightInches, topInches, bottomInches);
+	}
+
+	public void setHeaderMargin(final double inches) {
+		sheet.setHeaderMargin(inches);
+	}
+
+	public void setFooterMargin(final double inches) {
+        sheet.setFooterMargin(inches);
+	}
+
+	public void setCenterTitle(
+			final String title,
+			final int fontSizePts,
+			final boolean bold
+	) {
+        sheet.setCenterTitle(title, fontSizePts, bold);
+	}
+
+
+    // ------------------------------------------------------------------------
+    // Common sheet functions
+    // ------------------------------------------------------------------------
 
     public int getFirstRowNum() {
         final int n = sheet.getFirstRowNum();

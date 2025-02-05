@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
+import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -56,8 +57,10 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FontFormatting;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Hyperlink;
+import org.apache.poi.ss.usermodel.PageMargin;
 import org.apache.poi.ss.usermodel.PatternFormatting;
 import org.apache.poi.ss.usermodel.Picture;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -69,6 +72,7 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
+import org.apache.poi.xssf.usermodel.XSSFFirstHeader;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -111,6 +115,72 @@ public class ExcelSheet {
     public int getIndex() {
         return sheet.getWorkbook().getSheetIndex(sheet);
     }
+
+	public void setPrintLayout(
+			final boolean landscape,
+			final boolean fitWidth,
+			final short paperSize,  // e.g.: PrintSetup.A4_PAPERSIZE
+			final double headerMarginInches,
+			final double footerMarginInches
+	) {
+		final PrintSetup layout = sheet.getPrintSetup();
+		layout.setLandscape(landscape);
+		layout.setFitWidth(fitWidth ? (short)1 : (short)0);
+		layout.setPaperSize(paperSize);
+		layout.setHeaderMargin(headerMarginInches);
+		layout.setFooterMargin(footerMarginInches);
+	}
+
+	public void setPageMargins(
+			final double leftInches,
+			final double rightInches,
+			final double topInches,
+			final double bottomInches
+	) {
+		sheet.setMargin(PageMargin.LEFT, leftInches);
+		sheet.setMargin(PageMargin.RIGHT, rightInches);
+		sheet.setMargin(PageMargin.TOP, topInches);
+		sheet.setMargin(PageMargin.BOTTOM, bottomInches);
+	}
+
+	public void setHeaderMargin(final double inches) {
+		sheet.setMargin(PageMargin.HEADER, inches);
+	}
+
+	public void setFooterMargin(final double inches) {
+		sheet.setMargin(PageMargin.FOOTER, inches);
+	}
+
+	public void setCenterTitle(
+			final String title,
+			final int fontSizePts,
+			final boolean bold
+	) {
+		if (sheet instanceof HSSFSheet) {
+			final HSSFSheet hssfSheet = (HSSFSheet)sheet;
+
+			final HSSFHeader header = hssfSheet.getHeader();
+
+			final StringBuilder text = new StringBuilder();
+			text.append(HSSFHeader.fontSize((short)fontSizePts));
+			if (bold) text.append(HSSFHeader.startBold());
+			text.append(title);
+			if (bold) text.append(HSSFHeader.endBold());
+			header.setCenter(text.toString());
+		}
+		else {
+			final XSSFSheet xssfSheet = (XSSFSheet)sheet;
+
+			final XSSFFirstHeader header = (XSSFFirstHeader)xssfSheet.getFirstHeader();
+
+			final StringBuilder text = new StringBuilder();
+			text.append(HSSFHeader.fontSize((short)fontSizePts));
+			if (bold) text.append(HSSFHeader.startBold());
+			text.append(title);
+			if (bold) text.append(HSSFHeader.endBold());
+			header.setCenter(text.toString());
+		}
+	}
 
     public int getFirstRowNum() {
         return sheet.getFirstRowNum();

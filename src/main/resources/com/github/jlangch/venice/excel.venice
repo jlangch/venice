@@ -375,6 +375,163 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Excel sheet: print layout, page margins, header, footer
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+        "(print-layout sheet landscape? fitWith? headerMargin footerMargin)")
+     :doc
+        """
+        Sets the sheet's print layout
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/print-layout sheet true true 0.25 0.25)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '("excel/page-margins", "excel/header-margin", 
+                 "excel/footer-margin", "excel/center-title" )}
+
+  print-layout [sheet landscape? fitWith? headerMargin footerMargin]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (boolean? landscape?) (boolean? fitWith?)
+          (double? headerMargin) (double? footerMargin)] }
+
+  (. sheet :setPrintLayout landscape? fitWith? headerMargin footerMargin))
+
+
+(defn
+  ^{ :arglists '(
+        "(page-margins sheet left right top bottom)")
+     :doc
+        """
+        Sets the sheet's page margins
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/page-margins sheet 0.25 0.25 0.75 0.75)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '("excel/print-layout", "excel/header-margin", 
+                 "excel/footer-margin", "excel/center-title")}
+
+  page-margins [sheet left right top bottom]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet)
+          (double? left) (double? right)
+          (double? top) (double? bottom)] }
+
+  (. sheet :setPageMargins left right top bottom))
+
+
+(defn
+  ^{ :arglists '(
+        "(header-margin margin)")
+     :doc
+        """
+        Sets the sheet's header margin
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/header-margin sheet 0.25)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '("excel/print-layout", "excel/page-margins", 
+                 "excel/footer-margin", "excel/center-title")}
+
+  header-margin [sheet margin]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet) (double? margin) ] }
+
+  (. sheet :setHeaderMargin margin))
+
+
+(defn
+  ^{ :arglists '(
+        "(footer-margin margin)")
+     :doc
+        """
+        Sets the sheet's footer margin
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/footer-margin sheet 0.25)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '("excel/print-layout", "excel/page-margins", 
+                 "excel/header-margin", "excel/center-title")}
+
+  footer-margin [sheet margin]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet) (double? margin) ] }
+
+  (. sheet :setFooterMargin margin))
+
+
+(defn
+  ^{ :arglists '(
+        "(center-title title font-size bold?)")
+     :doc
+        """
+        Sets the sheet's center title with a given font-size and bold style
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/center-title sheet "Sheet Title" 24 true)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '("excel/print-layout", "excel/page-margins",
+                 "excel/header-margin", "excel/footer-margin")}
+
+  center-title [sheet title font-size bold?]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet) 
+          (string? title)
+          (long? font-size)
+          (boolean? bold?) ] }
+
+  (. sheet :setCenterTitle title font-size bold?))
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Write data to excel
 ;; -----------------------------------------------------------------------------
 
