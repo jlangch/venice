@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.36] - 2025-02-06
+## [1.12.37] - 2025-02-xx
 
 ### Added
 
@@ -15,6 +15,15 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.36] - 2025-02-06
+
+### Added
+
+- :excel module layout functions (print-layout, page-margins, header-margin, 
+  footer-margin, header, and footer)
 
 ### Notes
 
