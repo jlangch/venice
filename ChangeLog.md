@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - :excel module layout functions (print-layout, page-margins, header-margin, 
-  footer-margin, center-title)
+  footer-margin, header, and footer)
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
