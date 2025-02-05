@@ -30,7 +30,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 
@@ -71,44 +70,55 @@ public class ExcelSheetFacade<T> {
     // Sheet print layout, page margins, header, footer
     // ------------------------------------------------------------------------
 
-	public void setPrintLayout(
-			final boolean landscape,
-			final boolean fitWidth,
-			final double headerMarginInches,
-			final double footerMarginInches
-	) {
-		sheet.setPrintLayout(
-				landscape,
-				fitWidth,
-				PrintSetup.A4_PAPERSIZE,
-				headerMarginInches,
-				footerMarginInches);
-	}
+    public void setPrintLayout(
+            final PaperSize paperSize,
+            final PageOrientation orientation,
+            final boolean fitWidth,
+            final double headerMarginInches,
+            final double footerMarginInches
+    ) {
+        sheet.setPrintLayout(
+                paperSize,
+                orientation,
+                fitWidth,
+                headerMarginInches,
+                footerMarginInches);
+    }
 
-	public void setPageMargins(
-			final double leftInches,
-			final double rightInches,
-			final double topInches,
-			final double bottomInches
-	) {
+    public void setPageMargins(
+            final double leftInches,
+            final double rightInches,
+            final double topInches,
+            final double bottomInches
+    ) {
         sheet.setPageMargins(leftInches, rightInches, topInches, bottomInches);
-	}
+    }
 
-	public void setHeaderMargin(final double inches) {
-		sheet.setHeaderMargin(inches);
-	}
+    public void setHeaderMargin(final double inches) {
+        sheet.setHeaderMargin(inches);
+    }
 
-	public void setFooterMargin(final double inches) {
+    public void setFooterMargin(final double inches) {
         sheet.setFooterMargin(inches);
-	}
+    }
 
-	public void setCenterTitle(
-			final String title,
-			final int fontSizePts,
-			final boolean bold
-	) {
-        sheet.setCenterTitle(title, fontSizePts, bold);
-	}
+    public void setHeader(
+            final String text,
+            final HeaderFooterPosition position,
+            final int fontSizePts,
+            final boolean bold
+    ) {
+        sheet.setHeader(text, position, fontSizePts, bold);
+    }
+
+    public void setFooter(
+            final String text,
+            final HeaderFooterPosition position,
+            final int fontSizePts,
+            final boolean bold
+    ) {
+        sheet.setFooter(text, position, fontSizePts, bold);
+    }
 
 
     // ------------------------------------------------------------------------
@@ -139,7 +149,7 @@ public class ExcelSheetFacade<T> {
     public void protectSheet(final String password) {
         // Protect the sheet (optional if the sheet is protected)
         // This will ensure that locked cells remain locked and unlocked cells are editable.
-    	sheet.protectSheet(password);
+        sheet.protectSheet(password);
     }
 
     public boolean isCellEmpty(final int row1, final int col1) {
@@ -654,15 +664,15 @@ public class ExcelSheetFacade<T> {
     }
 
     public void removeFormula(final int row1, final int col1) {
-    	sheet.removeFormula(row1-1, col1-1);
+        sheet.removeFormula(row1-1, col1-1);
     }
 
     public void removeHyperlink(final int row1, final int col1) {
-    	sheet.removeHyperlink(row1-1, col1-1);
+        sheet.removeHyperlink(row1-1, col1-1);
     }
 
     public void removeComment(final int row1, final int col1) {
-    	sheet.removeComment(row1-1, col1-1);
+        sheet.removeComment(row1-1, col1-1);
     }
 
 

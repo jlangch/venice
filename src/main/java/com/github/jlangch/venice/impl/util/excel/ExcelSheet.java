@@ -55,7 +55,9 @@ import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FontFormatting;
+import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Header;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.PageMargin;
 import org.apache.poi.ss.usermodel.PatternFormatting;
@@ -72,7 +74,6 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
-import org.apache.poi.xssf.usermodel.XSSFFirstHeader;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -81,6 +82,9 @@ import com.github.jlangch.venice.ExcelException;
 import com.github.jlangch.venice.impl.util.time.TimeUtil;
 import com.github.jlangch.venice.util.excel.CellAddr;
 import com.github.jlangch.venice.util.excel.CellRangeAddr;
+import com.github.jlangch.venice.util.excel.HeaderFooterPosition;
+import com.github.jlangch.venice.util.excel.PageOrientation;
+import com.github.jlangch.venice.util.excel.PaperSize;
 import com.github.jlangch.venice.util.excel.chart.AreaDataSeries;
 import com.github.jlangch.venice.util.excel.chart.BarDataSeries;
 import com.github.jlangch.venice.util.excel.chart.BarGrouping;
@@ -116,71 +120,100 @@ public class ExcelSheet {
         return sheet.getWorkbook().getSheetIndex(sheet);
     }
 
-	public void setPrintLayout(
-			final boolean landscape,
-			final boolean fitWidth,
-			final short paperSize,  // e.g.: PrintSetup.A4_PAPERSIZE
-			final double headerMarginInches,
-			final double footerMarginInches
-	) {
-		final PrintSetup layout = sheet.getPrintSetup();
-		layout.setLandscape(landscape);
-		layout.setFitWidth(fitWidth ? (short)1 : (short)0);
-		layout.setPaperSize(paperSize);
-		layout.setHeaderMargin(headerMarginInches);
-		layout.setFooterMargin(footerMarginInches);
-	}
+    public void setPrintLayout(
+            final PaperSize paperSize,
+            final PageOrientation orientation,
+            final boolean fitWidth,
+            final double headerMarginInches,
+            final double footerMarginInches
+    ) {
+        final PrintSetup layout = sheet.getPrintSetup();
+        layout.setLandscape(orientation == PageOrientation.LANDSCAPE);
+        layout.setFitWidth(fitWidth ? (short)1 : (short)0);
+        layout.setPaperSize(paperSize.getLegacyApiValue());
+        layout.setHeaderMargin(headerMarginInches);
+        layout.setFooterMargin(footerMarginInches);
+    }
 
-	public void setPageMargins(
-			final double leftInches,
-			final double rightInches,
-			final double topInches,
-			final double bottomInches
-	) {
-		sheet.setMargin(PageMargin.LEFT, leftInches);
-		sheet.setMargin(PageMargin.RIGHT, rightInches);
-		sheet.setMargin(PageMargin.TOP, topInches);
-		sheet.setMargin(PageMargin.BOTTOM, bottomInches);
-	}
+    public void setPageMargins(
+            final double leftInches,
+            final double rightInches,
+            final double topInches,
+            final double bottomInches
+    ) {
+        sheet.setMargin(PageMargin.LEFT, leftInches);
+        sheet.setMargin(PageMargin.RIGHT, rightInches);
+        sheet.setMargin(PageMargin.TOP, topInches);
+        sheet.setMargin(PageMargin.BOTTOM, bottomInches);
+    }
 
-	public void setHeaderMargin(final double inches) {
-		sheet.setMargin(PageMargin.HEADER, inches);
-	}
+    public void setHeaderMargin(final double inches) {
+        sheet.setMargin(PageMargin.HEADER, inches);
+    }
 
-	public void setFooterMargin(final double inches) {
-		sheet.setMargin(PageMargin.FOOTER, inches);
-	}
+    public void setFooterMargin(final double inches) {
+        sheet.setMargin(PageMargin.FOOTER, inches);
+    }
 
-	public void setCenterTitle(
-			final String title,
-			final int fontSizePts,
-			final boolean bold
-	) {
-		if (sheet instanceof HSSFSheet) {
-			final HSSFSheet hssfSheet = (HSSFSheet)sheet;
+    public void setHeader(
+            final String text,
+            final HeaderFooterPosition position,
+            final int fontSizePts,
+            final boolean bold
+    ) {
+        final Header header = sheet.getHeader();
 
-			final HSSFHeader header = hssfSheet.getHeader();
+        final StringBuilder tmp = new StringBuilder();
+        tmp.append(HSSFHeader.fontSize((short)fontSizePts));
+        if (bold) tmp.append(HSSFHeader.startBold());
+        tmp.append(text);
+        if (bold) tmp.append(HSSFHeader.endBold());
 
-			final StringBuilder text = new StringBuilder();
-			text.append(HSSFHeader.fontSize((short)fontSizePts));
-			if (bold) text.append(HSSFHeader.startBold());
-			text.append(title);
-			if (bold) text.append(HSSFHeader.endBold());
-			header.setCenter(text.toString());
-		}
-		else {
-			final XSSFSheet xssfSheet = (XSSFSheet)sheet;
+        switch (position) {
+            case LEFT:
+                header.setLeft(tmp.toString());
+                break;
+            case CENTER:
+                header.setCenter(tmp.toString());
+                break;
+            case RIGHT:
+                header.setRight(tmp.toString());
+                break;
+            default:
+                header.setCenter(tmp.toString());
+                break;
+        }
+    }
 
-			final XSSFFirstHeader header = (XSSFFirstHeader)xssfSheet.getFirstHeader();
+    public void setFooter(
+            final String text,
+            final HeaderFooterPosition position,
+            final int fontSizePts,
+            final boolean bold
+    ) {
+        final Footer footer = sheet.getFooter();
 
-			final StringBuilder text = new StringBuilder();
-			text.append(HSSFHeader.fontSize((short)fontSizePts));
-			if (bold) text.append(HSSFHeader.startBold());
-			text.append(title);
-			if (bold) text.append(HSSFHeader.endBold());
-			header.setCenter(text.toString());
-		}
-	}
+        final StringBuilder tmp = new StringBuilder();
+        tmp.append(HSSFHeader.fontSize((short)fontSizePts));
+        if (bold) tmp.append(HSSFHeader.startBold());
+        tmp.append(text);
+        if (bold) tmp.append(HSSFHeader.endBold());
+
+        switch (position) {
+            case LEFT:
+                footer.setLeft(tmp.toString());
+                break;
+            case CENTER:
+                footer.setCenter(tmp.toString());
+                break;
+            case RIGHT:
+                footer.setRight(tmp.toString());
+                break;
+            default:
+                footer.setCenter(tmp.toString());
+                break;
+        }
+    }
 
     public int getFirstRowNum() {
         return sheet.getFirstRowNum();
@@ -207,7 +240,7 @@ public class ExcelSheet {
     public void protectSheet(final String password) {
         // Protect the sheet (optional if the sheet is protected)
         // This will ensure that locked cells remain locked and unlocked cells are editable.
-    	sheet.protectSheet(password);
+        sheet.protectSheet(password);
     }
 
     public boolean isCellEmpty(final int row, final int col) {

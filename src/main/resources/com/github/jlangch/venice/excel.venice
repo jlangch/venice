@@ -380,10 +380,43 @@
 
 (defn
   ^{ :arglists '(
-        "(print-layout sheet landscape? fitWith? headerMargin footerMargin)")
+        "(print-layout sheet paper-size orientation fit-with? header-margin footer-margin)")
      :doc
         """
         Sets the sheet's print layout
+
+        Arguments:
+
+        | paper-size    | `:A4_PAPERSIZE`, `:LETTER_PAPERSIZE`, ...    |
+        | orientation   | `:PORTARIT` or `:LANDSACPE`                  |
+        | fit-with?     | fit with page width {`true` or `false`}      |
+        | header-margin | header margin (in inches)                    |
+        | footer-margin | footer margin (in inches)                    |
+
+        ```
+               +--- 1)                                                      +--- 2)
+              /                                                            /
+        +----+------------------------------------------------------------+----+
+        |    |                                                            |    |   
+        +----+------------------+----------------------+------------------+----+ --- 5)
+        |    |   LEFT HEADER    |     CENTER HEADER    |   RIGHT HEADER   |    | 
+        +----+------------------+----------------------+------------------+----+ --- 3)
+        |    |                                                            |    |
+        |    |                                                            |    |       1)  page margin left
+        |    |                                                            |    |       2)  page margin right
+        |    |                          EXCEL CELLS                       |    |       3)  page margin top
+        |    |                                                            |    |       4)  page margin bottom
+        |    |                                                            |    |       5)  header margin
+        |    |                                                            |    |       6)  footer margin
+        |    |                                                            |    |
+        +----+------------------+----------------------+------------------+----+ --- 4)
+        |    |   LEFT FOOTER    |     CENTER FOOTER    |   RIGHT FOOTER   |    |
+        +----+------------------+----------------------+------------------+----+ --- 6)
+        |    |                                                            |    |
+        +----+------------------------------------------------------------+----+
+
+        note: all margins in inches
+       ```
         """
      :examples '(
         """
@@ -394,19 +427,26 @@
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
             (excel/auto-size-columns sheet)
-            (excel/print-layout sheet true true 0.25 0.25)
+            (excel/print-layout sheet :LANDSCAPE true 1.25 1.25)
+            (excel/page-margins sheet 1.25 1.25 2.5 2.5)
+            (excel/header sheet "H/LEFT" :LEFT 24 true)
+            (excel/header sheet "H/CENTER" :CENTER 24 true)
+            (excel/header sheet "H/RIGHT" :RIGHT 24 true)
+            (excel/footer sheet "F/LEFT" :LEFT 24 true)
+            (excel/footer sheet "F/CENTER" :CENTER 24 true)
+            (excel/footer sheet "F/RIGHT" :RIGHT 24 true)
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/page-margins", "excel/header-margin", 
-                 "excel/footer-margin", "excel/center-title" )}
+                 "excel/footer-margin", "excel/header", "excel/footer" )}
 
-  print-layout [sheet landscape? fitWith? headerMargin footerMargin]
+  print-layout [sheet paper-size orientation fit-with? header-margin footer-margin]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
-          (boolean? landscape?) (boolean? fitWith?)
-          (double? headerMargin) (double? footerMargin)] }
+          (keyword? paper-size) (keyword? orientation) (boolean? fit-with?)
+          (double? header-margin) (double? footer-margin)] }
 
-  (. sheet :setPrintLayout landscape? fitWith? headerMargin footerMargin))
+  (. sheet :setPrintLayout paper-size orientation fit-with? header-margin footer-margin))
 
 
 (defn
@@ -414,7 +454,7 @@
         "(page-margins sheet left right top bottom)")
      :doc
         """
-        Sets the sheet's page margins
+        Sets the sheet's page margins (in inches)
         """
      :examples '(
         """
@@ -429,7 +469,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/print-layout", "excel/header-margin", 
-                 "excel/footer-margin", "excel/center-title")}
+                 "excel/footer-margin", "excel/header", "excel/footer")}
 
   page-margins [sheet left right top bottom]
   
@@ -445,7 +485,7 @@
         "(header-margin margin)")
      :doc
         """
-        Sets the sheet's header margin
+        Sets the sheet's header margin (in inches)
         """
      :examples '(
         """
@@ -460,11 +500,11 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/print-layout", "excel/page-margins", 
-                 "excel/footer-margin", "excel/center-title")}
+                 "excel/footer-margin", "excel/header", "excel/footer")}
 
   header-margin [sheet margin]
   
-  { :pre [(instance-of? :ExcelSheetFacade sheet) (double? margin) ] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet) (double? margin)] }
 
   (. sheet :setHeaderMargin margin))
 
@@ -474,7 +514,7 @@
         "(footer-margin margin)")
      :doc
         """
-        Sets the sheet's footer margin
+        Sets the sheet's footer margin (in inches)
         """
      :examples '(
         """
@@ -489,21 +529,22 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/print-layout", "excel/page-margins", 
-                 "excel/header-margin", "excel/center-title")}
+                 "excel/header-margin", "excel/header", "excel/footer")}
 
   footer-margin [sheet margin]
   
-  { :pre [(instance-of? :ExcelSheetFacade sheet) (double? margin) ] }
+  { :pre [(instance-of? :ExcelSheetFacade sheet) (double? margin)] }
 
   (. sheet :setFooterMargin margin))
 
 
 (defn
   ^{ :arglists '(
-        "(center-title title font-size bold?)")
+        "(header text position font-size bold?)")
      :doc
         """
-        Sets the sheet's center title with a given font-size and bold style
+        Sets the sheet's header text at posstion (:LEFT, :CENTER, :RIGHT) with 
+        a given font-size (in points) and bold style
         """
      :examples '(
         """
@@ -514,20 +555,57 @@
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
             (excel/auto-size-columns sheet)
-            (excel/center-title sheet "Sheet Title" 24 true)
+            (excel/header sheet "Sheet Title" :CENTER 24 true)
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/print-layout", "excel/page-margins",
-                 "excel/header-margin", "excel/footer-margin")}
+                 "excel/header-margin", "excel/footer-margin",  
+                 "excel/footer")}
 
-  center-title [sheet title font-size bold?]
+  header [sheet text position font-size bold?]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet) 
-          (string? title)
+          (string? text)
+          (keyword? position)
           (long? font-size)
-          (boolean? bold?) ] }
+          (boolean? bold?)] }
 
-  (. sheet :setCenterTitle title font-size bold?))
+  (. sheet :setHeader text position font-size bold?))
+
+
+(defn
+  ^{ :arglists '(
+        "(footer text position font-size bold?)")
+     :doc
+        """
+        Sets the sheet's footer  text at posstion (:LEFT, :CENTER, :RIGHT) with 
+        a given font-size (in points) and bold style
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/footer sheet "Sheet Title" :CENTER 24 true)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '("excel/print-layout", "excel/page-margins",
+                 "excel/header-margin", "excel/footer-margin",  
+                 "excel/header")}
+
+  footer [sheet text position font-size bold?]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet) 
+          (string? text)
+          (keyword? position)
+          (long? font-size)
+          (boolean? bold?)] }
+
+  (. sheet :setFooter text position font-size bold?))
 
 
 

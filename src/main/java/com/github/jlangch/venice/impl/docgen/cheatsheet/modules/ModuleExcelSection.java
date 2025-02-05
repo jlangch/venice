@@ -91,7 +91,8 @@ public class ModuleExcelSection implements ISectionBuilder {
         layout.addItem(diBuilder.getDocItem("excel/page-margins", false));
         layout.addItem(diBuilder.getDocItem("excel/header-margin", false));
         layout.addItem(diBuilder.getDocItem("excel/footer-margin", false));
-        layout.addItem(diBuilder.getDocItem("excel/center-title", false));
+        layout.addItem(diBuilder.getDocItem("excel/header", false));
+        layout.addItem(diBuilder.getDocItem("excel/footer", false));
         all.addSection(layout);
 
         final DocSection cells = new DocSection("Cells", id());
