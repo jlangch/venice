@@ -955,12 +955,14 @@ note: all margins in inches
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/create :xlsx)
-        sheet (excel/add-sheet wbook "Data")]
+  (let [wbook       (excel/create :xlsx)
+        sheet       (excel/add-sheet wbook "Data")
+        fit-width?  true
+        grid-lines? true]
     (excel/write-values sheet 1 1 "John" "Doe" 28)
     (excel/write-values sheet 2 1 "Sue" "Ford" 26)
     (excel/auto-size-columns sheet)
-    (excel/print-layout sheet :A4 :LANDSCAPE true 1.25 1.25)
+    (excel/print-layout sheet :A4 :LANDSCAPE fit-width? grid-lines? 1.25 1.25)
     (excel/page-margins sheet 1.25 1.25 2.5 2.5)
     (excel/header sheet "H/LEFT" :LEFT 24 true)
     (excel/header sheet "H/CENTER" :CENTER 24 true)
@@ -979,12 +981,14 @@ note: all margins in inches
 ```clojure
 (do
   (load-module :excel)
-  (let [wbook (excel/create :xlsx)
-        sheet (excel/add-sheet wbook "Data")]
+  (let [wbook       (excel/create :xlsx)
+        sheet       (excel/add-sheet wbook "Data")
+        fit-width?  true
+        grid-lines? true]
     (excel/write-values sheet 1 1 "John" "Doe" 28)
     (excel/write-values sheet 2 1 "Sue" "Ford" 26)
     (excel/auto-size-columns sheet)
-    (excel/print-layout sheet :A4 :LANDSCAPE true 1.25 1.25)
+    (excel/print-layout sheet :A4 :LANDSCAPE fit-width? grid-lines? 1.25 1.25)
     (excel/page-margins sheet 1.25 1.25 2.5 1.25)
     (excel/header sheet "Example Report" :CENTER 24 true)
     (excel/footer sheet "{date}  {time}" :LEFT 11 false)

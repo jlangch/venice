@@ -124,6 +124,7 @@ public class ExcelSheet {
             final PaperSize paperSize,
             final PageOrientation orientation,
             final boolean fitWidth,
+            final boolean gridLines,
             final double headerMarginInches,
             final double footerMarginInches
     ) {
@@ -133,6 +134,8 @@ public class ExcelSheet {
         layout.setPaperSize(paperSize.getLegacyApiValue());
         layout.setHeaderMargin(headerMarginInches);
         layout.setFooterMargin(footerMarginInches);
+
+        sheet.setPrintGridlines(gridLines);
     }
 
     public void setPageMargins(

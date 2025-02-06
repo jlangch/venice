@@ -380,7 +380,9 @@
 
 (defn
   ^{ :arglists '(
-        "(print-layout sheet paper-size orientation fit-with? header-margin footer-margin)")
+        "(print-layout sheet paper-size orientation 
+                       fit-with? grid-lines? 
+                       header-margin footer-margin)")
      :doc
         """
         Sets the sheet's print layout
@@ -426,7 +428,7 @@
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
             (excel/auto-size-columns sheet)
-            (excel/print-layout sheet :A4 :LANDSCAPE true 1.25 1.25)
+            (excel/print-layout sheet :A4 :LANDSCAPE true false 1.25 1.25)
             (excel/page-margins sheet 1.25 1.25 2.5 2.5)
             (excel/header sheet "H/LEFT" :LEFT 24 true)
             (excel/header sheet "H/CENTER" :CENTER 24 true)
@@ -444,7 +446,7 @@
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
             (excel/auto-size-columns sheet)
-            (excel/print-layout sheet :A4 :LANDSCAPE true 1.25 1.25)
+            (excel/print-layout sheet :A4 :LANDSCAPE true false 1.25 1.25)
             (excel/page-margins sheet 1.25 1.25 2.5 1.25)
             (excel/header sheet "Example Report" :CENTER 24 true)
             (excel/footer sheet "{date}  {time}" :LEFT 11 false)
@@ -454,13 +456,18 @@
      :see-also '("excel/page-margins", "excel/header-margin", 
                  "excel/footer-margin", "excel/header", "excel/footer" )}
 
-  print-layout [sheet paper-size orientation fit-with? header-margin footer-margin]
+  print-layout [sheet paper-size orientation 
+                fit-with? grid-lines? 
+                header-margin footer-margin]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
-          (keyword? paper-size) (keyword? orientation) (boolean? fit-with?)
+          (keyword? paper-size) (keyword? orientation) 
+          (boolean? fit-with?) (boolean? grid-lines?)
           (double? header-margin) (double? footer-margin)] }
 
-  (. sheet :setPrintLayout paper-size orientation fit-with? header-margin footer-margin))
+  (. sheet :setPrintLayout paper-size orientation 
+                           fit-with? grid-lines? 
+                           header-margin footer-margin))
 
 
 (defn

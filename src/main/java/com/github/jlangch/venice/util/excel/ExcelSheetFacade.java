@@ -74,6 +74,7 @@ public class ExcelSheetFacade<T> {
             final PaperSize paperSize,
             final PageOrientation orientation,
             final boolean fitWidth,
+            final boolean gridLines,
             final double headerMarginInches,
             final double footerMarginInches
     ) {
@@ -81,6 +82,7 @@ public class ExcelSheetFacade<T> {
                 paperSize,
                 orientation,
                 fitWidth,
+                gridLines,
                 headerMarginInches,
                 footerMarginInches);
     }
