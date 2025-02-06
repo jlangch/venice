@@ -46,7 +46,7 @@ public class ModuleExcelSection implements ISectionBuilder {
                                         "Excel",
                                         "Read/Write Excel files",
                                         "modules.excel",
-                                        "Venice is compatible with Apache POI 4.1.x and 5.3.x.\n\n" +
+                                        "Venice is compatible with Apache POI 5.x.\n\n" +
                                         "To use charts with Excel documents Apache POI 5.2.0 or " +
                                         "newer is required.",
                                         footer);

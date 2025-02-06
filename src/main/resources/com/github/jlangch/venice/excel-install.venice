@@ -34,24 +34,15 @@
 (load-module :installer)
 
 
-(defn libraries []
-  (libraries-5.x) )
-
-
 (defn dependencies []
   (maven/dependencies (libraries) :scope :runtime))
 
 
-(defn libraries-5.x []
-  [ "org.apache.poi:poi:5.3.0"
-    "org.apache.poi:poi-ooxml:5.3.0"
-    "org.apache.poi:poi-ooxml-full:5.3.0"
+(defn libraries []
+  [ "org.apache.poi:poi:5.4.0"
+    "org.apache.poi:poi-ooxml:5.4.0"
+    "org.apache.poi:poi-ooxml-full:5.4.0"
     "org.apache.logging.log4j:log4j-core:2.20.0" ] )
-
-(defn libraries-4.x []
-  [ "org.apache.poi:poi:4.1.2"
-    "org.apache.poi:poi-ooxml:4.1.2"
-    "org.apache.poi:poi-ooxml-schemas:4.1.2" ] )
 
 
 (defn
@@ -75,30 +66,4 @@
 
   install [ & options]
 
-  (apply installer/install (libraries-5.x) options))
-
-
-(defn
-  ^{ :arglists '("(install-4.x options*)")
-     :doc
-       """
-       Install the Java 3rd party libraries for the Excel module.
-
-       Install Apache POI 4.1.x
-
-       Options:
-
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress \
-                                 bar, defaults to true |
-       """
-     :examples '(
-       """
-       (do
-         (load-module :excel-install)
-         (excel-install/install-4.x :dir (repl/libs-dir) :silent false))
-       """) }
-
-  install-4.x [ & options]
-
-  (apply installer/install (libraries-4.x) options))
+  (apply installer/install (libraries) options))

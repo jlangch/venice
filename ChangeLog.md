@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - :excel module layout functions (print-layout, page-margins, header-margin, 
   footer-margin, header, and footer)
+- :excel module: abandoned support for Apache POI 4.x (please use POI 5.x)
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
