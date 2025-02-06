@@ -163,25 +163,13 @@ public class ExcelSheet {
     ) {
         final Header header = sheet.getHeader();
 
-        final StringBuilder tmp = new StringBuilder();
-        tmp.append(HSSFHeader.fontSize((short)fontSizePts));
-        if (bold) tmp.append(HSSFHeader.startBold());
-        tmp.append(text);
-        if (bold) tmp.append(HSSFHeader.endBold());
+        final String s = buildFooterHeaderString(text, position, fontSizePts, bold);
 
         switch (position) {
-            case LEFT:
-                header.setLeft(tmp.toString());
-                break;
-            case CENTER:
-                header.setCenter(tmp.toString());
-                break;
-            case RIGHT:
-                header.setRight(tmp.toString());
-                break;
-            default:
-                header.setCenter(tmp.toString());
-                break;
+            case LEFT:   header.setLeft(s);   break;
+            case CENTER: header.setCenter(s); break;
+            case RIGHT:  header.setRight(s);  break;
+            default:     header.setCenter(s); break;
         }
     }
 
@@ -193,25 +181,13 @@ public class ExcelSheet {
     ) {
         final Footer footer = sheet.getFooter();
 
-        final StringBuilder tmp = new StringBuilder();
-        tmp.append(HSSFHeader.fontSize((short)fontSizePts));
-        if (bold) tmp.append(HSSFHeader.startBold());
-        tmp.append(text);
-        if (bold) tmp.append(HSSFHeader.endBold());
+        final String s = buildFooterHeaderString(text, position, fontSizePts, bold);
 
         switch (position) {
-            case LEFT:
-                footer.setLeft(tmp.toString());
-                break;
-            case CENTER:
-                footer.setCenter(tmp.toString());
-                break;
-            case RIGHT:
-                footer.setRight(tmp.toString());
-                break;
-            default:
-                footer.setCenter(tmp.toString());
-                break;
+            case LEFT:   footer.setLeft(s);   break;
+            case CENTER: footer.setCenter(s); break;
+            case RIGHT:  footer.setRight(s);  break;
+            default:     footer.setCenter(s); break;
         }
     }
 
@@ -1496,6 +1472,34 @@ public class ExcelSheet {
 
         return new XSSFColor(rgbColor, null);
     }
+
+    public String buildFooterHeaderString(
+            final String text,
+            final HeaderFooterPosition position,
+            final int fontSizePts,
+            final boolean bold
+    ) {
+    	// supported place holders: {page} {num-pages} {date} {time}
+
+    	final StringBuilder tmp = new StringBuilder();
+
+    	tmp.append(HSSFHeader.fontSize((short)fontSizePts));
+
+    	if (bold) tmp.append(HSSFHeader.startBold());
+
+        String s = text;
+        s.replace("{page}", HSSFHeader.page());
+        s.replace("{num-pages}", HSSFHeader.numPages());
+        s.replace("{numPages}", HSSFHeader.numPages());
+        s.replace("{date}", HSSFHeader.date());
+        s.replace("{time}", HSSFHeader.time());
+        tmp.append(s);
+
+        if (bold) tmp.append(HSSFHeader.endBold());
+
+        return tmp.toString();
+    }
+
 
 
     // The Excel's magic conversion factor
