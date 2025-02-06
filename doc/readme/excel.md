@@ -53,6 +53,7 @@ libraries:
        * [Images](#images)
        * [Charts](#charts)
     * [Styling](#styling)
+       * [Page Setup, Headers, Footers](#page-setup-headers-footers)
        * [Row height](#row-height)
        * [Col width](#col-width)
        * [Fonts](#fonts)
@@ -921,7 +922,7 @@ for formulas:
 
 ### Styling
 
-#### Page Setup, Headers & Footers
+#### Page Setup, Headers, Footers
 
 Excel page model:
 
