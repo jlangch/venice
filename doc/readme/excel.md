@@ -973,6 +973,27 @@ note: all margins in inches
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-page-layout-001.png" width="400">
 
+
+**Customizing header and footer**
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Data")]
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+    (excel/auto-size-columns sheet)
+    (excel/print-layout sheet :A4 :LANDSCAPE true 1.25 1.25)
+    (excel/page-margins sheet 1.25 1.25 2.5 1.25)
+    (excel/header sheet "Example Report" :CENTER 24 true)
+    (excel/footer sheet "{date}  {time}" :LEFT 11 false)
+    (excel/footer sheet "{page} / {num-pages}" :RIGHT 11 false)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-page-layout-002.png" width="400">
+
 [top](#content)
 
 

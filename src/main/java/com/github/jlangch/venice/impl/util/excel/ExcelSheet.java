@@ -1488,11 +1488,11 @@ public class ExcelSheet {
     	if (bold) tmp.append(HSSFHeader.startBold());
 
         String s = text;
-        s.replace("{page}", HSSFHeader.page());
-        s.replace("{num-pages}", HSSFHeader.numPages());
-        s.replace("{numPages}", HSSFHeader.numPages());
-        s.replace("{date}", HSSFHeader.date());
-        s.replace("{time}", HSSFHeader.time());
+        s = s.replace("{page}", HSSFHeader.page());
+        s = s.replace("{num-pages}", HSSFHeader.numPages());
+        s = s.replace("{numPages}", HSSFHeader.numPages());
+        s = s.replace("{date}", HSSFHeader.date());
+        s = s.replace("{time}", HSSFHeader.time());
         tmp.append(s);
 
         if (bold) tmp.append(HSSFHeader.endBold());
