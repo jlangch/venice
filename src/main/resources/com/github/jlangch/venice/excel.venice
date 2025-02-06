@@ -543,7 +543,7 @@
         "(header text position font-size bold?)")
      :doc
         """
-        Sets the sheet's header text at posstion (:LEFT, :CENTER, :RIGHT) with 
+        Sets the sheet's header text at position (`:LEFT`, `:CENTER`, `:RIGHT`) with 
         a given font-size (in points) and bold style
         """
      :examples '(
@@ -578,7 +578,7 @@
         "(footer text position font-size bold?)")
      :doc
         """
-        Sets the sheet's footer  text at posstion (:LEFT, :CENTER, :RIGHT) with 
+        Sets the sheet's footer  text at position (`:LEFT`, `:CENTER`, `:RIGHT`) with 
         a given font-size (in points) and bold style
         """
      :examples '(
