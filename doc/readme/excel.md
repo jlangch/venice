@@ -921,6 +921,60 @@ for formulas:
 
 ### Styling
 
+#### Page Setup, Headers & Footers
+
+Excel page model:
+
+```
+        +--- 1)                                                      +--- 2)
+      /                                                            /
++----+------------------------------------------------------------+----+
+|    |                                                            |    |   
++----+------------------+----------------------+------------------+----+ --- 5)
+|    |   LEFT HEADER    |     CENTER HEADER    |   RIGHT HEADER   |    | 
++----+------------------+----------------------+------------------+----+ --- 3)
+|    |                                                            |    |
+|    |                                                            |    |       1)  page margin left
+|    |                                                            |    |       2)  page margin right
+|    |                          EXCEL CELLS                       |    |       3)  page margin top
+|    |                                                            |    |       4)  page margin bottom
+|    |                                                            |    |       5)  header margin
+|    |                                                            |    |       6)  footer margin
+|    |                                                            |    |
++----+------------------+----------------------+------------------+----+ --- 4)
+|    |   LEFT FOOTER    |     CENTER FOOTER    |   RIGHT FOOTER   |    |
++----+------------------+----------------------+------------------+----+ --- 6)
+|    |                                                            |    |
++----+------------------------------------------------------------+----+
+
+note: all margins in inches
+```
+
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/create :xlsx)
+        sheet (excel/add-sheet wbook "Data")]
+    (excel/write-values sheet 1 1 "John" "Doe" 28)
+    (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+    (excel/auto-size-columns sheet)
+    (excel/print-layout sheet :A4 :LANDSCAPE true 1.25 1.25)
+    (excel/page-margins sheet 1.25 1.25 2.5 2.5)
+    (excel/header sheet "H/LEFT" :LEFT 24 true)
+    (excel/header sheet "H/CENTER" :CENTER 24 true)
+    (excel/header sheet "H/RIGHT" :RIGHT 24 true)
+    (excel/footer sheet "F/LEFT" :LEFT 24 true)
+    (excel/footer sheet "F/CENTER" :CENTER 24 true)
+    (excel/footer sheet "F/RIGHT" :RIGHT 24 true)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-page-layout-001.png" width="400">
+
+[top](#content)
+
+
 #### Row height
 
 Set the height of individual rows:
