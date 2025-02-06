@@ -454,7 +454,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/page-margins", "excel/header-margin", 
-                 "excel/footer-margin", "excel/header", "excel/footer" )}
+                 "excel/footer-margin", "excel/header", 
+                 "excel/footer", "excel/display-grid-lines")}
 
   print-layout [sheet paper-size orientation 
                 fit-with? grid-lines? 
@@ -490,7 +491,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/print-layout", "excel/header-margin", 
-                 "excel/footer-margin", "excel/header", "excel/footer")}
+                 "excel/footer-margin", "excel/header", 
+                 "excel/footer", "excel/display-grid-lines")}
 
   page-margins [sheet left right top bottom]
   
@@ -503,7 +505,7 @@
 
 (defn
   ^{ :arglists '(
-        "(header-margin margin)")
+        "(header-margin sheet margin)")
      :doc
         """
         Sets the sheet's header margin (in inches)
@@ -521,7 +523,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/print-layout", "excel/page-margins", 
-                 "excel/footer-margin", "excel/header", "excel/footer")}
+                 "excel/footer-margin", "excel/header", 
+                 "excel/footer", "excel/display-grid-lines")}
 
   header-margin [sheet margin]
   
@@ -532,7 +535,7 @@
 
 (defn
   ^{ :arglists '(
-        "(footer-margin margin)")
+        "(footer-margin sheet margin)")
      :doc
         """
         Sets the sheet's footer margin (in inches)
@@ -550,7 +553,8 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '("excel/print-layout", "excel/page-margins", 
-                 "excel/header-margin", "excel/header", "excel/footer")}
+                 "excel/header-margin", "excel/header", 
+                 "excel/footer", "excel/display-grid-lines")}
 
   footer-margin [sheet margin]
   
@@ -561,7 +565,7 @@
 
 (defn
   ^{ :arglists '(
-        "(header text position font-size bold?)")
+        "(header sheet text position font-size bold?)")
      :doc
         """
         Sets the sheet's header text at position (`:LEFT`, `:CENTER`, `:RIGHT`)
@@ -588,7 +592,7 @@
         """)
      :see-also '("excel/print-layout", "excel/page-margins",
                  "excel/header-margin", "excel/footer-margin",  
-                 "excel/footer")}
+                 "excel/footer", "excel/display-grid-lines")}
 
   header [sheet text position font-size bold?]
   
@@ -603,7 +607,7 @@
 
 (defn
   ^{ :arglists '(
-        "(footer text position font-size bold?)")
+        "(footer sheet text position font-size bold?)")
      :doc
         """
         Sets the sheet's footer  text at position (`:LEFT`, `:CENTER`, `:RIGHT`) 
@@ -631,7 +635,7 @@
         """)
      :see-also '("excel/print-layout", "excel/page-margins",
                  "excel/header-margin", "excel/footer-margin",  
-                 "excel/header")}
+                 "excel/header", "excel/display-grid-lines")}
 
   footer [sheet text position font-size bold?]
   
@@ -642,6 +646,40 @@
           (boolean? bold?)] }
 
   (. sheet :setFooter text position font-size bold?))
+
+
+(defn
+  ^{ :arglists '(
+        "(display-grid-lines sheet display?)")
+     :doc
+        """
+        If `true` displays grid lines in the Excel else omits them.
+
+        To control grid lines for printed Excels see the function 
+        `excel/print-layout`.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/create :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-values sheet 1 1 "John" "Doe" 28)
+            (excel/write-values sheet 2 1 "Sue" "Ford" 26)
+            (excel/auto-size-columns sheet)
+            (excel/display-grid-lines sheet false)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '("excel/print-layout", "excel/page-margins",
+                 "excel/header-margin", "excel/footer-margin",  
+                 "excel/header", "excel/footer")}
+
+  display-grid-lines [sheet display?]
+  
+  { :pre [(instance-of? :ExcelSheetFacade sheet) 
+          (boolean? display?)] }
+
+  (. sheet :setDisplayGridlines display?))
 
 
 

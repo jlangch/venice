@@ -93,6 +93,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         layout.addItem(diBuilder.getDocItem("excel/footer-margin", false));
         layout.addItem(diBuilder.getDocItem("excel/header", false));
         layout.addItem(diBuilder.getDocItem("excel/footer", false));
+        layout.addItem(diBuilder.getDocItem("excel/display-grid-lines", false));
         all.addSection(layout);
 
         final DocSection cells = new DocSection("Cells", id());

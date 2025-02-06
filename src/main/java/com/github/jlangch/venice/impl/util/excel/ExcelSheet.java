@@ -194,6 +194,10 @@ public class ExcelSheet {
         }
     }
 
+    public void setDisplayGridlines(final boolean display) {
+        sheet.setDisplayGridlines(display);
+    }
+
     public int getFirstRowNum() {
         return sheet.getFirstRowNum();
     }

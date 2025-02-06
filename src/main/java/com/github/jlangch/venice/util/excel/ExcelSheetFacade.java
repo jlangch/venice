@@ -122,6 +122,10 @@ public class ExcelSheetFacade<T> {
         sheet.setFooter(text, position, fontSizePts, bold);
     }
 
+    public void setDisplayGridlines(final boolean display) {
+        sheet.setDisplayGridlines(display);
+    }
+
 
     // ------------------------------------------------------------------------
     // Common sheet functions
