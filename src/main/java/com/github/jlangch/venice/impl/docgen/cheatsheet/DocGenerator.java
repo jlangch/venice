@@ -111,6 +111,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ProtocolsSection
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.RegexSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ReplSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SandboxSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ShellCoreSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SpecialFormsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemVarSection;
@@ -330,8 +331,13 @@ public class DocGenerator {
         system.addSection(new DocSection("REPL", "repl"));
         system.addSection(new DocSection("Sandbox", "sandbox"));
         system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
-        system.addSection(new DocSection("Shebang", "shebang"));
         content.add(system);
+
+        final DocSection shell = new DocSection("Shell", "shell");
+        shell.addSection(new DocSection("Shell System", "shell-system"));
+        shell.addSection(new DocSection("Shell", "modules.shell"));
+        shell.addSection(new DocSection("Shebang", "shebang"));
+        content.add(shell);
 
         final DocSection java = new DocSection("Java", "java");
         java.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
@@ -508,6 +514,7 @@ public class DocGenerator {
                 new ArraySection(diBuilder).section(),
                 new ConcurrencySection(diBuilder).section(),
                 new SystemSection(diBuilder).section(),
+                new ShellCoreSection(diBuilder).section(),
                 new SystemVarSection(diBuilder).section(),
                 new TapSection(diBuilder).section(),
                 new TimeSection(diBuilder).section(),

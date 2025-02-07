@@ -112,18 +112,6 @@ public class SystemSection implements ISectionBuilder {
         services.addItem(diBuilder.getDocItem("service", false));
         services.addItem(diBuilder.getDocItem("service?", false));
 
-        final DocSection shell = new DocSection("Shell", "system.shell");
-        all.addSection(shell);
-        shell.addItem(diBuilder.getDocItem("sh", false));
-        shell.addItem(diBuilder.getDocItem("with-sh-dir", false));
-        shell.addItem(diBuilder.getDocItem("with-sh-env", false));
-        shell.addItem(diBuilder.getDocItem("with-sh-throw", false));
-
-        final DocSection tools = new DocSection("Shell Tools", "system.shell.tools");
-        all.addSection(tools);
-        tools.addItem(diBuilder.getDocItem("sh/open", false));
-        tools.addItem(diBuilder.getDocItem("sh/pwd", false));
-
         return section;
     }
 
