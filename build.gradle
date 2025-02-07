@@ -98,6 +98,7 @@
 //   [3] Draft a GitHub Venice release
 //       - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //         This will create the release tag
+//         => don't miss to set "latest flag"!
 //       - Pull the changes (commit tag)
 //
 //   [4] Open new development cycle
