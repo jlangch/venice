@@ -196,12 +196,12 @@
     P|pdfdoc         show the cheat sheet PDF
     d|dependencies   list the Venice dependencies
     e|eclipse        update the Eclipse project classpath
-    p|publish k u p  publish Venice artefacts, requires pgp-key, user & password
+    p|publish k u p  publish artefacts, requires pgp-key, Sonatype user & pwd
     C|colors         print the color theme
     i|info           display the configuration
     h|!|help         display the help
     q|quit           quit the shell
-    x|exit          quit the shell
+    x|exit           quit the shell
 
     """))
 
