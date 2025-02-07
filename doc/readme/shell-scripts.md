@@ -115,9 +115,9 @@ A larger example that zips Tomcat log files on a monthly base:
 With a little bit of sorcery a Venice script can be run as a Unix Shebang script.
 
 
-### A Venice Shebang script 
+### REPL based Venice Shebang Script
 
-This shebang demo uses the Venice interpreter from an installed Venice REPL, giving the script access to all the 3rd party libraries installed within the REPL.
+This *shebang* demo uses the Venice interpreter from an installed Venice REPL, giving the script access to all the 3rd party libraries installed within the REPL.
 
 **Prerequisites**
 
@@ -165,7 +165,7 @@ Time: 2024-07-26T14:49:47.963
 nil
 ```
 
-### A bare Venice Shebang script
+### Standalone Venice Shebang Script
 
 This shebang demo implicitly downloads the Venice library from the Maven 
 repository when the script starts, provided the Venice library is not yet 

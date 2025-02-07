@@ -330,6 +330,7 @@ public class DocGenerator {
         system.addSection(new DocSection("REPL", "repl"));
         system.addSection(new DocSection("Sandbox", "sandbox"));
         system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
+        system.addSection(new DocSection("Shebang", "shebang"));
         content.add(system);
 
         final DocSection java = new DocSection("Java", "java");
@@ -455,6 +456,12 @@ public class DocGenerator {
                         new TextRenderer().softWrap(120).render(loadVeniceDocMarkdown("destructuring-doc.md")),
                         new HtmlRenderer().render(loadVeniceDocMarkdown("destructuring-doc.md")),
                         "concepts.destructuring"));
+
+        topics.add(new MarkdownDoc(
+                        "Shebang",
+                        new TextRenderer().softWrap(120).render(loadVeniceDocMarkdown("shebang-doc.md")),
+                        new HtmlRenderer().render(loadVeniceDocMarkdown("shebang-doc.md")),
+                        "shebang"));
 
         topics.add(new MarkdownDoc(
                         "VeniceDoc",
@@ -614,14 +621,14 @@ public class DocGenerator {
         return new File(System.getProperty("user.dir"));
     }
 
-    private Markdown loadVeniceDocMarkdown(final String ressource) {
+    private Markdown loadVeniceDocMarkdown(final String resource) {
         try {
             return Markdown.parse(
-                        new ClassPathResource(Venice.class.getPackage(), "docgen/" + ressource)
+                        new ClassPathResource(Venice.class.getPackage(), "docgen/" + resource)
                             .getResourceAsString("UTF-8"));
         }
         catch(RuntimeException ex) {
-            throw new RuntimeException("Failed to read '" + ressource+ "'!", ex);
+            throw new RuntimeException("Failed to read '" + resource+ "'!", ex);
         }
     }
 
