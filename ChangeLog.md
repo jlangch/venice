@@ -27,8 +27,8 @@ All notable changes to this project will be documented in this file.
 
 ### Notes
 
-- re-enabled GitHub Code Scanning workflow. GitHub deactivated after 60 days
-  of inactivity
+- re-enabled GitHub Code Scanning workflow. GitHub deactivated it after 60
+  days of inactivity
 
 
 
