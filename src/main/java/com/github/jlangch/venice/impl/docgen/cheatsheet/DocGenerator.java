@@ -334,7 +334,7 @@ public class DocGenerator {
         content.add(system);
 
         final DocSection shell = new DocSection("Shell", "shell");
-        shell.addSection(new DocSection("Shell System", "shell-system"));
+        shell.addSection(new DocSection("Shell\u00A0System", "shell-system"));
         shell.addSection(new DocSection("Shell", "modules.shell"));
         shell.addSection(new DocSection("Shebang", "shebang"));
         content.add(shell);
