@@ -710,7 +710,7 @@
           Removes all files from the zip file that match the names in the input 
           list.
 
-          If any of the file is a directory, all the files and directories under 
+          If any of the files is a directory, all the files and directories under 
           this directory will be removed as well.
           """
      :examples '(
