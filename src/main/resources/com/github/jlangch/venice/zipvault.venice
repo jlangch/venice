@@ -100,7 +100,7 @@
               ;;          ├── d.txt
               ;;          ├── e.txt
               ;;          ├── empty.txt
-              ;;          └── xx
+              ;;          └── xx/
               ;;              └── g.txt
               (zipvault/zip 
                   (io/file "vault.zip")
@@ -122,6 +122,7 @@
           "zipvault/add-file"
           "zipvault/add-files"
           "zipvault/add-folder"
+          "zipvault/add-empty-folder"
           "zipvault/add-stream"
           "zipvault/remove-files"
           "zipvault/extract-file"
@@ -197,7 +198,11 @@
           """ )
      :see-also '(
           "zipvault/zip"
-          "zipvault/add-folder" ) }
+          "zipvault/add-file"
+          "zipvault/add-files"
+          "zipvault/add-folder"
+          "zipvault/add-empty-folder"
+          "zipvault/add-stream" ) }
 
   zip-folder 
 
@@ -306,15 +311,18 @@
           (do 
             (load-module :zipvault)
 
+            ;; create "vault.zip"
+            ;;          ├── a.txt
+            ;;          └── b.txt
+
             (let [zip   (io/file "vault.zip")
-                  tmp-1 (io/file (io/tmp-dir) "a1.txt")
-                  tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+                  tmp-1 (io/file (io/tmp-dir) "a.txt")
+                  tmp-2 (io/file (io/tmp-dir) "b.txt")]
               (io/spit tmp-1 "1234")
               (io/spit tmp-2 "2345")
               (io/delete-file-on-exit tmp-1)
               (io/delete-file-on-exit tmp-2)
 
-              (zipvault/zip zip "pwd" "a.txt" "A")
               (zipvault/add-file zip "pwd" tmp-1)
               (zipvault/add-file zip "pwd" tmp-2)))
           """,
@@ -322,22 +330,27 @@
           (do 
             (load-module :zipvault)
 
+            ;; create "vault.zip"
+            ;;          └── test/
+            ;;              ├── aa1.txt
+            ;;              └── bb2.txt
+
             (let [zip   (io/file "vault.zip")
                   tmp-1 (io/file (io/tmp-dir) "a1.txt")
-                  tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+                  tmp-2 (io/file (io/tmp-dir) "b2.txt")]
               (io/spit tmp-1 "1234")
               (io/spit tmp-2 "2345")
               (io/delete-file-on-exit tmp-1)
               (io/delete-file-on-exit tmp-2)
 
-              (zipvault/zip zip "pwd" "a.txt" "A")
-              (zipvault/add-file zip "pwd" "test/aaa1.txt" tmp-1)
-              (zipvault/add-file zip "pwd" "test/aaa2.txt" tmp-2)))
+              (zipvault/add-file zip "pwd" "test/aa1.txt" tmp-1)
+              (zipvault/add-file zip "pwd" "test/bb2.txt" tmp-2)))
           """ )
      :see-also '(
           "zipvault/zip"
           "zipvault/add-files"
           "zipvault/add-folder"
+          "zipvault/add-empty-folder"
           "zipvault/add-stream"
           "zipvault/remove-files" ) }
 
@@ -379,9 +392,16 @@
           (do 
             (load-module :zipvault)
 
+            ;; create "vault.zip"
+            ;;          ├── a1.txt
+            ;;          ├── b2.txt
+            ;;          └── copies/
+            ;;              ├── a1.txt
+            ;;              └── b2.txt
+
             (let [zip   (io/file "vault.zip")
                   tmp-1 (io/file (io/tmp-dir) "a1.txt")
-                  tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+                  tmp-2 (io/file (io/tmp-dir) "b2.txt")]
               (io/spit tmp-1 "1234")
               (io/spit tmp-2 "2345")
               (io/delete-file-on-exit tmp-1)
@@ -395,6 +415,7 @@
           "zipvault/zip"
           "zipvault/add-file"
           "zipvault/add-folder"
+          "zipvault/add-empty-folder"
           "zipvault/add-stream"
           "zipvault/remove-files" ) }
 
@@ -434,35 +455,52 @@
           excluded from the zip. 'exclude-fn' is a single argument function 
           that receives a file and returns true if the files is to be excluded 
           otherwise it returns false. May be `nil`.
+
+          Note: To add a folder but without any files of the folder
+
+          ```
+          (let [zip (io/file "data.zip")]
+             (zipvault/add-folder zip "123" (io/file "/tmp/test/data") true (fn [x] true)))
+          ```
+
+          This creates the zip "data.zip" with the empty folder "data".
           """
      :examples '(
           """
           (do 
             (load-module :zipvault)
 
+            ;; create "vault.zip"
+            ;;          ├── a1.txt
+            ;;          └── b2.txt
+
             (let [zip        (io/file "vault.zip")
-                  tmp-folder (io/file (io/tmp-dir) "ziptest")
+                  tmp-folder (io/file (io/tmp-dir) "data")
                   tmp-1      (io/file tmp-folder "a1.txt")
-                  tmp-2      (io/file tmp-folder "a2.txt")]
+                  tmp-2      (io/file tmp-folder "b2.txt")]
               (io/mkdir tmp-folder)
               (io/spit tmp-1 "1234")
               (io/spit tmp-2 "2345")
               (io/delete-file-on-exit tmp-folder)
 
-              (zipvault/zip zip "pwd" "a.txt" "A")
-              (zipvault/add-folder zip "pwd" tmp-folder)))
+              (zipvault/add-folder zip "pwd" tmp-folder false)))
           """,
           """
           (do 
             (load-module :zipvault)
 
+            ;; create "vault.zip"
+            ;;          └── data/
+            ;;              ├── a1.txt
+            ;;              └── b2.txt
+
             (defn exclude-fn [file] (io/file-ext? file "log"))
 
             (let [zip        (io/file "vault.zip")
-                  tmp-folder (io/file (io/tmp-dir) "ziptest")
-                  tmp-1      (io/file tmp-folder "a.txt")
-                  tmp-2      (io/file tmp-folder "b.txt")
-                  tmp-3      (io/file tmp-folder "c.log")]
+                  tmp-folder (io/file (io/tmp-dir) "data")
+                  tmp-1      (io/file tmp-folder "a1.txt")
+                  tmp-2      (io/file tmp-folder "b2.txt")
+                  tmp-3      (io/file tmp-folder "c3.log")]
               (io/mkdir tmp-folder)
               (io/spit tmp-1 "12")
               (io/spit tmp-2 "23")
@@ -471,11 +509,32 @@
 
               (zipvault/zip zip "pwd")
               (zipvault/add-folder zip "pwd" tmp-folder true exclude-fn)))
+          """,
+          """
+          (do 
+            (load-module :zipvault)
+
+            ;; create "vault.zip"
+            ;;          └── backup/
+            ;;              ├── a1.txt
+            ;;              └── b2.txt
+
+            (let [zip        (io/file "vault.zip")
+                  tmp-folder (io/file (io/tmp-dir) "data")
+                  tmp-1      (io/file tmp-folder "a1.txt")
+                  tmp-2      (io/file tmp-folder "b2.txt")]
+              (io/mkdir tmp-folder)
+              (io/spit tmp-1 "12")
+              (io/spit tmp-2 "23")
+              (io/delete-file-on-exit tmp-folder)
+
+              (zipvault/add-folder zip "pwd" tmp-folder "backup" true nil)))
           """ )
      :see-also '(
           "zipvault/zip"
           "zipvault/add-file"
           "zipvault/add-files"
+          "zipvault/add-empty-folder"
           "zipvault/add-stream"
           "zipvault/remove-files" ) }
 
@@ -533,6 +592,45 @@
 
 
 (defn 
+  ^{ :arglists '(
+          "(zipvault/add-empty-folder zip passphrase name)")
+     :doc """
+          Adds an empty folder to the zip file. 
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            ;; create "vault.zip"
+            ;;          └── data/
+            ;;          └── doc/
+            ;;              └── setup/
+
+            (let [zip (io/file "vault.zip")]
+              (zipvault/add-empty-folder zip "pwd" "data")
+              (zipvault/add-empty-folder zip "pwd" "doc/setup")))
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/add-file"
+          "zipvault/add-files"
+          "zipvault/add-folder"
+          "zipvault/add-stream"
+          "zipvault/remove-files" ) }
+
+  add-empty-folder [zip passphrase name]
+
+  { :pre [(file-or-string? zip)
+          (string? passphrase)
+          (string? name)] } 
+
+  (let [is   (io/string-in-stream "")
+        name (if (str/ends-with? name "/") name (str name "/"))]
+    (zipvault/add-stream zip passphrase name is)))
+
+
+(defn 
   ^{ :arglists '("(zipvault/add-stream zip passphrase name is)")
      :doc """
           Creates a new entry in the zip file and adds the content of the 
@@ -542,17 +640,55 @@
           """
           (do 
             (load-module :zipvault)
-
+ 
             (let [zip (io/file "vault.zip")
-                  is  (io/string-in-stream "abc")]
-              (zipvault/zip zip "pwd" "a.txt" "A")
-              (zipvault/add-stream zip "pwd" "a.txt" is)))
-          """ )
+                  is  (io/string-in-stream "100")]
+              (zipvault/add-stream zip "pwd" "100.txt" is)))
+          """,
+          """
+          (do 
+            (load-module :zipvault)
+
+            ;; create "vault.zip"
+            ;;          ├── a.txt
+            ;;          └── data/
+            ;;              ├── b.txt
+            ;;              └── c.txt
+ 
+            (let [zip (io/file "vault.zip")
+                  is1  (io/string-in-stream "100")
+                  is2  (io/string-in-stream "200")
+                  is3  (io/string-in-stream "300")]
+              (zipvault/add-stream zip "pwd" "a.txt" is1)
+              (zipvault/add-stream zip "pwd" "data/b.txt" is2)
+              (zipvault/add-stream zip "pwd" "data/c.txt" is3)))
+          """,
+          """
+          (do 
+            (load-module :zipvault)
+
+            ;; create "vault.zip"
+            ;;          └── data/
+            ;;              ├── a.txt
+            ;;              └── old/
+            ;;                  ├── b.txt
+            ;;                  └── c.txt
+ 
+            (let [zip (io/file "vault.zip")
+                  is1  (io/string-in-stream "100")
+                  is2  (io/string-in-stream "200")
+                  is3  (io/string-in-stream "300")]
+              (zipvault/add-stream zip "pwd" "data/a.txt" is1)
+              (zipvault/add-stream zip "pwd" "data/old/b.txt" is2)
+              (zipvault/add-stream zip "pwd" "data/old/c.txt" is3)))
+          """,
+           )
      :see-also '(
           "zipvault/zip"
           "zipvault/add-file"
           "zipvault/add-files"
           "zipvault/add-folder"
+          "zipvault/add-empty-folder"
           "zipvault/remove-files" ) }
 
   add-stream [zip passphrase name is]
