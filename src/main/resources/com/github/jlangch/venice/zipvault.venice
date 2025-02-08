@@ -366,9 +366,13 @@
 
 
 (defn 
-  ^{ :arglists '("(zipvault/add-files zip passphrase & files)")
+  ^{ :arglists '("(zipvault/add-files zip passphrase root-folder-name-in-zip & files)")
      :doc """
           Adds a list of files to the zip.
+          
+          'root-folder-name-in-zip' set the folder name that will be prepended 
+          to the filenames in the ZIP. Must be either `nil` or a non blank 
+          string!
           """
      :examples '(
           """
@@ -384,7 +388,8 @@
               (io/delete-file-on-exit tmp-2)
 
               (zipvault/zip zip "pwd" "a.txt" "A")
-              (zipvault/add-files zip "pwd" tmp-1 tmp-2)))
+              (zipvault/add-files zip "pwd" nil tmp-1 tmp-2)
+              (zipvault/add-files zip "pwd" "copies/" tmp-1 tmp-2)))
           """ )
      :see-also '(
           "zipvault/zip"
@@ -393,13 +398,18 @@
           "zipvault/add-stream"
           "zipvault/remove-files" ) }
 
-  add-files [zip passphrase & files]
+  add-files [zip passphrase root-folder-name-in-zip & files]
 
   { :pre [(file-or-string? zip)
           (string? passphrase)
+          (or (nil? root-folder-name-in-zip)
+              (and (string? root-folder-name-in-zip)
+                   (str/not-blank? root-folder-name-in-zip)))
           (every? file-or-string? files)] } 
 
   (let [params  (create-params)]
+    (when some? root-folder-name-in-zip
+      (. params :setRootFolderNameInZip root-folder-name-in-zip))
     (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
       (. zf :addFiles files params))))
 
@@ -414,7 +424,8 @@
           Adds a folder to the zip file. 
           
           'root-folder-name-in-zip' set the folder name that will be prepended 
-          to the filename in the ZIP. Must not be `nil` or empty!
+          to the filenames in the ZIP. Must be either `nil` or a non blank 
+          string!
 
           If 'include-root-folder?' (default true) is true the root folder name 
           will be added to the entry name as folder.
@@ -422,7 +433,7 @@
           The 'exclude-fn' filters the files in the folder that are to be 
           excluded from the zip. 'exclude-fn' is a single argument function 
           that receives a file and returns true if the files is to be excluded 
-          otherwise it returns false.
+          otherwise it returns false. May be `nil`.
           """
      :examples '(
           """
@@ -503,15 +514,20 @@
     { :pre [(file-or-string? zip)
             (string? passphrase)
             (file-or-string? folder)
-            (string? root-folder-name-in-zip)
-            (str/not-blank? root-folder-name-in-zip)
+            (or (nil? root-folder-name-in-zip)
+                (and (string? root-folder-name-in-zip)
+                     (str/not-blank? root-folder-name-in-zip)))
             (boolean? include-root-folder?)
-            (fn? exclude-fn)] } 
+            (or (nil? exclude-fn) (fn? exclude-fn))] } 
     (let [params   (create-params)
-          exc-fn   (proxify :ExcludeFileFilter {:isExcluded exclude-fn})]
-      (. params :setRootFolderNameInZip root-folder-name-in-zip)
+          excl-fn  (if exclude-fn 
+                     (proxify :ExcludeFileFilter {:isExcluded exclude-fn})
+                     nil)]
+      (when some? root-folder-name-in-zip
+        (. params :setRootFolderNameInZip root-folder-name-in-zip))
       (. params :setIncludeRootFolder include-root-folder?)
-      (. params :setExcludeFileFilter exc-fn)
+      (when some? excl-fn
+        (. params :setExcludeFileFilter excl-fn))
       (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
         (. zf :addFolder folder params)))))
 

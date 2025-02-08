@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- :zipvault: functions `add-file` to add a single under a modified zip file path
+- :zipvault: supports now root-folder-name-in-zip and file-name-in-zip
+  for more flexibility adding files to a zip
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
