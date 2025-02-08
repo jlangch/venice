@@ -49,6 +49,7 @@ public class ModuleZipVaultSection implements ISectionBuilder {
 
         final DocSection add = new DocSection("Add", id());
         all.addSection(add);
+        add.addItem(diBuilder.getDocItem("zipvault/add-file", false));
         add.addItem(diBuilder.getDocItem("zipvault/add-files", false));
         add.addItem(diBuilder.getDocItem("zipvault/add-folder", false));
         add.addItem(diBuilder.getDocItem("zipvault/add-stream", false));

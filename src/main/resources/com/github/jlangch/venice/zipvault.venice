@@ -119,6 +119,7 @@
      :see-also '(
           "zipvault/zip-folder"
           "zipvault/entries"
+          "zipvault/add-file"
           "zipvault/add-files"
           "zipvault/add-folder"
           "zipvault/add-stream"
@@ -145,13 +146,13 @@
 (defn 
   ^{ :arglists '(
       "(zipvault/zip-folder out passphrase folder)"
-      "(zipvault/zip-folder out passphrase folder include-root-folder)"
-      "(zipvault/zip-folder out passphrase folder include-root-folder exclude-fn)")
+      "(zipvault/zip-folder out passphrase folder include-root-folder?)"
+      "(zipvault/zip-folder out passphrase folder include-root-folder? exclude-fn)")
      :doc """
           Creates an AES-256 encrypted and password protected zip from the
           folder. 
           
-          If 'include-root-folder' (default true) is true the root folder name 
+          If 'include-root-folder?' (default true) is true the root folder name 
           will be added to the entry name as folder.
 
           The 'exclude-fn' filters the files in the folder that are to be 
@@ -192,7 +193,7 @@
               (io/spit tmp-3 "34")
               (io/delete-file-on-exit tmp-folder)
 
-              (zipvault/zip -folder zip "pwd" tmp-folder true exclude-fn)))
+              (zipvault/zip-folder zip "pwd" tmp-folder true exclude-fn)))
           """ )
      :see-also '(
           "zipvault/zip"
@@ -204,13 +205,13 @@
     (zip out passphrase)
     (add-folder out passphrase folder))
 
-  ([out passphrase folder include-root-folder]
+  ([out passphrase folder include-root-folder?]
     (zip out passphrase)
-    (add-folder out passphrase folder include-root-folder))
+    (add-folder out passphrase folder include-root-folder?))
 
-  ([out passphrase folder include-root-folder exclude-fn]
+  ([out passphrase folder include-root-folder? exclude-fn]
     (zip out passphrase)
-    (add-folder out passphrase folder include-root-folder exclude-fn)))
+    (add-folder out passphrase folder include-root-folder? exclude-fn)))
 
 
 (defn 
@@ -287,6 +288,84 @@
 
 
 (defn 
+  ^{ :arglists '(
+          "(zipvault/add-file zip passphrase file)"
+          "(zipvault/add-file zip passphrase filename-in-zip file)")
+     :doc """
+          Adds a file to the zip.
+
+          `filename-in-zip`
+          Set the filename that will be used to include a file into the ZIP file 
+          to a different name that given by the source filename added to the ZIP
+          file. The `filename-in-zip` must adhere to the ZIP filename specification, 
+          including the use of forward slash '/' as the directory separator, and 
+          it must also be a relative file.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (let [zip   (io/file "vault.zip")
+                  tmp-1 (io/file (io/tmp-dir) "a1.txt")
+                  tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+              (io/spit tmp-1 "1234")
+              (io/spit tmp-2 "2345")
+              (io/delete-file-on-exit tmp-1)
+              (io/delete-file-on-exit tmp-2)
+
+              (zipvault/zip zip "pwd" "a.txt" "A")
+              (zipvault/add-file zip "pwd" tmp-1)
+              (zipvault/add-file zip "pwd" tmp-2)))
+          """,
+          """
+          (do 
+            (load-module :zipvault)
+
+            (let [zip   (io/file "vault.zip")
+                  tmp-1 (io/file (io/tmp-dir) "a1.txt")
+                  tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+              (io/spit tmp-1 "1234")
+              (io/spit tmp-2 "2345")
+              (io/delete-file-on-exit tmp-1)
+              (io/delete-file-on-exit tmp-2)
+
+              (zipvault/zip zip "pwd" "a.txt" "A")
+              (zipvault/add-file zip "pwd" "test/aaa1.txt" tmp-1)
+              (zipvault/add-file zip "pwd" "test/aaa2.txt" tmp-2)))
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/add-files"
+          "zipvault/add-folder"
+          "zipvault/add-stream"
+          "zipvault/remove-files" ) }
+
+  add-file 
+
+  ([zip passphrase file]
+    { :pre [(file-or-string? zip)
+            (string? passphrase)
+            (file-or-string? file)] } 
+
+    (let [params  (create-params)]
+      (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
+        (. zf :addFile file params))))
+ 
+  ([zip passphrase filename-in-zip file]
+    { :pre [(file-or-string? zip)
+            (string? passphrase)
+            (string? filename-in-zip)
+            (str/not-blank? filename-in-zip)
+            (file-or-string? file)] } 
+
+    (let [params  (create-params)]
+      (. params :setFileNameInZip filename-in-zip)
+      (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
+        (. zf :addFile file params)))))
+
+
+(defn 
   ^{ :arglists '("(zipvault/add-files zip passphrase & files)")
      :doc """
           Adds a list of files to the zip.
@@ -309,6 +388,7 @@
           """ )
      :see-also '(
           "zipvault/zip"
+          "zipvault/add-file"
           "zipvault/add-folder"
           "zipvault/add-stream"
           "zipvault/remove-files" ) }
@@ -327,12 +407,16 @@
 (defn 
   ^{ :arglists '(
           "(zipvault/add-folder zip passphrase folder)"
-          "(zipvault/add-folder zip passphrase folder include-root-folder)"
-          "(zipvault/add-folder zip passphrase folder include-root-folder exclude-fn)")
+          "(zipvault/add-folder zip passphrase folder include-root-folder?)"
+          "(zipvault/add-folder zip passphrase folder include-root-folder? exclude-fn)"
+          "(zipvault/add-folder zip passphrase folder root-folder-name-in-zip include-root-folder? exclude-fn)")
      :doc """
           Adds a folder to the zip file. 
           
-          If 'include-root-folder' (default true) is true the root folder name 
+          'root-folder-name-in-zip' set the folder name that will be prepended 
+          to the filename in the ZIP. Must not be `nil` or empty!
+
+          If 'include-root-folder?' (default true) is true the root folder name 
           will be added to the entry name as folder.
 
           The 'exclude-fn' filters the files in the folder that are to be 
@@ -379,6 +463,7 @@
           """ )
      :see-also '(
           "zipvault/zip"
+          "zipvault/add-file"
           "zipvault/add-files"
           "zipvault/add-stream"
           "zipvault/remove-files" ) }
@@ -391,25 +476,41 @@
             (file-or-string? folder)] } 
     (add-folder (io/file zip) passphrase folder true))
   
-  ([zip passphrase folder include-root-folder]
+  ([zip passphrase folder include-root-folder?]
     { :pre [(file-or-string? zip)
             (string? passphrase)
             (file-or-string? folder)
-            (boolean? include-root-folder)] } 
+            (boolean? include-root-folder?)] } 
     (let [params  (create-params)]
-      (. params :setIncludeRootFolder include-root-folder)
+      (. params :setIncludeRootFolder include-root-folder?)
       (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
         (. zf :addFolder folder params))))
   
-  ([zip passphrase folder include-root-folder exclude-fn]
+  ([zip passphrase folder include-root-folder? exclude-fn]
     { :pre [(file-or-string? zip)
             (string? passphrase)
             (file-or-string? folder)
-            (boolean? include-root-folder)
+            (boolean? include-root-folder?)
             (fn? exclude-fn)] } 
     (let [params   (create-params)
           exc-fn   (proxify :ExcludeFileFilter {:isExcluded exclude-fn})]
-      (. params :setIncludeRootFolder include-root-folder)
+      (. params :setIncludeRootFolder include-root-folder?)
+      (. params :setExcludeFileFilter exc-fn)
+      (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
+        (. zf :addFolder folder params))))
+  
+  ([zip passphrase folder root-folder-name-in-zip include-root-folder? exclude-fn]
+    { :pre [(file-or-string? zip)
+            (string? passphrase)
+            (file-or-string? folder)
+            (string? root-folder-name-in-zip)
+            (str/not-blank? root-folder-name-in-zip)
+            (boolean? include-root-folder?)
+            (fn? exclude-fn)] } 
+    (let [params   (create-params)
+          exc-fn   (proxify :ExcludeFileFilter {:isExcluded exclude-fn})]
+      (. params :setRootFolderNameInZip root-folder-name-in-zip)
+      (. params :setIncludeRootFolder include-root-folder?)
       (. params :setExcludeFileFilter exc-fn)
       (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
         (. zf :addFolder folder params)))))
@@ -433,6 +534,7 @@
           """ )
      :see-also '(
           "zipvault/zip"
+          "zipvault/add-file"
           "zipvault/add-files"
           "zipvault/add-folder"
           "zipvault/remove-files" ) }
@@ -470,6 +572,7 @@
           """ )
      :see-also '(
           "zipvault/zip"
+          "zipvault/add-file"
           "zipvault/add-files"
           "zipvault/add-folder"
           "zipvault/add-stream" ) }
