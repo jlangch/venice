@@ -4,6 +4,20 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.12.38] - 2025-02-xx
+
+### Added
+
+- ...
+
+- :openai module support for assistant api
+- :openai module support for assistant threads api
+- :openai module support for assistant message api (in work)
+- :openai module support for assistant run api (...)
+- :openai module support for assistant run steps api (...)
+
+
+
 ## [1.12.37] - 2025-02-12
 
 ### Added
@@ -11,12 +25,6 @@ All notable changes to this project will be documented in this file.
 - :zipvault supports now root-folder-name-in-zip and file-name-in-zip
   for more flexibility adding files to a zip
 - module :qrcode for encoding and decoding QR code images
-
-- :openai module support for assistant api
-- :openai module support for assistant threads api
-- :openai module support for assistant message api (in work)
-- :openai module support for assistant run api (...)
-- :openai module support for assistant run steps api (...)
 
 
 
