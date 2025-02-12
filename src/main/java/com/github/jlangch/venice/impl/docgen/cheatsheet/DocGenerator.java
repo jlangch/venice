@@ -74,6 +74,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMimetypesS
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMultipartSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleOpenAiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrCodeSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
@@ -156,7 +157,7 @@ public class DocGenerator {
                         "openai",        "jtokkit",             "keystores",
                         "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
-                        "ring-util",     "server-side-events",  "pretty-print"));
+                        "ring-util",     "server-side-events",  "pretty-print",     "qrcode"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -388,6 +389,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
+        extmod.addSection(new DocSection("QR\u00A0Code", "modules.qrcode"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
         content.add(extmod);
 
@@ -571,6 +573,7 @@ public class DocGenerator {
                 new ModuleTimingSection(diBuilder).section(),
                 new ModuleGrepSection(diBuilder).section(),
                 new ModuleQrRefSection(diBuilder).section(),
+                new ModuleQrCodeSection(diBuilder).section(),
                 new ModuleAsciiTableSection(diBuilder).section(),
                 new ModuleMatrixSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),

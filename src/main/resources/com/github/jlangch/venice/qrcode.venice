@@ -56,7 +56,7 @@
         (do
           (load-module :qrcode)
 
-          (qrcode/decode (io/file "./xxxx.png")))
+          (qrcode/decode (io/file "./example.png")))
         """)
      :see-also '(
         "qrcode/encode" )}
