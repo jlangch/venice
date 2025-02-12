@@ -29,13 +29,19 @@
 
 (ns qrcode)
 
-(import :import com.google.zxing.BinaryBitmap)
-(import :import com.google.zxing.NotFoundException)
-(import :import com.google.zxing.MultiFormatReader)
-(import :import com.google.zxing.client.j2se.BufferedImageLuminanceSource)
-(import :import com.google.zxing.common.HybridBinarizer)
-(import :import javax.imageio.ImageIO)
-(import :import java.awt.image.BufferedImage)
+(import :com.google.zxing.BinaryBitmap)
+(import :com.google.zxing.NotFoundException)
+(import :com.google.zxing.MultiFormatReader)
+(import :com.google.zxing.client.j2se.BufferedImageLuminanceSource)
+(import :com.google.zxing.common.HybridBinarizer)
+(import :javax.imageio.ImageIO)
+(import :java.awt.image.BufferedImage)
+
+(import :com.google.zxing.BarcodeFormat)
+(import :com.google.zxing.EncodeHintType)
+(import :com.google.zxing.client.j2se.MatrixToImageWriter)
+(import :com.google.zxing.common.BitMatrix)
+(import :com.google.zxing.qrcode.QRCodeWriter)
 
 
 (defn decode [img-file]
@@ -48,3 +54,12 @@
     (. result :getText)))
 
 
+(defn encode [text width height os]
+  (let [qr-code-writer (. :QRCodeWriter :new)
+        hints          { (type (. :EncodeHintType :MARGIN))  3 }
+        bitMatrix      (. qr-code-writer :encode text
+											                           :QR_CODE
+											                           width
+											                           height
+											                           hints)]
+    (. :MatrixToImageWriter :writeToStream bitMatrix "PNG" os)))
