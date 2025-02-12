@@ -29,9 +29,22 @@
 
 (ns qrcode)
 
-(import :net.codecrete.qrbill.canvas.PDFCanvas)
-(import :net.codecrete.qrbill.generator.Address)
-(import :net.codecrete.qrbill.generator.Bill)
-(import :net.codecrete.qrbill.generator.QRBill)
+(import :import com.google.zxing.BinaryBitmap)
+(import :import com.google.zxing.NotFoundException)
+(import :import com.google.zxing.MultiFormatReader)
+(import :import com.google.zxing.client.j2se.BufferedImageLuminanceSource)
+(import :import com.google.zxing.common.HybridBinarizer)
+(import :import javax.imageio.ImageIO)
+(import :import java.awt.image.BufferedImage)
+
+
+(defn decode [img-file]
+  (let [buffered-img (. :ImageIO :read img-file)
+        source       (. :BufferedImageLuminanceSource :new buffered-img)
+        binarizer    (. :HybridBinarizer :new source)
+        bitmap       (. :BinaryBitmap :new binarizer)
+        reader       (. :MultiFormatReader :new)
+        result       (. reader :decode bitmap)]
+    (. result :getText)))
 
 
