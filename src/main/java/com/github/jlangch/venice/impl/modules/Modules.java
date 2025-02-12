@@ -56,6 +56,7 @@ public class Modules {
                         "postgresql-jdbc-install",
                         "qdrant-client-install",
                         "qrbill-install",
+                        "qrcode-install",
                         "tomcat-install",
                         "xchart-install",
 
@@ -115,6 +116,7 @@ public class Modules {
                         "pretty-print",
                         "qrbill",
                         "qrref",
+                        "qrcode",
                         "repl-setup",
                         "ring",
                         "ring-mw",
