@@ -22,8 +22,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- :zipvault supports now root-folder-name-in-zip and file-name-in-zip
-  for more flexibility adding files to a zip
+- :zipvault support for the functions `root-folder-name-in-zip` and 
+  `file-name-in-zip` for more flexibility adding files to a zip
 - module :qrcode for encoding and decoding QR code images
 
 
@@ -34,7 +34,7 @@ All notable changes to this project will be documented in this file.
 
 - :excel module layout functions (print-layout, page-margins, header-margin, 
   footer-margin, header, and footer)
-- documentation for Venice shebang scripts in the cheatsheet
+- documentation for Venice Shebang scripts in the cheatsheet
 
 ### Changed
 
