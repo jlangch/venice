@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - :zipvault: supports now root-folder-name-in-zip and file-name-in-zip
   for more flexibility adding files to a zip
-- module :qrcode: for encoding and decoing QR code images
+- module :qrcode: for encoding and decoding QR code images
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
