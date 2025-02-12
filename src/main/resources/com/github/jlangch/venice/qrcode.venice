@@ -44,8 +44,29 @@
 (import :com.google.zxing.qrcode.QRCodeWriter)
 
 
-(defn decode [img-file]
-  (let [buffered-img (. :ImageIO :read img-file)
+(defn 
+  ^{ :arglists '("(decode source)")
+     :doc """
+          Decode a QR image. Returns the text in QR image. 
+
+          Loads the image from a `:java.io.File` or a `:java.io.InputStream`.
+          """
+     :examples '(
+        """
+        (do
+          (load-module :qrcode)
+
+          (qrcode/decode (io/file "./xxxx.png")))
+        """)
+     :see-also '(
+        "qrcode/encode" )}
+
+  decode [source]
+  
+  (assert (or (io/file? source) 
+              (instance-of? :java.io.InputStream source)))
+
+  (let [buffered-img (. :ImageIO :read source)
         source       (. :BufferedImageLuminanceSource :new buffered-img)
         binarizer    (. :HybridBinarizer :new source)
         bitmap       (. :BinaryBitmap :new binarizer)
@@ -54,9 +75,40 @@
     (. result :getText)))
 
 
-(defn encode [text width height os]
+(defn 
+  ^{ :arglists '("(encode text width height margin os)")
+     :doc """
+          Encodes text into a PNG QR image. Writes the generated QR image to the
+          supplied output stream.
+
+          Arguments:
+
+          | text    | The text to encode in the QR image      |
+          | width   | the image width in pixels               |
+          | height  | the image height in pixels              |
+          | margin  | the image margin in pixels              |
+          | os      | The output stream to write the image to |
+           """
+     :examples '(
+        """
+        (do
+          (load-module :qrcode)
+
+          (qrcode/encode "Hello" 600 600 3 (io/file-out-stream "./example.png")))
+        """)
+     :see-also '(
+        "qrcode/decode" )}
+   
+  encode [text width height margin os]
+
+  { :pre [(string? text)
+          (long? width) 
+          (long? height) 
+          (long? margin)
+          (instance-of? :java.io.OutputStream os)] }
+
   (let [qr-code-writer (. :QRCodeWriter :new)
-        hints          { (type (. :EncodeHintType :MARGIN))  3 }
+        hints          { (type (. :EncodeHintType :MARGIN))  margin }
         bitMatrix      (. qr-code-writer :encode text
 											                           :QR_CODE
 											                           width
