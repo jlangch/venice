@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- support for structured addresses to :qrbill module
+  Note: starting November 25, 2025, banks will no longer accept payments using combined address elements
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
@@ -16,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
-
+    
 
 ## [1.12.37] - 2025-02-12
 

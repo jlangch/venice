@@ -35,12 +35,25 @@
 (import :net.codecrete.qrbill.generator.QRBill)
 
 
-(defn address [name line1 line2]
-  (doto (. :Address :new)
-        (. :setName name)
-        (. :setAddressLine1 line1)
-        (. :setAddressLine2 line2)
-        (. :setCountryCode "CH")))
+(defn address 
+  ([name line1 line2]
+    ;; combined address 
+    ;; starting November 25, 2025, banks will no longer accept payments using
+    ;; combined address elements
+    (doto (. :Address :new)
+          (. :setName name)                  ;; mandatory
+          (. :setAddressLine1 line1)         ;; mandatory (street name, house no)
+          (. :setAddressLine2 line2)         ;; mandatory (postal code and town)
+          (. :setCountryCode "CH")))         ;; mandatory
+  ([name street house-no postal-code town]
+    ;; structured address 
+    (doto (. :Address :new)
+          (. :setName name)                   ;; mandatory
+          (. :setStreet street)               ;; optional
+          (. :setHouseNo house-no)            ;; optional
+          (. :setPostalCode postal-code)      ;; mandatory
+          (. :setTown town)                   ;; mandatory
+          (. :setCountryCode "CH"))))         ;; mandatory
 
 
 (defn bill [account amount qr-ref msg debtor creditor]
@@ -76,9 +89,15 @@
 
 
 (defn- address-spec [key spec]
-  (address (-> spec key :name)
-           (-> spec key :line1)
-           (-> spec key :line2)))
+  (if (contains? spec :town)
+    (address (-> spec key :name)         ;; structured address
+             (-> spec key :street)
+             (-> spec key :house-no)
+             (-> spec key :postal-code)
+             (-> spec key :town))
+    (address (-> spec key :name)         ;; combined address
+             (-> spec key :line1)
+             (-> spec key :line2))))
 
 
 (defn- write-spec [spec]
@@ -107,18 +126,25 @@
   ^{ :arglists '(
        "(write bill out-file)"
        "(write bill payment-slip-pdf-type invoice-pdf-file out-dir)")
-     :doc "Write the bill to a file"
+     :doc 
+       """
+       Write the bill to a file.
+
+       Note: Starting November 25, 2025, banks will no longer accept payments 
+       using combined address elements!
+       """
      :examples '(
        """
        (do
          (load-module :qrbill ['qrbill :as 'q])
 
+         ;; use structured debtor and creditor addresses
          (let [debtor    (q/address "Peter Meier"
-                                    "Bahnhofstrasse 2"
-                                    "8000 Wil")
+                                    "Bahnhofstrasse" "2"
+                                    "8000" "Wil")
                creditor  (q/address "Travag GmbH"
-                                    "Bahnhofstrasse 3"
-                                    "8000 Wil")
+                                    "Bahnhofstrasse" "3"
+                                    "8000" "Wil")
                bill      (q/bill "CH00 3000 2000 1000 0000 0"
                                  300.00M
                                  "000004"
@@ -140,14 +166,19 @@
        """
        (do
          (load-module :qrbill ['qrbill :as 'q])
-
+  
+         ;; use structured debtor and creditor addresses
          ;; the fields :debtor, :amount, :message, and :file-in are optional
          (q/write  { :debtor      { :name  "Peter Meier"
-                                    :line1 "Aarestrasse 2"
-                                    :line2 "9500 Wil" }
+                                    :street "Aarestrasse"
+                                    :house-no "2"
+                                    :postal-code "9500"
+                                    :town "Wil" }
                      :creditor    { :name  "Kenag GmbH"
-                                    :line1 "Aarestrasse 3"
-                                    :line2 "9500 Wil" }
+                                    :street "Aarestrasse"
+                                    :house-no "3"
+                                    :postal-code "9500 "
+                                    :town "Wil" }
                      :bill        { :account   "CH00 3000 2000 1000 0000 0"
                                     :amount    "300.00"
                                     :reference "000004"
