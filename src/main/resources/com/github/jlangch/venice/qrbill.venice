@@ -40,6 +40,9 @@
     ;; combined address 
     ;; starting November 25, 2025, banks will no longer accept payments using
     ;; combined address elements
+    { :pre [(string? name)
+            (string? line1)
+            (string? line2)] }
     (doto (. :Address :new)
           (. :setName name)                  ;; mandatory
           (. :setAddressLine1 line1)         ;; mandatory (street name, house no)
@@ -47,6 +50,11 @@
           (. :setCountryCode "CH")))         ;; mandatory
   ([name street house-no postal-code town]
     ;; structured address 
+    { :pre [(string? name) 
+            (or (nil? street) (string? street))
+            (or (nil? house-no) (string? house-no))
+            (string? postal-code)
+            (string? town)] }
     (doto (. :Address :new)
           (. :setName name)                   ;; mandatory
           (. :setStreet street)               ;; optional
