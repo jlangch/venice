@@ -215,7 +215,7 @@ public class FunctionBuilder implements Serializable {
                         final CallFrame cf = new CallFrame(name, v.getMeta());
                         try (WithCallStack cs = new WithCallStack(cf)) {
                             throw new AssertionException(String.format(
-                                    "pre-condition assert failed: %s",
+                                    "precondition assert failed: %s",
                                     v.toString(true)));
                         }
                     }

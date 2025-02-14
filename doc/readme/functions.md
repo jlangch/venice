@@ -182,12 +182,35 @@ Even global functions can remember the context they have been created:
 
 ## Functions with preconditions
 
+Preconditions are defined in a vector and are saved in the function’s metadata. 
+The precondition assertions are a vector predicates and must return true for 
+the constrains to pass. If any of them evaluate to false an AssertionError 
+(a Java `RuntimeException`) with the specific constrain assertion will be thrown. 
+
 ```clojure
 (do
    (defn sum [x y] 
       { :pre [(number? x) (number? y)] } 
       (+ x y)))
 ```
+
+Passing preconditions
+
+```
+> (sum 1 2)
+=> 3
+```
+
+Failing preconditions
+
+```
+Exception in thread "main" AssertionException: precondition assert failed: (number? y)
+
+[Callstack]
+    at: user/sum (user: line 3, col 27)
+    at: user/sum (user: line 1, col 2)
+```
+
 
 ## Argument type hints
 
