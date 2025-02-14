@@ -204,6 +204,8 @@ Passing preconditions
 Failing preconditions
 
 ```
+> (sum 1 "2")
+
 Exception in thread "main" AssertionException: precondition assert failed: (number? y)
 
 [Callstack]
