@@ -381,8 +381,9 @@
 (defn
   ^{ :arglists '(
         "(print-layout sheet paper-size orientation 
-                       fit-with? grid-lines? 
-                       header-margin footer-margin)")
+                       header-margin footer-margin,
+                       grid-lines? 
+                       fit-to-width? fit-to-page?)")
      :doc
         """
         Sets the sheet's print layout
@@ -391,9 +392,11 @@
 
         | paper-size    | `:A4`, `:A5`, `:LETTER`, `:LETTER_SMALL`, ...    |
         | orientation   | `:PORTARIT` or `:LANDSACPE`                      |
-        | fit-with?     | fit with page width {`true` or `false`}          |
         | header-margin | header margin (in inches)                        |
         | footer-margin | footer margin (in inches)                        |
+        | grid-lines?   | show grid lines  {`true` or `false`}             |
+        | fit-to-width? | fit to page width  {`true` or `false`}           |
+        | fit-to-page?  | fit to page  {`true` or `false`}                 |
         ```
                +--- 1)                                                      +--- 2)
               /                                                            /
@@ -428,7 +431,7 @@
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
             (excel/auto-size-columns sheet)
-            (excel/print-layout sheet :A4 :LANDSCAPE true false 1.25 1.25)
+            (excel/print-layout sheet :A4 :LANDSCAPE 1.25 1.25 false true true)
             (excel/page-margins sheet 1.25 1.25 2.5 2.5)
             (excel/header sheet "H/LEFT" :LEFT 24 true)
             (excel/header sheet "H/CENTER" :CENTER 24 true)
@@ -446,7 +449,7 @@
             (excel/write-values sheet 1 1 "John" "Doe" 28)
             (excel/write-values sheet 2 1 "Sue" "Ford" 26)
             (excel/auto-size-columns sheet)
-            (excel/print-layout sheet :A4 :LANDSCAPE true false 1.25 1.25)
+            (excel/print-layout sheet :A4 :LANDSCAPE 1.25 1.25 false true true)
             (excel/page-margins sheet 1.25 1.25 2.5 1.25)
             (excel/header sheet "Example Report" :CENTER 24 true)
             (excel/footer sheet "{date}  {time}" :LEFT 11 false)
@@ -458,17 +461,18 @@
                  "excel/footer", "excel/display-grid-lines")}
 
   print-layout [sheet paper-size orientation 
-                fit-with? grid-lines? 
-                header-margin footer-margin]
+                header-margin footer-margin,
+                grid-lines? fit-to-width? fit-to-page?]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
           (keyword? paper-size) (keyword? orientation) 
-          (boolean? fit-with?) (boolean? grid-lines?)
-          (double? header-margin) (double? footer-margin)] }
+          (double? header-margin) (double? footer-margin)
+          (boolean? grid-lines?) 
+          (boolean? fit-to-width?) (boolean? fit-to-page?)] }
 
   (. sheet :setPrintLayout paper-size orientation 
-                           fit-with? grid-lines? 
-                           header-margin footer-margin))
+                           header-margin footer-margin
+                           grid-lines? fit-to-width? fit-to-page?))
 
 
 (defn

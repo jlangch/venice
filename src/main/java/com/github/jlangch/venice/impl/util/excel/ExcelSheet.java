@@ -123,19 +123,29 @@ public class ExcelSheet {
     public void setPrintLayout(
             final PaperSize paperSize,
             final PageOrientation orientation,
-            final boolean fitWidth,
-            final boolean gridLines,
             final double headerMarginInches,
-            final double footerMarginInches
+            final double footerMarginInches,
+            final boolean gridLines,
+            final boolean fitToWidthOnly,
+            final boolean fitToPage
     ) {
-        final PrintSetup layout = sheet.getPrintSetup();
-        layout.setLandscape(orientation == PageOrientation.LANDSCAPE);
-        layout.setFitWidth(fitWidth ? (short)1 : (short)0);
-        layout.setPaperSize(paperSize.getLegacyApiValue());
-        layout.setHeaderMargin(headerMarginInches);
-        layout.setFooterMargin(footerMarginInches);
+        final PrintSetup ps = sheet.getPrintSetup();
+        ps.setLandscape(orientation == PageOrientation.LANDSCAPE);
+        ps.setPaperSize(paperSize.getLegacyApiValue());
+        ps.setHeaderMargin(headerMarginInches);
+        ps.setFooterMargin(footerMarginInches);
 
         sheet.setPrintGridlines(gridLines);
+
+        if (fitToPage) {
+        	ps.setFitWidth((short)1);
+        	ps.setFitHeight((short)0);
+        	//sheet.setAutobreaks(true);
+            sheet.setFitToPage(true);
+        }
+        else if (fitToWidthOnly) {
+        	ps.setFitWidth((short)1);
+        }
     }
 
     public void setPageMargins(

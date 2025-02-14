@@ -73,18 +73,20 @@ public class ExcelSheetFacade<T> {
     public void setPrintLayout(
             final PaperSize paperSize,
             final PageOrientation orientation,
-            final boolean fitWidth,
-            final boolean gridLines,
             final double headerMarginInches,
-            final double footerMarginInches
+            final double footerMarginInches,
+            final boolean gridLines,
+            final boolean fitToWidthOnly,
+            final boolean fitToPage
     ) {
         sheet.setPrintLayout(
                 paperSize,
                 orientation,
-                fitWidth,
-                gridLines,
                 headerMarginInches,
-                footerMarginInches);
+                footerMarginInches,
+                gridLines,
+                fitToWidthOnly,
+                fitToPage);
     }
 
     public void setPageMargins(
