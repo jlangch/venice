@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - support for structured addresses to :qrbill module. Please note that
   starting November 25, 2025, Swiss banks will no longer accept payments using 
   combined address elements
+- support for `fit-to-page` in the excel print setup
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
