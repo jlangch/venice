@@ -43,6 +43,10 @@ All notable changes to this project will be documented in this file.
 
 - :excel module to not support for Apache POI 4.x anymore (please use POI 5.x)
 
+### Updated dependencies:
+
+- Bumped Apache POI from 5.3.0 to 5.4.0
+
 ### Notes
 
 - re-enabled GitHub Code Scanning workflow. GitHub deactivated it after 60
