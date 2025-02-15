@@ -41,7 +41,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- :excel module: abandoned support for Apache POI 4.x (please use POI 5.x)
+- :excel module to not support for Apache POI 4.x anymore (please use POI 5.x)
 
 ### Notes
 
