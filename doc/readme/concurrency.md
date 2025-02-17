@@ -48,6 +48,9 @@ A future can be cancelled `(cancel f)` as long its computation has not yet
 finished. A future can be checked if it has been cancelled `(cancelled? f)` or
 if its computation has finished `(realized? f)`.
 
+
+Note: A Venice *future* implements the Java interface `java.util.concurrent.Future<V>`
+
 ```clojure
 (do
    (defn task [] (sleep 1000) 200)
@@ -75,6 +78,8 @@ its value once set.
 
 Promises are futures too. They come with additional features for chaining and 
 combining asynchronous tasks.
+
+Note: A Venice *promise* implements the Java interface `java.util.concurrent.CompletableFuture<T>`
 
 ```clojure
 (do
@@ -227,7 +232,6 @@ Timeouts:
     (complete-on-timeout "The fox did not jump" 300 :milliseconds)
     (deref))
 ```
-
 
 
 ## Delays
