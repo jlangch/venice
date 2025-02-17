@@ -28,6 +28,8 @@
 
 ## Vulnerabilities
 
+[GitHub Advisory Database](https://github.com/advisories)
+
 [Vulnerability Disclojure Cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html)
 
 [How to Discuss and Fix Vulnerabilities in Your Open Source Library](https://www.lunasec.io/docs/blog/how-to-mitigate-open-source/)
