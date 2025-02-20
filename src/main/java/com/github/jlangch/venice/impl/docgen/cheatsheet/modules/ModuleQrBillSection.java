@@ -47,7 +47,7 @@ public class ModuleQrBillSection implements ISectionBuilder {
         all.addSection(main);
         main.addItem(diBuilder.getDocItem("qrbill/address", false));
         main.addItem(diBuilder.getDocItem("qrbill/bill", false));
-        main.addItem(diBuilder.getDocItem("qrbill/write?", false));
+        main.addItem(diBuilder.getDocItem("qrbill/write", false));
 
         return section;
     }

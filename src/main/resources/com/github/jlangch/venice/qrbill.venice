@@ -64,7 +64,9 @@
           (q/address "Peter Meier"
                     "Bahnhofstrasse 2"
                     "8000 Wil"))
-       """) }
+       """)
+     :see-also '(
+         "qrbill/bill", "qrbill/write")  }
 
   address 
 
@@ -125,7 +127,9 @@
                    "Testrechnung 4"
                    debtor
                    creditor)))
-       """) }
+       """)
+     :see-also '(
+          "qrbill/address", "qrbill/write")  }
 
   bill [account amount qr-ref msg debtor creditor]
 
@@ -258,7 +262,9 @@
                      :qr-slip-pos :new-page-at-end    ;; :last-page
                      :file-in     "./Meier-Rechnung-1.pdf"
                      :file-out    "./Meier-Rechnung-QR-1.pdf" }))
-       """) }
+       """)
+     :see-also '(
+          "qrbill/address", "qrbill/bill")  }
 
   write
 
