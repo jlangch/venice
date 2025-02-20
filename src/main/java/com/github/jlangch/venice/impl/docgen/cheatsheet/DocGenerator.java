@@ -74,6 +74,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMimetypesS
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMultipartSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleOpenAiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrBillSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrCodeSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
@@ -148,7 +149,7 @@ public class DocGenerator {
                         "java",          "semver",              "excel",            "hexdump",
                         "shell",         "geoip",               "benchmark",        "component",
                         "config",        "parsifal",            "grep",             "test",
-                        "fonts",         "qrref",               "jsonl",            "timing",
+                        "fonts",         "jsonl",               "timing",
                         "zipvault",      "gradlew",             "matrix",           "ascii-table",
                         "docker",        "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "cargo-postgresql",
@@ -157,7 +158,8 @@ public class DocGenerator {
                         "openai",        "jtokkit",             "keystores",
                         "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
-                        "ring-util",     "server-side-events",  "pretty-print",     "qrcode"));
+                        "ring-util",     "server-side-events",  "pretty-print",
+                        "qrcode",        "qrref",               "qrbill"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -389,6 +391,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
+        extmod.addSection(new DocSection("QR\u00A0Bill", "modules.qrbill"));
         extmod.addSection(new DocSection("QR\u00A0Code", "modules.qrcode"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
         content.add(extmod);
@@ -573,6 +576,7 @@ public class DocGenerator {
                 new ModuleTimingSection(diBuilder).section(),
                 new ModuleGrepSection(diBuilder).section(),
                 new ModuleQrRefSection(diBuilder).section(),
+                new ModuleQrBillSection(diBuilder).section(),
                 new ModuleQrCodeSection(diBuilder).section(),
                 new ModuleAsciiTableSection(diBuilder).section(),
                 new ModuleMatrixSection(diBuilder).section(),
