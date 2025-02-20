@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.38] - 2025-02-xx
+## [1.12.38] - 2025-02-20
 
 ### Added
 
@@ -18,6 +18,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+### Updated dependencies:
+
+- Bumped VAVR from 0.10.4 to 0.10.6
 
     
 

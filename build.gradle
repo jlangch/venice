@@ -220,7 +220,7 @@ ext {
     poi_Version = '5.3.0' // '4.1.2'
     servletApi_Version = '5.0.0'
     springExpression_Version = '5.2.0.RELEASE'
-    vavr_Version = '0.10.4'
+    vavr_Version = '0.10.6'
     xchart_Version = '3.8.6'
     zip4j_Version = '2.11.5'
 }
