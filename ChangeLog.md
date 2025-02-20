@@ -4,6 +4,17 @@
 All notable changes to this project will be documented in this file.
 
 
+## [1.12.39] - 2025-02-xx
+
+### Added
+
+- :openai module support for assistant api
+- :openai module support for assistant threads api
+- :openai module support for assistant message api (in work)
+- :openai module support for assistant run api (...)
+- :openai module support for assistant run steps api (...)
+
+
 ## [1.12.38] - 2025-02-20
 
 ### Added
@@ -12,12 +23,6 @@ All notable changes to this project will be documented in this file.
   starting November 25, 2025, Swiss banks will no longer accept payments using 
   combined address elements
 - support for `fit-to-page` in the excel print setup
-
-- :openai module support for assistant api
-- :openai module support for assistant threads api
-- :openai module support for assistant message api (in work)
-- :openai module support for assistant run api (...)
-- :openai module support for assistant run steps api (...)
 
 ### Updated dependencies:
 
