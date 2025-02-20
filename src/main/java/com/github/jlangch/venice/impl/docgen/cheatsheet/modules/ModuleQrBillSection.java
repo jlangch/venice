@@ -34,11 +34,20 @@ public class ModuleQrBillSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
+        final String footer = "Install Java 3rd party libraries:\n\n" +
+                "```                                            \n" +
+                "(do                                            \n" +
+                "  (load-module :qrbill-install)                \n" +
+                "  (qrbill-install/install :dir (repl/libs-dir) \n" +
+                "                          :silent false))      \n" +
+                "```\n";
+
         final DocSection section = new DocSection(
                                             "QR-Bill",
-                                            "Create Swiss QR bills according to the "
-                                            + "Swiss payment standards.",
-                                            "modules.qrbill");
+                                            "Create Swiss QR bills according to the Swiss payment standards.",
+                                            "modules.qrbill",
+                                            null,
+                                            footer);
 
         final DocSection all = new DocSection("(load-module :qrbill)", id());
         section.addSection(all);

@@ -34,9 +34,20 @@ public class ModuleJdbcPostgreSQLSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
+        final String footer = "Install Java 3rd party libraries:         \n\n" +
+                "```                                                     \n" +
+                "(do                                                     \n" +
+                "  (load-module :postgresql-jdbc-install)                \n" +
+                "  (postgresql-jdbc-install/install :dir (repl/libs-dir) \n" +
+                "                          :silent false))               \n" +
+                "```\n";
+
         final DocSection section = new DocSection(
-                                        "JDBC PostgreSQL",
-                                        "modules.jdbc-postgresql");
+						                "JDBC PostgreSQL",
+						                "JDBC PostgreSQL support",
+                                        "modules.jdbc-postgresql",
+                                        null,
+                                        footer);
 
         final DocSection all = new DocSection("(load-module :jdbc-postgresql)", id());
         section.addSection(all);

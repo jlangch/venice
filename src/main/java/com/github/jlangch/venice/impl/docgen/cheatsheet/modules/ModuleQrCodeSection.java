@@ -34,10 +34,20 @@ public class ModuleQrCodeSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
+        final String footer = "Install Java 3rd party libraries:\n\n" +
+                "```                                            \n" +
+                "(do                                            \n" +
+                "  (load-module :qrcode-install)                \n" +
+                "  (qrcode-install/install :dir (repl/libs-dir) \n" +
+                "                          :silent false))      \n" +
+                "```\n";
+
         final DocSection section = new DocSection(
                                             "QR-Codes",
                                             "Encode and decode QR code images.",
-                                            "modules.qrcode");
+                                            "modules.qrcode",
+                                            null,
+                                            footer);
 
         final DocSection all = new DocSection("(load-module :qrcode)", id());
         section.addSection(all);
