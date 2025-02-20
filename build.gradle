@@ -111,7 +111,7 @@
 //         version in "com.github.jlangch.venice.modules.ReplSetupModuleTest.java" 
 //         for staged REPL setup tests 
 //         Test Venics installer availability: 
-//           curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.38/venice-1.12.36.jar" --output ./venice-1.12.38.jar
+//           curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.38/venice-1.12.38.jar" --output ./venice-1.12.38.jar
 //
 // -----------------------------------------------------------------------------
 // Gradle wrapper
