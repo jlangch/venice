@@ -187,7 +187,7 @@ public class Benchmark {
 
     private static void runGCs(final long count) {
         for(int ii=0; ii<count; ii++) {
-            System.runFinalization();
+            // System.runFinalization();  // deprecated on Java 21
             System.gc();
         }
     }

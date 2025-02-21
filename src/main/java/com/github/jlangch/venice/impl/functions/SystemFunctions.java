@@ -260,9 +260,7 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(gc)")
-                    .doc(
-                        "Run the Java garbage collector. Runs the finalization methods " +
-                        "of any objects pending finalization prior to the GC.")
+                    .doc("Run the Java garbage collector.")
                     .examples("(gc)")
                     .build()
         ) {
@@ -272,7 +270,7 @@ public class SystemFunctions {
 
                 sandboxFunctionCallValidation();
 
-                Runtime.getRuntime().runFinalization();
+                // System.runFinalization();  // deprecated on Java 21
                 Runtime.getRuntime().gc();
 
                 return Nil;
