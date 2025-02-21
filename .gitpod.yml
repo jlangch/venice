@@ -3,7 +3,7 @@ tasks:
     command: ./gitpod-init-repl.sh
     name: REPL
     
-image: gitpod/workspace-java-17
+image: gitpod/workspace-java-21
 
 vscode:
   extensions:
