@@ -47,7 +47,8 @@
 (defn 
   ^{ :arglists '("(decode source)")
      :doc """
-          Decode a QR image. Returns the text in QR image. 
+          Decode a QR code image. Returns the text decoded from the QR code 
+          image. 
 
           Loads the image from a `:java.io.File` or a `:java.io.InputStream`.
           """
@@ -78,12 +79,12 @@
 (defn 
   ^{ :arglists '("(encode text width height margin os)")
      :doc """
-          Encodes text into a PNG QR image. Writes the generated QR image to the
-          supplied output stream.
+          Encodes text into a PNG QR code image. Writes the generated QR code 
+          image to the supplied output stream.
 
           Arguments:
 
-          | text    | The text to encode in the QR image      |
+          | text    | The text to encode in the QR code image |
           | width   | the image width in pixels               |
           | height  | the image height in pixels              |
           | margin  | the image margin in pixels              |
