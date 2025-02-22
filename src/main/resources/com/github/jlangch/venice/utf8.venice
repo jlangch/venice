@@ -85,5 +85,9 @@
 (defonce pi                    #\u03C0)  ;; pi 'π'
 (defonce sigma                 #\u03C3)  ;; sigma 'σ'
 (defonce tau                   #\u03C4)  ;; tau 'τ'
+(defonce omega                 #\u03C9)  ;; omega 'ω'
 
-(defonce delta-upper           #\u0394)  ;; uppercase greek delta 'Δ'
+(defonce sigma-upper           #\u03A3)  ;; uppercase sigma 'Σ'
+(defonce delta-upper           #\u0394)  ;; uppercase delta 'Δ'
+(defonce tau-upper             #\u03A4)  ;; uppercase tau 'Τ'
+(defonce omega-upper           #\u03A9)  ;; uppercase omega 'Ω'
