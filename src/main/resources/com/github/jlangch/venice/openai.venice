@@ -22,6 +22,9 @@
 ;;;; OpenAI client without any dependencies on 3rd party libraries
 
 
+;;;; OpenAI OpenAPI
+;;;; https://github.com/openai/openai-openapi/blob/master/openapi.yaml
+
 (ns openai)
 
 (load-module :http-client-j8 ['http-client-j8 :as 'hc])
