@@ -21,7 +21,7 @@
 
 ;;;; JTokkit: Wraps the Java JTokkit library
 ;;;;
-;;;; See: hhttps://jtokkit.knuddels.de/
+;;;; See: https://jtokkit.knuddels.de/
 ;;;; See: https://github.com/knuddelsgmbh/jtokkit/
 
 ;;;; Install JTokkit 3rd party libraries:
