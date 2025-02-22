@@ -59,6 +59,7 @@ public class Modules {
                         "qrcode-install",
                         "tomcat-install",
                         "xchart-install",
+                        "yaml-install",
 
                         "ansi",
                         "app",
@@ -137,6 +138,7 @@ public class Modules {
                         "webdav",
                         "xchart",
                         "xml",
+                        "yaml",
                         "zipvault")));
 
     public static final Set<VncKeyword> NATIVE_MODULES =
