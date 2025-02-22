@@ -40,8 +40,10 @@
                             :excel
                             :pdf
                             :qrbill
+                            :qrcode
                             :tomcat
                             :xchart
+                            :yaml
                             :jtokkit
                             :langchain
                             :postgresql-jdbc ])
@@ -154,7 +156,7 @@
 
       (when-not silent
         (println)
-        (printf "Installed %d artefacts.%n" cnt)))))
+        (printf "Installed %d artefact%s.%n" cnt (if (== cnt 1) "" "s"))))))
 
 
 (defn 
@@ -242,8 +244,10 @@
          * :excel
          * :pdf
          * :qrbill
+         * :qrcode
          * :tomcat
          * :xchart
+         * :yaml
          * :jtokkit
          * :langchain
          * :postgresql-jdbc 

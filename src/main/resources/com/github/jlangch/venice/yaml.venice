@@ -32,3 +32,7 @@
 
 (ns yaml)
 
+
+(defn yaml->json [yaml]
+  ;; https://stackoverflow.com/questions/23744216/how-do-i-convert-from-yaml-to-json-in-java
+   )
