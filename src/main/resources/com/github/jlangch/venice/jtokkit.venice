@@ -54,8 +54,10 @@
   ^{ :arglists '(
           "(encoding type)")
      :doc """
-          Returns the encoding with the given encoding or model type
-          returns `nil`
+          Returns the encoding (:com.knuddels.jtokkit.api.Encoding) object for 
+          the given encoding or model type.
+          
+          Returns `nil` if it does not exist.
           """
      :examples '(
           """
@@ -138,12 +140,23 @@
           "(encode encoding text)")
      :doc """
           Encodes the given text into a list of token ids.
+
+          The argument 'encoding' may be an encding type like `:O200K_BASE` or
+          a model type like `:GPT_4O`
           """
      :examples '(
           """
           (do 
             (load-module :jtokkit ['jtokkit :as 'jt])
-            (-> (jt/encoding :GPT_3_5_TURBO)
+            ;; e.g. model types:  :GPT_4, :GPT_4O, :GPT_4O_MINI
+            (-> (jt/encoding :GPT_4O)
+                (jt/encode "hello world")))
+          """,
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            ;; e.g. encoding types:  :CL100K_BASE, :O200K_BASE
+            (-> (jt/encoding :O200K_BASE)
                 (jt/encode "hello world")))
           """ )
      :see-also '( 
@@ -167,12 +180,23 @@
      :doc """
           Encodes the given text into a list of token ids and returns the 
           number of tokens.
-          """
+ 
+          The argument 'encoding' may be an encding type like `:O200K_BASE` or
+          a model type like `:GPT_4O`
+         """
      :examples '(
           """
           (do 
             (load-module :jtokkit ['jtokkit :as 'jt])
-            (-> (jt/encoding :GPT_3_5_TURBO)
+            ;; e.g. model types:  :GPT_4, :GPT_4O, :GPT_4O_MINI
+            (-> (jt/encoding :GPT_4O)
+                (jt/count-tokens "hello world")))
+          """,
+          """
+          (do 
+            (load-module :jtokkit ['jtokkit :as 'jt])
+            ;; e.g. encoding types:  :CL100K_BASE, :O200K_BASE
+            (-> (jt/encoding :O200K_BASE)
                 (jt/count-tokens "hello world")))
           """ )
      :see-also '( 
