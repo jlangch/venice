@@ -273,6 +273,13 @@
           """(println (str (ansi/ansi :blue) "foo"))"""
           """(println (str (ansi/ansi :underline) "foo"))"""
           """(println (str (ansi/ansi (ansi/fg-color 33)) "foo"))"""
+          """
+          (do
+            (dotimes [n 10] (println ">>>" n))
+            (sleep 1 :seconds)
+            (println (ansi/ansi :clear-screen))
+            (println "Hello"))
+          """
         ) }
 
   ansi [style]
@@ -364,12 +371,10 @@
           """
      :examples '("""
                  (let [pb (ansi/progress :caption "Test:")]
-                   (pb 0 :progress)
-                   (sleep 1 :seconds)
-                   (pb 50 :progress)
-                   (sleep 1 :seconds)
-                   (pb 100 :progress)
-                   (sleep 1 :seconds)
+                   (pb 0 :start)
+                   (doseq [x (range 0 101 10)] 
+                     (pb x :progress)
+                     (sleep 1 :seconds))
                    (pb 100 :end))
                  """
                  """
@@ -448,15 +453,13 @@
           """
      :examples '("""
                  (let [pb (ansi/progress-bar
-                                 :caption     "Test:"
-                                 :width        25
+                                 :caption      "Test:"
+                                 :width        20
                                  :show-percent true)]
-                   (pb 0 :progress)
-                   (sleep 1 :seconds)
-                   (pb 50 :progress)
-                   (sleep 1 :seconds)
-                   (pb 100 :progress)
-                   (sleep 1 :seconds)
+                   (pb 0 :start)
+                   (doseq [x (range 0 101 10)] 
+                     (pb x :progress)
+                     (sleep 1 :seconds))
                    (pb 100 :end))
                  """
                  """
