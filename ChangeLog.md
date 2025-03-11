@@ -8,11 +8,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- clear screen command to the REPL
+
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+### Updated dependencies:
+
+- Bumped jtokkit lib in the :jtokkit module to V1.1.0
 
 
 

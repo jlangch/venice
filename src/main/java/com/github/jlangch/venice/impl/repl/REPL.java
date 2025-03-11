@@ -399,6 +399,11 @@ public class REPL implements IRepl {
                                 printer.println("error", "There is no debugger attached!");
                                 break;
 
+                            case "clear":
+                                terminal.puts(Capability.clear_screen);
+                                terminal.flush();
+                            	break;
+
                             default:
                                 handleReplCommand(cmd, env, terminal, history);
                                 break;

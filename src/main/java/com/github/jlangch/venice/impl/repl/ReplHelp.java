@@ -71,6 +71,7 @@ public class ReplHelp {
             "  !app         run an app archive:  !app test\n" +
             "  !manifest    print the app archive manifest:  !manifest test\n" +
             "  !hist clear  clear the history\n" +
+            "  !clear       clear screen (or type ctrl-L)\n" +
             "  !quit, !q    quit the REPL\n\n" +
             "Drag&Drop: \n" +
             "  Scripts can be dragged to the REPL. Upon pressing [return]\n" +
