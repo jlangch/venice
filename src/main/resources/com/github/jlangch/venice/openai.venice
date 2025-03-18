@@ -85,6 +85,67 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; ME
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(me & options)" )
+     :doc """
+          If you need to find the user and organizations associated with an API 
+          key, you can do so by calling the 'me' endpoint. The request just
+          needs the the API key.
+
+          ¶*Parameter request «options»*
+
+          | [![width: 15%]]   | [![width: 85%]] |
+          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
+                                from the environment variable "OPENAI_API_KEY". |
+          | :uri              | An OpenAI chat completion URI. E.g.: \
+                                "https://api.openai.com/v1/me". ¶\
+                                Defaults  to "https://api.openai.com/v1/me" |
+          | :debug            | An optional debug flag (true/false). Defaults \
+                                to false. ¶\
+                                In debug mode prints the HTTP request and response data |         
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+
+            (let [response (openai/me)]
+              (println "Status:  " (:status response))
+              (println "Mimetype:" (:mimetype response))
+              (if (=  (:status response) 200)
+                (println "Message:" (openai/pretty-print-json (:data response)))
+                (println "Error:"   (:data response)))))
+          """ ) }
+
+  me [& options]
+
+  (let [opts            (apply hash-map options)
+        uri             (:uri opts "https://api.openai.com/v1/me")
+        openai-api-key  (or (:openai-api-key opts) (openai-api-key-from-env))
+        _               (validate-openai-api-key openai-api-key)
+        debug?          (:debug opts false)
+        _               (when debug? (dump-prompt body))
+        response        (hc/send :get 
+                          uri
+                          :headers (openai-api-headers "application/json" 
+                                                       openai-api-key
+                                                       (:headers opts))
+                          :body nil
+                          :debug  debug?)
+        result          { :status   (:http-status response)
+                          :mimetype (:content-type-mimetype response)
+                          :headers  (:headers response) } ]
+   (assoc result :data  (hc/slurp-response response 
+                                           :json-parse-mode :data 
+                                           :json-key-fn keyword))))
+
+
+
+;; -----------------------------------------------------------------------------
 ;; CHAT COMPLETIONS 
 ;; -----------------------------------------------------------------------------
 
