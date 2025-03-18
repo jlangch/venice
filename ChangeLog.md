@@ -4,17 +4,23 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.39] - 2025-02-xx
+## [1.12.40] - 2025-03-xx
 
 ### Added
-
-- clear screen command to the REPL
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.39] - 2025-03-xx
+
+### Added
+
+- clear screen command to the REPL
 - :openai module support for 'me' endpoint
 
 ### Updated dependencies:
