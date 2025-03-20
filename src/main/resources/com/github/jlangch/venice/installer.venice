@@ -75,7 +75,8 @@
        """)
      :see-also '( 
        "installer/install"
-       "installer/install-libs" ) }
+       "installer/install-libs"
+       "installer/clean" ) }
 
   install-module [name & options]
 
@@ -125,7 +126,8 @@
        """)
      :see-also '( 
        "installer/install-libs"
-       "installer/install-module" ) }
+       "installer/install-module"
+       "installer/clean" ) }
 
   install [artifacts & options]
 
@@ -188,7 +190,8 @@
        """)
      :see-also '( 
        "installer/install"
-       "installer/install-module" ) }
+       "installer/install-module"
+       "installer/clean" ) }
 
   install-libs [libs & options]
 
@@ -220,15 +223,24 @@
          (installer/clean (repl/libs-dir)))
        """)
      :see-also '( 
+       "installer/install"
+       "installer/install-module"
        "installer/install-libs" ) }
 
-  clean [dir]
+  clean 
 
-  (when (io/exists-dir? dir)
-    (->> (io/list-files-glob dir "*.{jar,ttf,otf}")
-         (filter #(not (jansi-lib? %)))
-         (filter #(not (venice-lib? %)))
-         (docoll io/delete-file))))
+  ([]
+    (if (repl?)
+      (clean (repl/libs-dir))
+      (throw (ex :VncException "Please pass the directory to clean!"))))
+  
+  ([dir]
+    (if (io/exists-dir? dir)
+      (->> (io/list-files-glob dir "*.{jar,ttf,otf}")
+          (filter #(not (jansi-lib? %)))
+          (filter #(not (venice-lib? %)))
+          (docoll io/delete-file))
+      (throw (ex :VncException "The directory ~{dir} does not exist!")))))
 
 
 (defn
