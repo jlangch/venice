@@ -316,6 +316,6 @@ Examples:
 (do
   (load-module :maven)
   
-  (maven/download "org.knowm.xchart:xchart:3.8.0"))
+  (maven/download "org.knowm.xchart:xchart:3.8.6"))
 ```
 
