@@ -13,7 +13,6 @@ and loads a module only once and skips subsequent load attempts.
 * [Maven](ext-maven.md)
 * [Shell](ext-shell.md)
 * [Grep](ext-grep.md)
-* [Charts](ext-charts.md)
 * [Configuration](ext-configuration.md)
 * [Components](ext-components.md)
 * [Hexdump](ext-hexdump.md)
