@@ -1,8 +1,7 @@
 # Charts
 
-Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
+The Venice chart is based on the [XChart](https://knowm.org/open-source/xchart/) library.
 
-- org.knowm.xchart:xchart:3.8.6
 
 Run this script from the REPL to download the XChart libraries:
 
@@ -11,7 +10,7 @@ Run this script from the REPL to download the XChart libraries:
   (load-module :xchart-install)
   
   ;; Download the XChart libs from Maven
-  (xchart-install/install :dir (repl/libs-dir) :silent false))
+  (xchart-install/install :dir (repl/libs-dir) :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (println "\nRestarting REPL...")
@@ -26,7 +25,7 @@ Examples:
 - [Bubble Chart](#bubble-chart)
 - [Bar Chart](#bar-chart)
 - [Pie Chart](#pie-chart)
-- [Download Libraries](#download-required-3rd-party-libs)
+- [Install Libraries](#install-the-required-3rd-party-libs)
 
 
 ## Line Chart
@@ -310,12 +309,13 @@ Examples:
 
 
 
-## Download required 3rd party libs
+## Install the required 3rd party libs
 
 ```clojure
 (do
-  (load-module :maven)
+  (load-module :xchart-install)
   
-  (maven/download "org.knowm.xchart:xchart:3.8.6"))
+  ;; Download the XChart libs from Maven
+  (xchart-install/install :dir (repl/libs-dir) :silent false))
 ```
 

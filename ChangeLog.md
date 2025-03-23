@@ -25,7 +25,8 @@ All notable changes to this project will be documented in this file.
 
 ### Updated dependencies:
 
-- Bumped jtokkit lib in the :jtokkit module to V1.1.0
+- bumped jtokkit lib in the :jtokkit module to V1.1.0
+- bumped bumped xchart lib in the :chart module to V3.8.8
 
 
 
