@@ -47,6 +47,7 @@ public class Modules {
                         "installer",
 
                         "bouncycastle-install",
+                        "docx4j-8-install",
                         "excel-install",
                         "ivy-install",
                         "jansi-install",
@@ -80,6 +81,7 @@ public class Modules {
                         "dag",
                         "docker",
                         "docx",
+                        "docx4j-8",
                         "excel",
                         "esr",
                         "fam",

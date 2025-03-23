@@ -201,7 +201,10 @@
                                 See: [OpenAI Request Options](https://platform.openai.com/docs/api-reference/chat/create) |
           | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
                                 from the environment variable "OPENAI_API_KEY". |
-          | :headers          | Additional headers. E.g.: {"OpenAI-Beta" "chats=v2"} |
+          | :headers          | Additional headers. ¶\
+                                E.g.: { "OpenAI-Beta"         "chats=v2" ¶\
+                                        "OpenAI-Organization" "YOUR_ORG_ID" ¶\
+                                        "OpenAI-Project"      "YOUR_PROJECT_ID" } |
           | :uri              | An OpenAI chat completion URI. E.g.: \
                                 "https://api.openai.com/v1/chat/completions". ¶\
                                 Defaults  to "https://api.openai.com/v1/chat/completions" |

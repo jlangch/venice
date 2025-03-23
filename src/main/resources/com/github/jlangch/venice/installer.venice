@@ -37,7 +37,6 @@
 ;; E.g. :jansi -> :jansi-install
 (def- installable-modules [ :jansi
                             :bouncycastle
-                            :chart
                             :docx4j-8
                             :excel
                             :jtokkit
@@ -48,6 +47,7 @@
                             :qrbill
                             :qrcode
                             :tomcat
+                            :xchart
                             :yaml ])
 
 
@@ -254,7 +254,6 @@
 
          * :jansi
          * :bouncycastle
-         * :chart
          * :docx4j-8
          * :excel
          * :jtokkit
@@ -265,6 +264,7 @@
          * :qrbill
          * :qrcode
          * :tomcat
+         * :xchart
          * :yaml
          * :postgresql-jdbc 
 
