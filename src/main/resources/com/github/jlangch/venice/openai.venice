@@ -82,6 +82,9 @@
                             "audio/wav"    "wav"
                             "audio/webm"   "webm" })
 
+(defonce openapi-yaml-github "https://github.com/openai/openai-openapi/blob/master/openapi.yaml")
+(defonce openapi-yaml-url "https://raw.githubusercontent.com/openai/openai-openapi/refs/heads/master/openapi.yaml")
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -142,6 +145,34 @@
    (assoc result :data  (hc/slurp-response response 
                                            :json-parse-mode :data 
                                            :json-key-fn keyword))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; OpenAPI YAML
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(openapi-yaml)" )
+     :doc """
+          Returns the current OpenAI OpenAPI YAML definition.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai)
+            (println (openai/openapi-yaml)))
+          """,
+          """
+          (do
+            (load-module :openai)
+            (io/spit "openapi.yaml" (openai/openapi-yaml)))
+          """ ) }
+
+  openapi-yaml []
+
+  (io/download  openapi-yaml-url :binary false))
 
 
 

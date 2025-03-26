@@ -41,6 +41,11 @@ public class ModuleOpenAiSection implements ISectionBuilder {
         final DocSection all = new DocSection("(load-module :openai)", id());
         section.addSection(all);
 
+        final DocSection util = new DocSection("Util", id());
+        all.addSection(util);
+        util.addItem(diBuilder.getDocItem("openai/me", false));
+        util.addItem(diBuilder.getDocItem("openai/openapi-yaml", false));
+
         final DocSection chat = new DocSection("Chat", id());
         all.addSection(chat);
         chat.addItem(diBuilder.getDocItem("openai/chat-completion", false));
