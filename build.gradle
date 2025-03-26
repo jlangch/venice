@@ -594,6 +594,15 @@ task updateReleaseVersion {
         ) {
             fileset(dir: 'src/main/resources', includes: '**/app.venice')
         }
+ 
+        println "Updating version ${project.version} -> 'shebang-doc.md'"
+        ant.replaceregexp(
+                match:   "VERSION=${version_regex}",
+                replace: "VERSION=${project.version}",
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/resources', includes: '**/shebang-doc.md')
+        }
 
         println "Updating version ${project.version} -> 'readme/*.md'"
         ant.replaceregexp(
@@ -630,15 +639,6 @@ task updateReleaseVersion {
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'repl-advanced.md')
-        }
- 
-        println "Updating version ${project.version} -> 'docgen/shebang-doc.md'"
-        ant.replaceregexp(
-                match:   "VERSION=${version_regex}",
-                replace: "VERSION=${project.version}",
-                flags:   'g'
-        ) {
-            fileset(dir: 'src/main/resources', includes: 'com/github/jlangch/venice/docgen/shebang-doc.md')
         }
         
         println "Updating version ${project.version} -> 'Launcher.java'"
