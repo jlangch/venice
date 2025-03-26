@@ -115,11 +115,16 @@ public class SpecialForms_OtherFunctions {
                         "   dec                  \n" +
                         "```")
                     .examples(
+                    	";; documentation of function '+'\n" +
                         "(doc +)",
+                    	";; documentation of special form 'def'\n" +
                         "(doc def)",
+                    	";; source code of module ':ascii-table'\n" +
+                        "(doc :ascii-table)",
+                    	";; definition/structure of a complex type\n" +
                         "(do \n" +
-                        "   (deftype :complex [real :long, imaginary :long]) \n" +
-                        "   (doc :complex))")
+                        "  (deftype :complex [real :long, imaginary :long]) \n" +
+                        "  (doc :complex))")
                     .seeAlso(
                     	"ns-list", "modules", "finder")
                     .build()
