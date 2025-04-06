@@ -30,6 +30,7 @@
 ;;;;   (shell/alive? pid)                            9+        x      x     x
 ;;;;   (shell/pid)                                   9+        x      x     x
 ;;;;   (shell/pid p)                                 9+        x      x     x
+;;;;   (shell/nice p)                                9+        x      x     -
 ;;;;   (shell/process-handle p)                      9+        x      x     x
 ;;;;   (shell/process-handle? p)                     9+        x      x     x
 ;;;;   (shell/process-info p)                        9+        x      x     x
@@ -166,6 +167,48 @@
   ([process-handle]
     (require-java-9+)
     (. process-handle :pid)))
+
+
+(defn
+  ^{ :arglists '(
+        "(nice n)"
+        "(nice pid n)")
+     :doc
+        """
+        The *Nice* command in linux allows users to prioritize process execution.
+        The nice value determines the priority of a process, with lower values 
+        indicating higher priority.
+
+        A niceness of -20 is the lowest niceness, or highest priority. The 
+        default niceness for processes is inherited from its parent process and 
+        is usually 0. 
+
+        Systems have diverged on what priority is the lowest. Linux systems 
+        document a niceness of 19 as the lowest priority, BSD systems document 
+        20 as the lowest priority. In both cases, the "lowest" priority is 
+        documented as running only when nothing else wants to. 
+
+        `(nice n)`  change the nice value of this process
+
+        `(nice pid n)`  change the nice value of this process with the given pid
+
+        Requires Java 9+.
+        """
+     :examples '(
+        "(shell/nice -10)"
+        "(shell/nice (shell-pid) -10)")
+     :see-also '(
+        "shell/pid" ) }
+
+  nice
+
+  ([n]
+    (require-java-9+)
+    (nice (shell/pid) n))
+
+  ([pid n]
+    (require-java-9+)
+    (sh "nice" (str pid) (str n) :throw-ex true)))
 
 
 (defn

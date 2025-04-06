@@ -54,6 +54,7 @@ public class ModuleShellSection implements ISectionBuilder {
         test.addItem(diBuilder.getDocItem("shell/wait-for-process-exit", false));
         test.addItem(diBuilder.getDocItem("shell/alive?", false));
         test.addItem(diBuilder.getDocItem("shell/pid", false));
+        test.addItem(diBuilder.getDocItem("shell/nice", false));
         test.addItem(diBuilder.getDocItem("shell/process-handle", false));
         test.addItem(diBuilder.getDocItem("shell/process-handle?", false));
         test.addItem(diBuilder.getDocItem("shell/process-info", false));
