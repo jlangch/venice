@@ -192,6 +192,8 @@
 
         `(nice pid n)`  change the nice value of this process with the given pid
 
+        Command line equivalent: `nice -n -10 tar cvzf archive.tgz largefile`
+
         Requires Java 9+.
         """
      :examples '(
