@@ -198,7 +198,7 @@
         """
      :examples '(
         "(shell/nice -10)"
-        "(shell/nice (shell-pid) -10)")
+        "(shell/nice (shell/pid) -10)")
      :see-also '(
         "shell/pid" ) }
 
