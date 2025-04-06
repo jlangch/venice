@@ -124,6 +124,8 @@ public class CollectionsSection implements ISectionBuilder {
         list_access.addItem(diBuilder.getDocItem("butlast"));
         list_access.addItem(diBuilder.getDocItem("nfirst"));
         list_access.addItem(diBuilder.getDocItem("nlast"));
+        list_access.addItem(diBuilder.getDocItem("index-of"));
+        list_access.addItem(diBuilder.getDocItem("last-index-of"));
         list_access.addItem(diBuilder.getDocItem("sublist"));
         list_access.addItem(diBuilder.getDocItem("some"));
 
@@ -194,6 +196,8 @@ public class CollectionsSection implements ISectionBuilder {
         vec_access.addItem(diBuilder.getDocItem("rest"));
         vec_access.addItem(diBuilder.getDocItem("nfirst"));
         vec_access.addItem(diBuilder.getDocItem("nlast"));
+        vec_access.addItem(diBuilder.getDocItem("index-of"));
+        vec_access.addItem(diBuilder.getDocItem("last-index-of"));
         vec_access.addItem(diBuilder.getDocItem("subvec"));
         vec_access.addItem(diBuilder.getDocItem("some"));
 

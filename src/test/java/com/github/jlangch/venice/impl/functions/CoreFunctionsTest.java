@@ -2319,6 +2319,44 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void index_of() {
+        final Venice venice = new Venice();
+
+        assertEquals( 1L, venice.eval("(index-of [1 2 2 3] 2)"));
+        assertEquals(-1L, venice.eval("(index-of [1 2 3] 6)"));
+        assertEquals(-1L, venice.eval("(index-of [1 2 3] nil)"));
+        assertEquals( 1L, venice.eval("(index-of [1 nil 3] nil)"));
+        assertEquals(-1L, venice.eval("(index-of nil 7)"));
+        assertEquals(-1L, venice.eval("(index-of nil nil)"));
+
+        assertEquals( 1L, venice.eval("(index-of '(1 2 2 3) 2)"));
+        assertEquals(-1L, venice.eval("(index-of '(1 2 3) 6)"));
+        assertEquals(-1L, venice.eval("(index-of '(1 2 3) nil)"));
+        assertEquals( 1L, venice.eval("(index-of '(1 nil 3) nil)"));
+        assertEquals(-1L, venice.eval("(index-of nil 7)"));
+        assertEquals(-1L, venice.eval("(index-of nil nil)"));
+    }
+
+    @Test
+    public void last_index_of() {
+        final Venice venice = new Venice();
+
+        assertEquals( 2L, venice.eval("(last-index-of [1 2 2 3] 2)"));
+        assertEquals(-1L, venice.eval("(last-index-of [1 2 3] 6)"));
+        assertEquals(-1L, venice.eval("(last-index-of [1 2 3] nil)"));
+        assertEquals( 1L, venice.eval("(last-index-of [1 nil 3] nil)"));
+        assertEquals(-1L, venice.eval("(last-index-of nil 7)"));
+        assertEquals(-1L, venice.eval("(last-index-of nil nil)"));
+
+        assertEquals( 2L, venice.eval("(last-index-of '(1 2 2 3) 2)"));
+        assertEquals(-1L, venice.eval("(last-index-of '(1 2 3) 6)"));
+        assertEquals(-1L, venice.eval("(last-index-of '(1 2 3) nil)"));
+        assertEquals( 1L, venice.eval("(last-index-of '(1 nil 3) nil)"));
+        assertEquals(-1L, venice.eval("(last-index-of nil 7)"));
+        assertEquals(-1L, venice.eval("(last-index-of nil nil)"));
+    }
+
+    @Test
     public void test_instance_of_Q() {
         final Venice venice = new Venice();
 

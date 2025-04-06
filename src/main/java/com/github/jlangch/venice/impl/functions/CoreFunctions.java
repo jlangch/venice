@@ -7196,6 +7196,106 @@ public class CoreFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     };
 
+    public static VncFunction index_of =
+        new VncFunction(
+                "index-of",
+                VncFunction
+                    .meta()
+                    .arglists("(index-of sequence val)")
+                    .doc(
+                        "Returns the first index of the sequence value that is equal to val or -1 if not found")
+                    .examples(
+                        "(index-of [1 2 2 3] 2)",
+                        "(index-of [1 2 3] 6)",
+                        "(index-of [1 2 3] nil)",
+                        "(index-of [1 nil 3] nil)",
+                        "(index-of nil 7)")
+                    .seeAlso("last-index-of")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0, 2);
+
+                final VncVal coll = args.first();
+                if (coll == Nil) {
+                    return new VncLong(-1);
+                }
+                else if (Types.isVncSequence(coll)) {
+                    final VncVal val = args.second();
+
+                	final VncSequence seq = ((VncSequence)coll);
+
+                	for(int ii=0; ii<seq.size(); ii++) {
+                		final VncVal v = seq.nth(ii);
+
+                		if (val.compareTo(v) == 0) {
+                			return new VncLong(ii);
+                		}
+                	}
+
+                    return new VncLong(-1);
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Invalid argument type %s while calling function 'index-of'",
+                            Types.getType(coll)));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction last_index_of =
+        new VncFunction(
+                "last-index-of",
+                VncFunction
+                    .meta()
+                    .arglists("(last-index-of sequence val)")
+                    .doc(
+                        "Returns the last index of the sequence value that is equal to val or -1 if not found")
+                    .examples(
+                        "(last-index-of [1 2 2 3] 2)",
+                        "(last-index-of [1 2 3] 6)",
+                        "(last-index-of [1 2 3] nil)",
+                        "(last-index-of [1 nil 3] nil)",
+                        "(last-index-of nil 7)")
+                    .seeAlso("index-of")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0, 2);
+
+                final VncVal coll = args.first();
+                if (coll == Nil) {
+                    return new VncLong(-1);
+                }
+                else if (Types.isVncSequence(coll)) {
+                    final VncVal val = args.second();
+
+                	final VncSequence seq = ((VncSequence)coll);
+
+                	for(int ii=seq.size()-1; ii>=0; ii--) {
+                		final VncVal v = seq.nth(ii);
+
+                		if (val.compareTo(v) == 0) {
+                			return new VncLong(ii);
+                		}
+                	}
+
+                    return new VncLong(-1);
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Invalid argument type %s while calling function 'last-index-of'",
+                            Types.getType(coll)));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction partition =
         new VncFunction(
                 "partition",
@@ -10301,6 +10401,8 @@ public class CoreFunctions {
                 .add(butlast)
                 .add(nfirst)
                 .add(nlast)
+                .add(index_of)
+                .add(last_index_of)
                 .add(emptyToNil)
                 .add(pop)
                 .add(put_BANG)
