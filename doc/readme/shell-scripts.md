@@ -218,6 +218,21 @@ Time: 2024-07-26T14:49:47.963
 nil
 ```
 
+### Running a Venice Shebang script as Unix cron job
+
+Open the cron editor:
+
+```
+> export EDITOR=/bin/vi
+> crontab -e
+```
+
+Add the following line to schedule the job:
+
+```
+30 23 * * Mon-Fri /bin/sh /home/foo/shebang-demo.venice 1 2 3
+```
+
 
 ## Noticeable I/O Functions
 

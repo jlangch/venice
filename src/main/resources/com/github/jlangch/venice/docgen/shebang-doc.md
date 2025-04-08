@@ -4,7 +4,7 @@
 With a little bit of sorcery a Venice script can be run as a Unix *Shebang* script.
 
 
-## REPL based Venice Shebang Script
+## REPL based Venice Shebang script
 
 This *shebang* demo uses the Venice interpreter from an installed Venice REPL, giving the script access to all the 3rd party libraries installed within the REPL.
 
@@ -55,7 +55,7 @@ nil
 ```
 
 
-## Standalone Venice Shebang Script
+## Standalone Venice Shebang script
 
 This *shebang* demo implicitly downloads the Venice library from the Maven 
 repository when the script starts, provided the Venice library is not yet 
@@ -107,3 +107,19 @@ Args: (1 2 3)
 Time: 2024-07-26T14:49:47.963
 nil
 ```
+
+## Running a Venice Shebang script as Unix cron job
+
+Open the cron editor:
+
+```
+> export EDITOR=/bin/vi
+> crontab -e
+```
+
+Add the following line to schedule the job:
+
+```
+30 23 * * Mon-Fri /bin/sh /home/foo/shebang-demo.venice 1 2 3
+```
+
