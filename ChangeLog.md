@@ -6,18 +6,24 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.40] - 2025-04-xx
+## [1.12.41] - 2025-04-xx
 
 ### Added
-
-- function `shell/nice`
-- function `index-of` and `last-index-of` for sequences
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.40] - 2025-04-08
+
+### Added
+
+- function `shell/nice`
+- function `index-of` and `last-index-of` for sequences
 
 
 
