@@ -2045,10 +2045,10 @@ public class CoreFunctions {
                     return arg;
                 }
                 else if (VncBoolean.isFalse(arg)) {
-                	return new VncFloat(0.0F);
+                    return new VncFloat(0.0F);
                 }
                 else if (VncBoolean.isTrue(arg)) {
-                	return new VncFloat(1.0F);
+                    return new VncFloat(1.0F);
                 }
                 else if (Types.isVncInteger(arg)) {
                     return new VncFloat(((VncInteger)arg).toJavaFloat());
@@ -7201,38 +7201,51 @@ public class CoreFunctions {
                 "index-of",
                 VncFunction
                     .meta()
-                    .arglists("(index-of sequence val)")
+                    .arglists(
+                    	"(index-of sequence val)",
+                    	"(index-of comparefn sequence val)")
                     .doc(
-                        "Returns the first index of the sequence value that is equal to val or -1 if not found")
+                        "Returns the first index of the sequence value that is equal to " +
+                        "val or -1 if not found.\n\n" +
+                        "If no compare function is supplied, uses the natural compare to " +
+                        "compare the sequence values to the supplied value. The compare " +
+                        "function takes two arguments and returns -1, 0, or 1.")
                     .examples(
                         "(index-of [1 2 2 3] 2)",
                         "(index-of [1 2 3] 6)",
                         "(index-of [1 2 3] nil)",
                         "(index-of [1 nil 3] nil)",
-                        "(index-of nil 7)")
+                        "(index-of nil 7)",
+                        "(index-of compare [1 2 2 3] 2)",
+                        "(index-of #(if (== %1 %2) 0 1) [1 2 2 3] 2)")
                     .seeAlso("last-index-of")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 0, 2);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
-                final VncVal coll = args.first();
+                final IVncFunction compfn = args.size() == 2
+                                                ? compare // -> sort by natural order
+                                                : Coerce.toIVncFunction(args.first());
+
+                final VncVal coll = args.size() == 2 ? args.first() : args.second();
+                final VncVal val = args.size() == 2 ? args.second() : args.third();
+
                 if (coll == Nil) {
                     return new VncLong(-1);
                 }
                 else if (Types.isVncSequence(coll)) {
-                    final VncVal val = args.second();
 
-                	final VncSequence seq = ((VncSequence)coll);
+                    final VncSequence seq = ((VncSequence)coll);
 
-                	for(int ii=0; ii<seq.size(); ii++) {
-                		final VncVal v = seq.nth(ii);
+                    for(int ii=0; ii<seq.size(); ii++) {
+                        final VncVal v = seq.nth(ii);
 
-                		if (val.compareTo(v) == 0) {
-                			return new VncLong(ii);
-                		}
-                	}
+                        if (Coerce.toVncLong(compfn.apply(VncList.of(val,v))).getValue() == 0L) {
+                            return new VncLong(ii);
+                        }
+                    }
 
                     return new VncLong(-1);
                 }
@@ -7251,38 +7264,50 @@ public class CoreFunctions {
                 "last-index-of",
                 VncFunction
                     .meta()
-                    .arglists("(last-index-of sequence val)")
+                    .arglists(
+                        "(last-index-of sequence val)",
+                        "(last-index-of comparefn sequence val)")
                     .doc(
-                        "Returns the last index of the sequence value that is equal to val or -1 if not found")
+                        "Returns the last index of the sequence value that is equal " +
+                        "to val or -1 if not found.\n\n" +
+                        "If no compare function is supplied, uses the natural compare to " +
+                        "compare the sequence values to the supplied value. The compare " +
+                        "function takes two arguments and returns -1, 0, or 1.")
                     .examples(
                         "(last-index-of [1 2 2 3] 2)",
                         "(last-index-of [1 2 3] 6)",
                         "(last-index-of [1 2 3] nil)",
                         "(last-index-of [1 nil 3] nil)",
-                        "(last-index-of nil 7)")
+                        "(last-index-of nil 7)",
+                        "(last-index-of compare [1 2 2 3] 2)",
+                        "(last-index-of #(if (== %1 %2) 0 1) [1 2 2 3] 2)")
                     .seeAlso("index-of")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 0, 2);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
-                final VncVal coll = args.first();
+                final IVncFunction compfn = args.size() == 2
+                                                ? compare // -> sort by natural order
+                                                : Coerce.toIVncFunction(args.first());
+
+                final VncVal coll = args.size() == 2 ? args.first() : args.second();
+                final VncVal val = args.size() == 2 ? args.second() : args.third();
+
                 if (coll == Nil) {
                     return new VncLong(-1);
                 }
                 else if (Types.isVncSequence(coll)) {
-                    final VncVal val = args.second();
+                    final VncSequence seq = ((VncSequence)coll);
 
-                	final VncSequence seq = ((VncSequence)coll);
+                    for(int ii=seq.size()-1; ii>=0; ii--) {
+                        final VncVal v = seq.nth(ii);
 
-                	for(int ii=seq.size()-1; ii>=0; ii--) {
-                		final VncVal v = seq.nth(ii);
-
-                		if (val.compareTo(v) == 0) {
-                			return new VncLong(ii);
-                		}
-                	}
+                        if (Coerce.toVncLong(compfn.apply(VncList.of(val,v))).getValue() == 0L) {
+                            return new VncLong(ii);
+                        }
+                    }
 
                     return new VncLong(-1);
                 }

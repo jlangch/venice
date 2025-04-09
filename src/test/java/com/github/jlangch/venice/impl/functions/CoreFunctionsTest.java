@@ -2319,7 +2319,7 @@ public class CoreFunctionsTest {
     }
 
     @Test
-    public void index_of() {
+    public void test_index_of() {
         final Venice venice = new Venice();
 
         assertEquals( 1L, venice.eval("(index-of [1 2 2 3] 2)"));
@@ -2338,7 +2338,45 @@ public class CoreFunctionsTest {
     }
 
     @Test
-    public void last_index_of() {
+    public void test_index_of_compare_std() {
+        final Venice venice = new Venice();
+
+        assertEquals( 1L, venice.eval("(index-of compare [1 2 2 3] 2)"));
+        assertEquals(-1L, venice.eval("(index-of compare [1 2 3] 6)"));
+        assertEquals(-1L, venice.eval("(index-of compare [1 2 3] nil)"));
+        assertEquals( 1L, venice.eval("(index-of compare [1 nil 3] nil)"));
+        assertEquals(-1L, venice.eval("(index-of compare nil 7)"));
+        assertEquals(-1L, venice.eval("(index-of compare nil nil)"));
+
+        assertEquals( 1L, venice.eval("(index-of compare '(1 2 2 3) 2)"));
+        assertEquals(-1L, venice.eval("(index-of compare '(1 2 3) 6)"));
+        assertEquals(-1L, venice.eval("(index-of compare '(1 2 3) nil)"));
+        assertEquals( 1L, venice.eval("(index-of compare '(1 nil 3) nil)"));
+        assertEquals(-1L, venice.eval("(index-of compare nil 7)"));
+        assertEquals(-1L, venice.eval("(index-of compare nil nil)"));
+    }
+
+    @Test
+    public void test_index_of_compare_custom() {
+        final Venice venice = new Venice();
+
+        assertEquals( 1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) [1 2 2 3] 2)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) [1 2 3] 6)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) [1 2 3] nil)"));
+        assertEquals( 1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) [1 nil 3] nil)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) nil 7)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) nil nil)"));
+
+        assertEquals( 1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) '(1 2 2 3) 2)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) '(1 2 3) 6)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) '(1 2 3) nil)"));
+        assertEquals( 1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) '(1 nil 3) nil)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) nil 7)"));
+        assertEquals(-1L, venice.eval("(index-of (fn [x y] (if (== x y) 0 1)) nil nil)"));
+    }
+
+    @Test
+    public void test_last_index_of() {
         final Venice venice = new Venice();
 
         assertEquals( 2L, venice.eval("(last-index-of [1 2 2 3] 2)"));
@@ -2354,6 +2392,44 @@ public class CoreFunctionsTest {
         assertEquals( 1L, venice.eval("(last-index-of '(1 nil 3) nil)"));
         assertEquals(-1L, venice.eval("(last-index-of nil 7)"));
         assertEquals(-1L, venice.eval("(last-index-of nil nil)"));
+    }
+
+    @Test
+    public void test_last_index_of_compare_std() {
+        final Venice venice = new Venice();
+
+        assertEquals( 2L, venice.eval("(last-index-of compare [1 2 2 3] 2)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare [1 2 3] 6)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare [1 2 3] nil)"));
+        assertEquals( 1L, venice.eval("(last-index-of compare [1 nil 3] nil)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare nil 7)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare nil nil)"));
+
+        assertEquals( 2L, venice.eval("(last-index-of compare '(1 2 2 3) 2)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare '(1 2 3) 6)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare '(1 2 3) nil)"));
+        assertEquals( 1L, venice.eval("(last-index-of compare '(1 nil 3) nil)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare nil 7)"));
+        assertEquals(-1L, venice.eval("(last-index-of compare nil nil)"));
+    }
+
+    @Test
+    public void test_last_index_of_compare_custom() {
+        final Venice venice = new Venice();
+
+        assertEquals( 2L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) [1 2 2 3] 2)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) [1 2 3] 6)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) [1 2 3] nil)"));
+        assertEquals( 1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) [1 nil 3] nil)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) nil 7)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) nil nil)"));
+
+        assertEquals( 2L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) '(1 2 2 3) 2)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) '(1 2 3) 6)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) '(1 2 3) nil)"));
+        assertEquals( 1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) '(1 nil 3) nil)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) nil 7)"));
+        assertEquals(-1L, venice.eval("(last-index-of (fn [x y] (if (== x y) 0 1)) nil nil)"));
     }
 
     @Test
