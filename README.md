@@ -57,7 +57,7 @@ Would you like to try Venice in an interactive REPL environment?
 
 ## Cheat Sheet
 
-Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangch/venice/d776e5b/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/d776e5b/cheatsheet.pdf)
+Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangch/venice/197f271/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/197f271/cheatsheet.pdf)
 
 
 
