@@ -30,7 +30,7 @@
 ;;;;   (shell/alive? pid)                            9+        x      x     x
 ;;;;   (shell/pid)                                   9+        x      x     x
 ;;;;   (shell/pid p)                                 9+        x      x     x
-;;;;   (shell/nice p)                                9+        x      x     -
+;;;;   (shell/nice p)                                9+        -      x     -
 ;;;;   (shell/process-handle p)                      9+        x      x     x
 ;;;;   (shell/process-handle? p)                     9+        x      x     x
 ;;;;   (shell/process-info p)                        9+        x      x     x
