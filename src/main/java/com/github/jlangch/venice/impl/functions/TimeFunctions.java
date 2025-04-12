@@ -870,7 +870,7 @@ public class TimeFunctions {
                     .doc(
                         "Calculates the amount of time between two date/time values. Unit is " +
                         "one of :millis, :seconds, :minutes, :hours, :days, :weeks, :months, :years.\n\n" +
-                        "Note: the units :millis, :seconds, :minutes, :hours are not supported for local-date types.")
+                        "Note: the units :millis, :seconds, :minutes, and :hours are not supported for local-date types.")
                     .examples(
                         "(time/between (time/local-date 2018 1 1) \n" +
                         "              (time/local-date 2019 1 1) \n" +
