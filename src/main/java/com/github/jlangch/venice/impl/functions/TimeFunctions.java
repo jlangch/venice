@@ -869,25 +869,36 @@ public class TimeFunctions {
                         "(time/between date1 date2 unit)")
                     .doc(
                         "Calculates the amount of time between two date/time values. Unit is " +
-                        "one of :millis, :seconds, :minutes, :hours, :weeks, :months, :years.")
+                        "one of :millis, :seconds, :minutes, :hours, :days, :weeks, :months, :years.\n\n" +
+                        "Note: the units :millis, :seconds, :minutes, :hours are not supported for local-date types.")
                     .examples(
-                        "(time/between (time/local-date 2019 1 1) \n" +
-                        "              (time/local-date 2018 1 1) \n" +
+                        "(time/between (time/local-date 2018 1 1) \n" +
+                        "              (time/local-date 2019 1 1) \n" +
                         "              :days)",
-                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
-                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
-                        "             :seconds)",
-                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
-                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
-                        "             :minutes)",
-                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
-                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
-                        "             :hours)",
-                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
-                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
-                        "             :days)",
-                       "(time/between (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\") \n" +
-                        "             (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\"))")
+                        "(time/between (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "              (time/local-date-time \"2019-03-01T10:00:00.000\") \n" +
+                        "              :seconds)",
+                        "(time/between (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "              (time/local-date-time \"2019-03-01T10:00:00.000\") \n" +
+                        "              :minutes)",
+                        "(time/between (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "              (time/local-date-time \"2019-03-01T10:00:00.000\") \n" +
+                        "              :hours)",
+                        "(time/between (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "              (time/local-date-time \"2019-03-01T10:00:00.000\") \n" +
+                        "              :days)",
+                        "(time/between (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "              (time/local-date-time \"2019-03-01T10:00:00.000\") \n" +
+                        "              :weeks)",
+                        "(time/between (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "              (time/local-date-time \"2019-03-01T10:00:00.000\") \n" +
+                        "              :months)",
+                        "(time/between (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "              (time/local-date-time \"2019-03-01T10:00:00.000\") \n" +
+                        "              :years)",
+                        "(time/between (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\") \n" +
+                        "              (time/zoned-date-time \"2019-03-01T10:00:00.000+01:00\") \n" +
+                        "              :months)")
                     .seeAlso(
                         "time/after?", "time/before?", "time/not-after?", "time/not-before?")
                     .build()
@@ -931,7 +942,7 @@ public class TimeFunctions {
                     default:
                         throw new VncException(String.format(
                                 "Function 'time/between' invalid unit parameter ':%s'. Use one of" +
-                                ":millis, :seconds, :minutes, :hours, :weeks, :months, :years",
+                                ":millis, :seconds, :minutes, :hours, :days, :weeks, :months, :years",
                                 unit.getSimpleName()));
                 }
             }

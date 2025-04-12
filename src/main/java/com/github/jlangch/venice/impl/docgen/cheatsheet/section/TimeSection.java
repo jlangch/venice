@@ -107,6 +107,7 @@ public class TimeSection implements ISectionBuilder {
 
         final DocSection misc = new DocSection("Miscellaneous", "time.misc");
         all.addSection(misc);
+        misc.addItem(diBuilder.getDocItem("time/between"));
         misc.addItem(diBuilder.getDocItem("time/with-time"));
         misc.addItem(diBuilder.getDocItem("time/plus"));
         misc.addItem(diBuilder.getDocItem("time/minus"));
