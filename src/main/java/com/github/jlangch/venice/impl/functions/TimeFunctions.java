@@ -23,6 +23,14 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.MONTHS;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.time.temporal.ChronoUnit.WEEKS;
+import static java.time.temporal.ChronoUnit.YEARS;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -843,6 +851,89 @@ public class TimeFunctions {
                                                 .toLocalDateTime();
 
                 return new VncJavaObject(ts);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Between
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static VncFunction between =
+        new VncFunction(
+                "time/between",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(time/between date1 date2 unit)")
+                    .doc(
+                        "Calculates the amount of time between two date/time values. Unit is " +
+                        "one of :millis, :seconds, :minutes, :hours, :weeks, :months, :years.")
+                    .examples(
+                        "(time/between (time/local-date 2019 1 1) \n" +
+                        "              (time/local-date 2018 1 1) \n" +
+                        "              :days)",
+                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
+                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "             :seconds)",
+                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
+                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "             :minutes)",
+                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
+                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "             :hours)",
+                        "(time/between (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
+                        "             (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+                        "             :days)",
+                       "(time/between (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\") \n" +
+                        "             (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\"))")
+                    .seeAlso(
+                        "time/after?", "time/before?", "time/not-after?", "time/not-before?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 3);
+
+                final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
+                final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
+                final VncKeyword unit = Coerce.toVncKeyword(args.third());
+
+                if (!(date1 instanceof Temporal)) {
+                    throw new VncException(String.format(
+                            "Function 'time/between' invalid date1 parameter %s. Must be a date/time",
+                            Types.getType(args.first())));
+                }
+                if (!(date2 instanceof Temporal)) {
+                    throw new VncException(String.format(
+                            "Function 'time/between' invalid date2 parameter %s. Must be a date/time",
+                            Types.getType(args.second())));
+                }
+
+                switch(unit.getSimpleName()) {
+                    case "millis":
+                        return new VncLong(MILLIS.between((Temporal)date1, (Temporal)date2));
+                    case "seconds":
+                        return new VncLong(SECONDS.between((Temporal)date1, (Temporal)date2));
+                    case "minutes":
+                        return new VncLong(MINUTES.between((Temporal)date1, (Temporal)date2));
+                    case "hours":
+                        return new VncLong(HOURS.between((Temporal)date1, (Temporal)date2));
+                    case "days":
+                        return new VncLong(DAYS.between((Temporal)date1, (Temporal)date2));
+                    case "weeks":
+                        return new VncLong(WEEKS.between((Temporal)date1, (Temporal)date2));
+                    case "months":
+                        return new VncLong(MONTHS.between((Temporal)date1, (Temporal)date2));
+                    case "years":
+                        return new VncLong(YEARS.between((Temporal)date1, (Temporal)date2));
+                    default:
+                        throw new VncException(String.format(
+                                "Function 'time/between' invalid unit parameter ':%s'. Use one of" +
+                                ":millis, :seconds, :minutes, :hours, :weeks, :months, :years",
+                                unit.getSimpleName()));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2506,6 +2597,7 @@ public class TimeFunctions {
                     .add(length_of_month)
                     .add(zone)
                     .add(zone_offset)
+                    .add(between)
                     .add(after_Q)
                     .add(not_after_Q)
                     .add(before_Q)

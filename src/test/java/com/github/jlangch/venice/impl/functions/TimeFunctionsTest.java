@@ -476,6 +476,121 @@ public class TimeFunctionsTest {
     }
 
     @Test
+    public void test_between_local_date() {
+        final Venice venice = new Venice();
+
+        assertEquals(430L, venice.eval(
+                "(time/between (time/local-date \"2018-08-10\")" +
+                "              (time/local-date \"2019-10-14\")" +
+                "              :days))"));
+
+        assertEquals(61L, venice.eval(
+                "(time/between (time/local-date \"2018-08-10\")" +
+                "              (time/local-date \"2019-10-14\")" +
+                "              :weeks))"));
+
+        assertEquals(14L, venice.eval(
+                "(time/between (time/local-date \"2018-08-10\")" +
+                "              (time/local-date \"2019-10-14\")" +
+                "              :months))"));
+
+        assertEquals(1L, venice.eval(
+                "(time/between (time/local-date \"2018-08-10\")" +
+                "              (time/local-date \"2019-10-14\")" +
+                "              :years))"));
+    }
+
+    @Test
+    public void test_between_local_date_time() {
+        final Venice venice = new Venice();
+
+        assertEquals(37152000000L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :millis))"));
+
+        assertEquals(37152000L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :seconds))"));
+
+        assertEquals(619200L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :minutes))"));
+
+        assertEquals(10320L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :hours))"));
+
+        assertEquals(430L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :days))"));
+
+        assertEquals(61L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :weeks))"));
+
+        assertEquals(14L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :months))"));
+
+        assertEquals(1L, venice.eval(
+                "(time/between (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+                "              (time/local-date-time \"2019-10-14T10:00:00.000\")" +
+                "              :years))"));
+    }
+
+    @Test
+    public void test_between_zoned_date_time() {
+        final Venice venice = new Venice();
+
+        assertEquals(37152000000L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :millis))"));
+
+        assertEquals(37152000L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :seconds))"));
+
+        assertEquals(619200L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :minutes))"));
+
+        assertEquals(10320L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :hours))"));
+
+        assertEquals(430L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :days))"));
+
+        assertEquals(61L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :weeks))"));
+
+        assertEquals(14L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :months))"));
+
+        assertEquals(1L, venice.eval(
+                "(time/between (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+                "              (time/zoned-date-time \"2019-10-14T10:00:00.000+01:00\")" +
+                "              :years))"));
+    }
+
+    @Test
     public void test_after() {
         final Venice venice = new Venice();
 

@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - support for an optional compare function to `index-of` and `last-index-of`
+- function `time/between`
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
