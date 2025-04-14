@@ -90,7 +90,31 @@ public abstract class UTF8 {
 
     public static char DELTA_UPPER           = '\u0394';  // uppercase greek delta 'Δ'
 
+    // Block elements (https://en.wikipedia.org/wiki/Box-drawing_characters)
+    public static char UPPER_HALF_BLOCK           = '\u2580';  // ▀
+    public static char LOWER_ONE_EIGHTH_BLOCK     = '\u2581';  // ▁
+    public static char LOWER_ONE_QUARTER_BLOCK    = '\u2582';  // ▂
+    public static char LOWER_THREE_EIGHTHS_BLOCK  = '\u2583';  // ▃
+    public static char LOWER_HALF_BLOCK           = '\u2584';  // ▄
+    public static char LOWER_FIVE_EIGHTHS_BLOCK   = '\u2585';  // ▅
+    public static char LOWER_THREE_QUARTERS_BLOCK = '\u2586';  // ▆
+    public static char LOWER_SEVEN_EIGHTHS_BLOCK  = '\u2587';  // ▇
+    public static char FULL_BLOCK                 = '\u2588';  // █
 
+    public static char LEFT_SEVEN_EIGHTHS_BLOCK   = '\u2589';  // ▉
+    public static char LEFT_THREE_QUARTERS_BLOCK  = '\u258A';  // ▊
+    public static char LEFT_FIVE_EIGHTHS_BLOCK    = '\u258B';  // ▋
+    public static char LEFT_HALF_BLOCK            = '\u258C';  // ▌
+    public static char LEFT_THREE_EIGHTHS_BLOCK   = '\u258D';  // ▍
+    public static char LEFT_ONE_QUARTER_BLOCK     = '\u258E';  // ▎
+    public static char LEFT_ONE_EIGHTH_BLOCK      = '\u258F';  // ▏
+    public static char RIGHT_HALF_BLOCK           = '\u2589';  // ▐
+
+    public static char UPPER_ONE_EIGHTH_BLOCK     = '\u2594';  // ▔
+    public static char RIGHT_ONE_EIGHTH_BLOCK     = '\u2595';  // ▕
+
+
+    // Table
     public static String TABLE               = "┌───┬───┐"
                                              + "│   │   │"
                                              + "├───┼───┤"
