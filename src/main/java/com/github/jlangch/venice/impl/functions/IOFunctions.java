@@ -1588,6 +1588,7 @@ public class IOFunctions {
                         "                             #(log (str \"terminated watching \" %1)))] \n" +
                         "    (sleep 30 :seconds)))")
                     .seeAlso(
+                        "io/add-watch-dir",
                         "io/close-watcher",
                         "io/await-for")
                     .build()
@@ -1685,7 +1686,9 @@ public class IOFunctions {
                     .meta()
                     .arglists("(io/close-watcher watcher)")
                     .doc("Closes a watcher created from 'io/watch-dir'.")
-                    .seeAlso("io/watch-dir")
+                    .seeAlso(
+                        "io/watch-dir",
+                        "io/add-watch-dir")
                     .build()
         ) {
             @Override
@@ -1709,13 +1712,13 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_register_watcher =
+    public static VncFunction io_add_watch_dir =
         new VncFunction(
-                "io/register-watcher",
+                "io/add-watch-dir",
                 VncFunction
                     .meta()
-                    .arglists("(io/register-watcher watcher file)")
-                    .doc("Register a watcher with another file or directory.")
+                    .arglists("(io/add-watch-dir watcher file)")
+                    .doc("Register another file or directory with a watcher.")
                     .examples(
                         "(do                                                                     \n" +
                         "  (defn log [msg] (locking log (println msg)))                          \n" +
@@ -1724,11 +1727,13 @@ public class IOFunctions {
                         "                             #(log (str %1 \" \" %2))                   \n" +
                         "                             #(log (str \"failure \" (:message %2)))    \n" +
                         "                             #(log (str \"terminated watching \" %1)))] \n" +
-                        "    (io/register-watcher w \"/data/filestore/0000\")                    \n" +
-                        "    (io/register-watcher w \"/data/filestore/0001\")                    \n" +
-                        "    (io/register-watcher w \"/data/filestore/0002\")                    \n" +
+                        "    (io/add-watch-dir w \"/data/filestore/0000\")                       \n" +
+                        "    (io/add-watch-dir w \"/data/filestore/0001\")                       \n" +
+                        "    (io/add-watch-dir w \"/data/filestore/0002\")                       \n" +
                         "    (sleep 30 :seconds)))")
-                    .seeAlso("io/watch-dir")
+                    .seeAlso(
+                        "io/watch-dir",
+                        "io/close-watcher")
                     .build()
         ) {
             @Override
@@ -1741,7 +1746,7 @@ public class IOFunctions {
 
                 final File file = convertToFile(
                                         args.second(),
-                                        "Function 'io/register-watcher' does not allow %s as file").getAbsoluteFile();
+                                        "Function 'io/add-watch-dir' does not allow %s as file").getAbsoluteFile();
 
                 try {
                     fw.register(file.toPath());
@@ -1750,7 +1755,7 @@ public class IOFunctions {
                 }
                 catch(IOException ex) {
                     throw new VncException(
-                            "Function 'io/register-watcher' failed to register a new file with the watcher",
+                            "Function 'io/add-watch-dir' failed to add a new file with the watcher",
                             ex);
                 }
             }
@@ -3676,8 +3681,8 @@ public class IOFunctions {
                     .add(io_to_uri)
                     .add(io_await_for)
                     .add(io_watch_dir)
+                    .add(io_add_watch_dir)
                     .add(io_close_watcher)
-                    .add(io_register_watcher)
                     .add(io_list_files)
                     .add(io_list_file_tree)
                     .add(io_list_file_tree_lazy)
