@@ -1560,7 +1560,8 @@ public class IOFunctions {
                     .arglists(
                         "(io/watch-dir dir event-fn)",
                         "(io/watch-dir dir event-fn failure-fn)",
-                        "(io/watch-dir dir event-fn failure-fn termination-fn)")
+                        "(io/watch-dir dir event-fn failure-fn termination-fn)",
+                        "(io/watch-dir dir event-fn failure-fn termination-fn register-fn)")
                     .doc(
                         "Watch a directory for changes, and call the function `event-fn` when it " +
                         "does. Calls the optional `failure-fn` if errors occur. On closing " +
@@ -1570,6 +1571,8 @@ public class IOFunctions {
                         "`failure-fn` is a two argument function that receives the watch dir and the " +
                         "failure exception. \n\n" +
                         "`termination-fn` is a one argument function that receives the watch dir.\n\n" +
+                        "`register-fn` is a one argument function that is called when a newly created " +
+                        "sub directory is dynamically registered. It receives the watch dir.\n\n" +
                         "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
                         "a resource which should be closed with `(io/close-watcher w)`.")
                     .examples(
@@ -1595,7 +1598,7 @@ public class IOFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3, 4);
+                ArityExceptions.assertArity(this, args, 2, 3, 4, 5);
 
                 sandboxFunctionCallValidation();
 
@@ -1603,13 +1606,23 @@ public class IOFunctions {
                                         args.first(),
                                         "Function 'io/watch-dir' does not allow %s as file").getAbsoluteFile();
 
-                final VncFunction eventFn = Coerce.toVncFunction(args.second());
-                final VncFunction failFn = Coerce.toVncFunctionOptional(args.third());
-                final VncFunction termFn = Coerce.toVncFunctionOptional(args.fourth());
+
+                if (!dir.isDirectory()) {
+                    throw new VncException(
+                            String.format(
+                                    "Function 'io/watch-dir': dir '%s' is not a directory",
+                                    dir.toString()));
+                }
+
+                final VncFunction eventFn = Coerce.toVncFunction(args.nth(1));
+                final VncFunction failFn = Coerce.toVncFunctionOptional(args.nth(2));
+                final VncFunction termFn = Coerce.toVncFunctionOptional(args.nth(3));
+                final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nth(4));
 
                 eventFn.sandboxFunctionCallValidation();
                 if (failFn != null) failFn.sandboxFunctionCallValidation();
                 if (termFn != null) termFn.sandboxFunctionCallValidation();
+                if (registerFn != null) registerFn.sandboxFunctionCallValidation();
 
 
                 final Function<WatchEvent.Kind<?>, VncKeyword> convert = (event) -> {
@@ -1658,12 +1671,24 @@ public class IOFunctions {
                                                         new VncString(path.toString()))))
                                             .run();
 
+                final Consumer<Path> registerListener =
+                        registerFn == null
+	                        ? null
+	                        : (path) -> threadBridge
+	                                        .bridgeRunnable( () ->
+	                                            ConcurrencyFunctions.future.applyOf(
+	                                                CoreFunctions.partial.applyOf(
+	                                                	registerFn,
+	                                                    new VncString(path.toString()))))
+	                                        .run();
+
                 try {
                     final FileWatcher fw = new FileWatcher(
                                                     dir.toPath(),
                                                     eventListener,
                                                     errorListener,
-                                                    terminationListener);
+                                                    terminationListener,
+                                                    registerListener);
 
                     return new VncJavaObject(fw);
                 }
@@ -1672,39 +1697,6 @@ public class IOFunctions {
                             String.format(
                                     "Function 'io/watch-dir' failed to watch dir '%s'",
                                     dir.toString()),
-                            ex);
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-    public static VncFunction io_close_watcher =
-        new VncFunction(
-                "io/close-watcher",
-                VncFunction
-                    .meta()
-                    .arglists("(io/close-watcher watcher)")
-                    .doc("Closes a watcher created from 'io/watch-dir'.")
-                    .seeAlso(
-                        "io/watch-dir",
-                        "io/add-watch-dir")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                sandboxFunctionCallValidation();
-
-                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
-                try {
-                    fw.close();
-                    return Nil;
-                }
-                catch(IOException ex) {
-                    throw new VncException(
-                            "Function 'io/close-watcher' failed to close watch service",
                             ex);
                 }
             }
@@ -1744,18 +1736,58 @@ public class IOFunctions {
 
                 final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
 
-                final File file = convertToFile(
+                final File dir = convertToFile(
                                         args.second(),
                                         "Function 'io/add-watch-dir' does not allow %s as file").getAbsoluteFile();
 
+                if (!dir.isDirectory()) {
+                    throw new VncException(
+                            String.format(
+                                    "Function 'io/add-watch-dir': dir '%s' is not a directory",
+                                    dir.toString()));
+                }
+
                 try {
-                    fw.register(file.toPath());
+                    fw.register(dir.toPath());
 
                     return Nil;
                 }
                 catch(IOException ex) {
                     throw new VncException(
                             "Function 'io/add-watch-dir' failed to add a new file with the watcher",
+                            ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_close_watcher =
+        new VncFunction(
+                "io/close-watcher",
+                VncFunction
+                    .meta()
+                    .arglists("(io/close-watcher watcher)")
+                    .doc("Closes a watcher created from 'io/watch-dir'.")
+                    .seeAlso(
+                        "io/watch-dir",
+                        "io/add-watch-dir")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
+                try {
+                    fw.close();
+                    return Nil;
+                }
+                catch(IOException ex) {
+                    throw new VncException(
+                            "Function 'io/close-watcher' failed to close watch service",
                             ex);
                 }
             }
