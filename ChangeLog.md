@@ -18,6 +18,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Enhanced
+
+- file watcher functions
+
 
 
 ## [1.12.40] - 2025-04-09

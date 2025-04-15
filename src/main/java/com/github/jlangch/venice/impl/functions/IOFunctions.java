@@ -45,7 +45,6 @@ import java.nio.file.PathMatcher;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchService;
 import java.nio.file.attribute.FileTime;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -91,6 +90,7 @@ import com.github.jlangch.venice.impl.util.http.BasicAuthentication;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
+import com.github.jlangch.venice.impl.util.io.FileWatcher;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -1573,22 +1573,20 @@ public class IOFunctions {
                         "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
                         "a resource which should be closed with `(io/close-watcher w)`.")
                     .examples(
-                        "(do                                                  \n" +
-                        "  (defn log [msg] (locking log (println msg)))       \n" +
-                        "                                                     \n" +
-                        "  (let [w (io/watch-dir \"/tmp\"                     \n" +
-                        "                        #(log (str %1 \" \" %2))     \n" +
-                        "    (sleep 30 :seconds)                              \n" +
-                        "    (io/close-watcher w)))",
-                        "(do                                                                \n" +
-                        "  (defn log [msg] (locking log (println msg)))                     \n" +
-                        "                                                                   \n" +
-                        "  (let [w (io/watch-dir \"/tmp\"                                   \n" +
-                        "                        #(log (str %1 \" \" %2))                   \n" +
-                        "                        #(log (str \"failure \" (:message %2)))    \n" +
-                        "                        #(log (str \"terminated watching \" %1)))] \n" +
-                        "    (sleep 30 :seconds)                                            \n" +
-                        "    (io/close-watcher w)))")
+                        "(do                                                      \n" +
+                        "  (defn log [msg] (locking log (println msg)))           \n" +
+                        "                                                         \n" +
+                        "  (try-with [w (io/watch-dir \"/tmp\"                    \n" +
+                        "                             #(log (str %1 \" \" %2))    \n" +
+                        "    (sleep 30 :seconds)))",
+                        "(do                                                                     \n" +
+                        "  (defn log [msg] (locking log (println msg)))                          \n" +
+                        "                                                                        \n" +
+                        "  (try-with [w (io/watch-dir \"/tmp\"                                   \n" +
+                        "                             #(log (str %1 \" \" %2))                   \n" +
+                        "                             #(log (str \"failure \" (:message %2)))    \n" +
+                        "                             #(log (str \"terminated watching \" %1)))] \n" +
+                        "    (sleep 30 :seconds)))")
                     .seeAlso(
                         "io/close-watcher",
                         "io/await-for")
@@ -1603,13 +1601,6 @@ public class IOFunctions {
                 final File dir = convertToFile(
                                         args.first(),
                                         "Function 'io/watch-dir' does not allow %s as file").getAbsoluteFile();
-
-                if (!dir.isDirectory()) {
-                    throw new VncException(
-                            String.format(
-                                    "Function 'io/watch-dir': dir '%s' is not a directpry",
-                                    dir.toString()));
-                }
 
                 final VncFunction eventFn = Coerce.toVncFunction(args.second());
                 final VncFunction failFn = Coerce.toVncFunctionOptional(args.third());
@@ -1667,12 +1658,13 @@ public class IOFunctions {
                                             .run();
 
                 try {
-                    return new VncJavaObject(
-                                    FileUtil.watchDir(
-                                        dir.toPath(),
-                                        eventListener,
-                                        errorListener,
-                                        terminationListener));
+                    final FileWatcher fw = new FileWatcher(
+                                                    dir.toPath(),
+                                                    eventListener,
+                                                    errorListener,
+                                                    terminationListener);
+
+                    return new VncJavaObject(fw);
                 }
                 catch(IOException ex) {
                     throw new VncException(
@@ -1702,14 +1694,63 @@ public class IOFunctions {
 
                 sandboxFunctionCallValidation();
 
-                final WatchService ws = Coerce.toVncJavaObject(args.first(), WatchService.class);
+                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
                 try {
-                    ws.close();
+                    fw.close();
                     return Nil;
                 }
                 catch(IOException ex) {
                     throw new VncException(
                             "Function 'io/close-watcher' failed to close watch service",
+                            ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_register_watcher =
+        new VncFunction(
+                "io/register-watcher",
+                VncFunction
+                    .meta()
+                    .arglists("(io/register-watcher watcher file)")
+                    .doc("Register a watcher with another file or directory.")
+                    .examples(
+                        "(do                                                                     \n" +
+                        "  (defn log [msg] (locking log (println msg)))                          \n" +
+                        "                                                                        \n" +
+                        "  (try-with [w (io/watch-dir \"/data/filestore\"                        \n" +
+                        "                             #(log (str %1 \" \" %2))                   \n" +
+                        "                             #(log (str \"failure \" (:message %2)))    \n" +
+                        "                             #(log (str \"terminated watching \" %1)))] \n" +
+                        "    (io/register-watcher w \"/data/filestore/0000\")                    \n" +
+                        "    (io/register-watcher w \"/data/filestore/0001\")                    \n" +
+                        "    (io/register-watcher w \"/data/filestore/0002\")                    \n" +
+                        "    (sleep 30 :seconds)))")
+                    .seeAlso("io/watch-dir")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                sandboxFunctionCallValidation();
+
+                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
+
+                final File file = convertToFile(
+                                        args.second(),
+                                        "Function 'io/register-watcher' does not allow %s as file").getAbsoluteFile();
+
+                try {
+                    fw.register(file.toPath());
+
+                    return Nil;
+                }
+                catch(IOException ex) {
+                    throw new VncException(
+                            "Function 'io/register-watcher' failed to register a new file with the watcher",
                             ex);
                 }
             }
@@ -3636,6 +3677,7 @@ public class IOFunctions {
                     .add(io_await_for)
                     .add(io_watch_dir)
                     .add(io_close_watcher)
+                    .add(io_register_watcher)
                     .add(io_list_files)
                     .add(io_list_file_tree)
                     .add(io_list_file_tree_lazy)

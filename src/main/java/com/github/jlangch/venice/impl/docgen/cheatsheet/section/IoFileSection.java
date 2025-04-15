@@ -144,9 +144,10 @@ public class IoFileSection implements ISectionBuilder {
 
         final DocSection file_watch = new DocSection("file watch", "io.filewatch");
         all.addSection(file_watch);
-        file_watch.addItem(diBuilder.getDocItem("io/await-for", false));
         file_watch.addItem(diBuilder.getDocItem("io/watch-dir", false));
+        file_watch.addItem(diBuilder.getDocItem("io/register-watcher", false));
         file_watch.addItem(diBuilder.getDocItem("io/close-watcher", false));
+        file_watch.addItem(diBuilder.getDocItem("io/await-for", false));
 
         final DocSection file_tmp = new DocSection("temporary", "io.filetmp");
         all.addSection(file_tmp);

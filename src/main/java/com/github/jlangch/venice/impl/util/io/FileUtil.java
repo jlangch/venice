@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,12 +38,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import com.github.jlangch.venice.FileException;
-import com.github.jlangch.venice.impl.thread.ThreadBridge;
-import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 
 
 /**
@@ -522,62 +517,6 @@ public class FileUtil {
         return false;
     }
 
-    public static WatchService watchDir(
-            final Path dir,
-            final BiConsumer<Path,WatchEvent.Kind<?>> eventListener,
-            final BiConsumer<Path,Exception> errorListener,
-            final Consumer<Path> terminationListener
-    ) throws IOException {
-        final WatchService ws = FileSystems.getDefault().newWatchService();
-
-        dir.register(
-                ws,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE,
-                StandardWatchEventKinds.ENTRY_MODIFY);
-
-        final Runnable runnable =
-            () -> {
-                while (true) {
-                    try {
-                        final WatchKey key = ws.take();
-                        if (key == null) {
-                            break;
-                        }
-
-                        for (WatchEvent<?> event: key.pollEvents()) {
-                            safeRun(() -> eventListener.accept((Path)event.context(), event.kind()));
-                        }
-
-                        key.reset();
-                    }
-                    catch(ClosedWatchServiceException ex) {
-                        break;
-                    }
-                    catch(InterruptedException ex) {
-                        // continue
-                    }
-                    catch(Exception ex) {
-                        if (errorListener != null) {
-                            safeRun(() -> errorListener.accept(dir, ex));
-                        }
-                        // continue
-                    }
-                }
-
-                try { ws.close(); } catch(Exception e) {}
-
-                if (terminationListener != null) {
-                    safeRun(() -> terminationListener.accept(dir));
-                }
-            };
-
-        final Thread th = GlobalThreadFactory.newThread("venice-watch-dir", runnable);
-        th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
-        th.start();
-
-        return ws;
-    }
 
 
     private static boolean awaitFileEarlyReturnCheck(
@@ -642,15 +581,6 @@ public class FileUtil {
                 copy(file, new File(dstdir, file.getName()), true);
             }
         }
-    }
-
-    private static void safeRun(final Runnable r) {
-        try {
-            if (r != null) {
-                r.run();
-            }
-        }
-        catch(Exception e) { e.printStackTrace(); }
     }
 
 
