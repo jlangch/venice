@@ -89,7 +89,7 @@ public class FileWatcher implements Closeable {
                                final Path absPath = dirPath.resolve(p);
                                if (absPath.toFile().isDirectory() && e.kind() == ENTRY_CREATE) {
                                    // register the new subdir
-                                   register(ws, keys, errorListener, registerListener, dir);
+                                   register(ws, keys, errorListener, registerListener, dir, true);
                                }
                                safeRun(() -> eventListener.accept(absPath, e.kind()));
                              });
@@ -127,7 +127,7 @@ public class FileWatcher implements Closeable {
             throw new RuntimeException("Folder " + dir + " does not exist or is not a directory");
         }
 
-        register(ws, keys, errorListener, registerListener, dir);
+        register(ws, keys, errorListener, registerListener, dir, false);
      }
 
 
@@ -156,7 +156,8 @@ public class FileWatcher implements Closeable {
             final Map<WatchKey,Path> keys,
             final BiConsumer<Path,Exception> errorListener,
             final Consumer<Path> registerListener,
-            final Path dir
+            final Path dir,
+            final boolean audit
     ) {
         try {
             final WatchKey dirKey = dir.register(
@@ -166,7 +167,7 @@ public class FileWatcher implements Closeable {
 
             keys.put(dirKey, dir);
 
-            if (registerListener != null) {
+            if (audit && registerListener != null) {
                 safeRun(() -> registerListener.accept(dir));
             }
         }
