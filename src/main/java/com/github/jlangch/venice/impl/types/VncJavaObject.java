@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +51,7 @@ import com.github.jlangch.venice.javainterop.IInvoker;
 import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
-public class VncJavaObject extends VncMap implements IVncJavaObject {
+public class VncJavaObject extends VncMap implements IVncJavaObject, Closeable {
 
     public VncJavaObject(final Object obj) {
         this(obj, null, Constants.Nil);
@@ -183,14 +185,14 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
     @Override
     public VncVal get(final VncVal key) {
-    	if (key instanceof VncString) {
-    		return getProperty((VncString)key);
-    	}
-    	else {
-    	      throw new VncException(
-    	    		  "VncJavaObject::get() requires a string or keyword as argument. "
-    	    		  + "Got a " + Types.getType(key));
-    	}
+        if (key instanceof VncString) {
+            return getProperty((VncString)key);
+        }
+        else {
+              throw new VncException(
+                      "VncJavaObject::get() requires a string or keyword as argument. "
+                      + "Got a " + Types.getType(key));
+        }
     }
 
     @Override
@@ -282,6 +284,13 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
         }
 
         return super.compareTo(o);
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (delegate != null && (delegate instanceof Closeable)) {
+            ((Closeable)delegate).close();
+        }
     }
 
     @Override
