@@ -180,6 +180,7 @@ public class RestrictedBlacklistedFunctions {
                 "io/print-line",
                 "io/read-char",
                 "io/read-line",
+                "io/registered-watch-dirs",
                 "io/slurp",
                 "io/slurp-lines",
                 "io/slurp-reader",

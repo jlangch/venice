@@ -1589,6 +1589,7 @@ public class IOFunctions {
                         "    (sleep 30 :seconds)))")
                     .seeAlso(
                         "io/add-watch-dir",
+                        "io/registered-watch-dirs",
                         "io/close-watcher",
                         "io/await-for")
                     .build()
@@ -1688,6 +1689,7 @@ public class IOFunctions {
                         "    (sleep 30 :seconds)))")
                     .seeAlso(
                         "io/watch-dir",
+                        "io/registered-watch-dirs",
                         "io/close-watcher")
                     .build()
         ) {
@@ -1725,6 +1727,37 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_registered_watch_dirs =
+        new VncFunction(
+                "io/registered-watch-dirs",
+                VncFunction
+                    .meta()
+                    .arglists("(io/registered-watch-dirs watcher)")
+                    .doc("Returns the registred watch directories of a watcher.")
+                    .seeAlso(
+                        "io/watch-dir",
+                        "io/add-watch-dir",
+                        "io/close-watcher")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
+
+                return VncList.ofColl(
+                		fw.getRegisteredPaths()
+                		  .stream()
+                		  .map(p -> new VncJavaObject(p.toFile()))
+                		  .collect(Collectors.toList()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_close_watcher =
         new VncFunction(
                 "io/close-watcher",
@@ -1734,7 +1767,8 @@ public class IOFunctions {
                     .doc("Closes a watcher created from 'io/watch-dir'.")
                     .seeAlso(
                         "io/watch-dir",
-                        "io/add-watch-dir")
+                        "io/add-watch-dir",
+                        "io/registered-watch-dirs")
                     .build()
         ) {
             @Override
@@ -3677,6 +3711,7 @@ public class IOFunctions {
                     .add(io_await_for)
                     .add(io_watch_dir)
                     .add(io_add_watch_dir)
+                    .add(io_registered_watch_dirs)
                     .add(io_close_watcher)
                     .add(io_list_files)
                     .add(io_list_file_tree)

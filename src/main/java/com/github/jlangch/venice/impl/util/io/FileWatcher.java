@@ -34,9 +34,11 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
@@ -128,8 +130,11 @@ public class FileWatcher implements Closeable {
         }
 
         register(ws, keys, errorListener, registerListener, dir, false);
-     }
+    }
 
+    public List<Path> getRegisteredPaths() {
+        return keys.values().stream().sorted().collect(Collectors.toList());
+    }
 
     @Override
     public void close() throws IOException {
@@ -150,6 +155,7 @@ public class FileWatcher implements Closeable {
             }
         }
     }
+
 
     private static void register(
             final WatchService ws,
