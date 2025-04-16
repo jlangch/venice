@@ -1575,12 +1575,8 @@ public class IOFunctions {
                         "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
                         "a resource which should be closed with `(io/close-watcher w)`.")
                     .examples(
-                        "(do                                                      \n" +
-                        "  (defn log [msg] (locking log (println msg)))           \n" +
-                        "                                                         \n" +
-                        "  (try-with [w (io/watch-dir \"/tmp\"                    \n" +
-                        "                             #(log (str %1 \" \" %2))    \n" +
-                        "    (sleep 30 :seconds)))",
+                        " (try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))] \n" +
+                        "    (sleep 30 :seconds))",
                         "(do                                                                     \n" +
                         "  (defn log [msg] (locking log (println msg)))                          \n" +
                         "                                                                        \n" +
@@ -1615,9 +1611,9 @@ public class IOFunctions {
                 }
 
                 final VncFunction eventFn = Coerce.toVncFunction(args.nth(1));
-                final VncFunction failFn = Coerce.toVncFunctionOptional(args.nth(2));
-                final VncFunction termFn = Coerce.toVncFunctionOptional(args.nth(3));
-                final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nth(4));
+                final VncFunction failFn = Coerce.toVncFunctionOptional(args.nthOrDefault(2, Nil));
+                final VncFunction termFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
+                final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nthOrDefault(4, Nil));
 
                 final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
                         (path, event) -> future.applyOf(
