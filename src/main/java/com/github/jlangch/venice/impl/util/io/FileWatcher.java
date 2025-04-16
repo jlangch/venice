@@ -64,8 +64,6 @@ public class FileWatcher implements Closeable {
         this.errorListener = errorListener;
         this.registerListener = registerListener;
 
-        // https://stackoverflow.com/questions/18701242/how-to-watch-a-folder-and-subfolders-for-changes
-
         // com.sun.nio.file.ExtendedWatchEventModifier.FILE_TREE
 
         register(dir);
