@@ -23,8 +23,6 @@ package com.github.jlangch.venice.impl.types;
 
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
@@ -35,7 +33,7 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.Watchable;
 
 
-public class VncAtom extends VncVal implements IDeref, Closeable {
+public class VncAtom extends VncVal implements IDeref {
 
     public VncAtom(final VncVal value) {
         super(Constants.Nil);
@@ -130,25 +128,6 @@ public class VncAtom extends VncVal implements IDeref, Closeable {
 
     public void removeWatch(final VncKeyword name) {
         watchable.removeWatch(name);
-    }
-
-    @Override
-    public void close() throws IOException {
-        for(;;) {
-            final VncVal oldVal = deref();
-
-            if (oldVal instanceof Closeable) {
-               if (state.compareAndSet(oldVal, oldVal)) {
-                  try {
-                      ((Closeable)oldVal).close();
-                  }
-                  catch (Exception ex) {
-                     // best effort
-                  }
-                  return;
-              }
-            }
-        }
     }
 
     @Override
