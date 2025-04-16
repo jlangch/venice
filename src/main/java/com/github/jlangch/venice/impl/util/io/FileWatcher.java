@@ -190,7 +190,7 @@ public class FileWatcher implements Closeable {
 
     private static void safeRun(final Runnable r) {
         try {
-            if (r != null) r.run();
+            r.run();
         }
         catch(Exception e) { }
     }
