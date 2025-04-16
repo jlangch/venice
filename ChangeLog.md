@@ -21,8 +21,6 @@ All notable changes to this project will be documented in this file.
 ### Enhanced
 
 - file watcher functions
-- VncJavaObject for supporting Closeable if the delegate is a Closeable
-- VncAtom for supporting Closeable if the atom's state value is a Closeable
 
 
 
