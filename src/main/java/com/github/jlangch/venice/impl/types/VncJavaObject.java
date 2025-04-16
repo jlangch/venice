@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -282,6 +284,12 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
         }
 
         return super.compareTo(o);
+    }
+
+    public void close() throws IOException {
+        if (delegate != null && (delegate instanceof Closeable)) {
+            ((Closeable)delegate).close();
+        }
     }
 
     @Override
