@@ -59,7 +59,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
@@ -1619,21 +1618,6 @@ public class IOFunctions {
                 final VncFunction termFn = Coerce.toVncFunctionOptional(args.nth(3));
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nth(4));
 
-                eventFn.sandboxFunctionCallValidation();
-                if (failFn != null) failFn.sandboxFunctionCallValidation();
-                if (termFn != null) termFn.sandboxFunctionCallValidation();
-                if (registerFn != null) registerFn.sandboxFunctionCallValidation();
-
-
-                final Function<WatchEvent.Kind<?>, VncKeyword> convert = (event) -> {
-                    switch(event.name()) {
-                        case "ENTRY_CREATE": return new VncKeyword("created");
-                        case "ENTRY_DELETE": return new VncKeyword("deleted");
-                        case "ENTRY_MODIFY": return new VncKeyword("modified");
-                        default: return new VncKeyword("unknown");
-                    }
-                };
-
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "io/watch-dir",
                                                     new CallFrame(this, args));
@@ -1645,7 +1629,7 @@ public class IOFunctions {
                                                     CoreFunctions.partial.applyOf(
                                                             eventFn,
                                                             new VncString(path.toString()),
-                                                            convert.apply(event))))
+                                                            FileWatcher.convertEvent(event))))
                                             .run();
 
                 final BiConsumer<Path,Exception> errorListener =

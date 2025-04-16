@@ -40,6 +40,7 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 
 
 public class FileWatcher implements Closeable {
@@ -65,8 +66,8 @@ public class FileWatcher implements Closeable {
 
         register(dir);
 
-
-        final Runnable runnable = () -> {
+        final Runnable runnable =
+            () -> {
                 while (true) {
                     try {
                         final WatchKey key = ws.take();
@@ -133,6 +134,21 @@ public class FileWatcher implements Closeable {
     @Override
     public void close() throws IOException {
         ws.close();
+    }
+
+    public static VncKeyword convertEvent(final WatchEvent.Kind<?> kind) {
+        if (kind == null) {
+            return new VncKeyword("unknown");
+        }
+        else {
+            switch(kind.name()) {
+                case "ENTRY_CREATE": return new VncKeyword("created");
+                case "ENTRY_DELETE": return new VncKeyword("deleted");
+                case "ENTRY_MODIFY": return new VncKeyword("modified");
+                case "OVERFLOW":     return new VncKeyword("overflow");
+                default:             return new VncKeyword("unknown");
+            }
+        }
     }
 
     private static void register(
