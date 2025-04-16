@@ -85,6 +85,7 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.http.BasicAuthentication;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -1646,6 +1647,7 @@ public class IOFunctions {
 
                 try {
                     final FileWatcher fw = new FileWatcher(
+                                                    new CallFrame[] { new CallFrame(this, args) },
                                                     dir.toPath(),
                                                     eventListener,
                                                     errorListener,

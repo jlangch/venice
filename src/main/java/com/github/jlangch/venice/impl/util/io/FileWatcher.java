@@ -43,11 +43,13 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 
 
 public class FileWatcher implements Closeable {
 
     public FileWatcher(
+            final CallFrame[] callFrame,
             final Path dir,
             final BiConsumer<Path,WatchEvent.Kind<?>> eventListener,
             final BiConsumer<Path,Exception> errorListener,
@@ -68,7 +70,11 @@ public class FileWatcher implements Closeable {
 
         register(dir);
 
-        final Runnable runnable =
+        // Create a wrapper that inherits the Venice thread context
+        // from the parent thread to the executer thread!
+        final ThreadBridge threadBridge = ThreadBridge.create("thread", callFrame);
+
+        final Runnable runnable = threadBridge.bridgeRunnable(
             () -> {
                 while (true) {
                     try {
@@ -117,7 +123,7 @@ public class FileWatcher implements Closeable {
                 if (terminationListener != null) {
                     safeRun(() -> terminationListener.accept(dir));
                 }
-            };
+            });
 
         final Thread th = GlobalThreadFactory.newThread("venice-watch-dir", runnable);
         th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
