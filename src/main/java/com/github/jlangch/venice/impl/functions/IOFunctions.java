@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.functions.ConcurrencyFunctions.future;
+import static com.github.jlangch.venice.impl.functions.CoreFunctions.partial;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.BufferedInputStream;
@@ -1618,31 +1620,31 @@ public class IOFunctions {
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nth(4));
 
                 final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
-                        (path, event) -> ConcurrencyFunctions.future.applyOf(
-                                                CoreFunctions.partial.applyOf(
-                                                        eventFn,
-                                                        new VncString(path.toString()),
-                                                        FileWatcher.convertEvent(event)));
+                        (path, event) -> future.applyOf(
+                                           partial.applyOf(
+                                                eventFn,
+                                                new VncString(path.toString()),
+                                                FileWatcher.convertEvent(event)));
 
                 final BiConsumer<Path,Exception> errorListener =
                         failFn == null ? null
-                                       : (path, ex) -> ConcurrencyFunctions.future.applyOf(
-                                                        CoreFunctions.partial.applyOf(
+                                       : (path, ex) -> future.applyOf(
+                                                        partial.applyOf(
                                                             failFn,
                                                             new VncString(path.toString()),
                                                             new VncJavaObject(ex)));
 
                 final Consumer<Path> terminationListener =
                         termFn == null ? null
-                                       : (path) -> ConcurrencyFunctions.future.applyOf(
-                                                    CoreFunctions.partial.applyOf(
+                                       : (path) -> future.applyOf(
+                                                    partial.applyOf(
                                                         termFn,
                                                         new VncString(path.toString())));
 
                 final Consumer<Path> registerListener =
                         registerFn == null ? null
-                                           : (path) -> ConcurrencyFunctions.future.applyOf(
-                                                        CoreFunctions.partial.applyOf(
+                                           : (path) -> future.applyOf(
+                                                        partial.applyOf(
                                                             registerFn,
                                                             new VncString(path.toString())));
 
