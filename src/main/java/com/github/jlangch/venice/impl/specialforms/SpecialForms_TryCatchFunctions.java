@@ -262,18 +262,18 @@ public class SpecialForms_TryCatchFunctions {
                 RuntimeException primaryEx = null;
                 RuntimeException autoCloseEx = null;
 
-             	try {
-             		retVal = handleTryCatchFinally(
+                 try {
+                     retVal = handleTryCatchFinally(
                                 "try-with",
                                 args.rest(),
                                 ctx,
                                 localEnv,
                                 specialFormMeta,
                                 boundResources);
-            	}
-            	catch(RuntimeException ex) {
-            		primaryEx = ex;
-            	}
+                }
+                catch(RuntimeException ex) {
+                    primaryEx = ex;
+                }
 
                 try {
                     final List<VncException> exceptions = new ArrayList<>();
@@ -307,20 +307,20 @@ public class SpecialForms_TryCatchFunctions {
                     if (!exceptions.isEmpty()) {
                         throw exceptions.get(0);
                     }
-            	}
-            	catch(RuntimeException ex) {
-            		autoCloseEx = ex;
-            	}
+                }
+                catch(RuntimeException ex) {
+                    autoCloseEx = ex;
+                }
 
 
                 if (primaryEx != null) {
-                	throw primaryEx;
+                    throw primaryEx;
                 }
                 else if (autoCloseEx != null) {
-                	throw autoCloseEx;
+                    throw autoCloseEx;
                 }
                 else {
-                	return retVal;
+                    return retVal;
                 }
             }
 
