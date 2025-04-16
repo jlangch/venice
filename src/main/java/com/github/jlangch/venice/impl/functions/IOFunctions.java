@@ -63,7 +63,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -84,7 +83,6 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
-import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.http.BasicAuthentication;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -1618,53 +1616,37 @@ public class IOFunctions {
                 final VncFunction termFn = Coerce.toVncFunctionOptional(args.nth(3));
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nth(4));
 
-                final ThreadBridge threadBridge = ThreadBridge.create(
-                                                    "io/watch-dir",
-                                                    new CallFrame(this, args));
-
                 final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
-                        (path, event) -> threadBridge
-                                            .bridgeRunnable( () ->
-                                                ConcurrencyFunctions.future.applyOf(
-                                                    CoreFunctions.partial.applyOf(
-                                                            eventFn,
-                                                            new VncString(path.toString()),
-                                                            FileWatcher.convertEvent(event))))
-                                            .run();
+                        (path, event) -> ConcurrencyFunctions.future.applyOf(
+                                                CoreFunctions.partial.applyOf(
+                                                        eventFn,
+                                                        new VncString(path.toString()),
+                                                        FileWatcher.convertEvent(event)));
 
                 final BiConsumer<Path,Exception> errorListener =
                         failFn == null
                             ? null
-                            : (path, ex) -> threadBridge
-                                                .bridgeRunnable( () ->
-                                                    ConcurrencyFunctions.future.applyOf(
-                                                        CoreFunctions.partial.applyOf(
-                                                            failFn,
-                                                            new VncString(path.toString()),
-                                                            new VncJavaObject(ex))))
-                                                .run();
+                            : (path, ex) -> ConcurrencyFunctions.future.applyOf(
+                                                CoreFunctions.partial.applyOf(
+                                                    failFn,
+                                                    new VncString(path.toString()),
+                                                    new VncJavaObject(ex)));
 
                 final Consumer<Path> terminationListener =
                         termFn == null
                             ? null
-                            : (path) -> threadBridge
-                                            .bridgeRunnable( () ->
-                                                ConcurrencyFunctions.future.applyOf(
-                                                    CoreFunctions.partial.applyOf(
-                                                        termFn,
-                                                        new VncString(path.toString()))))
-                                            .run();
+                            : (path) -> ConcurrencyFunctions.future.applyOf(
+                                            CoreFunctions.partial.applyOf(
+                                                termFn,
+                                                new VncString(path.toString())));
 
                 final Consumer<Path> registerListener =
                         registerFn == null
-	                        ? null
-	                        : (path) -> threadBridge
-	                                        .bridgeRunnable( () ->
-	                                            ConcurrencyFunctions.future.applyOf(
-	                                                CoreFunctions.partial.applyOf(
-	                                                	registerFn,
-	                                                    new VncString(path.toString()))))
-	                                        .run();
+                            ? null
+                            : (path) -> ConcurrencyFunctions.future.applyOf(
+                                            CoreFunctions.partial.applyOf(
+                                            	registerFn,
+                                                new VncString(path.toString())));
 
                 try {
                     final FileWatcher fw = new FileWatcher(

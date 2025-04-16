@@ -166,7 +166,9 @@ public class FileWatcher implements Closeable {
 
             keys.put(dirKey, dir);
 
-            registerListener.accept(dir);
+            if (registerListener != null) {
+                safeRun(() -> registerListener.accept(dir));
+            }
         }
         catch(Exception e) {
             if (errorListener != null) {
