@@ -356,8 +356,6 @@ public class ConcurrencyFunctions {
                 final VncKeyword key = Coerce.toVncKeyword(args.second());
                 final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 
-                fn.sandboxFunctionCallValidation();
-
                 if (Types.isVncJavaObject(ref)) {
                     final Object delegate = ((VncJavaObject)args.first()).getDelegate();
                     if (delegate instanceof Agent) {
@@ -502,8 +500,6 @@ public class ConcurrencyFunctions {
                     final VncFunction fn = Coerce.toVncFunction(args.second());
                     final VncList fnArgs = args.slice(2);
 
-                    fn.sandboxFunctionCallValidation();
-
                     agent.send(new CallFrame(this, args), fn, fnArgs);
                     return args.first();
                 }
@@ -548,8 +544,6 @@ public class ConcurrencyFunctions {
                     final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
                     final VncFunction fn = Coerce.toVncFunction(args.second());
                     final VncList fnArgs = args.slice(2);
-
-                    fn.sandboxFunctionCallValidation();
 
                     agent.send_off(new CallFrame(this, args), fn, fnArgs);
                     return args.first();
@@ -636,8 +630,6 @@ public class ConcurrencyFunctions {
                 if (Types.isVncJavaObject(args.first(), Agent.class)) {
                     final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
                     final VncFunction fn = Coerce.toVncFunction(args.second());
-
-                    fn.sandboxFunctionCallValidation();
 
                     agent.setErrorHandler(fn);
                     return args.first();
@@ -1183,7 +1175,6 @@ public class ConcurrencyFunctions {
                     final VncVal arg = args.first();
                     if (arg instanceof VncFunction) {
                         final VncFunction fn = Coerce.toVncFunction(args.first());
-                        fn.sandboxFunctionCallValidation();
 
                         final CallFrame[] cf = new CallFrame[] {
                                                     new CallFrame(this, args),
@@ -1342,12 +1333,13 @@ public class ConcurrencyFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
+                sandboxFunctionCallValidation();
+
                 @SuppressWarnings("unchecked")
                 final CompletableFuture<VncVal> cf = Coerce.toVncJavaObject(
                                                         args.first(),
                                                         CompletableFuture.class);
                 final VncFunction fn = Coerce.toVncFunction(args.second());
-                fn.sandboxFunctionCallValidation();
 
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "then-accept",
@@ -1448,7 +1440,6 @@ public class ConcurrencyFunctions {
                                                         CompletableFuture.class);
 
                 final VncFunction fn = Coerce.toVncFunction(args.third());
-                fn.sandboxFunctionCallValidation();
 
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "then-combine",
@@ -1502,7 +1493,6 @@ public class ConcurrencyFunctions {
                                                         CompletableFuture.class);
 
                 final VncFunction fn = Coerce.toVncFunction(args.second());
-                fn.sandboxFunctionCallValidation();
 
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "then-compose",
@@ -1556,7 +1546,6 @@ public class ConcurrencyFunctions {
                                                         CompletableFuture.class);
 
                 final VncFunction fn = Coerce.toVncFunction(args.second());
-                fn.sandboxFunctionCallValidation();
 
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "when-complete",
@@ -1614,7 +1603,6 @@ public class ConcurrencyFunctions {
                                                                                     CompletableFuture.class);
 
                 final VncFunction fn = Coerce.toVncFunction(args.third());
-                fn.sandboxFunctionCallValidation();
 
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "accept-either",
@@ -1670,7 +1658,6 @@ public class ConcurrencyFunctions {
                                                                                     CompletableFuture.class);
 
                 final VncFunction fn = Coerce.toVncFunction(args.third());
-                fn.sandboxFunctionCallValidation();
 
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "apply-to-either",
@@ -1726,7 +1713,6 @@ public class ConcurrencyFunctions {
                                                         CompletableFuture.class);
 
                 final VncFunction fn = Coerce.toVncFunction(args.third());
-                fn.sandboxFunctionCallValidation();
 
                 final ThreadBridge threadBridge = ThreadBridge.create(
                                                     "then-accept-both",
@@ -1975,7 +1961,6 @@ public class ConcurrencyFunctions {
                 sandboxFunctionCallValidation();
 
                 final VncFunction fn = Coerce.toVncFunction(args.first());
-                fn.sandboxFunctionCallValidation();
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -2062,7 +2047,6 @@ public class ConcurrencyFunctions {
                 sandboxFunctionCallValidation();
 
                 final VncFunction taskFn = Coerce.toVncFunction(args.first());
-                taskFn.sandboxFunctionCallValidation();
 
                 // Create a wrapper that inherits the Venice thread context from the parent thread to the executer thread!
                 final ThreadBridge bridgedTask = bridge(taskFn, args);
@@ -2294,7 +2278,6 @@ public class ConcurrencyFunctions {
 
                 final VncLong count = Coerce.toVncLong(args.first());
                 final VncFunction workerFactoryFn = Coerce.toVncFunction(args.second());
-                workerFactoryFn.sandboxFunctionCallValidation();
 
                 final List<VncVal> futures = new ArrayList<>();
 
@@ -2582,8 +2565,9 @@ public class ConcurrencyFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1, 2, 3);
 
+                sandboxFunctionCallValidation();
+
                 final VncFunction fn = Coerce.toVncFunction(args.first());
-                fn.sandboxFunctionCallValidation();
 
                 final String name = args.size() >= 2
                                         ? Coerce.toVncString(args.second()).getValue()
@@ -2803,8 +2787,9 @@ public class ConcurrencyFunctions {
                     return VncList.empty();
                 }
 
+                sandboxFunctionCallValidation();
+
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
-                fn.sandboxFunctionCallValidation();
 
                 VncLazySeq lazySeq;
 

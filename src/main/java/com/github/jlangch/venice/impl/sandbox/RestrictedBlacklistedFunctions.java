@@ -116,6 +116,7 @@ public class RestrictedBlacklistedFunctions {
                 // I/O:
                 "io/->uri",
                 "io/->url",
+                "io/add-watch-dir",
                 "io/await-for",
                 "io/buffered-reader",
                 "io/buffered-writer",

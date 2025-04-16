@@ -130,10 +130,14 @@ public class Sandbox_Shootout_Test {
     @Test
     public void test_native_func_concurrency() {
         final Interceptor interceptor = new SandboxRules()
+                                             .rejectAllUnsafeFunctions()
                                              .rejectVeniceFunctions("+")
                                              .sandbox();
 
         final String[] expr = new String[] {
+
+        		    // "+"
+                    "(+ 1 2)",
 
                     // pmap
 
@@ -226,7 +230,7 @@ public class Sandbox_Shootout_Test {
                     "    @result))                                                   ",
 
                     // promise -> accept-either #1
-            		"(let [result (promise)]                                         \n" +
+                    "(let [result (promise)]                                         \n" +
                     "  (-> (promise (fn [] (sleep 200) 200))                         \n" +
                     "      (accept-either (promise (fn [] (sleep 100) 100))          \n" +
                     "                     (fn [v]                                    \n" +
@@ -237,7 +241,7 @@ public class Sandbox_Shootout_Test {
                     "  @result)                                                      ",
 
                     // promise -> accept-either #2
-            		"(let [result (promise)]                                         \n" +
+                    "(let [result (promise)]                                         \n" +
                     "  (-> (promise (fn [] (sleep 100) 100))                         \n" +
                     "      (accept-either (promise (fn [] (sleep 200) 200))          \n" +
                     "                     (fn [v]                                    \n" +
@@ -260,7 +264,7 @@ public class Sandbox_Shootout_Test {
                     "    (deref))                                                    ",
 
                     // promise -> then-accept-both
-            		"(let [result (promise)]                                         \n" +
+                    "(let [result (promise)]                                         \n" +
                     "  (-> (promise (fn [] (sleep 200) 200))                         \n" +
                     "      (then-accept-both (promise (fn [] (sleep 100) 100))       \n" +
                     "                        (fn [u v]                               \n" +
@@ -416,60 +420,60 @@ public class Sandbox_Shootout_Test {
 
         final String[] expr = new String[] {
 
-	               "(do                                                    \n" +
-	               "  (load-module :java ['java :as 'j])                   \n" +
-	               "                                                       \n" +
-	               "  (. (j/as-runnable (fn [] (+ 1 1) nil)) :run))        ",
+                   "(do                                                    \n" +
+                   "  (load-module :java ['java :as 'j])                   \n" +
+                   "                                                       \n" +
+                   "  (. (j/as-runnable (fn [] (+ 1 1) nil)) :run))        ",
 
-	               "(do                                                    \n" +
-	               "  (load-module :java ['java :as 'j])                   \n" +
-	               "                                                       \n" +
-	               "  (. (j/as-callable (fn [] (+ 1 1))) :call))           ",
+                   "(do                                                    \n" +
+                   "  (load-module :java ['java :as 'j])                   \n" +
+                   "                                                       \n" +
+                   "  (. (j/as-callable (fn [] (+ 1 1))) :call))           ",
 
-	               "(do                                                    \n" +
-	               "  (load-module :java ['java :as 'j])                   \n" +
-	               "                                                       \n" +
-	               "  (. (j/as-function (fn [x] (+ x 1))) :apply 4))       ",
+                   "(do                                                    \n" +
+                   "  (load-module :java ['java :as 'j])                   \n" +
+                   "                                                       \n" +
+                   "  (. (j/as-function (fn [x] (+ x 1))) :apply 4))       ",
 
-	               "(do                                                    \n" +
-	               "  (load-module :java ['java :as 'j])                   \n" +
-	               "                                                       \n" +
-	               "  (. (j/as-consumer (fn [x] (+ 1 1) nil)) :accept 4))   ",
+                   "(do                                                    \n" +
+                   "  (load-module :java ['java :as 'j])                   \n" +
+                   "                                                       \n" +
+                   "  (. (j/as-consumer (fn [x] (+ 1 1) nil)) :accept 4))   ",
 
- 	               "(do                                                    \n" +
-	               "  (load-module :java ['java :as 'j])                   \n" +
-	               "                                                       \n" +
-	               "  (. (j/as-supplier (fn [] (+ 1 1))) :get))            ",
+                    "(do                                                    \n" +
+                   "  (load-module :java ['java :as 'j])                   \n" +
+                   "                                                       \n" +
+                   "  (. (j/as-supplier (fn [] (+ 1 1))) :get))            ",
 
-	               "(do                                                              \n" +
-	               "  (load-module :java ['java :as 'j])                             \n" +
-	               "                                                                 \n" +
-	               "  (. (j/as-predicate (fn [x] (+ 1 1) (some? x))) :test 1))       ",
+                   "(do                                                              \n" +
+                   "  (load-module :java ['java :as 'j])                             \n" +
+                   "                                                                 \n" +
+                   "  (. (j/as-predicate (fn [x] (+ 1 1) (some? x))) :test 1))       ",
 
-	               "(do                                                              \n" +
-	               "  (load-module :java ['java :as 'j])                             \n" +
-	               "                                                                 \n" +
-	               "  (. (j/as-bipredicate (fn [x y] (+ 1 1) true)) :test 2 1))      ",
+                   "(do                                                              \n" +
+                   "  (load-module :java ['java :as 'j])                             \n" +
+                   "                                                                 \n" +
+                   "  (. (j/as-bipredicate (fn [x y] (+ 1 1) true)) :test 2 1))      ",
 
-	               "(do                                                              \n" +
-	               "  (load-module :java ['java :as 'j])                             \n" +
-	               "                                                                 \n" +
-	               "  (. (j/as-bifunction (fn [x y] (+ x y))) :apply 1 2))           ",
+                   "(do                                                              \n" +
+                   "  (load-module :java ['java :as 'j])                             \n" +
+                   "                                                                 \n" +
+                   "  (. (j/as-bifunction (fn [x y] (+ x y))) :apply 1 2))           ",
 
-	               "(do                                                              \n" +
-	               "  (load-module :java ['java :as 'j])                             \n" +
-	               "                                                                 \n" +
-	               "  (. (j/as-biconsumer (fn [x y] (+ 1 1) nil)) :accept 1 2))      ",
+                   "(do                                                              \n" +
+                   "  (load-module :java ['java :as 'j])                             \n" +
+                   "                                                                 \n" +
+                   "  (. (j/as-biconsumer (fn [x y] (+ 1 1) nil)) :accept 1 2))      ",
 
-	               "(do                                                              \n" +
-	               "  (load-module :java ['java :as 'j])                             \n" +
-	               "                                                                 \n" +
-	               "  (. (j/as-unaryoperator (fn [x] (+ x 1))) :apply 1))            ",
+                   "(do                                                              \n" +
+                   "  (load-module :java ['java :as 'j])                             \n" +
+                   "                                                                 \n" +
+                   "  (. (j/as-unaryoperator (fn [x] (+ x 1))) :apply 1))            ",
 
-	               "(do                                                              \n" +
-	               "  (load-module :java ['java :as 'j])                             \n" +
-	               "                                                                 \n" +
-	               "  (. (j/as-binaryoperator (fn [x y] (+ x y))) :apply 1 2))       "
+                   "(do                                                              \n" +
+                   "  (load-module :java ['java :as 'j])                             \n" +
+                   "                                                                 \n" +
+                   "  (. (j/as-binaryoperator (fn [x y] (+ x y))) :apply 1 2))       "
         };
 
         final Venice venice = new Venice(interceptor);
