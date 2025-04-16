@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 ### Enhanced
 
 - file watcher functions
-- VncJavaObject: it supports now the Closeable if the delegate is a Closeable
+- VncJavaObject: it supports now Closeable if the delegate is a Closeable
 
 
 
