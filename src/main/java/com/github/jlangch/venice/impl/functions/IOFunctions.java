@@ -1624,29 +1624,26 @@ public class IOFunctions {
                                                         FileWatcher.convertEvent(event)));
 
                 final BiConsumer<Path,Exception> errorListener =
-                        failFn == null
-                            ? null
-                            : (path, ex) -> ConcurrencyFunctions.future.applyOf(
-                                                CoreFunctions.partial.applyOf(
-                                                    failFn,
-                                                    new VncString(path.toString()),
-                                                    new VncJavaObject(ex)));
+                        failFn == null ? null
+                                       : (path, ex) -> ConcurrencyFunctions.future.applyOf(
+                                                        CoreFunctions.partial.applyOf(
+                                                            failFn,
+                                                            new VncString(path.toString()),
+                                                            new VncJavaObject(ex)));
 
                 final Consumer<Path> terminationListener =
-                        termFn == null
-                            ? null
-                            : (path) -> ConcurrencyFunctions.future.applyOf(
-                                            CoreFunctions.partial.applyOf(
-                                                termFn,
-                                                new VncString(path.toString())));
+                        termFn == null ? null
+                                       : (path) -> ConcurrencyFunctions.future.applyOf(
+                                                    CoreFunctions.partial.applyOf(
+                                                        termFn,
+                                                        new VncString(path.toString())));
 
                 final Consumer<Path> registerListener =
-                        registerFn == null
-                            ? null
-                            : (path) -> ConcurrencyFunctions.future.applyOf(
-                                            CoreFunctions.partial.applyOf(
-                                            	registerFn,
-                                                new VncString(path.toString())));
+                        registerFn == null ? null
+                                           : (path) -> ConcurrencyFunctions.future.applyOf(
+                                                        CoreFunctions.partial.applyOf(
+                                                            registerFn,
+                                                            new VncString(path.toString())));
 
                 try {
                     final FileWatcher fw = new FileWatcher(
