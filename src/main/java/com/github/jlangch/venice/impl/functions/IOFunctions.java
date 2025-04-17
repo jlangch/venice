@@ -1584,7 +1584,8 @@ public class IOFunctions {
                         "  (try-with [w (io/watch-dir \"/tmp\"                                   \n" +
                         "                             #(log (str %1 \" \" %2))                   \n" +
                         "                             #(log (str \"failure \" (:message %2)))    \n" +
-                        "                             #(log (str \"terminated watching \" %1)))] \n" +
+                        "                             #(log (str \"terminated watching \" %1))   \n" +
+                        "                             #(log (str \"registered dir \" %1)))]      \n" +
                         "    (sleep 30 :seconds)))")
                     .seeAlso(
                         "io/add-watch-dir",
