@@ -1577,6 +1577,7 @@ public class IOFunctions {
                         "a resource which should be closed with `(io/close-watcher w)`.")
                     .examples(
                         " (try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))] \n" +
+                        "    ;; wait 30s and terminate                           \n" +
                         "    (sleep 30 :seconds))",
                         "(do                                                                     \n" +
                         "  (defn log [msg] (locking log (println msg)))                          \n" +
@@ -1586,6 +1587,7 @@ public class IOFunctions {
                         "                             #(log (str \"failure \" (:message %2)))    \n" +
                         "                             #(log (str \"terminated watching \" %1))   \n" +
                         "                             #(log (str \"registered dir \" %1)))]      \n" +
+                        "    ;; wait 30s and terminate                                           \n" +
                         "    (sleep 30 :seconds)))")
                     .seeAlso(
                         "io/add-watch-dir",
