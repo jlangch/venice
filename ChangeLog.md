@@ -5,18 +5,23 @@ All notable changes to this project will be documented in this file.
 
 
 
-
-## [1.12.41] - 2025-04-xx
+## [1.12.42] - 2025-04-xx
 
 ### Added
-
-- function `time/between`
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.41] - 2025-04-18
+
+### Added
+
+- function `time/between`
 
 ### Enhanced
 
