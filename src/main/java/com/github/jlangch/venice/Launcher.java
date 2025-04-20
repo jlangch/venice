@@ -171,13 +171,16 @@ public class Launcher {
 
         final String scriptWrapped = "(do " + script + ")";
 
-        System.out.println(
-                runScript(
-                    cli.removeSwitches("-file", "-macroexpand", "-loadpath"),
-                    macroexpand,
-                    interceptor,
-                    scriptWrapped,
-                    new File(file).getName()));
+        final String result = runScript(
+                                cli.removeSwitches("-file", "-macroexpand", "-loadpath"),
+                                macroexpand,
+                                interceptor,
+                                scriptWrapped,
+                                new File(file).getName());
+
+        if (!"nil".equals(result)) {
+            System.out.println(result);
+        }
     }
 
     private static void runClasspathFileCmd(
@@ -192,13 +195,16 @@ public class Launcher {
         final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
         final String script = new ClassPathResource(file).getResourceAsString();
 
-        System.out.println(
-                runScript(
-                    cli.removeSwitches("-cp-file", "-macroexpand", "-loadpath"),
-                    macroexpand,
-                    interceptor,
-                    script,
-                    new File(file).getName()));
+        final String result = runScript(
+                                cli.removeSwitches("-cp-file", "-macroexpand", "-loadpath"),
+                                macroexpand,
+                                interceptor,
+                                script,
+                                new File(file).getName());
+
+        if (!"nil".equals(result)) {
+            System.out.println(result);
+        }
     }
 
     private static void runScriptCmd(

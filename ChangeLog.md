@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.42] - 2025-04-xx
 
+### Improved 
+
+- the file runner (launcher) not to print 'nil' to stdout if the result was 
+  just `nil`.
+
 ### Added
 
 - :openai module support for assistant api
