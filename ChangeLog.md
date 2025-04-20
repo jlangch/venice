@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Improved 
 
 - the file runner (launcher) not to print 'nil' to stdout if the result was 
-  just `nil`.
+  just `nil` (cosmetic change).
 
 ### Added
 
