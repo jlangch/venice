@@ -77,7 +77,7 @@ public class LauncherTest {
             assertEquals(0, exitCode);
 
             // Must run on *nix and Windows
-            assertEquals("201\nnil\n", StringUtil.crlf_to_lf(baos.toString()));
+            assertEquals("201\n", StringUtil.crlf_to_lf(baos.toString()));
         }
         finally {
             System.setOut(orgStdOut);
@@ -98,7 +98,7 @@ public class LauncherTest {
             assertEquals(0, exitCode);
 
             // Must run on *nix and Windows
-            assertEquals("301\nnil\n", StringUtil.crlf_to_lf(baos.toString()));
+            assertEquals("301\n", StringUtil.crlf_to_lf(baos.toString()));
         }
         finally {
             System.setOut(orgStdOut);
