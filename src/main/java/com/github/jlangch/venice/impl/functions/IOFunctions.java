@@ -2590,6 +2590,13 @@ public class IOFunctions {
                                     args.second(),
                                     "Function 'io/move-file' does not allow %s as target");
 
+                if (!from.isFile()) {
+                    throw new VncException(
+                            String.format(
+                                "Failed to move file %s to %s. The from file does not exists!",
+                                from.getPath(), to.getPath()));
+                }
+
                 try {
                     final List<CopyOption> moveOptions = new ArrayList<>();
                     if (VncBoolean.isTrue(replaceOpt)) {
