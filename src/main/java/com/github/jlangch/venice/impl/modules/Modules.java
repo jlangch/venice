@@ -129,6 +129,7 @@ public class Modules {
                         "semver",
                         "server-side-events",
                         "shell",
+                        "stopwatch",
                         "test",
                         "test-support",
                         "timing",
