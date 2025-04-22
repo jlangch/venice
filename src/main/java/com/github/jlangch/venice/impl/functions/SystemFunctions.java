@@ -1090,6 +1090,7 @@ public class SystemFunctions {
     public static final VncKeyword CALLSTACK_KEY_LINE = new VncKeyword(":line");
     public static final VncKeyword CALLSTACK_KEY_COL = new VncKeyword(":col");
 
+    // See: com.github.jlangch.venice.Launcher
     public static final AtomicInteger SYSTEM_EXIT_CODE = new AtomicInteger(0);
 
     public static final Map<VncVal,IVncFunction> interruptHooks = new ConcurrentHashMap<>();
