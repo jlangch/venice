@@ -190,11 +190,11 @@
           
           time-unit:
           
-          * `:MILLISECONDS`
-          * `:SECONDS`
-          * `:MINUTES`
-          * `:HOURS`
-          * `:DAYS`
+          * `:milliseconds`
+          * `:seconds`
+          * `:minutes`
+          * `:hours`
+          * `:days`
           
           Returns the split time.
           """
@@ -216,8 +216,8 @@
 
   split
 
-  ([sw] (. sw :splitTime :MILLISECONDS))
-  ([sw time-unit] (. sw :splitTime time-unit)))
+  ([sw] (. sw :splitTime :milliseconds))
+  ([sw time-unit] (. sw :splitTime (time-unit-upper-case time-unit))))
  
 
 (defn 
@@ -228,11 +228,11 @@
           
           time-unit:
           
-          * `:MILLISECONDS`
-          * `:SECONDS`
-          * `:MINUTES`
-          * `:HOURS`
-          * `:DAYS`
+          * `:milliseconds`
+          * `:seconds`
+          * `:minutes`
+          * `:hours`
+          * `:days`
           
           Returns the elapsed time.
           """
@@ -263,8 +263,8 @@
 
   elapsed
 
-  ([sw] (. sw :elapsed :MILLISECONDS))
-  ([sw time-unit] (. sw :elapsed time-unit)))
+  ([sw] (. sw :elapsed :milliseconds))
+  ([sw time-unit] (. sw :elapsed (time-unit-upper-case time-unit))))
  
 
 (defn 
@@ -296,4 +296,8 @@
   elapsed-formatted [sw]
 
   (. sw :elapsedMillisFormatted))
+
+
+(defn- time-unit-upper-case [u]
+  (keyword (str/upper-case (name u))))
  
