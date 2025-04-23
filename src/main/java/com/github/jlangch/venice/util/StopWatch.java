@@ -98,7 +98,7 @@ public class StopWatch {
     /**
      * Returns the elapsed time of this stop watch.
      *
-     * @param unit The unit of the elapsed time if <tt>null</tt> milliseconds are used
+     * @param unit The unit of the elapsed time if <code>null</code> milliseconds are used
      * @return the elapsed time or 0 if the watch has not been stopped.
      */
     public long elapsed(final TimeUnit unit) {
@@ -110,7 +110,7 @@ public class StopWatch {
     /**
      * Returns the split time regarding a time unit
      *
-     * @param unit The unit of the split time if <tt>null</tt> milliseconds are used
+     * @param unit The unit of the split time if <code>null</code> milliseconds are used
      * @return the split time
      */
     public long splitTime(final TimeUnit unit) {
