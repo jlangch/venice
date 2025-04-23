@@ -394,13 +394,34 @@ public class DocForm {
     private static VncString formatDoc(final VncVal val, final int width) {
         if (val != null) {
             if (Types.isVncFunction(val)) {
-                return formatDoc((VncFunction)val, width);
+            	try {
+            		return formatDoc((VncFunction)val, width);
+            	}
+            	catch(RuntimeException ex) {
+            		throw new RuntimeException(
+            				"Failed to format function doc: " + ((VncFunction)val).getQualifiedName(),
+            				ex);
+            	}
             }
             else if (Types.isVncSpecialForm(val)) {
-                return formatDoc((VncSpecialForm)val, width);
+            	try {
+            		return formatDoc((VncSpecialForm)val, width);
+            	}
+            	catch(RuntimeException ex) {
+            		throw new RuntimeException(
+            				"Failed to format special form doc: " + ((VncSpecialForm)val).getName(),
+            				ex);
+            	}
             }
             else if (Types.isVncProtocol(val)) {
-                return formatDoc((VncProtocol)val, width);
+            	try {
+                	return formatDoc((VncProtocol)val, width);
+            	}
+            	catch(RuntimeException ex) {
+            		throw new RuntimeException(
+            				"Failed to format protocol doc: " + ((VncProtocol)val).getName(),
+            				ex);
+            	}
             }
         }
 
