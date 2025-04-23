@@ -149,9 +149,9 @@ public class StopWatch {
      *
      * <p>Formats chosen
      * <ul>
-     *   <li>245ms - for elapsed times < 1s</li>
-     *   <li>45s 245ms - for elapsed times < 1h</li>
-     *   <li>10m 45s - for elapsed times >= 1h</li>
+     *   <li>245ms - for elapsed times &lt; 1s</li>
+     *   <li>45s 245ms - for elapsed times &lt; 1h</li>
+     *   <li>10m 45s - for elapsed times &gt;= 1h</li>
      * </ul>
      *
      * @param millis a duration in milliseconds
