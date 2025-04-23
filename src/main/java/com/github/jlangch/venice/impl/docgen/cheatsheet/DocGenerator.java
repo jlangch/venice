@@ -81,6 +81,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSseSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleStopWatchSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTimingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTomcatSection;
@@ -149,7 +150,7 @@ public class DocGenerator {
                         "java",          "semver",              "excel",            "hexdump",
                         "shell",         "geoip",               "benchmark",        "component",
                         "config",        "parsifal",            "grep",             "test",
-                        "fonts",         "jsonl",               "timing",
+                        "fonts",         "jsonl",               "timing",           "stopwatch",
                         "zipvault",      "gradlew",             "matrix",           "ascii-table",
                         "docker",        "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "cargo-postgresql",
@@ -350,6 +351,7 @@ public class DocGenerator {
         final DocSection util = new DocSection("Util", "util");
         util.addSection(new DocSection("Math", "math"));
         util.addSection(new DocSection("Time", "time"));
+        util.addSection(new DocSection("StopWatch", "modules.stopwatch"));
         util.addSection(new DocSection("Regex", "regex"));
         util.addSection(new DocSection("INET", "inet"));
         util.addSection(new DocSection("CIDR", "cidr"));
@@ -523,6 +525,7 @@ public class DocGenerator {
                 new SystemVarSection(diBuilder).section(),
                 new TapSection(diBuilder).section(),
                 new TimeSection(diBuilder).section(),
+                new ModuleStopWatchSection(diBuilder).section(),
                 new IoSection(diBuilder).section(),
                 new IoFileSection(diBuilder).section(),
                 new JsonSection(diBuilder).section(),

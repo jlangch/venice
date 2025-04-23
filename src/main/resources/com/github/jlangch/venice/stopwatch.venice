@@ -36,17 +36,19 @@
           
           Returns the created stop watch.
           """
-     :examples '(
+     :examples (list
           """
           (do
             (load-module :stopwatch ['stopwatch :as 'sw])
             (let [sw (sw/create)]
               (sleep 500)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")))
+              (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "copy", "start", "stop", "resume", "split", "elapsed", "elapsed-formatted") }
+          "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
 
   create []
 
@@ -70,11 +72,13 @@
                 (let [sw-2 (sw/copy sw-1)]
                   (sw/stop sw-1)
                   (sw/stop sw-2)
-                  (println "sw-1: ~(sw/elapsed sw-1) ms")
-                  (println "sw-2: ~(sw/elapsed sw-2) ms"))))
+                  (println (str "sw-1: " (sw/elapsed sw-1) "ms"))
+                  (println (str "sw-2: " (sw/elapsed sw-2) "ms")))))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split", "elapsed", "elapsed-formatted") }
+          "stopwatch/create", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
 
   copy [sw]
 
@@ -98,10 +102,12 @@
               (sw/start sw)
               (sleep 200)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")))
+              (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "create", "copy", "stop", "resume", "split", "elapsed", "elapsed-formatted") }
+          "stopwatch/create", "stopwatch/copy", "stopwatch/stop", 
+          "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
 
   start [sw]
 
@@ -124,7 +130,7 @@
             (let [sw (sw/create)]
               (sleep 500)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")))
+              (println (str (sw/elapsed sw) "ms"))))
           """,
           """
           (do
@@ -132,13 +138,15 @@
             (let [sw (sw/create)]
               (sleep 500)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")
+              (println (str (sw/elapsed sw) "ms"))
               (sleep 300)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")))
+              (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "create", "copy", "start", "resume", "split", "elapsed", "elapsed-formatted") }
+          "stopwatch/create", "stopwatch/copy", "stopwatch/start",
+          "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
 
   stop [sw]
 
@@ -162,10 +170,12 @@
               (sw/resume sw)
               (sleep 300)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")))
+              (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "create", "copy", "start", "stop", "split", "elapsed", "elapsed-formatted") }
+          "stopwatch/create", "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/split", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
 
   resume [sw]
 
@@ -194,13 +204,15 @@
             (load-module :stopwatch ['stopwatch :as 'sw])
             (let [sw (sw/create)]
               (sleep 500)
-              (println "~(sw/split sw) ms")
+              (println (str (sw/split sw) "ms"))
               (sleep 300)
-              (println "~(sw/split sw) ms")
-              (println "~(sw/split sw :MILLISECONDS) ms")))
+              (println (str (sw/split sw) "ms"))
+              (println (str (sw/split sw :MILLISECONDS) "ms"))))
           """)
      :see-also '(
-          "create", "copy", "start", "stop", "resume", "elapsed", "elapsed-formatted") }
+          "stopwatch/create", "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/resume", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
 
   split
 
@@ -231,8 +243,8 @@
             (let [sw (sw/create)]
               (sleep 500)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")
-              (println "~(sw/elapsed sw :MILLISECONDS) ms")))
+              (println (str (sw/elapsed sw) "ms"))
+              (println (str (sw/elapsed sw :MILLISECONDS) "ms"))))
           """,
           """
           (do
@@ -240,13 +252,14 @@
             (let [sw (sw/create)]
               (sleep 500)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")
+              (println (str (sw/elapsed sw) "ms"))
               (sleep 300)
               (sw/stop sw)
-              (println "~(sw/elapsed sw) ms")))
+              (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "create", "copy", "start", "stop", "resume", "split", "elapsed-formatted") }
+          "stopwatch/create", "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed-formatted") }
 
   elapsed
 
@@ -274,10 +287,11 @@
             (let [sw (sw/create)]
               (sleep 500)
               (sw/stop sw)
-              (println (sw/elapsed-formatted sw))))
+              (println (sw/elapsed-formatted sw)))))
           """)
      :see-also '(
-          "create", "copy", "start", "stop", "resume", "split", "elapsed") }
+          "stopwatch/create", "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed") }
 
   elapsed-formatted [sw]
 
