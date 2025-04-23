@@ -46,13 +46,16 @@
                (println "~(sw/elapsed sw) ms")))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
+          "copy", "start", "stop", "resume", "split", "elapsed", "elapsed-formatted") }
+
   create []
+
   (. :StopWatch :new))
+
 
 (defn 
   ^{ :arglists '(
-          "(copy)")
+          "(copy sw)")
      :doc """
           Copies a stop watch with its internal state.
  
@@ -71,13 +74,16 @@
                  (println "sw-2: ~(sw/elapsed sw-2) ms"))))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
+          "create", "start", "stop", "resume", "split", "elapsed", "elapsed-formatted") }
+
   copy [sw]
+
   (. sw :copy))
+
 
 (defn 
   ^{ :arglists '(
-          "(start)")
+          "(start sw)")
      :doc """
           Restart a stop watch by resetting the start time to now.
  
@@ -95,13 +101,16 @@
                (println "~(sw/elapsed sw) ms")))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
+          "create", "copy", "stop", "resume", "split", "elapsed", "elapsed-formatted") }
+
   start [sw]
+
   (. sw :start))
+
 
 (defn 
   ^{ :arglists '(
-          "(stop)")
+          "(stop sw)")
      :doc """
           Stops a stop watch. Remembers the elapsed time and sets the start
           time to now.
@@ -129,13 +138,16 @@
                (println "~(sw/elapsed sw) ms")))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
+          "create", "copy", "start", "resume", "split", "elapsed", "elapsed-formatted") }
+
   stop [sw]
+
   (. sw :stop))
+
 
 (defn 
   ^{ :arglists '(
-          "(resume)")
+          "(resume sw)")
      :doc """
           Resumes a stop watch. Sets the start time to now.
  
@@ -153,15 +165,26 @@
                (println "~(sw/elapsed sw) ms")))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
+          "create", "copy", "start", "stop", "split", "elapsed", "elapsed-formatted") }
+
   resume [sw]
+
   (. sw :resume))
+
 
 (defn 
   ^{ :arglists '(
-          "(split)")
+          "(split sw)" "(split sw time-unit)")
      :doc """
           Returns the split time (now - start time) in milli seconds.
+
+          time-unit:
+
+          * `:MILLISECONDS`
+          * `:SECONDS`
+          * `:MINUTES`
+          * `:HOURS`
+          * `:DAYS`
   
           Returns the split time.
           """
@@ -173,19 +196,32 @@
                (sleep 500)
                (println "~(sw/split sw) ms")
                (sleep 300)
-               (println "~(sw/split sw) ms")))
+               (println "~(sw/split sw) ms")
+               (println "~(sw/split sw :MILLISECONDS) ms")))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
-  split [sw]
-  (. sw :splitTime :MILLISECONDS))
+          "create", "copy", "start", "stop", "resume", "elapsed", "elapsed-formatted") }
+
+  split
+
+  ([sw] (. sw :splitTime :MILLISECONDS))
+  ([sw time-unit] (. sw :splitTime time-unit)))
  
+
 (defn 
   ^{ :arglists '(
-          "(elapsed)")
+          "(elapsed sw)" "(elapsed sw time-unit)")
      :doc """
           Returns the elapsed time (now - last stop time) in milli seconds.
-  
+
+          time-unit:
+
+          * `:MILLISECONDS`
+          * `:SECONDS`
+          * `:MINUTES`
+          * `:HOURS`
+          * `:DAYS`
+
           Returns the elapsed time.
           """
      :examples '(
@@ -195,7 +231,8 @@
             (let [sw (sw/create)]
                (sleep 500)
                (sw/stop sw)
-               (println "~(sw/elapsed sw) ms")))
+               (println "~(sw/elapsed sw) ms")
+               (println "~(sw/elapsed sw :MILLISECONDS) ms")))
           """,
           """
           (do
@@ -209,13 +246,17 @@
                (println "~(sw/elapsed sw) ms")))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
-  elapsed [sw]
-  (. sw :elapsedMillis))
+          "create", "copy", "start", "stop", "resume", "split", "elapsed-formatted") }
+
+  elapsed
+
+  ([sw] (. sw :elapsed :MILLISECONDS))
+  ([sw time-unit] (. sw :elapsed time-unit)))
  
+
 (defn 
   ^{ :arglists '(
-          "(elapsed-formatted)")
+          "(elapsed-formatted sw)")
      :doc """
           Returns the elapsed time (now - last stop time) formatted.
           
@@ -236,7 +277,9 @@
                (println (sw/elapsed-formatted sw))))
           """)
      :see-also '(
-          "create", "start", "stop", "resume", "split") }
+          "create", "copy", "start", "stop", "resume", "split", "elapsed") }
+
   elapsed-formatted [sw]
+  
   (. sw :elapsedMillisFormatted))
  
