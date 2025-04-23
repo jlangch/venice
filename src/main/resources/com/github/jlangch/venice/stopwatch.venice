@@ -69,11 +69,11 @@
             (load-module :stopwatch ['stopwatch :as 'sw])
             (let [sw-1 (sw/create)]
               (sleep 500)
-                (let [sw-2 (sw/copy sw-1)]
-                  (sw/stop sw-1)
-                  (sw/stop sw-2)
-                  (println (str "sw-1: " (sw/elapsed sw-1) "ms"))
-                  (println (str "sw-2: " (sw/elapsed sw-2) "ms")))))
+              (let [sw-2 (sw/copy sw-1)]
+                (sw/stop sw-1)
+                (sw/stop sw-2)
+                (println (str "sw-1: " (sw/elapsed sw-1) "ms"))
+                (println (str "sw-2: " (sw/elapsed sw-2) "ms")))))
           """)
      :see-also '(
           "stopwatch/create", "stopwatch/start", "stopwatch/stop", 
