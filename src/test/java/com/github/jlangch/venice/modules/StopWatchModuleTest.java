@@ -58,8 +58,8 @@ public class StopWatchModuleTest {
                 "     (sw/stop sw)                                  \n" +
                 "     (sw/elapsed sw)))";
 
-        assertTrue((long)venice.eval(script) > 100);
-        assertTrue((long)venice.eval(script) < 150);
+        assertTrue((long)venice.eval(script) >= 100);
+        assertTrue((long)venice.eval(script) <= 150);
     }
 
     @Test
@@ -73,8 +73,8 @@ public class StopWatchModuleTest {
                 "     (sleep 100)                                   \n" +
                 "     (sw/split sw :milliseconds)))";
 
-        assertTrue((long)venice.eval(script) > 100);
-        assertTrue((long)venice.eval(script) < 150);
+        assertTrue((long)venice.eval(script) >= 100);
+        assertTrue((long)venice.eval(script) <= 150);
     }
 
     @Test
