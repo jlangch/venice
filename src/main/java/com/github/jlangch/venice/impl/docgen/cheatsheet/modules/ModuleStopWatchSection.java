@@ -46,11 +46,13 @@ public class ModuleStopWatchSection implements ISectionBuilder {
         all.addSection(sw);
 
         sw.addItem(diBuilder.getDocItem("stopwatch/create", false));
+        sw.addItem(diBuilder.getDocItem("stopwatch/create-with-limit", false));
         sw.addItem(diBuilder.getDocItem("stopwatch/copy", false));
         sw.addItem(diBuilder.getDocItem("stopwatch/start", false));
         sw.addItem(diBuilder.getDocItem("stopwatch/stop", false));
         sw.addItem(diBuilder.getDocItem("stopwatch/resume", false));
         sw.addItem(diBuilder.getDocItem("stopwatch/split", false));
+        sw.addItem(diBuilder.getDocItem("stopwatch/exceeded?", false));
         sw.addItem(diBuilder.getDocItem("stopwatch/elapsed", false));
         sw.addItem(diBuilder.getDocItem("stopwatch/elapsed-formatted", false));
 

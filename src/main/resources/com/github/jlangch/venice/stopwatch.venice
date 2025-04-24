@@ -46,6 +46,7 @@
               (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
+          "stopwatch/create-with-limit",
           "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
           "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
           "stopwatch/elapsed-formatted") }
@@ -53,6 +54,41 @@
   create []
 
   (. :StopWatch :new))
+
+(defn 
+  ^{ :arglists '(
+          "(create-with-limit unit n)")
+     :doc """
+          Create a new stop watch with a time limit and implicitely starts it by
+          setting the start time as now. The stop watch has a resolution of 
+          milliseconds.
+
+          The stop watch has the same functionality as a standard stop watch.
+          But in addition the time limit can be checked with `exceeded?`
+          
+          Returns the created stop watch.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :stopwatch ['stopwatch :as 'sw])
+            (let [sw (sw/create-with-limit :seconds 3)]
+              (sleep 2000)
+              (println "Exceeded:" (sw/exceeded? sw))
+              (sleep 2000)
+              (println "Exceeded:" (sw/exceeded? sw))
+              (sw/stop sw)
+              (println (str (sw/elapsed sw) "ms"))))
+          """)
+     :see-also '(
+          "stopwatch/exceeded?", "stopwatch/create", 
+          "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
+
+  create-with-limit [unit n]
+
+  (. :StopWatch :new (time-unit-upper-case unit) n))
 
 
 (defn 
@@ -186,7 +222,8 @@
   ^{ :arglists '(
           "(split sw)" "(split sw time-unit)")
      :doc """
-          Returns the split time (now - start time) in milli seconds.
+          Returns the split time (now - start time) in milli seconds or in the
+          requested time unit.
           
           time-unit:
           
@@ -207,7 +244,7 @@
               (println (str (sw/split sw) "ms"))
               (sleep 300)
               (println (str (sw/split sw) "ms"))
-              (println (str (sw/split sw :MILLISECONDS) "ms"))))
+              (println (str (sw/split sw :milliseconds) "ms"))))
           """)
      :see-also '(
           "stopwatch/create", "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
@@ -216,15 +253,45 @@
 
   split
 
-  ([sw] (. sw :splitTime :milliseconds))
+  ([sw] (split sw :milliseconds))
   ([sw time-unit] (. sw :splitTime (time-unit-upper-case time-unit))))
- 
+
+
+(defn 
+  ^{ :arglists '(
+          "(exceeded? sw)")
+     :doc """
+          Returns `true` if the current time has exceeded the stop watch's time 
+          limit, else `false`.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :stopwatch ['stopwatch :as 'sw])
+            (let [sw (sw/create-with-limit :seconds 3)]
+              (sleep 2000)
+              (println "Exceeded:" (sw/exceeded? sw))
+              (sleep 2000)
+              (println "Exceeded:" (sw/exceeded? sw))
+              (sw/stop sw)
+              (println (str (sw/elapsed sw) "ms"))))
+          """)
+     :see-also '(
+          "stopwatch/create", "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
+          "stopwatch/split", "stopwatch/elapsed", 
+          "stopwatch/elapsed-formatted") }
+
+  exceeded? [sw]
+
+  (. sw :hasExceeded))
+
 
 (defn 
   ^{ :arglists '(
           "(elapsed sw)" "(elapsed sw time-unit)")
      :doc """
-          Returns the elapsed time (now - last stop time) in milli seconds.
+          Returns the elapsed time (now - last stop time) in milliseconds or
+          in the requested time unit.
           
           time-unit:
           
@@ -244,7 +311,7 @@
               (sleep 500)
               (sw/stop sw)
               (println (str (sw/elapsed sw) "ms"))
-              (println (str (sw/elapsed sw :MILLISECONDS) "ms"))))
+              (println (str (sw/elapsed sw :milliseconds) "ms"))))
           """,
           """
           (do
@@ -263,7 +330,7 @@
 
   elapsed
 
-  ([sw] (. sw :elapsed :milliseconds))
+  ([sw] (elapsed sw :milliseconds))
   ([sw time-unit] (. sw :elapsed (time-unit-upper-case time-unit))))
  
 
@@ -299,5 +366,5 @@
 
 
 (defn- time-unit-upper-case [u]
-  (keyword (str/upper-case (name u))))
+  (if (nil? u) u (keyword (str/upper-case (name u)))))
  

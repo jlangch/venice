@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.util.concurrent.TimeUnit;
 
 
@@ -56,9 +58,8 @@ public class StopWatch {
         this(
             System.currentTimeMillis(),
             0L,
-            unit == null
-                ? n
-                : unit.convert(n, TimeUnit.MILLISECONDS));
+            unit == null ? n
+                         : MILLISECONDS.convert(n, unit));
     }
 
 
@@ -127,7 +128,7 @@ public class StopWatch {
     public long elapsed(final TimeUnit unit) {
         return unit == null
                 ? elapsedTime
-                : unit.convert(elapsedTime, TimeUnit.MILLISECONDS);
+                : unit.convert(elapsedTime, MILLISECONDS);
     }
 
     /**
@@ -139,7 +140,7 @@ public class StopWatch {
     public long splitTime(final TimeUnit unit) {
         return unit == null
                     ? splitTime()
-                    : unit.convert(splitTime(), TimeUnit.MILLISECONDS);
+                    : unit.convert(splitTime(), MILLISECONDS);
     }
 
     /**
@@ -166,7 +167,7 @@ public class StopWatch {
      * @return true if the current time has exceeded the limit time
      */
     public boolean hasExceeded() {
-        return limitTime == 0 ? false : System.currentTimeMillis() > limitTime;
+        return limitTime == 0L ? false : System.currentTimeMillis() > limitTime;
     }
 
 
