@@ -74,9 +74,9 @@
             (load-module :stopwatch ['stopwatch :as 'sw])
             (let [sw (sw/create-time-limit :seconds 3)]
               (sleep 2000)
-              (println "Exceeded:" (sw/expired? sw))
+              (println "Expired:" (sw/expired? sw))
               (sleep 2000)
-              (println "Exceeded:" (sw/expired? sw))
+              (println "Expired:" (sw/expired? sw))
               (sw/stop sw)
               (println (str (sw/elapsed sw) "ms"))))
           """)
@@ -268,18 +268,17 @@
           """
           (do
             (load-module :stopwatch ['stopwatch :as 'sw])
-            (let [sw (sw/create-with-limit :seconds 3)]
+            (let [sw (sw/create-time-limit :seconds 3)]
               (sleep 2000)
-              (println "Exceeded:" (sw/expired? sw))
+              (println "Expired:" (sw/expired? sw))
               (sleep 2000)
-              (println "Exceeded:" (sw/expired? sw))
+              (println "Expired:" (sw/expired? sw))
               (sw/stop sw)
               (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "stopwatch/create", "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
-          "stopwatch/split", "stopwatch/elapsed", 
-          "stopwatch/elapsed-formatted") }
+          "stopwatch/create-time-limit", 
+          "stopwatch/elapsed", "stopwatch/elapsed-formatted") }
 
   expired? [sw]
 
