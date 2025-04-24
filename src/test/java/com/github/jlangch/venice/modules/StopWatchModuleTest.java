@@ -129,6 +129,24 @@ public class StopWatchModuleTest {
         final Venice venice = new Venice();
 
         final String script =
+                "(do                                                \n" +
+                "   (load-module :stopwatch ['stopwatch :as 'sw])   \n" +
+                "   (let [sw (sw/create)]                           \n" +
+                "     (sleep 100)                                   \n" +
+                "     (sw/stop sw)                                  \n" +
+                "     (sw/resume sw)                                \n" +
+                "     (sleep 100)                                   \n" +
+                "     (sw/elapsed sw)))";
+
+        assertTrue((long)venice.eval(script) >= 100);
+        assertTrue((long)venice.eval(script) <= 150);
+    }
+
+    @Test
+    public void test_8() {
+        final Venice venice = new Venice();
+
+        final String script =
                 "(do                                                     \n" +
                 "   (load-module :stopwatch ['stopwatch :as 'sw])        \n" +
                 "   (let [sw (sw/create-time-limit :milliseconds 1000)]  \n" +
@@ -139,7 +157,7 @@ public class StopWatchModuleTest {
     }
 
     @Test
-    public void test_8() {
+    public void test_9() {
         final Venice venice = new Venice();
 
         final String script =
