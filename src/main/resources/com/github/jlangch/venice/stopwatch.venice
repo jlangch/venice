@@ -64,7 +64,7 @@
           milliseconds.
 
           This stop watch has the same functionality as a standard stop watch.
-          But in addition the time limit can be checked with `exceeded?`
+          But in addition the time limit can be checked with `expired?`
           
           Returns the created stop watch.
           """
@@ -74,19 +74,19 @@
             (load-module :stopwatch ['stopwatch :as 'sw])
             (let [sw (sw/create-time-limit :seconds 3)]
               (sleep 2000)
-              (println "Exceeded:" (sw/exceeded? sw))
+              (println "Exceeded:" (sw/expired? sw))
               (sleep 2000)
-              (println "Exceeded:" (sw/exceeded? sw))
+              (println "Exceeded:" (sw/expired? sw))
               (sw/stop sw)
               (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "stopwatch/exceeded?", "stopwatch/create", 
+          "stopwatch/expired?", "stopwatch/create", 
           "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
           "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
           "stopwatch/elapsed-formatted") }
 
-  create-with-limit [unit n]
+  create-time-limit [unit n]
 
   (. :StopWatch :new (time-unit-upper-case unit) n))
 
@@ -259,10 +259,10 @@
 
 (defn 
   ^{ :arglists '(
-          "(exceeded? sw)")
+          "(expired? sw)")
      :doc """
-          Returns `true` if the current time has exceeded the stop watch's time 
-          limit, else `false`.
+          Returns `true` if the stop watch has expired, meaning it exceeded the 
+          time limit, else `false`.
           """
      :examples '(
           """
@@ -270,9 +270,9 @@
             (load-module :stopwatch ['stopwatch :as 'sw])
             (let [sw (sw/create-with-limit :seconds 3)]
               (sleep 2000)
-              (println "Exceeded:" (sw/exceeded? sw))
+              (println "Exceeded:" (sw/expired? sw))
               (sleep 2000)
-              (println "Exceeded:" (sw/exceeded? sw))
+              (println "Exceeded:" (sw/expired? sw))
               (sw/stop sw)
               (println (str (sw/elapsed sw) "ms"))))
           """)
@@ -281,9 +281,9 @@
           "stopwatch/split", "stopwatch/elapsed", 
           "stopwatch/elapsed-formatted") }
 
-  exceeded? [sw]
+  expired? [sw]
 
-  (. sw :hasExceeded))
+  (. sw :hasExpired))
 
 
 (defn 

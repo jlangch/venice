@@ -164,9 +164,9 @@ public class StopWatch {
 
 
     /**
-     * @return true if the current time has exceeded the limit time
+     * @return true if the stop has expired, meaning it exceeded the time limit
      */
-    public boolean hasExceeded() {
+    public boolean hasExpired() {
         return limitTime == 0L ? false : System.currentTimeMillis() > limitTime;
     }
 
