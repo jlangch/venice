@@ -63,7 +63,7 @@
           setting the start time as now. The stop watch has a resolution of 
           milliseconds.
 
-          The stop watch has the same functionality as a standard stop watch.
+          This stop watch has the same functionality as a standard stop watch.
           But in addition the time limit can be checked with `exceeded?`
           
           Returns the created stop watch.
