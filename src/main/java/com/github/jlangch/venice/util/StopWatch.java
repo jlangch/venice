@@ -52,7 +52,7 @@ public class StopWatch {
      * <p>
      * The stop watch has the same functionality as a standard stop watch.
      * But in addition the time limit can be checked with
-     * {@link #hasExceeded() hasExceeded}.
+     * {@link #hasExpired() hasExpired}.
      */
     public StopWatch(final TimeUnit unit, final long n) {
         this(
