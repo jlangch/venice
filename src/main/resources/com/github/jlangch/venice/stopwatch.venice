@@ -46,7 +46,7 @@
               (println (str (sw/elapsed sw) "ms"))))
           """)
      :see-also '(
-          "stopwatch/create-with-limit",
+          "stopwatch/create-time-limit",
           "stopwatch/copy", "stopwatch/start", "stopwatch/stop", 
           "stopwatch/resume", "stopwatch/split", "stopwatch/elapsed", 
           "stopwatch/elapsed-formatted") }
@@ -57,7 +57,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(create-with-limit unit n)")
+          "(create-time-limit unit n)")
      :doc """
           Create a new stop watch with a time limit and implicitely starts it by
           setting the start time as now. The stop watch has a resolution of 
@@ -72,7 +72,7 @@
           """
           (do
             (load-module :stopwatch ['stopwatch :as 'sw])
-            (let [sw (sw/create-with-limit :seconds 3)]
+            (let [sw (sw/create-time-limit :seconds 3)]
               (sleep 2000)
               (println "Exceeded:" (sw/exceeded? sw))
               (sleep 2000)
