@@ -118,8 +118,7 @@ public class StopWatchModuleTest {
                 "   (let [sw (sw/create)]                           \n" +
                 "     (sleep 100)                                   \n" +
                 "     (sw/stop sw)                                  \n" +
-                "     (sw/copy sw)                                  \n" +
-                "     (sw/elapsed sw)))";
+                "     (sw/elapsed (sw/copy sw))))";
 
         assertTrue((long)venice.eval(script) >= 100);
         assertTrue((long)venice.eval(script) <= 150);
