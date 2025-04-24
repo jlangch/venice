@@ -41,12 +41,35 @@ public class StopWatch {
      * Create a new stop watch. Start time is now
      */
     public StopWatch() {
-        this(System.currentTimeMillis(), 0L);
+        this(System.currentTimeMillis(), 0L, 0L);
     }
 
-    private StopWatch(final long startTime, final long elapsedTime) {
+    /**
+     * Create a new stop watch with a time limit. Start time is now.
+     *
+     * <p>
+     * The stop watch has the same functionality as a standard stop watch.
+     * But in addition the time limit can be checked with
+     * {@link #hasExceeded() hasExceeded}.
+     */
+    public StopWatch(final TimeUnit unit, final long n) {
+        this(
+            System.currentTimeMillis(),
+            0L,
+            unit == null
+                ? n
+                : unit.convert(n, TimeUnit.MILLISECONDS));
+    }
+
+
+    private StopWatch(
+            final long startTime,
+            final long elapsedTime,
+            final long limitMilliseconds
+    ) {
         this.startTime = startTime;
         this.elapsedTime = elapsedTime;
+        this.limitTime = startTime + limitMilliseconds;
     }
 
 
@@ -56,7 +79,7 @@ public class StopWatch {
      * @return this stop watch
      */
     public StopWatch copy() {
-        return new StopWatch(startTime, elapsedTime);
+        return new StopWatch(startTime, elapsedTime, limitTime);
     }
 
     /**
@@ -139,6 +162,14 @@ public class StopWatch {
     }
 
 
+    /**
+     * @return true if the current time has exceeded the limit time
+     */
+    public boolean hasExceeded() {
+        return limitTime == 0 ? false : System.currentTimeMillis() > limitTime;
+    }
+
+
     @Override
     public String toString() {
         return formatMillis(elapsedTime);
@@ -174,4 +205,5 @@ public class StopWatch {
 
     private long startTime = 0L;
     private long elapsedTime = 0L;
+    private long limitTime = 0L;
 }
