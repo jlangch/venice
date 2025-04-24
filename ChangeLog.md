@@ -3,9 +3,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.43] - 2025-04-xx
+
+### Added
+
+- :openai module support for assistant api
+- :openai module support for assistant threads api
+- :openai module support for assistant message api (in work)
+- :openai module support for assistant run api (...)
+- :openai module support for assistant run steps api (...)
 
 
-## [1.12.42] - 2025-04-xx
+
+## [1.12.42] - 2025-04-24
 
 ### Improved 
 
@@ -15,12 +25,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - :stopwatch module for time measuring
-
-- :openai module support for assistant api
-- :openai module support for assistant threads api
-- :openai module support for assistant message api (in work)
-- :openai module support for assistant run api (...)
-- :openai module support for assistant run steps api (...)
 
 
 
