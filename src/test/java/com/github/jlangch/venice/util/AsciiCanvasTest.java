@@ -32,28 +32,28 @@ public class AsciiCanvasTest {
 
     @Test
     public void test1() {
-       	final int w = 10;
-       	final int h = 5;
+        final int w = 10;
+        final int h = 5;
 
-    	final AsciiCanvas canvas = new AsciiCanvas(w, h);
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
 
-    	canvas.drawHorizontal('-', w, 0, 0);
-    	canvas.drawHorizontal('-', w, 0, h-1);
+        canvas.drawHorizontal('-', w, 0, 0);
+        canvas.drawHorizontal('-', w, 0, h-1);
 
-    	canvas.drawVertical('|', h, 0, 0);
-    	canvas.drawVertical('|', h, w-1, 0);
+        canvas.drawVertical('|', h, 0, 0);
+        canvas.drawVertical('|', h, w-1, 0);
 
-    	canvas.draw('+', 0, 0);
-    	canvas.draw('+', w-1, 0);
-    	canvas.draw('+', 0, h-1);
-    	canvas.draw('+', w-1, h-1);
+        canvas.draw('+', 0, 0);
+        canvas.draw('+', w-1, 0);
+        canvas.draw('+', 0, h-1);
+        canvas.draw('+', w-1, h-1);
 
-    	final List<String> lines = canvas.toAsciiLines();
+        final List<String> lines = canvas.toAsciiLines();
 
-    	assertEquals("+--------+", lines.get(0));
-    	assertEquals("|        |", lines.get(1));
-    	assertEquals("|        |", lines.get(2));
-    	assertEquals("|        |", lines.get(3));
-    	assertEquals("+--------+", lines.get(4));
+        assertEquals("+--------+", lines.get(0));
+        assertEquals("|        |", lines.get(1));
+        assertEquals("|        |", lines.get(2));
+        assertEquals("|        |", lines.get(3));
+        assertEquals("+--------+", lines.get(4));
     }
 }
