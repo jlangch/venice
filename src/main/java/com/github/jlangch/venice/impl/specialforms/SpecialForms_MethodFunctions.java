@@ -79,8 +79,8 @@ public class SpecialForms_MethodFunctions {
                             "   (defmulti salary (fn [amount] (amount :t)))                            \n" +
                             "                                                                          \n" +
                             "   ;;defmethod provides a function implementation for a particular value  \n" +
-                            "   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
-                            "   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
+                            "   (defmethod salary \"com\"     [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+                            "   (defmethod salary \"bon\"     [amount] (+ (:b amount) 99))                 \n" +
                             "   (defmethod salary :default  [amount] (:b amount))                      \n" +
                             "                                                                          \n" +
                             "   [(salary {:t \"com\" :b 1000})                                         \n" +
@@ -146,8 +146,8 @@ public class SpecialForms_MethodFunctions {
                         "   (defmulti salary (fn [amount] (amount :t)))                              \n" +
                         "                                                                            \n" +
                         "   ;;defmethod provides a function implementation for a particular value    \n" +
-                        "   (defmethod salary \"com\"   [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
-                        "   (defmethod salary \"bon\"   [amount] (+ (:b amount) 99))                 \n" +
+                        "   (defmethod salary \"com\"     [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+                        "   (defmethod salary \"bon\"     [amount] (+ (:b amount) 99))                 \n" +
                         "   (defmethod salary :default  [amount] (:b amount))                        \n" +
                         "                                                                            \n" +
                         "   [(salary {:t \"com\" :b 1000})                                           \n" +
