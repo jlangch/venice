@@ -38,7 +38,7 @@ public class AsciiCanvas {
         }
         if (height < 1 || height > 1000) {
             throw new IllegalArgumentException("A height must be in the range [1..1000]");
-           }
+        }
 
         this.width = width;
         this.height = height;
