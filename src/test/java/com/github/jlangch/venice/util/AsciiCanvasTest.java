@@ -56,4 +56,40 @@ public class AsciiCanvasTest {
         assertEquals("|        |", lines.get(3));
         assertEquals("+--------+", lines.get(4));
     }
+
+    @Test
+    public void test2() {
+        final int w = 10;
+        final int h = 5;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.drawBox(0,0,10,5,"++++-|-|");
+
+        final List<String> lines = canvas.toAsciiLines();
+
+        assertEquals("+--------+", lines.get(0));
+        assertEquals("|        |", lines.get(1));
+        assertEquals("|        |", lines.get(2));
+        assertEquals("|        |", lines.get(3));
+        assertEquals("+--------+", lines.get(4));
+    }
+
+    @Test
+    public void test3() {
+        final int w = 10;
+        final int h = 5;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.drawBox(0,0,10,5,"┌┐┘└─│─│");
+
+        final List<String> lines = canvas.toAsciiLines();
+
+        assertEquals("┌────────┐", lines.get(0));
+        assertEquals("│        │", lines.get(1));
+        assertEquals("│        │", lines.get(2));
+        assertEquals("│        │", lines.get(3));
+        assertEquals("└────────┘", lines.get(4));
+    }
 }

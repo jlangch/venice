@@ -74,56 +74,81 @@ public class AsciiCanvas {
         }
     }
 
-    public void draw(final char ch, final int  x, final int y) {
+    public void draw(final char ch, final int x, final int y) {
     	draw(ch, "", x, y);
     }
 
-    public void draw(final char ch, final String format, final int  x, final int y) {
+    public void draw(final char ch, final String format, final int x, final int y) {
         if (y >= 0 && y < height &&  x >= 0 &&  x < width) {
             canvas[y][x] = new Cell(ch, StringUtil.trimToEmpty(format));
         }
     }
 
-    public void drawHorizontal(final String str, final int  x, final int y) {
+    public void drawHorizontal(final String str, final int x, final int y) {
     	drawHorizontal(str, "", x, y);
     }
 
-    public void drawHorizontal(final String str, final String format, final int  x, final int y) {
+    public void drawHorizontal(final String str, final String format, final int x, final int y) {
         int ii=0;
         for(char ch : str.toCharArray()) {
             draw(ch, format, x + ii++, y);
         }
     }
 
-    public void drawHorizontal(final char ch, final int repeat, final int  x, final int y) {
+    public void drawHorizontal(final char ch, final int repeat, final int x, final int y) {
     	drawHorizontal(ch, "", repeat, x, y);
     }
 
-    public void drawHorizontal(final char ch, final String format, final int repeat, final int  x, final int y) {
+    public void drawHorizontal(final char ch, final String format, final int repeat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
         	draw(ch, format, x+ii, y);
         }
     }
 
-    public void drawVertical(final String str, final int  x, final int y) {
+    public void drawVertical(final String str, final int x, final int y) {
     	drawVertical(str, "", x, y);
     }
 
-    public void drawVertical(final String str, final String format, final int  x, final int y) {
+    public void drawVertical(final String str, final String format, final int x, final int y) {
         int ii=0;
         for(char ch : str.toCharArray()) {
             draw(ch, format, x, y + ii++);
         }
     }
 
-    public void drawVertical(final char ch, final int repeat, final int  x, final int y) {
+    public void drawVertical(final char ch, final int repeat, final int x, final int y) {
     	drawVertical(ch, "", repeat, x, y);
     }
 
-    public void drawVertical(final char ch, final String format, final int repeat, final int  x, final int y) {
+    public void drawVertical(final char ch, final String format, final int repeat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
         	draw(ch, format, x, y+ii);
         }
+    }
+
+    public void drawBox(final int x, final int y, final int w, final int h, final String elements) {
+    	if (elements == null || elements.length() != 8) {
+    		throw new IllegalArgumentException("The box elements must have 8 chars. E.g. \"++++-|-|\"");
+    	}
+    	final char topLeft = elements.charAt(0);
+    	final char topRight = elements.charAt(1);
+    	final char bottomRight = elements.charAt(2);
+    	final char bottomLeft = elements.charAt(3);
+    	final char topBar = elements.charAt(4);
+    	final char rightBar = elements.charAt(5);
+    	final char bottomBar = elements.charAt(6);
+    	final char leftBar = elements.charAt(7);
+
+        draw(topLeft,     x,     y+h-1);
+        draw(topRight,    x+w-1, y+h-1);
+        draw(bottomLeft,  x,     y);
+        draw(bottomRight, x+w-1, y);
+
+        drawHorizontal(topBar,    w-2, x+1, y+h-1);
+        drawHorizontal(bottomBar, w-2, x+1, y);
+
+        drawVertical(leftBar,  h-2, x,     y+1);
+        drawVertical(rightBar, h-2, x+w-1, y+1);
     }
 
     public List<String> toAnsiLines() {
