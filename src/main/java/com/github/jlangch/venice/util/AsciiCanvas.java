@@ -128,8 +128,12 @@ public class AsciiCanvas {
 
     public void drawBox(final int x, final int y, final int w, final int h, final String elements) {
     	if (elements == null || elements.length() != 8) {
-    		throw new IllegalArgumentException("The box elements must have 8 chars. E.g. \"++++-|-|\"");
+    		throw new IllegalArgumentException(
+    				"The box elements must have 8 chars "
+    				+ "[topLeft,topRight,bottomRight,bottomLeft,topBar,rightBar,bottomBar,leftBar]. "
+    				+ "E.g. \"┌┐┘└─│─│\"");
     	}
+
     	final char topLeft = elements.charAt(0);
     	final char topRight = elements.charAt(1);
     	final char bottomRight = elements.charAt(2);
