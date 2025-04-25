@@ -33,6 +33,13 @@ public class AsciiCanvas {
             final int width,
             final int height
     ) {
+    	if (width < 1 || width > 1000) {
+    		throw new IllegalArgumentException("A width must be in the range [1..1000]");
+    	}
+    	if (height < 1 || height > 1000) {
+    		throw new IllegalArgumentException("A height must be in the range [1..1000]");
+   	    }
+
         this.width = width;
         this.height = height;
         this.canvas = new Cell[height][width];
@@ -48,84 +55,98 @@ public class AsciiCanvas {
         return height;
     }
 
-    public char getCharAt(final int row, final int col) {
-        if (row < 0 || row >= height) {
-        	throw new IndexOutOfBoundsException("The row is out of bounds [0," + (height-1) + "]");
+    public char getCharAt(final int x, final int y) {
+        if ( x < 0 ||  x >= width) {
+        	throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
         }
-        if (col < 0 || col >= width) {
-        	throw new IndexOutOfBoundsException("The col is out of bounds [0," + (width-1) + "]");
+        if (y < 0 || y >= height) {
+        	throw new IndexOutOfBoundsException("The y is out of bounds [0," + (height-1) + "]");
         }
 
-        return canvas[row][col].val;
+        return getCellAt(x,y).val;
     }
 
     public void clear() {
-        for(int h=0; h<height; h++) {
-            for(int w=0; w<height; w++) {
-                canvas[h][w] = new Cell();
+        for(int y=0; y<height; y++) {
+            for(int x=0; x<width; x++) {
+                canvas[y][x] = new Cell();
             }
         }
     }
 
-    public void draw(final char ch, final int row, final int col) {
-    	draw(ch, "", row, col);
+    public void draw(final char ch, final int  x, final int y) {
+    	draw(ch, "", x, y);
     }
 
-    public void draw(final char ch, final String format, final int row, final int col) {
-        if (row >= 0 && row < height && col >= 0 && col < width) {
-            canvas[row][col] = new Cell(ch, StringUtil.trimToEmpty(format));
+    public void draw(final char ch, final String format, final int  x, final int y) {
+        if (y >= 0 && y < height &&  x >= 0 &&  x < width) {
+            canvas[y][x] = new Cell(ch, StringUtil.trimToEmpty(format));
         }
     }
 
-    public void drawHorizontal(final String str, final int row, final int col) {
-    	drawHorizontal(str, "", row, col);
+    public void drawHorizontal(final String str, final int  x, final int y) {
+    	drawHorizontal(str, "", x, y);
     }
 
-    public void drawHorizontal(final String str, final String format, final int row, final int col) {
+    public void drawHorizontal(final String str, final String format, final int  x, final int y) {
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, format, row, col + ii++);
+            draw(ch, format, x + ii++, y);
         }
     }
 
-    public void drawHorizontal(final char ch, final int repeat, final int row, final int col) {
-    	drawHorizontal(ch, "", repeat, row, col);
+    public void drawHorizontal(final char ch, final int repeat, final int  x, final int y) {
+    	drawHorizontal(ch, "", repeat, x, y);
     }
 
-    public void drawHorizontal(final char ch, final String format, final int repeat, final int row, final int col) {
+    public void drawHorizontal(final char ch, final String format, final int repeat, final int  x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
-        	draw(ch, format, row, col+ii);
+        	draw(ch, format, x+ii, y);
         }
     }
 
-    public void drawVertical(final String str, final int row, final int col) {
-    	drawVertical(str, "", row, col);
+    public void drawVertical(final String str, final int  x, final int y) {
+    	drawVertical(str, "", x, y);
     }
 
-    public void drawVertical(final String str, final String format, final int row, final int col) {
+    public void drawVertical(final String str, final String format, final int  x, final int y) {
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, format, row + ii++, col);
+            draw(ch, format, x, y + ii++);
         }
     }
 
-    public void drawVertical(final char ch, final int repeat, final int row, final int col) {
-    	drawVertical(ch, "", repeat, row, col);
+    public void drawVertical(final char ch, final int repeat, final int  x, final int y) {
+    	drawVertical(ch, "", repeat, x, y);
     }
 
-    public void drawVertical(final char ch, final String format, final int repeat, final int row, final int col) {
+    public void drawVertical(final char ch, final String format, final int repeat, final int  x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
-        	draw(ch, format, row+ii, col);
+        	draw(ch, format, x, y+ii);
         }
     }
 
-    public List<String> toLines() {
+    public List<String> toAnsiLines() {
         final List<String> lines = new ArrayList<>();
 
-        for(int h=height-1; h>=0; h--) {
+        for(int y=height-1; y>=0; y--) {
             final StringBuilder line = new StringBuilder();
-            for(int w=0; w<height; w++) {
-                line.append(canvas[h][w].toString());
+            for(int x=0; x<width; x++) {
+                line.append(getCellAt(x,y).toString());
+            }
+            lines.add(line.toString());
+        }
+
+        return lines;
+    }
+
+    public List<String> toAsciiLines() {
+        final List<String> lines = new ArrayList<>();
+
+        for(int y=height-1; y>=0; y--) {
+            final StringBuilder line = new StringBuilder();
+            for(int x=0; x<width; x++) {
+                line.append(getCellAt(x,y).val);
             }
             lines.add(line.toString());
         }
@@ -135,7 +156,18 @@ public class AsciiCanvas {
 
     @Override
     public String toString() {
-        return String.join("\n", toLines());
+        return String.join("\n", toAnsiLines());
+    }
+
+    private Cell getCellAt(final int x, final int y) {
+        if ( x < 0 ||  x >= width) {
+        	throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
+        }
+        if (y < 0 || y >= height) {
+        	throw new IndexOutOfBoundsException("The y is out of bounds [0," + (height-1) + "]");
+        }
+
+        return canvas[y][x];
     }
 
 
