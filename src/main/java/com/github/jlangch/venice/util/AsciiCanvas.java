@@ -33,12 +33,12 @@ public class AsciiCanvas {
             final int width,
             final int height
     ) {
-    	if (width < 1 || width > 1000) {
-    		throw new IllegalArgumentException("A width must be in the range [1..1000]");
-    	}
-    	if (height < 1 || height > 1000) {
-    		throw new IllegalArgumentException("A height must be in the range [1..1000]");
-   	    }
+        if (width < 1 || width > 1000) {
+            throw new IllegalArgumentException("A width must be in the range [1..1000]");
+        }
+        if (height < 1 || height > 1000) {
+            throw new IllegalArgumentException("A height must be in the range [1..1000]");
+           }
 
         this.width = width;
         this.height = height;
@@ -57,10 +57,10 @@ public class AsciiCanvas {
 
     public char getCharAt(final int x, final int y) {
         if ( x < 0 ||  x >= width) {
-        	throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
+            throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
         }
         if (y < 0 || y >= height) {
-        	throw new IndexOutOfBoundsException("The y is out of bounds [0," + (height-1) + "]");
+            throw new IndexOutOfBoundsException("The y is out of bounds [0," + (height-1) + "]");
         }
 
         return getCellAt(x,y).val;
@@ -75,7 +75,7 @@ public class AsciiCanvas {
     }
 
     public void draw(final char ch, final int x, final int y) {
-    	draw(ch, "", x, y);
+        draw(ch, "", x, y);
     }
 
     public void draw(final char ch, final String format, final int x, final int y) {
@@ -85,21 +85,21 @@ public class AsciiCanvas {
     }
 
     public void drawText(final String text, final int x, final int y) {
-    	drawText(text, "", x, y);
+        drawText(text, "", x, y);
     }
 
     public void drawText(final String text, final String format, final int x, final int y) {
-    	if (text == null) {
-    		return;
-    	}
+        if (text == null) {
+            return;
+        }
 
-    	for(int ii=0; ii<text.length(); ii++) {
-    		draw(text.charAt(ii), format, x + ii, y);
-    	}
+        for(int ii=0; ii<text.length(); ii++) {
+            draw(text.charAt(ii), format, x + ii, y);
+        }
     }
 
     public void drawHorizontal(final String str, final int x, final int y) {
-    	drawHorizontal(str, "", x, y);
+        drawHorizontal(str, "", x, y);
     }
 
     public void drawHorizontal(final String str, final String format, final int x, final int y) {
@@ -110,17 +110,17 @@ public class AsciiCanvas {
     }
 
     public void drawHorizontal(final char ch, final int repeat, final int x, final int y) {
-    	drawHorizontal(ch, "", repeat, x, y);
+        drawHorizontal(ch, "", repeat, x, y);
     }
 
     public void drawHorizontal(final char ch, final String format, final int repeat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
-        	draw(ch, format, x+ii, y);
+            draw(ch, format, x+ii, y);
         }
     }
 
     public void drawVertical(final String str, final int x, final int y) {
-    	drawVertical(str, "", x, y);
+        drawVertical(str, "", x, y);
     }
 
     public void drawVertical(final String str, final String format, final int x, final int y) {
@@ -131,31 +131,31 @@ public class AsciiCanvas {
     }
 
     public void drawVertical(final char ch, final int repeat, final int x, final int y) {
-    	drawVertical(ch, "", repeat, x, y);
+        drawVertical(ch, "", repeat, x, y);
     }
 
     public void drawVertical(final char ch, final String format, final int repeat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
-        	draw(ch, format, x, y+ii);
+            draw(ch, format, x, y+ii);
         }
     }
 
     public void drawBox(final int x, final int y, final int w, final int h, final String elements) {
-    	if (elements == null || elements.length() != 8) {
-    		throw new IllegalArgumentException(
-    				"The box elements must have 8 chars: "
-    				+ "[topLeft,topRight,bottomRight,bottomLeft,topBar,rightBar,bottomBar,leftBar]. "
-    				+ "E.g. \"┌┐┘└─│─│\"");
-    	}
+        if (elements == null || elements.length() != 8) {
+            throw new IllegalArgumentException(
+                    "The box elements must have 8 chars: "
+                    + "[topLeft,topRight,bottomRight,bottomLeft,topBar,rightBar,bottomBar,leftBar]. "
+                    + "E.g. \"┌┐┘└─│─│\"");
+        }
 
-    	final char topLeft = elements.charAt(0);
-    	final char topRight = elements.charAt(1);
-    	final char bottomRight = elements.charAt(2);
-    	final char bottomLeft = elements.charAt(3);
-    	final char topBar = elements.charAt(4);
-    	final char rightBar = elements.charAt(5);
-    	final char bottomBar = elements.charAt(6);
-    	final char leftBar = elements.charAt(7);
+        final char topLeft = elements.charAt(0);
+        final char topRight = elements.charAt(1);
+        final char bottomRight = elements.charAt(2);
+        final char bottomLeft = elements.charAt(3);
+        final char topBar = elements.charAt(4);
+        final char rightBar = elements.charAt(5);
+        final char bottomBar = elements.charAt(6);
+        final char leftBar = elements.charAt(7);
 
         draw(topLeft,     x,     y+h-1);
         draw(topRight,    x+w-1, y+h-1);
@@ -204,17 +204,17 @@ public class AsciiCanvas {
 
     private Cell getCellAt(final int x, final int y) {
         if ( x < 0 ||  x >= width) {
-        	throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
+            throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
         }
         if (y < 0 || y >= height) {
-        	throw new IndexOutOfBoundsException("The y is out of bounds [0," + (height-1) + "]");
+            throw new IndexOutOfBoundsException("The y is out of bounds [0," + (height-1) + "]");
         }
 
         return canvas[y][x];
     }
 
     private boolean inbound(final int x, final int y) {
-    	return (y >= 0 && y < height && x >= 0 &&  x < width);
+        return (y >= 0 && y < height && x >= 0 &&  x < width);
     }
 
 
