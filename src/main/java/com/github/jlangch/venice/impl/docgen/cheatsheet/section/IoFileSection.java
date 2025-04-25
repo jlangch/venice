@@ -114,6 +114,7 @@ public class IoFileSection implements ISectionBuilder {
         all.addSection(file_test);
         file_test.addItem(diBuilder.getDocItem("io/file?"));
         file_test.addItem(diBuilder.getDocItem("io/file-absolute?"));
+        file_test.addItem(diBuilder.getDocItem("io/exists?"));
         file_test.addItem(diBuilder.getDocItem("io/exists-file?"));
         file_test.addItem(diBuilder.getDocItem("io/exists-dir?"));
         file_perm.addItem(diBuilder.getDocItem("io/file-can-read?", false));

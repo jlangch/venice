@@ -119,6 +119,34 @@ public class IOFunctionsTest {
     }
 
     @Test
+    public void test_io_exists_Q() {
+        final Venice venice = new Venice();
+
+        // dir
+        assertTrue((Boolean)venice.eval("(io/exists? (io/user-dir))"));
+
+        // file
+        try {
+            final File file = Files.createTempFile("spit", ".txt").normalize().toFile();
+
+            file.deleteOnExit();
+
+            venice.eval(
+                    "(io/spit file \"123456789\" :append true)",
+                    Parameters.of("file", file));
+
+            assertTrue((Boolean)venice.eval("(io/exists? f))", Parameters.of("f", file)));
+
+            venice.eval("(io/delete-file f))", Parameters.of("f", file));
+
+            assertFalse((Boolean)venice.eval("(io/exists? f))", Parameters.of("f", file)));
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
     public void test_io_exists_dir_Q() {
         final Venice venice = new Venice();
 

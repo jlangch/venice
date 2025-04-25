@@ -650,6 +650,33 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_exists_Q =
+        new VncFunction(
+                "io/exists?",
+                VncFunction
+                    .meta()
+                    .arglists("(io/exists? f)")
+                    .doc("Returns true if the file  or directory f exists. f must be a file or a string (file path).")
+                    .examples("(io/exists? \"/tmp/test.txt\")")
+                    .seeAlso("io/exists-file?", "io/exists-dir?", "io/symbolic-link?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final File f = convertToFile(
+                                    args.first(),
+                                    "Function 'io/exists?' does not allow %s as f");
+
+                return VncBoolean.of(f.exists());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_exists_file_Q =
         new VncFunction(
                 "io/exists-file?",
@@ -3700,6 +3727,7 @@ public class IOFunctions {
                     .add(io_file_normalize_utf)
                     .add(io_file_size)
                     .add(io_file_last_modified)
+                    .add(io_exists_Q)
                     .add(io_exists_file_Q)
                     .add(io_exists_dir_Q)
                     .add(io_file_can_read_Q)
