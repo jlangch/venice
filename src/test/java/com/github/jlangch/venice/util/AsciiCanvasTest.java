@@ -40,12 +40,12 @@ public class AsciiCanvasTest {
         canvas.drawHorizontal('-', w, 0, 0);
         canvas.drawHorizontal('-', w, 0, h-1);
 
-        canvas.drawVertical('|', h, 0, 0);
+        canvas.drawVertical('|', h, 0,   0);
         canvas.drawVertical('|', h, w-1, 0);
 
-        canvas.draw('+', 0, 0);
+        canvas.draw('+', 0,   0);
         canvas.draw('+', w-1, 0);
-        canvas.draw('+', 0, h-1);
+        canvas.draw('+', 0,   h-1);
         canvas.draw('+', w-1, h-1);
 
         final List<String> lines = canvas.toAsciiLines();
