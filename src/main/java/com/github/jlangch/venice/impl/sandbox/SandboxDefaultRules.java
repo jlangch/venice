@@ -44,9 +44,10 @@ public class SandboxDefaultRules {
                 "class:" + BASE + ".util.CapturingPrintStream:*",
                 "class:" + BASE + ".util.CallbackPrintStream:*",
                 "class:" + BASE + ".util.*XMLHandler*:*",
-
                 "class:" + BASE + ".util.CapturingPrintStream:*",
                 "class:" + BASE + ".util.ImmutableServiceDiscovery:*",
+                "class:" + BASE + ".util.AsciiCanvas:*",
+                "class:" + BASE + ".util.StopWatch:*",
 
                 "class:" + BASE + ".servlet.*:*",
 
@@ -57,6 +58,9 @@ public class SandboxDefaultRules {
                 "class:" + BASE + ".impl.types.collections.VncVector",
 
                 "class:" + BASE + ".impl.types.concurrent.Delay:*",
+                "class:" + BASE + ".impl.types.concurrent.Agent:*",
+
+                "class:" + BASE + ".impl.types.concurrent.Agent:*",
                 "class:" + BASE + ".impl.types.concurrent.Agent:*",
 
                 // Excel adapter classes
@@ -157,10 +161,14 @@ public class SandboxDefaultRules {
             Collections.unmodifiableSet(
                 new HashSet<>(
                     Arrays.asList(
+                        "ansi",
+                        "ascii-table",
+                        "ascii-canvas",
                         "crypt",
                         "kira",
                         "mimetypes",
                         "parsifal",
+                        "stop-watch",
                         "test",
                         "test-support",
                         "utf8",

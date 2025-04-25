@@ -65,6 +65,7 @@ public class Modules {
                         "ansi",
                         "app",
                         "ascii-table",
+                        "ascii-canvas",
                         "benchmark",
                         "cargo",
                         "cargo-arangodb",
