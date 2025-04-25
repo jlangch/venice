@@ -79,9 +79,23 @@ public class AsciiCanvas {
     }
 
     public void draw(final char ch, final String format, final int x, final int y) {
-        if (y >= 0 && y < height &&  x >= 0 &&  x < width) {
+        if (inbound(x,y)) {
             canvas[y][x] = new Cell(ch, StringUtil.trimToEmpty(format));
         }
+    }
+
+    public void drawText(final String text, final int x, final int y) {
+    	drawText(text, "", x, y);
+    }
+
+    public void drawText(final String text, final String format, final int x, final int y) {
+    	if (text == null) {
+    		return;
+    	}
+
+    	for(int ii=0; ii<text.length(); ii++) {
+    		draw(text.charAt(ii), format, x + ii, y);
+    	}
     }
 
     public void drawHorizontal(final String str, final int x, final int y) {
@@ -197,6 +211,10 @@ public class AsciiCanvas {
         }
 
         return canvas[y][x];
+    }
+
+    private boolean inbound(final int x, final int y) {
+    	return (y >= 0 && y < height && x >= 0 &&  x < width);
     }
 
 

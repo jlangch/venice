@@ -92,4 +92,48 @@ public class AsciiCanvasTest {
         assertEquals("│        │", lines.get(3));
         assertEquals("└────────┘", lines.get(4));
     }
+
+    @Test
+    public void test4() {
+        final int w = 10;
+        final int h = 5;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.drawText("Hello", 0, 4);
+        canvas.drawText("Hello", 1, 3);
+        canvas.drawText("Hello", 2, 2);
+        canvas.drawText("Hello", 3, 1);
+        canvas.drawText("Hello", 4, 0);
+
+        final List<String> lines = canvas.toAsciiLines();
+
+        assertEquals("Hello     ", lines.get(0));
+        assertEquals(" Hello    ", lines.get(1));
+        assertEquals("  Hello   ", lines.get(2));
+        assertEquals("   Hello  ", lines.get(3));
+        assertEquals("    Hello ", lines.get(4));
+    }
+
+    @Test
+    public void test5() {
+        final int w = 10;
+        final int h = 5;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.drawText("Hello", -2, 4);
+        canvas.drawText("Hello", -1, 3);
+        canvas.drawText("Hello",  7, 2);
+        canvas.drawText("Hello",  8, 1);
+        canvas.drawText("Hello",  9, 0);
+
+        final List<String> lines = canvas.toAsciiLines();
+
+        assertEquals("llo       ", lines.get(0));
+        assertEquals("ello      ", lines.get(1));
+        assertEquals("       Hel", lines.get(2));
+        assertEquals("        He", lines.get(3));
+        assertEquals("         H", lines.get(4));
+    }
 }
