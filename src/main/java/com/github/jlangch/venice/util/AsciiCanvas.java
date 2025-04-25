@@ -242,7 +242,8 @@ public class AsciiCanvas {
     }
 
 
-    private static final String ANSI_RESET = "\u001b[0m";
+    private static final String ESC = "\u001b";
+    private static final String ANSI_RESET = ESC + "[0m";
 
     private final int width;
     private final int height;
