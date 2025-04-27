@@ -328,14 +328,14 @@ public class AsciiCanvas {
      * </pre>
      *
      * <pre>
-     * Arrays.toList(
+     * Arrays.toList(new String[] {
      *   "                ",
      *   "  +---------+   ",
      *   "  |         |   ",
      *   "  +--+   +--+   ",
      *   "     |   |      ",
      *   "     +---+      ",
-     *   "                ")
+     *   "                " } );
      * </pre>
       *
      *
