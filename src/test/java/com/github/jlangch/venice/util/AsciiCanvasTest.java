@@ -241,4 +241,22 @@ public class AsciiCanvasTest {
         assertEquals("",           canvas.getFormatAt(0,0));
         assertEquals("\u001b[34m", canvas.getFormatAt(2,0));
    }
+
+    @Test
+    public void test11() {
+        final int w = 10;
+        final int h = 5;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.fill('*', 1, 1, 8, 3);
+
+        final List<String> lines = canvas.toAsciiLines();
+
+        assertEquals("          ", lines.get(0));
+        assertEquals(" ******** ", lines.get(1));
+        assertEquals(" ******** ", lines.get(2));
+        assertEquals(" ******** ", lines.get(3));
+        assertEquals("          ", lines.get(4));
+    }
 }

@@ -436,6 +436,20 @@ public class AsciiCanvas {
         return this;
     }
 
+    public AsciiCanvas fill(final char ch, final int x, final int y, final int w, final int h) {
+    	fill(ch, x, y, w, h, "");
+        return this;
+    }
+
+    public AsciiCanvas fill(final char ch, final int x, final int y, final int w, final int h, final String ansiFormat) {
+    	for(int y_=y; y_<y+h; y_++) {
+        	for(int x_=x; x_<x+w; x_++) {
+                draw(ch, x_, y_, ansiFormat);
+        	}
+    	}
+        return this;
+    }
+
     public List<String> toAnsiLines() {
         final List<String> lines = new ArrayList<>();
 

@@ -82,6 +82,10 @@
   ([canvas x y w h border]        (. canvas :drawBox x y w h border))
   ([canvas x y w h border format] (. canvas :drawBox x y w h border format)))
 
+(defn fill
+  ([canvas ch x y w h]        (. canvas :fill ch x y w h))
+  ([canvas ch x y w h format] (. canvas :fill ch x y w h format)))
+
 (defn lines-ansi [canvas]
   (. canvas :toAnsiLines))
 
