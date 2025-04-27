@@ -90,13 +90,16 @@ public class AsciiCanvas {
 
     /**
      * Clears the canvas by filling he canvas with spaces.
+     *
+     * @return this canvas
      */
-    public void clear() {
+    public AsciiCanvas clear() {
         for(int y=0; y<height; y++) {
             for(int x=0; x<width; x++) {
                 canvas[y][x] = new Cell();
             }
         }
+        return this;
     }
 
     /**
@@ -105,15 +108,19 @@ public class AsciiCanvas {
      * @param ch The character
      * @param x The x position (0..width-1)
      * @param y The y position (0..height-1)
+     *
+     * @return this canvas
      */
-    public void draw(final char ch, final int x, final int y) {
+    public AsciiCanvas draw(final char ch, final int x, final int y) {
         draw(ch, "", x, y);
+        return this;
     }
 
-    public void draw(final char ch, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas draw(final char ch, final String ansiFormat, final int x, final int y) {
         if (inbound(x,y)) {
             canvas[y][x] = new Cell(ch, StringUtil.trimToEmpty(ansiFormat));
         }
+        return this;
     }
 
     /**
@@ -122,13 +129,17 @@ public class AsciiCanvas {
      * @param text The text
      * @param x The x position (0..width-1)
      * @param y The y position (0..height-1)
+     *
+     * @return this canvas
      */
-    public void drawText(final String text, final int x, final int y) {
+    public AsciiCanvas drawText(final String text, final int x, final int y) {
     	drawHorizontal(text, "", x, y);
+        return this;
     }
 
-    public void drawText(final String text, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawText(final String text, final String ansiFormat, final int x, final int y) {
         drawHorizontal(text, ansiFormat, x, y);
+        return this;
     }
 
     /**
@@ -138,20 +149,24 @@ public class AsciiCanvas {
      * @param str The string
      * @param x The x position (0..width-1)
      * @param y The y position (0..height-1)
+     *
+     * @return this canvas
      */
-    public void drawHorizontal(final String str, final int x, final int y) {
+    public AsciiCanvas drawHorizontal(final String str, final int x, final int y) {
         drawHorizontal(str, "", x, y);
+        return this;
     }
 
-    public void drawHorizontal(final String str, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawHorizontal(final String str, final String ansiFormat, final int x, final int y) {
         if (str == null) {
-            return;
+            return this;
         }
 
         int ii=0;
         for(char ch : str.toCharArray()) {
             draw(ch, ansiFormat, x + ii++, y);
         }
+        return this;
     }
 
     /**
@@ -162,15 +177,19 @@ public class AsciiCanvas {
      * @param repeat The number of repetitions
      * @param x The x position (0..width-1)
      * @param y The y position (0..height-1)
+     *
+     * @return this canvas
      */
-    public void drawHorizontal(final char ch, final int repeat, final int x, final int y) {
-        drawHorizontal(ch, "", repeat, x, y);
+    public AsciiCanvas drawHorizontal(final char ch, final int repeat, final int x, final int y) {
+        drawHorizontal(ch, repeat, "", x, y);
+        return this;
     }
 
-    public void drawHorizontal(final char ch, final String ansiFormat, final int repeat, final int x, final int y) {
+    public AsciiCanvas drawHorizontal(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
             draw(ch, ansiFormat, x+ii, y);
         }
+        return this;
     }
 
     /**
@@ -180,24 +199,28 @@ public class AsciiCanvas {
      * @param str The string
      * @param x The x position (0..width-1)
      * @param y The y position (0..height-1)
+     *
+     * @return this canvas
      */
-    public void drawVertical(final String str, final int x, final int y) {
+    public AsciiCanvas drawVertical(final String str, final int x, final int y) {
         if (str == null) {
-            return;
+            return this;
         }
 
         drawVertical(str, "", x, y);
+        return this;
     }
 
-    public void drawVertical(final String str, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawVertical(final String str, final String ansiFormat, final int x, final int y) {
         if (str == null) {
-            return;
+            return this;
         }
 
         int ii=0;
         for(char ch : str.toCharArray()) {
             draw(ch, ansiFormat, x, y + ii++);
         }
+        return this;
     }
 
     /**
@@ -208,15 +231,19 @@ public class AsciiCanvas {
      * @param repeat The number of repetitions
      * @param x The x position (0..width-1)
      * @param y The y position (0..height-1)
+     *
+     * @return this canvas
      */
-    public void drawVertical(final char ch, final int repeat, final int x, final int y) {
-        drawVertical(ch, "", repeat, x, y);
+    public AsciiCanvas drawVertical(final char ch, final int repeat, final int x, final int y) {
+        drawVertical(ch, repeat, "", x, y);
+        return this;
     }
 
-    public void drawVertical(final char ch, final String ansiFormat, final int repeat, final int x, final int y) {
+    public AsciiCanvas drawVertical(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
             draw(ch, ansiFormat, x, y+ii);
         }
+        return this;
     }
 
     /**
@@ -249,8 +276,15 @@ public class AsciiCanvas {
      * @param w The width
      * @param h The height
      * @param border The box' border characters (must be exactly 8 chars)
+     *
+     * @return this canvas
      */
-    public void drawBox(final int x, final int y, final int w, final int h, final String border) {
+    public AsciiCanvas drawBox(final int x, final int y, final int w, final int h, final String border) {
+    	drawBox(x, y, w, h, border, "");
+        return this;
+    }
+
+    public AsciiCanvas drawBox(final int x, final int y, final int w, final int h, final String border, final String ansiFormat) {
         if (border == null || border.length() != 8) {
             throw new IllegalArgumentException(
                     "The box' border must have 8 chars: "
@@ -267,16 +301,17 @@ public class AsciiCanvas {
         final char bottomBar = border.charAt(6);
         final char leftBar = border.charAt(7);
 
-        draw(topLeft,     x,     y+h-1);
-        draw(topRight,    x+w-1, y+h-1);
-        draw(bottomLeft,  x,     y);
-        draw(bottomRight, x+w-1, y);
+        draw(topLeft,     ansiFormat, x,     y+h-1);
+        draw(topRight,    ansiFormat, x+w-1, y+h-1);
+        draw(bottomLeft,  ansiFormat, x,     y);
+        draw(bottomRight, ansiFormat, x+w-1, y);
 
-        drawHorizontal(topBar,    w-2, x+1, y+h-1);
-        drawHorizontal(bottomBar, w-2, x+1, y);
+        drawHorizontal(topBar,    w-2, ansiFormat, x+1, y+h-1);
+        drawHorizontal(bottomBar, w-2, ansiFormat, x+1, y);
 
-        drawVertical(leftBar,  h-2, x,     y+1);
-        drawVertical(rightBar, h-2, x+w-1, y+1);
+        drawVertical(leftBar,  h-2, ansiFormat, x,     y+1);
+        drawVertical(rightBar, h-2, ansiFormat, x+w-1, y+1);
+        return this;
     }
 
     public List<String> toAnsiLines() {

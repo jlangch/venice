@@ -27,3 +27,45 @@
 (import :com.github.jlangch.venice.util.AsciiCanvas)
 
 
+(defn create [w h]
+  (. :AsciiCanvas :create w h))
+
+(defn width [canvas]
+  (. canvas :width))
+
+(defn height [canvas]
+  (. canvas :height))
+
+(defn char-at [canvas x y]
+  (. canvas :getCharAt x y))
+
+(defn clear [canvas]
+  (. canvas :clear))
+
+(defn draw 
+  ([canvas ch x y]        (. canvas :draw ch x y))
+  ([canvas ch format x y] (. canvas :draw ch format x y)))
+
+(defn draw-text
+  ([canvas text x y]        (. canvas :drawText text x y))
+  ([canvas text format x y] (. canvas :drawText text format x y)))
+
+(defn draw-horizontal
+  ([canvas s x y]        (. canvas :drawHorizontal s x y))
+  ([canvas s format x y] (. canvas :drawHorizontal s format x y)))
+
+(defn draw-vertical
+  ([canvas s x y]        (. canvas :drawVertical s x y))
+  ([canvas s format x y] (. canvas :drawVertical s format x y)))
+
+(defn draw-horizontal-repeat
+  ([canvas ch repeat x y]        (. canvas :drawHorizontal ch repeat x y))
+  ([canvas ch repeat format x y] (. canvas :drawHorizontal ch repeat format x y)))
+
+(defn draw-vertical-repeat
+  ([canvas ch repeat x y]        (. canvas :drawVertical ch repeat x y))
+  ([canvas ch repeat format x y] (. canvas :drawVertical ch repeat format x y)))
+
+(defn draw-box
+  ([canvas x y w h border]        (. canvas :drawBox x y w h border))
+  ([canvas x y w h border format] (. canvas :drawBox x y w h border format)))
