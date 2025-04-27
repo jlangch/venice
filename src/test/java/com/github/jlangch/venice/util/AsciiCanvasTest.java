@@ -37,11 +37,11 @@ public class AsciiCanvasTest {
 
         final AsciiCanvas canvas = new AsciiCanvas(w, h);
 
-        canvas.drawHorizontal('-', w, 0, 0);
-        canvas.drawHorizontal('-', w, 0, h-1);
+        canvas.drawHorizontalRight('-', w, 0, 0);
+        canvas.drawHorizontalRight('-', w, 0, h-1);
 
-        canvas.drawVertical('|', h, 0,   0);
-        canvas.drawVertical('|', h, w-1, 0);
+        canvas.drawVerticalUp('|', h, 0,   0);
+        canvas.drawVerticalUp('|', h, w-1, 0);
 
         canvas.draw('+', 0,   0);
         canvas.draw('+', w-1, 0);
@@ -135,5 +135,48 @@ public class AsciiCanvasTest {
         assertEquals("       Hel", lines.get(2));
         assertEquals("        He", lines.get(3));
         assertEquals("         H", lines.get(4));
+    }
+
+    @Test
+    public void test6() {
+        final int w = 10;
+        final int h = 5;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.drawHorizontalRight("Hello", -2, 4);
+        canvas.drawHorizontalRight("Hello", -1, 3);
+        canvas.drawHorizontalRight("Hello",  7, 2);
+        canvas.drawHorizontalRight("Hello",  8, 1);
+        canvas.drawHorizontalRight("Hello",  9, 0);
+
+        final List<String> lines = canvas.toAsciiLines();
+
+        assertEquals("llo       ", lines.get(0));
+        assertEquals("ello      ", lines.get(1));
+        assertEquals("       Hel", lines.get(2));
+        assertEquals("        He", lines.get(3));
+        assertEquals("         H", lines.get(4));
+    }
+
+    @Test
+    public void test7() {
+        final int w = 10;
+        final int h = 5;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.drawVerticalUp("Hello", 0, -2);
+        canvas.drawVerticalUp("Hello", 2,  0);
+        canvas.drawVerticalUp("Hello", 4,  2);
+        canvas.drawVerticalUp("Hello", 6,  4);
+
+        final List<String> lines = canvas.toAsciiLines();
+
+        assertEquals("  o l H   ", lines.get(0));
+        assertEquals("  l e     ", lines.get(1));
+        assertEquals("o l H     ", lines.get(2));
+        assertEquals("l e       ", lines.get(3));
+        assertEquals("l H       ", lines.get(4));
     }
 }

@@ -133,12 +133,12 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawText(final String text, final int x, final int y) {
-    	drawHorizontal(text, "", x, y);
+    	drawHorizontalRight(text, "", x, y);
         return this;
     }
 
     public AsciiCanvas drawText(final String text, final String ansiFormat, final int x, final int y) {
-        drawHorizontal(text, ansiFormat, x, y);
+        drawHorizontalRight(text, ansiFormat, x, y);
         return this;
     }
 
@@ -152,12 +152,12 @@ public class AsciiCanvas {
      *
      * @return this canvas
      */
-    public AsciiCanvas drawHorizontal(final String str, final int x, final int y) {
-        drawHorizontal(str, "", x, y);
+    public AsciiCanvas drawHorizontalRight(final String str, final int x, final int y) {
+        drawHorizontalRight(str, "", x, y);
         return this;
     }
 
-    public AsciiCanvas drawHorizontal(final String str, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawHorizontalRight(final String str, final String ansiFormat, final int x, final int y) {
         if (str == null) {
             return this;
         }
@@ -180,20 +180,21 @@ public class AsciiCanvas {
      *
      * @return this canvas
      */
-    public AsciiCanvas drawHorizontal(final char ch, final int repeat, final int x, final int y) {
-        drawHorizontal(ch, repeat, "", x, y);
+    public AsciiCanvas drawHorizontalRight(final char ch, final int repeat, final int x, final int y) {
+        drawHorizontalRight(ch, repeat, "", x, y);
         return this;
     }
 
-    public AsciiCanvas drawHorizontal(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawHorizontalRight(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
             draw(ch, ansiFormat, x+ii, y);
         }
         return this;
     }
 
+
     /**
-     * Draw a vertical string starting at the position (x,y). The text is clipped at the
+     * Draw a horizontal string starting at the position (x,y). The text is clipped at the
      * canvas' border
      *
      * @param str The string
@@ -202,16 +203,66 @@ public class AsciiCanvas {
      *
      * @return this canvas
      */
-    public AsciiCanvas drawVertical(final String str, final int x, final int y) {
+    public AsciiCanvas drawHorizontalLeft(final String str, final int x, final int y) {
+        drawHorizontalLeft(str, "", x, y);
+        return this;
+    }
+
+    public AsciiCanvas drawHorizontalLeft(final String str, final String ansiFormat, final int x, final int y) {
         if (str == null) {
             return this;
         }
 
-        drawVertical(str, "", x, y);
+        int ii=0;
+        for(char ch : str.toCharArray()) {
+            draw(ch, ansiFormat, x + ii--, y);
+        }
         return this;
     }
 
-    public AsciiCanvas drawVertical(final String str, final String ansiFormat, final int x, final int y) {
+    /**
+     * Draw a character repeating it horizontally n-times starting at the position (x,y).
+     * The text is clipped at the canvas' border
+     *
+     * @param ch The character
+     * @param repeat The number of repetitions
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     *
+     * @return this canvas
+     */
+    public AsciiCanvas drawHorizontalLeft(final char ch, final int repeat, final int x, final int y) {
+        drawHorizontalLeft(ch, repeat, "", x, y);
+        return this;
+    }
+
+    public AsciiCanvas drawHorizontalLeft(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+        for(int ii=0; ii<repeat; ii++) {
+            draw(ch, ansiFormat, x-ii, y);
+        }
+        return this;
+    }
+
+    /**
+     * Draw a vertical string up starting at the position (x,y). The text is clipped at the
+     * canvas' border
+     *
+     * @param str The string
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     *
+     * @return this canvas
+     */
+    public AsciiCanvas drawVerticalUp(final String str, final int x, final int y) {
+        if (str == null) {
+            return this;
+        }
+
+        drawVerticalUp(str, "", x, y);
+        return this;
+    }
+
+    public AsciiCanvas drawVerticalUp(final String str, final String ansiFormat, final int x, final int y) {
         if (str == null) {
             return this;
         }
@@ -234,14 +285,69 @@ public class AsciiCanvas {
      *
      * @return this canvas
      */
-    public AsciiCanvas drawVertical(final char ch, final int repeat, final int x, final int y) {
-        drawVertical(ch, repeat, "", x, y);
+    public AsciiCanvas drawVerticalUp(final char ch, final int repeat, final int x, final int y) {
+        drawVerticalUp(ch, repeat, "", x, y);
         return this;
     }
 
-    public AsciiCanvas drawVertical(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawVerticalUp(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
             draw(ch, ansiFormat, x, y+ii);
+        }
+        return this;
+    }
+
+
+    /**
+     * Draw a vertical string up starting at the position (x,y). The text is clipped at the
+     * canvas' border
+     *
+     * @param str The string
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     *
+     * @return this canvas
+     */
+    public AsciiCanvas drawVerticalDown(final String str, final int x, final int y) {
+        if (str == null) {
+            return this;
+        }
+
+        drawVerticalDown(str, "", x, y);
+        return this;
+    }
+
+    public AsciiCanvas drawVerticalDown(final String str, final String ansiFormat, final int x, final int y) {
+        if (str == null) {
+            return this;
+        }
+
+        int ii=0;
+        for(char ch : str.toCharArray()) {
+            draw(ch, ansiFormat, x, y + ii--);
+        }
+        return this;
+    }
+
+    /**
+     * Draw a character repeating it vertically n-times starting at the position (x,y).
+     * The text is clipped at the canvas' border
+     *
+     * @param ch The character
+     * @param repeat The number of repetitions
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     *
+     * @return this canvas
+     */
+    public AsciiCanvas drawVerticalDown(final char ch, final int repeat, final int x, final int y) {
+        drawVerticalDown(ch, repeat, "", x, y);
+        return this;
+    }
+
+    public AsciiCanvas drawVerticalDown(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+        for(int ii=0; ii<repeat; ii++) {
+            draw(ch, ansiFormat, x, y-ii);
         }
         return this;
     }
@@ -306,11 +412,11 @@ public class AsciiCanvas {
         draw(bottomLeft,  ansiFormat, x,     y);
         draw(bottomRight, ansiFormat, x+w-1, y);
 
-        drawHorizontal(topBar,    w-2, ansiFormat, x+1, y+h-1);
-        drawHorizontal(bottomBar, w-2, ansiFormat, x+1, y);
+        drawHorizontalRight(topBar,    w-2, ansiFormat, x+1, y+h-1);
+        drawHorizontalRight(bottomBar, w-2, ansiFormat, x+1, y);
 
-        drawVertical(leftBar,  h-2, ansiFormat, x,     y+1);
-        drawVertical(rightBar, h-2, ansiFormat, x+w-1, y+1);
+        drawVerticalUp(leftBar,  h-2, ansiFormat, x,     y+1);
+        drawVerticalUp(rightBar, h-2, ansiFormat, x+w-1, y+1);
         return this;
     }
 
