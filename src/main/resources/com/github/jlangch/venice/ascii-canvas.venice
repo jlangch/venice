@@ -27,6 +27,11 @@
 (import :com.github.jlangch.venice.util.AsciiCanvas)
 
 
+(def border-simple "++++-|-|")
+(def border-single "┌┐┘└─│─│")
+(def border-double "╔╗╝╚═║═║")
+
+
 (defn create [w h]
   (. :AsciiCanvas :create w h))
 
@@ -69,3 +74,9 @@
 (defn draw-box
   ([canvas x y w h border]        (. canvas :drawBox x y w h border))
   ([canvas x y w h border format] (. canvas :drawBox x y w h border format)))
+
+(defn lines-ansi [canvas]
+  (. canvas :toAnsiLines))
+
+(defn lines-ascii [canvas]
+  (. canvas :toAsciiLines))
