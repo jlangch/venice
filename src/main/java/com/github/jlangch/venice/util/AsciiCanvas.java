@@ -26,9 +26,18 @@ import java.util.List;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
 
-
+/**
+ * Defines an ASCII based canvas for drawing ASCII characters
+ */
 public class AsciiCanvas {
 
+	/**
+	 * Creates a canvas in the given dimension. Initializes the canvas with
+	 * spaces.
+	 *
+	 * @param width the width (characters), must be in the range 1..1000
+	 * @param height the height (characters), must be in the range 1..1000
+	 */
     public AsciiCanvas(
             final int width,
             final int height
@@ -47,14 +56,27 @@ public class AsciiCanvas {
     }
 
 
+    /**
+     * @return the canvas's width
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * @return the canvas's height
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * Returns the character as position (x,y)
+     *
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     * @return The character at position (x,y)
+     */
     public char getCharAt(final int x, final int y) {
         if ( x < 0 ||  x >= width) {
             throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
@@ -66,6 +88,9 @@ public class AsciiCanvas {
         return getCellAt(x,y).val;
     }
 
+    /**
+     * Clears the canvas by filling he canvas with spaces.
+     */
     public void clear() {
         for(int y=0; y<height; y++) {
             for(int x=0; x<width; x++) {
@@ -74,88 +99,174 @@ public class AsciiCanvas {
         }
     }
 
+    /**
+     * Draw a character at the position (x,y)
+     *
+     * @param ch The character
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     */
     public void draw(final char ch, final int x, final int y) {
         draw(ch, "", x, y);
     }
 
-    public void draw(final char ch, final String format, final int x, final int y) {
+    public void draw(final char ch, final String ansiFormat, final int x, final int y) {
         if (inbound(x,y)) {
-            canvas[y][x] = new Cell(ch, StringUtil.trimToEmpty(format));
+            canvas[y][x] = new Cell(ch, StringUtil.trimToEmpty(ansiFormat));
         }
     }
 
+    /**
+     * Draw text at the position (x,y). The text is clipped at the canvas' border
+     *
+     * @param text The text
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     */
     public void drawText(final String text, final int x, final int y) {
-        drawText(text, "", x, y);
+    	drawHorizontal(text, "", x, y);
     }
 
-    public void drawText(final String text, final String format, final int x, final int y) {
-        if (text == null) {
-            return;
-        }
-
-        for(int ii=0; ii<text.length(); ii++) {
-            draw(text.charAt(ii), format, x + ii, y);
-        }
+    public void drawText(final String text, final String ansiFormat, final int x, final int y) {
+        drawHorizontal(text, ansiFormat, x, y);
     }
 
+    /**
+     * Draw a horizontal string starting at the position (x,y). The text is clipped at the
+     * canvas' border
+     *
+     * @param str The string
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     */
     public void drawHorizontal(final String str, final int x, final int y) {
         drawHorizontal(str, "", x, y);
     }
 
-    public void drawHorizontal(final String str, final String format, final int x, final int y) {
+    public void drawHorizontal(final String str, final String ansiFormat, final int x, final int y) {
+        if (str == null) {
+            return;
+        }
+
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, format, x + ii++, y);
+            draw(ch, ansiFormat, x + ii++, y);
         }
     }
 
+    /**
+     * Draw a character repeating it horizontally n-times starting at the position (x,y).
+     * The text is clipped at the canvas' border
+     *
+     * @param ch The character
+     * @param repeat The number of repetitions
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     */
     public void drawHorizontal(final char ch, final int repeat, final int x, final int y) {
         drawHorizontal(ch, "", repeat, x, y);
     }
 
-    public void drawHorizontal(final char ch, final String format, final int repeat, final int x, final int y) {
+    public void drawHorizontal(final char ch, final String ansiFormat, final int repeat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
-            draw(ch, format, x+ii, y);
+            draw(ch, ansiFormat, x+ii, y);
         }
     }
 
+    /**
+     * Draw a vertical string starting at the position (x,y). The text is clipped at the
+     * canvas' border
+     *
+     * @param str The string
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     */
     public void drawVertical(final String str, final int x, final int y) {
+        if (str == null) {
+            return;
+        }
+
         drawVertical(str, "", x, y);
     }
 
-    public void drawVertical(final String str, final String format, final int x, final int y) {
+    public void drawVertical(final String str, final String ansiFormat, final int x, final int y) {
+        if (str == null) {
+            return;
+        }
+
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, format, x, y + ii++);
+            draw(ch, ansiFormat, x, y + ii++);
         }
     }
 
+    /**
+     * Draw a character repeating it vertically n-times starting at the position (x,y).
+     * The text is clipped at the canvas' border
+     *
+     * @param ch The character
+     * @param repeat The number of repetitions
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     */
     public void drawVertical(final char ch, final int repeat, final int x, final int y) {
         drawVertical(ch, "", repeat, x, y);
     }
 
-    public void drawVertical(final char ch, final String format, final int repeat, final int x, final int y) {
+    public void drawVertical(final char ch, final String ansiFormat, final int repeat, final int x, final int y) {
         for(int ii=0; ii<repeat; ii++) {
-            draw(ch, format, x, y+ii);
+            draw(ch, ansiFormat, x, y+ii);
         }
     }
 
-    public void drawBox(final int x, final int y, final int w, final int h, final String elements) {
-        if (elements == null || elements.length() != 8) {
+    /**
+     * Draw box at the position (x,y) with the given width and height
+     * The box is clipped at the canvas' border
+     *
+     * <p>
+     * The box' border is specified by a string of 8 characters
+     *
+     * <ol>
+     * <li>top left char</li>
+     * <li>top right char</li>
+     * <li>bottom right char</li>
+     * <li>bottom left char</li>
+     * <li>top bar char</li>
+     * <li>right bar char</li>
+     * <li>bottom bar char</li>
+     * <li>left bar char</li>
+     * </ol>
+     *
+     * <p>E.g.: "┌┐┘└─│─│" forms a box:
+     * <pre>
+     * ┌────┐
+     * │    │
+     * └────┘
+     * </pre>
+     *
+     *
+     * @param x The x position
+     * @param y The y position
+     * @param w The width
+     * @param h The height
+     * @param border The box' border characters (must be exactly 8 chars)
+     */
+    public void drawBox(final int x, final int y, final int w, final int h, final String border) {
+        if (border == null || border.length() != 8) {
             throw new IllegalArgumentException(
-                    "The box elements must have 8 chars: "
+                    "The box' border must have 8 chars: "
                     + "[topLeft,topRight,bottomRight,bottomLeft,topBar,rightBar,bottomBar,leftBar]. "
                     + "E.g. \"┌┐┘└─│─│\"");
         }
 
-        final char topLeft = elements.charAt(0);
-        final char topRight = elements.charAt(1);
-        final char bottomRight = elements.charAt(2);
-        final char bottomLeft = elements.charAt(3);
-        final char topBar = elements.charAt(4);
-        final char rightBar = elements.charAt(5);
-        final char bottomBar = elements.charAt(6);
-        final char leftBar = elements.charAt(7);
+        final char topLeft = border.charAt(0);
+        final char topRight = border.charAt(1);
+        final char bottomRight = border.charAt(2);
+        final char bottomLeft = border.charAt(3);
+        final char topBar = border.charAt(4);
+        final char rightBar = border.charAt(5);
+        final char bottomBar = border.charAt(6);
+        final char leftBar = border.charAt(7);
 
         draw(topLeft,     x,     y+h-1);
         draw(topRight,    x+w-1, y+h-1);
