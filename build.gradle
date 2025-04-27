@@ -298,6 +298,9 @@ compileTestJava {
     options.compilerArgs += [ '-parameters' ]
 }
 
+javadoc.options.encoding = 'UTF-8'
+
+
 /* JPMS support currently disabled
 task compileModuleInfoJava(type: JavaCompile) {
     classpath = files() // empty
