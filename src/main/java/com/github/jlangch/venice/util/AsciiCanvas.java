@@ -244,7 +244,6 @@ public class AsciiCanvas {
      * └────┘
      * </pre>
      *
-     *
      * @param x The x position
      * @param y The y position
      * @param w The width
