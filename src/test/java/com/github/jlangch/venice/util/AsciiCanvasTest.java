@@ -188,18 +188,19 @@ public class AsciiCanvasTest {
 
         final AsciiCanvas canvas = new AsciiCanvas(w, h);
 
-        canvas.drawVerticalUp("Hello", 0, -2);
-        canvas.drawVerticalUp("Hello", 2,  0);
-        canvas.drawVerticalUp("Hello", 4,  2);
-        canvas.drawVerticalUp("Hello", 6,  4);
+        canvas.drawVerticalUp("Hello", 0, 0);
+        canvas.drawVerticalUp("Hello", 2, 1);
+        canvas.drawVerticalUp("Hello", 4, 2);
+        canvas.drawVerticalUp("Hello", 6, 3);
+        canvas.drawVerticalUp("Hello", 8, 4);
 
         final List<String> lines = canvas.toAsciiLines();
 
-        assertEquals("  o l H   ", lines.get(0));
-        assertEquals("  l e     ", lines.get(1));
-        assertEquals("o l H     ", lines.get(2));
-        assertEquals("l e       ", lines.get(3));
-        assertEquals("l H       ", lines.get(4));
+        assertEquals("o l l e H ", lines.get(0));
+        assertEquals("l l e H   ", lines.get(1));
+        assertEquals("l e H     ", lines.get(2));
+        assertEquals("e H       ", lines.get(3));
+        assertEquals("H         ", lines.get(4));
     }
 
     @Test
@@ -213,6 +214,7 @@ public class AsciiCanvasTest {
         canvas.drawVerticalDown("Hello", 2,  3);
         canvas.drawVerticalDown("Hello", 4,  2);
         canvas.drawVerticalDown("Hello", 6,  1);
+        canvas.drawVerticalDown("Hello", 8,  0);
 
         final List<String> lines = canvas.toAsciiLines();
 
@@ -220,6 +222,6 @@ public class AsciiCanvasTest {
         assertEquals("e H       ", lines.get(1));
         assertEquals("l e H     ", lines.get(2));
         assertEquals("l l e H   ", lines.get(3));
-        assertEquals("o l l e   ", lines.get(4));
+        assertEquals("o l l e H ", lines.get(4));
     }
 }
