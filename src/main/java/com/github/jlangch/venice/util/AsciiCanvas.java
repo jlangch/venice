@@ -294,6 +294,54 @@ public class AsciiCanvas {
         return lines;
     }
 
+    /**
+     * Returns the canvas as a list of strings
+     *
+     * <pre>
+     *
+     * y ^
+     *   .
+     *   * (0,5)
+     *   .        * (9,4)
+     *   .
+     *   .
+     *   .
+     *   ....................>
+     *  (0,0)                x
+     *
+     * </pre>
+     *
+     * <p>E.g.:
+     *
+     * <pre>
+     *
+     * y ^
+     *   .
+     *   .  +---------+
+     *   .  |         |
+     *   .  +--+   +--+
+     *   .     |   |
+     *   .     +---+
+     *   .
+     *   ....................>
+     *  (0,0)                x
+     *
+     * </pre>
+     *
+     * <pre>
+     * Arrays.toList(
+     *   "                ",
+     *   "  +---------+   ",
+     *   "  |         |   ",
+     *   "  +--+   +--+   ",
+     *   "     |   |      ",
+     *   "     +---+      ",
+     *   "                ")
+     * </pre>
+      *
+     *
+     * @return the canvas as a list of strings
+     */
     public List<String> toAsciiLines() {
         final List<String> lines = new ArrayList<>();
 
