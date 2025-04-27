@@ -224,4 +224,21 @@ public class AsciiCanvasTest {
         assertEquals("l l e H   ", lines.get(3));
         assertEquals("o l l e H ", lines.get(4));
     }
+
+    @Test
+    public void test10() {
+        final int w = 5;
+        final int h = 1;
+
+        final AsciiCanvas canvas = new AsciiCanvas(w, h);
+
+        canvas.draw('-', 0, 0);
+        canvas.draw('-', 2, 0, "\u001b[34m");
+
+        assertEquals('-', canvas.getCharAt(0,0));
+        assertEquals('-', canvas.getCharAt(2,0));
+
+        assertEquals("",           canvas.getFormatAt(0,0));
+        assertEquals("\u001b[34m", canvas.getFormatAt(2,0));
+   }
 }

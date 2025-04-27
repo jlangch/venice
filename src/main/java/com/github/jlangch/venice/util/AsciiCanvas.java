@@ -24,8 +24,6 @@ package com.github.jlangch.venice.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.util.StringUtil;
-
 /**
  * Defines an ASCII based canvas for drawing ASCII characters
  */
@@ -89,6 +87,24 @@ public class AsciiCanvas {
     }
 
     /**
+     * Returns the format as position (x,y)
+     *
+     * @param x The x position (0..width-1)
+     * @param y The y position (0..height-1)
+     * @return The format at position (x,y)
+     */
+    public String getFormatAt(final int x, final int y) {
+        if ( x < 0 ||  x >= width) {
+            throw new IndexOutOfBoundsException("The x is out of bounds [0," + (width-1) + "]");
+        }
+        if (y < 0 || y >= height) {
+            throw new IndexOutOfBoundsException("The y is out of bounds [0," + (height-1) + "]");
+        }
+
+        return getCellAt(x,y).format;
+    }
+
+    /**
      * Clears the canvas by filling he canvas with spaces.
      *
      * @return this canvas
@@ -112,13 +128,13 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas draw(final char ch, final int x, final int y) {
-        draw(ch, "", x, y);
+        draw(ch, x, y, "");
         return this;
     }
 
-    public AsciiCanvas draw(final char ch, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas draw(final char ch, final int x, final int y, final String ansiFormat) {
         if (inbound(x,y)) {
-            canvas[y][x] = new Cell(ch, StringUtil.trimToEmpty(ansiFormat));
+            canvas[y][x] = new Cell(ch, ansiFormat);
         }
         return this;
     }
@@ -133,12 +149,12 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawText(final String text, final int x, final int y) {
-    	drawHorizontalRight(text, "", x, y);
+    	drawHorizontalRight(text, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawText(final String text, final String ansiFormat, final int x, final int y) {
-        drawHorizontalRight(text, ansiFormat, x, y);
+    public AsciiCanvas drawText(final String text, final int x, final int y, final String ansiFormat) {
+        drawHorizontalRight(text, x, y, ansiFormat);
         return this;
     }
 
@@ -153,18 +169,18 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawHorizontalRight(final String str, final int x, final int y) {
-        drawHorizontalRight(str, "", x, y);
+        drawHorizontalRight(str, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawHorizontalRight(final String str, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawHorizontalRight(final String str, final int x, final int y, final String ansiFormat) {
         if (str == null) {
             return this;
         }
 
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, ansiFormat, x + ii++, y);
+            draw(ch, x + ii++, y, ansiFormat);
         }
         return this;
     }
@@ -181,13 +197,13 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawHorizontalRight(final char ch, final int repeat, final int x, final int y) {
-        drawHorizontalRight(ch, repeat, "", x, y);
+        drawHorizontalRight(ch, repeat, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawHorizontalRight(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawHorizontalRight(final char ch, final int repeat, final int x, final int y, final String ansiFormat) {
         for(int ii=0; ii<repeat; ii++) {
-            draw(ch, ansiFormat, x+ii, y);
+            draw(ch, x+ii, y, ansiFormat);
         }
         return this;
     }
@@ -204,18 +220,18 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawHorizontalLeft(final String str, final int x, final int y) {
-        drawHorizontalLeft(str, "", x, y);
+        drawHorizontalLeft(str, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawHorizontalLeft(final String str, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawHorizontalLeft(final String str, final int x, final int y, final String ansiFormat) {
         if (str == null) {
             return this;
         }
 
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, ansiFormat, x + ii--, y);
+            draw(ch, x + ii--, y, ansiFormat);
         }
         return this;
     }
@@ -232,13 +248,13 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawHorizontalLeft(final char ch, final int repeat, final int x, final int y) {
-        drawHorizontalLeft(ch, repeat, "", x, y);
+        drawHorizontalLeft(ch, repeat, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawHorizontalLeft(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawHorizontalLeft(final char ch, final int repeat, final int x, final int y, final String ansiFormat) {
         for(int ii=0; ii<repeat; ii++) {
-            draw(ch, ansiFormat, x-ii, y);
+            draw(ch, x-ii, y, ansiFormat);
         }
         return this;
     }
@@ -258,18 +274,18 @@ public class AsciiCanvas {
             return this;
         }
 
-        drawVerticalUp(str, "", x, y);
+        drawVerticalUp(str, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawVerticalUp(final String str, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawVerticalUp(final String str, final int x, final int y, final String ansiFormat) {
         if (str == null) {
             return this;
         }
 
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, ansiFormat, x, y + ii++);
+            draw(ch, x, y + ii++, ansiFormat);
         }
         return this;
     }
@@ -286,13 +302,13 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawVerticalUp(final char ch, final int repeat, final int x, final int y) {
-        drawVerticalUp(ch, repeat, "", x, y);
+        drawVerticalUp(ch, repeat, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawVerticalUp(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawVerticalUp(final char ch, final int repeat, final int x, final int y, final String ansiFormat) {
         for(int ii=0; ii<repeat; ii++) {
-            draw(ch, ansiFormat, x, y+ii);
+            draw(ch, x, y+ii, ansiFormat);
         }
         return this;
     }
@@ -313,18 +329,18 @@ public class AsciiCanvas {
             return this;
         }
 
-        drawVerticalDown(str, "", x, y);
+        drawVerticalDown(str, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawVerticalDown(final String str, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawVerticalDown(final String str, final int x, final int y, final String ansiFormat) {
         if (str == null) {
             return this;
         }
 
         int ii=0;
         for(char ch : str.toCharArray()) {
-            draw(ch, ansiFormat, x, y + ii--);
+            draw(ch, x, y + ii--, ansiFormat);
         }
         return this;
     }
@@ -341,13 +357,13 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawVerticalDown(final char ch, final int repeat, final int x, final int y) {
-        drawVerticalDown(ch, repeat, "", x, y);
+        drawVerticalDown(ch, repeat, x, y, "");
         return this;
     }
 
-    public AsciiCanvas drawVerticalDown(final char ch, final int repeat, final String ansiFormat, final int x, final int y) {
+    public AsciiCanvas drawVerticalDown(final char ch, final int repeat, final int x, final int y, final String ansiFormat) {
         for(int ii=0; ii<repeat; ii++) {
-            draw(ch, ansiFormat, x, y-ii);
+            draw(ch, x, y-ii, ansiFormat);
         }
         return this;
     }
@@ -407,16 +423,16 @@ public class AsciiCanvas {
         final char bottomBar = border.charAt(6);
         final char leftBar = border.charAt(7);
 
-        draw(topLeft,     ansiFormat, x,     y+h-1);
-        draw(topRight,    ansiFormat, x+w-1, y+h-1);
-        draw(bottomLeft,  ansiFormat, x,     y);
-        draw(bottomRight, ansiFormat, x+w-1, y);
+        draw(topLeft,     x,     y+h-1, ansiFormat);
+        draw(topRight,    x+w-1, y+h-1, ansiFormat);
+        draw(bottomLeft,  x,     y,     ansiFormat);
+        draw(bottomRight, x+w-1, y,     ansiFormat);
 
-        drawHorizontalRight(topBar,    w-2, ansiFormat, x+1, y+h-1);
-        drawHorizontalRight(bottomBar, w-2, ansiFormat, x+1, y);
+        drawHorizontalRight(topBar,    w-2, x+1, y+h-1, ansiFormat);
+        drawHorizontalRight(bottomBar, w-2, x+1, y,     ansiFormat);
 
-        drawVerticalUp(leftBar,  h-2, ansiFormat, x,     y+1);
-        drawVerticalUp(rightBar, h-2, ansiFormat, x+w-1, y+1);
+        drawVerticalUp(leftBar,  h-2, x,     y+1, ansiFormat);
+        drawVerticalUp(rightBar, h-2, x+w-1, y+1, ansiFormat);
         return this;
     }
 
@@ -426,7 +442,7 @@ public class AsciiCanvas {
         for(int y=height-1; y>=0; y--) {
             final StringBuilder line = new StringBuilder();
             for(int x=0; x<width; x++) {
-                line.append(getCellAt(x,y).toString());
+                line.append(getCellAt(x,y).toAnsi());
             }
             lines.add(line.toString());
         }
@@ -488,7 +504,7 @@ public class AsciiCanvas {
         for(int y=height-1; y>=0; y--) {
             final StringBuilder line = new StringBuilder();
             for(int x=0; x<width; x++) {
-                line.append(getCellAt(x,y).val);
+                line.append(getCellAt(x,y).toAscii());
             }
             lines.add(line.toString());
         }
@@ -531,9 +547,12 @@ public class AsciiCanvas {
         }
 
 
-        @Override
-        public String toString() {
-            return format + val + ANSI_RESET;
+        public String toAnsi() {
+            return format + String.valueOf(val) + ANSI_RESET;
+        }
+
+        public String toAscii() {
+            return String.valueOf(val);
         }
 
         private final char val;

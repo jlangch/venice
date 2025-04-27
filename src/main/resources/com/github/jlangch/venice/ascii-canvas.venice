@@ -26,6 +26,13 @@
 
 (import :com.github.jlangch.venice.util.AsciiCanvas)
 
+;; (do 
+;;   (load-module :ascii-canvas ['ascii-canvas :as 'ac])
+;;   (load-module :ansi)
+;;   (-> (ac/create 50 50)
+;;       (ac/draw-box 10 10 20 15 ac/border-single (ansi/ansi :blue))
+;;       (ac/draw-box 20 20 20 15 ac/border-single (ansi/ansi :green))
+;;       (println)))
 
 (def border-simple "++++-|-|")
 (def border-single "┌┐┘└─│─│")
@@ -33,7 +40,7 @@
 
 
 (defn create [w h]
-  (. :AsciiCanvas :create w h))
+  (. :AsciiCanvas :new w h))
 
 (defn width [canvas]
   (. canvas :width))
