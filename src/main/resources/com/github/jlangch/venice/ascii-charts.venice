@@ -27,6 +27,16 @@
 (load-module :ascii-canvas ['ascii-canvas :as 'ac])
 
 
+(def ansi-bold          "\u001B[1m")
+(def ansi-black         "\u001B[30m")
+(def ansi-grey          "\u001B[38;5;242m")
+(def ansi-light-blue    "\u001B[38;5;111m")
+
+(def title-color        (str ansi-bold ansi-black))
+(def axis-color         ansi-grey)
+(def bar-color          ansi-light-blue)
+
+
 (defn 
   ^{ :arglists '("(percentage-bar-chart title x-axis-labels values)")
      :doc """
@@ -70,7 +80,7 @@
         ih             21]
   
     ;; title
-    (ac/draw-text cv title 0 (dec h))
+    (ac/draw-text cv title 0 (dec h) title-color)
 
     ;; x-axis / y-axis
     (let [ticks-x (count vals)
@@ -78,18 +88,18 @@
       ;; x-axis ticks
       (doseq [n (range ticks-x)]
         (let [x (+ 8 (* n x-col-width))]
-          (ac/draw-text cv (nth x-axis-labels n "??") x 0)))
+          (ac/draw-text cv (nth x-axis-labels n "??") x 0 axis-color)))
       ;; y-axis ticks 
       (doseq [n (range ticks-y)]
         (let [y (+ iy (* n 4))]
-          (ac/draw-text cv (str/format "%3d%% -" (* n 20)) 0 y))))
+          (ac/draw-text cv (str/format "%3d%% -" (* n 20)) 0 y axis-color))))
 
     ;; bars
     (doseq [n (range (count vals))]
       (let [v   (-> (nth vals n) (* ih) (/ 100))
             x   (+ ix (* n x-col-width))
             bar (if (zero? v) "▁" (str/repeat "▇" v))]
-        (ac/draw-vertical-up cv bar x iy)
-        (ac/draw-vertical-up cv bar (inc x) iy)))
+        (ac/draw-vertical-up cv bar x iy bar-color)
+        (ac/draw-vertical-up cv bar (inc x) iy bar-color)))
   
-    (ac/string-ascii cv)))
+    (ac/string-ansi cv)))
