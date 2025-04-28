@@ -292,7 +292,7 @@ public class AsciiCanvasModuleTest {
                               "        (ac/draw-text cv (str/format \"%3d%% -\" (* n 20)) 0 (+ 1 (* n 4)))))  \n" +
                               "                                                                               \n" +
                               "    ;; bars                                                                    \n" +
-                              "    (doseq [n (range 13)]                                                      \n" +
+                              "    (doseq [n (range (count vals))]                                                      \n" +
                               "      (let [v (-> (nth vals n) (* ih) (/ 100))]                                \n" +
                               "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) (+ ix (* n 4)) iy)        \n" +
                               "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) (+ ix 1 (* n 4)) iy)))    \n" +
