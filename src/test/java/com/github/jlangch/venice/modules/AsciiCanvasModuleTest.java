@@ -270,12 +270,12 @@ public class AsciiCanvasModuleTest {
                               "  (load-module :ascii-canvas ['ascii-canvas :as 'ac])                          \n" +
                               "                                                                               \n" +
                               "  (let [w     61                                                               \n" +
-                              "        h     25                                                               \n" +
+                              "        h     26                                                               \n" +
                               "        cv    (ac/create w h)                                                  \n" +
                               "        title (str/align w :center :ellipsis-left \"Bar Chart\")               \n" +
                               "        vals  [10 35 0 40 56 100 30 40 50 78 89 30 59]                         \n" +
                               "        ix    8                                                                \n" +
-                              "        iy    1                                                                \n" +
+                              "        iy    2                                                                \n" +
                               "        iw    (* (count vals) 3)                                               \n" +
                               "        ih    21]                                                              \n" +
                               "                                                                               \n" +
@@ -290,46 +290,48 @@ public class AsciiCanvasModuleTest {
                               "          (ac/draw-text cv (str/format \"%02d\" n) x 0)))                      \n" +
                               "      ;; y-axis ticks                                                          \n" +
                               "      (doseq [n (range ticks-y)]                                               \n" +
-                              "        (let [y (+ 1 (* n 4))]                                                 \n" +
+                              "        (let [y (+ iy (* n 4))]                                                \n" +
                               "          (ac/draw-text cv (str/format \"%3d%% -\" (* n 20)) 0 y))))           \n" +
                               "                                                                               \n" +
                               "    ;; bars                                                                    \n" +
                               "    (doseq [n (range (count vals))]                                            \n" +
-                              "      (let [v (-> (nth vals n) (* ih) (/ 100))                                 \n" +
-                              "            x (+ ix (* n 4))]                                                  \n" +
-                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) x iy)                     \n" +
-                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) (inc x) iy)))             \n" +
+                              "      (let [v   (-> (nth vals n) (* ih) (/ 100))                               \n" +
+                              "            x   (+ ix (* n 4))                                                 \n" +
+                              "            bar (if (zero? v) \"▁\" (str/repeat \"▇\" v))]                     \n" +
+                              "        (ac/draw-vertical-up cv bar x iy)                                      \n" +
+                              "        (ac/draw-vertical-up cv bar (inc x) iy)))                              \n" +
                               "                                                                               \n" +
                               "    (ac/string-ascii cv)))                                                     ";
 
-        // System.out.println(venice.eval(script));
+        //System.out.println(venice.eval(script));
 
         assertEquals(
-        		  "                          Bar Chart                          \n"
-        		+ "                                                             \n"
-        		+ "                                                             \n"
-        		+ "100% -                      ▅▅                               \n"
-        		+ "                            ▅▅                               \n"
-        		+ "                            ▅▅                               \n"
-        		+ "                            ▅▅                  ▅▅           \n"
-        		+ " 80% -                      ▅▅                  ▅▅           \n"
-        		+ "                            ▅▅              ▅▅  ▅▅           \n"
-        		+ "                            ▅▅              ▅▅  ▅▅           \n"
-        		+ "                            ▅▅              ▅▅  ▅▅           \n"
-        		+ " 60% -                      ▅▅              ▅▅  ▅▅           \n"
-        		+ "                            ▅▅              ▅▅  ▅▅      ▅▅   \n"
-        		+ "                        ▅▅  ▅▅              ▅▅  ▅▅      ▅▅   \n"
-        		+ "                        ▅▅  ▅▅          ▅▅  ▅▅  ▅▅      ▅▅   \n"
-        		+ " 40% -                  ▅▅  ▅▅          ▅▅  ▅▅  ▅▅      ▅▅   \n"
-        		+ "                    ▅▅  ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅      ▅▅   \n"
-        		+ "            ▅▅      ▅▅  ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅      ▅▅   \n"
-        		+ "            ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅   \n"
-        		+ " 20% -      ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅   \n"
-        		+ "            ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅   \n"
-        		+ "            ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅   \n"
-        		+ "        ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅   \n"
-        		+ "  0% -  ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅   \n"
-        		+ "        00  01  02  03  04  05  06  07  08  09  10  11  12   ",
+        		    "                          Bar Chart                          \n"
+        		    + "                                                             \n"
+        		    + "                                                             \n"
+        		    + "100% -                      ▇▇                               \n"
+        		    + "                            ▇▇                               \n"
+        		    + "                            ▇▇                               \n"
+        		    + "                            ▇▇                  ▇▇           \n"
+        		    + " 80% -                      ▇▇                  ▇▇           \n"
+        		    + "                            ▇▇              ▇▇  ▇▇           \n"
+        		    + "                            ▇▇              ▇▇  ▇▇           \n"
+        		    + "                            ▇▇              ▇▇  ▇▇           \n"
+        		    + " 60% -                      ▇▇              ▇▇  ▇▇           \n"
+        		    + "                            ▇▇              ▇▇  ▇▇      ▇▇   \n"
+        		    + "                        ▇▇  ▇▇              ▇▇  ▇▇      ▇▇   \n"
+        		    + "                        ▇▇  ▇▇          ▇▇  ▇▇  ▇▇      ▇▇   \n"
+        		    + " 40% -                  ▇▇  ▇▇          ▇▇  ▇▇  ▇▇      ▇▇   \n"
+        		    + "                    ▇▇  ▇▇  ▇▇      ▇▇  ▇▇  ▇▇  ▇▇      ▇▇   \n"
+        		    + "            ▇▇      ▇▇  ▇▇  ▇▇      ▇▇  ▇▇  ▇▇  ▇▇      ▇▇   \n"
+        		    + "            ▇▇      ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇   \n"
+        		    + " 20% -      ▇▇      ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇   \n"
+        		    + "            ▇▇      ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇   \n"
+        		    + "            ▇▇      ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇   \n"
+        		    + "        ▇▇  ▇▇      ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇   \n"
+        		    + "  0% -  ▇▇  ▇▇  ▁▁  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇  ▇▇   \n"
+        		    + "                                                             \n"
+        		    + "        00  01  02  03  04  05  06  07  08  09  10  11  12   ",
                   venice.eval(script));
     }
 }
