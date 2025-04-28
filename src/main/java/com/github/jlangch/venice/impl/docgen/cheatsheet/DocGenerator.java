@@ -151,7 +151,7 @@ public class DocGenerator {
                         "shell",         "geoip",               "benchmark",        "component",
                         "config",        "parsifal",            "grep",             "test",
                         "fonts",         "jsonl",               "timing",           "stopwatch",
-                        "zipvault",      "gradlew",             "matrix",           "ascii-table",
+                        "zipvault",      "gradlew",             "matrix",
                         "docker",        "cargo",               "cargo-arangodb",   "cargo-qdrant",
                         "cargo-postgresql",
                         "installer",     "mimetypes",           "multipart",        "images",
@@ -160,7 +160,8 @@ public class DocGenerator {
                         "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",     "server-side-events",  "pretty-print",
-                        "qrcode",        "qrref",               "qrbill"));
+                        "qrcode",        "qrref",               "qrbill",
+                        "ascii-canvas",  "ascii-charts",        "ascii-table"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
