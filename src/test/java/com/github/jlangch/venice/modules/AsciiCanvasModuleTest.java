@@ -286,20 +286,19 @@ public class AsciiCanvasModuleTest {
                               "    (let [ticks-x (count vals), ticks-y 6]                                     \n" +
                               "      ;; x-axis ticks                                                          \n" +
                               "      (doseq [n (range ticks-x)]                                               \n" +
-                              "        (let [x (+ 8 (* n 4)), y 0]                                            \n" +
-                              "          (ac/draw-text cv (str/format \"%02d\" n) x y)))                      \n" +
+                              "        (let [x (+ 8 (* n 4))]                                                 \n" +
+                              "          (ac/draw-text cv (str/format \"%02d\" n) x 0)))                      \n" +
                               "      ;; y-axis ticks                                                          \n" +
                               "      (doseq [n (range ticks-y)]                                               \n" +
-                              "        (let [x 0, y (+ 1 (* n 4))]                                            \n" +
-                              "          (ac/draw-text cv (str/format \"%3d%% -\" (* n 20)) x y))))           \n" +
+                              "        (let [y (+ 1 (* n 4))]                                                 \n" +
+                              "          (ac/draw-text cv (str/format \"%3d%% -\" (* n 20)) 0 y))))           \n" +
                               "                                                                               \n" +
                               "    ;; bars                                                                    \n" +
                               "    (doseq [n (range (count vals))]                                            \n" +
                               "      (let [v (-> (nth vals n) (* ih) (/ 100))                                 \n" +
-                              "            x (+ ix (* n 4))                                                   \n" +
-                              "            y iy]                                                              \n" +
-                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) x y)                      \n" +
-                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) (inc x) y)))              \n" +
+                              "            x (+ ix (* n 4))]                                                  \n" +
+                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) x iy)                     \n" +
+                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) (inc x) iy)))             \n" +
                               "                                                                               \n" +
                               "    (ac/string-ascii cv)))                                                     ";
 
