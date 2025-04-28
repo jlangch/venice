@@ -92,7 +92,7 @@
 (defn lines-ascii [canvas]
   (. canvas :toAsciiLines))
 
-(defn string-ansi[canvas]
+(defn string-ansi [canvas]
   (. canvas :toAnsiString))
 
 (defn string-ascii [canvas]
