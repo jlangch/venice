@@ -261,4 +261,72 @@ public class AsciiCanvasModuleTest {
                      "|********|\n" +
                      "+--------+", venice.eval(script));
     }
+
+    @Test
+    public void test_010_bar_chart() throws Exception {
+        final Venice venice = new Venice();
+
+        final String script = "(do                                                                            \n" +
+                              "  (load-module :ascii-canvas ['ascii-canvas :as 'ac])                          \n" +
+                              "                                                                               \n" +
+                              "  (let [w     65                                                               \n" +
+                              "        h     25                                                               \n" +
+                              "        cv    (ac/create w h)                                                  \n" +
+                              "        title (str/align w :center :ellipsis-left \"Bar Chart\")               \n" +
+                              "        vals  [10 35 0 40 56 100 30 40 50 78 89 30 59]                         \n" +
+                              "        ix    8                                                                \n" +
+                              "        iy    1                                                                \n" +
+                              "        iw    (* (count vals) 3)                                               \n" +
+                              "        ih    21]                                                              \n" +
+                              "                                                                               \n" +
+                              "    ;; title                                                                   \n" +
+                              "    (ac/draw-text cv title 0 (dec h))                                          \n" +
+                              "                                                                               \n" +
+                              "    ;; ticks                                                                   \n" +
+                              "    (let [ticks-x (count vals), ticks-y 6]                                     \n" +
+                              "      ;; x-axis ticks                                                          \n" +
+                              "      (doseq [n (range ticks-x)]                                               \n" +
+                              "        (ac/draw-text cv (str/format \"%02d\" n) (+ 8 (* n 4)) 0))             \n" +
+                              "      ;; y-axis ticks                                                          \n" +
+                              "      (doseq [n (range ticks-y)]                                               \n" +
+                              "        (ac/draw-text cv (str/format \"%3d%% -\" (* n 20)) 0 (+ 1 (* n 4)))))  \n" +
+                              "                                                                               \n" +
+                              "    ;; bars                                                                    \n" +
+                              "    (doseq [n (range 13)]                                                      \n" +
+                              "      (let [v (-> (nth vals n) (* ih) (/ 100))]                                \n" +
+                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) (+ ix (* n 4)) iy)        \n" +
+                              "        (ac/draw-vertical-up cv (str/repeat \"▅\" v) (+ ix 1 (* n 4)) iy)))    \n" +
+                              "                                                                               \n" +
+                              "    (ac/string-ascii cv)))                                                     ";
+
+        // System.out.println(venice.eval(script));
+
+        assertEquals(
+        		  "                            Bar Chart                            \n"
+        		+ "                                                                 \n"
+        		+ "                                                                 \n"
+        		+ "100% -                      ▅▅                                   \n"
+        		+ "                            ▅▅                                   \n"
+        		+ "                            ▅▅                                   \n"
+        		+ "                            ▅▅                  ▅▅               \n"
+        		+ " 80% -                      ▅▅                  ▅▅               \n"
+        		+ "                            ▅▅              ▅▅  ▅▅               \n"
+        		+ "                            ▅▅              ▅▅  ▅▅               \n"
+        		+ "                            ▅▅              ▅▅  ▅▅               \n"
+        		+ " 60% -                      ▅▅              ▅▅  ▅▅               \n"
+        		+ "                            ▅▅              ▅▅  ▅▅      ▅▅       \n"
+        		+ "                        ▅▅  ▅▅              ▅▅  ▅▅      ▅▅       \n"
+        		+ "                        ▅▅  ▅▅          ▅▅  ▅▅  ▅▅      ▅▅       \n"
+        		+ " 40% -                  ▅▅  ▅▅          ▅▅  ▅▅  ▅▅      ▅▅       \n"
+        		+ "                    ▅▅  ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅      ▅▅       \n"
+        		+ "            ▅▅      ▅▅  ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅      ▅▅       \n"
+        		+ "            ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅       \n"
+        		+ " 20% -      ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅       \n"
+        		+ "            ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅       \n"
+        		+ "            ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅       \n"
+        		+ "        ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅       \n"
+        		+ "  0% -  ▅▅  ▅▅      ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅  ▅▅       \n"
+        		+ "        00  01  02  03  04  05  06  07  08  09  10  11  12       ",
+                  venice.eval(script));
+    }
 }
