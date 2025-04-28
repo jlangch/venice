@@ -60,6 +60,15 @@
   ^{ :arglists '("(percentage-bar-chart title x-axis-labels values)")
      :doc """
           Returns a simple ascii percentage bar chart.
+
+          Arguments:
+
+          | title         | A chart title                       |
+          | x-axis-labels | The x-axis labels (two chars only!) |
+          | values        | The percentage values (0..100)      |
+
+          Note: the 'x-axis-labels' and 'values' arguments must have the same
+          size!
           """
      :examples '(
           """
