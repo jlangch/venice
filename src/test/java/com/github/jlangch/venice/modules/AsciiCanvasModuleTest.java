@@ -282,7 +282,7 @@ public class AsciiCanvasModuleTest {
                               "    ;; title                                                                   \n" +
                               "    (ac/draw-text cv title 0 (dec h))                                          \n" +
                               "                                                                               \n" +
-                              "    ;; ticks                                                                   \n" +
+                              "    ;; x-axis / y-axis                                                         \n" +
                               "    (let [ticks-x (count vals), ticks-y 6]                                     \n" +
                               "      ;; x-axis ticks                                                          \n" +
                               "      (doseq [n (range ticks-x)]                                               \n" +
