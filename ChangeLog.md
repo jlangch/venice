@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - function `io/exists?` to check for files or directories
+- module `:ascii-charts` to render bar charts in the terminal
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
