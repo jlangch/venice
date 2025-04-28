@@ -1,0 +1,95 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2025 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; An ASCII charts
+
+
+(ns ascii-charts)
+
+(load-module :ascii-canvas ['ascii-canvas :as 'ac])
+
+
+(defn 
+  ^{ :arglists '("(percentage-bar-chart title x-axis-labels values)")
+     :doc """
+          Returns a simple ascii percentage bar chart.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :ascii-charts ['ascii-charts :as 'chart])
+
+            (println)
+            (println
+              (chart/percentage-bar-chart 
+                  "CPU Usage Per Hour"
+                  [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
+                    "09" "10" "11" "12" "13" "14" "15" "16" "17"
+                    "18" "19" "20" "21" "22" "23" ]
+                  [ 100  100  100    0    0  100  100   50   30  
+                      0    0    0    0    0    0    0    0    0
+                      0   30   30   30   50  100 ] )))
+          """) }
+
+  percentage-bar-chart [title x-axis-labels values]
+
+  { :pre [(string? title)
+          (sequential? x-axis-labels)
+          (sequential? values)
+          (every? string? x-axis-labels)
+          (every? number? values)] }
+
+  (let [x-col-width    3
+        w              (+ 12 (* x-col-width (count values)))
+        h              26
+        cv             (ac/create w h)
+        title          (str/align w :center :ellipsis-left title)
+        vals           (map #(clamp (long %) 0 100) values)
+        x-axis-labels  (map #(str/nfirst % 2) x-axis-labels)
+        ix             8
+        iy             2
+        iw             (* 4 (count vals))
+        ih             21]
+  
+    ;; title
+    (ac/draw-text cv title 0 (dec h))
+
+    ;; x-axis / y-axis
+    (let [ticks-x (count vals)
+          ticks-y 6]
+      ;; x-axis ticks
+      (doseq [n (range ticks-x)]
+        (let [x (+ 8 (* n x-col-width))]
+          (ac/draw-text cv (nth x-axis-labels n "??") x 0)))
+      ;; y-axis ticks 
+      (doseq [n (range ticks-y)]
+        (let [y (+ iy (* n 4))]
+          (ac/draw-text cv (str/format "%3d%% -" (* n 20)) 0 y))))
+
+    ;; bars
+    (doseq [n (range (count vals))]
+      (let [v   (-> (nth vals n) (* ih) (/ 100))
+            x   (+ ix (* n x-col-width))
+            bar (if (zero? v) "▁" (str/repeat "▇" v))]
+        (ac/draw-vertical-up cv bar x iy)
+        (ac/draw-vertical-up cv bar (inc x) iy)))
+  
+    (ac/string-ascii cv)))
