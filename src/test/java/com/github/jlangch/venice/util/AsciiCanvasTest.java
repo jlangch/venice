@@ -64,7 +64,7 @@ public class AsciiCanvasTest {
 
         final AsciiCanvas canvas = new AsciiCanvas(w, h);
 
-        canvas.drawBox(0,0,10,5,"++++-|-|");
+        canvas.box(0,0,10,5,"++++-|-|");
 
         final List<String> lines = canvas.toAsciiLines();
 
@@ -82,7 +82,7 @@ public class AsciiCanvasTest {
 
         final AsciiCanvas canvas = new AsciiCanvas(w, h);
 
-        canvas.drawBox(0,0,10,5,"┌┐┘└─│─│");
+        canvas.box(0,0,10,5,"┌┐┘└─│─│");
 
         final List<String> lines = canvas.toAsciiLines();
 
@@ -249,14 +249,15 @@ public class AsciiCanvasTest {
 
         final AsciiCanvas canvas = new AsciiCanvas(w, h);
 
+        canvas.box(0,0,10,5,"++++-|-|");
         canvas.fill('*', 1, 1, 8, 3);
 
         final List<String> lines = canvas.toAsciiLines();
 
-        assertEquals("          ", lines.get(0));
-        assertEquals(" ******** ", lines.get(1));
-        assertEquals(" ******** ", lines.get(2));
-        assertEquals(" ******** ", lines.get(3));
-        assertEquals("          ", lines.get(4));
+        assertEquals("+--------+", lines.get(0));
+        assertEquals("|********|", lines.get(1));
+        assertEquals("|********|", lines.get(2));
+        assertEquals("|********|", lines.get(3));
+        assertEquals("+--------+", lines.get(4));
     }
 }

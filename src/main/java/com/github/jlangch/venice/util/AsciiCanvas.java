@@ -401,12 +401,12 @@ public class AsciiCanvas {
      *
      * @return this canvas
      */
-    public AsciiCanvas drawBox(final int x, final int y, final int w, final int h, final String border) {
-    	drawBox(x, y, w, h, border, "");
+    public AsciiCanvas box(final int x, final int y, final int w, final int h, final String border) {
+    	box(x, y, w, h, border, "");
         return this;
     }
 
-    public AsciiCanvas drawBox(final int x, final int y, final int w, final int h, final String border, final String ansiFormat) {
+    public AsciiCanvas box(final int x, final int y, final int w, final int h, final String border, final String ansiFormat) {
         if (border == null || border.length() != 8) {
             throw new IllegalArgumentException(
                     "The box' border must have 8 chars: "
@@ -524,6 +524,14 @@ public class AsciiCanvas {
         }
 
         return lines;
+    }
+
+    public String toAsciiString() {
+        return String.join("\n", toAsciiLines());
+    }
+
+    public String toAnsiString() {
+        return String.join("\n", toAnsiLines());
     }
 
     @Override

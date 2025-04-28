@@ -56,31 +56,31 @@
 
 (defn draw 
   ([canvas ch x y]        (. canvas :draw ch x y))
-  ([canvas ch format x y] (. canvas :draw ch format x y)))
+  ([canvas ch x y format] (. canvas :draw ch x y format)))
 
 (defn draw-text
   ([canvas text x y]        (. canvas :drawText text x y))
-  ([canvas text format x y] (. canvas :drawText text format x y)))
+  ([canvas text x y format] (. canvas :drawText text x y format)))
 
 (defn draw-horizontal-right
   ([canvas s x y]        (. canvas :drawHorizontalRight s x y))
-  ([canvas s format x y] (. canvas :drawHorizontalRight s format x y)))
+  ([canvas s x y format] (. canvas :drawHorizontalRight s x y format)))
 
 (defn draw-horizontal-left
   ([canvas s x y]        (. canvas :drawHorizontalLeft s x y))
-  ([canvas s format x y] (. canvas :drawHorizontalLeft s format x y)))
+  ([canvas s x y format] (. canvas :drawHorizontalLeft s x y format)))
 
 (defn draw-vertical-up
   ([canvas s x y]        (. canvas :drawVerticalUp s x y))
-  ([canvas s format x y] (. canvas :drawVerticalUp s format x y)))
+  ([canvas s x y format] (. canvas :drawVerticalUp s x y format)))
 
 (defn draw-vertical-down
   ([canvas s x y]        (. canvas :drawVerticalDown s x y))
-  ([canvas s format x y] (. canvas :drawVerticalDown format x y)))
+  ([canvas s x y format] (. canvas :drawVerticalDown s x y format)))
 
-(defn draw-box
-  ([canvas x y w h border]        (. canvas :drawBox x y w h border))
-  ([canvas x y w h border format] (. canvas :drawBox x y w h border format)))
+(defn box
+  ([canvas x y w h border]        (. canvas :box x y w h border))
+  ([canvas x y w h border format] (. canvas :box x y w h border format)))
 
 (defn fill
   ([canvas ch x y w h]        (. canvas :fill ch x y w h))
@@ -91,3 +91,9 @@
 
 (defn lines-ascii [canvas]
   (. canvas :toAsciiLines))
+
+(defn string-ansi[canvas]
+  (. canvas :toAnsiString))
+
+(defn string-ascii [canvas]
+  (. canvas :toAsciiString))
