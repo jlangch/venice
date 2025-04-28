@@ -266,42 +266,42 @@ public class AsciiCanvasModuleTest {
     public void test_010_bar_chart() throws Exception {
         final Venice venice = new Venice();
 
-        final String script = "(do                                                                            \n" +
-                              "  (load-module :ascii-canvas ['ascii-canvas :as 'ac])                          \n" +
-                              "                                                                               \n" +
-                              "  (let [w     61                                                               \n" +
-                              "        h     26                                                               \n" +
-                              "        cv    (ac/create w h)                                                  \n" +
-                              "        title (str/align w :center :ellipsis-left \"Bar Chart\")               \n" +
-                              "        vals  [10 35 0 40 56 100 30 40 50 78 89 30 59]                         \n" +
-                              "        ix    8                                                                \n" +
-                              "        iy    2                                                                \n" +
-                              "        iw    (* (count vals) 3)                                               \n" +
-                              "        ih    21]                                                              \n" +
-                              "                                                                               \n" +
-                              "    ;; title                                                                   \n" +
-                              "    (ac/draw-text cv title 0 (dec h))                                          \n" +
-                              "                                                                               \n" +
-                              "    ;; x-axis / y-axis                                                         \n" +
-                              "    (let [ticks-x (count vals), ticks-y 6]                                     \n" +
-                              "      ;; x-axis ticks                                                          \n" +
-                              "      (doseq [n (range ticks-x)]                                               \n" +
-                              "        (let [x (+ 8 (* n 4))]                                                 \n" +
-                              "          (ac/draw-text cv (str/format \"%02d\" n) x 0)))                      \n" +
-                              "      ;; y-axis ticks                                                          \n" +
-                              "      (doseq [n (range ticks-y)]                                               \n" +
-                              "        (let [y (+ iy (* n 4))]                                                \n" +
-                              "          (ac/draw-text cv (str/format \"%3d%% -\" (* n 20)) 0 y))))           \n" +
-                              "                                                                               \n" +
-                              "    ;; bars                                                                    \n" +
-                              "    (doseq [n (range (count vals))]                                            \n" +
-                              "      (let [v   (-> (nth vals n) (* ih) (/ 100))                               \n" +
-                              "            x   (+ ix (* n 4))                                                 \n" +
-                              "            bar (if (zero? v) \"▁\" (str/repeat \"▇\" v))]                     \n" +
-                              "        (ac/draw-vertical-up cv bar x iy)                                      \n" +
-                              "        (ac/draw-vertical-up cv bar (inc x) iy)))                              \n" +
-                              "                                                                               \n" +
-                              "    (ac/string-ascii cv)))                                                     ";
+        final String script = "(do                                                                     \n" +
+                              "  (load-module :ascii-canvas ['ascii-canvas :as 'ac])                   \n" +
+                              "                                                                        \n" +
+                              "  (let [w     61                                                        \n" +
+                              "        h     26                                                        \n" +
+                              "        cv    (ac/create w h)                                           \n" +
+                              "        title (str/align w :center :ellipsis-left \"Bar Chart\")        \n" +
+                              "        vals  [10 35 0 40 56 100 30 40 50 78 89 30 59]                  \n" +
+                              "        ix    8                                                         \n" +
+                              "        iy    2                                                         \n" +
+                              "        iw    (* (count vals) 3)                                        \n" +
+                              "        ih    21]                                                       \n" +
+                              "                                                                        \n" +
+                              "    ;; title                                                            \n" +
+                              "    (ac/draw-text cv title 0 (dec h))                                   \n" +
+                              "                                                                        \n" +
+                              "    ;; x-axis / y-axis                                                  \n" +
+                              "    (let [ticks-x (count vals), ticks-y 6]                              \n" +
+                              "      ;; x-axis ticks                                                   \n" +
+                              "      (doseq [n (range ticks-x)]                                        \n" +
+                              "        (let [x (+ 8 (* n 4))]                                          \n" +
+                              "          (ac/draw-text cv (str/format \"%02d\" n) x 0)))               \n" +
+                              "      ;; y-axis ticks                                                   \n" +
+                              "      (doseq [n (range ticks-y)]                                        \n" +
+                              "        (let [y (+ iy (* n 4))]                                         \n" +
+                              "          (ac/draw-text cv (str/format \"%3d%% -\" (* n 20)) 0 y))))    \n" +
+                              "                                                                        \n" +
+                              "    ;; bars                                                             \n" +
+                              "    (doseq [n (range (count vals))]                                     \n" +
+                              "      (let [v   (-> (nth vals n) (* ih) (/ 100))                        \n" +
+                              "            x   (+ ix (* n 4))                                          \n" +
+                              "            bar (if (zero? v) \"▁\" (str/repeat \"▇\" v))]              \n" +
+                              "        (ac/draw-vertical-up cv bar x iy)                               \n" +
+                              "        (ac/draw-vertical-up cv bar (inc x) iy)))                       \n" +
+                              "                                                                        \n" +
+                              "    (ac/string-ascii cv)))                                              ";
 
         //System.out.println(venice.eval(script));
 
