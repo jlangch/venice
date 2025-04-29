@@ -57,16 +57,18 @@
 
 
 (defn 
-  ^{ :arglists '("(percentage-bar-chart title x-axis-labels values highres)")
+  ^{ :arglists '(
+         "(percentage-bar-chart title x-axis-labels values)"
+         "(percentage-bar-chart title x-axis-labels values highres)")
      :doc """
           Returns a simple ascii percentage bar chart.
 
           Arguments:
 
-          | title         | A chart title                       |
-          | x-axis-labels | The x-axis labels (two chars only!) |
-          | values        | The percentage values (0..100)      |
-          | highres       | Best rendering for bars             |
+          | title         | A chart title                              |
+          | x-axis-labels | The x-axis labels (two chars only!)        |
+          | values        | The percentage values (0..100)             |
+          | highres       | Best rendering for bars (defaults to true) |
 
           Note: the 'x-axis-labels' and 'values' arguments must have the same
           size!
@@ -121,63 +123,70 @@
                   true)))
           """) }
 
-  percentage-bar-chart [title x-axis-labels values highres]
+  percentage-bar-chart 
 
-  { :pre [(string? title)
-          (sequential? x-axis-labels)
-          (sequential? values)
-          (every? string? x-axis-labels)
-          (every? number? values)] }
+  ([title x-axis-labels value]
+     (percentage-bar-chart title x-axis-labels values true))
 
-  (let [y-axis-width     8
-        x-axis-height    2
-        header-height    3
-        bar-col-width    3
-        bar-area-x       y-axis-width
-        bar-area-y       x-axis-height
-        bar-area-width   (* bar-col-width (count values))
-        bar-area-height  20
-        border-right     4
-        w                (+ y-axis-width bar-area-width border-right)
-        h                (+ header-height bar-area-height  x-axis-height)
-        cv               (ac/create w h)
-        title            (str/align w :center :ellipsis-left title)
-        vals             (map #(clamp (long %) 0 100) values)
-        x-axis-labels    (map #(str/nfirst % 2) x-axis-labels)]
-  
-    ;; title
-    (ac/draw-text cv title 0 (dec h) title-color)
+  ([title x-axis-labels values highres]
+    { :pre [(string? title)
+            (sequential? x-axis-labels)
+            (sequential? values)
+            (every? string? x-axis-labels)
+            (every? number? values)] }
 
-    ;; x-axis
-    (doseq [tick (range (count vals))]
-      (let [x (+ bar-area-x (* tick bar-col-width))]
-        (ac/draw-text cv (nth x-axis-labels tick "??") x 0 axis-color)))
+    (let [y-axis-width     8
+          x-axis-height    2
+          header-height    3
+          bar-col-width    3
+          bar-area-x       y-axis-width
+          bar-area-y       x-axis-height
+          bar-area-width   (* bar-col-width (count values))
+          bar-area-height  20
+          border-right     4
+          w                (+ y-axis-width bar-area-width border-right)
+          h                (+ header-height bar-area-height  x-axis-height)
+          canvas           (ac/create w h)
+          title            (str/align w :center :ellipsis-left title)
+          vals             (map #(clamp (long %) 0 100) values)
+          x-axis-labels    (map #(str/nfirst % 2) x-axis-labels)]
+    
+      ;; title
+      (ac/draw-text canvas title 0 (dec h) title-color)
 
-    ;; y-axis
-    (ac/draw-text cv (str/format "%3d%% ▁" 0) 0 bar-area-y axis-color)
-    (doseq [tick (range 1 6)]
-      (let [y (+ bar-area-y -1 (* tick 4))]
-        (ac/draw-text cv (str/format "%3d%% ▔" (* tick 20)) 0 y axis-color)))
+      ;; x-axis
+      (doseq [tick (range (count vals))]
+        (let [x (+ bar-area-x (* tick bar-col-width))]
+          (ac/draw-text canvas (nth x-axis-labels tick "??") x 0 axis-color)))
 
-    ;; bars
-    (doseq [n (range (count vals))]
-      (let [x   (+ bar-area-x (* n bar-col-width))
-            bar (render-bar (nth vals n) bar-area-height highres)]
-        (ac/draw-vertical-up cv bar x bar-area-y bar-color)
-        (ac/draw-vertical-up cv bar (inc x) bar-area-y bar-color)))
-  
-    (ac/string-ansi cv)))
+      ;; y-axis
+      (ac/draw-text canvas (str/format "%3d%% ▁" 0) 0 bar-area-y axis-color)
+      (doseq [tick (range 1 6)]
+        (let [y (+ bar-area-y -1 (* tick 4))]
+          (ac/draw-text canvas (str/format "%3d%% ▔" (* tick 20)) 0 y axis-color)))
+
+      ;; bars
+      (doseq [n (range (count vals))]
+        (let [x   (+ bar-area-x (* n bar-col-width))
+              bar (render-bar (nth vals n) bar-area-height highres)]
+          (ac/draw-vertical-up canvas bar x bar-area-y bar-color)
+          (ac/draw-vertical-up canvas bar (inc x) bar-area-y bar-color)))
+    
+      (ac/string-ansi canvas))))
+
 
 (defn render-bar [percentage max-bar-len highres]
   (if highres 
     (render-bar-highres percentage max-bar-len)
     (render-bar-lowres percentage max-bar-len)))
 
+
 (defn render-bar-lowres [percentage max-bar-len]
   (let [v (-> percentage (* max-bar-len) (/ 100))]
     (if (zero? v) 
       bar-zero-element 
       (str/repeat bar-element v))))
+
 
 (defn render-bar-highres [percentage max-bar-len]
   (let [v             (-> (* percentage max-bar-len 8) (/ 100))       
