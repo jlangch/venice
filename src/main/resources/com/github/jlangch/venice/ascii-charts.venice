@@ -69,13 +69,12 @@
           | x-axis-labels | The x-axis labels (two chars only!)        |
           | values        | The percentage values (0..100)             |
 
-          Note: the 'x-axis-labels' and 'values' arguments must have the same
+          Note: the 'x-axis-labels' and 'values' arguments must have the same size!
  
           Options:
 
           | :resolution r | Resolution {`:highres`, `:lowres`}. Defaults to `:highres` |
           | :size  s      | Size {`:large`, `:medium`, `:small`}. Defaults to `:medium` |
-          size!
           """
      :examples '(
           """
