@@ -37,12 +37,13 @@
 (ns ascii-charts)
 
 (load-module :ascii-canvas ['ascii-canvas :as 'ac])
+(load-module :ansi)
 
 
-(def ansi-bold          "\u001B[1m")
-(def ansi-black         "\u001B[30m")
-(def ansi-grey          "\u001B[38;5;242m")
-(def ansi-light-blue    "\u001B[38;5;111m")
+(def ansi-bold          (ansi/ansi :bold))
+(def ansi-black         (ansi/ansi :black))
+(def ansi-grey          (ansi/ansi (ansi/fg-color 242)))
+(def ansi-light-blue    (ansi/ansi (ansi/fg-color 111)))
 
 (def bar-zero-element   "▁")
 (def bar-element        "▇")  
@@ -68,54 +69,67 @@
  
           Options:
 
-          | :resolution r | Resolution {`:high`, `:low`}. Defaults to `:high` |
-          | :size  s      | Size {`:large`, `:medium`, `:small`}. Defaults to `:medium` |
+          | :resolution r  | Resolution {`:high`, `:low`}. Defaults to `:high` |
+          | :size  s       | Size {`:large`, `:medium`, `:small`}. Defaults to `:medium` |
+          | :title-color c | Title ansi color. E.g. `(str (ansi/ansi :bold) (ansi/ansi :black))` |
+          | :axis-color c  | Axis ansi color. E.g. `(ansi/ansi (ansi/fg-color 242))` |
+          | :bar-color c   | Bar ansi color. E.g. `(ansi/ansi (ansi/fg-color 22))` |
+
+          To get a list of the defined ansi colors run 
+          
+          ``` 
+          (do
+            (load-module :ansi)
+            (ansi/demo-colors))
+          ```
+          
+          in a REPL
           """
      :examples '(
           """
           (do
             (load-module :ascii-charts)
-
             (println)
-            (println
-              (ascii-charts/percentage-bar-chart 
-                  "CPU Usage Limit Per Hour"
-                  [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
-                    "09" "10" "11" "12" "13" "14" "15" "16" "17"
-                    "18" "19" "20" "21" "22" "23" ]
-                  [ 100  100  100    0    0  100  100   50   30  
-                      0    0    0    0    0    0    0    0    0
-                      0   30   30   30   50  100 ])))
+            (println (ascii-charts/percentage-bar-chart 
+                        "CPU Usage Limit Per Hour"
+                        [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
+                          "09" "10" "11" "12" "13" "14" "15" "16" "17"
+                          "18" "19" "20" "21" "22" "23" ]
+                        [ 100  100  100    0    0  100  100   50   30  
+                            0    0    0    0    0    0    0    0    0
+                            0   30   30   30   50  100 ])))
           """,
           """
           (do
             (load-module :ascii-charts)
-
+            (load-module :ansi)
             (println)
-            (println
-              (ascii-charts/percentage-bar-chart 
-                  "CPU Usage Limit Per Hour"
-                  [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
-                    "09" "10" "11" "12" "13" "14" "15" "16" "17"
-                    "18" "19" "20" "21" "22" "23" ]
-                  [   0    5   10   15   20   25   30   35   40  
-                     45   50   55   60   65   70   75   80   85
-                     90   95  100  100   95   90 ])))
+            (println (ascii-charts/percentage-bar-chart 
+                        "Demo Full Percentage Range"
+                        [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
+                          "09" "10" "11" "12" "13" "14" "15" "16" "17"
+                          "18" "19" "20" "21" "22" "23" ]
+                        [   0    5   10   15   20   25   30   35   40  
+                           45   50   55   60   65   70   75   80   85
+                           90   95  100  100   95   90 ]
+                        :resolution  :high
+                        :size        :medium
+                        :title-color (str (ansi/ansi :bold) (ansi/ansi :black))
+                        :axis-color  (ansi/ansi (ansi/fg-color 242))
+                        :bar-color   (ansi/ansi (ansi/fg-color 22)))))
           """,
           """
           (do
             (load-module :ascii-charts)
-
             (println)
-            (println
-              (ascii-charts/percentage-bar-chart 
-                  "CPU Usage Limit Per Hour"
-                  [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
-                    "09" "10" "11" "12" "13" "14" "15" "16" "17"
-                    "18" "19" "20" "21" "22" "23" ]
-                  [   0    1    2    3   4     5    6    7    8  
-                      9   10   11   12   13   14   15   16   17
-                     18   19   20   21   22   23 ])))
+            (println (ascii-charts/percentage-bar-chart 
+                        "Demo Small Percentage Increments"
+                        [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
+                          "09" "10" "11" "12" "13" "14" "15" "16" "17"
+                          "18" "19" "20" "21" "22" "23" ]
+                        [   0    1    2    3   4     5    6    7    8  
+                            9   10   11   12   13   14   15   16   17
+                           18   19   20   21   22   23 ])))
           """) }
 
   percentage-bar-chart [title x-axis-labels values & options]
