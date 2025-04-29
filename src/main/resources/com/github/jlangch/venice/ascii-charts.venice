@@ -44,10 +44,6 @@
 (def ansi-grey          "\u001B[38;5;242m")
 (def ansi-light-blue    "\u001B[38;5;111m")
 
-(def title-color        (str ansi-bold ansi-black))
-(def axis-color         ansi-grey)
-(def bar-color          ansi-light-blue)
-
 (def bar-zero-element   "▁")
 (def bar-element        "▇")  
 (def bar-elements       [ " ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ])
@@ -133,6 +129,9 @@
     (let [opts             (apply hash-map options)
           highres?         (= :highres (:resolution opts :highres))
           size             (:size opts :medium)
+          title-color      (:title-color opts (str ansi-bold ansi-black))
+          axis-color       (:axis-color opts ansi-grey)
+          bar-color        (:bar-color opts ansi-light-blue)
           y-axis-width     8
           x-axis-height    2
           header-height    3
@@ -141,7 +140,7 @@
           bar-area-y       x-axis-height
           bar-area-width   (* bar-col-width (count values))
           bar-area-height  (case size :large 40 :medium 20 :small 10 20)
-          border-right     4
+          border-right     (:border-right opts 0)
           y-ticks          6    ;; 0,20,40,60,80,100
           y-tick-distance  (/ bar-area-height 5)
           w                (+ y-axis-width bar-area-width border-right)
