@@ -127,7 +127,7 @@
 //    Create and init a gradle project:
 //       $> mkdir test
 //       $> cd test
-//       $> gradle init
+//       $> ./gradlew init
 //
 // -----------------------------------------------------------------------------
 //
