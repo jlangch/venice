@@ -68,7 +68,7 @@
  
           Options:
 
-          | :resolution r | Resolution {`:highres`, `:lowres`}. Defaults to `:highres` |
+          | :resolution r | Resolution {`:high`, `:low`}. Defaults to `:high` |
           | :size  s      | Size {`:large`, `:medium`, `:small`}. Defaults to `:medium` |
           """
      :examples '(
@@ -126,7 +126,8 @@
             (every? number? values)] }
 
     (let [opts             (apply hash-map options)
-          highres?         (= :highres (:resolution opts :highres))
+          highres?         (= :high (:resolution opts :high))
+          render-bar-fn    (if highres? render-bar-highres render-bar-lowres)
           size             (:size opts :medium)
           title-color      (:title-color opts (str ansi-bold ansi-black))
           axis-color       (:axis-color opts ansi-grey)
@@ -166,17 +167,11 @@
       ;; bars
       (doseq [n (range (count vals))]
         (let [x   (+ bar-area-x (* n bar-col-width))
-              bar (render-bar (nth vals n) bar-area-height highres?)]
+              bar (render-bar-fn (nth vals n) bar-area-height)]
           (ac/draw-vertical-up canvas bar x bar-area-y bar-color)
           (ac/draw-vertical-up canvas bar (inc x) bar-area-y bar-color)))
     
       (ac/string-ansi canvas)))
-
-
-(defn render-bar [percentage max-bar-len highres?]
-  (if highres?  
-    (render-bar-highres percentage max-bar-len)
-    (render-bar-lowres percentage max-bar-len)))
 
 
 (defn render-bar-lowres [percentage max-bar-len]
