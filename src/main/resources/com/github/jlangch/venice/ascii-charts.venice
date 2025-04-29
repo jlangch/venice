@@ -54,8 +54,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(percentage-bar-chart title x-axis-labels values & options)"
-         "(percentage-bar-chart title x-axis-labels values)")
+         "(percentage-bar-chart title x-axis-labels values & options)")
      :doc """
           Returns a simple ascii percentage bar chart.
 
