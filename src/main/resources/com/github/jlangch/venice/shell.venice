@@ -571,3 +571,55 @@
           nil
           (catch :java.lang.Exception e))))
       (pid handle)))
+
+
+(defn 
+  ^{ :arglists '(
+        "(exists-process-with-pid? pid)")
+     :doc
+        """
+        Returns `true` if a process with given pid exists else `false`.
+
+        Runs a "ps -p {pid}" command under the hood.
+
+        Is available on Mac OSX or Linux only! Runs on Java 8+.
+        """
+     :examples '(
+        "(shell/exists-process-with-pid? 12345)")
+     :see-also '(
+        "shell/pid" "shell/kill" "shell/wait-for-process-exit") }
+
+  exists-process-with-pid? [pid]
+  
+  (require-mac-or-linux)
+
+  (if (some? pid)
+    (= 0 (:exit (sh "ps" "-p" pid)))
+    false))
+
+
+(defn 
+  ^{ :arglists '(
+        "(get-process-pids process-name)")
+     :doc
+        """
+        Returns a list of the pids of all processes running with the given name.
+
+        Runs a "pgrep {name}" command under the hood.
+
+        Is available on Mac OSX or Linux only! Runs on Java 8+.
+        """
+     :examples '(
+        "(shell/get-process-pids \"clamscan\")")
+     :see-also '(
+        "shell/pid" "shell/kill" "shell/wait-for-process-exit") }
+
+  get-process-pids [process-name]
+  
+  (require-mac-or-linux)
+
+  (if (some? process-name)
+    (->> (:out (sh "pgrep" process-name))
+         (str/split-lines)
+         (filter str/not-blank?))
+    []))

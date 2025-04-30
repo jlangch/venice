@@ -62,6 +62,8 @@ public class ModuleShellSection implements ISectionBuilder {
         test.addItem(diBuilder.getDocItem("shell/processes-info", false));
         test.addItem(diBuilder.getDocItem("shell/descendant-processes", false));
         test.addItem(diBuilder.getDocItem("shell/parent-process", false));
+        test.addItem(diBuilder.getDocItem("shell/get-process-pids", false));
+        test.addItem(diBuilder.getDocItem("shell/exists-process-with-pid?", false));
 
         final DocSection util = new DocSection("Util", id());
         all.addSection(util);

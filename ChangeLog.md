@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - function `io/exists?` to check for files or directories
+- functions `shell/get-process-pids` and `shell/exists-process-with-pid?`
+
 - module `:ascii-charts` to render bar charts in the terminal
 
 - :openai module support for assistant api
