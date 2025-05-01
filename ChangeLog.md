@@ -3,20 +3,27 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.12.43] - 2025-04-xx
+
+
+## [1.12.44] - 2025-05-xx
 
 ### Added
-
-- function `io/exists?` to check for files or directories
-- functions `shell/get-process-pids` and `shell/exists-process-with-pid?`
-
-- module `:ascii-charts` to render bar charts in the terminal
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.43] - 2025-05-01
+
+### Added
+
+- function `io/exists?` to check for files or directories
+- functions `shell/get-process-pids` and `shell/exists-process-with-pid?`
+- module `:ascii-charts` to render bar charts in the terminal
 
 
 
