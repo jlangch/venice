@@ -67,6 +67,7 @@ public class Modules {
                         "ascii-table",
                         "ascii-canvas",
                         "ascii-charts",
+                        "aviron",
                         "benchmark",
                         "cargo",
                         "cargo-arangodb",
