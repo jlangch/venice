@@ -19,9 +19,261 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; clamav client
+;;;; Aviron ClamAV client
 
 (ns aviron)
 
 (import :com.github.jlangch.aviron.Client)
 (import :com.github.jlangch.aviron.FileSeparator)
+(import :com.github.jlangch.aviron.commands.scan.ScanResult)
+
+
+(defn 
+  ^{ :arglists '(
+         "(create-client & options)")
+     :doc """
+          The ClamAV client provides access to the ClamAV daemon (clamd) functions 
+          like file scanning, updating the daemon's ClamAV virus databases, or getting 
+          the scanning stats.
+ 
+          Options:
+
+          | :server-hostname s       | The ClamAV server hostname. Defaults to "localhost" |
+          | :server-port n           | The ClamAV server port. Defaults to 3310 |
+          | :server-file-separator k | The ClamAV server file separator, one of {`:UNIX`, `:WINDOWS`, `:JVM_PLATFORM`} . Defaults to `:JVM_PLATFORM` |
+          | :connection-timeout n    | The connection timeout in milliseconds, 0 means indefinite. Defaults to 3'000ms |
+          | :read-timeout n          | The read timeout in milliseconds, 0 means indefinite. Defaults to 20'000ms |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client :server-hostname "localhost"
+                                               :server-file-separator :UNIX)]
+
+              (println (aviron/reachable? client))
+
+              (println (aviron/version client))
+
+              (let [result (aviron/scan-path client "/data/summary.docx")]
+                (when (aviron/virus? result)
+                  (println (aviron/viruses result))))))
+          """) }
+
+  create-client [& options]
+
+  (let [opts  (apply hash-map options)
+        bld   (. :Client :build)]
+    (when (contains? opts :server-hostname) 
+      (. bld :serverHostname (:server-hostname opts)))
+    (when (contains? opts :server-port) 
+      (. bld :serverPort (:server-port opts)))
+    (when (contains? opts :server-file-separator) 
+      (. bld :serverFileSeparator (:server-file-separator opts)))
+    (when (contains? opts :connection-timeout) 
+      (. bld :connectionTimeout (:connection-timeout opts)))
+    (when (contains? opts :read-timeout 
+      (. bld :readTimeout (:read-timeout opts)))
+    (. bld :build))))
+
+
+(defn 
+  ^{ :arglists '(
+         "(ping client)")
+     :doc """
+          Sends a "PING" command to the ClamAV server.
+ 
+          Returns `true` f the server answers with a "PONG" else `false`
+          """ }
+
+  ping [client]
+
+  { :pre [(instance-of? :Client client)] }
+  
+  (. client :ping))
+
+
+(defn 
+  ^{ :arglists '(
+         "(version client)")
+     :doc """
+          Return the ClamAV version
+          """ }
+
+  version [client]
+
+  { :pre [(instance-of? :Client client)] }
+ 
+  (. client :version))
+
+
+(defn 
+  ^{ :arglists '(
+         "(stats client)")
+     :doc """
+          Returns the formatted statistics about the scan queue, contents of 
+          scan queue, and memory usage.
+          """ }
+
+  stats [client]
+
+  { :pre [(instance-of? :Client client)] }
+ 
+  (. client :stats))
+
+
+(defn 
+  ^{ :arglists '(
+         "(reload-virus-databases client)")
+     :doc """
+          Reload the virus databases. 
+          """ }
+
+  reload-virus-databases [client]
+
+  { :pre [(instance-of? :Client client)] }
+ 
+  (. client :reloadVirusDatabases))
+
+
+(defn 
+  ^{ :arglists '(
+         "(shutdown-server client)")
+     :doc """
+          Shutdown the ClamAV server and perform a clean exit.
+          """ }
+
+  shutdown-server [client]
+
+  { :pre [(instance-of? :Client client)] }
+
+  (. client :shutdownServer))
+
+
+(defn 
+  ^{ :arglists '(
+         "(scan-stream is)"
+         "(scan-stream is chunk-size)")
+     :doc """
+          ...
+          """ }
+
+  scan-stream 
+
+  ([client is] 
+    { :pre [(instance-of? :Client client)] }
+    (. client :scan is))
+
+  ([client is chunk-size] 
+   { :pre [(instance-of? :Client client)] }
+   (. client :scan is chunk-size)))
+
+
+(defn 
+  ^{ :arglists '(
+         "(scan-path  client path)"
+         "(scan-path  client path continue)")
+     :doc """
+          ...
+          """ }
+
+  scan-path 
+
+  ([client path]
+    { :pre [(instance-of? :Client client)] }
+    (. client :scan path))
+
+  ([client path continue] 
+    { :pre [(instance-of? :Client client)] }
+    (. client :scan is path continue)))
+
+
+(defn 
+  ^{ :arglists '(
+         "(scan-parallel client path)")
+     :doc """
+          ...
+          """ }
+
+  scan-parallel [client path] 
+
+  { :pre [(instance-of? :Client client)] }
+
+  (. client :parallelScan path))
+
+
+(defn
+  ^{ :arglists '(
+         "(reachable? client)"
+         "(reachable? client timeout)")
+     :doc """
+          ...
+          """ }
+
+  reachable?
+
+  ([client] 
+    { :pre [(instance-of? :Client client)] }
+    (. client :isReachable))
+
+  ([client timeout]
+    { :pre [(instance-of? :Client client)] }
+    (. client :isReachable timeout)))
+
+
+(defn
+  ^{ :arglists '(
+         "(last-command-run-details client)")
+     :doc """
+          ...
+          """ }
+
+  last-command-run-details [client]
+
+  { :pre [(instance-of? :Client client)] }
+
+  (. client :getLastCommandRunDetails))
+
+
+(defn
+  ^{ :arglists '(
+         "(ok? scan-result)")
+     :doc """
+          ...
+          """ }
+
+  ok? [scan-result]
+
+  { :pre [(instance-of? :ScanResult client)] } 
+
+  (. result :isOK))
+
+
+(defn
+  ^{ :arglists '(
+         "(virus? scan-result)")
+     :doc """
+          ...
+          """ }
+
+  virus? [scan-result]
+
+  { :pre [(instance-of? :ScanResult client)] } 
+
+  (. result :hasVirus))
+
+
+(defn
+  ^{ :arglists '(
+         "(viruses scan-result)")
+     :doc """
+          ...
+          """ }
+
+  viruses [scan-result]
+
+  { :pre [(instance-of? :ScanResult client)] } 
+
+  (. result :getVirusFound))
+
+  
