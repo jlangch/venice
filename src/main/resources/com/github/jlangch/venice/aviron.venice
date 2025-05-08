@@ -161,18 +161,18 @@
   scan-stream 
 
   ([client is] 
-    { :pre [(instance-of? :Client client)] }
+    { :pre [(instance-of? :Client client) (io/in-stream? is)] }
     (. client :scan is))
 
   ([client is chunk-size] 
-   { :pre [(instance-of? :Client client)] }
+   { :pre [(instance-of? :Client client) (io/in-stream? is) (long timeout)] }
    (. client :scan is chunk-size)))
 
 
 (defn 
   ^{ :arglists '(
-         "(scan-path  client path)"
-         "(scan-path  client path continue)")
+         "(scan-path client path)"
+         "(scan-path client path continue)")
      :doc """
           ...
           """ }
@@ -181,11 +181,11 @@
 
   ([client path]
     { :pre [(instance-of? :Client client)] }
-    (. client :scan path))
+    (. client :scan (io/->path path)))
 
   ([client path continue] 
-    { :pre [(instance-of? :Client client)] }
-    (. client :scan is path continue)))
+    { :pre [(instance-of? :Client client) (boolean? continue)] }
+    (. client :scan is (io/->path path) continue)))
 
 
 (defn 
@@ -199,7 +199,7 @@
 
   { :pre [(instance-of? :Client client)] }
 
-  (. client :parallelScan path))
+  (. client :parallelScan (io/->path path)))
 
 
 (defn
@@ -217,7 +217,7 @@
     (. client :isReachable))
 
   ([client timeout]
-    { :pre [(instance-of? :Client client)] }
+    { :pre [(instance-of? :Client client) (long timeout)] }
     (. client :isReachable timeout)))
 
 
