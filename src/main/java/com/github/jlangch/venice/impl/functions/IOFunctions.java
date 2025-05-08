@@ -491,6 +491,61 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_to_path =
+        new VncFunction(
+                "io/->path",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/->path f)")
+                    .doc(
+                        "Converts to a :java.nio.Path. " +
+                        "f must be a file or a string (file path).")
+                    .examples(
+                        "(io/->path \"some.txt\")",
+                        "(io/->path \"/tmp/test/some.txt\")",
+                        "(io/->path (io/file \"/tmp/test/some\"))")
+                    .seeAlso("io/path?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Path p = convertToPath(
+                                 args.first(),
+                                 "Function 'io/->path' does not allow %s as f");
+
+                return new VncJavaObject(p);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+        public static VncFunction io_path_Q =
+            new VncFunction(
+                    "io/path?",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(io/path f)")
+                        .doc(
+                            "Returns true if f is a :java.nio.Path.")
+                        .examples(
+                            "(io/path? (io/->path \"some.txt\"))")
+                        .seeAlso("io/->path")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    return VncBoolean.of(Types.isVncJavaObject(args.first(), Path.class));
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
     public static VncFunction io_file_ext_Q =
         new VncFunction(
                 "io/file-ext?",
@@ -636,7 +691,7 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists("(io/file? f)")
-                    .doc("Returns true if x is a java.io.File.")
+                    .doc("Returns true if x is a :java.io.File.")
                     .examples("(io/file? (io/file \"/tmp/test.txt\"))")
                     .build()
         ) {
@@ -3553,6 +3608,16 @@ public class IOFunctions {
         }
     }
 
+    private static Path convertToPath(final VncVal f, final String errFormat) {
+        final Path path = convertToPath(f);
+        if (path == null) {
+            throw new VncException(String.format(errFormat, Types.getType(f)));
+        }
+        else {
+            return path;
+        }
+    }
+
     public static void validateReadableFile(final File file) {
         if (!file.isFile()) {
             throw new VncException(String.format("'%s' is not a file", file.getPath()));
@@ -3722,6 +3787,8 @@ public class IOFunctions {
                     .add(io_file_parent)
                     .add(io_file_name)
                     .add(io_file_basename)
+                    .add(io_to_path)
+                    .add(io_path_Q)
                     .add(io_file_ext_Q)
                     .add(io_file_ext)
                     .add(io_file_normalize_utf)

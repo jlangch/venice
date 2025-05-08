@@ -54,6 +54,7 @@ public class IoFileSection implements ISectionBuilder {
         file.addItem(diBuilder.getDocItem("io/file-size", false));
         file.addItem(diBuilder.getDocItem("io/file-last-modified", false));
         file.addItem(diBuilder.getDocItem("io/file-normalize-utf", false));
+        file.addItem(diBuilder.getDocItem("io/->path"));
 
         final DocSection file_dir = new DocSection("dir", "io.filedir");
         all.addSection(file_dir);
@@ -117,12 +118,13 @@ public class IoFileSection implements ISectionBuilder {
         file_test.addItem(diBuilder.getDocItem("io/exists?"));
         file_test.addItem(diBuilder.getDocItem("io/exists-file?"));
         file_test.addItem(diBuilder.getDocItem("io/exists-dir?"));
-        file_perm.addItem(diBuilder.getDocItem("io/file-can-read?", false));
-        file_perm.addItem(diBuilder.getDocItem("io/file-can-write?", false));
-        file_perm.addItem(diBuilder.getDocItem("io/file-can-execute?", false));
+        file_test.addItem(diBuilder.getDocItem("io/file-can-read?", false));
+        file_test.addItem(diBuilder.getDocItem("io/file-can-write?", false));
+        file_test.addItem(diBuilder.getDocItem("io/file-can-execute?", false));
         file_test.addItem(diBuilder.getDocItem("io/file-hidden?", false));
         file_test.addItem(diBuilder.getDocItem("io/symbolic-link?", false));
         file_test.addItem(diBuilder.getDocItem("io/file-within-dir?"));
+        file_test.addItem(diBuilder.getDocItem("io/path?"));
 
         final DocSection file_glob = new DocSection("glob", "io.fileglob");
         all.addSection(file_glob);

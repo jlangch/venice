@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
@@ -186,7 +187,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-        	assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:/tmp/test/x.txt\"))"));
+            assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:/tmp/test/x.txt\"))"));
             assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:/tmp\" \"test\" \"x.txt\"))"));
         }
         else {
@@ -216,6 +217,42 @@ public class IOFunctionsTest {
         }
         else {
             assertEquals("x.txt", venice.eval("(io/file-name (io/file \"/tmp/test/x.txt\"))"));
+        }
+    }
+
+    @Test
+    public void test_io_to_path() {
+        final Venice venice = new Venice();
+
+        if (OS.isWindows()) {
+            assertTrue(venice.eval("(io/->path (io/file \"C:/tmp\"))") instanceof Path);
+            assertTrue(venice.eval("(io/->path (io/file \"C:/tmp\" \"a.txt\"))") instanceof Path);
+            assertTrue(venice.eval("(io/->path (io/file (io/file \"C:/tmp\") \"a.txt\"))") instanceof Path);
+
+            assertEquals("C:\\tmp\\a.txt", venice.eval("(io/file-path (io/->path (io/file (io/file \"C:/tmp\") \"a.txt\")))"));
+        }
+        else {
+            assertTrue(venice.eval("(io/->path (io/file \"/tmp\"))") instanceof Path);
+            assertTrue(venice.eval("(io/->path (io/file \"/tmp\" \"a.txt\"))") instanceof Path);
+            assertTrue(venice.eval("(io/->path (io/file (io/file \"/tmp\") \"a.txt\"))") instanceof Path);
+
+            assertEquals("/tmp/a.txt", venice.eval("(io/file-path (io/->path (io/file (io/file \"/tmp\") \"a.txt\")))"));
+        }
+    }
+
+    @Test
+    public void test_io_path_Q() {
+        final Venice venice = new Venice();
+
+        if (OS.isWindows()) {
+            assertTrue((Boolean)venice.eval("(io/path? (io/->path (io/file \"C:/tmp\")))"));
+            assertTrue((Boolean)venice.eval("(io/path? (io/->path (io/file \"C:/tmp\" \"a.txt\")))"));
+            assertTrue((Boolean)venice.eval("(io/path? (io/->path (io/file (io/file \"C:/tmp\") \"a.txt\")))"));
+        }
+        else {
+            assertTrue((Boolean)venice.eval("(io/path? (io/->path (io/file \"/tmp\")))"));
+            assertTrue((Boolean)venice.eval("(io/path? (io/->path (io/file \"/tmp\" \"a.txt\")))"));
+            assertTrue((Boolean)venice.eval("(io/path? (io/->path (io/file (io/file \"/tmp\") \"a.txt\")))"));
         }
     }
 
