@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Fixed
+
+- a bug in the file watcher regarding the detection of new sub directories
+
 
 
 ## [1.12.43] - 2025-05-01

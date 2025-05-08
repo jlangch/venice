@@ -95,7 +95,7 @@ public class FileWatcher implements Closeable {
                                final Path absPath = dirPath.resolve(p);
                                if (absPath.toFile().isDirectory() && e.kind() == ENTRY_CREATE) {
                                    // register the new subdir
-                                   register(ws, keys, errorListener, registerListener, dir, true);
+                                   register(ws, keys, errorListener, registerListener, absPath, true);
                                }
                                safeRun(() -> eventListener.accept(absPath, e.kind()));
                              });
