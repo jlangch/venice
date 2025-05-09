@@ -38,7 +38,7 @@ import com.github.jlangch.venice.util.OS;
 
 public class SimpleShell {
 
-    public static ShellResult execCmd(final String... command) throws IOException {
+    public static ShellResult execCmd(final String... command)  {
         final String cmdFormatted = formatCmd(command);
 
         try {
@@ -51,7 +51,7 @@ public class SimpleShell {
         }
     }
 
-    public static ShellBackgroundResult execCmdBackground(final String... command) throws IOException {
+    public static ShellBackgroundResult execCmdBackground(final String... command) {
         validateLinuxOrMacOSX("Shell::execCmdBackground");
 
         final String cmdFormatted = formatCmd(command);
@@ -103,34 +103,24 @@ public class SimpleShell {
     public static List<String> pgrep(final String process) {
         validateLinuxOrMacOSX("Shell::pgrep");
 
-        try {
-            final ShellResult r = SimpleShell.execCmd("pgrep", process);
-            return r.isZeroExitCode()
-                    ? r.getStdoutLines()
-                       .stream()
-                       .filter(s -> !StringUtil.isBlank(s))
-                       .collect(Collectors.toList())
-                    : new ArrayList<>();
-        }
-        catch(IOException ex) {
-            throw new RuntimeException("Failed to get " + process + " PIDs", ex);
-        }
+        final ShellResult r = SimpleShell.execCmd("pgrep", process);
+        return r.isZeroExitCode()
+                ? r.getStdoutLines()
+                   .stream()
+                   .filter(s -> !StringUtil.isBlank(s))
+                   .collect(Collectors.toList())
+                : new ArrayList<>();
     }
+
     public static void kill(final String pid) {
         validateLinuxOrMacOSX("Shell::kill");
 
-        try {
-            final ShellResult r = SimpleShell.execCmd("kill", pid);
-            if (!r.isZeroExitCode()) {
-                throw new RuntimeException(
-                        "Failed to kill process (" + pid + ").\n"
-                        + "\nExit code: " + r.getExitCode()
-                        + "\nError msg: " + r.getStderr());
-            }
-        }
-        catch(IOException ex) {
+        final ShellResult r = SimpleShell.execCmd("kill", pid);
+        if (!r.isZeroExitCode()) {
             throw new RuntimeException(
-                    "Failed to kill the process " + pid, ex);
+                    "Failed to kill process (" + pid + ").\n"
+                    + "\nExit code: " + r.getExitCode()
+                    + "\nError msg: " + r.getStderr());
         }
     }
 
@@ -138,18 +128,12 @@ public class SimpleShell {
         validateLinuxOrMacOSX("Shell::kill");
 
         if (!StringUtil.isBlank(pid)) {
-            try {
-                final ShellResult r = SimpleShell.execCmd("kill", "-" + signal.signal(), pid);
-                if (!r.isZeroExitCode()) {
-                    throw new RuntimeException(
-                            "Failed to kill process (" + pid + ").\n"
-                            + "\nExit code: " + r.getExitCode()
-                            + "\nError msg: " + r.getStderr());
-                }
-            }
-            catch(IOException ex) {
+            final ShellResult r = SimpleShell.execCmd("kill", "-" + signal.signal(), pid);
+            if (!r.isZeroExitCode()) {
                 throw new RuntimeException(
-                        "Failed to kill the process " + pid, ex);
+                        "Failed to kill process (" + pid + ").\n"
+                        + "\nExit code: " + r.getExitCode()
+                        + "\nError msg: " + r.getStderr());
             }
         }
     }

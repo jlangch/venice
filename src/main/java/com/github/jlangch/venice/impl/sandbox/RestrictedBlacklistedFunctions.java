@@ -56,12 +56,12 @@ public class RestrictedBlacklistedFunctions {
 
     public static Set<String> getAllFunctions() {
         return cache.computeIfAbsent("all", k -> mergeToSet(
-        											getIoFunctions(),
-        											getPrintFunctions(),
-        											getConcurrencyFunctions(),
-        											getJavaInteropFunctions(),
-        											getSystemFunctions(),
-        											getSpecialForms()));
+                                                    getIoFunctions(),
+                                                    getPrintFunctions(),
+                                                    getConcurrencyFunctions(),
+                                                    getJavaInteropFunctions(),
+                                                    getSystemFunctions(),
+                                                    getSpecialForms()));
     }
 
 
@@ -221,7 +221,10 @@ public class RestrictedBlacklistedFunctions {
                 // Shell
                 "sh",
                 "sh/open",
-                "sh/pwd"
+                "sh/pwd",
+                "sh/kill",
+                "sh/alive?",
+                "sh/pgrep"
 
                 // Note: Extension Modules are white listed if a sandbox is active.
                 //       So the potentially dangerous modules :fonts, :maven, :docker, and :geoip

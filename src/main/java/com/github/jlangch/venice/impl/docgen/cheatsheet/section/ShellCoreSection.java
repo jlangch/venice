@@ -51,10 +51,11 @@ public class ShellCoreSection implements ISectionBuilder {
         tools.addItem(diBuilder.getDocItem("sh/open", false));
         tools.addItem(diBuilder.getDocItem("sh/pwd", false));
 
-        final DocSection commands = new DocSection("Commands", "shell-system.shell.commands");
-        all.addSection(commands);
-        commands.addItem(diBuilder.getDocItem("sh/kill", false));
-        commands.addItem(diBuilder.getDocItem("sh/pgrep", false));
+        final DocSection process = new DocSection("Process", "shell-system.shell.process");
+        all.addSection(process);
+        process.addItem(diBuilder.getDocItem("sh/kill", false));
+        process.addItem(diBuilder.getDocItem("sh/pgrep", false));
+        process.addItem(diBuilder.getDocItem("sh/alive?", false));
 
         return section;
     }

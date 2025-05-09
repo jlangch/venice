@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -47,6 +48,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.shell.ShellResult;
 import com.github.jlangch.venice.impl.util.shell.Signal;
 import com.github.jlangch.venice.impl.util.shell.SimpleShell;
 import com.github.jlangch.venice.impl.util.shell.SmartShell;
@@ -278,9 +280,10 @@ public class ShellFunctions {
                     .arglists("(sh/kill pid)", "(sh/kill pid signal)")
                     .doc(
                         "Kills a process.\n\n" +
-                        "signal is one of {:sighup, :sigint, :sigquit, :sigkill, :sigtrm}" )
+                        "signal is one of {:sighup, :sigint, :sigquit, :sigkill, :sigtrm}\n\n" +
+                        "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/kill 2345 :sighup)")
-                    .seeAlso("sh")
+                    .seeAlso("sh", "sh/alive?", "sh/pgrep")
                     .build()
         ) {
             @Override
@@ -309,6 +312,34 @@ public class ShellFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction alive_Q =
+        new VncFunction(
+                "sh/alive?",
+                VncFunction
+                    .meta()
+                    .arglists("(sh/alive? pid)")
+                    .doc(
+                        "Returns true if the process represented by the PID is alive otherwise false.\n\n"  +
+                        "Note: This function is available for Linux and MacOS only!")
+                    .examples("(sh/alive? 2345)")
+                    .seeAlso("sh", "sh/kill", "sh/pgrep")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final String pid = Coerce.toVncString(args.first()).getValue();
+
+                final ShellResult result = SimpleShell.execCmd("ps", "-p", pid);
+                return VncBoolean.of(result.isZeroExitCode());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction pgrep =
         new VncFunction(
                 "sh/pgrep",
@@ -316,9 +347,10 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/pgrep name)")
                     .doc(
-                        "Returns all pids for process with the passed name.")
+                        "Returns all pids for process with the passed name.\n\n" +
+                        "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/pgrep java)")
-                    .seeAlso("sh")
+                    .seeAlso("sh", "sh/kill", "sh/alive?")
                     .build()
         ) {
             @Override
@@ -340,6 +372,7 @@ public class ShellFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -416,5 +449,6 @@ public class ShellFunctions {
                     .add(pwd)
                     .add(kill)
                     .add(pgrep)
+                    .add(alive_Q)
                     .toMap();
 }
