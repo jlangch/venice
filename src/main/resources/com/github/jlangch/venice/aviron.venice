@@ -58,7 +58,19 @@
               (let [result (aviron/scan-path client "/data/summary.docx")]
                 (when (aviron/virus? result)
                   (println (aviron/viruses result))))))
-          """) }
+          """)
+     :see-also '(
+          "aviron/scan-stream" 
+          "aviron/scan-path" 
+          "aviron/scan-parallel" 
+          "aviron/reload-virus-databases"
+          "aviron/shutdown-server"
+          "aviron/ping" 
+          "aviron/version" 
+          "aviron/stats" 
+          "aviron/reachable?" 
+          "aviron/reload-virus-databases"
+          "aviron/shutdown-server") }
 
   create-client [& options]
 
@@ -84,7 +96,18 @@
           Sends a "PING" command to the ClamAV server.
  
           Returns `true` f the server answers with a "PONG" else `false`
-          """ }
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/ping (aviron/create-client)))
+          """)
+     :see-also '(
+          "aviron/version" 
+          "aviron/stats" 
+          "aviron/reload-virus-databases"
+          "aviron/shutdown-server") }
 
   ping [client]
 
@@ -98,7 +121,18 @@
          "(version client)")
      :doc """
           Return the ClamAV version
-          """ }
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/version (aviron/create-client)))
+          """)
+     :see-also '(
+          "aviron/ping" 
+          "aviron/stats" 
+          "aviron/reload-virus-databases"
+          "aviron/shutdown-server") }
 
   version [client]
 
@@ -113,7 +147,18 @@
      :doc """
           Returns the formatted statistics about the scan queue, contents of 
           scan queue, and memory usage.
-          """ }
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/stats (aviron/create-client)))
+          """)
+     :see-also '(
+          "aviron/ping" 
+          "aviron/version" 
+          "aviron/reload-virus-databases"
+          "aviron/shutdown-server") }
 
   stats [client]
 
@@ -127,7 +172,18 @@
          "(reload-virus-databases client)")
      :doc """
           Reload the virus databases. 
-          """ }
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/reload-virus-databases (aviron/create-client)))
+          """)
+     :see-also '(
+          "aviron/ping" 
+          "aviron/version" 
+          "aviron/stats" 
+          "aviron/shutdown-server") }
 
   reload-virus-databases [client]
 
@@ -141,7 +197,18 @@
          "(shutdown-server client)")
      :doc """
           Shutdown the ClamAV server and perform a clean exit.
-          """ }
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/shutdown-server  (aviron/create-client)))
+          """)
+     :see-also '(
+          "aviron/ping" 
+          "aviron/version" 
+          "aviron/stats" 
+          "aviron/reload-virus-databases") }
 
   shutdown-server [client]
 
@@ -155,8 +222,25 @@
          "(scan-stream is)"
          "(scan-stream is chunk-size)")
      :doc """
-          ...
-          """ }
+          Scans a file's data passed in the 'is' stream. Uses a default chunk 
+          size of 2048 bytes.
+
+          Returns the scan result with the detected virus info
+          
+          Note: The input stream must be closed by the caller!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (try-with [is (io/file-in-stream "/data/document.pdf")]
+                (aviron/ok? (aviron/scan-stream is)))))
+          """)
+     :see-also '(
+          "aviron/ok?" 
+          "aviron/virus?" 
+          "aviron/viruses") }
 
   scan-stream 
 
@@ -174,8 +258,25 @@
          "(scan-path client path)"
          "(scan-path client path continue)")
      :doc """
-          ...
-          """ }
+          Scans a single file or directory (recursively). Stops by default after 
+          the first file with a detected virus.
+
+          If 'continue' is `true` continues scanning upon detecting a virus in a 
+          file else stops after the first file with a detected virus.
+
+          Returns the scan result with the detected virus info
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (aviron/ok? (aviron/scan-path "/data/document.pdf"))))
+          """)
+     :see-also '(
+          "aviron/ok?" 
+          "aviron/virus?" 
+          "aviron/viruses") }
 
   scan-path 
 
@@ -192,8 +293,21 @@
   ^{ :arglists '(
          "(scan-parallel client path)")
      :doc """
-          ...
-          """ }
+          Scans a single file or directory (recursively) using multiple threads.
+ 
+          Returns the scan result with the detected virus info
+         """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (aviron/ok? (aviron/scan-parallel "/data"))))
+          """)
+     :see-also '(
+          "aviron/ok?" 
+          "aviron/virus?" 
+          "aviron/viruses") }
 
   scan-parallel [client path] 
 
@@ -207,8 +321,17 @@
          "(reachable? client)"
          "(reachable? client timeout)")
      :doc """
-          ...
-          """ }
+          Tests if the ClamAV server is reachable. Uses a default timeout of
+          3'000ms.
+          
+          Returns `true` if the server is reachable else `false`.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/reachable? (aviron/create-client)))
+          """) }
 
   reachable?
 
@@ -225,8 +348,19 @@
   ^{ :arglists '(
          "(last-command-run-details client)")
      :doc """
-          ...
-          """ }
+          Returns the raw command string and the server's result for the last
+          the last command sent to the ClamAV server.
+           
+          This function is provided for debugging purposes
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (aviron/version client)
+              (println (aviron/last-command-run-details client))))
+          """) }
 
   last-command-run-details [client]
 
@@ -239,8 +373,19 @@
   ^{ :arglists '(
          "(ok? scan-result)")
      :doc """
-          ...
-          """ }
+          Returns `true` if the scan result does not contain any detected viruses
+          else `false`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (aviron/ok? (aviron/scan-path "/data/document.pdf"))))
+          """)
+     :see-also '(
+          "aviron/virus?" 
+          "aviron/viruses") }
 
   ok? [scan-result]
 
@@ -253,8 +398,19 @@
   ^{ :arglists '(
          "(virus? scan-result)")
      :doc """
-          ...
-          """ }
+          Returns `true` if the scan result does contain any detected viruses
+          else `false`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (aviron/virus? (aviron/scan-path "/data/document.pdf"))))
+          """) 
+     :see-also '(
+          "aviron/ok?" 
+          "aviron/viruses") }
 
   virus? [scan-result]
 
@@ -267,13 +423,24 @@
   ^{ :arglists '(
          "(viruses scan-result)")
      :doc """
-          ...
-          """ }
+          Returns a map of the detected viruses. 
+          
+          The map's keys hold the virus type and values contain a list of the
+          files detected with the virus type.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (println (aviron/viruses (aviron/scan-path "/data/document.pdf")))))
+          """)
+     :see-also '(
+          "aviron/ok?" 
+          "aviron/virus?") }
 
   viruses [scan-result]
 
   { :pre [(instance-of? :ScanResult client)] } 
 
   (. result :getVirusFound))
-
-  
