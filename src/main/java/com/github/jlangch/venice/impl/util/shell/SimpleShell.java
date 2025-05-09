@@ -36,7 +36,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.OS;
 
 
-public class Shell {
+public class SimpleShell {
 
     public static ShellResult execCmd(final String... command) throws IOException {
         final String cmdFormatted = formatCmd(command);
@@ -104,7 +104,7 @@ public class Shell {
         validateLinuxOrMacOSX("Shell::pgrep");
 
         try {
-            final ShellResult r = Shell.execCmd("pgrep", process);
+            final ShellResult r = SimpleShell.execCmd("pgrep", process);
             return r.isZeroExitCode()
                     ? r.getStdoutLines()
                        .stream()
@@ -122,7 +122,7 @@ public class Shell {
 
         if (!StringUtil.isBlank(pid)) {
             try {
-                final ShellResult r = Shell.execCmd("kill", "-" + signal.signal(), pid);
+                final ShellResult r = SimpleShell.execCmd("kill", "-" + signal.signal(), pid);
                 if (!r.isZeroExitCode()) {
                     throw new RuntimeException(
                             "Failed to kill process (" + pid + ").\n"
