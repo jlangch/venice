@@ -4,8 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-
-## [1.12.44] - 2025-05-xx
+## [1.12.45] - 2025-05-xx
 
 ### Added
 
@@ -14,6 +13,14 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.44] - 2025-05-09
+
+### Added
+
+- :aviron module, a ClamAV client
 
 ### Fixed
 
