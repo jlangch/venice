@@ -24,13 +24,15 @@ package com.github.jlangch.venice.impl.util.shell;
 
 public enum Signal {
 
-    SIGHUP(1),
+    SIGHUP(1),   // Terminal line hangup
 
-    SIGINT(2),
+    SIGINT(2),   // Interrupt program
 
-    SIGKILL(9),
+    SIGQUIT(3),  // Quit program
 
-    SIGTRM(15);
+    SIGKILL(9),  // Kill program
+
+    SIGTRM(15);  //Software termination signal
 
 
     private Signal(final int signal) {
@@ -38,7 +40,7 @@ public enum Signal {
     }
 
     public int signal() {
-    	return signal;
+        return signal;
     }
 
     private final int signal;

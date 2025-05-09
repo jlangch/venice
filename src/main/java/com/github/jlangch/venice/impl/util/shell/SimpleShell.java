@@ -116,6 +116,23 @@ public class SimpleShell {
             throw new RuntimeException("Failed to get " + process + " PIDs", ex);
         }
     }
+    public static void kill(final String pid) {
+        validateLinuxOrMacOSX("Shell::kill");
+
+        try {
+            final ShellResult r = SimpleShell.execCmd("kill", pid);
+            if (!r.isZeroExitCode()) {
+                throw new RuntimeException(
+                        "Failed to kill process (" + pid + ").\n"
+                        + "\nExit code: " + r.getExitCode()
+                        + "\nError msg: " + r.getStderr());
+            }
+        }
+        catch(IOException ex) {
+            throw new RuntimeException(
+                    "Failed to kill the process " + pid, ex);
+        }
+    }
 
     public static void kill(final Signal signal, final String pid) {
         validateLinuxOrMacOSX("Shell::kill");
