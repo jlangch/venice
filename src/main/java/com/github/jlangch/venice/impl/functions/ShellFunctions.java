@@ -280,7 +280,8 @@ public class ShellFunctions {
                     .arglists("(sh/kill pid)", "(sh/kill pid signal)")
                     .doc(
                         "Kills a process.\n\n" +
-                        "signal is one of {:sighup, :sigint, :sigquit, :sigkill, :sigtrm}\n\n" +
+                        "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
+                        "If no signal is specified, the :sigterm signal is sent.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/kill 2345 :sighup)")
                     .seeAlso("sh", "sh/alive?", "sh/pgrep")
@@ -291,6 +292,8 @@ public class ShellFunctions {
                 ArityExceptions.assertArity(this, args, 1, 2);
 
                 sandboxFunctionCallValidation();
+
+                SimpleShell.validateLinuxOrMacOSX("sh/kill");
 
                 final String pid = Coerce.toVncString(args.first()).getValue();
 
@@ -331,6 +334,8 @@ public class ShellFunctions {
 
                 sandboxFunctionCallValidation();
 
+                SimpleShell.validateLinuxOrMacOSX("sh/alive?");
+
                 final String pid = Coerce.toVncString(args.first()).getValue();
 
                 final ShellResult result = SimpleShell.execCmd("ps", "-p", pid);
@@ -358,6 +363,8 @@ public class ShellFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 sandboxFunctionCallValidation();
+
+                SimpleShell.validateLinuxOrMacOSX("sh/pgrep");
 
                 final String name = Coerce.toVncString(args.first()).getValue();
 
