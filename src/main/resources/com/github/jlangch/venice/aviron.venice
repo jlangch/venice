@@ -63,14 +63,14 @@
           "aviron/scan-stream" 
           "aviron/scan-path" 
           "aviron/scan-parallel" 
-          "aviron/reload-virus-databases"
           "aviron/shutdown-server"
           "aviron/ping" 
           "aviron/version" 
           "aviron/stats" 
           "aviron/reachable?" 
           "aviron/reload-virus-databases"
-          "aviron/shutdown-server") }
+          "aviron/shutdown-server"
+          "aviron/last-command-run-details") }
 
   create-client [& options]
 

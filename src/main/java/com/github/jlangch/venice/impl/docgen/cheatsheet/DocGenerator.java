@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArangoDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoPostgresqlDBSection;
@@ -161,7 +162,7 @@ public class DocGenerator {
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",     "server-side-events",  "pretty-print",
                         "qrcode",        "qrref",               "qrbill",
-                        "ascii-canvas",  "ascii-charts",        "ascii-table"));
+                        "ascii-canvas",  "ascii-charts",        "ascii-table",      "aviron"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -392,6 +393,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
+        extmod.addSection(new DocSection("Aviron", "modules.aviron"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
         extmod.addSection(new DocSection("QR\u00A0Bill", "modules.qrbill"));
@@ -560,7 +562,8 @@ public class DocGenerator {
                 new ModuleJdbcCoreSection(diBuilder).section(),
                 new ModuleInstallerSection(diBuilder).section(),
                 new ModuleJdbcPostgreSQLSection(diBuilder).section(),
-                new ModuleChinookPostgreSQLSection(diBuilder).section()
+                new ModuleChinookPostgreSQLSection(diBuilder).section(),
+                new ModuleAvironSection(diBuilder).section()
                 // new ModuleHttpClientSection(diBuilder).section(),
          );
     }
@@ -591,8 +594,7 @@ public class DocGenerator {
                 new ModuleHttpClientJ8Section(diBuilder).section(),
                 new ModuleOpenAiSection(diBuilder).section(),
                 new ModuleJTokkitSection(diBuilder).section(),
-                new ModuleImagesSection(diBuilder).section()
-        );
+                new ModuleImagesSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {
