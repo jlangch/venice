@@ -32,7 +32,7 @@ public enum Signal {
 
     SIGKILL(9),  // Kill program
 
-    SIGTRM(15);  //Software termination signal
+    SIGTRM(15);  // Software termination signal
 
 
     private Signal(final int signal) {
