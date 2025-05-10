@@ -41,7 +41,7 @@ public class FileWatcherQueue implements Closeable {
     }
 
     public static FileWatcherQueue create() {
-    	return create(null);
+        return create(null);
     }
 
     public static FileWatcherQueue create(final File walFileDir) {
@@ -66,6 +66,12 @@ public class FileWatcherQueue implements Closeable {
         }
     }
 
+    public boolean isEmpty() {
+        synchronized(queue) {
+            return queue.isEmpty();
+        }
+    }
+
     public void clear() {
         synchronized(queue) {
             queue.clear();
@@ -74,7 +80,7 @@ public class FileWatcherQueue implements Closeable {
 
     public void push(final File file) {
         synchronized(queue) {
-            addToWalFileEntry(WalAction.Push, file);
+            addToWalFile(WalAction.PUSH, file);
             queue.removeIf(it -> it.equals(file));
             queue.add(file);
         }
@@ -82,61 +88,67 @@ public class FileWatcherQueue implements Closeable {
 
     public File pop() {
         synchronized(queue) {
-            final File file = queue.isEmpty() ? null : queue.removeFirst();
-            if (file != null) {
-                addToWalFileEntry(WalAction.Pop, file);
+            if (queue.isEmpty()) {
+                return null;
             }
-            return file;
+            else {
+                final File file = queue.removeFirst();
+                addToWalFile(WalAction.POP, file);
+                return file;
+            }
         }
     }
 
     public List<File> pop(final int n) {
         synchronized(queue) {
             final List<File> files = new ArrayList<>();
-
             for(int ii=0; ii<n && !queue.isEmpty(); ii++) {
                 final File file = queue.removeFirst();
-                if (file != null) {
-                    addToWalFileEntry(WalAction.Pop, file);
-                }
+                addToWalFile(WalAction.POP, file);
+                files.add(file);
             }
-
             return files;
         }
     }
 
     public void load() {
+        if (walFile == null) {
+            return;
+        }
+
         synchronized(queue) {
             queue.clear();
-
-        	if (walFile == null) {
-        		return;
-        	}
 
             StringUtil.splitIntoLines(
                             new String(
                                     FileUtil.load(walFile),
                                     Charset.forName("UTF-8")))
                       .stream()
+                      .filter(s -> StringUtil.isNotBlank(s))
                       .map(s -> s.split("|"))
+                      .filter(e -> e.length == 2)
                       .forEach(e -> {
                           final File f = new File(e[1]);
-                          if (e[0].equals("push")) push(f);
-                          else if (e[0].equals("pop")) queue.removeIf(it -> it.equals(f));
+                          if (e[0].equals(WalAction.PUSH.name())) {
+                              push(f);
+                          }
+                          else if (e[0].equals(WalAction.POP.name())) {
+                              queue.removeIf(it -> it.equals(f));
+                          }
                       });
         }
     }
 
     public void save() {
-    	if (walFile == null) {
-    		return;
-    	}
+        if (walFile == null) {
+            return;
+        }
 
-    	synchronized(queue) {
+        synchronized(queue) {
             try (FileWriter fw = new FileWriter(walFile, false)) {
                 queue.forEach(f -> {
                     try {
-                        fw.write(walEntry(WalAction.Push, f));
+                        fw.write(walEntry(WalAction.PUSH, f));
                     }
                     catch(IOException ex) {
                         throw new RuntimeException(
@@ -160,9 +172,9 @@ public class FileWatcherQueue implements Closeable {
 
     private void init() {
         synchronized(queue) {
-        	if (walFile == null) {
-        		return;
-        	}
+            if (walFile == null) {
+                return;
+            }
 
             if (this.walFile.isFile()) {
                 try {
@@ -187,10 +199,10 @@ public class FileWatcherQueue implements Closeable {
         }
     }
 
-    private void addToWalFileEntry(final WalAction action, final File file) {
-    	if (walFile == null) {
-    		return;
-    	}
+    private void addToWalFile(final WalAction action, final File file) {
+        if (walFile == null) {
+            return;
+        }
 
         try (FileWriter fw = new FileWriter(walFile, true)) {
             fw.write(walEntry(action, file));
@@ -201,11 +213,11 @@ public class FileWatcherQueue implements Closeable {
     }
 
     private String walEntry(final WalAction action, final File file) {
-        return (action == WalAction.Push ? "push" : "pop") + "|" + file.getAbsolutePath() + "\n";
+        return action.name() + "|" + file.getAbsolutePath() + "\n";
     }
 
 
-    private static enum WalAction { Push, Pop };
+    private static enum WalAction { PUSH, POP };
 
     private final File walFile;
     private final LinkedList<File> queue = new LinkedList<>();
