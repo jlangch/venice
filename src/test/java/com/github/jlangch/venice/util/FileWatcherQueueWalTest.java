@@ -213,6 +213,7 @@ public class FileWatcherQueueWalTest {
             q.push(f3);
         }
 
+        // WAL: 3 entries
         try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
             assertFalse(q.isEmpty());
             assertEquals(3, q.size());
@@ -229,6 +230,7 @@ public class FileWatcherQueueWalTest {
             assertEquals(0, q.size());
         }
 
+        // WAL: 0 entries
         try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
             assertTrue(q.isEmpty());
             assertEquals(0, q.size());
