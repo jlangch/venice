@@ -37,7 +37,9 @@ import com.github.jlangch.venice.impl.util.io.FileUtil;
 public class FileWatcherQueue implements Closeable {
 
     private FileWatcherQueue(final File walFileDir) {
-        this.walFile = walFileDir == null ? null : new File(walFileDir, "filewatcher.wal");
+        this.walFile = walFileDir == null
+                        ? null
+                        : new File(walFileDir, "filewatcher.wal");
     }
 
     public static FileWatcherQueue create() {
@@ -139,7 +141,7 @@ public class FileWatcherQueue implements Closeable {
             queue.clear();
 
             if (!walFile.isFile()) {
-            	return;
+                return;
             }
 
             StringUtil.splitIntoLines(
