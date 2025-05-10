@@ -1,0 +1,136 @@
+/*   __    __         _
+ *   \ \  / /__ _ __ (_) ___ ___
+ *    \ \/ / _ \ '_ \| |/ __/ _ \
+ *     \  /  __/ | | | | (_|  __/
+ *      \/ \___|_| |_|_|\___\___|
+ *
+ *
+ * Copyright 2017-2025 Venice
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.github.jlangch.venice.impl.util.io;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.LinkedList;
+
+import com.github.jlangch.venice.impl.util.StringUtil;
+
+
+public class FileWatcherQueue implements Closeable {
+
+    public FileWatcherQueue(
+            final File walFileDir
+    ) {
+        if (!walFileDir.exists() || !walFileDir.isDirectory()) {
+            throw new RuntimeException("WAL dir " + walFileDir + " does not exist or is not a directory");
+        }
+
+        this.walFile = new File(walFileDir, "filewatcher.wal");
+
+    }
+
+    public int size() {
+        synchronized(queue) {
+            return queue.size();
+        }
+    }
+
+    public void clear() {
+        synchronized(queue) {
+            queue.clear();
+        }
+    }
+
+    public void push(final File file) {
+        synchronized(queue) {
+            addToWalFileEntry(WalAction.Push, file);
+            queue.removeIf(it -> it.equals(file));
+            queue.add(file);
+        }
+    }
+
+    public File pop() {
+        synchronized(queue) {
+            final File file = queue.isEmpty() ? null : queue.removeFirst();
+            if (file != null) {
+                addToWalFileEntry(WalAction.Pop, file);
+            }
+            return file;
+        }
+    }
+
+    public void load() {
+        synchronized(queue) {
+            queue.clear();
+
+            StringUtil.splitIntoLines(
+                            new String(
+                                    FileUtil.load(walFile),
+                                    Charset.forName("UTF-8")))
+                      .stream()
+                      .map(s -> s.split("|"))
+                      .forEach(e -> {
+                          final File f = new File(e[1]);
+                          if (e[0].equals("push")) push(f);
+                          else if (e[0].equals("pop")) queue.removeIf(it -> it.equals(f));
+                      });
+        }
+    }
+
+    public void save() {
+        synchronized(queue) {
+            try (FileWriter fw = new FileWriter(walFile, false)) {
+                queue.forEach(f -> {
+                    try {
+                        fw.write(walEntry(WalAction.Push, f));
+                    }
+                    catch(IOException ex) {
+                        throw new RuntimeException("Faile to write FileWatcher WAL entry", ex);
+                    }});
+
+            }
+            catch(IOException ex) {
+                throw new RuntimeException("Faile to save FileWatcher WAL entries", ex);
+            }
+        }
+    }
+
+    @Override
+    public void close() {
+        save();
+    }
+
+    private void addToWalFileEntry(final WalAction action, final File file) {
+        try (FileWriter fw = new FileWriter(walFile, true)) {
+            fw.write(walEntry(action, file));
+        }
+        catch(IOException ex) {
+            throw new RuntimeException("Faile to write FileWatcher WAL entry", ex);
+        }
+    }
+
+    private String walEntry(final WalAction action, final File file) {
+        return (action == WalAction.Push ? "push" : "pop") + "|" + file.getAbsolutePath() + "\n";
+    }
+
+
+    private static enum WalAction { Push, Pop };
+
+    private final File walFile;
+    private final LinkedList<File> queue = new LinkedList<>();
+}
