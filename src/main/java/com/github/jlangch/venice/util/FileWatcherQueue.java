@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.io;
+package com.github.jlangch.venice.util;
 
 import java.io.Closeable;
 import java.io.File;
@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 
 
 public class FileWatcherQueue implements Closeable {
