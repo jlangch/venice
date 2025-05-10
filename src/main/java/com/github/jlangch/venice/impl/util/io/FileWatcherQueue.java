@@ -55,6 +55,10 @@ public class FileWatcherQueue implements Closeable {
         return queue;
     }
 
+    public File getWalFile() {
+        return this.walFile;
+    }
+
     public int size() {
         synchronized(queue) {
             return queue.size();
