@@ -57,7 +57,26 @@ public class FileWatcherQueue implements Closeable {
     }
 
     public File getWalFile() {
-        return this.walFile;
+        return walFile;
+    }
+
+    public void removeWalFile() {
+        if (walFile != null && walFile.isFile()) {
+            walFile.delete();
+        }
+    }
+
+    public void clearWalFile() {
+        if (walFile != null) {
+            try {
+                new FileWriter(walFile, false).close();
+            }
+            catch(IOException ex) {
+                throw new RuntimeException(
+                        "Failed to initialize FileWatcher WAL file",
+                        ex);
+            }
+        }
     }
 
     public int size() {
@@ -119,18 +138,23 @@ public class FileWatcherQueue implements Closeable {
         synchronized(queue) {
             queue.clear();
 
+            if (!walFile.isFile()) {
+            	return;
+            }
+
             StringUtil.splitIntoLines(
                             new String(
                                     FileUtil.load(walFile),
                                     Charset.forName("UTF-8")))
                       .stream()
                       .filter(s -> StringUtil.isNotBlank(s))
-                      .map(s -> s.split("|"))
+                      .map(s -> s.split("[|]"))
                       .filter(e -> e.length == 2)
                       .forEach(e -> {
                           final File f = new File(e[1]);
                           if (e[0].equals(WalAction.PUSH.name())) {
-                              push(f);
+                              queue.removeIf(it -> it.equals(f));
+                              queue.add(f);
                           }
                           else if (e[0].equals(WalAction.POP.name())) {
                               queue.removeIf(it -> it.equals(f));
@@ -155,7 +179,6 @@ public class FileWatcherQueue implements Closeable {
                                 "Failed to write FileWatcher WAL entry",
                                 ex);
                     }});
-
             }
             catch(IOException ex) {
                 throw new RuntimeException(

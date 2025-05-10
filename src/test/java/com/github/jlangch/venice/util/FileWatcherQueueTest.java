@@ -131,9 +131,9 @@ public class FileWatcherQueueTest {
         q.push(f2);
         q.push(f3);
 
-           List<File> files1 = q.pop(2);
-           List<File> files2 = q.pop(2);
-           List<File> files3 = q.pop(2);
+        List<File> files1 = q.pop(2);
+        List<File> files2 = q.pop(2);
+        List<File> files3 = q.pop(2);
 
         assertEquals(2, files1.size());
         assertEquals(1, files2.size());
@@ -158,7 +158,7 @@ public class FileWatcherQueueTest {
         q.push(f2);
         q.push(f3);
 
-           List<File> files = q.pop(20);
+        List<File> files = q.pop(20);
 
         assertEquals(3, files.size());
 
