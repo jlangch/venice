@@ -33,15 +33,21 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class FileWatcherQueue implements Closeable {
 
-    public FileWatcherQueue(
-            final File walFileDir
-    ) {
+    private FileWatcherQueue(final File walFileDir) {
+        this.walFile = new File(walFileDir, "filewatcher.wal");
+    }
+
+    public static FileWatcherQueue create(final File walFileDir) {
         if (!walFileDir.exists() || !walFileDir.isDirectory()) {
-            throw new RuntimeException("WAL dir " + walFileDir + " does not exist or is not a directory");
+            throw new RuntimeException(
+                    "WAL dir " + walFileDir +
+                    " does not exist or is not a directory");
         }
 
-        this.walFile = new File(walFileDir, "filewatcher.wal");
-
+        // initialize
+        final FileWatcherQueue queue = new FileWatcherQueue(walFileDir);
+        queue.init();
+        return queue;
     }
 
     public int size() {
@@ -100,12 +106,16 @@ public class FileWatcherQueue implements Closeable {
                         fw.write(walEntry(WalAction.Push, f));
                     }
                     catch(IOException ex) {
-                        throw new RuntimeException("Faile to write FileWatcher WAL entry", ex);
+                        throw new RuntimeException(
+                                "Failed to write FileWatcher WAL entry",
+                                ex);
                     }});
 
             }
             catch(IOException ex) {
-                throw new RuntimeException("Faile to save FileWatcher WAL entries", ex);
+                throw new RuntimeException(
+                        "Failed to save FileWatcher WAL entries",
+                        ex);
             }
         }
     }
@@ -115,12 +125,37 @@ public class FileWatcherQueue implements Closeable {
         save();
     }
 
+    private void init() {
+        synchronized(queue) {
+            if (this.walFile.isFile()) {
+                try {
+                    load();
+                }
+                catch(Exception ex) {
+                    throw new RuntimeException(
+                            "Failed to initially load the FileWatcherQueue from the WAL file",
+                            ex);
+                }
+            }
+            else {
+                try {
+                    new FileWriter(walFile, false).close();
+                }
+                catch(IOException ex) {
+                    throw new RuntimeException(
+                            "Failed to initialize FileWatcher WAL file",
+                            ex);
+                }
+            }
+        }
+    }
+
     private void addToWalFileEntry(final WalAction action, final File file) {
         try (FileWriter fw = new FileWriter(walFile, true)) {
             fw.write(walEntry(action, file));
         }
         catch(IOException ex) {
-            throw new RuntimeException("Faile to write FileWatcher WAL entry", ex);
+            throw new RuntimeException("Failed to write FileWatcher WAL entry", ex);
         }
     }
 
