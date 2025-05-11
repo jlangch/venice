@@ -108,25 +108,23 @@ public class FileWatcherQueue implements Closeable {
     }
 
     public File pop() {
-        synchronized(queue) {
-            if (queue.isEmpty()) {
-                return null;
-            }
-            else {
-                final File file = queue.removeFirst();
-                addToWalFile(WalAction.POP, file);
-                return file;
-            }
-        }
+        final List<File> files = pop(1, false);
+        return files.isEmpty() ? null : files.get(0);
     }
 
     public List<File> pop(final int n) {
+        return pop(n, false);
+    }
+
+    public List<File> pop(final int n, final boolean skipMissingFiles) {
         synchronized(queue) {
-            final List<File> files = new ArrayList<>();
+            final List<File> files = new ArrayList<>(n);
             for(int ii=0; ii<n && !queue.isEmpty(); ii++) {
                 final File file = queue.removeFirst();
                 addToWalFile(WalAction.POP, file);
-                files.add(file);
+                if (!skipMissingFiles || file.exists()) {
+                    files.add(file);
+                }
             }
             return files;
         }
