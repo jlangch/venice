@@ -58,29 +58,6 @@ public class FileWatcherQueue implements Closeable {
         return queue;
     }
 
-    public File getWalFile() {
-        return walFile;
-    }
-
-    public void removeWalFile() {
-        if (walFile != null && walFile.isFile()) {
-            walFile.delete();
-        }
-    }
-
-    public void clearWalFile() {
-        if (walFile != null) {
-            try {
-                new FileWriter(walFile, false).close();
-            }
-            catch(IOException ex) {
-                throw new RuntimeException(
-                        "Failed to initialize FileWatcher WAL file",
-                        ex);
-            }
-        }
-    }
-
     public int size() {
         synchronized(queue) {
             return queue.size();
@@ -192,6 +169,30 @@ public class FileWatcherQueue implements Closeable {
     public void close() {
         save();
     }
+
+    public File getWalFile() {
+        return walFile;
+    }
+
+    public void removeWalFile() {
+        if (walFile != null && walFile.isFile()) {
+            walFile.delete();
+        }
+    }
+
+    public void clearWalFile() {
+        if (walFile != null) {
+            try {
+                new FileWriter(walFile, false).close();
+            }
+            catch(IOException ex) {
+                throw new RuntimeException(
+                        "Failed to initialize FileWatcher WAL file",
+                        ex);
+            }
+        }
+    }
+
 
     private void init() {
         synchronized(queue) {
