@@ -51,6 +51,7 @@ public class FileWatcherQueue implements Closeable {
         }
         final FileWatcherQueue queue = new FileWatcherQueue(walFile);
         queue.init();
+        queue.save();  // save the compacted queue back
         return queue;
     }
 

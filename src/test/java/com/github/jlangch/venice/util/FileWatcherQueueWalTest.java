@@ -220,7 +220,6 @@ public class FileWatcherQueueWalTest {
         }
     }
 
-
     @Test
     public void test_open_with_wal() throws IOException {
         final File walFile = File.createTempFile("file-watcher-", ".wal");
@@ -239,6 +238,50 @@ public class FileWatcherQueueWalTest {
         }
 
         // WAL: 3 entries
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            assertFalse(q.isEmpty());
+            assertEquals(3, q.size());
+
+            File f1 = new File("a").getAbsoluteFile();
+            File f2 = new File("b").getAbsoluteFile();
+            File f3 = new File("c").getAbsoluteFile();
+
+            assertEquals(f1, q.pop());
+            assertEquals(f2, q.pop());
+            assertEquals(f3, q.pop());
+
+            assertTrue(q.isEmpty());
+            assertEquals(0, q.size());
+        }
+
+        // WAL: 0 entries
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            assertTrue(q.isEmpty());
+            assertEquals(0, q.size());
+        }
+    }
+
+    @Test
+    public void test_open_with_wal_compacted() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
+            q.clear();
+
+            File f1 = new File("a").getAbsoluteFile();
+            File f2 = new File("b").getAbsoluteFile();
+            File f3 = new File("c").getAbsoluteFile();
+            q.push(f1);
+            q.push(f2);
+            q.push(f2);
+            q.push(f3);
+            q.push(f3);
+            q.push(f3);
+        }
+
+        // WAL: 3 entries (after read compaction)
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
             assertFalse(q.isEmpty());
             assertEquals(3, q.size());
