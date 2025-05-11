@@ -53,7 +53,7 @@
 
 (defn push [queue file] 
   { :pre [(instance-of? :FileWatcherQueue queue)
-          (io/file? queue)] }
+          (io/file? file)] }
   (. queue :push file))
 
 
