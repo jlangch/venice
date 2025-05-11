@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -35,9 +36,12 @@ import org.junit.jupiter.api.Test;
 public class FileWatcherQueueWalTest {
 
     @Test
-    public void test_empty() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_empty() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             assertTrue(q.isEmpty());
@@ -48,9 +52,12 @@ public class FileWatcherQueueWalTest {
     }
 
     @Test
-    public void test_push() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_push() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             File f = new File("a").getAbsoluteFile();
@@ -66,9 +73,12 @@ public class FileWatcherQueueWalTest {
     }
 
     @Test
-    public void test_push2() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_push2() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -88,9 +98,12 @@ public class FileWatcherQueueWalTest {
     }
 
     @Test
-    public void test_push3() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_push3() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -114,9 +127,12 @@ public class FileWatcherQueueWalTest {
     }
 
     @Test
-    public void test_pop() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_pop() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             File f = new File("a").getAbsoluteFile();
@@ -133,9 +149,12 @@ public class FileWatcherQueueWalTest {
     }
 
     @Test
-    public void test_pop2() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_pop2() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -159,9 +178,12 @@ public class FileWatcherQueueWalTest {
     }
 
     @Test
-    public void test_pop3() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_pop3() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -200,9 +222,12 @@ public class FileWatcherQueueWalTest {
 
 
     @Test
-    public void test_open_with_wal() {
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
-        	q.clearWalFile();
+    public void test_open_with_wal() throws IOException {
+        final File walFile = File.createTempFile("file-watcher-", ".wal");
+        walFile.deleteOnExit();
+
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
+            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -214,7 +239,7 @@ public class FileWatcherQueueWalTest {
         }
 
         // WAL: 3 entries
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
             assertFalse(q.isEmpty());
             assertEquals(3, q.size());
 
@@ -231,11 +256,9 @@ public class FileWatcherQueueWalTest {
         }
 
         // WAL: 0 entries
-        try (FileWatcherQueue q = FileWatcherQueue.create(tmpDir)) {
+        try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
             assertTrue(q.isEmpty());
             assertEquals(0, q.size());
         }
     }
-
-    private static File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 }

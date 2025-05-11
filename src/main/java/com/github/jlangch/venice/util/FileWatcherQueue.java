@@ -36,24 +36,20 @@ import com.github.jlangch.venice.impl.util.io.FileUtil;
 
 public class FileWatcherQueue implements Closeable {
 
-    private FileWatcherQueue(final File walFileDir) {
-        this.walFile = walFileDir == null
-                        ? null
-                        : new File(walFileDir, "filewatcher.wal");
+    private FileWatcherQueue(final File walFile) {
+        this.walFile = walFile;
     }
 
     public static FileWatcherQueue create() {
         return create(null);
     }
 
-    public static FileWatcherQueue create(final File walFileDir) {
-        if (walFileDir != null && !walFileDir.isDirectory()) {
-            throw new RuntimeException(
-                    "WAL dir " + walFileDir + " is not a directory");
-        }
-
+    public static FileWatcherQueue create(final File walFile) {
         // initialize
-        final FileWatcherQueue queue = new FileWatcherQueue(walFileDir);
+        if (walFile != null && !walFile.isFile()) {
+            initWalFile(walFile);
+        }
+        final FileWatcherQueue queue = new FileWatcherQueue(walFile);
         queue.init();
         return queue;
     }
@@ -181,16 +177,7 @@ public class FileWatcherQueue implements Closeable {
     }
 
     public void clearWalFile() {
-        if (walFile != null) {
-            try {
-                new FileWriter(walFile, false).close();
-            }
-            catch(IOException ex) {
-                throw new RuntimeException(
-                        "Failed to initialize FileWatcher WAL file",
-                        ex);
-            }
-        }
+    	initWalFile(walFile);
     }
 
 
@@ -219,6 +206,20 @@ public class FileWatcherQueue implements Closeable {
                             "Failed to initialize FileWatcher WAL file",
                             ex);
                 }
+            }
+        }
+    }
+
+
+    private static void initWalFile(final File walFile) {
+        if (walFile != null) {
+            try {
+                new FileWriter(walFile, false).close();
+            }
+            catch(IOException ex) {
+                throw new RuntimeException(
+                        "Failed to initialize FileWatcher WAL file",
+                        ex);
             }
         }
     }

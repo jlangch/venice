@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Fonts management
+;;;; File watcher queue management
 
 
 (ns file-watcher-queue)
@@ -28,42 +28,67 @@
 
 
 (defn create 
-  ([]         (. :FileWatcherQueue :create))
-  ([wal-dir]  (. :FileWatcherQueue :create wal-dir)))
+  ([] 
+    (. :FileWatcherQueue :create))
+
+  ([wal-file] 
+    { :pre [(or (nil? wal-file) (io/file? wal-file))] }
+    (. :FileWatcherQueue :create wal-file)))
 
 
 (defn size [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :size))
 
 
 (defn empty? [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :isEmpty))
 
 
 (defn clear [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :clear))
 
 
-(defn push [file] 
+(defn push [queue file] 
+  { :pre [(instance-of? :FileWatcherQueue queue)
+          (io/file? queue)] }
   (. queue :push file))
 
+
 (defn pop 
-  ([]                      (. queue :pop))
-  ([n]                     (. queue :pop n))
-  ([n skip-missing-files]  (. queue :pop n skip-missing-files)))
+  ([queue] 
+    { :pre [(instance-of? :FileWatcherQueue queue)] }
+    (. queue :pop))
+
+  ([queue n]
+    { :pre [(instance-of? :FileWatcherQueue queue)
+            (long? n) (pos? n)] }
+    (. queue :pop n))
+
+  ([queue n skip-missing-files]
+    { :pre [(instance-of? :FileWatcherQueue queue)
+            (long? n) (pos? n)
+            (boolean? skip-missing-files)] }
+    (. queue :pop n skip-missing-files)))
 
 
 (defn load [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :load))
 
 
 (defn save [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :save))
 
 
 (defn close [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :close))
 
 
-(defn wal-file [queue] 
+(defn wal-file [queue]
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :getWalFile))
