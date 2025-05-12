@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -47,7 +48,9 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.shell.ShellResult;
 import com.github.jlangch.venice.impl.util.shell.Signal;
 import com.github.jlangch.venice.impl.util.shell.SimpleShell;
@@ -325,7 +328,7 @@ public class ShellFunctions {
                         "Returns true if the process represented by the PID is alive otherwise false.\n\n"  +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/alive? 2345)")
-                    .seeAlso("sh", "sh/kill", "sh/pgrep")
+                    .seeAlso("sh", "sh/kill", "sh/pgrep", "sh/load-pid")
                     .build()
         ) {
             @Override
@@ -346,6 +349,47 @@ public class ShellFunctions {
                     final ShellResult result = SimpleShell.execCmd("ps", "-p", pid);
                     return VncBoolean.of(result.isZeroExitCode());
                 }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction load_pid =
+        new VncFunction(
+                "sh/load-pid",
+                VncFunction
+                    .meta()
+                    .arglists("(sh/load-pid pid-file)")
+                    .doc(
+                        "Load a process PID from a PID file.\n\nReturns the PID or nil " +
+                        "if the file does not exist or is empty")
+                    .examples("(sh/load-pid \"/data/scan.pid\")")
+                    .seeAlso("sh", "sh/alive?", "sh/kill", "sh/pgrep")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final File f = IOFunctions.convertToFile(
+                                    args.first(),
+                                    "Function 'sh/load-pid' does not allow %s as f");
+
+                SimpleShell.validateLinuxOrMacOSX("sh/load-pid");
+
+                if (f.isFile()) {
+                    final String s = StringUtil.trimToNull(
+                                        new String(
+                                                FileUtil.load(f),
+                                                Charset.forName("UTF-8")));
+                    if (s != null && s.matches("[0-9]+")) {
+	                    return new VncString(s);
+                    }
+                }
+
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -463,5 +507,6 @@ public class ShellFunctions {
                     .add(kill)
                     .add(pgrep)
                     .add(alive_Q)
+                    .add(load_pid)
                     .toMap();
 }

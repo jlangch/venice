@@ -224,6 +224,7 @@ public class RestrictedBlacklistedFunctions {
                 "sh/pwd",
                 "sh/kill",
                 "sh/alive?",
+                "sh/load-pid",
                 "sh/pgrep"
 
                 // Note: Extension Modules are white listed if a sandbox is active.

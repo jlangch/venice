@@ -22,15 +22,20 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 
 
@@ -189,5 +194,52 @@ public class ShellFunctionsTest {
                 "      :timeout 1500))";
 
         assertThrows(TimeoutException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_load_pid() throws IOException {
+    	final File pidFile = File.createTempFile("file", "pid");
+    	pidFile.deleteOnExit();
+
+    	assertNull(new Venice().eval(
+    					"test",
+    					"(sh/load-pid pid-file)",
+    					Parameters.of("pid-file", "--unknown--")));
+
+    	assertNull(new Venice().eval(
+    					"test",
+    					"(sh/load-pid pid-file)",
+    					Parameters.of("pid-file", pidFile.getAbsolutePath())));
+
+    	FileUtil.save("", pidFile, true);
+
+    	assertNull(new Venice().eval(
+    					"test",
+    					"(sh/load-pid pid-file)",
+    					Parameters.of("pid-file", pidFile.getAbsolutePath())));
+
+    	FileUtil.save("abc", pidFile, true);
+
+    	assertNull(new Venice().eval(
+    					"test",
+    					"(sh/load-pid pid-file)",
+    					Parameters.of("pid-file", pidFile.getAbsolutePath())));
+
+    	FileUtil.save("123\n456", pidFile, true);
+
+    	assertNull(new Venice().eval(
+    					"test",
+    					"(sh/load-pid pid-file)",
+    					Parameters.of("pid-file", pidFile.getAbsolutePath())));
+
+    	FileUtil.save("1230", pidFile, true);
+
+    	assertEquals(
+    			"1230",
+    			new Venice().eval(
+    					"test",
+    					"(sh/load-pid pid-file)",
+    					Parameters.of("pid-file", pidFile.getAbsolutePath())));
     }
 }
