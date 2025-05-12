@@ -352,7 +352,7 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/pgrep name)")
                     .doc(
-                        "Returns all pids for process with the passed name.\n\n" +
+                        "Returns a list of all pids for process with the passed name.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/pgrep java)")
                     .seeAlso("sh", "sh/kill", "sh/alive?")
