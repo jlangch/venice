@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * A stop watch
+ * A thread safe stop watch
  *
  * <pre>
  * final StopWatch sw = new StopWatch();
