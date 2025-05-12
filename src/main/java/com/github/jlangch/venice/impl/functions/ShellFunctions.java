@@ -336,10 +336,16 @@ public class ShellFunctions {
 
                 SimpleShell.validateLinuxOrMacOSX("sh/alive?");
 
-                final String pid = Coerce.toVncString(args.first()).getValue();
+                final VncVal arg1 = args.first();
+                if (arg1 == Nil) {
+                    return VncBoolean.False;
+                }
+                else {
+                    final String pid = Coerce.toVncString(arg1).getValue();
 
-                final ShellResult result = SimpleShell.execCmd("ps", "-p", pid);
-                return VncBoolean.of(result.isZeroExitCode());
+                    final ShellResult result = SimpleShell.execCmd("ps", "-p", pid);
+                    return VncBoolean.of(result.isZeroExitCode());
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
