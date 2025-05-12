@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
@@ -71,9 +72,9 @@ public class StopWatch {
             final long elapsedTime,
             final long limitMilliseconds
     ) {
-        this.startTime = startTime;
-        this.elapsedTime = elapsedTime;
-        this.limitTime = startTime + limitMilliseconds;
+        this.startTime = new AtomicLong(startTime);
+        this.elapsedTime = new AtomicLong(elapsedTime);
+        this.limitTime = new AtomicLong(startTime + limitMilliseconds);
     }
 
 
@@ -83,7 +84,7 @@ public class StopWatch {
      * @return this stop watch
      */
     public StopWatch copy() {
-        return new StopWatch(startTime, elapsedTime, limitTime);
+        return new StopWatch(startTime.get(), elapsedTime.get(), limitTime.get());
     }
 
     /**
@@ -93,8 +94,8 @@ public class StopWatch {
      * @return this stop watch
      */
     public StopWatch start() {
-        startTime = System.currentTimeMillis();
-        elapsedTime = 0L;
+        startTime = new AtomicLong(System.currentTimeMillis());
+        elapsedTime = new AtomicLong(0L);
         return this;
     }
 
@@ -105,7 +106,7 @@ public class StopWatch {
      * @return this stop watch
      */
     public StopWatch resume() {
-        startTime = System.currentTimeMillis();
+        startTime = new AtomicLong(System.currentTimeMillis());
         return this;
     }
 
@@ -117,8 +118,8 @@ public class StopWatch {
      * @return this stop watch
      */
     public StopWatch stop() {
-        elapsedTime += splitTime();
-        startTime = System.currentTimeMillis();
+        elapsedTime.addAndGet(splitTime());
+        startTime = new AtomicLong(System.currentTimeMillis());
         return this;
     }
 
@@ -130,8 +131,8 @@ public class StopWatch {
      */
     public long elapsed(final TimeUnit unit) {
         return unit == null
-                ? elapsedTime
-                : unit.convert(elapsedTime, MILLISECONDS);
+                ? elapsedTime.get()
+                : unit.convert(elapsedTime.get(), MILLISECONDS);
     }
 
     /**
@@ -153,7 +154,7 @@ public class StopWatch {
      */
     public long splitTime() {
         // Take care for system clock adjustments that the elapsed time does not get negative
-        return Math.max(0, System.currentTimeMillis() - startTime);
+        return Math.max(0, System.currentTimeMillis() - startTime.get());
     }
 
     /**
@@ -162,7 +163,7 @@ public class StopWatch {
      * @return the formatted elapsed time or 0 if the watch has not been stopped.
      */
     public String elapsedMillisFormatted() {
-        return formatMillis(elapsedTime);
+        return formatMillis(elapsedTime.get());
     }
 
 
@@ -170,13 +171,14 @@ public class StopWatch {
      * @return true if the stop has expired, meaning it exceeded the time limit
      */
     public boolean hasExpired() {
-        return limitTime == 0L ? false : System.currentTimeMillis() > limitTime;
+    	final long limit = limitTime.get();
+        return limit == 0L ? false : System.currentTimeMillis() > limit;
     }
 
 
     @Override
     public String toString() {
-        return formatMillis(elapsedTime);
+        return formatMillis(elapsedTime.get());
     }
 
     /**
@@ -207,7 +209,7 @@ public class StopWatch {
     }
 
 
-    private long startTime = 0L;
-    private long elapsedTime = 0L;
-    private long limitTime = 0L;
+    private AtomicLong startTime = new AtomicLong(0L);
+    private AtomicLong elapsedTime = new AtomicLong(0L);
+    private AtomicLong limitTime = new AtomicLong(0L);
 }
