@@ -74,10 +74,12 @@ public class FileWatcherQueue implements Closeable {
     }
 
     public void push(final File file) {
-        synchronized(queue) {
-            addToWalFile(WalAction.PUSH, file);
-            queue.removeIf(it -> it.equals(file));
-            queue.add(file);
+        if (file != null) {
+            synchronized(queue) {
+                addToWalFile(WalAction.PUSH, file);
+                queue.removeIf(it -> it.equals(file));
+                queue.add(file);
+            }
         }
     }
 
@@ -178,7 +180,7 @@ public class FileWatcherQueue implements Closeable {
     }
 
     public void clearWalFile() {
-    	initWalFile(walFile);
+        initWalFile(walFile);
     }
 
 
