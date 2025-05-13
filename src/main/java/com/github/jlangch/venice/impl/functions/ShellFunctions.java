@@ -105,20 +105,6 @@ public class ShellFunctions {
                         "              instead. |\n" +
                         "| :timeout  | A timeout in milliseconds |\n" +
                         "\n" +
-                        "You can bind :env, :dir for multiple operations using `with-sh-env` or " +
-                        "`with-sh-dir`. `with-sh-throw` is binds *:throw-ex* as *true*.\n" +
-                        "\n" +
-                        "sh returns a map of\n\n" +
-                        "```\n" +
-                        ":exit => sub-process's exit code\n" +
-                        ":out  => sub-process's stdout (as Bytebuf or String)\n" +
-                        ":err  => sub-process's stderr (String via platform default encoding)\n" +
-                        "```\n\n" +
-                        "E.g.:\n\n" +
-                        "```\n" +
-                        "(sh \"uname\" \"-r\") \n" +
-                        "=> {:err \"\" :out \"20.5.0\\n\" :exit 0}\n" +
-                        "```\n\n"+
                         "```                                                                  \n" +
                         "   +---------------------------------------------------------+       \n" +
                         "   |                       Venice Script                     |       \n" +
@@ -129,7 +115,22 @@ public class ShellFunctions {
                         "| in-data |----->|stdin                       |      +----------+    \n" +
                         "+---------+      |       SHELL PROCESS  stdout|----->|  out-fn  |    \n" +
                         "                 |                      stderr|----->|  err-fn  |    \n" +
-                        "                 +----------------------------+      +----------+    ")
+                        "                 +----------------------------+      +----------+    \n" +
+                        "```                                                                  \n\n" +
+                        "You can bind :env, :dir for multiple operations using `with-sh-env` or " +
+                        "`with-sh-dir`. `with-sh-throw` is binds *:throw-ex* as *true*.\n" +
+                        "\n" +
+                        "`sh` returns a map of:\n\n" +
+                        "```                                                                  \n" +
+                        ":exit => sub-process's exit code                                     \n" +
+                        ":out  => sub-process's stdout (as Bytebuf or String)                 \n" +
+                        ":err  => sub-process's stderr (String via platform default encoding) \n" +
+                        "```\n\n" +
+                        "E.g.:\n\n" +
+                        "```                                       \n" +
+                        "(sh \"uname\" \"-r\")                     \n" +
+                        "=> {:err \"\" :out \"20.5.0\\n\" :exit 0} \n" +
+                        "```")
                     .examples(
                         "(println (sh \"ls\" \"-l\"))",
                         "(println (sh \"ls\" \"-l\" \"/tmp\"))",
