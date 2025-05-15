@@ -69,6 +69,7 @@ public class FileWatcherQueue implements Closeable {
 
     public void clear() {
         synchronized(queue) {
+        	addToWalFile(WalAction.CLEAR, new File("/"));
             queue.clear();
         }
     }
@@ -128,12 +129,17 @@ public class FileWatcherQueue implements Closeable {
                       .filter(e -> e.length == 2)
                       .forEach(e -> {
                           final File f = new File(e[1]);
-                          if (e[0].equals(WalAction.PUSH.name())) {
-                              queue.removeIf(it -> it.equals(f));
-                              queue.add(f);
-                          }
-                          else if (e[0].equals(WalAction.POP.name())) {
-                              queue.removeIf(it -> it.equals(f));
+                          switch(e[0]) {
+                              case "CLEAR":
+                                  queue.clear();
+                                  break;
+                              case "PUSH":
+                                  queue.removeIf(it -> it.equals(f));
+                                  queue.add(f);
+                                  break;
+                              case "POP":
+                                  queue.removeIf(it -> it.equals(f));
+                                  break;
                           }
                       });
         }
@@ -245,7 +251,7 @@ public class FileWatcherQueue implements Closeable {
     }
 
 
-    private static enum WalAction { PUSH, POP };
+    private static enum WalAction { CLEAR, PUSH, POP };
 
     private final File walFile;
     private final LinkedList<File> queue = new LinkedList<>();

@@ -41,7 +41,6 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             assertTrue(q.isEmpty());
@@ -57,14 +56,12 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f = new File("a").getAbsoluteFile();
             q.push(f);
 
             q.save();
-            q.clear();
             q.load();
 
             assertFalse(q.isEmpty());
@@ -78,7 +75,6 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -89,7 +85,6 @@ public class FileWatcherQueueWalTest {
             q.push(f3);
 
             q.save();
-            q.clear();
             q.load();
 
             assertFalse(q.isEmpty());
@@ -103,7 +98,6 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -118,7 +112,6 @@ public class FileWatcherQueueWalTest {
             q.push(f2);
 
             q.save();
-            q.clear();
             q.load();
 
             assertFalse(q.isEmpty());
@@ -132,14 +125,12 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f = new File("a").getAbsoluteFile();
             q.push(f);
 
             q.save();
-            q.clear();
             q.load();
 
             assertEquals(f, q.pop());
@@ -154,7 +145,6 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -165,7 +155,6 @@ public class FileWatcherQueueWalTest {
             q.push(f3);
 
             q.save();
-            q.clear();
             q.load();
 
             assertEquals(f1, q.pop());
@@ -183,7 +172,6 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -196,13 +184,11 @@ public class FileWatcherQueueWalTest {
             List<File> files1 = q.pop(2);
 
             q.save();
-            q.clear();
             q.load();
 
             List<File> files2 = q.pop(2);
 
             q.save();
-            q.clear();
             q.load();
 
             List<File> files3 = q.pop(2);
@@ -226,7 +212,6 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
@@ -267,7 +252,6 @@ public class FileWatcherQueueWalTest {
         walFile.deleteOnExit();
 
         try (FileWatcherQueue q = FileWatcherQueue.create(walFile)) {
-            q.clearWalFile();
             q.clear();
 
             File f1 = new File("a").getAbsoluteFile();
