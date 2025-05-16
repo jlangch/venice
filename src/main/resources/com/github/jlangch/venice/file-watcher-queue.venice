@@ -65,13 +65,13 @@
   ([queue n]
     { :pre [(instance-of? :FileWatcherQueue queue)
             (long? n) (pos? n)] }
-    (. queue :pop n))
+    (into [] (. queue :pop n)))
 
   ([queue n skip-missing-files]
     { :pre [(instance-of? :FileWatcherQueue queue)
             (long? n) (pos? n)
             (boolean? skip-missing-files)] }
-    (. queue :pop n skip-missing-files)))
+    (into [] (. queue :pop n skip-missing-files))))
 
 
 (defn load [queue] 

@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -2667,6 +2668,24 @@ public class CoreFunctionsTest {
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) [{:a 1} {:b 2} {:c 3}] ))"));
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) { :a 1 :b 2 :c 3} ))"));
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) (ordered-map :a 1 :b 2 :c 3) ))"));
+
+        // from Java List
+        final List<String> list0 = new ArrayList<String>();
+        final List<String> list1 = new ArrayList<String>();
+        final List<String> list2 = new ArrayList<String>();
+        list1.add("1");
+        list2.add("1");
+        list2.add("2");
+
+        assertEquals("[]", venice.eval("(str (into [] x))", Parameters.of("x", list0)));
+        assertEquals("[1]", venice.eval("(str (into [] x))", Parameters.of("x", list1)));
+        assertEquals("[1 2]", venice.eval("(str (into [] x))", Parameters.of("x", list2)));
+        assertTrue((Boolean)venice.eval("(string? (first (into [] x)))", Parameters.of("x", list1)));
+
+        assertEquals("()", venice.eval("(str (into '() x))", Parameters.of("x", list0)));
+        assertEquals("(1)", venice.eval("(str (into '() x))", Parameters.of("x", list1)));
+        assertEquals("(2 1)", venice.eval("(str (into '() x))", Parameters.of("x", list2)));
+        assertTrue((Boolean)venice.eval("(string? (first (into '() x)))", Parameters.of("x", list1)));
     }
 
     @Test
@@ -2680,6 +2699,18 @@ public class CoreFunctionsTest {
         assertEquals("()", venice.eval("(str (into! (stack) []))"));
         assertEquals("(1)", venice.eval("(str (into! (stack) [1]))"));
         assertEquals("(2 1)", venice.eval("(str (into! (stack) [1 2]))"));
+
+        // from Java List
+        final List<String> list0 = new ArrayList<String>();
+        final List<String> list1 = new ArrayList<String>();
+        final List<String> list2 = new ArrayList<String>();
+        list1.add("1");
+        list2.add("1");
+        list2.add("2");
+
+        assertEquals("()", venice.eval("(str (into! (queue) x))", Parameters.of("x", list0)));
+        assertEquals("(1)", venice.eval("(str (into! (queue) x))", Parameters.of("x", list1)));
+        assertEquals("(1 2)", venice.eval("(str (into! (queue) x))", Parameters.of("x", list2)));
     }
 
     @Test
