@@ -36,19 +36,23 @@ import java.util.Set;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
+import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
+import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -269,7 +273,7 @@ public class MBeanFunctions {
                 VncFunction
                     .meta()
                     .arglists("(mbean/attribute object-name attribute-name)")
-                    .doc("Returns an MBean attribute's value")
+                    .doc("Returns a MBean attribute's value")
                     .examples(
                         "(-> (mbean/object-name \"java.lang:type=OperatingSystem\")  \n" +
                         "    (mbean/attribute \"ProcessCpuLoad\"))                   ",
@@ -319,17 +323,17 @@ public class MBeanFunctions {
                         "(mbean/invoke object-name operation params)",
                         "(mbean/invoke object-name operation params signature)")
                     .doc(
-                        "Invoke an MBean operation")
+                        "Invoke a MBean operation")
                     .examples(
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                         "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
-                        "    (mbean/register name (. :Hello :new) m)                  \n" +
+                        "    (mbean/register name (. :Hello :new) name)               \n" +
                         "    (mbean/invoke name \"add\" [1 2] [\"int\" \"int\"])))    ",
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                         "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
-                        "    (mbean/register name (. :Hello :new) m)                  \n" +
+                        "    (mbean/register name (. :Hello :new) name)               \n" +
                         "    (mbean/invoke name \"add\" [1 2])))                      ")
                     .build()
         ) {
@@ -399,26 +403,25 @@ public class MBeanFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
     public static VncFunction mbean_register =
         new VncFunction(
                 "mbean/register",
                 VncFunction
                     .meta()
                     .arglists("(mbean/register mbean name)")
-                    .doc("Register an MBean")
+                    .doc("Register a MBean")
                     .examples(
                             "(do                                                          \n" +
                             "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
-                            "  (->> (mbean/object-name \"venice:type=Hello\")             \n" +
-                            "       (mbean/register (. :Hello :new) m)))                  ")
+                            "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                            "     (mbean/register (. :Hello :new) name)))                 ")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final Object mbean = Coerce.toVncJavaObject(args.first());
+                final Object mbean = Coerce.toVncJavaObject(args.first(), Object.class);
                 final ObjectName name = Coerce.toVncJavaObject(args.second(), ObjectName.class);
 
                 final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -428,8 +431,66 @@ public class MBeanFunctions {
 
                     return new VncJavaObject(instance);
                 }
+                catch(InstanceAlreadyExistsException ex) {
+                    throw new VncException(
+                    		"Failed to register MBean. The MBean is already registered!", ex);
+                }
+                catch(MBeanRegistrationException ex) {
+                    throw new VncException(
+                    		"Failed to register MBean!", ex);
+                }
+                catch(NotCompliantMBeanException ex) {
+                    throw new VncException(
+                    		"Failed to register MBean. The MBean is not a compliant " +
+                    		"bean according to the MBean specification!",
+                    		ex);
+                }
                 catch(Exception ex) {
-                    throw new VncException("Failed register MBean", ex);
+                    throw new VncException("Failed to register MBean", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction mbean_unregister =
+        new VncFunction(
+                "mbean/unregister",
+                VncFunction
+                    .meta()
+                    .arglists("(mbean/unregister name)")
+                    .doc("Unregister a MBean")
+                    .examples(
+                            "(do                                                          \n" +
+                            "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                            "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                            "     (mbean/register (. :Hello :new) name)                   \n" +
+                            "     (mbean/unregister name)))                               ")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final ObjectName name = Coerce.toVncJavaObject(args.second(), ObjectName.class);
+
+                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+                try {
+                    mbs.unregisterMBean(name);
+
+                    return Constants.Nil;
+                }
+                catch(InstanceNotFoundException ex) {
+                    throw new VncException(
+                    		"Failed to unregister MBean. The MBean does not exist!", ex);
+                }
+                catch(MBeanRegistrationException ex) {
+                    throw new VncException(
+                    		"Failed to unregister MBean!", ex);
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to unregister MBean", ex);
                 }
             }
 
@@ -514,6 +575,7 @@ public class MBeanFunctions {
                     .add(mbean_attribute)
                     .add(mbean_invoke)
                     .add(mbean_register)
+                    .add(mbean_unregister)
                     .add(mbean_operating_system_mxbean)
                     .add(mbean_runtime_mxbean)
 

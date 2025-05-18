@@ -22,6 +22,11 @@
 package com.github.jlangch.venice.impl.util.mbean;
 
 
+/**
+ * A JMX standard MBean
+ *
+ * https://docs.oracle.com/javase/tutorial/jmx/mbeans/standard.html
+ */
 public interface HelloMBean {
 
     void sayHello();
