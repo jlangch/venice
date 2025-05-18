@@ -320,7 +320,7 @@ public class MBeanFunctions {
                         "Returns a MBean attribute's value.                       \n" +
 	                    "                                                         \n" +
 	                    "```                                                      \n" +
-	                    "// Java MBean                                            \n" +
+	                    "// Java MBean example                                    \n" +
 	                    "public interface HelloMBean {                            \n" +
 	                    "    void sayHello();                                     \n" +
 	                    "    int add(int x, int y);                               \n" +
@@ -409,7 +409,7 @@ public class MBeanFunctions {
                         "Invoke a MBean operation                                 \n" +
                         "                                                         \n" +
                         "```                                                      \n" +
-                        "// Java MBean                                            \n" +
+	                    "// Java MBean example                                    \n" +
                         "public interface HelloMBean {                            \n" +
                         "    void sayHello();                                     \n" +
                         "    int add(int x, int y);                               \n" +
