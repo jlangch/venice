@@ -122,7 +122,7 @@ public class MBeanFunctionsTest {
                               "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
-                              "     (mbean/attribute name \"FourtyTwo\")))                  ";
+                              "     (mbean/attribute name :FourtyTwo)))                     ";
 
         assertEquals(42, venice.eval(script));
     }
@@ -137,7 +137,7 @@ public class MBeanFunctionsTest {
                               "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
-                              "     (mbean/invoke name \"add\" [1I 2I] [\"int\" \"int\"]))) ";
+                              "     (mbean/invoke name :add [1I 2I] [\"int\" \"int\"])))    ";
 
         assertEquals(3, venice.eval(script));
     }
@@ -152,7 +152,7 @@ public class MBeanFunctionsTest {
                               "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
-                              "     (mbean/invoke name \"add\" [1I 2I])))                   ";
+                              "     (mbean/invoke name :add [1I 2I])))                      ";
 
         assertEquals(3, venice.eval(script));
     }

@@ -138,14 +138,14 @@ public class MBeanFunctions {
                 mbeans.forEach(on -> {
                     VncMap map = VncHashMap.empty();
                     map = map.assoc(new VncKeyword("canonical-name"), new VncString(on.getCanonicalName()));
-                       map = map.assoc(new VncKeyword("domain"), new VncString(on.getDomain()));
+                    map = map.assoc(new VncKeyword("domain"), new VncString(on.getDomain()));
 
-                       VncMap props = VncHashMap.empty();
-                       for(Entry<String,String> e : on.getKeyPropertyList().entrySet()) {
-                           props = props.assoc(new VncString(e.getKey()), new VncString(e.getValue()));
-                       }
-                       map = map.assoc(new VncKeyword("properties"), props);
-                       map = map.assoc(new VncKeyword("object-name"), new VncJavaObject(on));
+                    VncMap props = VncHashMap.empty();
+                    for(Entry<String,String> e : on.getKeyPropertyList().entrySet()) {
+                        props = props.assoc(new VncString(e.getKey()), new VncString(e.getValue()));
+                    }
+                    map = map.assoc(new VncKeyword("properties"), props);
+                    map = map.assoc(new VncKeyword("object-name"), new VncJavaObject(on));
 
                     list.add(map);
                  });
@@ -252,7 +252,6 @@ public class MBeanFunctions {
                     map = map.assoc(new VncKeyword("classname"),   new VncString(info.getClassName()));
                     map = map.assoc(new VncKeyword("description"), new VncString(info.getDescription()));
 
-
                     // constructors
                     VncMap ctorMap = VncHashMap.empty();
                     final MBeanConstructorInfo[] constructors = info.getConstructors();
@@ -260,17 +259,7 @@ public class MBeanFunctions {
                         VncMap c_ = VncHashMap.empty();
                         c_ = c_.assoc(new VncKeyword("description"), new VncString(ctor.getDescription()));
                         c_ = c_.assoc(new VncKeyword("descriptor"),  new VncJavaObject(ctor.getDescriptor()));
-
-                        VncMap params_ = VncHashMap.empty();
-                        for(MBeanParameterInfo param :  ctor.getSignature()) {
-                            VncMap p_ = VncHashMap.empty();
-                            p_ = p_.assoc(new VncKeyword("description"), new VncString(param.getDescription()));
-                            p_ = p_.assoc(new VncKeyword("type"),        new VncString(param.getType()));
-                            p_ = p_.assoc(new VncKeyword("descriptor"),  new VncJavaObject(param.getDescriptor()));
-                            params_ = params_.assoc(new VncKeyword(param.getName()), p_);
-                        }
-                        c_ = c_.assoc(new VncKeyword("parameters"), params_);
-
+                        c_ = c_.assoc(new VncKeyword("parameters"),  mapMBeanParameterInfo(ctor.getSignature()));
                         ctorMap = ctorMap.assoc(new VncKeyword(ctor.getName()), c_);
                     }
                     map = map.assoc(new VncKeyword("constructors"), ctorMap);
@@ -295,17 +284,7 @@ public class MBeanFunctions {
                         o_ = o_.assoc(new VncKeyword("description"), new VncString(op.getDescription()));
                         o_ = o_.assoc(new VncKeyword("return-type"), new VncString(op.getReturnType()));
                         o_ = o_.assoc(new VncKeyword("descriptor"),  new VncJavaObject(op.getDescriptor()));
-
-                        VncMap params_ = VncHashMap.empty();
-                        for(MBeanParameterInfo param :  op.getSignature()) {
-                            VncMap p_ = VncHashMap.empty();
-                            p_ = p_.assoc(new VncKeyword("description"), new VncString(param.getDescription()));
-                            p_ = p_.assoc(new VncKeyword("type"),        new VncString(param.getType()));
-                            p_ = p_.assoc(new VncKeyword("descriptor"),  new VncJavaObject(param.getDescriptor()));
-                            params_ = params_.assoc(new VncKeyword(param.getName()), p_);
-                        }
-                        o_ = o_.assoc(new VncKeyword("parameters"), params_);
-
+                        o_ = o_.assoc(new VncKeyword("parameters"),  mapMBeanParameterInfo(op.getSignature()));
                         opMap = opMap.assoc(new VncKeyword(op.getName()), o_);
                     }
                     map = map.assoc(new VncKeyword("operations"), opMap);
@@ -342,42 +321,42 @@ public class MBeanFunctions {
                         "(mbean/attribute object-name attribute-name)")
                     .doc(
                         "Returns the value of a Java MBean attribute.             \n" +
-	                    "                                                         \n" +
-	                    "```                                                      \n" +
-	                    "// Java MBean example                                    \n" +
-	                    "public interface HelloMBean {                            \n" +
-	                    "    void sayHello();                                     \n" +
-	                    "    int add(int x, int y);                               \n" +
-	                    "    int getFourtyTwo();                                  \n" +
-	                    "}                                                        \n" +
-	                    "                                                         \n" +
-	                    "public class Hello implements HelloMBean {               \n" +
-	                    "    @Override                                            \n" +
-	                    "    public void sayHello() {                             \n" +
-	                    "       System.out.println(\"Hello, world!\");            \n" +
-	                    "    }                                                    \n" +
-	                    "                                                         \n" +
-	                    "    @Override                                            \n" +
-	                    "    public int add(int x, int y) {                       \n" +
-	                    "        return x + y;                                    \n" +
-	                    "    }                                                    \n" +
-	                    "                                                         \n" +
-	                    "    @Override                                            \n" +
-	                    "    public int getFourtyTwo() {                          \n" +
-	                    "       return 42;                                        \n" +
-	                    "    }                                                    \n" +
-	                    "}                                                        \n" +
-	                    "```                                                      ")
+                        "                                                         \n" +
+                        "```                                                      \n" +
+                        "// Java MBean example                                    \n" +
+                        "public interface HelloMBean {                            \n" +
+                        "    void sayHello();                                     \n" +
+                        "    int add(int x, int y);                               \n" +
+                        "    int getFourtyTwo();                                  \n" +
+                        "}                                                        \n" +
+                        "                                                         \n" +
+                        "public class Hello implements HelloMBean {               \n" +
+                        "    @Override                                            \n" +
+                        "    public void sayHello() {                             \n" +
+                        "       System.out.println(\"Hello, world!\");            \n" +
+                        "    }                                                    \n" +
+                        "                                                         \n" +
+                        "    @Override                                            \n" +
+                        "    public int add(int x, int y) {                       \n" +
+                        "        return x + y;                                    \n" +
+                        "    }                                                    \n" +
+                        "                                                         \n" +
+                        "    @Override                                            \n" +
+                        "    public int getFourtyTwo() {                          \n" +
+                        "       return 42;                                        \n" +
+                        "    }                                                    \n" +
+                        "}                                                        \n" +
+                        "```                                                      ")
                     .examples(
                         "(-> (mbean/object-name \"java.lang:type=OperatingSystem\")  \n" +
-                        "    (mbean/attribute \"ProcessCpuLoad\"))                   ",
+                        "    (mbean/attribute :ProcessCpuLoad))                      ",
                         "(-> (mbean/object-name \"java.lang:type=OperatingSystem\")  \n" +
-                        "    (mbean/attribute \"SystemCpuLoad\"))                    ",
+                        "    (mbean/attribute :SystemCpuLoad))                       ",
                         "(do                                                         \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
                         "  (let [name (mbean/object-name \"venice:type=Hello\")]     \n" +
                         "     (mbean/register (. :Hello :new) name)                  \n" +
-                        "     (mbean/attribute name \"FourtyTwo\")))                 ")
+                        "     (mbean/attribute name :FourtyTwo)))                    ")
                     .seeAlso(
                             "mbean/platform-mbean-server",
                             "mbean/query-mbean-object-names",
@@ -393,7 +372,7 @@ public class MBeanFunctions {
                 ArityExceptions.assertArity(this, args, 2);
 
                 final ObjectName objectName = Coerce.toVncJavaObject(args.first(), ObjectName.class);
-                final String attributeName = Coerce.toVncString(args.second()).getValue();
+                final String attributeName = Coerce.toVncKeyword(args.second()).getSimpleName();
 
                 final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
@@ -434,7 +413,7 @@ public class MBeanFunctions {
                         "value.                                                   \n" +
                         "                                                         \n" +
                         "```                                                      \n" +
-	                    "// Java MBean example                                    \n" +
+                        "// Java MBean example                                    \n" +
                         "public interface HelloMBean {                            \n" +
                         "    void sayHello();                                     \n" +
                         "    int add(int x, int y);                               \n" +
@@ -463,12 +442,14 @@ public class MBeanFunctions {
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                         "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                         "    (mbean/register (. :Hello :new) name)                    \n" +
-                        "    (mbean/invoke name \"add\" [1I 2I] [\"int\" \"int\"])))  ",
+                        "    ;; use an explicit operation signature                   \n" +
+                        "    (mbean/invoke name :add [1I 2I] [\"int\" \"int\"])))     ",
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                         "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                         "    (mbean/register (. :Hello :new) name)                    \n" +
-                        "    (mbean/invoke name \"add\" [1I 2I])))                    ")
+                        "    ;; use the :add operation signature from the MBeanInfo   \n" +
+                        "    (mbean/invoke name :add [1I 2I])))                       ")
                     .seeAlso(
                         "mbean/platform-mbean-server",
                         "mbean/query-mbean-object-names",
@@ -484,7 +465,7 @@ public class MBeanFunctions {
                 ArityExceptions.assertArity(this, args, 3, 4);
 
                 final ObjectName name = Coerce.toVncJavaObject(args.first(), ObjectName.class);
-                final String operation = Coerce.toVncString(args.second()).getValue();
+                final String operation = Coerce.toVncKeyword(args.second()).getSimpleName();
                 final VncSequence vncParams = Coerce.toVncSequence(args.third());
 
                 // Build params
@@ -501,7 +482,7 @@ public class MBeanFunctions {
                     final List<String> signature = new ArrayList<>();
 
                     if (args.size() == 3) {
-                        // Find the correct signature from MBeanInfo
+                        // Find the correct signature from the MBeanInfo
                         MBeanOperationInfo mbeanOp = null;
                         for (MBeanOperationInfo op : info.getOperations()) {
                             if (op.getName().equals(operation)) {
@@ -525,13 +506,19 @@ public class MBeanFunctions {
                                 signature.add((String)s);
                             }
                             else {
-                                throw new VncException("The signature element " + ii + " must be of type string");
+                                throw new VncException(
+                                        "The signature element " + ii + " must be of type string");
                             }
                         };
                     }
 
                     // Invoke
-                    final Object result = mbs.invoke(name, operation, params, signature.toArray(new String[] {}));
+                    final Object result = mbs.invoke(
+                                            name,
+                                            operation,
+                                            params,
+                                            signature.toArray(new String[] {}));
+
                     return JavaInteropUtil.convertToVncVal(result);
                 }
                 catch(InstanceNotFoundException ex) {
@@ -740,6 +727,18 @@ public class MBeanFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+    private static VncMap mapMBeanParameterInfo(final MBeanParameterInfo[] paramInfo) {
+        VncMap params = VncHashMap.empty();
+        for(MBeanParameterInfo param :  paramInfo) {
+            VncMap p = VncHashMap.empty();
+            p = p.assoc(new VncKeyword("description"), new VncString(param.getDescription()));
+            p = p.assoc(new VncKeyword("type"),        new VncString(param.getType()));
+            p = p.assoc(new VncKeyword("descriptor"),  new VncJavaObject(param.getDescriptor()));
+            params = params.assoc(new VncKeyword(param.getName()), p);
+        }
+        return params;
+    }
 
 
     ///////////////////////////////////////////////////////////////////////////
