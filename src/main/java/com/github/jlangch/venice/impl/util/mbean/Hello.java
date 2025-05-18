@@ -43,7 +43,7 @@ public class Hello implements HelloMBean {
 
     @Override
     public int getFourtyTwo() {
-    	return 42;
+        return 42;
     }
 
 }

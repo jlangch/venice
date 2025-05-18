@@ -78,14 +78,14 @@ public class MBeanFunctionsTest {
         final Venice venice = new Venice();
 
         final String script = "(let [m (mbean/object-name \"java.lang:type=OperatingSystem\")]  \n" +
-        		              "   (mbean/info m))";
+                              "   (mbean/info m))";
 
         assertTrue(venice.eval(script) instanceof Map);
     }
 
     @Test
     public void test_register() {
-    	ensureUnregisteredHelloMBean();
+        ensureUnregisteredHelloMBean();
 
         final Venice venice = new Venice();
 
@@ -99,7 +99,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_unregister() {
-    	ensureUnregisteredHelloMBean();
+        ensureUnregisteredHelloMBean();
 
         final Venice venice = new Venice();
 
@@ -114,7 +114,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_attribute() {
-    	ensureUnregisteredHelloMBean();
+        ensureUnregisteredHelloMBean();
 
         final Venice venice = new Venice();
 
@@ -129,7 +129,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_operation_1() {
-    	ensureUnregisteredHelloMBean();
+        ensureUnregisteredHelloMBean();
 
         final Venice venice = new Venice();
 
@@ -144,7 +144,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_operation_2() {
-    	ensureUnregisteredHelloMBean();
+        ensureUnregisteredHelloMBean();
 
         final Venice venice = new Venice();
 
@@ -161,14 +161,14 @@ public class MBeanFunctionsTest {
 
 
     private static void ensureUnregisteredHelloMBean() {
-    	try {
-	        final String script = "(let [name (mbean/object-name \"venice:type=Hello\")] \n" +
-	                              "  (mbean/unregister name))                            ";
+        try {
+            final String script = "(let [name (mbean/object-name \"venice:type=Hello\")] \n" +
+                                  "  (mbean/unregister name))                            ";
 
-	        new Venice().eval(script);
-    	}
-    	catch(Exception ex) {
-    		// don't care
-    	}
+            new Venice().eval(script);
+        }
+        catch(Exception ex) {
+            // don't care
+        }
     }
 }
