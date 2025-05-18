@@ -77,7 +77,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/platform-mbean-server)")
                     .doc(
-                        "Returns the platform MBean server")
+                        "Returns the Java platform MBean server")
                     .examples(
                         "(mbean/platform-mbean-server)")
                     .seeAlso(
@@ -112,7 +112,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/query-mbean-object-names)")
                     .doc(
-                        "Returns a list of the registered object names.")
+                        "Returns a list of the registered Java MBean object names.")
                     .examples(
                         "(mbean/query-mbean-object-names)")
                     .seeAlso(
@@ -164,7 +164,7 @@ public class MBeanFunctions {
                         "(mbean/object-name name)",
                         "(mbean/object-name domain key value)")
                     .doc(
-                        "Creates an MBean object name")
+                        "Creates a Java MBean object name")
                     .examples(
                         "(mbean/object-name \"java.lang:type=OperatingSystem\")",
                         "(mbean/object-name \"java.lang\" \"type\" \"OperatingSystem\")")
@@ -220,7 +220,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/info object-name)")
                     .doc(
-                        "Return the MBean info of a MBean")
+                        "Return the MBean info of a Java MBean")
                     .examples(
                         "(let [m (mbean/object-name \"java.lang:type=OperatingSystem\")]  \n" +
                         "  (mbean/info m))                                                ")
@@ -317,7 +317,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/attribute object-name attribute-name)")
                     .doc(
-                        "Returns a MBean attribute's value.                       \n" +
+                        "Returns the value of a Java MBean attribute.             \n" +
 	                    "                                                         \n" +
 	                    "```                                                      \n" +
 	                    "// Java MBean example                                    \n" +
@@ -406,7 +406,8 @@ public class MBeanFunctions {
                         "(mbean/invoke object-name operation params)",
                         "(mbean/invoke object-name operation params signature)")
                     .doc(
-                        "Invoke a MBean operation                                 \n" +
+                        "Invoke a Java MBean operation and return its result      \n" +
+                        "value.                                                   \n" +
                         "                                                         \n" +
                         "```                                                      \n" +
 	                    "// Java MBean example                                    \n" +
@@ -528,7 +529,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/register mbean name)")
                     .doc(
-                        "Register a MBean")
+                        "Register a Java MBean")
                     .examples(
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
@@ -589,7 +590,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/unregister name)")
                     .doc(
-                        "Unregister a MBean")
+                        "Unregister a Java MBean")
                     .examples(
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
@@ -639,7 +640,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/operating-system-mxbean)")
                     .doc(
-                        "Returns the Operating System MXBean")
+                        "Returns the Java Operating System MXBean")
                     .examples(
                         "(mbean/operating-system-mxbean)")
                     .seeAlso(
@@ -667,7 +668,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/runtime-mxbean)")
                     .doc(
-                        "Returns the Runtime MXBean")
+                        "Returns the Java Runtime MXBean")
                     .examples(
                         "(mbean/runtime-mxbean)")
                     .seeAlso(
@@ -695,7 +696,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/memory-mxbean)")
                     .doc(
-                        "Returns the Memory MXBean")
+                        "Returns the Java Memory MXBean")
                     .examples(
                         "(mbean/memory-mxbean)")
                     .seeAlso(
