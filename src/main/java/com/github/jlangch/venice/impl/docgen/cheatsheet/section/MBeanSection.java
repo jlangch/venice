@@ -49,6 +49,7 @@ public class MBeanSection implements ISectionBuilder {
         server.addItem(diBuilder.getDocItem("mbean/object-name", false));
         access.addItem(diBuilder.getDocItem("mbean/info", false));
         access.addItem(diBuilder.getDocItem("mbean/attribute", false));
+        access.addItem(diBuilder.getDocItem("mbean/attribute!", false));
         access.addItem(diBuilder.getDocItem("mbean/invoke", false));
 
         final DocSection register = new DocSection("Register", "mbean.register");

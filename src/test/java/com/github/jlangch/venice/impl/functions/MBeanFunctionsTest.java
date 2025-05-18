@@ -85,7 +85,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_register() {
-        ensureUnregisteredHelloMBean();
+    	ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -99,7 +99,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_unregister() {
-        ensureUnregisteredHelloMBean();
+    	ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -114,7 +114,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_attribute() {
-        ensureUnregisteredHelloMBean();
+    	ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -129,7 +129,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_operation_1() {
-        ensureUnregisteredHelloMBean();
+    	ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -144,7 +144,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_operation_2() {
-        ensureUnregisteredHelloMBean();
+    	ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -157,13 +157,42 @@ public class MBeanFunctionsTest {
         assertEquals(3, venice.eval(script));
     }
 
+    @Test
+    public void test_dynamic_bean_get() {
+    	ensureUnregisteredMBean("venice:type=Data");
+
+        final Venice venice = new Venice();
+
+        final String script = "(do                                                     \n" +
+                              "  (let [bean (atom (hash-map :count 10))                \n" +
+                              "        name (mbean/object-name \"venice:type=Data\")]  \n" +
+                              "    (mbean/register-dynamic bean name)                  \n" +
+                              "    (mbean/attribute name :count)))                     ";
+
+        assertEquals(10L, venice.eval(script));
+    }
+
+    @Test
+    public void test_dynamic_bean_update() {
+    	ensureUnregisteredMBean("venice:type=Data");
+
+        final Venice venice = new Venice();
+
+        final String script = "(do                                                     \n" +
+                              "  (let [bean (atom (hash-map :count 10))                \n" +
+                              "        name (mbean/object-name \"venice:type=Data\")]  \n" +
+                              "    (mbean/register-dynamic bean name)                  \n" +
+                              "    (mbean/attribute! name :count 20)                   \n" +
+                              "    (mbean/attribute name :count)))                     ";
+
+        assertEquals(20L, venice.eval(script));
+    }
 
 
-
-    private static void ensureUnregisteredHelloMBean() {
+    private static void ensureUnregisteredMBean(final String name) {
         try {
-            final String script = "(let [name (mbean/object-name \"venice:type=Hello\")] \n" +
-                                  "  (mbean/unregister name))                            ";
+            final String script = "(let [name (mbean/object-name \"" + name + "\")] \n" +
+                                  "  (mbean/unregister name))                       ";
 
             new Venice().eval(script);
         }

@@ -34,7 +34,10 @@ import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
 
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.IDeref;
+import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -42,35 +45,48 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
+import com.github.jlangch.venice.impl.types.VncVolatile;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
 public class GenericMBean implements DynamicMBean {
 
-    public GenericMBean(final VncMutableMap map) {
-        this.map = map;
+    public GenericMBean(final IDeref stateRef) {
+        this.stateRef = stateRef;
     }
 
     @Override
     public Object getAttribute(final String attribute)
     throws AttributeNotFoundException, MBeanException, ReflectionException {
-        return map.get(new VncKeyword(attribute));
+        final VncVal state = stateRef.deref();
+        if (state instanceof VncMap) {
+             return getAttribute(state, attribute);
+        }
+        else {
+             return null;
+        }
     }
 
     @Override
     public void setAttribute(final Attribute attribute)
     throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
-        map.assoc(
-                new VncKeyword(attribute.getName(),
-                JavaInteropUtil.convertToVncVal(attribute.getValue())));
+         setAttribute(attribute.getName(), attribute.getValue());
     }
 
     @Override
     public AttributeList getAttributes(final String[] attributes) {
         final AttributeList list = new AttributeList();
 
-        for(String attr : attributes) {
-            list.add(new Attribute(attr, map.get(new VncKeyword(attr))));
+        final VncVal state = stateRef.deref();
+        if (state instanceof VncMap) {
+            for(String attr : attributes) {
+                list.add(new Attribute(attr, getAttribute(state, attr)));
+            }
+        }
+        else {
+             return null;
         }
 
         return list;
@@ -82,9 +98,7 @@ public class GenericMBean implements DynamicMBean {
 
         attributes.asList().forEach(a -> {
             attributeNames.add(a.getName());
-            map.assoc(
-                    new VncKeyword(a.getName()),
-                    JavaInteropUtil.convertToVncVal(a.getValue()));
+            setAttribute(a.getName(), a.getValue());
         });
 
         return getAttributes(attributeNames.toArray(new String[] {}));
@@ -111,20 +125,44 @@ public class GenericMBean implements DynamicMBean {
                 null);                    // notifications
     }
 
+    private Object getAttribute(final VncVal state, final String attribute) {
+        return ((VncMap)state).get(new VncKeyword(attribute));
+    }
+
+    private void setAttribute(final String name, final Object value) {
+         final VncKeyword key = new VncKeyword(name);
+         final VncVal val = JavaInteropUtil.convertToVncVal(value);
+
+         final VncMap update = VncHashMap.of(key, val);
+
+        if (stateRef instanceof VncAtom) {
+             ((VncAtom)stateRef).swap(CoreFunctions.merge, VncList.of(update));
+        }
+        else if (stateRef instanceof VncVolatile) {
+             ((VncVolatile)stateRef).swap(CoreFunctions.merge, VncList.of(update));
+        }
+    }
+
+
     private MBeanAttributeInfo[] getMBeanAttributeInfo() {
         final List<MBeanAttributeInfo> infos = new ArrayList<>();
-        map.keys().forEach(k -> {
-            if (k instanceof VncString) {
-                infos.add(getMBeanAttributeInfo(
-                               ((VncString)k).getValue(),
-                               map.get(k)));
-            }
-            else if (k instanceof VncKeyword) {
-                infos.add(getMBeanAttributeInfo(
-                               ((VncKeyword)k).getSimpleName(),
-                               map.get(k)));
-            }
-         });
+        final VncVal state = stateRef.deref();
+        if (state instanceof VncMap) {
+             final VncMap map = (VncMap)state;
+            map.keys().forEach(k -> {
+                if (k instanceof VncString) {
+                    infos.add(getMBeanAttributeInfo(
+                                   ((VncString)k).getValue(),
+                                   map.get(k)));
+                }
+                else if (k instanceof VncKeyword) {
+                    infos.add(getMBeanAttributeInfo(
+                                   ((VncKeyword)k).getSimpleName(),
+                                   map.get(k)));
+                }
+             });
+        }
+
          return infos.toArray(new MBeanAttributeInfo[] {});
     }
 
@@ -143,15 +181,15 @@ public class GenericMBean implements DynamicMBean {
     }
 
     private String guessType(final VncVal val) {
-    	if (val instanceof VncInteger) return "int";
-    	else if (val instanceof VncLong) return "long";
-    	else if (val instanceof VncBoolean) return "boolean";
-    	else if (val instanceof VncString) return "java.lang.String";
-    	else if (val instanceof VncChar) return "java.lang.String";
-    	else return val.getClass().getName();
+         if (val instanceof VncInteger) return "int";
+         else if (val instanceof VncLong) return "long";
+         else if (val instanceof VncBoolean) return "boolean";
+         else if (val instanceof VncString) return "java.lang.String";
+         else if (val instanceof VncChar) return "java.lang.String";
+         else return val.getClass().getName();
     }
 
 
 
-    private final VncMutableMap map;
+    private final IDeref stateRef;
 }

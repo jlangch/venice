@@ -27,11 +27,9 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.management.Attribute;
@@ -54,6 +52,7 @@ import javax.management.ObjectName;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -62,7 +61,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -88,6 +86,7 @@ public class MBeanFunctions {
                         "mbean/object-name",
                         "mbean/info",
                         "mbean/attribute",
+                        "mbean/attribute!",
                         "mbean/invoke",
                         "mbean/register",
                         "mbean/register-dynamic",
@@ -124,6 +123,7 @@ public class MBeanFunctions {
                         "mbean/object-name",
                         "mbean/info",
                         "mbean/attribute",
+                        "mbean/attribute!",
                         "mbean/invoke",
                         "mbean/register",
                         "mbean/register-dynamic",
@@ -178,6 +178,7 @@ public class MBeanFunctions {
                         "mbean/query-mbean-object-names",
                         "mbean/info",
                         "mbean/attribute",
+                        "mbean/attribute!",
                         "mbean/invoke",
                         "mbean/register",
                         "mbean/register-dynamic",
@@ -235,6 +236,7 @@ public class MBeanFunctions {
                         "mbean/query-mbean-object-names",
                         "mbean/object-name",
                         "mbean/attribute",
+                        "mbean/attribute!",
                         "mbean/invoke",
                         "mbean/register",
                         "mbean/register-dynamic",
@@ -362,12 +364,18 @@ public class MBeanFunctions {
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
                         "  (let [name (mbean/object-name \"venice:type=Hello\")]     \n" +
                         "     (mbean/register (. :Hello :new) name)                  \n" +
-                        "     (mbean/attribute name :FourtyTwo)))                    ")
+                        "     (mbean/attribute name :FourtyTwo)))                    ",
+                        "(do                                                     \n" +
+                        "  (let [bean (atom (hash-map :count 10))                \n" +
+                        "        name (mbean/object-name \"venice:type=Data\")]  \n" +
+                        "    (mbean/register-dynamic bean name)                  \n" +
+                        "    (mbean/attribute name :count)))                     ")
                     .seeAlso(
                             "mbean/platform-mbean-server",
                             "mbean/query-mbean-object-names",
                             "mbean/object-name",
                             "mbean/info",
+                            "mbean/attribute!",
                             "mbean/invoke",
                             "mbean/register",
                             "mbean/register-dynamic",
@@ -384,23 +392,73 @@ public class MBeanFunctions {
                 final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
                 try {
-                    final AttributeList list = mbs.getAttributes(
-                                                        objectName,
-                                                        new String[]{ attributeName });
+                    final Object val = mbs.getAttribute(objectName, attributeName);
 
-                    final Object value = Optional
-                                            .ofNullable(list)
-                                            .map(l -> l.isEmpty() ? null : l)
-                                            .map(List::iterator)
-                                            .map(Iterator::next)
-                                            .map(Attribute.class::cast)
-                                            .map(Attribute::getValue)
-                                            .orElse(null);
-
-                    return JavaInteropUtil.convertToVncVal(value);
+                    return JavaInteropUtil.convertToVncVal(val);
                 }
                 catch(Exception ex) {
                     throw new VncException("Failed to get MBean attribute value", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction mbean_attribute_BANG =
+        new VncFunction(
+                "mbean/attribute!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(mbean/attribute! object-name attribute-name attribute-value)")
+                    .doc(
+                        "Set the value of a Java MBean attribute.")
+                    .examples(
+                        "(do                                                     \n" +
+                        "  (let [bean (atom (hash-map :count 10))                \n" +
+                        "        name (mbean/object-name \"venice:type=Data\")]  \n" +
+                        "    (mbean/register-dynamic bean name)                  \n" +
+                        "    (mbean/attribute! name :count 20)                   \n" +
+                        "    (mbean/attribute name :count)))                     ")
+                    .seeAlso(
+                            "mbean/platform-mbean-server",
+                            "mbean/query-mbean-object-names",
+                            "mbean/object-name",
+                            "mbean/info",
+                            "mbean/attribute",
+                            "mbean/invoke",
+                            "mbean/register",
+                            "mbean/register-dynamic",
+                            "mbean/unregister")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final ObjectName objectName = Coerce.toVncJavaObject(args.first(), ObjectName.class);
+                final String attributeName = Coerce.toVncKeyword(args.second()).getSimpleName();
+                final VncVal attributeValue = args.third();
+
+                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+                try {
+                    final AttributeList list = new AttributeList();
+                    list.add(new Attribute(attributeName, attributeValue));
+
+                    final AttributeList result = mbs.setAttributes(objectName, list);
+
+                    VncMap vncResult = new VncHashMap();
+                    for(int ii=0; ii<result.size(); ii++) {
+                        final Attribute a = (Attribute)result.get(ii);
+                        vncResult = vncResult.assoc(
+                                        new VncKeyword(a.getName()),
+                                        JavaInteropUtil.convertToVncVal(a.getValue()));
+                    }
+                    return vncResult;
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to set MBean attribute value", ex);
                 }
             }
 
@@ -463,6 +521,7 @@ public class MBeanFunctions {
                         "mbean/object-name",
                         "mbean/info",
                         "mbean/attribute",
+                        "mbean/attribute!",
                         "mbean/register",
                         "mbean/register-dynamic",
                         "mbean/unregister")
@@ -560,6 +619,7 @@ public class MBeanFunctions {
                         "mbean/object-name",
                         "mbean/info",
                         "mbean/attribute",
+                        "mbean/attribute!",
                         "mbean/invoke",
                         "mbean/register-dynamic",
                         "mbean/unregister")
@@ -607,12 +667,13 @@ public class MBeanFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(mbean/register-dynamic map name)")
+                        "(mbean/register-dynamic bean name)")
                     .doc(
-                        "Register a mutable map as a dynamic Java MBean")
+                        "Register a bean (a map wrapped by an atom or a volatile) " +
+                        "as a dynamic Java MBean.")
                     .examples(
                         "(do                                                     \n" +
-                        "  (let [bean (mutable-map :count 10)                    \n" +
+                        "  (let [bean (atom hash-map :count 10)                  \n" +
                         "        name (mbean/object-name \"venice:type=Data\")]  \n" +
                         "    (mbean/register-dynamic bean name)                  \n" +
                         "    (mbean/attribute name :count)))                     ")
@@ -622,6 +683,7 @@ public class MBeanFunctions {
                         "mbean/object-name",
                         "mbean/info",
                         "mbean/attribute",
+                        "mbean/attribute!",
                         "mbean/invoke",
                         "mbean/register",
                         "mbean/unregister")
@@ -631,13 +693,18 @@ public class MBeanFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final VncMutableMap mbean = Coerce.toVncMutableMap(args.first());
+                final VncVal mbean = args.first();
+                if (!(mbean instanceof IDeref)) {
+                    throw new VncException(
+                            "Failed to register MBean. " +
+                            "A dynamic bean must either be an atom or a volatile!");
+                }
                 final ObjectName name = Coerce.toVncJavaObject(args.second(), ObjectName.class);
 
                 final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
                 try {
-                    final ObjectInstance instance = mbs.registerMBean(new GenericMBean(mbean), name);
+                    final ObjectInstance instance = mbs.registerMBean(new GenericMBean((IDeref)mbean), name);
 
                     return new VncJavaObject(instance);
                 }
@@ -823,6 +890,7 @@ public class MBeanFunctions {
                     .add(mbean_object_name)
                     .add(mbean_info)
                     .add(mbean_attribute)
+                    .add(mbean_attribute_BANG)
                     .add(mbean_invoke)
                     .add(mbean_register)
                     .add(mbean_register_dynamic)
