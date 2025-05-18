@@ -162,5 +162,6 @@ public class Modules {
                         new VncKeyword("pdf"),
                         new VncKeyword("inet"),
                         new VncKeyword("cidr"),
-                        new VncKeyword("csv"))));
+                        new VncKeyword("csv"),
+                        new VncKeyword("mbean"))));
 }

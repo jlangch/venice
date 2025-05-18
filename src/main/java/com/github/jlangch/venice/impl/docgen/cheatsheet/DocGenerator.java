@@ -106,6 +106,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JsonSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LazySequencesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LicenseSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LoadPathSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MBeanSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MacrosSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MathSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.NamespaceSection;
@@ -348,6 +349,7 @@ public class DocGenerator {
         final DocSection java = new DocSection("Java", "java");
         java.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
         java.addSection(new DocSection("Java", "modules.java"));
+        java.addSection(new DocSection("MBeans", "mbean"));
         content.add(java);
 
         final DocSection util = new DocSection("Util", "util");
@@ -514,7 +516,8 @@ public class DocGenerator {
                 new LoadPathSection(diBuilder).section(),
                 new PdfSection(diBuilder).section(),
                 new IoZipSection(diBuilder).section(),
-                new LicenseSection(diBuilder).section());
+                new LicenseSection(diBuilder).section(),
+                new MBeanSection(diBuilder).section());
     }
 
     private List<DocSection> getRightSections() {
