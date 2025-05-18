@@ -317,12 +317,43 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/attribute object-name attribute-name)")
                     .doc(
-                        "Returns a MBean attribute's value")
+                        "Returns a MBean attribute's value.                       \n" +
+	                    "                                                         \n" +
+	                    "```                                                      \n" +
+	                    "// Java MBean                                            \n" +
+	                    "public interface HelloMBean {                            \n" +
+	                    "    void sayHello();                                     \n" +
+	                    "    int add(int x, int y);                               \n" +
+	                    "    int getFourtyTwo();                                  \n" +
+	                    "}                                                        \n" +
+	                    "                                                         \n" +
+	                    "public class Hello implements HelloMBean {               \n" +
+	                    "    @Override                                            \n" +
+	                    "    public void sayHello() {                             \n" +
+	                    "       System.out.println(\"Hello, world!\");            \n" +
+	                    "    }                                                    \n" +
+	                    "                                                         \n" +
+	                    "    @Override                                            \n" +
+	                    "    public int add(int x, int y) {                       \n" +
+	                    "        return x + y;                                    \n" +
+	                    "    }                                                    \n" +
+	                    "                                                         \n" +
+	                    "    @Override                                            \n" +
+	                    "    public int getFourtyTwo() {                          \n" +
+	                    "       return 42;                                        \n" +
+	                    "    }                                                    \n" +
+	                    "}                                                        \n" +
+	                    "```                                                      ")
                     .examples(
                         "(-> (mbean/object-name \"java.lang:type=OperatingSystem\")  \n" +
                         "    (mbean/attribute \"ProcessCpuLoad\"))                   ",
                         "(-> (mbean/object-name \"java.lang:type=OperatingSystem\")  \n" +
-                        "    (mbean/attribute \"SystemCpuLoad\"))                    ")
+                        "    (mbean/attribute \"SystemCpuLoad\"))                    ",
+                        "(do                                                         \n" +
+                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
+                        "  (let [name (mbean/object-name \"venice:type=Hello\")]     \n" +
+                        "     (mbean/register (. :Hello :new) name)                  \n" +
+                        "     (mbean/attribute name \"FourtyTwo\")))                 ")
                     .seeAlso(
                             "mbean/platform-mbean-server",
                             "mbean/query-mbean-object-names",
@@ -375,7 +406,33 @@ public class MBeanFunctions {
                         "(mbean/invoke object-name operation params)",
                         "(mbean/invoke object-name operation params signature)")
                     .doc(
-                        "Invoke a MBean operation")
+                        "Invoke a MBean operation                                 \n" +
+                        "                                                         \n" +
+                        "```                                                      \n" +
+                        "// Java MBean                                            \n" +
+                        "public interface HelloMBean {                            \n" +
+                        "    void sayHello();                                     \n" +
+                        "    int add(int x, int y);                               \n" +
+                        "    int getFourtyTwo();                                  \n" +
+                        "}                                                        \n" +
+                        "                                                         \n" +
+                        "public class Hello implements HelloMBean {               \n" +
+                        "    @Override                                            \n" +
+                        "    public void sayHello() {                             \n" +
+                        "       System.out.println(\"Hello, world!\");            \n" +
+                        "    }                                                    \n" +
+                        "                                                         \n" +
+                        "    @Override                                            \n" +
+                        "    public int add(int x, int y) {                       \n" +
+                        "        return x + y;                                    \n" +
+                        "    }                                                    \n" +
+                        "                                                         \n" +
+                        "    @Override                                            \n" +
+                        "    public int getFourtyTwo() {                          \n" +
+                        "       return 42;                                        \n" +
+                        "    }                                                    \n" +
+                        "}                                                        \n" +
+                        "```                                                      ")
                     .examples(
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
