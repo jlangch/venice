@@ -228,16 +228,16 @@ public class RestrictedBlacklistedFunctions {
                 "sh/pgrep",
 
                 "mbean/platform-mbean-server",
-            	"mbean/query-mbean-object-names",
-            	"mbean/object-name",
-            	"mbean/info",
-            	"mbean/attribute",
-            	"mbean/invoke",
-            	"mbean/register",
-            	"mbean/unregister",
-            	"mbean/operating-system-mxbean",
-            	"mbean/operating-runtime-mxbean",
-            	"mbean/operating-memory-mxbean"
+                "mbean/query-mbean-object-names",
+                "mbean/object-name",
+                "mbean/info",
+                "mbean/attribute",
+                "mbean/invoke",
+                "mbean/register",
+                "mbean/unregister",
+                "mbean/operating-system-mxbean",
+                "mbean/operating-runtime-mxbean",
+                "mbean/operating-memory-mxbean"
 
 
                 // Note: Extension Modules are white listed if a sandbox is active.
