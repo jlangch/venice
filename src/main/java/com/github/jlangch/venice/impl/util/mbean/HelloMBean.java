@@ -33,4 +33,6 @@ public interface HelloMBean {
 
     int add(int x, int y);
 
+    int getFourtyTwo();
+
 }

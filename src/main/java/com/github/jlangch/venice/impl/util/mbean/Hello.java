@@ -40,4 +40,10 @@ public class Hello implements HelloMBean {
     public int add(int x, int y) {
         return x + y;
     }
+
+    @Override
+    public int getFourtyTwo() {
+    	return 42;
+    }
+
 }

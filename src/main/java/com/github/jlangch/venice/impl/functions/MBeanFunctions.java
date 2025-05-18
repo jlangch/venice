@@ -112,7 +112,7 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/query-mbean-object-names)")
                     .doc(
-                        "Returns the registered object names")
+                        "Returns a list of the registered object names.")
                     .examples(
                         "(mbean/query-mbean-object-names)")
                     .seeAlso(
