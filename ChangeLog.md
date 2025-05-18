@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- support for Java MBeans. See :mbean module
+- support for static and dynamic Java MBeans. See :mbean module
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
