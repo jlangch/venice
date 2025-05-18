@@ -39,6 +39,7 @@ import javax.management.AttributeList;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanConstructorInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
@@ -250,6 +251,29 @@ public class MBeanFunctions {
                     // main
                     map = map.assoc(new VncKeyword("classname"),   new VncString(info.getClassName()));
                     map = map.assoc(new VncKeyword("description"), new VncString(info.getDescription()));
+
+
+                    // constructors
+                    VncMap ctorMap = VncHashMap.empty();
+                    final MBeanConstructorInfo[] constructors = info.getConstructors();
+                    for(MBeanConstructorInfo ctor : constructors) {
+                        VncMap c_ = VncHashMap.empty();
+                        c_ = c_.assoc(new VncKeyword("description"), new VncString(ctor.getDescription()));
+                        c_ = c_.assoc(new VncKeyword("descriptor"),  new VncJavaObject(ctor.getDescriptor()));
+
+                        VncMap params_ = VncHashMap.empty();
+                        for(MBeanParameterInfo param :  ctor.getSignature()) {
+                            VncMap p_ = VncHashMap.empty();
+                            p_ = p_.assoc(new VncKeyword("description"), new VncString(param.getDescription()));
+                            p_ = p_.assoc(new VncKeyword("type"),        new VncString(param.getType()));
+                            p_ = p_.assoc(new VncKeyword("descriptor"),  new VncJavaObject(param.getDescriptor()));
+                            params_ = params_.assoc(new VncKeyword(param.getName()), p_);
+                        }
+                        c_ = c_.assoc(new VncKeyword("parameters"), params_);
+
+                        ctorMap = ctorMap.assoc(new VncKeyword(ctor.getName()), c_);
+                    }
+                    map = map.assoc(new VncKeyword("constructors"), ctorMap);
 
                     // attributes
                     VncMap attrMap = VncHashMap.empty();
