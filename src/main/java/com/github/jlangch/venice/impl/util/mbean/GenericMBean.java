@@ -38,8 +38,12 @@ import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
+import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncChar;
+import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFloat;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -106,10 +110,9 @@ public class GenericMBean implements DynamicMBean {
 
     @Override
     public Object invoke(String actionName, Object[] params, String[] signature)
-            throws MBeanException, ReflectionException {
-        throw new MBeanException(
-                new RuntimeException("Dynamic MBean operations are not implemented!"),
-                "Dynamic MBean operations are not implemented!");
+    throws MBeanException, ReflectionException {
+        final String msg = "Dynamic MBean operations are not implemented!";
+        throw new MBeanException(new RuntimeException(msg), msg);
     }
 
     @Override
@@ -126,7 +129,7 @@ public class GenericMBean implements DynamicMBean {
     }
 
     private Object getAttribute(final VncVal state, final String attribute) {
-        return ((VncMap)state).get(new VncKeyword(attribute));
+        return ((VncMap)state).get(new VncKeyword(attribute)).convertToJavaObject();
     }
 
     private void setAttribute(final String name, final Object value) {
@@ -181,11 +184,16 @@ public class GenericMBean implements DynamicMBean {
     }
 
     private String guessType(final VncVal val) {
-         if (val instanceof VncInteger) return "int";
-         else if (val instanceof VncLong) return "long";
-         else if (val instanceof VncBoolean) return "boolean";
-         else if (val instanceof VncString) return "java.lang.String";
-         else if (val instanceof VncChar) return "java.lang.String";
+         if (val instanceof VncInteger)         return "int";
+         else if (val instanceof VncLong)       return "long";
+         else if (val instanceof VncBoolean)    return "boolean";
+         else if (val instanceof VncString)     return "java.lang.String";
+         else if (val instanceof VncChar)       return "java.lang.String";
+         else if (val instanceof VncDouble)     return "java.lang.Double";
+         else if (val instanceof VncFloat)      return "java.lang.Float";
+         else if (val instanceof VncBigDecimal) return "java.math.BigDecimal";
+         else if (val instanceof VncBigInteger) return "java.math.BigInteger";
+
          else return val.getClass().getName();
     }
 
