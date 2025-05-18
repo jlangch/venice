@@ -62,10 +62,12 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.mbean.GenericMBean;
 
 
 public class MBeanFunctions {
@@ -88,6 +90,7 @@ public class MBeanFunctions {
                         "mbean/attribute",
                         "mbean/invoke",
                         "mbean/register",
+                        "mbean/register-dynamic",
                         "mbean/unregister",
                         "mbean/operating-system-mxbean",
                         "mbean/runtime-mxbean",
@@ -123,6 +126,7 @@ public class MBeanFunctions {
                         "mbean/attribute",
                         "mbean/invoke",
                         "mbean/register",
+                        "mbean/register-dynamic",
                         "mbean/unregister")
                     .build()
         ) {
@@ -176,6 +180,7 @@ public class MBeanFunctions {
                         "mbean/attribute",
                         "mbean/invoke",
                         "mbean/register",
+                        "mbean/register-dynamic",
                         "mbean/unregister")
                    .build()
         ) {
@@ -232,6 +237,7 @@ public class MBeanFunctions {
                         "mbean/attribute",
                         "mbean/invoke",
                         "mbean/register",
+                        "mbean/register-dynamic",
                         "mbean/unregister")
                     .build()
         ) {
@@ -364,6 +370,7 @@ public class MBeanFunctions {
                             "mbean/info",
                             "mbean/invoke",
                             "mbean/register",
+                            "mbean/register-dynamic",
                             "mbean/unregister")
                     .build()
         ) {
@@ -457,6 +464,7 @@ public class MBeanFunctions {
                         "mbean/info",
                         "mbean/attribute",
                         "mbean/register",
+                        "mbean/register-dynamic",
                         "mbean/unregister")
                     .build()
         ) {
@@ -553,7 +561,7 @@ public class MBeanFunctions {
                         "mbean/info",
                         "mbean/attribute",
                         "mbean/invoke",
-                        "mbean/register",
+                        "mbean/register-dynamic",
                         "mbean/unregister")
                     .build()
         ) {
@@ -568,6 +576,68 @@ public class MBeanFunctions {
 
                 try {
                     final ObjectInstance instance = mbs.registerMBean(mbean, name);
+
+                    return new VncJavaObject(instance);
+                }
+                catch(InstanceAlreadyExistsException ex) {
+                    throw new VncException(
+                            "Failed to register MBean. The MBean is already registered!", ex);
+                }
+                catch(MBeanRegistrationException ex) {
+                    throw new VncException(
+                            "Failed to register MBean!", ex);
+                }
+                catch(NotCompliantMBeanException ex) {
+                    throw new VncException(
+                            "Failed to register MBean. The MBean is not a compliant " +
+                            "bean according to the MBean specification!",
+                            ex);
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to register MBean", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction mbean_register_dynamic =
+        new VncFunction(
+                "mbean/register-dynamic",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(mbean/register-dynamic map name)")
+                    .doc(
+                        "Register a mutable map as a dynamic Java MBean")
+                    .examples(
+                        "(do                                                     \n" +
+                        "  (let [bean (mutable-map :count 10)                    \n" +
+                        "        name (mbean/object-name \"venice:type=Data\")]  \n" +
+                        "    (mbean/register-dynamic bean name)                  \n" +
+                        "    (mbean/attribute name :count)))                     ")
+                    .seeAlso(
+                        "mbean/platform-mbean-server",
+                        "mbean/query-mbean-object-names",
+                        "mbean/object-name",
+                        "mbean/info",
+                        "mbean/attribute",
+                        "mbean/invoke",
+                        "mbean/register",
+                        "mbean/unregister")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncMutableMap mbean = Coerce.toVncMutableMap(args.first());
+                final ObjectName name = Coerce.toVncJavaObject(args.second(), ObjectName.class);
+
+                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+                try {
+                    final ObjectInstance instance = mbs.registerMBean(new GenericMBean(mbean), name);
 
                     return new VncJavaObject(instance);
                 }
@@ -611,7 +681,8 @@ public class MBeanFunctions {
                     .seeAlso(
                         "mbean/platform-mbean-server",
                         "mbean/object-name",
-                        "mbean/register")
+                        "mbean/register",
+                        "mbean/register-dynamic")
                     .build()
         ) {
             @Override
@@ -754,6 +825,7 @@ public class MBeanFunctions {
                     .add(mbean_attribute)
                     .add(mbean_invoke)
                     .add(mbean_register)
+                    .add(mbean_register_dynamic)
                     .add(mbean_unregister)
                     .add(mbean_operating_system_mxbean)
                     .add(mbean_runtime_mxbean)

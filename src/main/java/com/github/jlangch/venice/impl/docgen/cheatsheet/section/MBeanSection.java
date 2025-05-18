@@ -54,6 +54,7 @@ public class MBeanSection implements ISectionBuilder {
         final DocSection register = new DocSection("Register", "mbean.register");
         all.addSection(register);
         register.addItem(diBuilder.getDocItem("mbean/register", false));
+        register.addItem(diBuilder.getDocItem("mbean/register-dynamic", false));
         register.addItem(diBuilder.getDocItem("mbean/unregister", false));
 
         final DocSection mx = new DocSection("MX Beans", "mbean.mx");
