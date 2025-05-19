@@ -25,6 +25,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,15 +45,23 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -63,6 +72,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.mbean.GenericMBean;
@@ -107,6 +117,146 @@ public class MBeanFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction mbean_create_jmx_connection =
+        new VncFunction(
+                "mbean/create-jmx-connection",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(mbean/create-jmx-connection)")
+                    .doc(
+                        "Create a local or remote JMX MBean server connection\n\n" +
+                        "Returns :javax.management.MBeanServerConnection object")
+                    .examples(
+                        "(mbean/create-jmx-connection \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\")")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final String url = Coerce.toVncString(args.first()).getValue();
+
+                try {
+                    final JMXServiceURL jmxurl = new JMXServiceURL(url);
+                    final JMXConnector jmxc = JMXConnectorFactory.connect(jmxurl, null);
+                    return new VncJavaObject(jmxc.getMBeanServerConnection());
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to create JMX server connection", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction mbean_jmx_connector_server_start =
+        new VncFunction(
+                "mbean/jmx-connector-server-start",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(mbean/jmx-connector-server-start port)")
+                    .doc(
+                        "Start a JMX connector server on a given port")
+                    .examples(
+                        "(let [registry (mbean/jmx-connector-server-start 9999)] \n" +
+                        "  (mbean/jmx-connector-server-alive? registry)          \n" +
+                        "  (mbean/jmx-connector-server-stop registry))           ")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final long port = Coerce.toVncLong(args.first()).getValue();
+
+                try {
+                    LocateRegistry.createRegistry((int)port);
+
+                    final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+                    // Create JMXServiceURL and start connector server
+                    final String url = "service:jmx:rmi:///jndi/rmi://localhost:" + port +"/jmxrmi";
+                    final JMXServiceURL jmxurl = new JMXServiceURL(url);
+                    final JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer(jmxurl, null, mbs);
+                    cs.start();
+
+                    return new VncJavaObject(cs);
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to create JMX connector server", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction mbean_jmx_connector_server_stop =
+        new VncFunction(
+                "mbean/jmx-connector-server-stop",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(mbean/jmx-connector-server-stop server)")
+                    .doc(
+                        "Stop a JMX connector server")
+                    .examples(
+                        "(let [cs (mbean/jmx-connector-server-start 9999)] \n" +
+                        "  (mbean/jmx-connector-server-alive? cs)          \n" +
+                        "  (mbean/jmx-connector-server-stop cs))           ")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final JMXConnectorServer cs = Coerce.toVncJavaObject(args.first(), JMXConnectorServer.class);
+
+                try {
+                	cs.stop();
+                    return Constants.Nil;
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to stop a JMX connector server", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction mbean_jmx_connector_server_alive_Q =
+        new VncFunction(
+                "mbean/jmx-connector-server-alive?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(mbean/jmx-connector-server-alive? server)")
+                    .doc(
+                        "Returns true if the JMX connector server is running else false.")
+                    .examples(
+                        "(let [cs (mbean/jmx-connector-server-start 9999)] \n" +
+                        "  (mbean/jmx-connector-server-alive? cs)          \n" +
+                        "  (mbean/jmx-connector-server-stop cs))           ")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final JMXConnectorServer cs = Coerce.toVncJavaObject(args.first(), JMXConnectorServer.class);
+
+                try {
+                	return VncBoolean.of(cs.isActive());
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to check if a JMX connector server is alive", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction mbean_query_mbean_object_names =
         new VncFunction(
                 "mbean/query-mbean-object-names",
@@ -134,27 +284,33 @@ public class MBeanFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0);
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-                final Set<ObjectName> mbeans = mbs.queryNames(null, null);
+                try {
+                    final MBeanServerConnection mbs = getMBeanServerConnection();
 
-                final List<VncVal> list = new ArrayList<>();
+                    final Set<ObjectName> mbeans = mbs.queryNames(null, null);
 
-                mbeans.forEach(on -> {
-                    VncMap map = VncHashMap.empty();
-                    map = map.assoc(new VncKeyword("canonical-name"), new VncString(on.getCanonicalName()));
-                    map = map.assoc(new VncKeyword("domain"), new VncString(on.getDomain()));
+                    final List<VncVal> list = new ArrayList<>();
 
-                    VncMap props = VncHashMap.empty();
-                    for(Entry<String,String> e : on.getKeyPropertyList().entrySet()) {
-                        props = props.assoc(new VncString(e.getKey()), new VncString(e.getValue()));
-                    }
-                    map = map.assoc(new VncKeyword("properties"), props);
-                    map = map.assoc(new VncKeyword("object-name"), new VncJavaObject(on));
+                    mbeans.forEach(on -> {
+                        VncMap map = VncHashMap.empty();
+                        map = map.assoc(new VncKeyword("canonical-name"), new VncString(on.getCanonicalName()));
+                        map = map.assoc(new VncKeyword("domain"), new VncString(on.getDomain()));
 
-                    list.add(map);
-                 });
+                        VncMap props = VncHashMap.empty();
+                        for(Entry<String,String> e : on.getKeyPropertyList().entrySet()) {
+                            props = props.assoc(new VncString(e.getKey()), new VncString(e.getValue()));
+                        }
+                        map = map.assoc(new VncKeyword("properties"), props);
+                        map = map.assoc(new VncKeyword("object-name"), new VncJavaObject(on));
 
-                return VncList.ofColl(list);
+                        list.add(map);
+                     });
+
+                    return VncList.ofColl(list);
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to query MBeans", ex);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -293,9 +449,9 @@ public class MBeanFunctions {
 
                 final ObjectName name = Coerce.toVncJavaObject(args.first(), ObjectName.class);
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
                 try {
+                    final MBeanServerConnection mbs = getMBeanServerConnection();
+
                     final MBeanInfo info = mbs.getMBeanInfo(name);
 
                     VncMap map = VncHashMap.empty();
@@ -432,9 +588,9 @@ public class MBeanFunctions {
                 final ObjectName objectName = Coerce.toVncJavaObject(args.first(), ObjectName.class);
                 final String attributeName = Coerce.toVncKeyword(args.second()).getSimpleName();
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
                 try {
+                    final MBeanServerConnection mbs = getMBeanServerConnection();
+
                     final Object val = mbs.getAttribute(objectName, attributeName);
 
                     return JavaInteropUtil.convertToVncVal(val);
@@ -492,9 +648,9 @@ public class MBeanFunctions {
                 final String attributeName = Coerce.toVncKeyword(args.second()).getSimpleName();
                 final VncVal attributeValue = args.third();
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
                 try {
+                    final MBeanServerConnection mbs = getMBeanServerConnection();
+
                     final AttributeList list = new AttributeList();
                     list.add(new Attribute(attributeName, attributeValue.convertToJavaObject()));
 
@@ -591,9 +747,9 @@ public class MBeanFunctions {
                     params[ii] = vncParams.nth(ii).convertToJavaObject();
                 }
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
                 try {
+                    final MBeanServerConnection mbs = getMBeanServerConnection();
+
                     final MBeanInfo info = mbs.getMBeanInfo(name);
 
                     final List<String> signature = new ArrayList<>();
@@ -642,7 +798,7 @@ public class MBeanFunctions {
                     throw new VncException("MBean not found", ex);
                 }
                 catch(Exception ex) {
-                    throw new VncException("Failed to invokeMBean", ex);
+                    throw new VncException("Failed to invoke MBean", ex);
                 }
             }
 
@@ -683,9 +839,9 @@ public class MBeanFunctions {
                 final Object mbean = Coerce.toVncJavaObject(args.first(), Object.class);
                 final ObjectName name = Coerce.toVncJavaObject(args.second(), ObjectName.class);
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
                 try {
+                    final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
                     final ObjectInstance instance = mbs.registerMBean(mbean, name);
 
                     return new VncJavaObject(instance);
@@ -752,9 +908,9 @@ public class MBeanFunctions {
                 }
                 final ObjectName name = Coerce.toVncJavaObject(args.second(), ObjectName.class);
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
                 try {
+                    final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
                     final ObjectInstance instance = mbs.registerMBean(new GenericMBean((IDeref)mbean), name);
 
                     return new VncJavaObject(instance);
@@ -810,9 +966,9 @@ public class MBeanFunctions {
 
                 final ObjectName name = Coerce.toVncJavaObject(args.first(), ObjectName.class);
 
-                final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
                 try {
+                    final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
                     mbs.unregisterMBean(name);
 
                     return Constants.Nil;
@@ -918,6 +1074,7 @@ public class MBeanFunctions {
         };
 
 
+
     private static VncMap mapMBeanParameterInfo(final MBeanParameterInfo[] paramInfo) {
         VncMap params = VncHashMap.empty();
         for(MBeanParameterInfo param :  paramInfo) {
@@ -929,6 +1086,25 @@ public class MBeanFunctions {
         }
         return params;
     }
+
+
+    private static MBeanServerConnection getMBeanServerConnection() {
+        final VncVal conn = ThreadContext.getValue(JMX_CONNECTION);
+
+        if (Types.isVncJavaObject(conn)) {
+            final Object delegate = ((VncJavaObject)conn).getDelegate();
+            if (delegate instanceof MBeanServerConnection) {
+                return (MBeanServerConnection)conn;
+            }
+        }
+
+        // otherwise connect to local MBean Server
+        return ManagementFactory.getPlatformMBeanServer();
+    }
+
+
+
+    private static final VncKeyword JMX_CONNECTION = new VncKeyword("*jmx-connection*");
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -950,6 +1126,12 @@ public class MBeanFunctions {
                     .add(mbean_operating_system_mxbean)
                     .add(mbean_runtime_mxbean)
                     .add(mbean_memory_mxbean)
+
+                    // JMX
+                    .add(mbean_create_jmx_connection)
+                    .add(mbean_jmx_connector_server_start)
+                    .add(mbean_jmx_connector_server_stop)
+                    .add(mbean_jmx_connector_server_alive_Q)
 
                     .toMap();
 }

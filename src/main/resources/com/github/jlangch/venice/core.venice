@@ -1317,6 +1317,25 @@
 
 
 (defmacro
+  ^{ :arglists '("(with-jmx-connction url & forms)")
+     :doc """
+          Establishes a JMX connection to access MBeans of a local or remote 
+          Java VM.
+          """
+     :examples '(
+          """
+          (with-jmx-connction "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi" 
+            (let [name (mbean/object-name "java.lang:type=OperatingSystem")]
+              (mbean/info name)))
+          """) }
+
+  with-jmx-connction [url & forms]
+
+  `(binding [*jmx-connection* (mbean/create-jmx-connection ~url)] 
+     (do ~@forms)))
+
+
+(defmacro
   ^{ :arglists '("(delay & body)")
      :doc """
           Takes a body of expressions and yields a Delay object that will invoke
