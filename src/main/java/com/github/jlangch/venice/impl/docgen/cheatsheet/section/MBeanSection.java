@@ -36,7 +36,7 @@ public class MBeanSection implements ISectionBuilder {
     public DocSection section() {
         final DocSection section = new DocSection(
                                         "MBeans",
-                                        "Managing static and dynamic Java MBeans",
+                                        "Static and dynamic Java MBeans",
                                         "mbean");
 
         final DocSection all = new DocSection("", id());

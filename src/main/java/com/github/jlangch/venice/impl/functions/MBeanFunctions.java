@@ -227,10 +227,54 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/info object-name)")
                     .doc(
-                        "Return the MBean info of a Java MBean")
+                        "Return the MBean info of a Java MBean.                                       \n" +
+                        "                                                                             \n" +
+                        "Example MBean:                                                               \n" +
+                        "                                                                             \n" +
+                        "```                                                                          \n" +
+                        "public interface HelloMBean {                                                \n" +
+                        "    void sayHello();                                                         \n" +
+                        "    int add(int x, int y);                                                   \n" +
+                        "    int getMaxCount();                                                       \n" +
+                        "    void setMaxCount(int c);                                                 \n" +
+                        "}                                                                            \n" +
+                        "```                                                                          \n" +
+                        "                                                                             \n" +
+                        "Example MBean info:                                                                             \n" +
+                        "                                                                                                \n" +
+                        "```                                                                                             \n" +
+                        "{:classname \"com.github.jlangch.venice.impl.util.mbean.Hello\"                                 \n" +
+                        " :notifications {}                                                                              \n" +
+                        " :operations {:add {:parameters {:p1 {:descriptor {}                                            \n" +
+                        "                                      :type \"int\"                                             \n" +
+                        "                                      :description \"\"}                                        \n" +
+                        "                                 :p2 {:descriptor {}                                            \n" +
+                        "                                      :type \"int\"                                             \n" +
+                        "                                      :description \"\"}}                                       \n" +
+                        "                    :descriptor {}                                                              \n" +
+                        "                    :return-type \"int\"                                                        \n" +
+                        "                    :description \"Operation exposed for management\"}                          \n" +
+                        "              :sayHello {:parameters {}                                                         \n" +
+                        "                         :descriptor {}                                                         \n" +
+                        "                         :return-type \"void\"                                                  \n" +
+                        "                         :description \"Operation exposed for management\"}}                    \n" +
+                        " :attributes {:MaxCount {:descriptor {}                                                         \n" +
+                        "                         :type \"int\"                                                          \n" +
+                        "                         :description \"Attribute exposed for management\"}}                    \n" +
+                        "                         :constructors {:com.github.jlangch.venice.impl.util.mbean.Hello        \n" +
+                        "                                          {:parameters {}                                       \n" +
+                        "                                           :descriptor {}                                       \n" +
+                        "                                           :description \"Public constructor of the MBean\"}}   \n" +
+                        "                         :description \"Information on the management interface of the MBean\"}  ")
                     .examples(
-                        "(let [m (mbean/object-name \"java.lang:type=OperatingSystem\")]  \n" +
-                        "  (mbean/info m))                                                ")
+                        "(let [name (mbean/object-name \"java.lang:type=OperatingSystem\")]  \n" +
+                        "  (mbean/info name))                                                ",
+                        "(do                                                         \n" +
+                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
+                        "  (let [bean (. :Hello :new)                                \n" +
+                        "        name (mbean/object-name \"venice:type=Hello\")]     \n" +
+                        "     (mbean/register bean name)                             \n" +
+                        "     (mbean/info name)))                                    ")
                     .seeAlso(
                         "mbean/platform-mbean-server",
                         "mbean/query-mbean-object-names",
@@ -333,26 +377,22 @@ public class MBeanFunctions {
                         "```                                                      \n" +
                         "// Java MBean example                                    \n" +
                         "public interface HelloMBean {                            \n" +
-                        "    void sayHello();                                     \n" +
-                        "    int add(int x, int y);                               \n" +
                         "    int getMaxCount();                                   \n" +
+                        "    void setMaxCount(int c);                             \n" +
                         "}                                                        \n" +
                         "                                                         \n" +
                         "public class Hello implements HelloMBean {               \n" +
                         "    @Override                                            \n" +
-                        "    public void sayHello() {                             \n" +
-                        "       System.out.println(\"Hello, world!\");            \n" +
-                        "    }                                                    \n" +
-                        "                                                         \n" +
-                        "    @Override                                            \n" +
-                        "    public int add(int x, int y) {                       \n" +
-                        "        return x + y;                                    \n" +
-                        "    }                                                    \n" +
-                        "                                                         \n" +
-                        "    @Override                                            \n" +
                         "    public int getMaxCount() {                           \n" +
-                        "       return 42;                                        \n" +
+                        "       return maxCount;                                  \n" +
                         "    }                                                    \n" +
+                        "                                                         \n" +
+                        "    @Override                                            \n" +
+                        "    public coid setMaxCount(int c) {                     \n" +
+                        "       maxCount = c;                                     \n" +
+                        "    }                                                    \n" +
+                        "                                                         \n" +
+                        "    private int maxCount = 42;                           \n" +
                         "}                                                        \n" +
                         "```                                                      ")
                     .examples(
@@ -363,8 +403,9 @@ public class MBeanFunctions {
                         ";; static MBean                                             \n" +
                         "(do                                                         \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
-                        "  (let [name (mbean/object-name \"venice:type=Hello\")]     \n" +
-                        "     (mbean/register (. :Hello :new) name)                  \n" +
+                        "  (let [bean (. :Hello :new)                                \n" +
+                        "        name (mbean/object-name \"venice:type=Hello\")]     \n" +
+                        "     (mbean/register bean name)                             \n" +
                         "     (mbean/attribute name :MaxCount)))                     ",
                         ";; dynamic MBean                                            \n" +
                         "(do                                                         \n" +
@@ -417,10 +458,11 @@ public class MBeanFunctions {
                         "Set the value of a Java MBean attribute.")
                     .examples(
                         ";; static MBean                                              \n" +
-                    	"(do                                                          \n" +
+                        "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
-                        "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
-                        "     (mbean/register (. :Hello :new) name)                   \n" +
+                        "  (let [bean (. :Hello :new)                                 \n" +
+                        "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                        "     (mbean/register bean name)                              \n" +
                         "     (mbean/attribute! name :MaxCount 64I)                   \n" +
                         "     (mbean/attribute name :MaxCount)))                      ",
                         ";; dynamic MBean                                             \n" +
@@ -494,7 +536,6 @@ public class MBeanFunctions {
                         "public interface HelloMBean {                            \n" +
                         "    void sayHello();                                     \n" +
                         "    int add(int x, int y);                               \n" +
-                        "    int getMaxCount();                                   \n" +
                         "}                                                        \n" +
                         "                                                         \n" +
                         "public class Hello implements HelloMBean {               \n" +
@@ -507,24 +548,21 @@ public class MBeanFunctions {
                         "    public int add(int x, int y) {                       \n" +
                         "        return x + y;                                    \n" +
                         "    }                                                    \n" +
-                        "                                                         \n" +
-                        "    @Override                                            \n" +
-                        "    public int getMaxCount() {                           \n" +
-                        "       return 42;                                        \n" +
-                        "    }                                                    \n" +
                         "}                                                        \n" +
                         "```                                                      ")
                     .examples(
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
-                        "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
-                        "    (mbean/register (. :Hello :new) name)                    \n" +
+                        "  (let [bean (. :Hello :new)                                 \n" +
+                        "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                        "    (mbean/register bean name)                               \n" +
                         "    ;; use an explicit operation signature                   \n" +
                         "    (mbean/invoke name :add [1I 2I] [\"int\" \"int\"])))     ",
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
-                        "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
-                        "    (mbean/register (. :Hello :new) name)                    \n" +
+                        "  (let [bean (. :Hello :new)                                 \n" +
+                        "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                        "    (mbean/register bean name)                               \n" +
                         "    ;; use the :add operation signature from the MBeanInfo   \n" +
                         "    (mbean/invoke name :add [1I 2I])))                       ")
                     .seeAlso(
@@ -623,8 +661,9 @@ public class MBeanFunctions {
                     .examples(
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
-                        "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
-                        "     (mbean/register (. :Hello :new) name)))                 ")
+                        "  (let [bean (. :Hello :new)                                 \n" +
+                        "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                        "     (mbean/register bean name)))                            ")
                     .seeAlso(
                         "mbean/platform-mbean-server",
                         "mbean/query-mbean-object-names",
@@ -754,8 +793,9 @@ public class MBeanFunctions {
                     .examples(
                         "(do                                                          \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
-                        "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
-                        "     (mbean/register (. :Hello :new) name)                   \n" +
+                        "  (let [bean (. :Hello :new)                                 \n" +
+                        "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                        "     (mbean/register bean name)                              \n" +
                         "     (mbean/unregister name)))                               ")
                     .seeAlso(
                         "mbean/platform-mbean-server",
