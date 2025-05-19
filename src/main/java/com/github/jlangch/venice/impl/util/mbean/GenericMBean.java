@@ -65,12 +65,9 @@ public class GenericMBean implements DynamicMBean {
     public Object getAttribute(final String attribute)
     throws AttributeNotFoundException, MBeanException, ReflectionException {
         final VncVal state = stateRef.deref();
-        if (state instanceof VncMap) {
-             return getAttribute(state, attribute);
-        }
-        else {
-             return null;
-        }
+        return state instanceof VncMap
+                 ? getAttribute(state, attribute)
+                 : null;
     }
 
     @Override
