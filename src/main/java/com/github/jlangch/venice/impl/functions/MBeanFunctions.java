@@ -240,32 +240,32 @@ public class MBeanFunctions {
                         "}                                                                            \n" +
                         "```                                                                          \n" +
                         "                                                                             \n" +
-                        "Example MBean info:                                                                             \n" +
-                        "                                                                                                \n" +
-                        "```                                                                                             \n" +
-                        "{:classname \"com.github.jlangch.venice.impl.util.mbean.Hello\"                                 \n" +
-                        " :notifications {}                                                                              \n" +
-                        " :operations {:add {:parameters {:p1 {:descriptor {}                                            \n" +
-                        "                                      :type \"int\"                                             \n" +
-                        "                                      :description \"\"}                                        \n" +
-                        "                                 :p2 {:descriptor {}                                            \n" +
-                        "                                      :type \"int\"                                             \n" +
-                        "                                      :description \"\"}}                                       \n" +
-                        "                    :descriptor {}                                                              \n" +
-                        "                    :return-type \"int\"                                                        \n" +
-                        "                    :description \"Operation exposed for management\"}                          \n" +
-                        "              :sayHello {:parameters {}                                                         \n" +
-                        "                         :descriptor {}                                                         \n" +
-                        "                         :return-type \"void\"                                                  \n" +
-                        "                         :description \"Operation exposed for management\"}}                    \n" +
-                        " :attributes {:MaxCount {:descriptor {}                                                         \n" +
-                        "                         :type \"int\"                                                          \n" +
-                        "                         :description \"Attribute exposed for management\"}}                    \n" +
-                        "                         :constructors {:com.github.jlangch.venice.impl.util.mbean.Hello        \n" +
-                        "                                          {:parameters {}                                       \n" +
-                        "                                           :descriptor {}                                       \n" +
-                        "                                           :description \"Public constructor of the MBean\"}}   \n" +
-                        "                         :description \"Information on the management interface of the MBean\"}  ")
+                        "Example MBean info:                                                                     \n" +
+                        "                                                                                        \n" +
+                        "```                                                                                     \n" +
+                        "{:classname \"com.github.jlangch.venice.impl.util.mbean.Hello\"                         \n" +
+                        " :notifications {}                                                                      \n" +
+                        " :operations {:add {:parameters {:p1 {:descriptor {}                                    \n" +
+                        "                                      :type \"int\"                                     \n" +
+                        "                                      :description \"\"}                                \n" +
+                        "                                 :p2 {:descriptor {}                                    \n" +
+                        "                                      :type \"int\"                                     \n" +
+                        "                                      :description \"\"}}                               \n" +
+                        "                    :descriptor {}                                                      \n" +
+                        "                    :return-type \"int\"                                                \n" +
+                        "                    :description \"Operation exposed for management\"}                  \n" +
+                        "              :sayHello {:parameters {}                                                 \n" +
+                        "                         :descriptor {}                                                 \n" +
+                        "                         :return-type \"void\"                                          \n" +
+                        "                         :description \"Operation exposed for management\"}}            \n" +
+                        " :attributes {:MaxCount {:descriptor {}                                                 \n" +
+                        "                         :type \"int\"                                                  \n" +
+                        "                         :description \"Attribute exposed for management\"}}            \n" +
+                        " :constructors {:com.github.jlangch.venice.impl.util.mbean.Hello                        \n" +
+                        "                   {:parameters {}                                                      \n" +
+                        "                    :descriptor {}                                                      \n" +
+                        "                    :description \"Public constructor of the MBean\"}}                  \n" +
+                        "                :description \"Information on the management interface of the MBean\"}  ")
                     .examples(
                         "(let [name (mbean/object-name \"java.lang:type=OperatingSystem\")]  \n" +
                         "  (mbean/info name))                                                ",
