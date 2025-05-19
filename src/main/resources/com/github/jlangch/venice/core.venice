@@ -1317,10 +1317,13 @@
 
 
 (defmacro
-  ^{ :arglists '("(with-jmx-connction url & forms)")
+  ^{ :arglists '("(with-jmx-connection url & forms)")
      :doc """
           Establishes a JMX connection to access MBeans of a local or remote 
           Java VM.
+
+          Without an explicit JMX connection local MBeans will be accessed. This
+          is the default setup.
           """
      :examples '(
           """
@@ -1329,7 +1332,7 @@
               (mbean/info name)))
           """) }
 
-  with-jmx-connction [url & forms]
+  with-jmx-connection [url & forms]
 
   `(binding [*jmx-connection* (mbean/create-jmx-connection ~url)] 
      (do ~@forms)))

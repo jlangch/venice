@@ -125,10 +125,13 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/create-jmx-connection)")
                     .doc(
-                        "Create a local or remote JMX MBean server connection\n\n" +
-                        "Returns :javax.management.MBeanServerConnection object")
+                        "Create a connection to a local or remote JMX MBean server.   \n\n" +
+                        "Returns :javax.management.MBeanServerConnection object.      \n\n" +
+                        "Prefer the macro `with-jmx-connection` to communicate with   \n" +
+                        "a remote JMX server!")
                     .examples(
                         "(mbean/create-jmx-connection \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\")")
+                    .seeAlso("with-jmx-connection")
                     .build()
         ) {
             @Override
@@ -158,11 +161,16 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/jmx-connector-server-start port)")
                     .doc(
-                        "Start a JMX connector server on a given port")
+                        "Start a JMX connector server on a given port.                     \n\n" +
+                        "A connector server is required if the MBeans should be accessible \n" +
+                        "from a remote Java VM.")
                     .examples(
                         "(let [registry (mbean/jmx-connector-server-start 9999)] \n" +
                         "  (mbean/jmx-connector-server-alive? registry)          \n" +
                         "  (mbean/jmx-connector-server-stop registry))           ")
+                    .seeAlso(
+                    	"mbean/jmx-connector-server-stop",
+                    	"mbean/jmx-connector-server-alive?")
                     .build()
         ) {
             @Override
@@ -205,6 +213,9 @@ public class MBeanFunctions {
                         "(let [cs (mbean/jmx-connector-server-start 9999)] \n" +
                         "  (mbean/jmx-connector-server-alive? cs)          \n" +
                         "  (mbean/jmx-connector-server-stop cs))           ")
+                    .seeAlso(
+                    	"mbean/jmx-connector-server-start",
+                    	"mbean/jmx-connector-server-alive?")
                     .build()
         ) {
             @Override
@@ -238,6 +249,9 @@ public class MBeanFunctions {
                         "(let [cs (mbean/jmx-connector-server-start 9999)] \n" +
                         "  (mbean/jmx-connector-server-alive? cs)          \n" +
                         "  (mbean/jmx-connector-server-stop cs))           ")
+                    .seeAlso(
+                    	"mbean/jmx-connector-server-start",
+                    	"mbean/jmx-connector-server-stop")
                     .build()
         ) {
             @Override

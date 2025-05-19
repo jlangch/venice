@@ -67,6 +67,16 @@ public class MBeanSection implements ISectionBuilder {
         mx.addItem(diBuilder.getDocItem("mbean/runtime-mxbean", false));
         mx.addItem(diBuilder.getDocItem("mbean/memory-mxbean", false));
 
+        final DocSection remote = new DocSection("Remote access", "mbean.remote");
+        all.addSection(remote);
+        remote.addItem(diBuilder.getDocItem("with-jmx-connection", false));
+
+        final DocSection cs = new DocSection("JMX Connector", "mbean.cs");
+        all.addSection(cs);
+        cs.addItem(diBuilder.getDocItem("mbean/jmx-connector-server-start", false));
+        cs.addItem(diBuilder.getDocItem("mbean/jmx-connector-server-stop", false));
+        cs.addItem(diBuilder.getDocItem("mbean/jmx-connector-server-alive?", false));
+
         return section;
     }
 
