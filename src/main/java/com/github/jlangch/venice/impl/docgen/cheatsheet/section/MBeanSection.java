@@ -34,7 +34,10 @@ public class MBeanSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
-        final DocSection section = new DocSection("MBeans", "mbean");
+        final DocSection section = new DocSection(
+                                        "MBeans",
+                                        "Managing static and dynamic Java MBeans",
+                                        "mbean");
 
         final DocSection all = new DocSection("", id());
         section.addSection(all);

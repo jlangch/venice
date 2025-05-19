@@ -335,7 +335,7 @@ public class MBeanFunctions {
                         "public interface HelloMBean {                            \n" +
                         "    void sayHello();                                     \n" +
                         "    int add(int x, int y);                               \n" +
-                        "    int getFourtyTwo();                                  \n" +
+                        "    int getMaxCount();                                   \n" +
                         "}                                                        \n" +
                         "                                                         \n" +
                         "public class Hello implements HelloMBean {               \n" +
@@ -350,7 +350,7 @@ public class MBeanFunctions {
                         "    }                                                    \n" +
                         "                                                         \n" +
                         "    @Override                                            \n" +
-                        "    public int getFourtyTwo() {                          \n" +
+                        "    public int getMaxCount() {                           \n" +
                         "       return 42;                                        \n" +
                         "    }                                                    \n" +
                         "}                                                        \n" +
@@ -360,26 +360,28 @@ public class MBeanFunctions {
                         "    (mbean/attribute :ProcessCpuLoad))                      ",
                         "(-> (mbean/object-name \"java.lang:type=OperatingSystem\")  \n" +
                         "    (mbean/attribute :SystemCpuLoad))                       ",
+                        ";; static MBean                                             \n" +
                         "(do                                                         \n" +
                         "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
                         "  (let [name (mbean/object-name \"venice:type=Hello\")]     \n" +
                         "     (mbean/register (. :Hello :new) name)                  \n" +
-                        "     (mbean/attribute name :FourtyTwo)))                    ",
-                        "(do                                                     \n" +
-                        "  (let [bean (atom (hash-map :count 10))                \n" +
-                        "        name (mbean/object-name \"venice:type=Data\")]  \n" +
-                        "    (mbean/register-dynamic bean name)                  \n" +
-                        "    (mbean/attribute name :count)))                     ")
+                        "     (mbean/attribute name :MaxCount)))                     ",
+                        ";; dynamic MBean                                            \n" +
+                        "(do                                                         \n" +
+                        "  (let [bean (atom (hash-map :count 10))                    \n" +
+                        "        name (mbean/object-name \"venice:type=Data\")]      \n" +
+                        "    (mbean/register-dynamic bean name)                      \n" +
+                        "    (mbean/attribute name :count)))                         ")
                     .seeAlso(
-                            "mbean/platform-mbean-server",
-                            "mbean/query-mbean-object-names",
-                            "mbean/object-name",
-                            "mbean/info",
-                            "mbean/attribute!",
-                            "mbean/invoke",
-                            "mbean/register",
-                            "mbean/register-dynamic",
-                            "mbean/unregister")
+                        "mbean/platform-mbean-server",
+                        "mbean/query-mbean-object-names",
+                        "mbean/object-name",
+                        "mbean/info",
+                        "mbean/attribute!",
+                        "mbean/invoke",
+                        "mbean/register",
+                        "mbean/register-dynamic",
+                        "mbean/unregister")
                     .build()
         ) {
             @Override
@@ -414,22 +416,30 @@ public class MBeanFunctions {
                     .doc(
                         "Set the value of a Java MBean attribute.")
                     .examples(
-                        "(do                                                     \n" +
-                        "  (let [bean (atom (hash-map :count 10))                \n" +
-                        "        name (mbean/object-name \"venice:type=Data\")]  \n" +
-                        "    (mbean/register-dynamic bean name)                  \n" +
-                        "    (mbean/attribute! name :count 20)                   \n" +
-                        "    (mbean/attribute name :count)))                     ")
+                        ";; static MBean                                              \n" +
+                    	"(do                                                          \n" +
+                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                        "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                        "     (mbean/register (. :Hello :new) name)                   \n" +
+                        "     (mbean/attribute! name :MaxCount 64I)                   \n" +
+                        "     (mbean/attribute name :MaxCount)))                      ",
+                        ";; dynamic MBean                                             \n" +
+                        "(do                                                          \n" +
+                        "  (let [bean (atom (hash-map :count 10))                     \n" +
+                        "        name (mbean/object-name \"venice:type=Data\")]       \n" +
+                        "    (mbean/register-dynamic bean name)                       \n" +
+                        "    (mbean/attribute! name :count 20)                        \n" +
+                        "    (mbean/attribute name :count)))                          ")
                     .seeAlso(
-                            "mbean/platform-mbean-server",
-                            "mbean/query-mbean-object-names",
-                            "mbean/object-name",
-                            "mbean/info",
-                            "mbean/attribute",
-                            "mbean/invoke",
-                            "mbean/register",
-                            "mbean/register-dynamic",
-                            "mbean/unregister")
+                        "mbean/platform-mbean-server",
+                        "mbean/query-mbean-object-names",
+                        "mbean/object-name",
+                        "mbean/info",
+                        "mbean/attribute",
+                        "mbean/invoke",
+                        "mbean/register",
+                        "mbean/register-dynamic",
+                        "mbean/unregister")
                     .build()
         ) {
             @Override
@@ -444,7 +454,7 @@ public class MBeanFunctions {
 
                 try {
                     final AttributeList list = new AttributeList();
-                    list.add(new Attribute(attributeName, attributeValue));
+                    list.add(new Attribute(attributeName, attributeValue.convertToJavaObject()));
 
                     final AttributeList result = mbs.setAttributes(objectName, list);
 
@@ -477,12 +487,14 @@ public class MBeanFunctions {
                         "Invoke a Java MBean operation and return its result      \n" +
                         "value.                                                   \n" +
                         "                                                         \n" +
+                        "Supported for static MBeans only!                        \n" +
+                        "                                                         \n" +
                         "```                                                      \n" +
                         "// Java MBean example                                    \n" +
                         "public interface HelloMBean {                            \n" +
                         "    void sayHello();                                     \n" +
                         "    int add(int x, int y);                               \n" +
-                        "    int getFourtyTwo();                                  \n" +
+                        "    int getMaxCount();                                   \n" +
                         "}                                                        \n" +
                         "                                                         \n" +
                         "public class Hello implements HelloMBean {               \n" +
@@ -497,7 +509,7 @@ public class MBeanFunctions {
                         "    }                                                    \n" +
                         "                                                         \n" +
                         "    @Override                                            \n" +
-                        "    public int getFourtyTwo() {                          \n" +
+                        "    public int getMaxCount() {                           \n" +
                         "       return 42;                                        \n" +
                         "    }                                                    \n" +
                         "}                                                        \n" +

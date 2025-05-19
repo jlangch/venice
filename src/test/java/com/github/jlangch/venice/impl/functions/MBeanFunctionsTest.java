@@ -122,9 +122,25 @@ public class MBeanFunctionsTest {
                               "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
-                              "     (mbean/attribute name :FourtyTwo)))                     ";
+                              "     (mbean/attribute name :MaxCount)))                      ";
 
         assertEquals(42, venice.eval(script));
+    }
+
+    @Test
+    public void test_attribute_BANG() {
+    	ensureUnregisteredMBean("venice:type=Hello");
+
+        final Venice venice = new Venice();
+
+        final String script = "(do                                                          \n" +
+                              "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                              "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
+                              "     (mbean/register (. :Hello :new) name)                   \n" +
+                              "     (mbean/attribute! name :MaxCount 64I)                   \n" +
+                              "     (mbean/attribute name :MaxCount)))                      ";
+
+        assertEquals(64, venice.eval(script));
     }
 
     @Test

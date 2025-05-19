@@ -33,6 +33,8 @@ public interface HelloMBean {
 
     int add(int x, int y);
 
-    int getFourtyTwo();
+    int getMaxCount();
+
+    void setMaxCount(int c);
 
 }
