@@ -146,7 +146,6 @@ public class GenericMBean implements DynamicMBean {
         }
     }
 
-
     private MBeanAttributeInfo[] getMBeanAttributeInfo() {
         final List<MBeanAttributeInfo> infos = new ArrayList<>();
         final VncVal state = stateRef.deref();
@@ -166,7 +165,7 @@ public class GenericMBean implements DynamicMBean {
              });
         }
 
-         return infos.toArray(new MBeanAttributeInfo[] {});
+        return infos.toArray(new MBeanAttributeInfo[] {});
     }
 
     private MBeanAttributeInfo getMBeanAttributeInfo(
@@ -180,7 +179,6 @@ public class GenericMBean implements DynamicMBean {
                 true,           // isReadable,
                 true,           // isWritable,
                 false);         // isIs
-
     }
 
     private String guessType(final VncVal val) {
@@ -196,7 +194,6 @@ public class GenericMBean implements DynamicMBean {
 
          else return val.getClass().getName();
     }
-
 
 
     private final IDeref stateRef;

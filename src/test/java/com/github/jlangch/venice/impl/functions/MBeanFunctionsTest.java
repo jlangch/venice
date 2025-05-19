@@ -90,7 +90,7 @@ public class MBeanFunctionsTest {
         final Venice venice = new Venice();
 
         final String script = "(do                                                          \n" +
-                              "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                              "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)))                 ";
 
@@ -104,7 +104,7 @@ public class MBeanFunctionsTest {
         final Venice venice = new Venice();
 
         final String script = "(do                                                          \n" +
-                              "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                              "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
                               "     (mbean/unregister name)))                               ";
@@ -119,7 +119,7 @@ public class MBeanFunctionsTest {
         final Venice venice = new Venice();
 
         final String script = "(do                                                          \n" +
-                              "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                              "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
                               "     (mbean/attribute name :MaxCount)))                      ";
@@ -134,7 +134,7 @@ public class MBeanFunctionsTest {
         final Venice venice = new Venice();
 
         final String script = "(do                                                          \n" +
-                              "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                              "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
                               "     (mbean/attribute! name :MaxCount 64I)                   \n" +
@@ -150,7 +150,7 @@ public class MBeanFunctionsTest {
         final Venice venice = new Venice();
 
         final String script = "(do                                                          \n" +
-                              "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                              "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
                               "     (mbean/invoke name :add [1I 2I] [\"int\" \"int\"])))    ";
@@ -165,7 +165,7 @@ public class MBeanFunctionsTest {
         final Venice venice = new Venice();
 
         final String script = "(do                                                          \n" +
-                              "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                              "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                               "  (let [name (mbean/object-name \"venice:type=Hello\")]      \n" +
                               "     (mbean/register (. :Hello :new) name)                   \n" +
                               "     (mbean/invoke name :add [1I 2I])))                      ";

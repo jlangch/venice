@@ -19,22 +19,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.mbean;
-
+package com.github.jlangch.venice.demo.mbean;
 
 /**
  * A JMX standard MBean
  *
  * https://docs.oracle.com/javase/tutorial/jmx/mbeans/standard.html
  */
-public interface HelloMBean {
+public class Hello implements HelloMBean {
 
-    void sayHello();
+    public Hello() {
+    }
 
-    int add(int x, int y);
+    @Override
+    public void sayHello() {
+        System.out.println("Hello, world!");
+    }
 
-    int getMaxCount();
+    @Override
+    public int add(int x, int y) {
+        return x + y;
+    }
 
-    void setMaxCount(int c);
+    @Override
+    public int getMaxCount() {
+        return maxCount;
+    }
 
+    @Override
+    public void setMaxCount(int c) {
+    	maxCount = c;
+    }
+
+    int maxCount = 42;
 }

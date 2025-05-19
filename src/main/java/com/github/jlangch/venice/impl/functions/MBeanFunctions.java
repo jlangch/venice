@@ -243,7 +243,7 @@ public class MBeanFunctions {
                         "Example MBean info:                                                                     \n" +
                         "                                                                                        \n" +
                         "```                                                                                     \n" +
-                        "{:classname \"com.github.jlangch.venice.impl.util.mbean.Hello\"                         \n" +
+                        "{:classname \"com.github.jlangch.venice.demo.mbean.Hello\"                              \n" +
                         " :notifications {}                                                                      \n" +
                         " :operations {:add {:parameters {:p1 {:descriptor {}                                    \n" +
                         "                                      :type \"int\"                                     \n" +
@@ -261,7 +261,7 @@ public class MBeanFunctions {
                         " :attributes {:MaxCount {:descriptor {}                                                 \n" +
                         "                         :type \"int\"                                                  \n" +
                         "                         :description \"Attribute exposed for management\"}}            \n" +
-                        " :constructors {:com.github.jlangch.venice.impl.util.mbean.Hello                        \n" +
+                        " :constructors {:com.github.jlangch.venice.demo.mbean.Hello                             \n" +
                         "                   {:parameters {}                                                      \n" +
                         "                    :descriptor {}                                                      \n" +
                         "                    :description \"Public constructor of the MBean\"}}                  \n" +
@@ -270,7 +270,7 @@ public class MBeanFunctions {
                         "(let [name (mbean/object-name \"java.lang:type=OperatingSystem\")]  \n" +
                         "  (mbean/info name))                                                ",
                         "(do                                                         \n" +
-                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
+                        "  (import :com.github.jlangch.venice.demo.mbean.Hello)      \n" +
                         "  (let [bean (. :Hello :new)                                \n" +
                         "        name (mbean/object-name \"venice:type=Hello\")]     \n" +
                         "     (mbean/register bean name)                             \n" +
@@ -402,7 +402,7 @@ public class MBeanFunctions {
                         "    (mbean/attribute :SystemCpuLoad))                       ",
                         ";; static MBean                                             \n" +
                         "(do                                                         \n" +
-                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello) \n" +
+                        "  (import :com.github.jlangch.venice.demo.mbean.Hello)      \n" +
                         "  (let [bean (. :Hello :new)                                \n" +
                         "        name (mbean/object-name \"venice:type=Hello\")]     \n" +
                         "     (mbean/register bean name)                             \n" +
@@ -459,7 +459,7 @@ public class MBeanFunctions {
                     .examples(
                         ";; static MBean                                              \n" +
                         "(do                                                          \n" +
-                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                        "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                         "  (let [bean (. :Hello :new)                                 \n" +
                         "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
                         "     (mbean/register bean name)                              \n" +
@@ -552,14 +552,14 @@ public class MBeanFunctions {
                         "```                                                      ")
                     .examples(
                         "(do                                                          \n" +
-                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                        "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                         "  (let [bean (. :Hello :new)                                 \n" +
                         "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
                         "    (mbean/register bean name)                               \n" +
                         "    ;; use an explicit operation signature                   \n" +
                         "    (mbean/invoke name :add [1I 2I] [\"int\" \"int\"])))     ",
                         "(do                                                          \n" +
-                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                        "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                         "  (let [bean (. :Hello :new)                                 \n" +
                         "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
                         "    (mbean/register bean name)                               \n" +
@@ -660,7 +660,7 @@ public class MBeanFunctions {
                         "Register a Java MBean")
                     .examples(
                         "(do                                                          \n" +
-                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                        "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                         "  (let [bean (. :Hello :new)                                 \n" +
                         "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
                         "     (mbean/register bean name)))                            ")
@@ -792,7 +792,7 @@ public class MBeanFunctions {
                         "Unregister a Java MBean")
                     .examples(
                         "(do                                                          \n" +
-                        "  (import :com.github.jlangch.venice.impl.util.mbean.Hello)  \n" +
+                        "  (import :com.github.jlangch.venice.demo.mbean.Hello)       \n" +
                         "  (let [bean (. :Hello :new)                                 \n" +
                         "        name (mbean/object-name \"venice:type=Hello\")]      \n" +
                         "     (mbean/register bean name)                              \n" +
