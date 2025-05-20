@@ -1328,6 +1328,39 @@
 
           It is strongly recommended to configure SSL and authentication for the
           JMX connector!
+
+          **Authentication**
+
+          To enable authentication, the server JVM must be started with these 
+          system properties:
+
+          ```
+          -Dcom.sun.management.jmxremote
+          -Dcom.sun.management.jmxremote.port=9999
+          -Dcom.sun.management.jmxremote.authenticate=true
+          -Dcom.sun.management.jmxremote.ssl=false
+          -Dcom.sun.management.jmxremote.password.file=/path/to/jmxremote.password
+          -Dcom.sun.management.jmxremote.access.file=/path/to/jmxremote.access
+          ```
+
+          Example password file (jmxremote.password):
+
+          ```
+          admin secret
+          ```
+
+          Set file permissions strictly:
+
+          ```
+          chmod 600 /path/to/jmxremote.password
+          ```
+
+          Example access file (jmxremote.access):
+
+          ```
+          admin readwrite
+          ````
+
           """
      :examples '(
           """

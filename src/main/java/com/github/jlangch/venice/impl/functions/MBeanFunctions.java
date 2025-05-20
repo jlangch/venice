@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
@@ -75,9 +77,9 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.mbean.GenericMBean;
-
 
 public class MBeanFunctions {
 
@@ -125,34 +127,55 @@ public class MBeanFunctions {
                     .meta()
                     .arglists(
                         "(mbean/create-jmx-connection url)",
-                    	"(mbean/create-jmx-connection url env)")
+                        "(mbean/create-jmx-connection url env)")
                     .doc(
                         "Create a connection to a local or remote JMX MBean server.   \n\n" +
                         "Returns :javax.management.MBeanServerConnection object.      \n\n" +
                         "Prefer the macro `with-jmx-connection` to communicate with   \n" +
                         "a remote JMX server!")
                     .examples(
+                        ";; without SSL and authentication                                         \n" +
                         "(mbean/create-jmx-connection                                              \n" +
-                        "         \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\")         ",
-                        "(do                                                                       \n" +
-                        "  (import :javax.management.remote.password.UserPasswordCredential)       \n" +
-                        "                                                                          \n" +
-                        "  (mbean/create-jmx-connection                                            \n" +
-                        "          \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\"         \n" +
-                        "          { \"jmx.remote.credentials\" [\"username\" \"password\"] } ))   ")
+                        "         \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\"          \n" +
+                        "         nil                                                              \n" +
+                        "         nil)                                                             ",
+                        ";; with SSL and username/password authentication                          \n" +
+                        "(mbean/create-jmx-connection                                              \n" +
+                        "         \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\"          \n" +
+                        "         { \"javax.net.ssl\" true                                         \n" +
+                        "           \"javax.net.ssl.trustStore\" \"/path/to/jmx.truststore\"       \n" +
+                        "           \"javax.net.ssl.trustStorePassword\" \"changeit\" }            \n" +
+                        "         { \"jmx.remote.credentials\" [\"username\" \"password\"] })      ")
                     .seeAlso("with-jmx-connection")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1, 2);
+                ArityExceptions.assertArity(this, args, 3);
 
                 final String url = Coerce.toVncString(args.first()).getValue();
 
-                final VncMap envMap = args.size() == 1 || args.second() == Constants.Nil
+                final VncMap sslMap = args.second() == Constants.Nil
                                         ? VncHashMap.empty()
                                         : Coerce.toVncMap(args.second());
 
+                final VncMap envMap = args.third() == Constants.Nil
+                                        ? VncHashMap.empty()
+                                        : Coerce.toVncMap(args.third());
+
+                // ssl
+                final VncVal ssl_ = sslMap.get(new VncString("javax.net.ssl"));
+                final VncVal trustStore_ = sslMap.get(new VncString("javax.net.ssl.trustStore"));
+                final VncVal trustStorePwd_ = sslMap.get(new VncString("javax.net.ssl.trustStorePassword"));
+                final boolean ssl = VncBoolean.isTrue(ssl_);
+                final String trustStore = Types.isVncString(trustStore_)
+                                            ? StringUtil.trimToNull(((VncString)trustStore_).getValue())
+                                            : null;
+                final String trustStorePwd = Types.isVncString(trustStorePwd_)
+                                                ? StringUtil.trimToNull(((VncString)trustStorePwd_).getValue())
+                                                : null;
+
+                // environment
                 final Map<String, Object> environment = new HashMap<>();
                 if (!envMap.isEmpty()) {
                     envMap.getJavaMap().forEach((k,v) -> {
@@ -161,9 +184,9 @@ public class MBeanFunctions {
 
                             // special case for credentials
                             if (key.equals("jmx.remote.credentials")) {
-                                final VncSequence val = Coerce.toVncSequence(v);
-                                final String user = Coerce.toVncString(val.first()).getValue();
-                                final String password = Coerce.toVncString(val.second()).getValue();
+                                final VncSequence seq = Coerce.toVncSequence(v);
+                                final String user = Coerce.toVncString(seq.first()).getValue();
+                                final String password = Coerce.toVncString(seq.second()).getValue();
                                 environment.put(key, new String[] {user, password});
                             }
                             else {
@@ -178,6 +201,15 @@ public class MBeanFunctions {
                 }
 
                 try {
+                    // Set SSL system properties
+                    if (ssl) {
+                        if (trustStore != null && trustStorePwd != null) {
+                            System.setProperty("javax.net.ssl.trustStore", trustStore);
+                            System.setProperty("javax.net.ssl.trustStorePassword", trustStorePwd);
+                        }
+                        environment.put("com.sun.jndi.rmi.factory.socket", new javax.rmi.ssl.SslRMIClientSocketFactory());
+                    }
+
                     final JMXServiceURL jmxurl = new JMXServiceURL(url);
                     final JMXConnector jmxc = JMXConnectorFactory.connect(jmxurl, environment);
                     return new VncJavaObject(jmxc.getMBeanServerConnection());
@@ -209,7 +241,8 @@ public class MBeanFunctions {
                         "  (mbean/jmx-connector-server-stop registry))           ")
                     .seeAlso(
                         "mbean/jmx-connector-server-stop",
-                        "mbean/jmx-connector-server-alive?")
+                        "mbean/jmx-connector-server-alive?",
+                        "with-jmx-connection")
                     .build()
         ) {
             @Override
@@ -265,7 +298,7 @@ public class MBeanFunctions {
 
                 try {
                     cs.stop();
-                    return Constants.Nil;
+                    return Nil;
                 }
                 catch(Exception ex) {
                     throw new VncException("Failed to stop a JMX connector server", ex);
@@ -1024,7 +1057,7 @@ public class MBeanFunctions {
 
                     mbs.unregisterMBean(name);
 
-                    return Constants.Nil;
+                    return Nil;
                 }
                 catch(InstanceNotFoundException ex) {
                     throw new VncException(
