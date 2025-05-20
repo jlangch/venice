@@ -241,8 +241,7 @@ public class MBeanFunctions {
                         "  (mbean/jmx-connector-server-stop registry))           ")
                     .seeAlso(
                         "mbean/jmx-connector-server-stop",
-                        "mbean/jmx-connector-server-alive?",
-                        "with-jmx-connection")
+                        "mbean/jmx-connector-server-alive?")
                     .build()
         ) {
             @Override
