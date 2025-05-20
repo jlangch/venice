@@ -1317,7 +1317,8 @@
 
 
 (defmacro
-  ^{ :arglists '("(with-jmx-connection url & forms)")
+  ^{ :arglists '(
+          "(with-jmx-connection url env & forms)")
      :doc """
           Establishes a JMX connection to access MBeans of a local or remote 
           Java VM.
@@ -1327,14 +1328,22 @@
           """
      :examples '(
           """
-          (with-jmx-connction "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi" 
+          (with-jmx-connction "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi"
+                              nil
+            (let [name (mbean/object-name "java.lang:type=OperatingSystem")]
+              (mbean/info name)))
+          """
+          """
+          ;; example with username/password authentication
+          (with-jmx-connction "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi"
+                              { "jmx.remote.credentials" ["username" "password"] }
             (let [name (mbean/object-name "java.lang:type=OperatingSystem")]
               (mbean/info name)))
           """) }
 
-  with-jmx-connection [url & forms]
+  with-jmx-connection [url env & forms]
 
-  `(binding [*jmx-connection* (mbean/create-jmx-connection ~url)] 
+  `(binding [*jmx-connection* (mbean/create-jmx-connection ~url ~env)] 
      (do ~@forms)))
 
 

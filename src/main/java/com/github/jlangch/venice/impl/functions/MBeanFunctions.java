@@ -28,6 +28,7 @@ import java.lang.management.RuntimeMXBean;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -123,26 +124,62 @@ public class MBeanFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(mbean/create-jmx-connection)")
+                        "(mbean/create-jmx-connection url)",
+                    	"(mbean/create-jmx-connection url env)")
                     .doc(
                         "Create a connection to a local or remote JMX MBean server.   \n\n" +
                         "Returns :javax.management.MBeanServerConnection object.      \n\n" +
                         "Prefer the macro `with-jmx-connection` to communicate with   \n" +
                         "a remote JMX server!")
                     .examples(
-                        "(mbean/create-jmx-connection \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\")")
+                        "(mbean/create-jmx-connection                                              \n" +
+                        "         \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\")         ",
+                        "(do                                                                       \n" +
+                        "  (import :javax.management.remote.password.UserPasswordCredential)       \n" +
+                        "                                                                          \n" +
+                        "  (mbean/create-jmx-connection                                            \n" +
+                        "          \"service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi\"         \n" +
+                        "          { \"jmx.remote.credentials\" [\"username\" \"password\"] } ))   ")
                     .seeAlso("with-jmx-connection")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
                 final String url = Coerce.toVncString(args.first()).getValue();
 
+                final VncMap envMap = args.size() == 1 || args.second() == Constants.Nil
+                                        ? VncHashMap.empty()
+                                        : Coerce.toVncMap(args.second());
+
+                final Map<String, Object> environment = new HashMap<>();
+                if (!envMap.isEmpty()) {
+                    envMap.getJavaMap().forEach((k,v) -> {
+                        if (Types.isVncString(k)) {
+                            final String key = ((VncString)k).getValue();
+
+                            // special case for credentials
+                            if (key.equals("jmx.remote.credentials")) {
+                                final VncSequence val = Coerce.toVncSequence(v);
+                                final String user = Coerce.toVncString(val.first()).getValue();
+                                final String password = Coerce.toVncString(val.second()).getValue();
+                                environment.put(key, new String[] {user, password});
+                            }
+                            else {
+                                final Object val = v.convertToJavaObject();
+                                environment.put(key, val);
+                            }
+                        }
+                        else {
+                            throw new VncException("Invalid environment key. Must be a string");
+                        }
+                    });
+                }
+
                 try {
                     final JMXServiceURL jmxurl = new JMXServiceURL(url);
-                    final JMXConnector jmxc = JMXConnectorFactory.connect(jmxurl, null);
+                    final JMXConnector jmxc = JMXConnectorFactory.connect(jmxurl, environment);
                     return new VncJavaObject(jmxc.getMBeanServerConnection());
                 }
                 catch(Exception ex) {
@@ -161,16 +198,18 @@ public class MBeanFunctions {
                     .arglists(
                         "(mbean/jmx-connector-server-start port)")
                     .doc(
-                        "Start a JMX connector server on a given port.                     \n\n" +
-                        "A connector server is required if the MBeans should be accessible \n" +
-                        "from a remote Java VM.")
+                        "Start a JMX connector server on a given port.                      \n\n" +
+                        "A connector server is required if the MBeans should be accessible  \n" +
+                        "from a remote Java VM.                                             \n\n" +
+                        "It is strongly recommended to configure SSL and authentication for \n" +
+                        "the JMX connector!")
                     .examples(
                         "(let [registry (mbean/jmx-connector-server-start 9999)] \n" +
                         "  (mbean/jmx-connector-server-alive? registry)          \n" +
                         "  (mbean/jmx-connector-server-stop registry))           ")
                     .seeAlso(
-                    	"mbean/jmx-connector-server-stop",
-                    	"mbean/jmx-connector-server-alive?")
+                        "mbean/jmx-connector-server-stop",
+                        "mbean/jmx-connector-server-alive?")
                     .build()
         ) {
             @Override
@@ -214,8 +253,8 @@ public class MBeanFunctions {
                         "  (mbean/jmx-connector-server-alive? cs)          \n" +
                         "  (mbean/jmx-connector-server-stop cs))           ")
                     .seeAlso(
-                    	"mbean/jmx-connector-server-start",
-                    	"mbean/jmx-connector-server-alive?")
+                        "mbean/jmx-connector-server-start",
+                        "mbean/jmx-connector-server-alive?")
                     .build()
         ) {
             @Override
@@ -225,7 +264,7 @@ public class MBeanFunctions {
                 final JMXConnectorServer cs = Coerce.toVncJavaObject(args.first(), JMXConnectorServer.class);
 
                 try {
-                	cs.stop();
+                    cs.stop();
                     return Constants.Nil;
                 }
                 catch(Exception ex) {
@@ -250,8 +289,8 @@ public class MBeanFunctions {
                         "  (mbean/jmx-connector-server-alive? cs)          \n" +
                         "  (mbean/jmx-connector-server-stop cs))           ")
                     .seeAlso(
-                    	"mbean/jmx-connector-server-start",
-                    	"mbean/jmx-connector-server-stop")
+                        "mbean/jmx-connector-server-start",
+                        "mbean/jmx-connector-server-stop")
                     .build()
         ) {
             @Override
@@ -261,7 +300,7 @@ public class MBeanFunctions {
                 final JMXConnectorServer cs = Coerce.toVncJavaObject(args.first(), JMXConnectorServer.class);
 
                 try {
-                	return VncBoolean.of(cs.isActive());
+                    return VncBoolean.of(cs.isActive());
                 }
                 catch(Exception ex) {
                     throw new VncException("Failed to check if a JMX connector server is alive", ex);
