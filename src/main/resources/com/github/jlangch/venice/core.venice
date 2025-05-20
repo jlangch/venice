@@ -1325,21 +1325,29 @@
 
           Without an explicit JMX connection local MBeans will be accessed. This
           is the default setup.
+
+          It is strongly recommended to configure SSL and authentication for the
+          JMX connector!
           """
      :examples '(
           """
-          (with-jmx-connction "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi"
-                              nil
+          (with-jmx-connection "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi"
+                               nil
             (let [name (mbean/object-name "java.lang:type=OperatingSystem")]
               (mbean/info name)))
           """
           """
           ;; example with username/password authentication
-          (with-jmx-connction "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi"
-                              { "jmx.remote.credentials" ["username" "password"] }
+          (with-jmx-connection "service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi"
+                               { "jmx.remote.credentials" ["username" "password"] }
             (let [name (mbean/object-name "java.lang:type=OperatingSystem")]
               (mbean/info name)))
-          """) }
+          """
+          """
+          ;; local access (without explicit JMX connection)
+          (let [name (mbean/object-name "java.lang:type=OperatingSystem")]
+            (mbean/info name))
+          """ ) }
 
   with-jmx-connection [url env & forms]
 
