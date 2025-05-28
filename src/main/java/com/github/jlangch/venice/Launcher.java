@@ -53,7 +53,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  * <p>The launcher is configured as the Venice JAR's main-class.
  *
  * <p>Running scripts:
- * <pre>java -jar venice-1.12.45.jar -script "(+ 1 1)"</pre>
+ * <pre>java -jar venice-1.12.44.jar -script "(+ 1 1)"</pre>
  *
  * <p>Running a REPL:
  * <pre>
@@ -90,10 +90,10 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *  -repl              start a REPL
  *
  *  -setup             setup a REPL
- *                     E.g.:  java -jar venice-1.12.45.jar -setup -colors \n" +
- *                            java -jar venice-1.12.45.jar -setup -colors-light \n" +
- *                            java -jar venice-1.12.45.jar -setup -colors-dark \n" +
- *                            java -jar venice-1.12.45.jar -setup -colors -dir /Users/foo/repl \n" +
+ *                     E.g.:  java -jar venice-1.12.44.jar -setup -colors \n" +
+ *                            java -jar venice-1.12.44.jar -setup -colors-light \n" +
+ *                            java -jar venice-1.12.44.jar -setup -colors-dark \n" +
+ *                            java -jar venice-1.12.44.jar -setup -colors -dir /Users/foo/repl \n" +
  *
  *  -help              prints a help
  *  </pre>
@@ -268,7 +268,7 @@ public class Launcher {
              "The launcher is configured as the Venice JAR's main-class. \n" +
              "\n" +
              "Running scripts: \n" +
-             "    java -jar venice-1.12.45.jar -script \"(+ 1 1)\" \n" +
+             "    java -jar venice-1.12.44.jar -script \"(+ 1 1)\" \n" +
              "\n" +
              "Running a REPL:  \n" +
              "    java \\ \n" +
@@ -306,10 +306,10 @@ public class Launcher {
              "                     E.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
              "\n" +
              "  -setup             setup a REPL \n" +
-             "                     E.g.:  java -jar venice-1.12.45.jar -setup -colors \n" +
-             "                            java -jar venice-1.12.45.jar -setup -colors-light \n" +
-             "                            java -jar venice-1.12.45.jar -setup -colors-dark \n" +
-             "                            java -jar venice-1.12.45.jar -setup -colors -dir /Users/foo/repl \n" +
+             "                     E.g.:  java -jar venice-1.12.44.jar -setup -colors \n" +
+             "                            java -jar venice-1.12.44.jar -setup -colors-light \n" +
+             "                            java -jar venice-1.12.44.jar -setup -colors-dark \n" +
+             "                            java -jar venice-1.12.44.jar -setup -colors -dir /Users/foo/repl \n" +
             "\n" +
              "  -help              prints a help \n" +
              "\n" +

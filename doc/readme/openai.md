@@ -58,7 +58,7 @@ Add the key to the 'repl.env' file in the REPL home directory.
 with:
 
 ```
-foo>  java -jar venice-1.12.45.jar -setup -colors
+foo>  java -jar venice-1.12.44.jar -setup -colors
 ```
 
 *Unix like OSs*

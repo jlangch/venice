@@ -57,7 +57,7 @@ Would you like to try Venice in an interactive REPL environment?
 
 ## Cheat Sheet
 
-Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangch/venice/e57d844/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/e57d844/cheatsheet.pdf)
+Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangch/venice/e8ca833/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/e8ca833/cheatsheet.pdf)
 
 
 
@@ -125,7 +125,7 @@ You can can pull it from the central Maven repositories:
 <dependency>
   <groupId>com.github.jlangch</groupId>
   <artifactId>venice</artifactId>
-  <version>1.12.45</version>
+  <version>1.12.44</version>
 </dependency>
 ```
 
