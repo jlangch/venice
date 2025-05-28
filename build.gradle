@@ -486,8 +486,7 @@ publishing {
     repositories {
         if(!version.endsWith('SNAPSHOT')) {
             maven {
-                url "https://central.sonatype.com/repository/org.sonatype.nexus.repository.maven-releases/"
-                //url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 
                 credentials {
                     username sonatypeUsername
