@@ -439,9 +439,9 @@ shadowJar {
 publishing {
     publications {
         venicePublication(MavenPublication) {
-            groupId = 'com.github.jlangch'
-            artifactId = 'venice'
-            version = "${project.version}"
+            groupId    = "${project.groupId}"
+            artifactId = "${project.artifactId}"
+            version    = "${project.version}"
 
             artifact sourcesJar
             artifact javadocJar
@@ -519,25 +519,40 @@ jdeprscanReport {
 */
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
+    // https://central.sonatype.org/publish/publish-portal-upload/
+    // https://central.sonatype.org/publish/publish-portal-api/
+    // Use "com.github.jlangch:venice:1.0.0" as "Deployment Name.
+    
     workingDir 'build/libs'
 
     commandLine "/bin/sh",
                 "-c",
-                "cat ../../src/main/resources/com/github/jlangch/venice/old/pom.xml " +
-                  " | sed 's/__VERSION__/${project.version}/g' > ./pom.xml" +
-                  "; echo 'Bundling Venice ${project.version}'" +
-                  "; echo 'Signing artifacts...'" +
-                  "; gpg2 -ab pom.xml" +
-                  "; gpg2 -ab venice-${project.version}-javadoc.jar" +
-                  "; gpg2 -ab venice-${project.version}-sources.jar" +
-                  "; gpg2 -ab venice-${project.version}.jar" +
-                  "; echo 'Bundling artifacts...'" +
-                  "; jar -cvf bundle.jar" +
-                         " pom.xml pom.xml.asc" +
-                         " venice-${project.version}-javadoc.jar venice-${project.version}-javadoc.jar.asc" +
-                         " venice-${project.version}-sources.jar venice-${project.version}-sources.jar.asc" +
-                         " venice-${project.version}.jar venice-${project.version}.jar.asc" +
-                  "; echo 'Bundling done.'"
+                "cat ../../pom-template.xml | sed 's/__VERSION__/${project.version}/g' > ./pom.xml" +
+                  "; echo 'Bundling ${project.artifactId} ${project.version}' for publishing to Sonatype" +
+                  "; echo 'Create ascii armored artifacts...'" +
+                  "; gpg -ab pom.xml" +
+                  "; gpg -ab ${project.artifactId}-${project.version}.jar" +
+                  "; gpg -ab ${project.artifactId}-${project.version}-sources.jar" +
+                  "; gpg -ab ${project.artifactId}-${project.version}-javadoc.jar" +
+                  "; echo 'Computing SHA1 checksums ...'" +
+                  "; sha1sum pom.xml | cut -d' ' -f1 >  pom.xml.sha1" +
+                  "; sha1sum ${project.artifactId}-${project.version}.jar         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.sha1" +
+                  "; sha1sum ${project.artifactId}-${project.version}-sources.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.sha1" +
+                  "; sha1sum ${project.artifactId}-${project.version}-javadoc.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.sha1" +
+                  "; echo 'Computing MD5 checksums ...'" +
+                  "; md5sum pom.xml | cut -d' ' -f1 > pom.xml.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}.jar         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}-sources.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}-javadoc.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.md5" +
+                  "; echo 'Bundling artifacts to JAR...'" +
+                  "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
+                  "; cp pom.* venice-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
+                  "; (cd staging; jar -cMf ../bundle.jar *)" +
+                  //"; jar -tvf bundle.jar" +
+                  "; echo 'Bundling done.'" +
+                  "; echo " +
+                  "; echo 'Publish manually at : https://central.sonatype.com/publishing'" +
+                  "; echo 'with deployment name: ${project.groupId}:${project.artifactId}:${project.version}'"
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
