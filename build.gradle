@@ -77,23 +77,11 @@
 //       - Commit the 'README.md' change
 //
 //   [2] Publish to Maven
-//       - see example https://github.com/kit-data-manager/nexus-publish-example
-//       - ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
-//                   -Dorg.gradle.internal.http.socketTimeout=60000
-//                   -Dorg.gradle.internal.http.connectionTimeout=60000
-//                   --warning-mode all
-//                   -Psigning.gnupg.keyName=[gpg-user-key-id]
-//                   -PsonatypeUsername=[name]
-//                   -PsonatypePassword=[pw]
-//                   clean shadowJar publish
-//         see:  https://central.sonatype.org/news/20240301_changes_to_account_management/
-//       - Log in to Sonatype OSSRH (https://oss.sonatype.org/)
-//       - Choose Staging Repositories
-//       - Find the release 'comgithubjlangch-*'
-//       - Verify the contents are ok
-//       - Click Close (wait for validation steps under the Activity tab
-//         to complete)
-//       - Click Release
+//       - ./gradlew bundle
+//       - Open https://central.sonatype.com/publishing and login
+//       - Choose deployment name: "com.github.jlangch:aviron:x.y.z"
+//       - Upload 'bundle.jar' (scroll down publish dialog)
+//       - Publish the artifact
 //
 //   [3] Draft a GitHub Venice release
 //       - Draft a new release in Git (https://github.com/jlangch/venice/releases)
@@ -514,7 +502,7 @@ publishing {
 
 
 signing {
-    useGpgCmd()  // use the local GPG agent to sign the artefacts
+    useGpgCmd()  // use the local GPG agent to sign the artifacts
 
     sign publishing.publications.venicePublication
 }
@@ -537,7 +525,7 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
     // Tech info:         https://central.sonatype.org/publish/publish-portal-upload/
     //                    https://central.sonatype.org/publish/publish-portal-api/
     // Manual publish:    https://central.sonatype.com/publishing
-    //                    deployment name "com.github.jlangch:venice:1.0.0"
+    //                    deployment name "com.github.jlangch:venice:x.y.z"
     //                    scroll down to upload 'bundle.jar'
     // Browse artifacts:  https://central.sonatype.com/search?namespace=com.github.jlangch
     
@@ -552,16 +540,15 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
                   "; gpg -ab ${project.artifactId}-${project.version}.jar" +
                   "; gpg -ab ${project.artifactId}-${project.version}-sources.jar" +
                   "; gpg -ab ${project.artifactId}-${project.version}-javadoc.jar" +
-                  "; echo 'Computing SHA1 checksums ...'" +
+                  "; echo 'Computing SHA1 and MD5 checksums ...'" +
                   "; sha1sum ${project.artifactId}-${project.version}.pom         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.pom.sha1" +
                   "; sha1sum ${project.artifactId}-${project.version}.jar         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.sha1" +
                   "; sha1sum ${project.artifactId}-${project.version}-sources.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.sha1" +
                   "; sha1sum ${project.artifactId}-${project.version}-javadoc.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.sha1" +
-                  "; echo 'Computing MD5 checksums ...'" +
-                  "; md5sum ${project.artifactId}-${project.version}.pom         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.pom.md5" +
-                  "; md5sum ${project.artifactId}-${project.version}.jar         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.md5" +
-                  "; md5sum ${project.artifactId}-${project.version}-sources.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.md5" +
-                  "; md5sum ${project.artifactId}-${project.version}-javadoc.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}.pom          | cut -d' ' -f1 > ${project.artifactId}-${project.version}.pom.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}.jar          | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}-sources.jar  | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}-javadoc.jar  | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.md5" +
                   "; echo 'Bundling artifacts to JAR...'" +
                   "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
                   "; cp venice-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
