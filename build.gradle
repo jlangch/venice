@@ -482,11 +482,25 @@ publishing {
             }
         }
     }
+    
+    // As of June 30th, 2025 Sonatype retires the publishing of Maven artifacts to 
+    // OSSRH server.
+    // The sugested vanniktech plugin does not work with Java 8 and JReleaser has its
+    // own drwabacks.
+    //
+    // But one can continue use the "old" community plugins as maven-publish.
+    // They implemented a bridge from the "old way" to the "new portal", so that 
+    // you just have to use a new URL and generate a new user token on the new 
+    // system.
+    // See: https://central.sonatype.org/publish/publish-portal-ossrh-staging-api/#configuration
 
     repositories {
         if(!version.endsWith('SNAPSHOT')) {
             maven {
-                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                name = "ossrh-staging-api"
+                url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
+
+                // url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 
                 credentials {
                     username sonatypeUsername

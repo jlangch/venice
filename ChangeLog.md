@@ -5,18 +5,29 @@ All notable changes to this project will be documented in this file.
 
 
 
-
-## [1.12.45] - 2025-05-xx
+## [1.12.46] - 2025-06-xx
 
 ### Added
-
-- support for static and dynamic Java MBeans. See :mbean module
 
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.45] - 2025-05-29
+
+### Added
+
+- support for static and dynamic Java MBeans. See :mbean module
+
+
+### Changed
+
+- the Maven publish process. Migrated to Sonatype's new Central Maven 
+  repository to publish artifacts.
 
 
 
