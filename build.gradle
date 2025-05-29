@@ -534,34 +534,37 @@ jdeprscanReport {
 */
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
-    // https://central.sonatype.org/publish/publish-portal-upload/
-    // https://central.sonatype.org/publish/publish-portal-api/
-    // Use "com.github.jlangch:venice:1.0.0" as "Deployment Name.
+    // Tech info:         https://central.sonatype.org/publish/publish-portal-upload/
+    //                    https://central.sonatype.org/publish/publish-portal-api/
+    // Manual publish:    https://central.sonatype.com/publishing
+    //                    deployment name "com.github.jlangch:venice:1.0.0"
+    //                    scroll down to upload 'bundle.jar'
+    // Browse artifacts:  https://central.sonatype.com/search?namespace=com.github.jlangch
     
     workingDir 'build/libs'
 
     commandLine "/bin/sh",
                 "-c",
-                "cat ../../pom-template.xml | sed 's/__VERSION__/${project.version}/g' > ./pom.xml" +
+                "cat ../../pom-template.xml | sed 's/__VERSION__/${project.version}/g' > ./${project.artifactId}-${project.version}.pom" +
                   "; echo 'Bundling ${project.artifactId} ${project.version}' for publishing to Sonatype" +
                   "; echo 'Create ascii armored artifacts...'" +
-                  "; gpg -ab pom.xml" +
+                  "; gpg -ab ${project.artifactId}-${project.version}.pom" +
                   "; gpg -ab ${project.artifactId}-${project.version}.jar" +
                   "; gpg -ab ${project.artifactId}-${project.version}-sources.jar" +
                   "; gpg -ab ${project.artifactId}-${project.version}-javadoc.jar" +
                   "; echo 'Computing SHA1 checksums ...'" +
-                  "; sha1sum pom.xml | cut -d' ' -f1 >  pom.xml.sha1" +
+                  "; sha1sum ${project.artifactId}-${project.version}.pom         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.pom.sha1" +
                   "; sha1sum ${project.artifactId}-${project.version}.jar         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.sha1" +
                   "; sha1sum ${project.artifactId}-${project.version}-sources.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.sha1" +
                   "; sha1sum ${project.artifactId}-${project.version}-javadoc.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.sha1" +
                   "; echo 'Computing MD5 checksums ...'" +
-                  "; md5sum pom.xml | cut -d' ' -f1 > pom.xml.md5" +
+                  "; md5sum ${project.artifactId}-${project.version}.pom         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.pom.md5" +
                   "; md5sum ${project.artifactId}-${project.version}.jar         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.md5" +
                   "; md5sum ${project.artifactId}-${project.version}-sources.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.md5" +
                   "; md5sum ${project.artifactId}-${project.version}-javadoc.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.md5" +
                   "; echo 'Bundling artifacts to JAR...'" +
                   "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
-                  "; cp pom.* venice-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
+                  "; cp venice-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
                   "; (cd staging; jar -cMf ../bundle.jar *)" +
                   //"; jar -tvf bundle.jar" +
                   "; echo 'Bundling done.'" +
