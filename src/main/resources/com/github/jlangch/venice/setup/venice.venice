@@ -102,20 +102,6 @@
         proj-libs-dir (io/file proj-home "build/libs")]
     (io/delete-files-glob  repl-libs-dir "venice-*.jar")
     (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar")))
- 
-(defn publish [pgp-key sonatype-user sonatype-pwd]
-  (assert (some? pgp-key) "Please provide the PGP key ID (e.g. 0000AAAA)!")
-  (assert (some? sonatype-user) "Please provide the Sonatype user!")
-  (assert (some? sonatype-pwd) "Please provide the Sonatype password!")
-  (gradle-tasks "clean" 
-                "shadowJar" 
-                "publish"
-                "-Dorg.gradle.internal.publish.checksums.insecure=true"
-                "-Dorg.gradle.internal.http.socketTimeout=60000"
-                "-Dorg.gradle.internal.http.connectionTimeout=60000"
-                "-Psigning.gnupg.keyName=\"~{pgp-key}\""
-                "-PsonatypeUsername=\"~{sonatype-user}\""
-                "-PsonatypePassword=\"~{sonatype-pwd}\""))
 
 (defn gradle-tasks [& args]
   (apply gradlew/run* proj-home 
@@ -196,7 +182,7 @@
     P|pdfdoc         show the cheat sheet PDF
     d|dependencies   list the Venice dependencies
     e|eclipse        update the Eclipse project classpath
-    p|publish k u p  publish artefacts, requires pgp-key, Sonatype user & pwd
+    B|bundle         bundle artefacts for publishing to Central Sonatype
     C|colors         print the color theme
     i|info           display the configuration
     h|!|help         display the help
@@ -244,7 +230,7 @@
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
     (match? cmd "e|eclipse")      (gradle-tasks "eclipse")
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
-    (match? cmd "p|publish")      (publish (first args) (second args) (third args))
+    (match? cmd "B|bundle")       (gradle-tasks "bundle")
     (match? cmd "t|task")         (apply gradle-tasks args)
     (match? cmd "C|colors")       (show-color-theme)
     (match? cmd "i|info")         (display-info)
