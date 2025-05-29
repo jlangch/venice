@@ -23,7 +23,6 @@ All notable changes to this project will be documented in this file.
 
 - support for static and dynamic Java MBeans. See :mbean module
 
-
 ### Changed
 
 - the Maven publish process. Migrated to Sonatype's new Central Maven 
