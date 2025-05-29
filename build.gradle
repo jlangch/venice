@@ -470,6 +470,7 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
                   //"; jar -tvf bundle.jar" +
                   "; echo 'Bundling done.'" +
                   "; echo " +
+                  "; echo 'Bundle              : build/libs/bundle.jar'" +
                   "; echo 'Publish manually at : https://central.sonatype.com/publishing'" +
                   "; echo 'with deployment name: ${project.groupId}:${project.artifactId}:${project.version}'"
 }
