@@ -157,8 +157,6 @@
 
 plugins {
     id 'java'
-    id 'maven-publish'
-    id 'signing'
     id 'eclipse'
 
     // https://github.com/johnrengelman/shadow/
@@ -423,90 +421,6 @@ shadowJar {
     archiveClassifier = ''  // default is '-all'
 }
 
-
-publishing {
-    publications {
-        venicePublication(MavenPublication) {
-            groupId    = "${project.groupId}"
-            artifactId = "${project.artifactId}"
-            version    = "${project.version}"
-
-            artifact sourcesJar
-            artifact javadocJar
-            artifact shadowJar
-
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-
-            pom {
-                name = 'Venice'
-                description = 'Venice, a sandboxed Lisp implemented in Java.'
-                url = 'https://github.com/jlangch/venice/'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'jlangch'
-                        name = 'Juerg Lang'
-                        email = 'juerg.ch@ggaweb.ch'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git@github.com:jlangch/venice.git'
-                    developerConnection = 'scm:git:git@github.com:jlangch/venice.git'
-                    url = 'http://github.com:jlangch/venice/tree/master'
-                    tag = 'HEAD'
-                }
-            }
-        }
-    }
-    
-    // As of June 30th, 2025 Sonatype retires the publishing of Maven artifacts to 
-    // the OSSRH server.
-    // The sugested vanniktech plugin does not work with Java 8 and JReleaser has
-    // its own drawbacks.
-    //
-    // But one can continue use the "old" community plugins as maven-publish.
-    // They implemented a bridge from the "old way" to the "new portal", so that 
-    // you just have to use a new URL and generate a new user token on the new 
-    // system.
-    // See: https://central.sonatype.org/publish/publish-portal-ossrh-staging-api/
-    //      https://central.sonatype.org/publish/publish-portal-ossrh-staging-api/#configuration
-
-    repositories {
-        if(!version.endsWith('SNAPSHOT')) {
-            maven {
-                name = "ossrh-staging-api"
-                url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-
-                // url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-
-                credentials {
-                    username sonatypeUsername
-                    password sonatypePassword
-                }
-            }
-        }
-    }
-}
-
-
-signing {
-    useGpgCmd()  // use the local GPG agent to sign the artifacts
-
-    sign publishing.publications.venicePublication
-}
-
 /*
 jdepsReport {
     sourceSets = ['main']
@@ -551,7 +465,7 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
                   "; md5sum ${project.artifactId}-${project.version}-javadoc.jar  | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.md5" +
                   "; echo 'Bundling artifacts to JAR...'" +
                   "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
-                  "; cp venice-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
+                  "; cp ${project.artifactId}-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
                   "; (cd staging; jar -cMf ../bundle.jar *)" +
                   //"; jar -tvf bundle.jar" +
                   "; echo 'Bundling done.'" +
