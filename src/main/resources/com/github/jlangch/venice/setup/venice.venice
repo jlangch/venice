@@ -103,6 +103,18 @@
     (io/delete-files-glob  repl-libs-dir "venice-*.jar")
     (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar")))
 
+(defn publish [sonatype-user sonatype-pwd sonatype-publish-type]
+  (assert (some? sonatype-user) "Please provide the Sonatype user!")
+  (assert (some? sonatype-pwd) "Please provide the Sonatype password!")
+  (assert (some? sonatype-publish-type) "Please provide the Sonatype publish type!")
+  (assert (contains? #{"AUTOMATIC" "USER_MANAGED"} sonatype-publish-type) 
+          "Please provide a valid Sonatype publish type!")
+  
+  (gradle-tasks "sonatypePublish"
+                "-PsonatypeUsername=\"~{sonatype-user}\""
+                "-PsonatypePassword=\"~{sonatype-pwd}\""
+                "-PsonatypePublishType=\"~{sonatype-publish-type}\""))
+
 (defn gradle-tasks [& args]
   (apply gradlew/run* proj-home 
                       (partial printlnc :stdout)  
@@ -183,6 +195,7 @@
     d|dependencies   list the Venice dependencies
     e|eclipse        update the Eclipse project classpath
     B|bundle         bundle artefacts for publishing to Central Sonatype
+    p|publish u p    publish artefacts, requires Sonatype user and password
     C|colors         print the color theme
     i|info           display the configuration
     h|!|help         display the help
@@ -230,7 +243,8 @@
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
     (match? cmd "e|eclipse")      (gradle-tasks "eclipse")
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
-    (match? cmd "B|bundle")       (gradle-tasks "bundle")
+    (match? cmd "B|bundle")       (gradle-tasks "sonatypeBundle")
+    (match? cmd "p|publish")      (publish (first args) (second args)  "AUTOMATIC")
     (match? cmd "t|task")         (apply gradle-tasks args)
     (match? cmd "C|colors")       (show-color-theme)
     (match? cmd "i|info")         (display-info)
