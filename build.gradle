@@ -222,8 +222,9 @@ def group = 'com.github.jlangch'
 
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
 
-def sonatypeUsername = project.properties['sonatypeUsername'] ?: "unknown"
-def sonatypePassword = project.properties['sonatypePassword'] ?: "unknown"
+def sonatypeUsername    = project.properties['sonatypeUsername'] ?: "unknown"
+def sonatypePassword    = project.properties['sonatypePassword'] ?: "unknown"
+def sonatypePublishType = project.properties['sonatypePublishType'] ?: "USER_MANAGED" // {AUTOMATIC, USER_MANAGED}
 
 def sonatypeBearer = "${sonatypeUsername}:${sonatypePassword}".bytes.encodeBase64().toString()
 
@@ -527,15 +528,17 @@ task sonatypeBundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javado
 task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
     workingDir "$buildDir/libs"
 
-    // publishingType may be one of {AUTOMATIC, USER_MANAGED}
     commandLine "/bin/sh",
                 "-c",
                 "echo 'Publishing...'" +
+                "; echo 'Name: ${project.groupId}:${project.artifactId}:${project.version}'" +
+                "; echo 'Type: ${sonatypePublishType}'" +
+                "; sleep 2" +
                 "; curl --request POST" +
                 "       --verbose" +
                 "       --header 'Authorization: Bearer ${sonatypeBearer}'" +
                 "       --form bundle=@bundle.jar" +
-                "       https://central.sonatype.com/api/v1/publisher/upload&name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=AUTOMATIC"
+                "       https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}"
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
