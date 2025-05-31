@@ -538,7 +538,7 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
                 "       --verbose" +
                 "       --header 'Authorization: Bearer ${sonatypeBearer}'" +
                 "       --form bundle=@bundle.jar" +
-                "       https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}"
+                "       'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
