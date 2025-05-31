@@ -4,8 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-
-## [1.12.46] - 2025-06-xx
+## [1.12.47] - 2025-06-xx
 
 ### Added
 
@@ -14,6 +13,15 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.46] - 2025-06-xx
+
+### Changed
+
+- the Maven publish process for optional auto deployment to Sonatype's new Central 
+  Maven repository without disclosing any credentials to 3rd parties.
 
 
 
