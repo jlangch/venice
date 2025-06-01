@@ -101,6 +101,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [PDF](doc/readme/pdf.md)
 * [EXCEL](doc/readme/excel.md)
 * [Charts](doc/readme/charts.md)
+* [Kira Templates](doc/readme/ext-kira.md)
 * [ASCII Tables](doc/readme/ascii-tables.md)
 * [HTTP Client (Java 8+)](doc/readme/http-client-j8.md)
 * [Venice meets LLMs](doc/readme/venice-meets-llms.md)
