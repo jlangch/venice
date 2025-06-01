@@ -181,7 +181,7 @@ plugins {
     // 09.08.2024: Migrated to 'com.gradleup.shadow' 8.3.0 (see https://plugins.gradle.org/)
     
      id 'com.gradleup.shadow' version '8.3.0'
-	
+    
 /*
     // https://github.com/kordamp/jdeps-gradle-plugin
     id 'org.kordamp.gradle.jdeps' version '0.16.0'
@@ -372,7 +372,7 @@ test {
         showStandardStreams = false
         
         events "PASSED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
-	    
+        
         afterSuite { desc, result ->
             if (!desc.parent) { // will match the outermost suite
                 def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
@@ -493,49 +493,58 @@ task sonatypeBundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javado
     //                    deployment name "com.github.jlangch:venice:x.y.z"
     //                    scroll down to upload 'bundle.jar'
     // Browse artifacts:  https://central.sonatype.com/search?namespace=com.github.jlangch
-    
-    workingDir "$buildDir/libs"
 
-    commandLine "/bin/sh",
-                "-c",
-                "echo 'Bundling ${project.artifactId} ${project.version}' for publishing to Sonatype" +
-                  "; export artifact='${project.artifactId}-${project.version}'" +
-                  "; echo 'Create ASCII-armored artifacts...'" +
-                  "; gpg -ab \${artifact}.pom" +
-                  "; gpg -ab \${artifact}.jar" +
-                  "; gpg -ab \${artifact}-sources.jar" +
-                  "; gpg -ab \${artifact}-javadoc.jar" +
-                  "; echo 'Computing SHA1 and MD5 checksums ...'" +
-                  "; sha1sum \${artifact}.pom         | cut -d' ' -f1 > \${artifact}.pom.sha1" +
-                  "; sha1sum \${artifact}.jar         | cut -d' ' -f1 > \${artifact}.jar.sha1" +
-                  "; sha1sum \${artifact}-sources.jar | cut -d' ' -f1 > \${artifact}-sources.jar.sha1" +
-                  "; sha1sum \${artifact}-javadoc.jar | cut -d' ' -f1 > \${artifact}-javadoc.jar.sha1" +
-                  "; md5sum \${artifact}.pom          | cut -d' ' -f1 > \${artifact}.pom.md5" +
-                  "; md5sum \${artifact}.jar          | cut -d' ' -f1 > \${artifact}.jar.md5" +
-                  "; md5sum \${artifact}-sources.jar  | cut -d' ' -f1 > \${artifact}-sources.jar.md5" +
-                  "; md5sum \${artifact}-javadoc.jar  | cut -d' ' -f1 > \${artifact}-javadoc.jar.md5" +
-                  "; echo 'Bundling artifacts to JAR...'" +
-                  "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
-                  "; cp ${project.artifactId}-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
-                  "; (cd staging; jar -cMf ../sonatype-bundle.jar *)" +
-                  //"; jar -tvf sonatype-bundle.jar" +
-                  "; echo 'Bundling done.'" +
-                  "; echo " +
-                  "; echo 'Bundle              : $buildDir/libs/sonatype-bundle.jar'" +
-                  "; echo 'Publish manually at : https://central.sonatype.com/publishing'" +
-                  "; echo 'with deployment name: ${project.groupId}:${project.artifactId}:${project.version}'"
+    doLast {
+        workingDir "$buildDir/libs"
+
+        commandLine "/bin/sh",
+                    "-c",
+                    "echo 'Bundling ${project.artifactId} ${project.version}' for publishing to Sonatype" +
+                      "; export artifact='${project.artifactId}-${project.version}'" +
+                      "; echo 'Create ASCII-armored artifacts...'" +
+                      "; gpg -ab \${artifact}.pom" +
+                      "; gpg -ab \${artifact}.jar" +
+                      "; gpg -ab \${artifact}-sources.jar" +
+                      "; gpg -ab \${artifact}-javadoc.jar" +
+                      "; echo 'Computing SHA1 and MD5 checksums ...'" +
+                      "; sha1sum \${artifact}.pom         | cut -d' ' -f1 > \${artifact}.pom.sha1" +
+                      "; sha1sum \${artifact}.jar         | cut -d' ' -f1 > \${artifact}.jar.sha1" +
+                      "; sha1sum \${artifact}-sources.jar | cut -d' ' -f1 > \${artifact}-sources.jar.sha1" +
+                      "; sha1sum \${artifact}-javadoc.jar | cut -d' ' -f1 > \${artifact}-javadoc.jar.sha1" +
+                      "; md5sum \${artifact}.pom          | cut -d' ' -f1 > \${artifact}.pom.md5" +
+                      "; md5sum \${artifact}.jar          | cut -d' ' -f1 > \${artifact}.jar.md5" +
+                      "; md5sum \${artifact}-sources.jar  | cut -d' ' -f1 > \${artifact}-sources.jar.md5" +
+                      "; md5sum \${artifact}-javadoc.jar  | cut -d' ' -f1 > \${artifact}-javadoc.jar.md5" +
+                      "; echo 'Bundling artifacts to JAR...'" +
+                      "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
+                      "; cp ${project.artifactId}-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
+                      "; (cd staging; jar -cMf ../sonatype-bundle.jar *)" +
+                      //"; jar -tvf sonatype-bundle.jar" +
+                      "; echo 'Bundling done.'" +
+                      "; echo " +
+                      "; echo 'Bundle              : $buildDir/libs/sonatype-bundle.jar'" +
+                      "; echo 'Publish manually at : https://central.sonatype.com/publishing'" +
+                      "; echo 'with deployment name: ${project.groupId}:${project.artifactId}:${project.version}'"
+    }
 }
 
 task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
-    workingDir "$buildDir/libs"
+    doLast {
+        if(version.endsWith('SNAPSHOT')) {
+            throw new GradleException(
+                        "Rejected publishing sonatype bundle. ${project.version} is not a release!")
+        }
 
-    commandLine "/bin/sh",
-                "-c",
-                "curl --request POST" +
-                "     --no-progress-meter" +
-                "     --header 'Authorization: Bearer ${sonatypeBearer}'" +
-                "     --form bundle=@sonatype-bundle.jar" +
-                "     'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
+        workingDir "$buildDir/libs"
+
+        commandLine "/bin/sh",
+                    "-c",
+                    "curl --request POST" +
+                    "     --no-progress-meter" +
+                    "     --header 'Authorization: Bearer ${sonatypeBearer}'" +
+                    "     --form bundle=@sonatype-bundle.jar" +
+                    "     'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
+    }
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
