@@ -499,20 +499,21 @@ task sonatypeBundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javado
     commandLine "/bin/sh",
                 "-c",
                 "echo 'Bundling ${project.artifactId} ${project.version}' for publishing to Sonatype" +
+                  "; export artifact='${project.artifactId}-${project.version}'" +
                   "; echo 'Create ASCII-armored artifacts...'" +
-                  "; gpg -ab ${project.artifactId}-${project.version}.pom" +
-                  "; gpg -ab ${project.artifactId}-${project.version}.jar" +
-                  "; gpg -ab ${project.artifactId}-${project.version}-sources.jar" +
-                  "; gpg -ab ${project.artifactId}-${project.version}-javadoc.jar" +
+                  "; gpg -ab \${artifact}.pom" +
+                  "; gpg -ab \${artifact}.jar" +
+                  "; gpg -ab \${artifact}-sources.jar" +
+                  "; gpg -ab \${artifact}-javadoc.jar" +
                   "; echo 'Computing SHA1 and MD5 checksums ...'" +
-                  "; sha1sum ${project.artifactId}-${project.version}.pom         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.pom.sha1" +
-                  "; sha1sum ${project.artifactId}-${project.version}.jar         | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.sha1" +
-                  "; sha1sum ${project.artifactId}-${project.version}-sources.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.sha1" +
-                  "; sha1sum ${project.artifactId}-${project.version}-javadoc.jar | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.sha1" +
-                  "; md5sum ${project.artifactId}-${project.version}.pom          | cut -d' ' -f1 > ${project.artifactId}-${project.version}.pom.md5" +
-                  "; md5sum ${project.artifactId}-${project.version}.jar          | cut -d' ' -f1 > ${project.artifactId}-${project.version}.jar.md5" +
-                  "; md5sum ${project.artifactId}-${project.version}-sources.jar  | cut -d' ' -f1 > ${project.artifactId}-${project.version}-sources.jar.md5" +
-                  "; md5sum ${project.artifactId}-${project.version}-javadoc.jar  | cut -d' ' -f1 > ${project.artifactId}-${project.version}-javadoc.jar.md5" +
+                  "; sha1sum \${artifact}.pom         | cut -d' ' -f1 > \${artifact}.pom.sha1" +
+                  "; sha1sum \${artifact}.jar         | cut -d' ' -f1 > \${artifact}.jar.sha1" +
+                  "; sha1sum \${artifact}-sources.jar | cut -d' ' -f1 > \${artifact}-sources.jar.sha1" +
+                  "; sha1sum \${artifact}-javadoc.jar | cut -d' ' -f1 > \${artifact}-javadoc.jar.sha1" +
+                  "; md5sum \${artifact}.pom          | cut -d' ' -f1 > \${artifact}.pom.md5" +
+                  "; md5sum \${artifact}.jar          | cut -d' ' -f1 > \${artifact}.jar.md5" +
+                  "; md5sum \${artifact}-sources.jar  | cut -d' ' -f1 > \${artifact}-sources.jar.md5" +
+                  "; md5sum \${artifact}-javadoc.jar  | cut -d' ' -f1 > \${artifact}-javadoc.jar.md5" +
                   "; echo 'Bundling artifacts to JAR...'" +
                   "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
                   "; cp ${project.artifactId}-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
