@@ -25,8 +25,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- the Maven publish process for optional auto deployment to Sonatype's new Central 
-  Maven repository without disclosing any credentials to 3rd parties.
+- the Maven publish process for optional auto deployment to Sonatype's new
+  Central Maven repository.
 
 
 
@@ -39,8 +39,15 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - the Maven publish process. Migrated to Sonatype's new Central Maven 
-  repository to publish artifacts.
-
+  repository to publish artifacts. Sonatype retired the old OSSRH server
+  by June 30th, 2025. There are only a handful of viable solutions. It 
+  turned out that Maven-Publish plugin's bridge mode does not work, Vannitek's
+  plugin does not work with Java 8, JReleaser is complex and its not obvious
+  to get it working with shadow JARs. It turned out that the "bare metal" 
+  method is the easiest to implement and there is no disclosure of credentials 
+  to 3rd party components as an additional benefit.
+  
+  
 
 
 ## [1.12.44] - 2025-05-09
