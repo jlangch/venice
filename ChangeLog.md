@@ -14,6 +14,11 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Fixed
+
+- auto publishing to Sonatype's Central Maven repository
+
+
 
 
 ## [1.12.46] - 2025-05-31
