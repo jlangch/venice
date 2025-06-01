@@ -527,6 +527,8 @@ task sonatypeBundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javado
 }
 
 task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
+    // Tech info:  https://central.sonatype.org/publish/publish-portal-api/
+    //             https://central.sonatype.com/api-doc
 
     workingDir "$buildDir/libs"
 
@@ -536,11 +538,11 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
                 "     --no-progress-meter" +
                 "     --header 'Authorization: Bearer ${sonatypeBearer}'" +
                 "     --form bundle=@sonatype-bundle.jar" +
-                "     'https://central.sonatype.comkk/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
+                "     'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
 
     doFirst {
         // prevent publishing snapshot releases
-        if(version.endsWith('SNAPSHOT')) {
+        if(version.toLowerCase().endsWith('snapshot')) {
             throw new GradleException(
                         "Rejected publishing sonatype bundle. Version ${project.version} is NOT a release!")
         }
