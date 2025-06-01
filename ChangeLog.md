@@ -36,16 +36,15 @@ All notable changes to this project will be documented in this file.
 
 - support for static and dynamic Java MBeans. See :mbean module
 
-### Changed
+### Updated
 
-- the Maven publish process. Migrated to Sonatype's new Central Maven 
-  repository to publish artifacts. Sonatype retired the old OSSRH server
-  by June 30th, 2025. There are only a handful of viable solutions. It 
-  turned out that Maven-Publish plugin's bridge mode does not work, Vannitek's
-  plugin does not work with Java 8, JReleaser is complex and its not obvious
-  to get it working with shadow JARs. Hence the "bare metal" method is the 
-  easiest to implement and there is no disclosure of credentials to 3rd party 
-  components as an additional benefit.
+- the Maven publishing process by migrating to Sonatype’s new Central Maven
+  repository, as the old OSSRH server was retired on June 30, 2025. Only a
+  few viable alternatives were available. The Maven Publish plugin’s bridge
+  mode did not work, Vanniktech’s plugin is incompatible with Java 8, and
+  JReleaser is complex — especially when working with shadow JARs. As a 
+  result, the “bare metal” approach was chosen for its simplicity and the 
+  added benefit of avoiding credential disclosure to third-party components.
   
 
 
