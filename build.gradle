@@ -516,11 +516,11 @@ task sonatypeBundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javado
                   "; echo 'Bundling artifacts to JAR...'" +
                   "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
                   "; cp ${project.artifactId}-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
-                  "; (cd staging; jar -cMf ../bundle.jar *)" +
-                  //"; jar -tvf bundle.jar" +
+                  "; (cd staging; jar -cMf ../sonatype-bundle.jar *)" +
+                  //"; jar -tvf sonatype-bundle.jar" +
                   "; echo 'Bundling done.'" +
                   "; echo " +
-                  "; echo 'Bundle              : $buildDir/libs/bundle.jar'" +
+                  "; echo 'Bundle              : $buildDir/libs/sonatype-bundle.jar'" +
                   "; echo 'Publish manually at : https://central.sonatype.com/publishing'" +
                   "; echo 'with deployment name: ${project.groupId}:${project.artifactId}:${project.version}'"
 }
@@ -530,15 +530,11 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
 
     commandLine "/bin/sh",
                 "-c",
-                "echo 'Publishing...'" +
-                "; echo 'Name: ${project.groupId}:${project.artifactId}:${project.version}'" +
-                "; echo 'Type: ${sonatypePublishType}'" +
-                "; sleep 2" +
-                "; curl --request POST" +
-                "       --verbose" +
-                "       --header 'Authorization: Bearer ${sonatypeBearer}'" +
-                "       --form bundle=@bundle.jar" +
-                "       'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
+                "curl --request POST" +
+                "     --no-progress-meter" +
+                "     --header 'Authorization: Bearer ${sonatypeBearer}'" +
+                "     --form bundle=@sonatype-bundle.jar" +
+                "     'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
