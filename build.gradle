@@ -218,8 +218,6 @@ ext {
 }
 
 
-def group = 'com.github.jlangch'
-
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
 
 def sonatypeUsername    = project.properties['sonatypeUsername'] ?: "unknown"
@@ -393,7 +391,7 @@ jar {
     exclude 'data'      // doc/examples/scripts/data
     exclude 'nbody'     // doc/examples/scripts/nbody
 
-    archiveFileName = "venice-raw-${project.version}.jar"
+    archiveFileName = "${project.artifactId}-${project.version}-raw.jar"
 }
 
 
@@ -425,7 +423,7 @@ shadowJar {
 
     mergeServiceFiles()
 
-    archiveFileName = "venice-${project.version}.jar"
+    archiveFileName = "${project.artifactId}-${project.version}.jar"
     archiveClassifier = ''  // default is '-all'
 }
 
@@ -499,28 +497,16 @@ task sonatypeBundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javado
     commandLine "/bin/sh",
                 "-c",
                 "echo 'Bundling ${project.artifactId} ${project.version}' for publishing to Sonatype" +
-                  "; export artifact='${project.artifactId}-${project.version}'" +
-                  "; echo 'Create ASCII-armored artifacts...'" +
-                  "; gpg -ab \${artifact}.pom" +
-                  "; gpg -ab \${artifact}.jar" +
-                  "; gpg -ab \${artifact}-sources.jar" +
-                  "; gpg -ab \${artifact}-javadoc.jar" +
-                  "; echo 'Computing SHA1 and MD5 checksums ...'" +
-                  "; sha1sum \${artifact}.pom         | cut -d' ' -f1 > \${artifact}.pom.sha1" +
-                  "; sha1sum \${artifact}.jar         | cut -d' ' -f1 > \${artifact}.jar.sha1" +
-                  "; sha1sum \${artifact}-sources.jar | cut -d' ' -f1 > \${artifact}-sources.jar.sha1" +
-                  "; sha1sum \${artifact}-javadoc.jar | cut -d' ' -f1 > \${artifact}-javadoc.jar.sha1" +
-                  "; md5sum \${artifact}.pom          | cut -d' ' -f1 > \${artifact}.pom.md5" +
-                  "; md5sum \${artifact}.jar          | cut -d' ' -f1 > \${artifact}.jar.md5" +
-                  "; md5sum \${artifact}-sources.jar  | cut -d' ' -f1 > \${artifact}-sources.jar.md5" +
-                  "; md5sum \${artifact}-javadoc.jar  | cut -d' ' -f1 > \${artifact}-javadoc.jar.md5" +
-                  "; echo 'Bundling artifacts to JAR...'" +
+                  "; export base='${project.artifactId}-${project.version}'" +
+                  "; for a in \${base}.pom \${base}.jar \${base}-sources.jar \${base}-javadoc.jar; do" +
+                  "    gpg -ab \$a;" +
+                  "    sha1sum \$a | cut -d' ' -f1 > \$a.sha1;" +
+                  "    md5sum  \$a | cut -d' ' -f1 > \$a.md5;" +
+                  "  done" +
                   "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
                   "; cp ${project.artifactId}-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
                   "; (cd staging; jar -cMf ../sonatype-bundle.jar *)" +
                   //"; jar -tvf sonatype-bundle.jar" +
-                  "; echo 'Bundling done.'" +
-                  "; echo " +
                   "; echo 'Bundle              : $buildDir/libs/sonatype-bundle.jar'" +
                   "; echo 'Publish manually at : https://central.sonatype.com/publishing'" +
                   "; echo 'with deployment name: ${project.groupId}:${project.artifactId}:${project.version}'"
@@ -543,8 +529,7 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
     doFirst {
         // prevent publishing snapshot releases
         if(version.toLowerCase().endsWith('snapshot')) {
-            throw new GradleException(
-                        "Rejected publishing sonatype bundle. Version ${project.version} is NOT a release!")
+            throw new GradleException("Rejected publishing snapshot release!")
         }
     }
 
