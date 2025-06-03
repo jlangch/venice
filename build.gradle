@@ -163,6 +163,7 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'maven-publish'
+    id 'signing'
 
     // https://github.com/johnrengelman/shadow/
     // note: the shadow plugin does not work for jline3 3.22.0+
@@ -394,7 +395,6 @@ jar {
     archiveFileName = "${project.artifactId}-${project.version}-raw.jar"
 }
 
-
 shadowJar {
     // https://github.com/johnrengelman/shadow/
     // https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Jar.html
@@ -449,6 +449,10 @@ publishing {
             artifactId = "${project.artifactId}"
             version    = "${project.version}"
 
+            artifact sourcesJar
+            artifact javadocJar
+            artifact shadowJar
+
             pom {
                 name = 'Venice'
                 description = 'Venice, a sandboxed Lisp implemented in Java.'
@@ -476,47 +480,45 @@ publishing {
             }
         }
     }
-}
 
-model {   
-    tasks.generatePomFileForMavenCustomPublication {
-        destination = file("$buildDir/libs/${project.artifactId}-${project.version}.pom")
+    repositories {
+        maven {
+            name = "LocalMavenWithChecksums"
+            url = uri(layout.buildDirectory.dir("staging-deploy"))
+        }
     }
 }
 
-task sonatypeBundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar, generatePomFileForMavenCustomPublication]) {
+signing {
+    useGpgCmd()  // use the local GPG agent to sign the artefacts
+
+    sign publishing.publications.MavenCustom
+}
+
+tasks.register('sonatypeBundle') {
     // Tech info:         https://central.sonatype.org/publish/publish-portal-upload/
     //                    https://central.sonatype.org/publish/publish-portal-api/
     // Manual publish:    https://central.sonatype.com/publishing
     //                    deployment name "com.github.jlangch:venice:x.y.z"
     //                    scroll down to upload 'bundle.jar'
     // Browse artifacts:  https://central.sonatype.com/search?namespace=com.github.jlangch
-
-    workingDir "$buildDir/libs"
-
-    commandLine "/bin/sh",
-                "-c",
-                "echo 'Bundling ${project.artifactId} ${project.version}' for publishing to Sonatype" +
-                  "; export base='${project.artifactId}-${project.version}'" +
-                  "; for a in \${base}.pom \${base}.jar \${base}-sources.jar \${base}-javadoc.jar; do" +
-                  "    gpg -ab \$a;" +
-                  "    sha1sum \$a | cut -d' ' -f1 > \$a.sha1;" +
-                  "    md5sum  \$a | cut -d' ' -f1 > \$a.md5;" +
-                  "  done" +
-                  "; mkdir -p staging/com/github/jlangch/${project.artifactId}/${project.version}" +
-                  "; cp ${project.artifactId}-*.* staging/com/github/jlangch/${project.artifactId}/${project.version}" +
-                  "; (cd staging; jar -cMf ../sonatype-bundle.jar *)" +
-                  //"; jar -tvf sonatype-bundle.jar" +
-                  "; echo 'Bundle              : $buildDir/libs/sonatype-bundle.jar'" +
-                  "; echo 'Publish manually at : https://central.sonatype.com/publishing'" +
-                  "; echo 'with deployment name: ${project.groupId}:${project.artifactId}:${project.version}'"
+                  
+    doLast {
+       ant.zip(destfile:"build/sonatype-bundle.zip", basedir:"build/staging-deploy")
+       
+       println "Bundle:              build/sonatype-bundle.zip"
+       println "Publish manually at: https://central.sonatype.com/publishing"
+       println "Deployment name:     ${project.groupId}:${project.artifactId}:${project.version}"   
+    }
+    
+    dependsOn clean, shadowJar, sourcesJar, javadocJar, publishMavenCustomPublicationToLocalMavenWithChecksumsRepository
 }
 
 task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
     // Tech info:  https://central.sonatype.org/publish/publish-portal-api/
     //             https://central.sonatype.com/api-doc
 
-    workingDir "$buildDir/libs"
+    workingDir "$buildDir"
 
     commandLine "/bin/sh",
                 "-c",
@@ -532,7 +534,6 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
             throw new GradleException("Rejected publishing snapshot release!")
         }
     }
-
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {

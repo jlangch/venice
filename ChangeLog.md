@@ -18,6 +18,10 @@ All notable changes to this project will be documented in this file.
 
 - auto publishing to Sonatype's Central Maven repository
 
+### Changed
+
+- the publishing to Sonatype's Central Maven repository (it's simpler now)
+
 
 
 
