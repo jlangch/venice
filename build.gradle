@@ -79,8 +79,8 @@
 //   [2a] Publish manually to Maven
 //       - ./gradlew sonatypeBundle
 //       - Open https://central.sonatype.com/publishing and login
-//       - Choose deployment name: "com.github.jlangch:aviron:x.y.z"
-//       - Upload 'build/libs/bundle.jar' (scroll down publish dialog)
+//       - Choose deployment name: "com.github.jlangch:venice:x.y.z"
+//       - Upload 'build/sonatype-bundle.zip' (scroll down publish dialog)
 //       - Publish the artifact
 //
 //   [2b] Publish automatically to Maven
