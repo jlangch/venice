@@ -525,7 +525,7 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
                 "curl --request POST" +
                 "     --no-progress-meter" +
                 "     --header 'Authorization: Bearer ${sonatypeBearer}'" +
-                "     --form bundle=@sonatype-bundle.jar" +
+                "     --form bundle=@sonatype-bundle.zip" +
                 "     'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
 
     doFirst {
