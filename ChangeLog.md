@@ -4,7 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.47] - 2025-06-xx
+## [1.12.48] - 2025-06-xx
 
 ### Added
 
@@ -14,6 +14,9 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+
+
+## [1.12.47] - 2025-06-04
 
 ### Changed
 
