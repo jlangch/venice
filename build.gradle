@@ -533,7 +533,7 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
         if(version.toLowerCase().endsWith('snapshot')) {
             throw new GradleException("Rejected publishing snapshot release!")
         }
-        println "Publishing to Sonatype (mode=${sonatypePublishType})"
+        println "Publishing to Central Sonatype (mode=${sonatypePublishType})"
     }
 }
 
