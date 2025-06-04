@@ -221,11 +221,11 @@ ext {
 
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
 
-def sonatypeUsername    = project.properties['sonatypeUsername'] ?: "unknown"
-def sonatypePassword    = project.properties['sonatypePassword'] ?: "unknown"
-def sonatypePublishType = project.properties['sonatypePublishType'] ?: "USER_MANAGED" // {AUTOMATIC, USER_MANAGED}
-
-def sonatypeBearer = "${sonatypeUsername}:${sonatypePassword}".bytes.encodeBase64().toString()
+def sonatypeUsername       = project.properties['sonatypeUsername'] ?: "unknown"
+def sonatypePassword       = project.properties['sonatypePassword'] ?: "unknown"
+def sonatypePublishType    = project.properties['sonatypePublishType'] ?: "USER_MANAGED" // {AUTOMATIC, USER_MANAGED}
+def sonatypeBearer         = "${sonatypeUsername}:${sonatypePassword}".bytes.encodeBase64().toString()
+def sonatypeDeploymentName = "${project.groupId}:${project.artifactId}:${project.version}"
 
 // Detect Java 8 or 11+
 def javaCurr = JavaVersion.current()
@@ -508,7 +508,7 @@ tasks.register('sonatypeBundle') {
        
        println "Bundle:              build/sonatype-bundle.zip"
        println "Publish manually at: https://central.sonatype.com/publishing"
-       println "Deployment name:     ${project.groupId}:${project.artifactId}:${project.version}"   
+       println "Deployment name:     ${sonatypeDeploymentName}"
     }
     
     dependsOn clean, shadowJar, sourcesJar, javadocJar, publishMavenCustomPublicationToLocalMavenWithChecksumsRepository
@@ -526,13 +526,14 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
                 "     --no-progress-meter" +
                 "     --header 'Authorization: Bearer ${sonatypeBearer}'" +
                 "     --form bundle=@sonatype-bundle.zip" +
-                "     'https://central.sonatype.com/api/v1/publisher/upload?name=${project.groupId}:${project.artifactId}:${project.version}&publishingType=${sonatypePublishType}'"
+                "     'https://central.sonatype.com/api/v1/publisher/upload?name=${sonatypeDeploymentName}&publishingType=${sonatypePublishType}'"
 
     doFirst {
         // prevent publishing snapshot releases
         if(version.toLowerCase().endsWith('snapshot')) {
             throw new GradleException("Rejected publishing snapshot release!")
         }
+        println "Publishing to Sonatype (mode=${sonatypePublishType})"
     }
 }
 
