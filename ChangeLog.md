@@ -14,14 +14,13 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
-### Fixed
-
-- auto publishing to Sonatype's Central Maven repository
 
 ### Changed
 
-- the publishing to Sonatype's Central Maven repository (it's simpler now)
-
+- the publishing to Sonatype's Central Maven repository. The publishing
+  process uses now more functionality from the 'maven-publish' plugin to
+  create the Maven bundle and uploads the bundle explicitly via Sontatype's
+  publisher REST api.
 
 
 
