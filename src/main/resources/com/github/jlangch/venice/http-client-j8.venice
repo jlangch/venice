@@ -98,11 +98,9 @@
 
           ```
           URL:  https://foo.example.org:12346/crm/organisations?name=aviron#detailed
-
-                └───┘                   └───┘                   └─────────┘ 
-                scheme  └─────────────┘ port └────────────────┘    query    └──────┘
-                             host                 pathname                  fragment
-          ```
+                └───┘   └─────────────┘ └───┘└────────────────┘ └─────────┘ └──────┘
+                 scheme  host            port pathname           query       fragment
+           ```
           """ 
      :examples '(
           """
