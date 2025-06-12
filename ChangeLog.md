@@ -14,8 +14,8 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
-- explicite URL query parameter support HTTP Client. The parameters are 
-  encode appropriately
+- explicit URL query parameter and fragment support HTTP Client. The 
+  parameters fragment are encoded appropriately
 
 
 

@@ -67,8 +67,9 @@
           | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
-          | :query-params       | A map of query parameters (name/value). The names \
+          | :url-query-params   | A map of url query parameters (name/value). The names \
                                   and values will be appropriately encodes. |
+          | :url-fragment       | An url fragment |
           | :debug              | Debug true/false. Defaults to false. ¶\
                                   In debug mode prints the HTTP request and \
                                   response data  |
@@ -93,7 +94,14 @@
                                  \u00A0\u00A0\u00A0\u00A0\u00A0(io/wrap-is-with-gzip-input-stream (:data-stream response)) ¶\
                                  to uncompress the data. ¶\
                                  See `http-client-j8/slurp-response` to painlessly \
-                                 process responses. |   
+                                 process responses. |  
+
+          ```
+          URL:  https://foo.example.org:12346/crm/organisations?name=aviron#detailed
+                _____                   _____                   ___________ 
+                        _______________      __________________             ________
+                scheme  host            port pathname           query       fragment
+          ```
           """ 
      :examples '(
           """
@@ -248,7 +256,8 @@
         ssl-socket-factory (:ssl-socket-factory opts)
         use-caches         (:use-caches opts false)
         user-agent         (:user-agent opts hc-user-agent)
-        query-params       (:query-params opts {})
+        url-query-params   (:url-query-params opts {})
+        url-fragment       (:url-fragment opts)
         debug?             (true? (:debug opts false))
                            ;; default headers
         headers            (assoc headers "User-Agent" user-agent)
@@ -263,12 +272,12 @@
     (assert (or (nil? conn-timeout) (long? conn-timeout)))
     (assert (or (nil? read-timeout) (long? read-timeout)))
     (assert (or (nil? follow-redirects) (boolean? follow-redirects)))
-    (assert (map? query-params))
+    (assert (map? url-query-params))
+    (assert (or (nil? url-fragment) (string? url-fragment)))
 
     (let [https?          (str/starts-with? (str/lower-case uri) "https:")
           [type encoding] (parse-content-type (get headers "Content-Type"))
-          query-string    (build-query-string query-params)
-          url             (. :URL :new (str uri query-string))
+          url             (. :URL :new (build-url uri url-query-params url-fragment))
           con             (. url :openConnection)
           con             (if https? (cast :HttpsURLConnection con)
                                      (cast :HttpURLConnection con))]
@@ -348,8 +357,9 @@
           | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
-          | :query-params       | A map of query parameters (name/value). The names \
+          | :url-query-params   | A map of url query parameters (name/value). The names \
                                   and values will be appropriately encodes. |
+          | :url-fragment       | An url fragment |
           | :debug              | Debug true/false. Defaults to false. ¶\
                                   In debug mode prints the HTTP request and \
                                   response data and info on the uploaded file  |
@@ -459,8 +469,9 @@
           | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
-          | :query-params       | A map of query parameters (name/value). The names \
+          | :url-query-params   | A map of url query parameters (name/value). The names \
                                   and values will be appropriately encodes. |
+          | :url-fragment       | An url fragment |
           | :debug              | Debug true/false. Defaults to false. ¶\
                                   In debug mode prints the HTTP request (multipart \
                                   data included) and the response data |
@@ -1044,5 +1055,23 @@
 
 (defn- build-query-string [params]
   (let [s (encode-query-params params)]
-    (if (empty? s) s (str "?" s))))
+    (if (empty? s) "" (str "?" s))))
 
+
+(defn- build-fragment [fragment]
+  (if (str/blank? fragment) "" (str "#" (str/encode-url fragment))))
+
+
+(defn build-url 
+  ([url-base] 
+    (build-url url-base nil nil))
+
+  ([url-base url-query-params] (
+    build-url url-base url-query-params nil))
+
+  ([url-base url-query-params url-fragment]
+    (assert (or (nil? url-query-params) (map? url-query-params)))
+    (assert (or (nil? url-fragment) (string? url-fragment)))
+    (str url-base 
+        (build-query-string (or url-query-params {}))
+        (build-fragment url-fragment))))
