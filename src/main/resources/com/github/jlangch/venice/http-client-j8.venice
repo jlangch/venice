@@ -67,6 +67,8 @@
           | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+          | :query-params       | A map of query parameters (name/value). The names \
+                                  and values will be appropriately encodes. |
           | :debug              | Debug true/false. Defaults to false. ¶\
                                   In debug mode prints the HTTP request and \
                                   response data  |
@@ -107,6 +109,7 @@
             (let [response (hc/send :get 
                                     "http://localhost:8080/employees" 
                                     :headers { "Accept" "application/json, text/plain" }
+                                    :query-params { "status" "active" }
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
@@ -245,6 +248,7 @@
         ssl-socket-factory (:ssl-socket-factory opts)
         use-caches         (:use-caches opts false)
         user-agent         (:user-agent opts hc-user-agent)
+        query-params       (:query-params opts {})
         debug?             (true? (:debug opts false))
                            ;; default headers
         headers            (assoc headers "User-Agent" user-agent)
@@ -254,15 +258,17 @@
 
     (assert (string? method))
     (assert (string? uri))
-    (assert (or (map? headers)))
+    (assert (map? headers))
     (assert (or (nil? body) (string? body) (bytebuf? body) (io/in-stream? body)))
     (assert (or (nil? conn-timeout) (long? conn-timeout)))
     (assert (or (nil? read-timeout) (long? read-timeout)))
     (assert (or (nil? follow-redirects) (boolean? follow-redirects)))
+    (assert (map? query-params))
 
     (let [https?          (str/starts-with? (str/lower-case uri) "https:")
           [type encoding] (parse-content-type (get headers "Content-Type"))
-          url             (. :URL :new uri)
+          query-string    (build-query-string query-params)
+          url             (. :URL :new (str uri query-string))
           con             (. url :openConnection)
           con             (if https? (cast :HttpsURLConnection con)
                                      (cast :HttpURLConnection con))]
@@ -342,6 +348,8 @@
           | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+          | :query-params       | A map of query parameters (name/value). The names \
+                                  and values will be appropriately encodes. |
           | :debug              | Debug true/false. Defaults to false. ¶\
                                   In debug mode prints the HTTP request and \
                                   response data and info on the uploaded file  |
@@ -451,6 +459,8 @@
           | :use-caches         | A boolean indicating wether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+          | :query-params       | A map of query parameters (name/value). The names \
+                                  and values will be appropriately encodes. |
           | :debug              | Debug true/false. Defaults to false. ¶\
                                   In debug mode prints the HTTP request (multipart \
                                   data included) and the response data |
@@ -1020,4 +1030,19 @@
   (try 
     (str (. :HttpStatus :of status-code)) 
     (catch :Exception ex (str status-code))))
+
+
+(defn- encode-query-nv [name value]
+  (str (str/encode-url (str name)) "=" (str/encode-url (str value))))
+
+
+(defn- encode-query-params [params]
+  (->> (seq params)
+       (map #(encode-query-nv (first %) (second %)))
+       (str/join "&")))
+
+
+(defn- build-query-string [params]
+  (let [s (encode-query-params params)]
+    (if (empty? s) s (str "?" s))))
 

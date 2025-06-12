@@ -14,6 +14,9 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+- explicite URL query parameter support HTTP Client. The parameters are 
+  encode appropriately
+
 
 
 ## [1.12.47] - 2025-06-04
