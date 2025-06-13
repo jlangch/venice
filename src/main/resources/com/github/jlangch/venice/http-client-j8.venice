@@ -46,9 +46,10 @@
           ¶¶*Request Options:*
 
           | [![width: 20%]]    | [![width: 80%]] |
-          | :url-query-params   | A map of url query parameters (name/value). The names \
-                                  and values will be appropriately encodes. |
-          | :url-fragment       | An url fragment |
+          | :url-query-params  | A map of url query parameters (name/value). The \
+                                 names and values will be appropriately encoded. |
+          | :url-fragment      | An url fragment. The fragment will be \
+                                 appropriately encoded. |
           | :headers           | A map of request headers. Headers can be single- \
                                  or multi-value (comma separated): ¶\
                                  {"X-Header-1" "value1" ¶ \
@@ -240,7 +241,9 @@
      :see-also '(
           "http-client-j8/upload-file"
           "http-client-j8/upload-multipart"
-          "http-client-j8/slurp-response" ) }
+          "http-client-j8/slurp-response"
+          "http-client-j8/build-url"
+          "http-client-j8/create-authorization-bearer" ) }
 
   send [method uri & options]
   
@@ -338,9 +341,10 @@
           ¶¶*Request Options:*
 
           | [![width: 20%]]    | [![width: 80%]] |
-          | :url-query-params   | A map of url query parameters (name/value). The names \
-                                  and values will be appropriately encodes. |
-          | :url-fragment       | An url fragment |
+          | :url-query-params  | A map of url query parameters (name/value). The \
+                                 names and values will be appropriately encoded. |
+          | :url-fragment      | An url fragment. The fragment will be \
+                                 appropriately encoded. |
           | :headers           | A map of request headers. Headers can be single- \
                                  or multi-value (comma separated): ¶\
                                  {"X-Header-1" "value1" ¶ \
@@ -393,7 +397,9 @@
           """ )
      :see-also '(
           "http-client-j8/send"
-          "http-client-j8/upload-multipart" ) }
+          "http-client-j8/upload-multipart"
+          "http-client-j8/build-url"
+          "http-client-j8/create-authorization-bearer" ) }
 
   upload-file [file uri & options]
  
@@ -450,9 +456,10 @@
           ¶¶*Request Options:*
 
           | [![width: 20%]]    | [![width: 80%]] |
-          | :url-query-params   | A map of url query parameters (name/value). The names \
-                                  and values will be appropriately encodes. |
-          | :url-fragment       | An url fragment |
+          | :url-query-params  | A map of url query parameters (name/value). The \
+                                 names and values will be appropriately encoded. |
+          | :url-fragment      | An url fragment. The fragment will be \
+                                 appropriately encoded. |
           | :headers           | A map of request headers. Headers can be single- \
                                  or multi-value (comma separated): ¶\
                                  {"X-Header-1" "value1" ¶ \
@@ -506,7 +513,9 @@
           """ )
      :see-also '(
           "http-client-j8/upload-file"
-          "http-client-j8/upload-multipart" ) }
+          "http-client-j8/upload-multipart"
+          "http-client-j8/build-url"
+          "http-client-j8/create-authorization-bearer" ) }
 
   upload-multipart [parts uri & options]
  
@@ -1061,7 +1070,7 @@
   (if (str/blank? fragment) "" (str "#" (str/encode-url fragment))))
 
 
-(defn build-url 
+(defn 
   ^{ :arglists '(
           "(build-url url)"
           "(build-url url query-params)"
@@ -1087,22 +1096,26 @@
           """
           (do
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
-            (build-url "https://foo.example.org:12346/crm/organisations"
-                       { "name" "aviron" }))
+            (hc/build-url "https://foo.example.org:12346/crm/organisations"
+                          { "name" "aviron 1" }))
           """,
           """
           (do
             (load-module :http-client-j8 ['http-client-j8 :as 'hc])
-            (build-url "https://foo.example.org:12346/crm/organisations"
-                       { "name" "aviron" }
-                       "detailed"))
-          """ ) }
+            (hc/build-url "https://foo.example.org:12346/crm/organisations"
+                          { "name" "aviron 1" }
+                          "detailed"))
+          """ )
+     :see-also '(
+          "http-client-j8/create-authorization-bearer" ) }
+
+  build-url 
 
   ([url] 
     (build-url url nil nil))
 
-  ([url query-params] (
-    build-url url query-params nil))
+  ([url query-params]
+    (build-url url query-params nil))
 
   ([url query-params fragment]
     (assert (or (nil? query-params) (map? query-params)))
@@ -1110,3 +1123,50 @@
     (str url
         (build-query-string (or query-params {}))
         (build-fragment fragment))))
+
+(defn 
+  ^{ :arglists '(
+          "(create-authorization-bearer token)"
+          "(create-authorization-bearer user password)")
+     :doc """
+          Create a base64 encoded bearer token for an 'Authorization' HTTP 
+          header.
+
+          ```
+          User:     "john.doe"
+          Password: "12345"
+
+          =>  "Bearer am9obi5kb2U6MTIzNDU="
+          ```
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+            (str "Bearer " (hc/create-authorization-bearer "john.doe" "12345")))
+
+          """,
+          """
+          (do
+            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+            (str "Bearer " (hc/create-authorization-bearer "rfd3@90000")))
+
+          """ )
+     :see-also '(
+          "http-client-j8/build-url" ) }
+
+  create-authorization-bearer 
+   
+  ([token]
+    (assert (string? token)) 
+
+    (->> (bytebuf-from-string token)
+         (str/encode-base64)))
+ 
+  ([user password]
+    (assert (string? user)) 
+    (assert (string? password)) 
+
+    (->> (str user ":" password)
+         (bytebuf-from-string)
+         (str/encode-base64))))
