@@ -210,7 +210,9 @@ public class MavenModuleTest {
         final File tmp = Files.createTempDirectory("maven").toFile();
 
         try {
-            final String script =
+        	final String mavenVersion = getVeniceMavenVersion();
+
+        	final String script =
                     "(do                                             \n" +
                     "   (load-module :maven)                         \n" +
                     "                                                \n" +
@@ -223,15 +225,15 @@ public class MavenModuleTest {
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("mvn-dir", tmp,
-                                                          "mvn-version", "3.9.6"));
+                                                          "mvn-version", mavenVersion));
             if (result.equals("no-internet")) {
                 assertTrue(true);
             }
             else if (result.equals("installed")) {
-                final File dir = new File(tmp, "apache-maven-3.9.6");
+                final File dir = new File(tmp, "apache-maven-" + mavenVersion);
                 assertTrue(dir.isDirectory());
 
-                final File file = new File(tmp, "apache-maven-3.9.6/bin/mvn");
+                final File file = new File(tmp, "apache-maven-" + mavenVersion + "/bin/mvn");
                 assertTrue(file.isFile());
            }
             else {
@@ -249,6 +251,15 @@ public class MavenModuleTest {
 
             System.out.println("Deleted install dir: " + tmp);
         }
+    }
+
+    private static String getVeniceMavenVersion() {
+        final String script =
+                "(do                      \n" +
+                "   (load-module :maven)  \n" +
+                "   maven/maven-version)  ";
+
+        return (String)new Venice().eval(script);
     }
 
 }

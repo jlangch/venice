@@ -86,6 +86,8 @@ public class ReplSetupModuleTest {
         final File tmp = Files.createTempDirectory("setup").toFile();
 
         try {
+        	final String mavenVersion = getVeniceMavenVersion();
+
             final String script =
                     "(do                                             \n" +
                     "   (load-module :repl-setup)                    \n" +
@@ -119,8 +121,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
                 assertTrue(new File(tmp, "scripts/shebang-demo.venice").isFile());
 
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(tmp, "tools/apache-maven-" + mavenVersion).isDirectory());
+                assertTrue(new File(tmp, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -144,7 +146,9 @@ public class ReplSetupModuleTest {
         final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
-            final String script =
+         	final String mavenVersion = getVeniceMavenVersion();
+
+         	final String script =
                     "(do                                                                          \n" +
                     "   (load-module :repl-setup)                                                 \n" +
                     "                                                                             \n" +
@@ -194,8 +198,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
                 assertTrue(new File(setup, "scripts/shebang-demo.venice").isFile());
 
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion).isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -220,6 +224,8 @@ public class ReplSetupModuleTest {
         final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
+         	final String mavenVersion = getVeniceMavenVersion();
+
             final String script =
                     "(do                                                                          \n" +
                     "   (load-module :repl-setup)                                                 \n" +
@@ -271,8 +277,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
                 assertTrue(new File(setup, "scripts/shebang-demo.venice").isFile());
 
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion).isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -295,6 +301,8 @@ public class ReplSetupModuleTest {
         final File tmp = Files.createTempDirectory("setup").toFile();
 
         try {
+         	final String mavenVersion = getVeniceMavenVersion();
+
             final String script =
                     "(do                                            \n" +
                     "   (load-module :repl-setup)                   \n" +
@@ -325,8 +333,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "scripts/sudoku.venice").isFile());
                 assertFalse(new File(tmp, "scripts/shebang-demo.venice").exists());
 
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(tmp, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(tmp, "tools/apache-maven-" + mavenVersion).isDirectory());
+                assertTrue(new File(tmp, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -352,6 +360,8 @@ public class ReplSetupModuleTest {
         System.out.println("Setup dir: " + setup.getPath());
 
         try {
+         	final String mavenVersion = getVeniceMavenVersion();
+
             final String script =
                     "(do                                                                                 \n" +
                     "   (load-module :repl-setup)                                                        \n" +
@@ -399,8 +409,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
                 assertFalse(new File(setup, "scripts/shebang-demo.venice").exists());
 
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion).isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -427,6 +437,8 @@ public class ReplSetupModuleTest {
         System.out.println("Setup dir: " + setup.getPath());
 
         try {
+         	final String mavenVersion = getVeniceMavenVersion();
+
             final String script =
                     "(do                                                                                 \n" +
                     "   (load-module :repl-setup)                                                        \n" +
@@ -475,8 +487,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
                 assertFalse(new File(setup, "scripts/shebang-demo.venice").exists());
 
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6").isDirectory());
-                assertTrue(new File(setup, "tools/apache-maven-3.9.6/bin/mvn").isFile());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion).isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -491,6 +503,14 @@ public class ReplSetupModuleTest {
         }
     }
 
+    private static String getVeniceMavenVersion() {
+        final String script =
+                "(do                      \n" +
+                "   (load-module :maven)  \n" +
+                "   maven/maven-version)  ";
+
+        return (String)new Venice().eval(script);
+    }
 
     private static void deleteSetupDir(final File dir) throws IOException {
         Files.walk(dir.toPath())
