@@ -26,7 +26,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Maven download to use "https://archive.apache.org/dist/maven/"
+- Maven download URL to "https://archive.apache.org/dist/maven/"
+  instead of "https://dlcdn.apache.org/maven/maven-3/". Maven changed 
+  the latter URL to provide the current version only.
+  This broke the Venice setup in demo mode and the installation of
+  additional 3rd party libs.
 
 
 
