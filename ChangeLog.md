@@ -4,7 +4,8 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.48] - 2025-06-xx
+
+## [1.12.49] - 2025-06-xx
 
 ### Added
 
@@ -13,6 +14,12 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.48] - 2025-06-13
+
+### Added
 
 - explicit URL query parameter and fragment support for the HTTP Client. 
   Parameters and fragments are encoded appropriately.
