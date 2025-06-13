@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 - explicit URL query parameter and fragment support for the HTTP Client. 
   The parameters fragment are encoded appropriately
 
+### Fixed
+
+- Maven download to use "https://archive.apache.org/dist/maven/"
+
 
 
 ## [1.12.47] - 2025-06-04

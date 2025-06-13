@@ -35,7 +35,7 @@
 
 (def maven-version "3.9.6")
 
-(def maven-binary-uri "https://dlcdn.apache.org/maven/maven-3/{{version}}/binaries/apache-maven-{{version}}-bin.zip")
+(def maven-binary-uri "https://archive.apache.org/dist/maven/maven-3/{{version}}/binaries/apache-maven-{{version}}-bin.zip")
 
 
 (defn 
