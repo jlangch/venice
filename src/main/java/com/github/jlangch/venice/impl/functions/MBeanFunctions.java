@@ -991,7 +991,7 @@ public class MBeanFunctions {
                 if (!(mbean instanceof IDeref)) {
                     throw new VncException(
                             "Failed to register MBean. " +
-                            "A dynamic bean must either be an atom or a volatile!");
+                            "A dynamic bean must be map wrapped by an atom or a volatile!");
                 }
                 final ObjectName name = Coerce.toVncJavaObject(args.second(), ObjectName.class);
 
