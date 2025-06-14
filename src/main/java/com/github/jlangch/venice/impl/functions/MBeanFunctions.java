@@ -964,11 +964,13 @@ public class MBeanFunctions {
                         "Register a bean (a map wrapped by an atom or a volatile) " +
                         "as a dynamic Java MBean.")
                     .examples(
-                        "(do                                                     \n" +
-                        "  (let [bean (atom {:count 10})                         \n" +
-                        "        name (mbean/object-name \"venice:type=Data\")]  \n" +
-                        "    (mbean/register-dynamic bean name)                  \n" +
-                        "    (mbean/attribute name :count)))                     ")
+                        "(do                                                         \n" +
+                        "  (let [bean (atom {:count 10})                             \n" +
+                        "        name (mbean/object-name \"venice:type=Data\")]      \n" +
+                        "    (mbean/register-dynamic bean name)                      \n" +
+                        "    (println \":count  \" (mbean/attribute name :count))    \n" +
+                        "    (mbean/attribute! name :count 20)                       \n" +
+                        "    (println \":count  \" (mbean/attribute name :count))))  ")
                     .seeAlso(
                         "mbean/platform-mbean-server",
                         "mbean/query-mbean-object-names",
