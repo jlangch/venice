@@ -965,7 +965,7 @@ public class MBeanFunctions {
                         "as a dynamic Java MBean.")
                     .examples(
                         "(do                                                     \n" +
-                        "  (let [bean (atom hash-map :count 10)                  \n" +
+                        "  (let [bean (atom {:count 10})                         \n" +
                         "        name (mbean/object-name \"venice:type=Data\")]  \n" +
                         "    (mbean/register-dynamic bean name)                  \n" +
                         "    (mbean/attribute name :count)))                     ")
