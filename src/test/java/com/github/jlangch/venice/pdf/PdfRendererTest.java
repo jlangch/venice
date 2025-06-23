@@ -29,6 +29,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 
 
 public class PdfRendererTest {
@@ -66,7 +67,9 @@ public class PdfRendererTest {
         venice.eval(script);
     }
 
+    // This unit tests runs 15+ minutes on windows !?!
     @Test
+    @EnableOnMacOrLinux
     public void testExtractUrls() {
         final Venice venice = new Venice();
 
