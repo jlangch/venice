@@ -844,7 +844,7 @@ public class PdfFunctions {
                     .arglists("(pdf/page-count pdf)")
                     .doc(
                        "Returns the number of pages in a PDF.\n\n" +
-                        "Uses the pdfbox libraries.")
+                       "Uses the pdfbox libraries.")
                     .seeAlso("pdf/render", "pdf/to-text")
                     .build()
         ) {
