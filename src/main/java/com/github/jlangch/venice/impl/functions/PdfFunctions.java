@@ -69,6 +69,8 @@ import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.util.pdf.HtmlColor;
 import com.github.jlangch.venice.util.pdf.PdfRenderer;
 import com.github.jlangch.venice.util.pdf.PdfTextStripper;
+import com.github.jlangch.venice.util.pdf.PdfUrlExtractor;
+import com.github.jlangch.venice.util.pdf.PdfUrlExtractor.Url;
 import com.github.jlangch.venice.util.pdf.PdfWatermark;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfCopy;
@@ -97,6 +99,28 @@ public class PdfFunctions {
                         "| :base-url url     | a base url for resources . E.g.: \"classpath:/\"  |\n" +
                         "| :resources resmap | a resource map for dynamic resources              |\n")
                     .examples(
+                        "(do                                                              \n" +
+                        "   (load-module :kira)                                           \n" +
+                        "                                                                 \n" +
+                        "   (defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
+                        "                                                                 \n" +
+                        "   ;; define the template                                        \n" +
+                        "   (def template (str/strip-indent                               \n" +
+                        "      \"\"\"<?xml version=\"1.0\" encoding=\"UTF-8\"?>           \n" +
+                        "      <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">  \n" +
+                        "        <body>                                                   \n" +
+                        "          <div>${ (kira/escape-xml title) }$</div>               \n" +
+                        "          <div>${ (kira/escape-xml ts test/format-ts) }$</div>   \n" +
+                        "        </body>                                                  \n" +
+                        "      </html>                                                    \n" +
+                        "      \"\"\"))                                                   \n" +
+                        "                                                                 \n" +
+                        "   (def data { :title \"Hello, world\"                           \n" +
+                        "               :ts (time/local-date 2000 8 1) })                 \n" +
+                        "                                                                 \n" +
+                        "   (def xhtml (kira/eval template [\"${\" \"}$\"] data))         \n" +
+                        "                                                                 \n" +
+                        "   (pdf/render xhtml))                                           ",
                         "(pdf/render xhtml :base-url \"classpath:/\")",
                         "(pdf/render xhtml \n" +
                         "            :base-url \"classpath:/\"\n" +
@@ -608,6 +632,78 @@ public class PdfFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+    public static VncFunction pdf_extract_urls =
+        new VncFunction(
+                "pdf/extract-urls",
+                VncFunction
+                    .meta()
+                    .arglists("(pdf/extract-urls pdf)")
+                    .doc(
+                        "Extracts the URLs from a PDF.                           \n\n" +
+                        "pdf may be a:                                           \n\n" +
+                        " * string file path, e.g: \"/temp/foo.pdf\"             \n" +
+                        " * bytebuffer                                           \n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.pdf\")`   \n" +
+                        " * `java.io.InputStream`                                \n\n" +
+                        "Returns a list of URLs given as maps with the keys: `:url`, `:url-text`, and `:page-num`)")
+                    .examples(
+                        "(do                                                                      \n" +
+                        "   (def xhtml \"\"\"                                                     \n" +
+                        "              <?xml version=\"1.0\" encoding=\"UTF-8\"?>                 \n" +
+                        "              <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">  \n" +
+                        "                <body>                                                   \n" +
+                        "                   <a href=\"https://github.com/\">GitHub</a>            \n" +
+                        "                   <a href=\"https://duckduckgo.com/\">DuckDuckGo</a>    \n" +
+                        "                </body>                                                  \n" +
+                        "              </html>                                                    \n" +
+                        "              \"\"\")                                                    \n" +
+                        "                                                                         \n" +
+                        "     (pdf/extract-urls (pdf/render xhtml)))                              ")
+                    .seeAlso("pdf/render")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                final VncVal arg = args.first();
+
+                try {
+                    final File file = convertToFile(arg);
+                    if (file != null) {
+                        final ByteBuffer data = loadpaths.loadBinaryResource(file);
+                        return mapPdfUrls(PdfUrlExtractor.extract(data.array()));
+                   }
+                    else if (Types.isVncByteBuffer(arg)) {
+                         final VncByteBuffer data = (VncByteBuffer)arg;
+                         return mapPdfUrls(PdfUrlExtractor.extract(data.getBytes()));
+                   }
+                    else if (Types.isVncJavaObject(arg, InputStream.class)) {
+                        final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
+                        return mapPdfUrls(PdfUrlExtractor.extract(is));
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'pdf/to-tex' does not allow %s as pdf input",
+                                Types.getType(args.first())));
+                    }
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to extract text from PDF", ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction pdf_page_to_image =
         new VncFunction(
                 "pdf/page-to-image",
@@ -758,7 +854,7 @@ public class PdfFunctions {
                 final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
 
                 try(PDDocument doc = Loader.loadPDF(pdf.array())) {
-                	return new VncLong(doc.getNumberOfPages());
+                    return new VncLong(doc.getNumberOfPages());
                 }
                 catch(VncException ex) {
                     throw ex;
@@ -914,6 +1010,16 @@ public class PdfFunctions {
         }
     }
 
+    private static VncList mapPdfUrls(final List<Url> urls) {
+        return VncList.ofList(
+                urls.stream()
+                    .map(u -> VncHashMap.of(
+                                new VncKeyword("url"),      new VncString(u.getUrl()),
+                                new VncKeyword("url-text"), new VncString(u.getUrlText()),
+                                new VncKeyword("page-num"), new VncLong(u.getPageNum())))
+                    .collect(Collectors.toList()));
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -930,6 +1036,7 @@ public class PdfFunctions {
                     .add(pdf_pages)
                     .add(pdf_text_to_pdf)
                     .add(pdf_to_text)
+                    .add(pdf_extract_urls)
                     .add(pdf_page_to_image)
 //                    .add(pdf_extract_images)
                     .add(pdf_page_count)

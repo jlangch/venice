@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.pdf;
 
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,12 +32,14 @@ import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
 
@@ -82,25 +85,53 @@ public class PdfUrlExtractor {
             final ArrayList<Url> urls = new ArrayList<>();
 
             int pageNum = 0;
-            for (PDPage p : pdDocument.getPages()) {
+            for (PDPage page : pdDocument.getPages()) {
                 pageNum++;
 
                 final PDFTextStripperByArea stripper = new PDFTextStripperByArea();
-                final List<PDAnnotation> annotations = p.getAnnotations();
+                final List<PDAnnotation> annotations = page.getAnnotations();
 
-                for ( int j=0; j<annotations.size(); j++ ) {
-                    final PDAnnotation a = annotations.get(j);
+                //first setup text extraction regions
+                for (int j=0; j<annotations.size(); j++ ) {
+                    final PDAnnotation annot = annotations.get(j);
 
-                    if (a instanceof PDAnnotationLink) {
-                        final PDAnnotationLink link = (PDAnnotationLink)a;
+                    if (annot instanceof PDAnnotationLink) {
+                        final PDRectangle rect = annot.getRectangle();
+                        //need to reposition link rectangle to match text space
+                        float x = rect.getLowerLeftX();
+                        float y = rect.getUpperRightY();
+                        float width = rect.getWidth();
+                        float height = rect.getHeight();
+                        int rotation = page.getRotation();
+                        if (rotation == 0) {
+                            final PDRectangle pageSize = page.getMediaBox();
+                            // area stripper uses java coordinates, not PDF coordinates
+                            y = pageSize.getHeight() - y;
+                        }
+                        else {
+                            // do nothing
+                        }
+
+                        final Rectangle2D.Float awtRect = new Rectangle2D.Float(x, y, width, height);
+                        stripper.addRegion(String.valueOf(j), awtRect);
+                    }
+                }
+
+                stripper.extractRegions(page);
+
+                for (int j=0; j<annotations.size(); j++ ) {
+                    final PDAnnotation annot = annotations.get(j);
+
+                    if (annot instanceof PDAnnotationLink) {
+                        final PDAnnotationLink link = (PDAnnotationLink)annot;
                         final PDAction action = link.getAction();
 
                         if (action instanceof PDActionURI) {
                             final PDActionURI uri = (PDActionURI)action;
                             final String url = uri.getURI();
-                            final String urlText = stripper.getTextForRegion("" + j);
+                            final String urlText = stripper.getTextForRegion(String.valueOf(j));
 
-                            urls.add(new Url(url, urlText, pageNum));
+                            urls.add(new Url(url, StringUtil.trimToEmpty(urlText), pageNum));
                         }
                     }
                 }

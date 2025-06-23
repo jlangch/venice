@@ -21,6 +21,11 @@
  */
 package com.github.jlangch.venice.pdf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -36,13 +41,11 @@ public class PdfRendererTest {
                 "(do                                                                \n" +
                 "     (ns test)                                                     \n" +
                 "                                                                   \n" +
-                "     (import :com.github.jlangch.venice.util.pdf.PdfRenderer)      \n" +
-                "                                                                   \n" +
                 "     (load-module :kira)                                           \n" +
                 "                                                                   \n" +
                 "     (defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
                 "                                                                   \n" +
-                "     ; define the template                                         \n" +
+                "     ;; define the template                                        \n" +
                 "     (def template (str/strip-indent                               \n" +
                 "        \"\"\"<?xml version=\"1.0\" encoding=\"UTF-8\"?>           \n" +
                 "        <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">  \n" +
@@ -58,10 +61,42 @@ public class PdfRendererTest {
                 "                                                                   \n" +
                 "     (def xhtml (kira/eval template [\"${\" \"}$\"] data))         \n" +
                 "                                                                   \n" +
-                "     (. :PdfRenderer :render xhtml)                                \n" +
-                "   )                                                               \n";
+                "     (pdf/render xhtml))                                           ";
 
         venice.eval(script);
+    }
+
+    @Test
+    public void testExtractUrls() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                      \n" +
+                "   (ns test)                                                             \n" +
+                "                                                                         \n" +
+                "   (def xhtml \"\"\"<?xml version=\"1.0\" encoding=\"UTF-8\"?>           \n" +
+                "              <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">  \n" +
+                "                <body>                                                   \n" +
+                "                   <a href=\"https://github.com/\">GitHub</a>            \n" +
+                "                   <a href=\"https://duckduckgo.com/\">DuckDuckGo</a>    \n" +
+                "                </body>                                                  \n" +
+                "              </html>                                                    \n" +
+                "              \"\"\")                                                    \n" +
+                "                                                                         \n" +
+                "     (pdf/extract-urls (pdf/render xhtml)))                              ";
+
+        @SuppressWarnings("unchecked")
+        final List<Map<String,?>> urls = (List<Map<String,?>>)venice.eval(script);
+
+        assertEquals(2L, urls.size());
+
+        assertEquals("https://github.com/", urls.get(0).get("url"));
+        assertEquals("GitHub", urls.get(0).get("url-text"));
+        assertEquals(1L, urls.get(0).get("page-num"));
+
+        assertEquals("https://duckduckgo.com/", urls.get(1).get("url"));
+        assertEquals("DuckDuckGo", urls.get(1).get("url-text"));
+        assertEquals(1L, urls.get(1).get("page-num"));
     }
 
 }

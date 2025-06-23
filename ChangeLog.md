@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run steps api (...)
 
 - function `http-client-j8/create-authorization-bearer` and `http-client-j8/build-url`
+- function `pdf/extract-urls` to extract all URLs from a PDF
 
 
 
