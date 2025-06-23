@@ -471,7 +471,8 @@ public class PdfFunctions {
                     .meta()
                     .arglists("(pdf/pages pdf)")
                     .doc(
-                        "Returns the number of pages of a PDF. The PDF is passed as bytebuf.")
+                        "Returns the number of pages of a PDF. The PDF is passed as bytebuf.\n\n" +
+                        "Uses the openPDF libraries.")
                     .examples(
                         "(->> (str/lorem-ipsum :paragraphs 30)  \n" +
                         "     (pdf/text-to-pdf)                 \n" +
@@ -841,7 +842,9 @@ public class PdfFunctions {
                 VncFunction
                     .meta()
                     .arglists("(pdf/page-count pdf)")
-                    .doc("Returns the number of pages in a PDF.")
+                    .doc(
+                       "Returns the number of pages in a PDF.\n\n" +
+                        "Uses the pdfbox libraries.")
                     .seeAlso("pdf/render", "pdf/to-text")
                     .build()
         ) {
