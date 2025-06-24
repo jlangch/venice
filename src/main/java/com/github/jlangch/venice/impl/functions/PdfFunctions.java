@@ -647,7 +647,8 @@ public class PdfFunctions {
                         " * bytebuffer                                           \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.pdf\")`   \n" +
                         " * `java.io.InputStream`                                \n\n" +
-                        "Returns a list of URLs given as maps with the keys: `:url`, `:url-text`, and `:page-num`)")
+                        "Returns a list of URLs given as maps with the keys:     \n" +
+                        "`:url`, `:url-text`, and `:page-num`")
                     .examples(
                         "(do                                                                      \n" +
                         "   (def xhtml \"\"\"                                                     \n" +
