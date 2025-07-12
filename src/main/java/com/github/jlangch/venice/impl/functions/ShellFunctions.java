@@ -298,8 +298,8 @@ public class ShellFunctions {
                         "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
                         "If no signal is specified, the :sigterm signal is sent.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
-                    .examples("(sh/kill 2345 :sighup)")
-                    .seeAlso("sh", "sh/alive?", "sh/pgrep")
+                    .examples("(sh/kill \"2345\" :sighup)")
+                    .seeAlso("sh", "sh/alive?", "sh/pgrep", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -339,8 +339,8 @@ public class ShellFunctions {
                     .doc(
                         "Returns true if the process represented by the PID is alive otherwise false.\n\n"  +
                         "Note: This function is available for Linux and MacOS only!")
-                    .examples("(sh/alive? 2345)")
-                    .seeAlso("sh", "sh/kill", "sh/pgrep", "sh/load-pid")
+                    .examples("(sh/alive? \"2345\")")
+                    .seeAlso("sh", "sh/kill", "sh/pgrep", "sh/pargs", "sh/load-pid")
                     .build()
         ) {
             @Override
@@ -376,7 +376,7 @@ public class ShellFunctions {
                         "Load a process PID from a PID file.\n\nReturns the PID or nil " +
                         "if the file does not exist or is empty")
                     .examples("(sh/load-pid \"/data/scan.pid\")")
-                    .seeAlso("sh", "sh/alive?", "sh/kill", "sh/pgrep")
+                    .seeAlso("sh", "sh/alive?", "sh/kill", "sh/pgrep", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -416,8 +416,8 @@ public class ShellFunctions {
                     .doc(
                         "Returns a list of all pids for process with the passed name.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
-                    .examples("(sh/pgrep java)")
-                    .seeAlso("sh", "sh/kill", "sh/alive?")
+                    .examples("(sh/pgrep \"clamd\")")
+                    .seeAlso("sh", "sh/pargs", "sh/kill", "sh/alive?")
                     .build()
         ) {
             @Override
@@ -442,6 +442,36 @@ public class ShellFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction pargs =
+        new VncFunction(
+                "sh/pargs",
+                VncFunction
+                    .meta()
+                    .arglists("(sh/pargs pid)")
+                    .doc(
+                        "Returns a process' arguments.\n\n" +
+                        "Note: This function is available for Linux and MacOS only!")
+                    .examples("(sh/pargs \"1234\")")
+                    .seeAlso("sh", "sh/pgrep",  "sh/kill", "sh/alive?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                SimpleShell.validateLinuxOrMacOSX("sh/pargs");
+
+                final String pid = Coerce.toVncString(args.first()).getValue();
+
+                final String cmd = SimpleShell.pargs(pid);
+
+                return new VncString(cmd);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -518,6 +548,7 @@ public class ShellFunctions {
                     .add(pwd)
                     .add(kill)
                     .add(pgrep)
+                    .add(pargs)
                     .add(alive_Q)
                     .add(load_pid)
                     .toMap();

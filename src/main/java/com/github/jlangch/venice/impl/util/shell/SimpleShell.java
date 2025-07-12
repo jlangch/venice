@@ -103,13 +103,29 @@ public class SimpleShell {
     public static List<String> pgrep(final String process) {
         validateLinuxOrMacOSX("Shell::pgrep");
 
-        final ShellResult r = SimpleShell.execCmd("pgrep", process);
+        final ShellResult r = SimpleShell.execCmd("pgrep", "-x", process);
         return r.isZeroExitCode()
                 ? r.getStdoutLines()
                    .stream()
                    .filter(s -> !StringUtil.isBlank(s))
                    .collect(Collectors.toList())
                 : new ArrayList<>();
+    }
+
+
+    public static String pargs(final String pid) {
+        validateLinuxOrMacOSX("Shell::pargs");
+
+        final ShellResult r = SimpleShell.execCmd("ps", "-p", pid, "-ww", "-o", "args");
+        if (r.isZeroExitCode()) {
+        	final List<String> lines = r.getStdoutLines();
+        	return lines.size() == 2
+        			? lines.get(1)
+        			: null;
+        }
+        else {
+        	return null;
+        }
     }
 
     public static void kill(final String pid) {
