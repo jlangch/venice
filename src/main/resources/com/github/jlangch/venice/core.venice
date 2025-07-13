@@ -815,13 +815,14 @@
   ^{ :arglists '("(-> x & forms)")
      :doc """
           Threads the x through the forms. Inserts x as the second item in the
-          first form, making a list of it if it is not a list already.¶
+          first form, making a list of it if it is not a list already.
+
           If there are more forms, inserts the first form as the second item in
           second form, etc.
           """
      :examples '(
           """
-          (-> 5 (+ 3) (/ 2) (- 1))
+          (-> 5 (+ 3) (/ 2) (- 1))   ;; (- (/ (+ 5 3) 2) 1)
           """
           """
           (do
@@ -831,7 +832,7 @@
                             :city "Bern"
                             :zip 3000}})
 
-            (-> person :address :street))
+            (-> person :address :street))  ;; "Lindenstrasse 45"
           """ )
      :see-also '("->>" "-<>" "as->") }
 
@@ -851,18 +852,25 @@
   ^{ :arglists '("(->> x & forms)")
      :doc """
           Threads the x through the forms. Inserts x as the last item in the
-          first form, making a list of it if it is not a list already. If there
-          are more forms, inserts the first form as the last item in second
-          form, etc.
+          first form, making a list of it if it is not a list already. 
+          
+          If there are more forms, inserts the first form as the last item in 
+          second form, etc.
           """
      :examples '(
-          "(->> 5 (+ 3) (/ 32) (- 1))"
+          "(->> 5 (+ 3) (/ 32) (- 1))"    ;; (- 1 (/ 32 (+ 3 5)))
           """
           (->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
                (map (fn [x] (get x :b)))
                (filter (fn [x] (> x 4)))
-               (map inc))))
-          """ )
+               (map inc))
+          """ 
+          """
+          (->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
+               (map #(get % :b))
+               (filter #(> % 4))
+               (map inc))
+          """)
      :see-also '("->" "-<>" "as->") }
 
   ->> [x & forms]
@@ -900,8 +908,10 @@
      :doc """
           Threads the x through the forms. Inserts x at position of the `<>`
           symbol of the first form, making a list of it if is not a list
-          already. If there are more forms, inserts the first form at position
-          of the `<>` symbol in second form, etc.
+          already. 
+          
+          If there are more forms, inserts the first form at position of the 
+          `<>` symbol in second form, etc.
           """
      :examples '(
           """
