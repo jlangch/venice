@@ -136,7 +136,7 @@ public class SmartShell {
                 InputStream stderr = proc.getErrorStream()
             ) {
                 final String enc = getEncoding(outEnc);
-                final Charset charset = CharsetUtil.charset(enc);
+                final Charset charset = "bytes".equals(enc) ? CharsetUtil.DEFAULT_CHARSET : CharsetUtil.charset(enc);
 
                 // slurp the subprocess' stdout (as string or bytebuf)
                 Future<VncVal> future_stdout;
