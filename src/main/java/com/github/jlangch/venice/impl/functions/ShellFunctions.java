@@ -408,7 +408,7 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/pgrep name)")
                     .doc(
-                        "Returns a list of all pids for process with the passed name or `nil` " +
+                        "Returns a list of all pids for a process with the passed name or `nil` " +
                         "if there are no processes matching the name.\n\n" +
                         "Runs the Unix command: `pgrep -x {name}`\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
