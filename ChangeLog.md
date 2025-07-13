@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.49] - 2025-07-12
+## [1.12.50] - 2025-07-xx
 
 ### Added
 
@@ -14,6 +14,12 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.49] - 2025-07-12
+
+### Added
 
 - function `http-client-j8/create-authorization-bearer` and `http-client-j8/build-url`
 - function `pdf/extract-urls` to extract all URLs from a PDF
