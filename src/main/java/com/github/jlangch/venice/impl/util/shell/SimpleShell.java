@@ -112,7 +112,6 @@ public class SimpleShell {
                 : new ArrayList<>();
     }
 
-
     public static String pargs(final String pid) {
         validateLinuxOrMacOSX("Shell::pargs");
 

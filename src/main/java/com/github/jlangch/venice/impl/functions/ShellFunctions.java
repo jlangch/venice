@@ -27,16 +27,15 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -189,17 +188,7 @@ public class ShellFunctions {
                 final VncList cmd = Coerce.toVncList(v.first()).withMeta(args.getMeta());
                 final VncMap opts = Coerce.toVncMap(v.second()).withMeta(args.getMeta());
 
-                final ExecutorService executor = Executors.newFixedThreadPool(
-                                                    3,
-                                                    ThreadPoolUtil.createCountedThreadFactory(
-                                                            "venice-shell-pool",
-                                                            true /* daemon threads */));
-                try {
-                    return SmartShell.exec(cmd, opts, executor);
-                }
-                finally {
-                    executor.shutdownNow();
-                }
+                return SmartShell.exec(cmd, opts, null);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -297,8 +286,11 @@ public class ShellFunctions {
                         "Kills a process.\n\n" +
                         "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
                         "If no signal is specified, the :sigterm signal is sent.\n\n" +
+                        "Throws an exception if the process does not exist or cannot be killed!\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
-                    .examples("(sh/kill \"2345\" :sighup)")
+                    .examples(
+                        "(sh/kill \"2345\")",
+                        "(sh/kill \"2345\" :sighup)")
                     .seeAlso("sh", "sh/alive?", "sh/pgrep", "sh/pargs")
                     .build()
         ) {
@@ -338,6 +330,8 @@ public class ShellFunctions {
                     .arglists("(sh/alive? pid)")
                     .doc(
                         "Returns true if the process represented by the PID is alive otherwise false.\n\n"  +
+                        "Runs internally the Unix command `ps -p {pid}` to check if there is a process "+
+                        "with the given pid.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/alive? \"2345\")")
                     .seeAlso("sh", "sh/kill", "sh/pgrep", "sh/pargs", "sh/load-pid")
@@ -373,7 +367,7 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/load-pid pid-file)")
                     .doc(
-                        "Load a process PID from a PID file.\n\nReturns the PID or nil " +
+                        "Load a process PID from a PID file.\n\nReturns the PID or `nil` " +
                         "if the file does not exist or is empty")
                     .examples("(sh/load-pid \"/data/scan.pid\")")
                     .seeAlso("sh", "sh/alive?", "sh/kill", "sh/pgrep", "sh/pargs")
@@ -397,7 +391,7 @@ public class ShellFunctions {
                                                 FileUtil.load(f),
                                                 Charset.forName("UTF-8")));
                     if (s != null && s.matches("[0-9]+")) {
-	                    return new VncString(s);
+                        return new VncString(s);
                     }
                 }
 
@@ -414,7 +408,9 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/pgrep name)")
                     .doc(
-                        "Returns a list of all pids for process with the passed name.\n\n" +
+                        "Returns a list of all pids for process with the passed name or `nil` " +
+                        "if there are no processes matching the name.\n\n" +
+                        "Runs the Unix command: `pgrep -x {name}`\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/pgrep \"clamd\")")
                     .seeAlso("sh", "sh/pargs", "sh/kill", "sh/alive?")
@@ -447,27 +443,77 @@ public class ShellFunctions {
                 "sh/pargs",
                 VncFunction
                     .meta()
-                    .arglists("(sh/pargs pid)")
+                    .arglists(
+                        "(sh/pargs pid)",
+                        "(sh/pargs :parse pid)")
                     .doc(
-                        "Returns a process' arguments.\n\n" +
+                        "Returns a process' command line.\n\n" +
+                        "Without the `:parse` option returns the command line as a string or `nil` if " +
+                        "there is no process matching the PID. With the `:parse` option returns a list " +
+                        "of the command line arguments or an empty list the process does not exist.\n\n" +
+                        "Runs the Unix command: `ps -p {pid} -ww -o args` to get the command line.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
-                    .examples("(sh/pargs \"1234\")")
+                    .examples(
+                        "(sh/pargs \"1234\")",
+                        "(sh/pargs :parse \"1234\")")
                     .seeAlso("sh", "sh/pgrep",  "sh/kill", "sh/alive?")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
                 sandboxFunctionCallValidation();
 
                 SimpleShell.validateLinuxOrMacOSX("sh/pargs");
 
-                final String pid = Coerce.toVncString(args.first()).getValue();
+                final String pid = Coerce.toVncString(args.size() == 1 ? args.first() : args.second()).getValue();
+                final String flag = args.size() == 1 ? null : Coerce.toVncKeyword(args.first()).getValue();
+
+                boolean parse = false;
+
+                if (flag != null) {
+                    if (!flag.equals("parse")) {
+                        throw new VncException("Invalid arguments for function 'sh/pargs'. " +
+                                               "Only :parse is supported as flag!");
+                    }
+                    parse = true;
+                }
 
                 final String cmd = SimpleShell.pargs(pid);
 
-                return new VncString(cmd);
+                if (parse) {
+                       final VncHashMap result = SmartShell.exec(
+                                                   VncList.of(
+                                                       new VncString("xargs"),
+                                                       new VncString("printf"),
+                                                       new VncString("%s\n")),
+                                                   VncHashMap.of(
+                                                       new VncKeyword("in"),
+                                                       new VncString(cmd)),
+                                                   null);
+
+                       final long exitCode = ((VncLong)result.get(new VncKeyword(":exit"))).toJavaLong();
+                       if (exitCode != 0) {
+                             final String err = ((VncString)result.get(new VncKeyword(":err"))).getValue();
+
+                             throw new VncException(
+                                           "Function 'sh/pargs' failed with exit code " + exitCode + ". " +
+                                           "Error: " + err);
+                       }
+                       else {
+                           final String out = ((VncString)result.get(new VncKeyword(":out"))).getValue();
+                           return VncList.ofColl(
+                                     StringUtil
+                                        .splitIntoLines(out)
+                                        .stream()
+                                        .map(s -> new VncString(s))
+                                        .collect(Collectors.toList()));
+                       }
+                }
+                else {
+                    return StringUtil.isBlank(cmd) ? Constants.Nil : new VncString(cmd);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

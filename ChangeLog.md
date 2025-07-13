@@ -17,6 +17,8 @@ All notable changes to this project will be documented in this file.
 
 - function `http-client-j8/create-authorization-bearer` and `http-client-j8/build-url`
 - function `pdf/extract-urls` to extract all URLs from a PDF
+- functions `sh/pgrep` and `sh/pargs` to simplify scripts dealing with 
+  process pids and process command lines
 
 
 

@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.shell.SmartShell;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.util.FunctionExecutionMeter;
@@ -387,6 +388,7 @@ public class Venice {
         ConcurrencyFunctions.shutdown();
         ScheduleFunctions.shutdown();
         Agent.shutdown();
+        SmartShell.shutdown();
     }
 
     private Env createEnv(

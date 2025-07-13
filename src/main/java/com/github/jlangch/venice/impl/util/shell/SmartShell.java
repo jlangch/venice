@@ -41,6 +41,7 @@ import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
+import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -63,7 +64,15 @@ import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
 public class SmartShell {
 
-    public static VncVal exec(
+	/**
+	 * Executes a shell command
+	 *
+	 * @param cmd
+	 * @param opts
+	 * @param executor
+	 * @return
+	 */
+    public static VncHashMap exec(
             final VncList cmd,
             final VncMap opts,
             final ExecutorService executor
@@ -105,15 +114,15 @@ public class SmartShell {
                 // spit to subprocess' stdin a string, a bytebuf, or a File
 
                 if (Types.isVncString(in)) {
-                    future_stdin = executor.submit(
+                    future_stdin = getExecutorService(executor).submit(
                                     () -> copyAndClose((VncString)in, CharsetUtil.charset(inEnc), stdin));
                 }
                 else if (Types.isVncByteBuffer(in)) {
-                    future_stdin = executor.submit(
+                    future_stdin = getExecutorService(executor).submit(
                                     () -> copyAndClose((VncByteBuffer)in, stdin));
                 }
                 else if (Types.isVncJavaObject(in, File.class)) {
-                    future_stdin = executor.submit(
+                    future_stdin = getExecutorService(executor).submit(
                                     () -> copyAndClose((File)((VncJavaObject)in).getDelegate(), stdin));
                 }
             }
@@ -132,7 +141,7 @@ public class SmartShell {
                 // slurp the subprocess' stdout (as string or bytebuf)
                 Future<VncVal> future_stdout;
                 if ("bytes".equals(enc)) {
-                    future_stdout = executor.submit(() -> slurpToBytes(stdout));
+                    future_stdout = getExecutorService(executor).submit(() -> slurpToBytes(stdout));
                 }
                 else if (Types.isVncFunction(slurpOutFn)) {
                     final VncFunction fn = (VncFunction)slurpOutFn;
@@ -144,10 +153,10 @@ public class SmartShell {
                                                             return VncString.empty();
                                                         });
 
-                    future_stdout = executor.submit(task);
+                    future_stdout = getExecutorService(executor).submit(task);
                 }
                 else {
-                    future_stdout = executor.submit(() -> slurpToString(stdout, charset));
+                    future_stdout = getExecutorService(executor).submit(() -> slurpToString(stdout, charset));
                 }
 
                 // slurp the subprocess' stderr as string with platform default encoding
@@ -162,10 +171,10 @@ public class SmartShell {
                                                             return VncString.empty();
                                                         });
 
-                    future_stderr = executor.submit(task);
+                    future_stderr = getExecutorService(executor).submit(task);
                 }
                 else {
-                    future_stderr = executor.submit(() -> slurpToString(stderr, charset));
+                    future_stderr = getExecutorService(executor).submit(() -> slurpToString(stderr, charset));
                 }
 
                 // wait for the process to exit
@@ -257,6 +266,12 @@ public class SmartShell {
                         ex);
             }
         }
+    }
+
+    private static ExecutorService getExecutorService(final ExecutorService suppliedExecService) {
+    	return suppliedExecService != null
+    			? suppliedExecService
+    			: mngdExecutor.getExecutor();
     }
 
 
@@ -373,4 +388,11 @@ public class SmartShell {
         return new VncByteBuffer(IOStreamUtil.copyIStoByteArray(is));
     }
 
+    public static void shutdown() {
+        mngdExecutor.shutdown();
+    }
+
+
+    private static ManagedCachedThreadPoolExecutor mngdExecutor =
+            new ManagedCachedThreadPoolExecutor("venice-shell-pool", 6);  // 3 is the absolute minimum
 }
