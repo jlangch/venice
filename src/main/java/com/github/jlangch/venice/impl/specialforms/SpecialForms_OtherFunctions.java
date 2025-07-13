@@ -98,7 +98,9 @@ public class SpecialForms_OtherFunctions {
                 "doc",
                 VncSpecialForm
                     .meta()
-                    .arglists("(doc x)")
+                    .arglists(
+                    	"(doc )",
+                    	"(doc x)")
                     .doc(
                         "Prints documentation for a var or special form given `x` as its name. " +
                         "Prints the definition of custom types. \n\n" +
@@ -136,7 +138,7 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                assertArity("doc", FnType.SpecialForm, args, 1);
+                assertArity("doc", FnType.SpecialForm, args, 0, 1);
                 final VncString doc = DocForm.doc(args.first(), env);
                 ctx.getEvaluator().evaluate(
                         VncList.of(new VncSymbol("println"), doc),

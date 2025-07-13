@@ -2356,3 +2356,28 @@
     (println ostream (str title (first block)))
     (docoll #(println ostream (str indent %)) (rest block))
     (println ostream horz-line)))
+
+
+;; ---------------------------------------------------------------------------
+;; doc support
+;; ---------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+        "(symbols module-name)")
+     :doc
+        """
+        Lists all public symbols of a module. The module is loaded if it's not
+        yet available.
+        """
+      :examples '(
+        "(symbols :hexdump)" ) }
+
+  symbols [module-name]
+
+  (let [module-name$ (keyword (name module-name))           
+        ns-name$     (symbol (name module-name))]            
+    (load-module module-name$)                        
+    (->> (ns-list ns-name$)                           
+         (filter #(not (:private (meta %) false)))    
+         (sort))))

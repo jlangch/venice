@@ -60,7 +60,15 @@ import com.github.jlangch.venice.impl.util.markdown.Markdown;
 public class DocForm {
 
     public static VncString doc(final VncVal ref, final Env env) {
-        if (Types.isVncSymbol(ref)) {
+        if (ref == Constants.Nil) {
+        	return new VncString(
+        			"help on doc itslef:          (doc doc)\n" +
+                	"list available modules:      (doc modules)\n" +
+                	"list available symbols:      (doc symbols)\n" +
+                	"find loaded symbols:         (doc finder)\n" +
+        			"find loaded name spaces:     (doc ns-list)");
+        }
+        else if (Types.isVncSymbol(ref)) {
             return docForSymbol((VncSymbol)ref, env);
         }
         else if (Types.isVncKeyword(ref)) {
