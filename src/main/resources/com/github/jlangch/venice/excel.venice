@@ -1211,7 +1211,7 @@
                             rule color-html
                             region-first-row 
                             region-last-row
-    		                    region-first-col 
+                                region-first-col 
                             region-last-col]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
@@ -1226,7 +1226,7 @@
                                           color-html
                                           region-first-row 
                                           region-last-row
-    		                                  region-first-col 
+                                              region-first-col 
                                           region-last-col))
  
 
@@ -1265,7 +1265,7 @@
   add-conditional-font-color [sheet 
                               rule color-html
                               region-first-row region-last-row
-    		                      region-first-col region-last-col]
+                                  region-first-col region-last-col]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
           (string? rule)
@@ -1278,7 +1278,7 @@
   (. sheet :addConditionalFontColor rule 
                                     color-html
                                     region-first-row region-last-row
-    		                            region-first-col region-last-col))
+                                        region-first-col region-last-col))
  
 
 (defn
@@ -1413,7 +1413,7 @@
                             strings empty-cell-allowed?
                             err-title err-text
                             region-first-row region-last-row
-    		                    region-first-col region-last-col]
+                                region-first-col region-last-col]
   
   { :pre [(instance-of? :ExcelSheetFacade sheet)
           (sequential? strings)
@@ -1429,7 +1429,7 @@
   (. sheet :addTextDataValidation strings empty-cell-allowed?
                                   err-title err-text
                                   region-first-row region-last-row
-    		                          region-first-col region-last-col))
+                                      region-first-col region-last-col))
 
 
 

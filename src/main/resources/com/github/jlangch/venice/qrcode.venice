@@ -111,8 +111,8 @@
   (let [qr-code-writer (. :QRCodeWriter :new)
         hints          { (type (. :EncodeHintType :MARGIN))  margin }
         bitMatrix      (. qr-code-writer :encode text
-											                           :QR_CODE
-											                           width
-											                           height
-											                           hints)]
+                                         :QR_CODE
+                                         width
+                                         height
+                                         hints)]
     (. :MatrixToImageWriter :writeToStream bitMatrix "PNG" os)))

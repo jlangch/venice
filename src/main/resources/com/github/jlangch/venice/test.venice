@@ -39,7 +39,7 @@
 
 (def-dynamic *testing-vars* (list))  ; bound to hierarchy of vars being tested
 
-(def-dynamic *report-counters* nil)	 ; bound to a map in test-ns
+(def-dynamic *report-counters* nil)  ; bound to a map in test-ns
 
 (def-dynamic *test-out* *out*)       ; PrintWriter for test reporting output
 
