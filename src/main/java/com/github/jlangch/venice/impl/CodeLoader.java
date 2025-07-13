@@ -102,7 +102,7 @@ public class CodeLoader {
             }
             finally {
                 Namespaces.setCurrentNamespace(currNS);
-           }
+            }
         }
     }
 
