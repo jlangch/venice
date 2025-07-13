@@ -94,7 +94,7 @@ test {
 ## Performance
 
 [Clojure / Java Performance](http://www.diva-portal.org/smash/get/diva2:1424342/FULLTEXT01.pdf)
-
+ 
 
 ## Debugger
 
@@ -166,6 +166,11 @@ test {
 [ByteSTM](http://www.hydravm.org/hydra/chrome/site/pub/ByteSTM_tech.pdf)
 
 
+## Lisp
+
+https://www.cs.cmu.edu/~dst/LispBook/book.pdf
+
+
 ## GitHub Wiki
 
 [Wiki content](https://docs.github.com/en/free-pro-team@latest/github/building-a-strong-community/editing-wiki-content)
@@ -175,6 +180,7 @@ test {
 [Add images to the Wiki](https://github.com/RWTH-EBC/AixLib/wiki/How-to:-Add-images-to-the-Wiki)
 
 [Enabling pull requests on GitHub wikis](https://www.growingwiththeweb.com/2016/07/enabling-pull-requests-on-github-wikis.html)
+
 
 ## /etc
 
