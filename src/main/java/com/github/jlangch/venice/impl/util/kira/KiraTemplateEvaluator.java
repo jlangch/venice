@@ -32,9 +32,8 @@ import com.github.jlangch.venice.Venice;
 
 public class KiraTemplateEvaluator {
 
-	public KiraTemplateEvaluator() {
-
-	}
+    public KiraTemplateEvaluator() {
+    }
 
     public String evaluateKiraTemplate(
             final String template,

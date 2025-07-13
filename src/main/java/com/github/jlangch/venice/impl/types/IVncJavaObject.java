@@ -26,7 +26,7 @@ import java.lang.reflect.Type;
 
 public interface IVncJavaObject {
 
-	boolean isEnum();
+    boolean isEnum();
 
     Object getDelegate();
 

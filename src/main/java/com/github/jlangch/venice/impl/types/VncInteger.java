@@ -380,7 +380,7 @@ public class VncInteger extends VncNumber {
     }
 
     @Override
-	public String toString(final boolean print_machine_readably) {
+    public String toString(final boolean print_machine_readably) {
         return print_machine_readably ? String.valueOf(value) + "I" : String.valueOf(value);
     }
 

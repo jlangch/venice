@@ -132,7 +132,7 @@ public class AcceptAllInterceptor extends Interceptor {
             final String funcName
     ) throws SecurityException {
         // ok
-    	return this;
+        return this;
     }
 
     @Override
@@ -140,6 +140,6 @@ public class AcceptAllInterceptor extends Interceptor {
             final String moduleName
     ) throws SecurityException {
         // ok
-    	return this;
+        return this;
     }
 }

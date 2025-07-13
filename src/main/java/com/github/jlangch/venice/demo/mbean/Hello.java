@@ -48,7 +48,7 @@ public class Hello implements HelloMBean {
 
     @Override
     public void setMaxCount(int c) {
-    	maxCount = c;
+        maxCount = c;
     }
 
     int maxCount = 42;

@@ -51,14 +51,14 @@ public class Server_X509TrustManager implements X509TrustManager {
             final String authType
     ) throws CertificateException {
         if (checkFn != null) {
-        	try {
-        		if (!checkFn.test(Arrays.asList(chain), authType)) {
-            		throw new CertificateException("Server not trusted");
-        		}
-        	}
-        	catch(Exception ex) {
-        		throw new CertificateException(ex.getMessage());
-        	}
+            try {
+                if (!checkFn.test(Arrays.asList(chain), authType)) {
+                    throw new CertificateException("Server not trusted");
+                }
+            }
+            catch(Exception ex) {
+                throw new CertificateException(ex.getMessage());
+            }
         }
     }
 

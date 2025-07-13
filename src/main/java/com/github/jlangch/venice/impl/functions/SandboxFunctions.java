@@ -154,7 +154,7 @@ public class SandboxFunctions {
             case "system":
             case "java-interop":
             case "unsafe":
-        		return toVncList(SandboxFunctionGroups.groupFunctions("*" + group + "*"));
+                return toVncList(SandboxFunctionGroups.groupFunctions("*" + group + "*"));
 
             default:
                 throw new VncException(

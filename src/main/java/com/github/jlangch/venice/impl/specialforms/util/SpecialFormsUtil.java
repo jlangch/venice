@@ -35,8 +35,8 @@ import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 public class SpecialFormsUtil {
 
     public static void specialFormCallValidation(
-    		final SpecialFormsContext ctx,
-    		final String name
+            final SpecialFormsContext ctx,
+            final String name
     ) {
         ctx.getInterceptor().validateVeniceFunction(name);
     }

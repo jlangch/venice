@@ -614,8 +614,8 @@ public class MathFunctions {
                     .meta()
                     .arglists("(clamp x min max)")
                     .doc(
-                    	"Restricts a given value between a lower and upper bound. " +
-                    	"In this way, it acts like a combination of the `min` and `max` functions.")
+                        "Restricts a given value between a lower and upper bound. " +
+                        "In this way, it acts like a combination of the `min` and `max` functions.")
                     .examples(
                         "(clamp 1 10 20)",
                         "(clamp 1I 10I 20I)",
@@ -648,10 +648,10 @@ public class MathFunctions {
                 }
 
                 if (v.compareTo(min) < 0) {
-                	return min;
+                    return min;
                 }
                 else if (v.compareTo(max) > 0) {
-                	return max;
+                    return max;
                 }
                 return v;
             }
@@ -1584,10 +1584,10 @@ public class MathFunctions {
                         "(rand-long)",
                         "(rand-long 100)")
                     .seeAlso(
-                    	"rand-double",
-                    	"rand-bigint",
-                    	"rand-gaussian",
-                    	"bytebuf-allocate-random")
+                        "rand-double",
+                        "rand-bigint",
+                        "rand-gaussian",
+                        "bytebuf-allocate-random")
                     .build()
         ) {
             @Override
@@ -1627,10 +1627,10 @@ public class MathFunctions {
                         "(rand-double)",
                         "(rand-double 100.0)")
                     .seeAlso(
-                    	"rand-long",
-                       	"rand-bigint",
-                    	"rand-gaussian",
-                     	"bytebuf-allocate-random")
+                        "rand-long",
+                           "rand-bigint",
+                        "rand-gaussian",
+                         "bytebuf-allocate-random")
                     .build()
         ) {
             @Override
@@ -1673,10 +1673,10 @@ public class MathFunctions {
                         "(rand-gaussian)",
                         "(rand-gaussian 0.0 5.0)")
                     .seeAlso(
-                    	"rand-long",
-                    	"rand-double",
-                    	"rand-bigint",
-                    	"bytebuf-allocate-random")
+                        "rand-long",
+                        "rand-double",
+                        "rand-bigint",
+                        "bytebuf-allocate-random")
                     .build()
         ) {
             @Override
@@ -1709,10 +1709,10 @@ public class MathFunctions {
                     .examples(
                         "(rand-bigint 256)")
                     .seeAlso(
-                    	"rand-long",
-                    	"rand-double",
-                    	"rand-gaussian",
-                    	"bytebuf-allocate-random")
+                        "rand-long",
+                        "rand-double",
+                        "rand-gaussian",
+                        "bytebuf-allocate-random")
                     .build()
         ) {
             @Override

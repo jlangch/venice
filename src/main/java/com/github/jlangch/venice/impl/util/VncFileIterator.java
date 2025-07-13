@@ -64,7 +64,7 @@ public class VncFileIterator implements Iterator<VncVal>, Iterable<VncVal> {
     @Override
     public VncVal next() {
         while(hasDirs() || hasFiles()) {
-        	final VncVal item;
+            final VncVal item;
 
             if (hasFiles()) {
                 final File file = nextFile();

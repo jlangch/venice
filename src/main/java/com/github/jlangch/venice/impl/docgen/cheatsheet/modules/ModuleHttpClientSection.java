@@ -35,9 +35,9 @@ public class ModuleHttpClientSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"HTTP Client",
-        								"HTTP Client based on the JDK HTTP client (Java 11+)",
-        								"modules.http-client");
+                                        "HTTP Client",
+                                        "HTTP Client based on the JDK HTTP client (Java 11+)",
+                                        "modules.http-client");
 
         final DocSection all = new DocSection("(load-module :http-client)", id());
         section.addSection(all);

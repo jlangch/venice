@@ -52,13 +52,13 @@ public class PreCompiled implements IPreCompiled {
 
 
     @Override
-	public String scriptName() {
-    	return scriptName;
+    public String scriptName() {
+        return scriptName;
     }
 
     @Override
-	public String script() {
-    	return script;
+    public String script() {
+        return script;
     }
 
     public String getName() {

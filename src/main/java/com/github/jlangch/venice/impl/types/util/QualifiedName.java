@@ -135,7 +135,7 @@ public class QualifiedName {
     }
 
     public boolean isQualified() {
-    	return namespace != null;
+        return namespace != null;
     }
 
 

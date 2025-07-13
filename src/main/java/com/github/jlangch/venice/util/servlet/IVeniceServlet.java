@@ -33,8 +33,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public interface IVeniceServlet {
 
     default void init(
-    		final HttpServlet servlet,
-    		final ServletConfig config
+            final HttpServlet servlet,
+            final ServletConfig config
     ) throws ServletException {
     }
 
@@ -42,7 +42,7 @@ public interface IVeniceServlet {
     }
 
     default void doGet(
-    		final HttpServlet servlet,
+            final HttpServlet servlet,
             final HttpServletRequest req,
             final HttpServletResponse resp
     ) throws ServletException, IOException {
@@ -50,7 +50,7 @@ public interface IVeniceServlet {
     }
 
     default void doHead(
-    		final HttpServlet servlet,
+            final HttpServlet servlet,
             final HttpServletRequest req,
             final HttpServletResponse resp
     ) throws ServletException, IOException {
@@ -58,7 +58,7 @@ public interface IVeniceServlet {
     }
 
     default void doPost(
-    		final HttpServlet servlet,
+            final HttpServlet servlet,
             final HttpServletRequest req,
             final HttpServletResponse resp
     ) throws ServletException, IOException {
@@ -66,7 +66,7 @@ public interface IVeniceServlet {
     }
 
     default void doPut(
-    		final HttpServlet servlet,
+            final HttpServlet servlet,
             final HttpServletRequest req,
             final HttpServletResponse resp
     ) throws ServletException, IOException {
@@ -74,7 +74,7 @@ public interface IVeniceServlet {
     }
 
     default void doDelete(
-    		final HttpServlet servlet,
+            final HttpServlet servlet,
             final HttpServletRequest req,
             final HttpServletResponse resp
     ) throws ServletException, IOException {
@@ -82,7 +82,7 @@ public interface IVeniceServlet {
     }
 
     default void doOptions(
-    		final HttpServlet servlet,
+            final HttpServlet servlet,
             final HttpServletRequest req,
             final HttpServletResponse resp
     ) throws ServletException, IOException {
@@ -90,7 +90,7 @@ public interface IVeniceServlet {
     }
 
     default void doTrace(
-    		final HttpServlet servlet,
+            final HttpServlet servlet,
             final HttpServletRequest req,
             final HttpServletResponse resp
     ) throws ServletException, IOException {
@@ -103,27 +103,27 @@ public interface IVeniceServlet {
 
 
     static void sendNotImplemented(
-    		final HttpServletResponse resp,
-    		final String method
+            final HttpServletResponse resp,
+            final String method
     ) throws IOException {
         resp.setStatus(501);
         resp.setContentType("text/html");
         resp.getWriter().println(
-        		  "<html>\n"
-        		+ "  <head>\n"
-        		+ "    <style>\n"
-        		+ "      body    {font-family: Arial, Helvetica, sans-serif;}\n"
-        		+ "      .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}\n"
-        		+ "      .title  {color: #cccccc; font-size: 90px;}\n"
-        		+ "      .msg    {margin-top: 20px; color: #999999; font-size: 36px;}\n"
-        		+ "    </style>\n"
-        		+ "  </head>\n"
-        		+ "  <body>\n"
-        		+ "    <div class=\"box\">\n"
-        		+ "      <div class=\"title\">Not Implemented</div>\n"
-        		+ "      <div class=\"msg\">HTTP Method "+ method + "</div>\n"
-        		+ "    </div>\n"
-        		+ "  </body>\n"
-        		+ "</html>\n");
+                  "<html>\n"
+                + "  <head>\n"
+                + "    <style>\n"
+                + "      body    {font-family: Arial, Helvetica, sans-serif;}\n"
+                + "      .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}\n"
+                + "      .title  {color: #cccccc; font-size: 90px;}\n"
+                + "      .msg    {margin-top: 20px; color: #999999; font-size: 36px;}\n"
+                + "    </style>\n"
+                + "  </head>\n"
+                + "  <body>\n"
+                + "    <div class=\"box\">\n"
+                + "      <div class=\"title\">Not Implemented</div>\n"
+                + "      <div class=\"msg\">HTTP Method "+ method + "</div>\n"
+                + "    </div>\n"
+                + "  </body>\n"
+                + "</html>\n");
     }
 }

@@ -7202,8 +7202,8 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(index-of sequence val)",
-                    	"(index-of comparefn sequence val)")
+                        "(index-of sequence val)",
+                        "(index-of comparefn sequence val)")
                     .doc(
                         "Returns the first index of the sequence value that is equal to " +
                         "val or -1 if not found.\n\n" +

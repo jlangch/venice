@@ -210,7 +210,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
     }
 
     private static byte[] processData(
-    		final int mode,
+            final int mode,
             final byte[] data,
             final byte[] key,
             final byte[] iv

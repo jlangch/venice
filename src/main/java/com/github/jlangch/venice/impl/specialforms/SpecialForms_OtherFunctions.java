@@ -99,8 +99,8 @@ public class SpecialForms_OtherFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists(
-                    	"(doc )",
-                    	"(doc x)")
+                        "(doc )",
+                        "(doc x)")
                     .doc(
                         "Prints documentation for a var or special form given `x` as its name. " +
                         "Prints the definition of custom types. \n\n" +
@@ -117,18 +117,18 @@ public class SpecialForms_OtherFunctions {
                         "   dec                  \n" +
                         "```")
                     .examples(
-                    	";; documentation of function '+'\n" +
+                        ";; documentation of function '+'\n" +
                         "(doc +)",
-                    	";; documentation of special form 'def'\n" +
+                        ";; documentation of special form 'def'\n" +
                         "(doc def)",
-                    	";; source code of module ':ascii-table'\n" +
+                        ";; source code of module ':ascii-table'\n" +
                         "(doc :ascii-table)",
-                    	";; definition/structure of a complex type\n" +
+                        ";; definition/structure of a complex type\n" +
                         "(do \n" +
                         "  (deftype :complex [real :long, imaginary :long]) \n" +
                         "  (doc :complex))")
                     .seeAlso(
-                    	"ns-list", "modules", "finder")
+                        "ns-list", "modules", "finder")
                     .build()
         ) {
             @Override
@@ -177,7 +177,7 @@ public class SpecialForms_OtherFunctions {
                         "(finder #\"io/zip.*\" :machine)",
                         "(finder zip)")
                     .seeAlso(
-                    	"doc", "ns-list", "modules")
+                        "doc", "ns-list", "modules")
                     .build()
         ) {
             @Override
@@ -214,7 +214,7 @@ public class SpecialForms_OtherFunctions {
                 for(VncVal filter : filters) {
                     final Pattern p;
                     if (Types.isVncString(filter)) {
-                    	// globbing pattern
+                        // globbing pattern
                         String f = trimToNull(((VncString)filter).getValue());
                         if (f != null) {
                             f = f.contains("*") ? f.replaceAll("[*]", ".*") : ".*" + f + ".*";
@@ -222,7 +222,7 @@ public class SpecialForms_OtherFunctions {
                         p = Pattern.compile(f);
                     }
                     else if (Types.isVncSymbol(filter)) {
-                    	// symbol
+                        // symbol
                         String f = trimToNull(((VncSymbol)filter).getName());
                         if (f != null) {
                             f = f.contains("*") ? f.replaceAll("[*]", "[*]") : f;
@@ -230,7 +230,7 @@ public class SpecialForms_OtherFunctions {
                         p = Pattern.compile(f);
                     }
                     else if (Types.isVncJavaObject(args.first(), Pattern.class)) {
-                    	// regex pattern
+                        // regex pattern
                         p = Coerce.toVncJavaObject(args.first(), Pattern.class);
                     }
                     else {
@@ -1134,27 +1134,27 @@ public class SpecialForms_OtherFunctions {
     }
 
     private static boolean isFunctionType(final VncKeyword type) {
-    	return "core/function".equals(type.getQualifiedName())
-    			|| "core/protocol-function".equals(type.getQualifiedName());
+        return "core/function".equals(type.getQualifiedName())
+                || "core/protocol-function".equals(type.getQualifiedName());
     }
 
     private static boolean isMacroType(final VncKeyword type) {
-    	return "core/macro".equals(type.getQualifiedName());
+        return "core/macro".equals(type.getQualifiedName());
     }
 
     private static boolean isSpecialFormType(final VncKeyword type) {
-    	return "core/special-form".equals(type.getQualifiedName());
+        return "core/special-form".equals(type.getQualifiedName());
    }
 
     private static boolean isProtocolType(final VncKeyword type) {
-    	return "core/protocol".equals(type.getQualifiedName());
+        return "core/protocol".equals(type.getQualifiedName());
    }
 
     private static boolean isValueType(final VncKeyword type) {
-    	return !isFunctionType(type)
-    				&& !isMacroType(type)
-    				&& !isSpecialFormType(type)
-    				&& !isProtocolType(type);
+        return !isFunctionType(type)
+                    && !isMacroType(type)
+                    && !isSpecialFormType(type)
+                    && !isProtocolType(type);
     }
 
     private static VncFunction nilStatusFn =

@@ -64,14 +64,14 @@ import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
 public class SmartShell {
 
-	/**
-	 * Executes a shell command
-	 *
-	 * @param cmd
-	 * @param opts
-	 * @param executor
-	 * @return
-	 */
+    /**
+     * Executes a shell command
+     *
+     * @param cmd
+     * @param opts
+     * @param executor
+     * @return
+     */
     public static VncHashMap exec(
             final VncList cmd,
             final VncMap opts,
@@ -269,9 +269,9 @@ public class SmartShell {
     }
 
     private static ExecutorService getExecutorService(final ExecutorService suppliedExecService) {
-    	return suppliedExecService != null
-    			? suppliedExecService
-    			: mngdExecutor.getExecutor();
+        return suppliedExecService != null
+                ? suppliedExecService
+                : mngdExecutor.getExecutor();
     }
 
 

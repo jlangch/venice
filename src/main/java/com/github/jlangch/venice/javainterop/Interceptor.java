@@ -134,7 +134,7 @@ public abstract class Interceptor implements IInterceptor {
             final String funcName
     ) throws SecurityException {
         // ok, no black listed Venice functions
-    	return this;
+        return this;
     }
 
 
@@ -143,13 +143,13 @@ public abstract class Interceptor implements IInterceptor {
             final String moduleName
     ) throws SecurityException {
         // ok, no black listed Venice module
-    	return this;
+        return this;
     }
 
     @Override
     public IInterceptor validateMaxExecutionTime() throws SecurityException {
-    	//ok
-    	return this;
+        //ok
+        return this;
     }
 
     @Override

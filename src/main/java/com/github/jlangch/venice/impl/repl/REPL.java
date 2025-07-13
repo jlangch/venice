@@ -402,7 +402,7 @@ public class REPL implements IRepl {
                             case "clear":
                                 terminal.puts(Capability.clear_screen);
                                 terminal.flush();
-                            	break;
+                                break;
 
                             default:
                                 handleReplCommand(cmd, env, terminal, history);

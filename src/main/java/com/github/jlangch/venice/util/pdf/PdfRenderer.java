@@ -84,8 +84,8 @@ public class PdfRenderer {
             final ITextRenderer renderer = new ITextRenderer(dotsPerPoint, dotsPerPixel);
 
             final ClasspathUserAgent userAgent = new ClasspathUserAgent(
-            											renderer.getOutputDevice(),
-            											dotsPerPixel);
+                                                        renderer.getOutputDevice(),
+                                                        dotsPerPixel);
             if (resources != null) {
                 for(Map.Entry<String,ByteBuffer> entry : resources.entrySet()) {
                     userAgent.addResource(entry.getKey(), entry.getValue());

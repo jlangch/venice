@@ -155,7 +155,7 @@ public enum HttpStatus {
 
     HTTP_VERSION(505, "HTTP Version Not Supported"),
 
-	HTTP_VARIANT_ALSO_NEGOTIATES(506, "Variant Also Negotiates"),
+    HTTP_VARIANT_ALSO_NEGOTIATES(506, "Variant Also Negotiates"),
 
     HTTP_INSUFFICIENT_STORAGE(507, "Insufficient Storage"),
 

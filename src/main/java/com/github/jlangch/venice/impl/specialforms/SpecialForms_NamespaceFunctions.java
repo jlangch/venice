@@ -255,10 +255,10 @@ public class SpecialForms_NamespaceFunctions {
                                 .collect(Collectors.toList()));
                 }
                 else {
-                	final VncSymbol ns = Types.isVncKeyword(args.first())
-                							? ((VncKeyword)args.first()).toSymbol()
-                							: Coerce.toVncSymbol(
-                									ctx.getEvaluator().evaluate(args.first(), env, false));
+                    final VncSymbol ns = Types.isVncKeyword(args.first())
+                                            ? ((VncKeyword)args.first()).toSymbol()
+                                            : Coerce.toVncSymbol(
+                                                    ctx.getEvaluator().evaluate(args.first(), env, false));
 
                     final String nsCore = Namespaces.NS_CORE.getName();
                     final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();

@@ -35,9 +35,9 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 public class Namespace implements Serializable {
 
     private Namespace(
-    	    final VncSymbol ns,
-    	    final JavaImports javaImports,
-    	    final ConcurrentHashMap<String,String> aliases
+            final VncSymbol ns,
+            final JavaImports javaImports,
+            final ConcurrentHashMap<String,String> aliases
     ) {
         this.ns = ns;
         this.javaImports = javaImports.copy();

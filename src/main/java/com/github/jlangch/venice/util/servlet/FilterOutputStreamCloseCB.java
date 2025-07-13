@@ -43,10 +43,10 @@ public class FilterOutputStreamCloseCB extends FilterOutputStream {
         }
         finally {
             if (onClose != null) {
-            	try {
-            		onClose.run();
-            	}
-            	catch (Exception ex) { }
+                try {
+                    onClose.run();
+                }
+                catch (Exception ex) { }
             }
         }
     }

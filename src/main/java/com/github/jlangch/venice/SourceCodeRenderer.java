@@ -103,8 +103,8 @@ public class SourceCodeRenderer {
         }
         catch(Exception ex) {
             throw new RuntimeException(
-            			"Failed to render Venice source file as HTML/PDF (" + ex.getMessage() + ")",
-            			ex);
+                        "Failed to render Venice source file as HTML/PDF (" + ex.getMessage() + ")",
+                        ex);
         }
     }
 
@@ -130,9 +130,9 @@ public class SourceCodeRenderer {
         lines = lines.subList(1, lines.size()-1); // unwrap
 
         if (lineNumbering) {
-        	final String lineNrFormat = syntaxHighlighted
-        									? "<span style=\"color: #808080\">%04d   </span>%s"
-        									: "%04d   ";
+            final String lineNrFormat = syntaxHighlighted
+                                            ? "<span style=\"color: #808080\">%04d   </span>%s"
+                                            : "%04d   ";
 
             final AtomicLong line = new AtomicLong(1);
             lines = lines.stream()

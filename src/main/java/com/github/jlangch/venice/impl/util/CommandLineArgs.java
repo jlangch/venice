@@ -58,8 +58,8 @@ public class CommandLineArgs {
     }
 
     public String[] args() {
-    	final String[] copy = new String[args.length];
-    	System.arraycopy(args, 0, copy, 0, args.length);
+        final String[] copy = new String[args.length];
+        System.arraycopy(args, 0, copy, 0, args.length);
         return copy;
     }
 
@@ -120,7 +120,7 @@ public class CommandLineArgs {
 
     public String[] switchValues(final String switchName) {
         if (!switchIndexes.containsKey(switchName)) {
-        	return new String[0];
+            return new String[0];
         }
 
         final int switchIndex = switchIndexes.get(switchName);
@@ -151,32 +151,32 @@ public class CommandLineArgs {
     }
 
     public CommandLineArgs removeSwitch(final String switchName) {
-    	if (switchPresent(switchName)) {
-    		final int switchIndex = switchIndexes.get(switchName);
+        if (switchPresent(switchName)) {
+            final int switchIndex = switchIndexes.get(switchName);
 
-    		final List<String> args = new ArrayList<String>(Arrays.asList(this.args));
+            final List<String> args = new ArrayList<String>(Arrays.asList(this.args));
 
-    		if (switchValue(switchName) == null) {
-    			args.remove(switchIndex);
-    		}
-    		else {
-    			args.remove(switchIndex+1);
-    			args.remove(switchIndex);
-    		}
+            if (switchValue(switchName) == null) {
+                args.remove(switchIndex);
+            }
+            else {
+                args.remove(switchIndex+1);
+                args.remove(switchIndex);
+            }
 
-    		return new CommandLineArgs(args.toArray(new String[0]));
-    	}
-    	else {
-    		return this;
-    	}
+            return new CommandLineArgs(args.toArray(new String[0]));
+        }
+        else {
+            return this;
+        }
     }
 
     public CommandLineArgs removeSwitches(final String... switchNames) {
-    	CommandLineArgs args = this;
-    	for(final String name : switchNames) {
-    		args = args.removeSwitch(name);
-    	}
-    	return args;
+        CommandLineArgs args = this;
+        for(final String name : switchNames) {
+            args = args.removeSwitch(name);
+        }
+        return args;
     }
 
 

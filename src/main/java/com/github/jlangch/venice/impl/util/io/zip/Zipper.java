@@ -686,7 +686,7 @@ public class Zipper {
             final ZipInputStream zis = new ZipInputStream(zipIS);
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
-            	final File f = zipValidatedExtractDestFile(destDir, zipEntry);
+                  final File f = zipValidatedExtractDestFile(destDir, zipEntry);
 
                 if (zipEntry.isDirectory()) {
                     f.mkdirs();
@@ -861,13 +861,13 @@ public class Zipper {
     }
 
     private static File zipValidatedExtractDestFile(
-    		final File destDir,
-    		final ZipEntry zipEntry
+            final File destDir,
+            final ZipEntry zipEntry
     ) throws IOException {
         // A zip entry name my contain malicious  "../" elements resulting the
         // entry file to be written outside of 'destDirPath'!
 
-    	final File destFile = new File(destDir, zipEntry.getName());
+          final File destFile = new File(destDir, zipEntry.getName());
         if (!destFile.getCanonicalFile().toPath().startsWith(destDir.getCanonicalFile().toPath())) {
             throw new IOException(
                     String.format(
@@ -881,12 +881,12 @@ public class Zipper {
     }
 
     private static void validatedEntryNameForUnzip(
-    		final ZipEntry zipEntry
+            final ZipEntry zipEntry
     ) throws IOException {
         // A zip entry name my contain malicious  "../" elements resulting the
         // entry file to be written outside of an extraction path!
 
-    	final File destDir = new File(".");  // hypothetical unzip dest dir
+          final File destDir = new File(".");  // hypothetical unzip dest dir
         final File destFile = new File(destDir, zipEntry.getName());
         if (!destFile.getCanonicalFile().toPath().startsWith(destDir.getCanonicalFile().toPath())) {
             throw new IOException(

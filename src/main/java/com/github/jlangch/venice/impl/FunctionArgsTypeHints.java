@@ -37,7 +37,7 @@ public class FunctionArgsTypeHints {
             final VncSymbol sym,
             final VncVal val
     ) {
-    	validate(sym, val, getParamType(sym));
+        validate(sym, val, getParamType(sym));
     }
 
     public static void validate(
@@ -82,7 +82,7 @@ public class FunctionArgsTypeHints {
                 return new VncKeyword("core/" + tkw.getSimpleName());
             }
             else {
-            	return null;  // not quiet sure what to do in this case!
+                return null;  // not quiet sure what to do in this case!
             }
         }
         else {

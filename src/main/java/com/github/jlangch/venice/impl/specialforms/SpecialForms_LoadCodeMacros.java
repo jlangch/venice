@@ -152,9 +152,9 @@ public class SpecialForms_LoadCodeMacros {
                         "  (load-module :hexdump ['hexdump :as 'h]) \n" +
                         "  (h/dump (range 32 64)))                  ",
 
-                    	";; dynamically load a module        \n" +
-                    	"(let [mname (keyword \"hexdump\")]  \n" +
-                    	"  (load-module mname))              ")
+                        ";; dynamically load a module        \n" +
+                        "(let [mname (keyword \"hexdump\")]  \n" +
+                        "  (load-module mname))              ")
                     .seeAlso(
                         "load-file", "load-classpath-file", "load-string", "loaded-modules",
                         "loadpath/paths",
@@ -172,8 +172,8 @@ public class SpecialForms_LoadCodeMacros {
                 assertArity("load-module", FnType.SpecialForm, args, 1, 2, 3);
 
                 final VncVal mod = Types.isVncSymbol(args.first())
-                						? ctx.getEvaluator().evaluate(args.first(), env, false)
-                						: args.first();
+                                        ? ctx.getEvaluator().evaluate(args.first(), env, false)
+                                        : args.first();
 
                 final VncKeyword module = Coerce.toVncKeyword(mod);
                 final Options options = parseOptions(args, "load-module");

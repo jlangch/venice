@@ -138,13 +138,13 @@ public class ExcelSheet {
         sheet.setPrintGridlines(gridLines);
 
         if (fitToPage) {
-        	ps.setFitWidth((short)1);
-        	ps.setFitHeight((short)0);
-        	//sheet.setAutobreaks(true);
+            ps.setFitWidth((short)1);
+            ps.setFitHeight((short)0);
+            //sheet.setAutobreaks(true);
             sheet.setFitToPage(true);
         }
         else if (fitToWidthOnly) {
-        	ps.setFitWidth((short)1);
+            ps.setFitWidth((short)1);
         }
     }
 
@@ -1496,13 +1496,13 @@ public class ExcelSheet {
             final int fontSizePts,
             final boolean bold
     ) {
-    	// supported place holders: {page} {num-pages} {date} {time}
+        // supported place holders: {page} {num-pages} {date} {time}
 
-    	final StringBuilder tmp = new StringBuilder();
+        final StringBuilder tmp = new StringBuilder();
 
-    	tmp.append(HSSFHeader.fontSize((short)fontSizePts));
+        tmp.append(HSSFHeader.fontSize((short)fontSizePts));
 
-    	if (bold) tmp.append(HSSFHeader.startBold());
+        if (bold) tmp.append(HSSFHeader.startBold());
 
         String s = text;
         s = s.replace("{page}", HSSFHeader.page());

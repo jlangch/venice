@@ -41,7 +41,7 @@ public class VncBoolean extends VncScalar {
     }
 
     public VncBoolean not() {
-    	return value == null || value == false ? True : False;
+        return value == null || value == false ? True : False;
     }
 
     public static VncBoolean of(final boolean bool) {

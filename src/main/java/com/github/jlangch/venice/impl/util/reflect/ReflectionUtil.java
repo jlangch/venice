@@ -67,8 +67,8 @@ public class ReflectionUtil {
         }
         catch(Throwable ex) {
             throw new RuntimeException(
-            		String.format("Failed to load class '%s'", name),
-            		ex);
+                    String.format("Failed to load class '%s'", name),
+                    ex);
         }
     }
 

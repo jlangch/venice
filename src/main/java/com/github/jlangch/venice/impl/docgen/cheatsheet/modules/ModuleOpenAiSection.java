@@ -35,8 +35,8 @@ public class ModuleOpenAiSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"OpenAI Client",
-        								"modules.openai");
+                                        "OpenAI Client",
+                                        "modules.openai");
 
         final DocSection all = new DocSection("(load-module :openai)", id());
         section.addSection(all);

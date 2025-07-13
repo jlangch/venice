@@ -132,41 +132,41 @@ public class StringUtil {
         return buf.toString();
     }
 
-	/**
-	 * Splits a string into columns
-	 *
-	 * @param text	a string
-	 * @param colStartPos	a list of colum start pos
-	 *
-	 * @return the splitted columns
-	 */
-	public static List<String> splitColumns(final String text, final int[] colStartPos) {
-		if (colStartPos == null || colStartPos.length == 0) {
-			throw new IllegalArgumentException("A 'colStartPos' array must not be null or empty");
-		}
+    /**
+     * Splits a string into columns
+     *
+     * @param text  a string
+     * @param colStartPos  a list of colum start pos
+     *
+     * @return the splitted columns
+     */
+    public static List<String> splitColumns(final String text, final int[] colStartPos) {
+        if (colStartPos == null || colStartPos.length == 0) {
+            throw new IllegalArgumentException("A 'colStartPos' array must not be null or empty");
+        }
 
-		final List<String> columns = new ArrayList<>();
+        final List<String> columns = new ArrayList<>();
 
-		String tmp = text;
+        String tmp = text;
 
-		for(int ii=colStartPos.length-1; ii>=0; ii--) {
-			int pos = colStartPos[ii];
-			if (pos <= 0) {
-				columns.add(StringUtil.trimToEmpty(tmp));
-				tmp = "";
-			}
-			else if (pos >= tmp.length()) {
-				columns.add("");
-			}
-			else {
-				columns.add(StringUtil.trimToEmpty(tmp.substring(pos)));
-				tmp = tmp.substring(0, pos);
-			}
-		}
+        for(int ii=colStartPos.length-1; ii>=0; ii--) {
+            int pos = colStartPos[ii];
+            if (pos <= 0) {
+                columns.add(StringUtil.trimToEmpty(tmp));
+                tmp = "";
+            }
+            else if (pos >= tmp.length()) {
+                columns.add("");
+            }
+            else {
+                columns.add(StringUtil.trimToEmpty(tmp.substring(pos)));
+                tmp = tmp.substring(0, pos);
+            }
+        }
 
-		Collections.reverse(columns);
-		return columns;
-	}
+        Collections.reverse(columns);
+        return columns;
+    }
 
     /**
      * Splits a text into lines

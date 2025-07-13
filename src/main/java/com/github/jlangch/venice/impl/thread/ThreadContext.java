@@ -86,8 +86,8 @@ public class ThreadContext {
 
     public void setMeterRegistry_(final MeterRegistry registry) {
         this.meterRegistry = registry == null
-	                            ? new MeterRegistry(false)
-	                            : registry;
+                                ? new MeterRegistry(false)
+                                : registry;
     }
 
     public IInterceptor getInterceptor_() {
@@ -332,9 +332,9 @@ public class ThreadContext {
 
     public static void remove() {
         try {
-        	ThreadContext tc = ThreadContext.get();
+            ThreadContext tc = ThreadContext.get();
 
-        	tc.clear(false);
+            tc.clear(false);
 
             ThreadContext.context.set(null);
             ThreadContext.context.remove();

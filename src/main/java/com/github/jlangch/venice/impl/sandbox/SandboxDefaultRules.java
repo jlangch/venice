@@ -34,7 +34,7 @@ public class SandboxDefaultRules {
 
     private static final String BASE = Venice.class.getPackage().getName();
 
-	public static final List<String> SYSTEM_CLASS_RULES =
+    public static final List<String> SYSTEM_CLASS_RULES =
             Arrays.asList(
                 "class:" + BASE + ".*Exception:*",
                 "class:" + BASE + ".*Error:*",

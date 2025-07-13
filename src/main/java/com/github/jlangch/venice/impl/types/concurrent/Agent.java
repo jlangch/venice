@@ -280,7 +280,7 @@ public class Agent implements IDeref {
         if (options != null) {
             final VncVal validator = options.get(VALIDATOR);
             if (validator != Constants.Nil) {
-            	final VncFunction fn = Coerce.toVncFunction(validator);
+                final VncFunction fn = Coerce.toVncFunction(validator);
                 fn.sandboxFunctionCallValidation();
                 return fn;
             }

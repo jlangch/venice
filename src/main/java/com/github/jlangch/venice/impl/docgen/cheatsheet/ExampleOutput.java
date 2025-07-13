@@ -120,27 +120,27 @@ public class ExampleOutput {
         sb.append(example);
 
         if (addOutput) {
-	        if (stdout != null) {
-	            sb.append("\n");
-	            sb.append(stdout);
-	        }
+            if (stdout != null) {
+                sb.append("\n");
+                sb.append(stdout);
+            }
 
-	        if (stderr != null) {
-	            sb.append("\n");
-	            sb.append(stderr);
-	        }
+            if (stderr != null) {
+                sb.append("\n");
+                sb.append(stderr);
+            }
         }
 
         if (addResult) {
-	        if (result != null) {
-	            sb.append("\n");
-	            sb.append("=> ").append(result);
-	        }
+            if (result != null) {
+                sb.append("\n");
+                sb.append("=> ").append(result);
+            }
 
-	        if (ex != null) {
-	            sb.append("\n");
-	            sb.append("=> ").append(getExString());
-	        }
+            if (ex != null) {
+                sb.append("\n");
+                sb.append("=> ").append(getExString());
+            }
         }
 
         return sb.toString();

@@ -171,7 +171,7 @@ public class StopWatch {
      * @return true if the stop has expired, meaning it exceeded the time limit
      */
     public boolean hasExpired() {
-    	final long limit = limitTime.get();
+        final long limit = limitTime.get();
         return limit == 0L ? false : System.currentTimeMillis() > limit;
     }
 

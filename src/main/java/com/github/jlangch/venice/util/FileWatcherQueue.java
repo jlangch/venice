@@ -69,7 +69,7 @@ public class FileWatcherQueue implements Closeable {
 
     public void clear() {
         synchronized(queue) {
-        	addToWalFile(WalAction.CLEAR, new File("/"));
+            addToWalFile(WalAction.CLEAR, new File("/"));
             queue.clear();
         }
     }

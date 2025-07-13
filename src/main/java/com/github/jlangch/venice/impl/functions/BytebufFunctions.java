@@ -464,12 +464,12 @@ public class BytebufFunctions {
                                             : 0;
 
                 final long indexTo = args.size() == 4
-                        					? Coerce.toVncLong(args.third()).toJavaLong()
-                        					: -1;
+                                            ? Coerce.toVncLong(args.third()).toJavaLong()
+                                            : -1;
 
                 return indexTo < 0 || indexTo >= buf.length
-                		? new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom))
-                		: new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom, (int)indexTo));
+                        ? new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom))
+                        : new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom, (int)indexTo));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -622,8 +622,8 @@ public class BytebufFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    		"(bytebuf-to-string buf)",
-                    		"(bytebuf-to-string buf encoding)")
+                            "(bytebuf-to-string buf)",
+                            "(bytebuf-to-string buf encoding)")
                     .doc("Converts a bytebuf to a string using an optional encoding. The encoding defaults to :UTF-8")
                     .examples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)")
                     .seeAlso("bytebuf-from-string")
@@ -643,8 +643,8 @@ public class BytebufFunctions {
                 }
                 catch(Exception ex) {
                     throw new VncException(
-                    		"Failed to convert bytebuf to string",
-                    		ex);
+                            "Failed to convert bytebuf to string",
+                            ex);
                 }
             }
 

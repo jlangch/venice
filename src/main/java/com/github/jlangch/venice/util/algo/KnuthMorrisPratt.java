@@ -133,7 +133,7 @@ public abstract class KnuthMorrisPratt {
         }
 
         if (indexTo < 0 || indexTo >= data.length) {
-        	return indexOf(data, pattern, indexFrom);
+            return indexOf(data, pattern, indexFrom);
         }
 
 

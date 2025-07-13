@@ -48,7 +48,7 @@ public class ExamplesTest {
 
     @Test
     public void test_Embed_05_Exceptions() {
-    	Embed_05_Exceptions.main(new String[0]);
+        Embed_05_Exceptions.main(new String[0]);
     }
 
     @Test
@@ -73,12 +73,12 @@ public class ExamplesTest {
 
     @Test
     public void test_Embed_12_ServiceRegistry() {
-    	Embed_12_ServiceRegistry.run();
+        Embed_12_ServiceRegistry.run();
     }
 
     @Test
     public void test_Embed_13_DynServiceRegistry() {
-    	Embed_13_DynServiceRegistry.run();
+        Embed_13_DynServiceRegistry.run();
     }
 
 }

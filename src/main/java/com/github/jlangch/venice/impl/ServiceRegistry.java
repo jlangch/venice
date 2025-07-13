@@ -34,11 +34,11 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ServiceRegistry implements IServiceRegistry {
 
-	public ServiceRegistry() {
-		clear();
-	}
+    public ServiceRegistry() {
+        clear();
+    }
 
-	@Override
+    @Override
     public ServiceRegistry register(final String name, final Object service) {
         if (StringUtil.isBlank(name)) {
             throw new AssertionException(
@@ -53,25 +53,25 @@ public class ServiceRegistry implements IServiceRegistry {
         return this;
     }
 
-	@Override
+    @Override
     public ServiceRegistry registerAll(final Map<String,Object> services) {
-		if (services != null) {
-			services.forEach((k,v) -> register(k,v));
-		}
+        if (services != null) {
+            services.forEach((k,v) -> register(k,v));
+        }
 
         return this;
-	}
+    }
 
-	@Override
+    @Override
     public ServiceRegistry registerServiceDiscovery(final IServiceDiscovery serviceDiscovery) {
-		if (serviceDiscovery == null) {
+        if (serviceDiscovery == null) {
             throw new AssertionException(
                     "A service discovery for the service registry must not be null!");
-		}
+        }
 
-		this.serviceDiscovery.set(serviceDiscovery);
+        this.serviceDiscovery.set(serviceDiscovery);
         return this;
-	}
+    }
 
     @Override
     public ServiceRegistry unregister(final String name) {
@@ -86,13 +86,13 @@ public class ServiceRegistry implements IServiceRegistry {
 
     @Override
     public ServiceRegistry unregisterAll() {
-    	clear();
+        clear();
         return this;
    }
 
     @Override
     public ServiceRegistry unregisterServiceDiscovery() {
-    	serviceDiscovery.set(null);
+        serviceDiscovery.set(null);
         return this;
     }
 
@@ -128,7 +128,7 @@ public class ServiceRegistry implements IServiceRegistry {
 
         // primary check on static registry
         if (staticRegistry.containsKey(name)) {
-        	return true;
+            return true;
         }
 
         // secondary check on dynamic registry
@@ -138,8 +138,8 @@ public class ServiceRegistry implements IServiceRegistry {
 
 
     private void clear() {
-    	staticRegistry.clear();
-    	serviceDiscovery.set(null);
+        staticRegistry.clear();
+        serviceDiscovery.set(null);
     }
 
 

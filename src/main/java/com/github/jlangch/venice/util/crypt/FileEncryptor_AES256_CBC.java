@@ -63,9 +63,9 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class FileEncryptor_AES256_CBC {
 
-	public static boolean isSupported() {
-		return true;
-	}
+    public static boolean isSupported() {
+        return true;
+    }
 
     public static void encryptFileWithPassphrase(
             final String passphrase,
@@ -215,7 +215,7 @@ public class FileEncryptor_AES256_CBC {
 
 
     private static byte[] processData(
-    		final int mode,
+            final int mode,
             final byte[] data,
             final byte[] key,
             final byte[] iv
@@ -233,7 +233,7 @@ public class FileEncryptor_AES256_CBC {
     }
 
     private static Cipher getCipherInstance() throws Exception {
-    	return Cipher.getInstance(String.join("/", new String[] {"AES", "CBC", "PKCS5Padding"}));
+        return Cipher.getInstance(String.join("/", new String[] {"AES", "CBC", "PKCS5Padding"}));
     }
 
 

@@ -149,7 +149,7 @@ public enum PaperSize {
         return legacyApiValue;
     }
 
-	public static PaperSize getByShortValue(short legacyApiValue) {
+    public static PaperSize getByShortValue(short legacyApiValue) {
         return PAPER_SIZE_BY_LEGACY_API_VALUE.get(legacyApiValue);
     }
 

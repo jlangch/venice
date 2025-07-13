@@ -61,11 +61,11 @@ public class DocForm {
 
     public static VncString doc(final VncVal ref, final Env env) {
         if (ref == Constants.Nil) {
-        	return new VncString(
-        			"help on doc itself:          (doc doc)\n" +
-                	"list available modules:      (doc modules)\n" +
-                	"find loaded symbols:         (doc finder)\n" +
-        			"find loaded name spaces:     (doc ns-list)");
+            return new VncString(
+                    "help on doc itself:          (doc doc)\n" +
+                    "list available modules:      (doc modules)\n" +
+                    "find loaded symbols:         (doc finder)\n" +
+                    "find loaded name spaces:     (doc ns-list)");
         }
         else if (Types.isVncSymbol(ref)) {
             return docForSymbol((VncSymbol)ref, env);
@@ -358,7 +358,7 @@ public class DocForm {
             if (Types.isVncFunction(fn)) {
                 final VncVal theme = ((VncFunction)fn).applyOf();
                 if (Types.isVncKeyword(theme)) {
-                	return ((VncKeyword)theme).getValue();
+                    return ((VncKeyword)theme).getValue();
                 }
             }
 
@@ -401,34 +401,34 @@ public class DocForm {
     private static VncString formatDoc(final VncVal val, final int width) {
         if (val != null) {
             if (Types.isVncFunction(val)) {
-            	try {
-            		return formatDoc((VncFunction)val, width);
-            	}
-            	catch(RuntimeException ex) {
-            		throw new RuntimeException(
-            				"Failed to format function doc: " + ((VncFunction)val).getQualifiedName(),
-            				ex);
-            	}
+                try {
+                    return formatDoc((VncFunction)val, width);
+                }
+                catch(RuntimeException ex) {
+                    throw new RuntimeException(
+                            "Failed to format function doc: " + ((VncFunction)val).getQualifiedName(),
+                            ex);
+                }
             }
             else if (Types.isVncSpecialForm(val)) {
-            	try {
-            		return formatDoc((VncSpecialForm)val, width);
-            	}
-            	catch(RuntimeException ex) {
-            		throw new RuntimeException(
-            				"Failed to format special form doc: " + ((VncSpecialForm)val).getName(),
-            				ex);
-            	}
+                try {
+                    return formatDoc((VncSpecialForm)val, width);
+                }
+                catch(RuntimeException ex) {
+                    throw new RuntimeException(
+                            "Failed to format special form doc: " + ((VncSpecialForm)val).getName(),
+                            ex);
+                }
             }
             else if (Types.isVncProtocol(val)) {
-            	try {
-                	return formatDoc((VncProtocol)val, width);
-            	}
-            	catch(RuntimeException ex) {
-            		throw new RuntimeException(
-            				"Failed to format protocol doc: " + ((VncProtocol)val).getName(),
-            				ex);
-            	}
+                try {
+                    return formatDoc((VncProtocol)val, width);
+                }
+                catch(RuntimeException ex) {
+                    throw new RuntimeException(
+                            "Failed to format protocol doc: " + ((VncProtocol)val).getName(),
+                            ex);
+                }
             }
         }
 

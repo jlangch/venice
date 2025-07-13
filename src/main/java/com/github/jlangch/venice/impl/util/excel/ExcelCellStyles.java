@@ -198,11 +198,11 @@ public class ExcelCellStyles {
     }
 
     public Font getFont(final CellStyle style) {
-    	return style == null ? null : workbook.getFontAt(style.getFontIndex());
+        return style == null ? null : workbook.getFontAt(style.getFontIndex());
     }
 
     public short createDataFormat(final String format) {
-    	// cellStyle.setDataFormat(createDataFormat("dd.MM.yyyy"));
+        // cellStyle.setDataFormat(createDataFormat("dd.MM.yyyy"));
         final CreationHelper creationHelper = workbook.getCreationHelper();
         return creationHelper.createDataFormat().getFormat(format);
     }

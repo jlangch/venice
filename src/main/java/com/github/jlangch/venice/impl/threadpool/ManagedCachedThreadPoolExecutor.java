@@ -73,7 +73,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 
     public void setCorePoolSize(final int poolSize) {
         synchronized(this) {
-        	corePoolSize = Math.max(0, poolSize);
+            corePoolSize = Math.max(0, poolSize);
             if (super.exists()) {
                 getExecutor().setCorePoolSize(corePoolSize);
             }
@@ -82,7 +82,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 
     public void setKeepAliveTime(final int seconds) {
         synchronized(this) {
-        	keepAliveTimeSeconds = Math.max(0, seconds);
+            keepAliveTimeSeconds = Math.max(0, seconds);
             if (super.exists()) {
                 getExecutor().setKeepAliveTime(keepAliveTimeSeconds, TimeUnit.SECONDS);
             }

@@ -141,7 +141,7 @@ public class SpecialForms_VarFunctions {
                     return Nil;
                 }
                 else {
-                	final VncSymbol s = v.getName();
+                    final VncSymbol s = v.getName();
                     return s.hasNamespace()
                                 ? s
                                 : v.isGlobal() && !(v instanceof DynamicVar)

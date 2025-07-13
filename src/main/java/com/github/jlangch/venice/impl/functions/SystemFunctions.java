@@ -968,9 +968,9 @@ public class SystemFunctions {
                     .arglists("(logo)")
                     .doc("Returns the Venice logo, a map with the keys `:name`, `:mimetype`, and `:data`")
                     .examples(
-                    	"(logo)",
-                    	"(let [l (logo)]     \n" +
-                    	"  (io/spit (io/file (:name l)) (:data l)))")
+                        "(logo)",
+                        "(let [l (logo)]     \n" +
+                        "  (io/spit (io/file (:name l)) (:data l)))")
                     .build()
         ) {
             @Override
@@ -978,15 +978,15 @@ public class SystemFunctions {
                 ArityExceptions.assertArity(this, args, 0);
 
                 return new VncOrderedMap()
-                			.assoc(
-                				new VncKeyword(":name"),
-                				new VncString("logo.png"),
+                            .assoc(
+                                new VncKeyword(":name"),
+                                new VncString("logo.png"),
 
-                				new VncKeyword(":mimetype"),
-                				new VncString(MimeTypes.IMAGE_PNG),
+                                new VncKeyword(":mimetype"),
+                                new VncString(MimeTypes.IMAGE_PNG),
 
-                				new VncKeyword(":data"),
-                				new VncByteBuffer(
+                                new VncKeyword(":data"),
+                                new VncByteBuffer(
                                       new ClassPathResource("com/github/jlangch/venice/images/logo.png")
                                             .getResourceAsBinary()));
             }

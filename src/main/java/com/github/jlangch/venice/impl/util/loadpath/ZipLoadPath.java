@@ -59,12 +59,12 @@ public class ZipLoadPath extends LoadPath {
     @Override
     public boolean isOnPath(final File file, final Access mode) {
         if (mode == Access.Read && !file.isAbsolute()) {
-        	// Note: on Windows slashify the path for the ZIP entry name
-        	final String path = file.getPath().replace('\\', '/');
-        	return entries.contains(path);
+            // Note: on Windows slashify the path for the ZIP entry name
+            final String path = file.getPath().replace('\\', '/');
+            return entries.contains(path);
         }
         else {
-        	return false;
+            return false;
         }
     }
 
@@ -80,7 +80,7 @@ public class ZipLoadPath extends LoadPath {
 
     @Override
     public File normalize(final File file) {
-    	return null;  // not supported
+        return null;  // not supported
     }
 
     @Override

@@ -38,10 +38,10 @@ public class ShellException extends VncException {
     }
 
     public ShellException(
-    		final String message,
-    		final Integer exitCode,
-    		final String stdout,
-    		final String stderr
+            final String message,
+            final Integer exitCode,
+            final String stdout,
+            final String stderr
     ) {
         super(message);
         this.exitCode = exitCode;

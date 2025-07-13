@@ -106,7 +106,7 @@ public class Tokenizer {
 
                     final int chNext = reader.peek();
                     if (chNext == '!') {
-                    	// Venice allows shebang lines simply by making #! equivalent to ; comment
+                        // Venice allows shebang lines simply by making #! equivalent to ; comment
                         // comment:  #! ....  read to EOL
                         reader.consume();
                         readComment(pos, "#!");

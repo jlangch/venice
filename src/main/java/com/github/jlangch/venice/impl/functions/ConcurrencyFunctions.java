@@ -2574,8 +2574,8 @@ public class ConcurrencyFunctions {
                                         : null;
 
                 final VncKeyword type = args.size() == 3
-					                        ? Coerce.toVncKeyword(args.third())
-					                        : new VncKeyword("daemon");
+                                            ? Coerce.toVncKeyword(args.third())
+                                            : new VncKeyword("daemon");
 
                 if (!(type.hasValue("daemon") || type.hasValue("user"))) {
                     throw new VncException(String.format(

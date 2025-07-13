@@ -716,7 +716,7 @@ public class ArrayFunctions {
                 if (Types.isVncLong(arg)) {
                     final float[] arr = new float[((VncLong)arg).getIntValue()];
                     if (args.size() == 2) {
-                    	final VncNumber n = Coerce.toVncNumber(args.second());
+                        final VncNumber n = Coerce.toVncNumber(args.second());
                         Arrays.fill(arr, n.toJavaFloat());
                     }
                     return new VncJavaObject(arr);
@@ -776,7 +776,7 @@ public class ArrayFunctions {
                 if (Types.isVncLong(arg)) {
                     final double[] arr = new double[((VncLong)arg).getIntValue()];
                     if (args.size() == 2) {
-                    	final VncNumber n = Coerce.toVncNumber(args.second());
+                        final VncNumber n = Coerce.toVncNumber(args.second());
                         Arrays.fill(arr, n.toJavaDouble());
                     }
                     return new VncJavaObject(arr);

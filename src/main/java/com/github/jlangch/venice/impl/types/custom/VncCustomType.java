@@ -120,10 +120,10 @@ public class VncCustomType extends VncMap {
     }
 
     public VncVector getValuesAsVector() {
-    	VncVector vec = VncVector.empty();
-    	for(VncCustomTypeFieldDef f : typeDef.getFieldDefs()) {
-    		vec = vec.addAtEnd(values.get(f.getName()));
-    	}
+        VncVector vec = VncVector.empty();
+        for(VncCustomTypeFieldDef f : typeDef.getFieldDefs()) {
+            vec = vec.addAtEnd(values.get(f.getName()));
+        }
         return vec;
     }
 

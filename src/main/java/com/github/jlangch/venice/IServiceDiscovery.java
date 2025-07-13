@@ -44,7 +44,7 @@ public interface IServiceDiscovery {
      * @return <code>true</code> if the service exists otherwise <code>false</code>
      */
     default boolean exists(String name) {
-    	return lookup(name) != null;
+        return lookup(name) != null;
     }
 
 }

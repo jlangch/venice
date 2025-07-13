@@ -117,13 +117,13 @@ public class SimpleShell {
 
         final ShellResult r = SimpleShell.execCmd("ps", "-p", pid, "-ww", "-o", "args");
         if (r.isZeroExitCode()) {
-        	final List<String> lines = r.getStdoutLines();
-        	return lines.size() == 2
-        			? lines.get(1)
-        			: null;
+            final List<String> lines = r.getStdoutLines();
+            return lines.size() == 2
+                    ? lines.get(1)
+                    : null;
         }
         else {
-        	return null;
+            return null;
         }
     }
 

@@ -141,7 +141,7 @@ public class Boxing {
             }
         }
         else if (enumType.isAssignableFrom(arg.getClass())) {
-        	return (Enum<?>)arg;
+            return (Enum<?>)arg;
         }
         else {
             throw new JavaMethodInvocationException(String.format(

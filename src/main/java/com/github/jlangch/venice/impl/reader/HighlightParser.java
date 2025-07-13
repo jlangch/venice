@@ -272,10 +272,10 @@ public class HighlightParser {
                         process_list('(' , ')');
                     }
                     else if (t.getType() == TokenType.STRING) {
-                    	next();
+                        next();
                         String s = t.getToken();
                         if (s.startsWith("\"")) {
-                        	// regex pattern: #"[0-9]+"
+                            // regex pattern: #"[0-9]+"
                             addItem(s, STRING);
                         }
                      }

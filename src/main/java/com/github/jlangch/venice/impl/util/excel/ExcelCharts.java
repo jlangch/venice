@@ -69,9 +69,9 @@ import com.github.jlangch.venice.util.excel.chart.Position;
 
 public class ExcelCharts {
 
-	public ExcelCharts(final Sheet sheet) {
-		this.sheet = sheet;
-	}
+    public ExcelCharts(final Sheet sheet) {
+        this.sheet = sheet;
+    }
 
     public void addImage(
             final CellAddr anchor,
@@ -235,7 +235,7 @@ public class ExcelCharts {
 
         final boolean stacked = grouping == BarGrouping.STACKED || grouping == BarGrouping.PERCENT_STACKED;
         if (stacked) {
-        	chart.getCTChart().getPlotArea().getBarChartArray(0).addNewOverlap().setVal((byte)100);
+            chart.getCTChart().getPlotArea().getBarChartArray(0).addNewOverlap().setVal((byte)100);
         }
 
         chart.plot(data);

@@ -21,17 +21,18 @@
  */
 package com.github.jlangch.venice.util.excel;
 
+
 public class Formula {
 
-	public Formula(final String formula) {
-		this.formula = formula;
-	}
+    public Formula(final String formula) {
+        this.formula = formula;
+    }
 
 
-	public String getFormula() {
-		return formula;
-	}
+    public String getFormula() {
+        return formula;
+    }
 
 
-	private final String formula;
+    private final String formula;
 }

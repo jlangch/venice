@@ -43,8 +43,8 @@ public class ModuleJdbcPostgreSQLSection implements ISectionBuilder {
                 "```\n";
 
         final DocSection section = new DocSection(
-						                "JDBC PostgreSQL",
-						                "JDBC PostgreSQL support",
+                                        "JDBC PostgreSQL",
+                                        "JDBC PostgreSQL support",
                                         "modules.jdbc-postgresql",
                                         null,
                                         footer);

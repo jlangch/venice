@@ -377,7 +377,7 @@ public class VncBigInteger extends VncNumber {
     }
 
     @Override
-	public String toString(final boolean print_machine_readably) {
+    public String toString(final boolean print_machine_readably) {
         return print_machine_readably ? value.toString() + "N" : value.toString();
     }
 

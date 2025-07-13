@@ -1834,10 +1834,10 @@ public class IOFunctions {
                 final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
 
                 return VncList.ofColl(
-                		fw.getRegisteredPaths()
-                		  .stream()
-                		  .map(p -> new VncJavaObject(p.toFile()))
-                		  .collect(Collectors.toList()));
+                        fw.getRegisteredPaths()
+                          .stream()
+                          .map(p -> new VncJavaObject(p.toFile()))
+                          .collect(Collectors.toList()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

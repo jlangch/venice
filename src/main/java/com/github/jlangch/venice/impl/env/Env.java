@@ -720,9 +720,9 @@ public class Env implements Serializable {
 
         // remove private symbols
         return all.entrySet()
-        		  .stream()
-        		  .filter(e -> !e.getValue().isPrivate())
-        		  .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                  .stream()
+                  .filter(e -> !e.getValue().isPrivate())
+                  .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
     public List<VncSymbol> getAllGlobalFunctionSymbols() {

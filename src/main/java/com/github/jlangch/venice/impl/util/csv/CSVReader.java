@@ -46,8 +46,8 @@ public class CSVReader {
         this.quote = quote;
 
         if (quote == separator) {
-        	throw new RuntimeException(
-        			"The quote and the separator character must not be identical!");
+            throw new RuntimeException(
+                    "The quote and the separator character must not be identical!");
         }
     }
 
@@ -85,7 +85,7 @@ public class CSVReader {
 
     private List<String> parseRecord(final CharacterReader rd) {
         // empty line?
-    	rd.skipAllOfChar('\r');  // skip CR
+        rd.skipAllOfChar('\r');  // skip CR
         if (rd.peek() == '\n') {
             rd.consume();
             return new ArrayList<>();
@@ -102,14 +102,14 @@ public class CSVReader {
             final int ch = rd.peek();
 
             if (ch == '\r') {
-            	rd.skipAllOfChar('\r');  // skip CR
+                rd.skipAllOfChar('\r');  // skip CR
             }
             else if (ch == '\n') {
                 rd.consume();
                 break;
             }
             else if (ch == quote) {
-            	rd.consume();
+                rd.consume();
                 record.add(parseQuotedField(rd));
             }
             else {
@@ -120,7 +120,7 @@ public class CSVReader {
                 rd.consume();
                 rd.skipAllOfChar('\r');
                 if (rd.peek() == '\n' || rd.isEof()) {
-                	record.add(null);
+                    record.add(null);
                 }
             }
         }
@@ -146,7 +146,7 @@ public class CSVReader {
                                 rd.getColNr()));
             }
             else {
-            	rd.consume();
+                rd.consume();
                 sb.append((char)ch);
             }
         }
@@ -161,21 +161,21 @@ public class CSVReader {
         while(!rd.isEof()) {
             int ch = rd.peek();
             if (ch == quote) {
-            	// trailing quote or escaped quote?
+                // trailing quote or escaped quote?
                 rd.consume();
 
                 int chNext = rd.peek();
                 if (chNext == quote) {
-                	sb.append(quote); // escaped quote
+                    sb.append(quote); // escaped quote
                     rd.consume();
                 }
                 else {
-                	break;  // trailing quote
+                    break;  // trailing quote
                 }
             }
             else {
                 sb.append((char)ch);
-            	rd.consume();
+                rd.consume();
             }
         }
 

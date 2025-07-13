@@ -55,9 +55,9 @@ public class TextBlockParser {
                 break;
             }
             else if (prevLine != null
-            			&& !prevLine.endsWith("¶")
-            			&& ListBlockParser.isBlockStart(line)) {
-            	break;
+                        && !prevLine.endsWith("¶")
+                        && ListBlockParser.isBlockStart(line)) {
+                break;
             }
             else {
                 reader.consume();

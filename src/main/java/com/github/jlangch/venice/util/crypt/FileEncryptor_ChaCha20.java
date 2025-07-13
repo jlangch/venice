@@ -251,7 +251,7 @@ public class FileEncryptor_ChaCha20 {
     }
 
     private static byte[] processData(
-    		final int mode,
+            final int mode,
             final byte[] data,
             final byte[] key,
             final byte[] nonce,

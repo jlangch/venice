@@ -48,7 +48,7 @@ public class Inspector {
 
         }
         else if (Types.isVncMultiArityFunction(val)) {
-           	final VncMultiArityFunction fn = (VncMultiArityFunction)val;
+            final VncMultiArityFunction fn = (VncMultiArityFunction)val;
             fn.sandboxFunctionCallValidation();
 
             final List<VncVal> arityFunctions = new ArrayList<>();
@@ -69,7 +69,7 @@ public class Inspector {
                     new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
         }
         else if (Types.isVncMultiFunction(val)) {
-           	final VncFunction fn = (VncFunction)val;
+            final VncFunction fn = (VncFunction)val;
             fn.sandboxFunctionCallValidation();
 
             return VncOrderedMap.of(
@@ -81,7 +81,7 @@ public class Inspector {
                     new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
         }
         else if (Types.isVncMacro(val)) {
-           	final VncFunction fn = (VncFunction)val;
+            final VncFunction fn = (VncFunction)val;
             fn.sandboxFunctionCallValidation();
 
             return VncOrderedMap.of(
@@ -93,7 +93,7 @@ public class Inspector {
                     new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
         }
         else if (Types.isVncFunction(val)) {
-           	final VncFunction fn = (VncFunction)val;
+            final VncFunction fn = (VncFunction)val;
             fn.sandboxFunctionCallValidation();
 
             return VncOrderedMap.of(

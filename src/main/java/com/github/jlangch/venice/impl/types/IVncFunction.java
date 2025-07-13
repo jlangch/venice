@@ -33,7 +33,7 @@ public interface IVncFunction {
 
 
     default IInterceptor sandboxFunctionCallValidation() {
-    	return null;
+        return null;
     }
 
     default VncVal applyOf(final VncVal... mvs) {

@@ -171,7 +171,7 @@ public class TableColFmtParser {
     }
 
     private IPreCompiled getCssParser() {
-    	IPreCompiled pc = cssParser.get();
+        IPreCompiled pc = cssParser.get();
         if (pc == null) {
             final String parser = new ClassPathResource(CSS_PARSER).getResourceAsString();
 

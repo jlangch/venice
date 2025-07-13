@@ -75,7 +75,7 @@ public class AssertionException extends VncException {
     }
 
     public String getExpression() {
-    	return expression;
+        return expression;
     }
 
 

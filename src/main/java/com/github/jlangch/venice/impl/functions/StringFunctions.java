@@ -1167,13 +1167,13 @@ public class StringFunctions {
                 final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
 
                 try {
-	                return new VncString(
-	                                to == null
-	                                    ? string.getValue().substring(from.getValue().intValue())
-	                                    : string.getValue().substring(from.getValue().intValue(), to.getValue().intValue()));
+                    return new VncString(
+                                    to == null
+                                        ? string.getValue().substring(from.getValue().intValue())
+                                        : string.getValue().substring(from.getValue().intValue(), to.getValue().intValue()));
                 }
                 catch(StringIndexOutOfBoundsException ex) {
-                	throw new VncException("str/subs: index out of bounds!", ex);
+                    throw new VncException("str/subs: index out of bounds!", ex);
                 }
             }
 

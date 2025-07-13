@@ -235,7 +235,7 @@ public class RejectAllInterceptor extends Interceptor {
 
 
     public List<String> getBlacklistedVeniceFunctions() {
-    	// all unsafe (blacklisted) functions
+        // all unsafe (blacklisted) functions
         final List<String> list = new ArrayList<>(SandboxFunctionGroups.groupFunctions("*unsafe*"));
         Collections.sort(list);
         return list;

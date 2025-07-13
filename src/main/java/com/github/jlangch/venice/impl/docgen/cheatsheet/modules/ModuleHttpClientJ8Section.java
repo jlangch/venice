@@ -35,9 +35,9 @@ public class ModuleHttpClientJ8Section implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"HTTP Client J8",
-        								"HTTP Client based on HttpUrlConnection (Java 8+)",
-        								"modules.http-client-j8");
+                                        "HTTP Client J8",
+                                        "HTTP Client based on HttpUrlConnection (Java 8+)",
+                                        "modules.http-client-j8");
 
         final DocSection all = new DocSection("(load-module :http-client-j8)", id());
         section.addSection(all);

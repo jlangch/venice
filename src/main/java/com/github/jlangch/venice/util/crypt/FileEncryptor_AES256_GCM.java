@@ -60,9 +60,9 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class FileEncryptor_AES256_GCM {
 
-	public static boolean isSupported() {
-		return true;
-	}
+    public static boolean isSupported() {
+        return true;
+    }
 
     public static void encryptFileWithPassphrase(
             final String passphrase,
@@ -212,7 +212,7 @@ public class FileEncryptor_AES256_GCM {
 
 
     private static byte[] processData(
-    		final int mode,
+            final int mode,
             final byte[] data,
             final byte[] key,
             final byte[] iv

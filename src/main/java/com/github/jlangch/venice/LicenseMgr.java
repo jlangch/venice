@@ -31,71 +31,71 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 public abstract class LicenseMgr {
 
 
-	public static String loadVeniceLicenseText() {
-	    return new ClassPathResource("META-INF/" + LICENSE_VENICE_TEXT).getResourceAsString("UTF-8");
-	}
+    public static String loadVeniceLicenseText() {
+        return new ClassPathResource("META-INF/" + LICENSE_VENICE_TEXT).getResourceAsString("UTF-8");
+    }
 
-	public static String loadVeniceLicense() {
-	    return new ClassPathResource("META-INF/" + LICENSE_VENICE).getResourceAsString("UTF-8");
-	}
+    public static String loadVeniceLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_VENICE).getResourceAsString("UTF-8");
+    }
 
-	public static String loadAudiowideLicense() {
-	    return new ClassPathResource("META-INF/" + LICENSE_AUDIOWIDE).getResourceAsString("UTF-8");
-	}
+    public static String loadAudiowideLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_AUDIOWIDE).getResourceAsString("UTF-8");
+    }
 
-	public static String loadJLine3License() {
-	    return new ClassPathResource("META-INF/" + LICENSE_JLINE3).getResourceAsString("UTF-8");
-	}
+    public static String loadJLine3License() {
+        return new ClassPathResource("META-INF/" + LICENSE_JLINE3).getResourceAsString("UTF-8");
+    }
 
-	public static String loadNanojsonLicense() {
-	    return new ClassPathResource("META-INF/" + LICENSE_NANOJSON).getResourceAsString("UTF-8");
-	}
+    public static String loadNanojsonLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_NANOJSON).getResourceAsString("UTF-8");
+    }
 
-	public static String loadVavrLicense() {
-	    return new ClassPathResource("META-INF/" + LICENSE_VAVR).getResourceAsString("UTF-8");
-	}
+    public static String loadVavrLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_VAVR).getResourceAsString("UTF-8");
+    }
 
-	public static String loadZip4Jicense() {
-	    return new ClassPathResource("META-INF/" + LICENSE_ZIP4J).getResourceAsString("UTF-8");
-	}
+    public static String loadZip4Jicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_ZIP4J).getResourceAsString("UTF-8");
+    }
 
-	public static String loadOflLicense() {
-	    return new ClassPathResource("META-INF/" + LICENSE_OFL).getResourceAsString("UTF-8");
-	}
+    public static String loadOflLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_OFL).getResourceAsString("UTF-8");
+    }
 
-	public static String loadOpenSansLicense() {
-	    return new ClassPathResource("META-INF/" + LICENSE_OPENSANS).getResourceAsString("UTF-8");
-	}
+    public static String loadOpenSansLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_OPENSANS).getResourceAsString("UTF-8");
+    }
 
-	public static String loadAll() {
-		final List<String> licenses = CollectionUtil.toList(
-											header("Venice License"),
-											loadVeniceLicenseText(),
-											header("Venice License"),
-											loadJLine3License(),
-											header("JLine3 License"),
-											loadNanojsonLicense(),
-											header("NanJson License"),
-											loadVavrLicense(),
-											header("Vavr License"),
-											loadZip4Jicense(),
-											header("SIL Open Font License"),
-											loadOflLicense(),
-											header("Audowide Font License"),
-											loadAudiowideLicense(),
-											header("OpenSans Font License"),
-											loadOpenSansLicense());
+    public static String loadAll() {
+        final List<String> licenses = CollectionUtil.toList(
+                                            header("Venice License"),
+                                            loadVeniceLicenseText(),
+                                            header("Venice License"),
+                                            loadJLine3License(),
+                                            header("JLine3 License"),
+                                            loadNanojsonLicense(),
+                                            header("NanJson License"),
+                                            loadVavrLicense(),
+                                            header("Vavr License"),
+                                            loadZip4Jicense(),
+                                            header("SIL Open Font License"),
+                                            loadOflLicense(),
+                                            header("Audowide Font License"),
+                                            loadAudiowideLicense(),
+                                            header("OpenSans Font License"),
+                                            loadOpenSansLicense());
 
-		return String.join("\n\n\n\n", licenses);
-	}
+        return String.join("\n\n\n\n", licenses);
+    }
 
 
-	private static String header(final String header) {
-		return StringUtil.repeat('*', 80) + "\n" +
-	           "* " + header + StringUtil.repeat(' ', 80 - 3 -header.length()) + "*\n" +
-	           StringUtil.repeat('*', 80) + "\n" +
-	           "\n\n";
-	}
+    private static String header(final String header) {
+        return StringUtil.repeat('*', 80) + "\n" +
+               "* " + header + StringUtil.repeat(' ', 80 - 3 -header.length()) + "*\n" +
+               StringUtil.repeat('*', 80) + "\n" +
+               "\n\n";
+    }
 
 
     private final static String LICENSE_VENICE_TEXT = "license.txt";

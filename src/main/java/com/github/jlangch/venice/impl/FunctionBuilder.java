@@ -198,7 +198,7 @@ public class FunctionBuilder implements Serializable {
                         final VncKeyword typeMeta = paramTypesArr[ii];
                         if (typeMeta != null) {
                             // check 'val' type against 'typeMeta'
-                        	FunctionArgsTypeHints.validate(sym, val, typeMeta);
+                            FunctionArgsTypeHints.validate(sym, val, typeMeta);
                         }
                         env.setLocal(new Var(sym, val, Var.Scope.Local));
                     }

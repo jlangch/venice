@@ -29,13 +29,13 @@ import java.util.List;
  */
 public class AsciiCanvas {
 
-	/**
-	 * Creates a canvas in the given dimension. Initializes the canvas with
-	 * spaces.
-	 *
-	 * @param width the width (characters), must be in the range 1..1000
-	 * @param height the height (characters), must be in the range 1..1000
-	 */
+    /**
+     * Creates a canvas in the given dimension. Initializes the canvas with
+     * spaces.
+     *
+     * @param width the width (characters), must be in the range 1..1000
+     * @param height the height (characters), must be in the range 1..1000
+     */
     public AsciiCanvas(
             final int width,
             final int height
@@ -149,7 +149,7 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas drawText(final String text, final int x, final int y) {
-    	drawHorizontalRight(text, x, y, "");
+        drawHorizontalRight(text, x, y, "");
         return this;
     }
 
@@ -402,7 +402,7 @@ public class AsciiCanvas {
      * @return this canvas
      */
     public AsciiCanvas box(final int x, final int y, final int w, final int h, final String border) {
-    	box(x, y, w, h, border, "");
+        box(x, y, w, h, border, "");
         return this;
     }
 
@@ -437,16 +437,16 @@ public class AsciiCanvas {
     }
 
     public AsciiCanvas fill(final char ch, final int x, final int y, final int w, final int h) {
-    	fill(ch, x, y, w, h, "");
+        fill(ch, x, y, w, h, "");
         return this;
     }
 
     public AsciiCanvas fill(final char ch, final int x, final int y, final int w, final int h, final String ansiFormat) {
-    	for(int y_=y; y_<y+h; y_++) {
-        	for(int x_=x; x_<x+w; x_++) {
+        for(int y_=y; y_<y+h; y_++) {
+            for(int x_=x; x_<x+w; x_++) {
                 draw(ch, x_, y_, ansiFormat);
-        	}
-    	}
+            }
+        }
         return this;
     }
 

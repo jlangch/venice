@@ -90,7 +90,7 @@ public class Reader {
     }
 
     public static VncVal read_str(final String str, final String filename) {
-    	final Reader r = reader(str, filename);
+        final Reader r = reader(str, filename);
 
         return read_form(r);
     }
@@ -279,10 +279,10 @@ public class Reader {
 
         Token token;
         while ((token = rdr.peek()) != null && token.charAt(0) != end) {
-        	final VncVal form = read_form(rdr);
-        	if (form != null) {
-        		items.add(form);
-        	}
+            final VncVal form = read_form(rdr);
+            if (form != null) {
+                items.add(form);
+            }
         }
 
         if (token == null) {
@@ -441,15 +441,15 @@ public class Reader {
         VncVal meta = read_form(rdr);
 
         if (Types.isVncKeyword(meta)) {
-        	final String qName = ((VncKeyword)meta).getQualifiedName();
-        	if (qName.equals("private") || qName.equals("dynamic")) {
+            final String qName = ((VncKeyword)meta).getQualifiedName();
+            if (qName.equals("private") || qName.equals("dynamic")) {
                 // allow ^:private is equivalent to ^{:private true}
                 // allow ^:dynamic is equivalent to ^{:dynamic true}
                 meta = VncHashMap.of(meta, VncBoolean.True);
-        	}
-        	else {
+            }
+            else {
                 meta = VncHashMap.of(MetaUtil.TYPE, meta);
-        	}
+            }
         }
 
         if (Types.isVncMap(meta)) {

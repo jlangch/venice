@@ -89,7 +89,7 @@ public class ReplInstaller {
         catch (VncException ex) {
             ex.printStackTrace(System.err);
             System.err.println();
-        	System.err.println(ex.getCallStackAsString(""));
+            System.err.println(ex.getCallStackAsString(""));
             System.err.println();
             System.err.println("REPL setup failed!");
 
@@ -103,12 +103,12 @@ public class ReplInstaller {
             return false;
         }
         finally {
-        	ThreadContext.remove();
+            ThreadContext.remove();
         }
     }
 
 
     private static String slashifyFilePath(final String path) {
-    	return  path.replace('\\', '/');
+        return  path.replace('\\', '/');
     }
 }

@@ -67,7 +67,7 @@ public class SandboxRules {
      * @return a SandboxInterceptor
      */
     public SandboxInterceptor sandbox() {
-    	return new SandboxInterceptor(this);
+        return new SandboxInterceptor(this);
     }
 
     /**
@@ -490,7 +490,7 @@ public class SandboxRules {
      * @deprecated use {@link #rejectAllIoFunctions}
      */
     @Deprecated
-	public SandboxRules rejectAllVeniceIoFunctions() {
+    public SandboxRules rejectAllVeniceIoFunctions() {
         return rejectAllIoFunctions();
     }
 
@@ -554,7 +554,7 @@ public class SandboxRules {
         return this;
     }
     public SandboxRules rejectAllSenstiveSpecialForms() {
-    	// keep typo in function name for compatibility
+        // keep typo in function name for compatibility
         return rejectAllSensitiveSpecialForms();
     }
 

@@ -394,21 +394,21 @@ public class DocItemBuilder {
 
         int index = 0;
         for(VncVal item : list.getJavaList()) {
-        	if (item instanceof VncString) {
-        		tmpList.add(((VncString)item).getValue());
-        	}
-        	else {
+            if (item instanceof VncString) {
+                tmpList.add(((VncString)item).getValue());
+            }
+            else {
                 throw new RuntimeException(
-                			String.format(
-                					"Failed on item '%s' (at index %d) while processing %s. " +
-                					"Expected an item of type :core/string but got %s (%s)",
-                					name,
-                					index,
-                					helpType,
-                					item.getType().toString(true),
-                					StringUtil.truncate(item.toString(true), 20, "...")));
-        	}
-        	index++;
+                            String.format(
+                                    "Failed on item '%s' (at index %d) while processing %s. " +
+                                    "Expected an item of type :core/string but got %s (%s)",
+                                    name,
+                                    index,
+                                    helpType,
+                                    item.getType().toString(true),
+                                    StringUtil.truncate(item.toString(true), 20, "...")));
+            }
+            index++;
         }
 
         return tmpList;

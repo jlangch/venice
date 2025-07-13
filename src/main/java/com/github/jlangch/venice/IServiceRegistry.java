@@ -64,7 +64,7 @@ public interface IServiceRegistry {
      * @param service The service, any non <code>null</code> Java object
      * @return this registry to allow builder style configuration
      */
-	IServiceRegistry register(String name, Object service);
+    IServiceRegistry register(String name, Object service);
 
     /**
      * Register named services.
@@ -74,7 +74,7 @@ public interface IServiceRegistry {
      *                 The <code>value</code> holds the service, any non <code>null</code> Java object
     * @return this registry to allow builder style configuration
      */
-	IServiceRegistry registerAll(Map<String,Object> services);
+    IServiceRegistry registerAll(Map<String,Object> services);
 
     /**
      * Register a dynamic service lookup.
@@ -86,7 +86,7 @@ public interface IServiceRegistry {
      * @param serviceDiscovery The custom service discovery mechanism
     * @return this registry to allow builder style configuration
      */
-	IServiceRegistry registerServiceDiscovery(IServiceDiscovery serviceDiscovery);
+    IServiceRegistry registerServiceDiscovery(IServiceDiscovery serviceDiscovery);
 
     /**
      * Unregister a service.
@@ -96,21 +96,21 @@ public interface IServiceRegistry {
      * @param name The service's name
      * @return this registry to allow builder style configuration
      */
-	IServiceRegistry unregister(String name);
+    IServiceRegistry unregister(String name);
 
     /**
      * Unregister all services and the service discovery
      *
      * @return this registry to allow builder style configuration
      */
-	IServiceRegistry unregisterAll();
+    IServiceRegistry unregisterAll();
 
     /**
      * Unregister the dynamic service lookup.
      *
      * @return this registry to allow builder style configuration
      */
-	IServiceRegistry unregisterServiceDiscovery();
+    IServiceRegistry unregisterServiceDiscovery();
 
     /**
      * Looking up a service

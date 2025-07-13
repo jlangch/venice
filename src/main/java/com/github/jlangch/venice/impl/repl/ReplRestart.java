@@ -43,8 +43,8 @@ public class ReplRestart {
     }
 
     public static void restart(
-    		final boolean macroExpandOnLoad,
-    		final ColorMode colorMode
+            final boolean macroExpandOnLoad,
+            final ColorMode colorMode
     ) {
         ReplRestart.write(macroExpandOnLoad, colorMode);
 

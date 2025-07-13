@@ -185,8 +185,8 @@ public class SpecialForms_ImportFunctions {
                     // not yet repackaged. Falling back to the original package
                     // will make the import work
                     if (clazz.startsWith("org.repackage.") && !ReflectionUtil.isClassAvailable(clazz)) {
-                    	// not yet repackaged fall back to original class name
-                    	clazz = clazz.substring("org.repackage.".length());
+                        // not yet repackaged fall back to original class name
+                        clazz = clazz.substring("org.repackage.".length());
                     }
 
                     if (Types.isVncKeyword(as) && "as".equals(((VncKeyword)as).getValue())) {
