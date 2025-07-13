@@ -62,7 +62,7 @@ public class DocForm {
     public static VncString doc(final VncVal ref, final Env env) {
         if (ref == Constants.Nil) {
         	return new VncString(
-        			"help on doc itslef:          (doc doc)\n" +
+        			"help on doc itself:          (doc doc)\n" +
                 	"list available modules:      (doc modules)\n" +
                 	"find loaded symbols:         (doc finder)\n" +
         			"find loaded name spaces:     (doc ns-list)");
