@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.49] - 2025-06-xx
+## [1.12.49] - 2025-07-12
 
 ### Added
 
@@ -19,6 +19,11 @@ All notable changes to this project will be documented in this file.
 - function `pdf/extract-urls` to extract all URLs from a PDF
 - functions `sh/pgrep` and `sh/pargs` to simplify scripts dealing with 
   process pids and process command lines
+
+### Fixed
+
+- an edge case in the `sh` function dealing with binary shell command 
+  output streams.
 
 
 
