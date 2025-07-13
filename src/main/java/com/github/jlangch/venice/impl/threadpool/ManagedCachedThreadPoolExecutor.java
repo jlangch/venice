@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.threadpool;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -38,7 +39,9 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
             final int maxPoolSize
     ) {
         this.threadPoolName = threadPoolName;
-        this.maxThreadPoolSize = maxPoolSize;
+        this.maxThreadPoolSize = Math.max(1, maxPoolSize);
+        this.corePoolSize = 0;
+        this.keepAliveTimeSeconds = 10;
     }
 
 
@@ -52,6 +55,8 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
         final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool(
                                             ThreadPoolUtil.createCountedThreadFactory(
                                                     threadPoolName, true));
+        es.setCorePoolSize(corePoolSize);
+        es.setKeepAliveTime(keepAliveTimeSeconds, TimeUnit.SECONDS);
         es.setMaximumPoolSize(maxThreadPoolSize);
         return es;
     }
@@ -62,6 +67,24 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
             maxThreadPoolSize = Math.max(1, poolSize);
             if (super.exists()) {
                 getExecutor().setMaximumPoolSize(maxThreadPoolSize);
+            }
+        }
+    }
+
+    public void setCorePoolSize(final int poolSize) {
+        synchronized(this) {
+        	corePoolSize = Math.max(0, poolSize);
+            if (super.exists()) {
+                getExecutor().setCorePoolSize(corePoolSize);
+            }
+        }
+    }
+
+    public void setKeepAliveTime(final int seconds) {
+        synchronized(this) {
+        	keepAliveTimeSeconds = Math.max(0, seconds);
+            if (super.exists()) {
+                getExecutor().setKeepAliveTime(keepAliveTimeSeconds, TimeUnit.SECONDS);
             }
         }
     }
@@ -121,5 +144,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 
     private final String threadPoolName;
     private volatile int maxThreadPoolSize;
+    private volatile int corePoolSize;
+    private volatile int keepAliveTimeSeconds;
 }
 
