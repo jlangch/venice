@@ -227,9 +227,7 @@ public class SpecialForms_NamespaceFunctions {
                         "the symbols in the specified namespace ns.")
                     .examples(
                         "(ns-list 'regex)",
-                        "(ns-list)",
-                    	";; dynamically list all public symbols of a module  \n" +
-                        "(symbols :hexdump)                                  ")
+                        "(ns-list)")
                     .seeAlso(
                         "ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns", "symbols")
                     .build()
