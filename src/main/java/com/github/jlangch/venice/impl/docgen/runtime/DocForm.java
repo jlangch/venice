@@ -64,7 +64,6 @@ public class DocForm {
         	return new VncString(
         			"help on doc itslef:          (doc doc)\n" +
                 	"list available modules:      (doc modules)\n" +
-                	"list available symbols:      (doc symbols)\n" +
                 	"find loaded symbols:         (doc finder)\n" +
         			"find loaded name spaces:     (doc ns-list)");
         }

@@ -2356,9 +2356,3 @@
     (println ostream (str title (first block)))
     (docoll #(println ostream (str indent %)) (rest block))
     (println ostream horz-line)))
-
-
-;; ---------------------------------------------------------------------------
-;; doc support
-;; ---------------------------------------------------------------------------
-

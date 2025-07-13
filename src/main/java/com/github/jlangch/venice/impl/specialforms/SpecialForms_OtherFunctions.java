@@ -533,7 +533,7 @@ public class SpecialForms_OtherFunctions {
                     .meta()
                     .arglists("(modules)")
                     .doc("Lists the available Venice modules")
-                    .seeAlso("doc", "ns-list")
+                    .seeAlso("load-module", "doc", "ns-list")
                     .build()
         ) {
             @Override
