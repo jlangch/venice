@@ -349,7 +349,7 @@
          "(last-command-run-details client)")
      :doc """
           Returns the raw command string and the server's result for the last
-          the last command sent to the ClamAV server.
+          command sent to the ClamAV server.
            
           This function is provided for debugging purposes
           """ 
