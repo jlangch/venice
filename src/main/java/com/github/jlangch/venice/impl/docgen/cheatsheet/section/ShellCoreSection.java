@@ -54,8 +54,10 @@ public class ShellCoreSection implements ISectionBuilder {
         final DocSection process = new DocSection("Process", "shell-system.shell.process");
         all.addSection(process);
         process.addItem(diBuilder.getDocItem("sh/kill", false));
+        process.addItem(diBuilder.getDocItem("sh/killall", false));
         process.addItem(diBuilder.getDocItem("sh/pgrep", false));
-        process.addItem(diBuilder.getDocItem("sh/pargs", false));
+        process.addItem(diBuilder.getDocItem("sh/pgrep", false));
+        process.addItem(diBuilder.getDocItem("sh/pkill", false));
         process.addItem(diBuilder.getDocItem("sh/alive?", false));
         process.addItem(diBuilder.getDocItem("sh/load-pid", false));
 

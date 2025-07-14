@@ -287,12 +287,16 @@ public class ShellFunctions {
                         "Kills a process.\n\n" +
                         "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
                         "If no signal is specified, the :sigterm signal is sent.\n\n" +
+                        "Runs the Unix command: `kill -signal {pid}`\n\n" +
                         "Throws an exception if the process does not exist or cannot be killed!\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples(
                         "(sh/kill \"2345\")",
-                        "(sh/kill \"2345\" :sighup)")
-                    .seeAlso("sh", "sh/alive?", "sh/killall", "sh/pgrep", "sh/pargs")
+                        "(sh/kill \"2345\" :sigkill)")
+                    .seeAlso(
+                        "sh", "sh/alive?",
+                        "sh/killall",
+                        "sh/pgrep", "sh/pkill", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -306,15 +310,15 @@ public class ShellFunctions {
                 final String pid = Coerce.toVncString(args.first()).getValue();
 
                 if (args.size() == 1) {
-                    SimpleShell.kill(pid);
+                    SimpleShell.kill(pid, null);
                 }
                 else {
                     SimpleShell.kill(
+                        pid,
                         Signal.valueOf(
                             Coerce.toVncKeyword(args.second())
                                   .getSimpleName()
-                                  .toUpperCase()),
-                        pid);
+                                  .toUpperCase()));
                 }
 
                 return Nil;
@@ -333,9 +337,15 @@ public class ShellFunctions {
                         "Kills all processes with the given name.\n\n" +
                         "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
                         "If no signal is specified, the :sigterm signal is sent.\n\n" +
+                        "Runs the Unix command: `killall -signal -e {name}`\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
-                    .examples("(sh/killall \"clamd\")")
-                    .seeAlso("sh", "sh/kill", "sh/alive?", "sh/pgrep")
+                    .examples(
+                        "(sh/killall \"clamd\")",
+                        "(sh/killall \"clamd\" :sigkill)")
+                    .seeAlso(
+                        "sh", "sh/alive?",
+                        "sh/kill",
+                        "sh/pgrep", "sh/pkill", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -349,15 +359,15 @@ public class ShellFunctions {
                 final String name = Coerce.toVncString(args.first()).getValue();
 
                 if (args.size() == 1) {
-                    SimpleShell.killall(name);
+                    SimpleShell.killall(name, null);
                 }
                 else {
                     SimpleShell.killall(
+                        name,
                         Signal.valueOf(
                             Coerce.toVncKeyword(args.second())
                                   .getSimpleName()
-                                  .toUpperCase()),
-                        name);
+                                  .toUpperCase()));
                 }
 
                 return Constants.Nil;
@@ -378,7 +388,10 @@ public class ShellFunctions {
                         "with the given pid.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/alive? \"2345\")")
-                    .seeAlso("sh", "sh/kill", "sh/pgrep", "sh/pargs", "sh/load-pid")
+                    .seeAlso(
+                        "sh",
+                        "sh/kill", "sh/killall",
+                        "sh/pgrep", "sh/pkill", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -414,7 +427,10 @@ public class ShellFunctions {
                         "Load a process PID from a PID file.\n\nReturns the PID or `nil` " +
                         "if the file does not exist or is empty")
                     .examples("(sh/load-pid \"/data/scan.pid\")")
-                    .seeAlso("sh", "sh/alive?", "sh/kill", "sh/pgrep", "sh/pargs")
+                    .seeAlso(
+                        "sh", "sh/alive?",
+                        "sh/kill", "sh/killall",
+                        "sh/pgrep", "sh/pkill", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -457,7 +473,10 @@ public class ShellFunctions {
                         "Runs the Unix command: `pgrep -x {name}`\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/pgrep \"clamd\")")
-                    .seeAlso("sh", "sh/pargs", "sh/kill", "sh/alive?")
+                    .seeAlso(
+                        "sh", "sh/alive?",
+                        "sh/kill", "sh/killall",
+                        "sh/pkill", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -482,6 +501,55 @@ public class ShellFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+        public static VncFunction pkill =
+            new VncFunction(
+                    "sh/pkill",
+                    VncFunction
+                        .meta()
+                        .arglists("(sh/pkill name)", "(sh/pkill name signal)")
+                        .doc(
+                            "Sends a signal to all process with the passed name.\n\n" +
+                            "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
+                            "If no signal is specified, the :sigterm signal is sent.\n\n" +
+                            "Runs the Unix command: `pkill -signal -x {name}`\n\n" +
+                            "Note: This function is available for Linux and MacOS only!")
+                        .examples(
+                            "(sh/pkill \"clamd\")",
+                            "(sh/pkill \"clamd\" :sigkill)")
+                        .seeAlso(
+                            "sh", "sh/alive?",
+                            "sh/kill", "sh/killall",
+                            "sh/pgrep", "sh/pargs")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    sandboxFunctionCallValidation();
+
+                    SimpleShell.validateLinuxOrMacOSX("sh/pkill");
+
+                    final String name = Coerce.toVncString(args.first()).getValue();
+
+                    if (args.size() == 1) {
+                        SimpleShell.pkill(name, null);
+                    }
+                    else {
+                        SimpleShell.pkill(
+                            name,
+                            Signal.valueOf(
+                                Coerce.toVncKeyword(args.second())
+                                      .getSimpleName()
+                                      .toUpperCase()));
+                    }
+
+                    return Constants.Nil;
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
     public static VncFunction pargs =
         new VncFunction(
                 "sh/pargs",
@@ -500,7 +568,10 @@ public class ShellFunctions {
                     .examples(
                         "(sh/pargs \"1234\")",
                         "(sh/pargs :parse \"1234\")")
-                    .seeAlso("sh", "sh/pgrep",  "sh/kill", "sh/alive?")
+                    .seeAlso(
+                        "sh", "sh/alive?",
+                        "sh/kill", "sh/killall",
+                        "sh/pgrep", "sh/pkill")
                     .build()
         ) {
             @Override

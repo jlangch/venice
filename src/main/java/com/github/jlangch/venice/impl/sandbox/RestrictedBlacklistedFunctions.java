@@ -227,6 +227,7 @@ public class RestrictedBlacklistedFunctions {
                 "sh/alive?",
                 "sh/load-pid",
                 "sh/pgrep",
+                "sh/pkill",
                 "sh/pargs",
 
                 "mbean/platform-mbean-server",
