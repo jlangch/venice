@@ -285,7 +285,7 @@ public class ShellFunctions {
                     .arglists("(sh/kill pid)", "(sh/kill pid signal)")
                     .doc(
                         "Kills a process.\n\n" +
-                        "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
+                        "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}. " +
                         "If no signal is specified, the :sigterm signal is sent.\n\n" +
                         "Runs the Unix command: `kill -signal {pid}`\n\n" +
                         "Throws an exception if the process does not exist or cannot be killed!\n\n" +
@@ -335,7 +335,7 @@ public class ShellFunctions {
                     .arglists("(sh/killall name)", "(sh/killall name signal)")
                     .doc(
                         "Kills all processes with the given name.\n\n" +
-                        "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
+                        "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}. " +
                         "If no signal is specified, the :sigterm signal is sent.\n\n" +
                         "Runs the Unix command: `killall -signal -e {name}`\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
