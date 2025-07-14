@@ -223,9 +223,11 @@ public class RestrictedBlacklistedFunctions {
                 "sh/open",
                 "sh/pwd",
                 "sh/kill",
+                "sh/killall",
                 "sh/alive?",
                 "sh/load-pid",
                 "sh/pgrep",
+                "sh/pargs",
 
                 "mbean/platform-mbean-server",
                 "mbean/query-mbean-object-names",

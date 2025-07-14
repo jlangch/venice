@@ -139,6 +139,18 @@ public class SimpleShell {
         }
     }
 
+    public static void killall(final String name) {
+        validateLinuxOrMacOSX("Shell::killall");
+
+        final ShellResult r = SimpleShell.execCmd("killall", "-e", name);
+        if (!r.isZeroExitCode()) {
+            throw new RuntimeException(
+                    "Failed to kill all processes with the name '" + name + "'.\n"
+                    + "\nExit code: " + r.getExitCode()
+                    + "\nError msg: " + r.getStderr());
+        }
+    }
+
     public static void kill(final Signal signal, final String pid) {
         validateLinuxOrMacOSX("Shell::kill");
 

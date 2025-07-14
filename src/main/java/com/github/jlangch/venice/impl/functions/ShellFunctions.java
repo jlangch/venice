@@ -292,7 +292,7 @@ public class ShellFunctions {
                     .examples(
                         "(sh/kill \"2345\")",
                         "(sh/kill \"2345\" :sighup)")
-                    .seeAlso("sh", "sh/alive?", "sh/pgrep", "sh/pargs")
+                    .seeAlso("sh", "sh/alive?", "sh/killall", "sh/pgrep", "sh/pargs")
                     .build()
         ) {
             @Override
@@ -318,6 +318,37 @@ public class ShellFunctions {
                 }
 
                 return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction killall =
+        new VncFunction(
+                "sh/killall",
+                VncFunction
+                    .meta()
+                    .arglists("(sh/killall name)")
+                    .doc(
+                        "Kills all processes with the given name.\n\n" +
+                        "Note: This function is available for Linux and MacOS only!")
+                    .examples("(sh/killall \"clamd\")")
+                    .seeAlso("sh", "sh/kill", "sh/alive?", "sh/pgrep")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                SimpleShell.validateLinuxOrMacOSX("sh/killall");
+
+                final String name = Coerce.toVncString(args.first()).getValue();
+
+                SimpleShell.killall(name);
+
+                return Constants.Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -594,6 +625,7 @@ public class ShellFunctions {
                     .add(open)
                     .add(pwd)
                     .add(kill)
+                    .add(killall)
                     .add(pgrep)
                     .add(pargs)
                     .add(alive_Q)
