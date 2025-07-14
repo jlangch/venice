@@ -59,7 +59,7 @@ public class CSVWriterTest {
         final StringWriter wr = new StringWriter();
 
         final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"),
-        		                                         Arrays.asList("4", "5", "6"));
+                                                         Arrays.asList("4", "5", "6"));
 
         new CSVWriter(',', '"', "\n").write(wr, records);
 

@@ -480,7 +480,7 @@ public class AssertMacroTest {
         catch(Exception ex) {
             assertEquals(
                     "Assert failed.\n"
-            		+ "error\n"
+                    + "error\n"
                     + "Unexpected exception: :com.github.jlangch.venice.VncException\n"
                     + "Expression:\n"
                     + "(/ 2 0)",

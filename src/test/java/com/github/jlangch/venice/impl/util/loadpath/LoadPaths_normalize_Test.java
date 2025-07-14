@@ -37,9 +37,9 @@ import com.github.jlangch.venice.VncException;
 
 public class LoadPaths_normalize_Test {
 
-	// ------------------------------------------------------------------------
-	// Without Sandbox
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // Without Sandbox
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_normalize_absolute() {
@@ -73,9 +73,9 @@ public class LoadPaths_normalize_Test {
 
 
 
-	// ------------------------------------------------------------------------
-	// With Sandbox
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // With Sandbox
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_normalize_absolute_unlimited() {
@@ -157,12 +157,12 @@ public class LoadPaths_normalize_Test {
 
 
     private static File canonical(final File file, final String name) {
-    	try {
+        try {
             return new File(file, name).getCanonicalFile();
-    	}
-    	catch(IOException ex) {
-    		throw new RuntimeException(ex);
-    	}
+        }
+        catch(IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private static Map<String,Object> param(final String file) {

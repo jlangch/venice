@@ -695,7 +695,7 @@ public class ConcurrencyFunctionsTest {
 
     @Test
     public void test_pmap() {
-    	try { Thread.sleep(1000); } catch(Exception ex) {}
+        try { Thread.sleep(1000); } catch(Exception ex) {}
 
         final Venice venice = new Venice();
 
@@ -1288,7 +1288,7 @@ public class ConcurrencyFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(let [result (promise)]                                  \n" +
+                "(let [result (promise)]                                  \n" +
                 "  (-> (promise (fn [] (sleep 200) 200))                  \n" +
                 "      (accept-either (promise (fn [] (sleep 100) 100))   \n" +
                 "                     (fn [v] (deliver result v))))       \n" +
@@ -1302,7 +1302,7 @@ public class ConcurrencyFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(let [result (promise)]                                  \n" +
+                "(let [result (promise)]                                  \n" +
                 "  (-> (promise (fn [] (sleep 200) 200))                  \n" +
                 "      (accept-either (promise (fn [] (sleep 100) 100))   \n" +
                 "                     (fn [v] (deliver result v) v))      \n" +
@@ -1316,7 +1316,7 @@ public class ConcurrencyFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(let [result (promise)]                                  \n" +
+                "(let [result (promise)]                                  \n" +
                 "  (-> (promise (fn [] (sleep 100) 100))                  \n" +
                 "      (accept-either (promise (fn [] (sleep 200) 200))   \n" +
                 "                     (fn [v] (deliver result v))))       \n" +
@@ -1356,7 +1356,7 @@ public class ConcurrencyFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(let [result (promise)]                                          \n" +
+                "(let [result (promise)]                                          \n" +
                 "  (-> (promise (fn [] (sleep 200) 200))                          \n" +
                 "      (then-accept-both (promise (fn [] (sleep 100) 100))        \n" +
                 "                        (fn [u v] (deliver result (+ u v)) 4)))  \n" +
@@ -1370,7 +1370,7 @@ public class ConcurrencyFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-        		"(let [result (promise)]                                          \n" +
+                "(let [result (promise)]                                          \n" +
                 "  (-> (promise (fn [] (sleep 200) 200))                          \n" +
                 "      (then-accept-both (promise (fn [] (sleep 100) 100))        \n" +
                 "                        (fn [u v] (deliver result (+ u v)) 4))   \n" +

@@ -136,7 +136,7 @@ public class CommandLineArgsTest {
     @Test
     public void test_removeSwitch_1() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-c", "1", "2")
-        		                                   .removeSwitch("-file");
+                                                   .removeSwitch("-file");
 
         assertFalse(cli.switchPresent("-file"));
 
@@ -148,8 +148,8 @@ public class CommandLineArgsTest {
     @Test
     public void test_removeSwitch_2() {
         final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-c", "1", "2")
-        		                                   .removeSwitch("-file")
-        		                                   .removeSwitch("-c");
+                                                   .removeSwitch("-file")
+                                                   .removeSwitch("-c");
 
         assertFalse(cli.switchPresent("-file"));
 

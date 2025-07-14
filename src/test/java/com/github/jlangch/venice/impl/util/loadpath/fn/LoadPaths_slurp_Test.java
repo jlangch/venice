@@ -109,12 +109,12 @@ public class LoadPaths_slurp_Test {
 
             // URL (not allowed with limited load paths)
             assertThrows(
-            		com.github.jlangch.venice.SecurityException.class,
+                    com.github.jlangch.venice.SecurityException.class,
                     () -> venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
 
             // URI (not allowed with limited load paths)
             assertThrows(
-            		com.github.jlangch.venice.SecurityException.class,
+                    com.github.jlangch.venice.SecurityException.class,
                     () -> venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
       });
     }
@@ -164,11 +164,11 @@ public class LoadPaths_slurp_Test {
             // URL/URI ----------------------------------------------------------------------
 
             if (InternetUtil.isInternetAvailable()) {
-	            // URL
-	            assertNotNull(venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
+                // URL
+                assertNotNull(venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
 
-	            // URI
-	            assertNotNull(venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
+                // URI
+                assertNotNull(venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
             }
         });
     }

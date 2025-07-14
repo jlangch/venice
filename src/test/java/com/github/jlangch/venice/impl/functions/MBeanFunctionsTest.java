@@ -85,7 +85,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_register() {
-    	ensureUnregisteredMBean("venice:type=Hello");
+        ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -99,7 +99,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_unregister() {
-    	ensureUnregisteredMBean("venice:type=Hello");
+        ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -114,7 +114,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_attribute() {
-    	ensureUnregisteredMBean("venice:type=Hello");
+        ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -129,7 +129,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_attribute_BANG() {
-    	ensureUnregisteredMBean("venice:type=Hello");
+        ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -145,7 +145,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_operation_1() {
-    	ensureUnregisteredMBean("venice:type=Hello");
+        ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -160,7 +160,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_operation_2() {
-    	ensureUnregisteredMBean("venice:type=Hello");
+        ensureUnregisteredMBean("venice:type=Hello");
 
         final Venice venice = new Venice();
 
@@ -175,7 +175,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_dynamic_bean_get() {
-    	ensureUnregisteredMBean("venice:type=Data");
+        ensureUnregisteredMBean("venice:type=Data");
 
         final Venice venice = new Venice();
 
@@ -190,7 +190,7 @@ public class MBeanFunctionsTest {
 
     @Test
     public void test_dynamic_bean_update() {
-    	ensureUnregisteredMBean("venice:type=Data");
+        ensureUnregisteredMBean("venice:type=Data");
 
         final Venice venice = new Venice();
 

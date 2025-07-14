@@ -231,7 +231,7 @@ public class TextBlockParserTest {
 
     @Test
     public void test_text_followed_by_list_1() {
-    	// empty line between text block and list block
+        // empty line between text block and list block
         final String md = "Lorem ipsum\n\n* item 1";
 
         Blocks blocks = new BlockParser(md).parse();
@@ -261,7 +261,7 @@ public class TextBlockParserTest {
 
     @Test
     public void test_text_followed_by_list_2() {
-    	// no empty line between text block and list block
+        // no empty line between text block and list block
         final String md = "Lorem ipsum\n* item 1";
 
         Blocks blocks = new BlockParser(md).parse();

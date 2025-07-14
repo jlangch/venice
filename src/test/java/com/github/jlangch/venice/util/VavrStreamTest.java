@@ -64,17 +64,17 @@ public class VavrStreamTest {
 
     @Test
     public void testLazyFiniteStream1() {
-    	Stream<Long> s = Stream.ofAll(
-			    			Iterators.iterate(
-		    					1L,
-		    					v -> v < 5
-		    							? Option.of(v + 1)
-		    							: Option.none()));
+        Stream<Long> s = Stream.ofAll(
+                            Iterators.iterate(
+                                1L,
+                                v -> v < 5
+                                        ? Option.of(v + 1)
+                                        : Option.none()));
 
-    	// returns: 1, 2, 3, 4, 5
+        // returns: 1, 2, 3, 4, 5
 
-    	long sum = 0L;
-    	while (!s.isEmpty()) {
+        long sum = 0L;
+        while (!s.isEmpty()) {
             sum += s.head();
             s = s.tail();
         }
@@ -84,21 +84,21 @@ public class VavrStreamTest {
 
     @Test
     public void testLazyFiniteStream2() {
-    	final Long seed = 1L;
-    	final Function<Long,Long> inc = v -> v + 1;
-    	final Function<Long,Boolean> test = v -> v < 5 ? true : false;
+        final Long seed = 1L;
+        final Function<Long,Long> inc = v -> v + 1;
+        final Function<Long,Boolean> test = v -> v < 5 ? true : false;
 
-    	Stream<Long> s = Stream.ofAll(
-			    			Iterators.iterate(
-		    					seed,
-		    					v -> test.apply(v)
-		    							? Option.of(inc.apply(v))
-		    							: Option.none()));
+        Stream<Long> s = Stream.ofAll(
+                            Iterators.iterate(
+                                seed,
+                                v -> test.apply(v)
+                                        ? Option.of(inc.apply(v))
+                                        : Option.none()));
 
-    	// returns: 1, 2, 3, 4, 5
+        // returns: 1, 2, 3, 4, 5
 
-    	long sum = 0L;
-    	while (!s.isEmpty()) {
+        long sum = 0L;
+        while (!s.isEmpty()) {
             sum += s.head();
             s = s.tail();
         }

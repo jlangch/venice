@@ -671,15 +671,15 @@ public class SpecialFormsTest_Try {
                 "    (throw (ex :VncException \"EX-FINALLY\")))) ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("EX-FINALLY", msg);
+            final String msg = ex.getMessage();
+            assertEquals("EX-FINALLY", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 
@@ -696,15 +696,15 @@ public class SpecialFormsTest_Try {
                 "    (throw (ex :VncException \"EX-FINALLY\")))) ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("EX-FINALLY", msg);
+            final String msg = ex.getMessage();
+            assertEquals("EX-FINALLY", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 
@@ -721,15 +721,15 @@ public class SpecialFormsTest_Try {
                 "    1)) ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("EX-CATCH", msg);
+            final String msg = ex.getMessage();
+            assertEquals("EX-CATCH", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 
@@ -744,15 +744,15 @@ public class SpecialFormsTest_Try {
                 "    (throw (ex :VncException \"EX-CATCH\"))))   ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("EX-CATCH", msg);
+            final String msg = ex.getMessage();
+            assertEquals("EX-CATCH", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 
@@ -769,15 +769,15 @@ public class SpecialFormsTest_Try {
                 "    (throw (ex :VncException \"EX-FINALLY\")))) ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("EX-FINALLY", msg);
+            final String msg = ex.getMessage();
+            assertEquals("EX-FINALLY", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 

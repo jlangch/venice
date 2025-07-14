@@ -41,13 +41,13 @@ public class SpecialFormsTest_var {
 
     @Test
     public void test_var_sym() {
-    	// global var
+        // global var
         assertEquals("core/+",   new Venice().eval("(var-sym '+)"));
         assertEquals("str/trim", new Venice().eval("(var-sym 'str/trim)"));
         assertEquals("user/x",   new Venice().eval("(do (def x 100) (var-sym x))"));
         assertEquals("user/x",   new Venice().eval("(do (defn x [] nil) (var-sym x))"));
 
-    	// global dynamic var
+        // global dynamic var
         assertEquals("user/x",   new Venice().eval("(do (def-dynamic x 100) (var-sym x))"));
 
         // local var

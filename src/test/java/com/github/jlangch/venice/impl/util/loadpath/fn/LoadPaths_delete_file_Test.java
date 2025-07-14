@@ -86,8 +86,8 @@ public class LoadPaths_delete_file_Test {
 
             // outside
             assertThrows(
-            		VncException.class,
-            		() -> venice.eval("(io/delete-file src)", param(root, "dir2/res5.txt")));
+                    VncException.class,
+                    () -> venice.eval("(io/delete-file src)", param(root, "dir2/res5.txt")));
       });
     }
 

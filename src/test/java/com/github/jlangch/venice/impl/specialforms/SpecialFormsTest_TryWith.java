@@ -122,15 +122,15 @@ public class SpecialFormsTest_TryWith {
                 "     (throw (ex :VncException \"EX-BODY\"))))                         ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("EX-BODY", msg);
+            final String msg = ex.getMessage();
+            assertEquals("EX-BODY", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 
@@ -148,15 +148,15 @@ public class SpecialFormsTest_TryWith {
                 "     (throw (ex :VncException \"EX-BODY\"))))                         ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("EX-BODY", msg);
+            final String msg = ex.getMessage();
+            assertEquals("EX-BODY", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 
@@ -174,15 +174,15 @@ public class SpecialFormsTest_TryWith {
                 "     nil))                                                            ";
 
         try {
-        	venice.eval(script);
-        	fail("Expected a VncException");
+            venice.eval(script);
+            fail("Expected a VncException");
         }
         catch(VncException ex) {
-        	final String msg = ex.getMessage();
-        	assertEquals("'try-with' failed to close resource r2.", msg);
+            final String msg = ex.getMessage();
+            assertEquals("'try-with' failed to close resource r2.", msg);
         }
         catch(Exception ex) {
-        	fail("Expected a VncException");
+            fail("Expected a VncException");
         }
     }
 }

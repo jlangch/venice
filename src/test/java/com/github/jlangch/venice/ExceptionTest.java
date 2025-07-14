@@ -74,7 +74,7 @@ public class ExceptionTest {
             assertEquals("hello", ex.getMessage());
         }
         catch(Exception ex) {
-        	ex.printStackTrace();
+            ex.printStackTrace();
             fail("Unexpected Exception " + ex.getClass().getName());
         }
     }

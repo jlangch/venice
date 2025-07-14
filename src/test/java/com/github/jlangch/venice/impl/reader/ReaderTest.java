@@ -95,8 +95,8 @@ public class ReaderTest {
 
     @Test
     public void testAtomNumber_invalid() {
-    	assertThrows(
-    			ParseError.class,
+        assertThrows(
+                ParseError.class,
                 () -> new Venice().eval("[0 1 2false]"));
     }
 

@@ -257,27 +257,27 @@ public class IOFunctionsStreamTest {
 
     @Test
     public void test_ZLIB_compression() throws Exception {
-    	final String text = "hello, hello, hello";
+        final String text = "hello, hello, hello";
 
-    	// OK
-    	final byte[] zlib1 = ZipFunctions.compress(text.getBytes("utf-8"));
-    	assertEquals("hello, hello, hello", new String(ZipFunctions.decompress(zlib1), "utf-8"));
+        // OK
+        final byte[] zlib1 = ZipFunctions.compress(text.getBytes("utf-8"));
+        assertEquals("hello, hello, hello", new String(ZipFunctions.decompress(zlib1), "utf-8"));
 
-    	// OK (compress with DeflaterOutputStream)
-    	final ByteArrayOutputStream bo = new ByteArrayOutputStream();
-    	try (OutputStream os = new DeflaterOutputStream(bo)) {
-    		os.write(text.getBytes("utf-8"));
-    		os.flush();
-    	}
-    	final byte[] zlib2 = bo.toByteArray();
-    	assertEquals("hello, hello, hello", new String(ZipFunctions.decompress(zlib2), "utf-8"));
+        // OK (compress with DeflaterOutputStream)
+        final ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        try (OutputStream os = new DeflaterOutputStream(bo)) {
+            os.write(text.getBytes("utf-8"));
+            os.flush();
+        }
+        final byte[] zlib2 = bo.toByteArray();
+        assertEquals("hello, hello, hello", new String(ZipFunctions.decompress(zlib2), "utf-8"));
 
 
-    	// OK (decompress with InflaterInputStream)
-    	try (InputStream is = new InflaterInputStream(new ByteArrayInputStream(zlib1))) {
-    		final byte[] buffer = IOStreamUtil.copyIStoByteArray(is);
-     	    assertEquals("hello, hello, hello", new String(buffer, "utf-8"));
-    	}
+        // OK (decompress with InflaterInputStream)
+        try (InputStream is = new InflaterInputStream(new ByteArrayInputStream(zlib1))) {
+            final byte[] buffer = IOStreamUtil.copyIStoByteArray(is);
+             assertEquals("hello, hello, hello", new String(buffer, "utf-8"));
+        }
     }
 
     @Test

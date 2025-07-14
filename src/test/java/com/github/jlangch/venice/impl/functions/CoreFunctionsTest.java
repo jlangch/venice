@@ -1915,9 +1915,9 @@ public class CoreFunctionsTest {
                               "     (pr-str)))      ";
 
         assertEquals("({:params [] :variadic false} "
-        		    + "{:params [\"x\"] :variadic false} "
-        		    + "{:params [\"x\" \"y\"] :variadic false} "
-        		    + "{:params [\"x\" \"y\"] :variadic true :variadic-name \"more\"})", venice.eval(script));
+                    + "{:params [\"x\"] :variadic false} "
+                    + "{:params [\"x\" \"y\"] :variadic false} "
+                    + "{:params [\"x\" \"y\"] :variadic true :variadic-name \"more\"})", venice.eval(script));
     }
 
     @Test

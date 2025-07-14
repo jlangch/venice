@@ -447,8 +447,8 @@ public class ZipFunctionsTest {
 
         assertEquals("abcdef", new String(
                                     ((ByteBuffer)venice.eval("(-> (bytebuf-from-string \"abcdef\" :utf-8)   \n" +
-                                    		                 "    (io/deflate)                              \n" +
-                                    		                 "    (io/inflate))                             \n")).array(),
+                                                             "    (io/deflate)                              \n" +
+                                                             "    (io/inflate))                             \n")).array(),
                                     "utf-8"));
     }
 

@@ -520,7 +520,7 @@ public class TableBlockParserTest {
     @Test
     public void test_header() {
         final String md = "|h1|h2|h3|\n" +
-        		          "| :-- | :--: | --: |\n" +
+                          "| :-- | :--: | --: |\n" +
                           "|c1|c2|c3|";
 
         Blocks blocks = new BlockParser(md).parse();

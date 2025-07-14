@@ -34,34 +34,34 @@ public class LoadPaths_file_move_stream_Test {
 //            final Venice venice = new Venice();
 //
 //            assertEquals("res1", venice.eval(
-//            						"(do (io/move-file src dst) (io/slurp dst))",
-//            						Parameters.of(
-//            							"src", new File(root, "res1.txt"),
-//            							"dst", new File(root, "tmp/res1.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "res1.txt"),
+//                                        "dst", new File(root, "tmp/res1.txt"))));
 //
 //            assertEquals("res4", venice.eval(
-//            						"(do (io/move-file src dst) (io/slurp dst))",
-//            						Parameters.of(
-//            							"src", new File(root, "dir1/11/res4.txt"),
-//            							"dst", new File(root, "tmp/res4___.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir1/11/res4.txt"),
+//                                        "dst", new File(root, "tmp/res4___.txt"))));
 //
 //            // non existing source file
 //            assertThrows(
 //                    VncException.class,
 //                    () -> venice.eval(
-//    						"(do (io/move-file src dst) (io/slurp dst))",
-//    						Parameters.of(
-//    							"src", new File(root, "unknown.txt"),
-//    							"dst", new File(root, "tmp/res1.txt"))));
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File(root, "unknown.txt"),
+//                                "dst", new File(root, "tmp/res1.txt"))));
 //
 //            // non existing destination dir
 //            assertThrows(
 //                    VncException.class,
 //                    () -> venice.eval(
-//    						"(do (io/move-file src dst) (io/slurp dst))",
-//    						Parameters.of(
-//    							"src", new File(root, "dir1/res2.txt"),
-//    							"dst", new File(root, "unknown/res2.txt"))));
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File(root, "dir1/res2.txt"),
+//                                "dst", new File(root, "unknown/res2.txt"))));
 //        });
 //    }
 //
@@ -72,37 +72,37 @@ public class LoadPaths_file_move_stream_Test {
 //
 //            // inside -> inside
 //            assertEquals("res2", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File("res2.txt"),
-//										"dst", new File("11/res2__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File("res2.txt"),
+//                                        "dst", new File("11/res2__.txt"))));
 //
 //            // outside -> inside
 //            assertThrows(
-//            		VncException.class,
-//            		() -> venice.eval(
-//							"(do (io/move-file src dst) (io/slurp dst))",
-//							Parameters.of(
-//								"src", new File("dir2/res5.txt"),
-//								"dst", new File("11/res5__.txt"))));
+//                    VncException.class,
+//                    () -> venice.eval(
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File("dir2/res5.txt"),
+//                                "dst", new File("11/res5__.txt"))));
 //
 //            // inside -> outside
 //            assertThrows(
-//            		VncException.class,
-//            		() -> venice.eval(
-//							"(do (io/move-file src dst) (io/slurp dst))",
-//							Parameters.of(
-//								"src", new File("11/res4.txt"),
-//								"dst", new File("dir2/res4__.txt"))));
+//                    VncException.class,
+//                    () -> venice.eval(
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File("11/res4.txt"),
+//                                "dst", new File("dir2/res4__.txt"))));
 //
 //            // outside -> outside
 //            assertThrows(
-//            		VncException.class,
-//            		() -> venice.eval(
-//							"(do (io/move-file src dst) (io/slurp dst))",
-//							Parameters.of(
-//								"src", new File("dir2/res6.txt"),
-//								"dst", new File("dir2/res6__.txt"))));
+//                    VncException.class,
+//                    () -> venice.eval(
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File("dir2/res6.txt"),
+//                                "dst", new File("dir2/res6__.txt"))));
 //      });
 //    }
 //
@@ -114,31 +114,31 @@ public class LoadPaths_file_move_stream_Test {
 //
 //            // inside -> inside
 //            assertEquals("res2", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File("res2.txt"),
-//										"dst", new File("11/res2__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File("res2.txt"),
+//                                        "dst", new File("11/res2__.txt"))));
 //
 //            // outside -> inside
 //            assertEquals("res5", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File(root, "dir2/res5.txt"),
-//										"dst", new File("11/res5__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir2/res5.txt"),
+//                                        "dst", new File("11/res5__.txt"))));
 //
 //            // inside -> outside
 //            assertEquals("res3", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File("res3.txt"),
-//										"dst", new File(root, "dir2/res3__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File("res3.txt"),
+//                                        "dst", new File(root, "dir2/res3__.txt"))));
 //
 //            // outside -> outside
 //            assertEquals("res6", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File(root, "dir2/res6.txt"),
-//										"dst", new File(root, "dir2/res6__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir2/res6.txt"),
+//                                        "dst", new File(root, "dir2/res6__.txt"))));
 //        });
 //    }
 //
@@ -149,37 +149,37 @@ public class LoadPaths_file_move_stream_Test {
 //
 //            // inside -> inside
 //            assertEquals("res2", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File(root, "dir1/res2.txt"),
-//										"dst", new File(root, "dir1/res2__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir1/res2.txt"),
+//                                        "dst", new File(root, "dir1/res2__.txt"))));
 //
 //            // outside -> inside
 //            assertThrows(
-//            		VncException.class,
-//            		() -> venice.eval(
-//							"(do (io/move-file src dst) (io/slurp dst))",
-//							Parameters.of(
-//								"src", new File(root, "dir2/res5.txt"),
-//								"dst", new File(root, "dir1/res5__.txt"))));
+//                    VncException.class,
+//                    () -> venice.eval(
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File(root, "dir2/res5.txt"),
+//                                "dst", new File(root, "dir1/res5__.txt"))));
 //
 //            // inside -> outside
 //            assertThrows(
-//            		VncException.class,
-//            		() -> venice.eval(
-//							"(do (io/move-file src dst) (io/slurp dst))",
-//							Parameters.of(
-//								"src", new File(root, "dir1/res3.txt"),
-//								"dst", new File(root, "dir2/res3__.txt"))));
+//                    VncException.class,
+//                    () -> venice.eval(
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File(root, "dir1/res3.txt"),
+//                                "dst", new File(root, "dir2/res3__.txt"))));
 //
 //            // outside -> outside
 //            assertThrows(
-//            		VncException.class,
-//            		() -> venice.eval(
-//							"(do (io/move-file src dst) (io/slurp dst))",
-//							Parameters.of(
-//								"src", new File(root, "dir2/res6.txt"),
-//								"dst", new File(root, "dir2/res6__.txt"))));
+//                    VncException.class,
+//                    () -> venice.eval(
+//                            "(do (io/move-file src dst) (io/slurp dst))",
+//                            Parameters.of(
+//                                "src", new File(root, "dir2/res6.txt"),
+//                                "dst", new File(root, "dir2/res6__.txt"))));
 //      });
 //    }
 //
@@ -191,31 +191,31 @@ public class LoadPaths_file_move_stream_Test {
 //
 //            // inside -> inside
 //            assertEquals("res2", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File(root, "dir1/res2.txt"),
-//										"dst", new File(root, "dir1/res2__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir1/res2.txt"),
+//                                        "dst", new File(root, "dir1/res2__.txt"))));
 //
 //            // outside -> inside
 //            assertEquals("res5", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File(root, "dir2/res5.txt"),
-//										"dst", new File(root, "dir1/res5__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir2/res5.txt"),
+//                                        "dst", new File(root, "dir1/res5__.txt"))));
 //
 //            // inside -> outside
 //            assertEquals("res3", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File(root, "dir1/res3.txt"),
-//										"dst", new File(root, "dir2/res3__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir1/res3.txt"),
+//                                        "dst", new File(root, "dir2/res3__.txt"))));
 //
 //            // outside -> outside
 //            assertEquals("res6", venice.eval(
-//									"(do (io/move-file src dst) (io/slurp dst))",
-//									Parameters.of(
-//										"src", new File(root, "dir2/res6.txt"),
-//										"dst", new File(root, "dir2/res6__.txt"))));
+//                                    "(do (io/move-file src dst) (io/slurp dst))",
+//                                    Parameters.of(
+//                                        "src", new File(root, "dir2/res6.txt"),
+//                                        "dst", new File(root, "dir2/res6__.txt"))));
 //        });
 //    }
 
