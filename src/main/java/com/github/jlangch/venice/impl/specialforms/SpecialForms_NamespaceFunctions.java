@@ -229,7 +229,7 @@ public class SpecialForms_NamespaceFunctions {
                         "(ns-list 'regex)",
                         "(ns-list)")
                     .seeAlso(
-                        "ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns", "symbols")
+                        "ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
                     .build()
         ) {
             @Override

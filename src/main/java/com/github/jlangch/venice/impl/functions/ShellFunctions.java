@@ -468,7 +468,7 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/pgrep name)")
                     .doc(
-                        "Returns a list of all pids for a process with the passed name or `nil` " +
+                        "Returns a list of all pids for a process with the given name or `nil` " +
                         "if there are no processes matching the name.\n\n" +
                         "Runs the Unix command: `pgrep -x {name}`\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
@@ -508,7 +508,7 @@ public class ShellFunctions {
                         .meta()
                         .arglists("(sh/pkill name)", "(sh/pkill name signal)")
                         .doc(
-                            "Sends a signal to all process with the passed name.\n\n" +
+                            "Sends a signal to all processes with the given name.\n\n" +
                             "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
                             "If no signal is specified, the :sigterm signal is sent.\n\n" +
                             "Runs the Unix command: `pkill -signal -x {name}`\n\n" +
@@ -710,6 +710,7 @@ public class ShellFunctions {
                     .add(kill)
                     .add(killall)
                     .add(pgrep)
+                    .add(pkill)
                     .add(pargs)
                     .add(alive_Q)
                     .add(load_pid)
