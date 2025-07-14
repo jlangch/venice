@@ -328,9 +328,11 @@ public class ShellFunctions {
                 "sh/killall",
                 VncFunction
                     .meta()
-                    .arglists("(sh/killall name)")
+                    .arglists("(sh/killall name)", "(sh/killall name signal)")
                     .doc(
                         "Kills all processes with the given name.\n\n" +
+                        "The signal to be sent is one of {:sighup, :sigint, :sigquit, :sigkill, :sigterm}." +
+                        "If no signal is specified, the :sigterm signal is sent.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples("(sh/killall \"clamd\")")
                     .seeAlso("sh", "sh/kill", "sh/alive?", "sh/pgrep")
@@ -338,7 +340,7 @@ public class ShellFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
                 sandboxFunctionCallValidation();
 
@@ -346,7 +348,17 @@ public class ShellFunctions {
 
                 final String name = Coerce.toVncString(args.first()).getValue();
 
-                SimpleShell.killall(name);
+                if (args.size() == 1) {
+                    SimpleShell.killall(name);
+                }
+                else {
+                    SimpleShell.killall(
+                        Signal.valueOf(
+                            Coerce.toVncKeyword(args.second())
+                                  .getSimpleName()
+                                  .toUpperCase()),
+                        name);
+                }
 
                 return Constants.Nil;
             }

@@ -130,35 +130,59 @@ public class SimpleShell {
     public static void kill(final String pid) {
         validateLinuxOrMacOSX("Shell::kill");
 
-        final ShellResult r = SimpleShell.execCmd("kill", pid);
-        if (!r.isZeroExitCode()) {
-            throw new RuntimeException(
-                    "Failed to kill process (" + pid + ").\n"
-                    + "\nExit code: " + r.getExitCode()
-                    + "\nError msg: " + r.getStderr());
-        }
-    }
-
-    public static void killall(final String name) {
-        validateLinuxOrMacOSX("Shell::killall");
-
-        final ShellResult r = SimpleShell.execCmd("killall", "-e", name);
-        if (!r.isZeroExitCode()) {
-            throw new RuntimeException(
-                    "Failed to kill all processes with the name '" + name + "'.\n"
-                    + "\nExit code: " + r.getExitCode()
-                    + "\nError msg: " + r.getStderr());
+        if (!StringUtil.isBlank(pid)) {
+            final ShellResult r = SimpleShell.execCmd("kill", pid);
+            if (!r.isZeroExitCode()) {
+                throw new RuntimeException(
+                        "Failed to kill process (" + pid + ").\n"
+                        + "\nExit code: " + r.getExitCode()
+                        + "\nError msg: " + r.getStderr());
+            }
         }
     }
 
     public static void kill(final Signal signal, final String pid) {
         validateLinuxOrMacOSX("Shell::kill");
 
-        if (!StringUtil.isBlank(pid)) {
+        if (signal == null) {
+            kill(pid);
+        }
+        else if (!StringUtil.isBlank(pid)) {
             final ShellResult r = SimpleShell.execCmd("kill", "-" + signal.signal(), pid);
             if (!r.isZeroExitCode()) {
                 throw new RuntimeException(
-                        "Failed to kill process (" + pid + ").\n"
+                        "Failed to kill process (" + pid + "), signal=" + signal + ".\n"
+                        + "\nExit code: " + r.getExitCode()
+                        + "\nError msg: " + r.getStderr());
+            }
+        }
+    }
+
+    public static void killall(final String name) {
+        validateLinuxOrMacOSX("Shell::killall");
+
+        if (!StringUtil.isBlank(name)) {
+            final ShellResult r = SimpleShell.execCmd("killall", "-e", name);
+            if (!r.isZeroExitCode()) {
+                throw new RuntimeException(
+                        "Failed to kill all processes with the name '" + name + "'.\n"
+                        + "\nExit code: " + r.getExitCode()
+                        + "\nError msg: " + r.getStderr());
+            }
+        }
+    }
+
+    public static void killall(final Signal signal, final String name) {
+        validateLinuxOrMacOSX("Shell::killall");
+
+        if (signal == null) {
+            killall(name);
+        }
+        else if (!StringUtil.isBlank(name)) {
+            final ShellResult r = SimpleShell.execCmd("killall", "-" + signal.signal(), "-e", name);
+            if (!r.isZeroExitCode()) {
+                throw new RuntimeException(
+                        "Failed to kill all processes with the name='" + name + "', signal=" + signal + ".\n"
                         + "\nExit code: " + r.getExitCode()
                         + "\nError msg: " + r.getStderr());
             }
