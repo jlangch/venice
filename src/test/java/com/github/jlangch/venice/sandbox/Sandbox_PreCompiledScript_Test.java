@@ -88,8 +88,8 @@ public class Sandbox_PreCompiledScript_Test {
                                     .precompile("test","(gc)");
 
         final SandboxRules rules = new SandboxRules()
-        								.rejectVeniceFunctions("*io*")
-        								.rejectVeniceFunctions("*system*");
+                                        .rejectVeniceFunctions("*io*")
+                                        .rejectVeniceFunctions("*system*");
 
         assertThrows(SecurityException.class, () -> {
             // SandboxInterceptor with I/O functions rejected -> gc is blacklisted
@@ -111,8 +111,8 @@ public class Sandbox_PreCompiledScript_Test {
                                     .precompile("test","(gc)");
 
         final SandboxRules rules = new SandboxRules()
-        								.rejectVeniceFunctions("*io*")
-        								.rejectVeniceFunctions("*system*");
+                                        .rejectVeniceFunctions("*io*")
+                                        .rejectVeniceFunctions("*system*");
 
         assertThrows(SecurityException.class, () -> {
             // SandboxInterceptor with I/O functions rejected -> gc is blacklisted

@@ -210,9 +210,9 @@ public class MavenModuleTest {
         final File tmp = Files.createTempDirectory("maven").toFile();
 
         try {
-        	final String mavenVersion = getVeniceMavenVersion();
+            final String mavenVersion = getVeniceMavenVersion();
 
-        	final String script =
+            final String script =
                     "(do                                             \n" +
                     "   (load-module :maven)                         \n" +
                     "                                                \n" +

@@ -121,7 +121,7 @@ public class JavaInterop_Optional_Test {
 
 
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void test_optional_string_array() {
         final Venice venice = new Venice();
 

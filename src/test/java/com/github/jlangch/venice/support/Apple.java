@@ -28,19 +28,19 @@ public class Apple {
     public void setShades(final List<Color> shades) {
         this.shades.clear();
         if (shades != null) {
-        	for(Object s : shades) {
-        		if (!(s instanceof Color)) {
-        			throw new IllegalArgumentException("args must be of type " + Color.class.getName());
-        		}
-        	}
+            for(Object s : shades) {
+                if (!(s instanceof Color)) {
+                    throw new IllegalArgumentException("args must be of type " + Color.class.getName());
+                }
+            }
             this.shades.addAll(shades);
         }
     }
 
     public void addShade(final Color color) {
-    	if (color != null) {
-    		shades.add(color);
-    	}
+        if (color != null) {
+            shades.add(color);
+        }
     }
 
 

@@ -61,45 +61,45 @@ public class ThreadLocalBenchmark {
 
     @Benchmark
     public Object lookup(State_ state) {
-    	return ThreadContext.getInterceptor();
+        return ThreadContext.getInterceptor();
     }
 
     @Benchmark
     public Object thread_interceptor_1(State_ state) {
-    	return ThreadContext.getInterceptor().validateVeniceFunction("+");
+        return ThreadContext.getInterceptor().validateVeniceFunction("+");
     }
 
     @Benchmark
     public Object thread_interceptor_2(State_ state) {
-    	return ThreadContext.get().getInterceptor_().validateVeniceFunction("+");
+        return ThreadContext.get().getInterceptor_().validateVeniceFunction("+");
     }
 
     @Benchmark
     public Object interceptor(State_ state) {
-    	return state.interceptor.validateVeniceFunction("+");
+        return state.interceptor.validateVeniceFunction("+");
     }
 
     @Benchmark
     public Object thread_id(State_ state) {
-    	if (Thread.currentThread().getId() != state.threadID) {
-    		throw new RuntimeException("Runs on another thread than the setup!");
-    	}
+        if (Thread.currentThread().getId() != state.threadID) {
+            throw new RuntimeException("Runs on another thread than the setup!");
+        }
 
-    	return null;
+        return null;
     }
 
 
     @State(Scope.Benchmark)
     public static class State_ {
-    	public IInterceptor interceptor = setup();
-    	public long threadID = Thread.currentThread().getId();
+        public IInterceptor interceptor = setup();
+        public long threadID = Thread.currentThread().getId();
 
     }
 
     private static IInterceptor setup() {
         final SandboxRules rules = new SandboxRules()
-										.rejectVeniceFunctions("*io*")
-										.rejectVeniceFunctions("*system*");
+                                        .rejectVeniceFunctions("*io*")
+                                        .rejectVeniceFunctions("*system*");
 
         final IInterceptor interceptor = new SandboxInterceptor(rules);
 

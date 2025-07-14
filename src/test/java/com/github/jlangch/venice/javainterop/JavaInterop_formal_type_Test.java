@@ -110,14 +110,14 @@ public class JavaInterop_formal_type_Test {
 
         // OK   Circle::area
         final String script1 =
-        		"(do                                                                                    \n" +
+                "(do                                                                                    \n" +
                 "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$Circle)  \n" +
                 "  (let [c (. :JavaInterop_formal_type_Test$Circle :new 1.5)]                           \n" +
                 "    (. c :area)))                                                                      ";
 
         // OK   Circle::radius
         final String script2 =
-        		"(do                                                                                    \n" +
+                "(do                                                                                    \n" +
                 "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$Circle)  \n" +
                 "  (let [c (. :JavaInterop_formal_type_Test$Circle :new 1.5)]                           \n" +
                 "    (. c :radius)))                                                                    ";
@@ -132,14 +132,14 @@ public class JavaInterop_formal_type_Test {
 
         // OK    Shape::area
         final String script3 =
-        		"(do                                                                                             \n" +
+                "(do                                                                                             \n" +
                 "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$ShapeBuilder)     \n" +
                 "  (let [c (. :JavaInterop_formal_type_Test$ShapeBuilder :circle 1.5)]                           \n" +
                 "    (. c :area)))                                                                               ";
 
         // FAIL  Shape::radius is not defined
         final String script4 =
-        		"(do                                                                                             \n" +
+                "(do                                                                                             \n" +
                 "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$ShapeBuilder)     \n" +
                 "  (let [c (. :JavaInterop_formal_type_Test$ShapeBuilder :circle 1.5)]                           \n" +
                 "    (. c :radius)))                                                                             ";

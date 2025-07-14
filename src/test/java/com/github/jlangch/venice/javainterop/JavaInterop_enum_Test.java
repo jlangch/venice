@@ -168,21 +168,21 @@ public class JavaInterop_enum_Test {
                             Parameters.of("apple", new Apple())));
 
         assertEquals(
-        		Color.red,
+                Color.red,
                 venice.eval("(do                         " +
                             "  (. apple :setColor :red)  " +
                             "  (. apple :getColor))      ",
                             Parameters.of("apple", new Apple())));
 
         assertEquals(
-        		Color.red,
+                Color.red,
                 venice.eval("(do                               " +
                             "  (. apple :setColor :Color.red)  " +
                             "  (. apple :getColor))            ",
                             Parameters.of("apple", new Apple())));
 
         assertEquals(
-        		Color.red,
+                Color.red,
                 venice.eval("(do                                                  " +
                             "  (import :com.github.jlangch.venice.support.Color)  " +
                             "  (. apple :setColor :Color.red)                     " +
@@ -190,7 +190,7 @@ public class JavaInterop_enum_Test {
                             Parameters.of("apple", new Apple())));
 
         assertEquals(
-        		Color.blue,
+                Color.blue,
                 venice.eval("(do                                    " +
                             " (. apple :setColor \"Color.blue\")    " +
                             " (. apple :getColor))                  ",
@@ -244,22 +244,22 @@ public class JavaInterop_enum_Test {
         final Venice venice = new Venice();
 
         assertEquals(
-        		Color.blue,
+                Color.blue,
                 venice.eval("color",
                             Parameters.of("color", Color.blue)));
 
         assertEquals(
-        		Color.red,
+                Color.red,
                 venice.eval("color",
                             Parameters.of("color", Color.red)));
 
         assertEquals(
-        		Color.red,
+                Color.red,
                 venice.eval("(first colors)",
                             Parameters.of("colors", Arrays.asList(Color.red, Color.blue))));
 
         assertEquals(
-        		Color.blue,
+                Color.blue,
                 venice.eval("(second colors)",
                             Parameters.of("colors", Arrays.asList(Color.red, Color.blue))));
     }
@@ -269,22 +269,22 @@ public class JavaInterop_enum_Test {
         final Venice venice = new Venice();
 
         assertEquals(
-        		":JANUARY",
+                ":JANUARY",
                 venice.eval("(pr-str (keyword (. :java.time.Month :JANUARY)))"));
 
         assertEquals(
-        		":blue",
+                ":blue",
                 venice.eval("(do                                        " +
                             "  (. apple :setColor :blue)                " +
                             "  (pr-str (keyword (. apple :getColor))))  ",
                             Parameters.of("apple", new Apple())));
 
         assertEquals(
-        		":blue",
+                ":blue",
                 venice.eval("(pr-str (keyword (. :com.github.jlangch.venice.support.Color :blue)))"));
 
         assertEquals(
-        		":blue",
+                ":blue",
                 venice.eval("(do                                                  " +
                             "  (import :com.github.jlangch.venice.support.Color)  " +
                             "  (pr-str (keyword (. :Color :blue))))               "));
@@ -295,22 +295,22 @@ public class JavaInterop_enum_Test {
         final Venice venice = new Venice();
 
         assertEquals(
-        		"JANUARY",
+                "JANUARY",
                 venice.eval("(name (. :java.time.Month :JANUARY))"));
 
         assertEquals(
-        		"blue",
+                "blue",
                 venice.eval("(do                                        " +
                             "  (. apple :setColor :blue)                " +
                             "  (name (. apple :getColor)))  ",
                             Parameters.of("apple", new Apple())));
 
         assertEquals(
-        		"blue",
+                "blue",
                 venice.eval("(name (. :com.github.jlangch.venice.support.Color :blue))"));
 
         assertEquals(
-        		"blue",
+                "blue",
                 venice.eval("(do                                                  " +
                             "  (import :com.github.jlangch.venice.support.Color)  " +
                             "  (name (. :Color :blue)))                           "));
@@ -321,26 +321,26 @@ public class JavaInterop_enum_Test {
         try {
             ThreadContext.setInterceptor(new AcceptAllInterceptor());
 
-	        final Apple apple = new Apple();
-	        apple.setColor(Color.blue);
-	        apple.addShade(Color.blue);
-	        apple.addShade(Color.green);
+            final Apple apple = new Apple();
+            apple.setColor(Color.blue);
+            apple.addShade(Color.blue);
+            apple.addShade(Color.green);
 
-	        final VncVal val = JavaInteropUtil.convertToVncVal(apple);
-	        assertTrue(Types.isVncJavaObject(val));
+            final VncVal val = JavaInteropUtil.convertToVncVal(apple);
+            assertTrue(Types.isVncJavaObject(val));
 
-	        final VncJavaObject javaObj = (VncJavaObject)val;
+            final VncJavaObject javaObj = (VncJavaObject)val;
 
-	        assertTrue(javaObj.get(new VncKeyword("color")) instanceof VncJavaObject);
-	        assertEquals(Color.blue, ((Apple)javaObj.getDelegate()).getColor());
-	        assertEquals(Color.blue, javaObj.get(new VncKeyword("color")).convertToJavaObject());
+            assertTrue(javaObj.get(new VncKeyword("color")) instanceof VncJavaObject);
+            assertEquals(Color.blue, ((Apple)javaObj.getDelegate()).getColor());
+            assertEquals(Color.blue, javaObj.get(new VncKeyword("color")).convertToJavaObject());
 
-	        final Object obj = val.convertToJavaObject();
-	        assertTrue(obj instanceof Apple);
+            final Object obj = val.convertToJavaObject();
+            assertTrue(obj instanceof Apple);
 
-	        assertEquals(Color.blue,  ((Apple)obj).getColor());
-	        assertEquals(Color.blue,  ((Apple)obj).getShades().get(0));
-	        assertEquals(Color.green, ((Apple)obj).getShades().get(1));
+            assertEquals(Color.blue,  ((Apple)obj).getColor());
+            assertEquals(Color.blue,  ((Apple)obj).getShades().get(0));
+            assertEquals(Color.green, ((Apple)obj).getShades().get(1));
         }
         finally {
             ThreadContext.remove();

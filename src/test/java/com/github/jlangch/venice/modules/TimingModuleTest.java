@@ -192,10 +192,10 @@ public class TimingModuleTest {
 
         // Must run on *nix and Windows
         if (OS.isWindows()) {
-        	assertTrue(ret.matches("Started\r\n20\r\nElapsed: 1[0-9]{2}ms\r\n"));
+            assertTrue(ret.matches("Started\r\n20\r\nElapsed: 1[0-9]{2}ms\r\n"));
         }
         else {
-        	assertTrue(ret.matches("Started\n20\nElapsed: 1[0-9]{2}ms\n"));
+            assertTrue(ret.matches("Started\n20\nElapsed: 1[0-9]{2}ms\n"));
         }
     }
 }

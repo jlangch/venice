@@ -411,9 +411,9 @@ public class JavaInterop_proxy_Test {
 
 
     public static interface Fruit {
-    	boolean sweet();
-    	default String color() {
-    		return "green";
-    	}
+        boolean sweet();
+        default String color() {
+            return "green";
+        }
     }
 }

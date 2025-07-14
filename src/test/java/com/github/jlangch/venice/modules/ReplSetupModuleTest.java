@@ -86,7 +86,7 @@ public class ReplSetupModuleTest {
         final File tmp = Files.createTempDirectory("setup").toFile();
 
         try {
-        	final String mavenVersion = getVeniceMavenVersion();
+            final String mavenVersion = getVeniceMavenVersion();
 
             final String script =
                     "(do                                             \n" +
@@ -146,9 +146,9 @@ public class ReplSetupModuleTest {
         final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
-         	final String mavenVersion = getVeniceMavenVersion();
+             final String mavenVersion = getVeniceMavenVersion();
 
-         	final String script =
+             final String script =
                     "(do                                                                          \n" +
                     "   (load-module :repl-setup)                                                 \n" +
                     "                                                                             \n" +
@@ -224,7 +224,7 @@ public class ReplSetupModuleTest {
         final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
-         	final String mavenVersion = getVeniceMavenVersion();
+             final String mavenVersion = getVeniceMavenVersion();
 
             final String script =
                     "(do                                                                          \n" +
@@ -246,7 +246,7 @@ public class ReplSetupModuleTest {
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("stage-dir", stage,
-                                            		      "setup-dir", setup,
+                                                          "setup-dir", setup,
                                                           "v-version", VERSION));
 
             if (result.equals("internet-not-available")) {
@@ -301,7 +301,7 @@ public class ReplSetupModuleTest {
         final File tmp = Files.createTempDirectory("setup").toFile();
 
         try {
-         	final String mavenVersion = getVeniceMavenVersion();
+             final String mavenVersion = getVeniceMavenVersion();
 
             final String script =
                     "(do                                            \n" +
@@ -360,7 +360,7 @@ public class ReplSetupModuleTest {
         System.out.println("Setup dir: " + setup.getPath());
 
         try {
-         	final String mavenVersion = getVeniceMavenVersion();
+             final String mavenVersion = getVeniceMavenVersion();
 
             final String script =
                     "(do                                                                                 \n" +
@@ -437,7 +437,7 @@ public class ReplSetupModuleTest {
         System.out.println("Setup dir: " + setup.getPath());
 
         try {
-         	final String mavenVersion = getVeniceMavenVersion();
+             final String mavenVersion = getVeniceMavenVersion();
 
             final String script =
                     "(do                                                                                 \n" +
@@ -459,7 +459,7 @@ public class ReplSetupModuleTest {
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("stage-dir", stage,
-                                      		              "setup-dir", setup,
+                                                            "setup-dir", setup,
                                                           "v-version", VERSION));
 
             if (result.equals("internet-not-available")) {

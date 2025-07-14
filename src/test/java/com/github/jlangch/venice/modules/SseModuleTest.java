@@ -239,8 +239,8 @@ public class SseModuleTest {
                 "(do                                                                \n" +
                 "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
                 "  (-> \"id: 100\r\nevent: scores\r\ndata: 100\"                    \n" +
-        		"      (sse/parse)                                                  \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                  \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\"] :event \"scores\" :id \"100\"}", venice.eval(script));
     }
@@ -254,8 +254,8 @@ public class SseModuleTest {
                 "(do                                                                \n" +
                 "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
                 "  (-> \"id: 100\r\nevent: scores\r\ndata: 100\r\ndata: 200\"       \n" +
-        		"      (sse/parse)                                                  \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                  \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
     }
@@ -269,8 +269,8 @@ public class SseModuleTest {
                 "(do                                                                        \n" +
                 "  (load-module :server-side-events ['server-side-events :as 'sse])         \n" +
                 "  (-> \"id: 100\r\nevent: scores\r\n: comment\r\ndata: 100\r\ndata: 200\"  \n" +
-        		"      (sse/parse)                                                          \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                          \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
     }
@@ -284,8 +284,8 @@ public class SseModuleTest {
                 "(do                                                                        \n" +
                 "  (load-module :server-side-events ['server-side-events :as 'sse])         \n" +
                 "  (-> \": comment\r\nid: 100\r\nevent: scores\r\ndata: 100\r\ndata: 200\"  \n" +
-        		"      (sse/parse)                                                          \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                          \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
     }
@@ -299,8 +299,8 @@ public class SseModuleTest {
                 "(do                                                                        \n" +
                 "  (load-module :server-side-events ['server-side-events :as 'sse])         \n" +
                 "  (-> \"id: 100\r\nevent: scores\r\ndata: 100\r\ndata: 200\r\n: comment\"  \n" +
-        		"      (sse/parse)                                                          \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                          \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
     }
@@ -315,8 +315,8 @@ public class SseModuleTest {
                 "  (-> (sse/render { :id \"100\"                                    \n" +
                 "                    :event \"scores\"                              \n" +
                 "                    :data [\"100\"] } )                            \n" +
-        		"      (sse/parse)                                                  \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                  \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\"] :event \"scores\" :id \"100\"}", venice.eval(script));
     }
@@ -331,8 +331,8 @@ public class SseModuleTest {
                 "  (-> (sse/render { :id \"100\"                                    \n" +
                 "                    :event \"scores\"                              \n" +
                 "                    :data [\"100\" \"200\"] } )                    \n" +
-        		"      (sse/parse)                                                  \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                  \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\" \"200\"] :event \"scores\" :id \"100\"}", venice.eval(script));
     }
@@ -346,8 +346,8 @@ public class SseModuleTest {
                 "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
                 "  (-> (sse/render { :id \"100\"                                    \n" +
                 "                    :data [\"100\"] } )                            \n" +
-        		"      (sse/parse)                                                  \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                  \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\"] :id \"100\"}", venice.eval(script));
     }
@@ -360,8 +360,8 @@ public class SseModuleTest {
                 "(do                                                                \n" +
                 "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
                 "  (-> (sse/render { :data [\"100\"] } )                            \n" +
-        		"      (sse/parse)                                                  \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                  \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\"]}", venice.eval(script));
     }
@@ -374,8 +374,8 @@ public class SseModuleTest {
                 "(do                                                                \n" +
                 "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
                 "  (-> (sse/render { :data [\"100\" \"200\"] } )                    \n" +
-        		"      (sse/parse)                                                  \n" +
-        		"      (pr-str)))";
+                "      (sse/parse)                                                  \n" +
+                "      (pr-str)))";
 
         assertEquals("{:data [\"100\" \"200\"]}", venice.eval(script));
     }
@@ -478,9 +478,9 @@ public class SseModuleTest {
                 "    (pr-str (sse/read-events rd 2))))                                             ";
 
         assertEquals("[" +
-        		     "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
-        		     "{:data [\"101\"] :event \"scores\" :id \"101\"}" +
-        		     "]", venice.eval(script));
+                     "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
+                     "{:data [\"101\"] :event \"scores\" :id \"101\"}" +
+                     "]", venice.eval(script));
     }
 
     @Test
@@ -502,10 +502,10 @@ public class SseModuleTest {
                 "    (pr-str (sse/read-events rd 3))))                                             ";
 
         assertEquals("[" +
-        		     "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
-        		     "{:data [\"101\"] :event \"scores\" :id \"101\"} " +
-        		     "{:data [\"102\"] :event \"scores\" :id \"102\"}" +
-        		     "]", venice.eval(script));
+                     "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
+                     "{:data [\"101\"] :event \"scores\" :id \"101\"} " +
+                     "{:data [\"102\"] :event \"scores\" :id \"102\"}" +
+                     "]", venice.eval(script));
     }
 
     @Test
@@ -527,11 +527,11 @@ public class SseModuleTest {
                 "    (pr-str (sse/read-events rd 4))))                                             ";
 
         assertEquals("[" +
-		   		     "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
-		   		     "{:data [\"101\"] :event \"scores\" :id \"101\"} " +
-		   		     "{:data [\"102\"] :event \"scores\" :id \"102\"} " +
-		   		     "{:data [\"103\"] :event \"scores\" :id \"103\"}" +
-        		     "]", venice.eval(script));
+                        "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
+                        "{:data [\"101\"] :event \"scores\" :id \"101\"} " +
+                        "{:data [\"102\"] :event \"scores\" :id \"102\"} " +
+                        "{:data [\"103\"] :event \"scores\" :id \"103\"}" +
+                     "]", venice.eval(script));
     }
 
     @Test
@@ -553,11 +553,11 @@ public class SseModuleTest {
                 "    (pr-str (sse/read-events rd 5))))                                             ";
 
         assertEquals("[" +
-		   		     "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
-		   		     "{:data [\"101\"] :event \"scores\" :id \"101\"} " +
-		   		     "{:data [\"102\"] :event \"scores\" :id \"102\"} " +
-		   		     "{:data [\"103\"] :event \"scores\" :id \"103\"}" +
-        		     "]", venice.eval(script));
+                        "{:data [\"100\"] :event \"scores\" :id \"100\"} " +
+                        "{:data [\"101\"] :event \"scores\" :id \"101\"} " +
+                        "{:data [\"102\"] :event \"scores\" :id \"102\"} " +
+                        "{:data [\"103\"] :event \"scores\" :id \"103\"}" +
+                     "]", venice.eval(script));
     }
 
 }

@@ -33,15 +33,15 @@ public class TestSupportModuleTest {
     @Test
     public void test_load() {
         assertEquals(
-        	"[test-support, loaded]",
-        	new Venice().eval("(load-module :test-support)").toString());
+            "[test-support, loaded]",
+            new Venice().eval("(load-module :test-support)").toString());
     }
 
     @Test
     public void test_already_load() {
         assertEquals(
-        	"[test-support, already-loaded]",
-        	new Venice().eval("(do (load-module :test-support) (load-module :test-support))").toString());
+            "[test-support, already-loaded]",
+            new Venice().eval("(do (load-module :test-support) (load-module :test-support))").toString());
     }
 
     @Test
