@@ -20,6 +20,10 @@ All notable changes to this project will be documented in this file.
 - a function argument passing problem with the `scan-path` function of the
   :aviron module
 
+### Updated dependencies:
+
+- bumped the Aviron (ClamAV client) library to V 1.3.0
+
 
 
 ## [1.12.49] - 2025-07-12
