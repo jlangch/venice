@@ -23,9 +23,9 @@
 
 (ns aviron)
 
-(import :com.github.jlangch.aviron.Client)
-(import :com.github.jlangch.aviron.FileSeparator)
-(import :com.github.jlangch.aviron.commands.scan.ScanResult)
+(import :org.repackage.com.github.jlangch.aviron.Client)
+(import :org.repackage.com.github.jlangch.aviron.FileSeparator)
+(import :org.repackage.com.github.jlangch.aviron.commands.scan.ScanResult)
 
 
 (defn 
@@ -75,7 +75,7 @@
   create-client [& options]
 
   (let [opts  (apply hash-map options)
-        bld   (. :Client :build)]
+        bld   (. :Client :builder)]
     (when (contains? opts :server-hostname) 
       (. bld :serverHostname (:server-hostname opts)))
     (when (contains? opts :server-port) 
@@ -84,9 +84,9 @@
       (. bld :serverFileSeparator (:server-file-separator opts)))
     (when (contains? opts :connection-timeout) 
       (. bld :connectionTimeout (:connection-timeout opts)))
-    (when (contains? opts :read-timeout 
+    (when (contains? opts :read-timeout)
       (. bld :readTimeout (:read-timeout opts)))
-    (. bld :build))))
+    (. bld :build)))
 
 
 (defn 
