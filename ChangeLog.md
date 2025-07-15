@@ -15,6 +15,11 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Fixed
+
+- a function argument passing problem with `scan-path` function of the
+  :aviron module
+
 
 
 ## [1.12.49] - 2025-07-12

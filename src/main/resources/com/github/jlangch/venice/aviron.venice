@@ -286,7 +286,7 @@
 
   ([client path continue] 
     { :pre [(instance-of? :Client client) (boolean? continue)] }
-    (. client :scan is (io/->path path) continue)))
+    (. client :scan (io/->path path) continue)))
 
 
 (defn 
