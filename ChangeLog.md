@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- a function argument passing problem with `scan-path` function of the
+- a function argument passing problem with the `scan-path` function of the
   :aviron module
 
 
