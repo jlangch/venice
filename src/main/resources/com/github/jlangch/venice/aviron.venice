@@ -425,8 +425,8 @@
      :doc """
           Returns a map of the detected viruses. 
           
-          The map's keys hold the virus type and values contain a list of the
-          files detected with the virus type.
+          The map's keys hold the file detected and the values contain a list of 
+          the virus types detected in the file.
           """
      :examples '(
           """
