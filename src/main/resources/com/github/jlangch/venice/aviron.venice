@@ -389,9 +389,9 @@
 
   ok? [scan-result]
 
-  { :pre [(instance-of? :ScanResult client)] } 
+  { :pre [(instance-of? :ScanResult scan-result)] } 
 
-  (. result :isOK))
+  (. scan-result :isOK))
 
 
 (defn
@@ -414,9 +414,9 @@
 
   virus? [scan-result]
 
-  { :pre [(instance-of? :ScanResult client)] } 
+  { :pre [(instance-of? :ScanResult scan-result)] } 
 
-  (. result :hasVirus))
+  (. scan-result :hasVirus))
 
 
 (defn
@@ -441,6 +441,6 @@
 
   viruses [scan-result]
 
-  { :pre [(instance-of? :ScanResult client)] } 
+  { :pre [(instance-of? :ScanResult scan-result)] } 
 
-  (. result :getVirusFound))
+  (. scan-result :getVirusFound))
