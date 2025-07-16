@@ -249,7 +249,7 @@
     (. client :scan is))
 
   ([client is chunk-size] 
-   { :pre [(instance-of? :Client client) (io/in-stream? is) (long timeout)] }
+   { :pre [(instance-of? :Client client) (io/in-stream? is) (long? chunk-size)] }
    (. client :scan is chunk-size)))
 
 
