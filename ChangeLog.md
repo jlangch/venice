@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.50] - 2025-07-xx
+## [1.12.51] - 2025-07-xx
 
 ### Added
 
@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.50] - 2025-07-16
 
 ### Fixed
 
