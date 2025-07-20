@@ -35,8 +35,8 @@ public class ModuleAvironSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "ClamAV",
-                                            "ClamAV client.",
+                                            "Aviron",
+                                            "ClamAV client",
                                             "modules.aviron");
 
         final DocSection all = new DocSection("(load-module :aviron)", id());
@@ -67,9 +67,17 @@ public class ModuleAvironSection implements ISectionBuilder {
         admin.addItem(diBuilder.getDocItem("aviron/stats", false));
         admin.addItem(diBuilder.getDocItem("aviron/reload-virus-databases", false));
 
-        final DocSection debug = new DocSection("Admin", id());
+        final DocSection debug = new DocSection("Debug", id());
         all.addSection(debug);
         debug.addItem(diBuilder.getDocItem("aviron/last-command-run-details", false));
+
+        final DocSection clamd = new DocSection("Clamd", id());
+        all.addSection(clamd);
+        clamd.addItem(diBuilder.getDocItem("aviron/clamd-pid", false));
+        clamd.addItem(diBuilder.getDocItem("aviron/clamd-load-pid", false));
+        clamd.addItem(diBuilder.getDocItem("aviron/clamd-cpu-limit", false));
+        clamd.addItem(diBuilder.getDocItem("aviron/clamd-cpu-limit-off", false));
+        clamd.addItem(diBuilder.getDocItem("aviron/cpus", false));
 
         return section;
     }
