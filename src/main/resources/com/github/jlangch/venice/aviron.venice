@@ -493,7 +493,7 @@
 
   clamd-pid []
 
-  (. :admin :getClamdPID))
+  (. :Admin :getClamdPID))
 
 
 (defn
@@ -524,10 +524,9 @@
      :doc """
           Activates a CPU limit [1..LIMIT] percent on a clamd daemon process.
            
-          The value of LIMIT depends on the number of logical processors:
-
-          - on a 8 core **MacBook Air** LIMIT is 800%
-          - on a **Intel** single core with 2 hyperthreads LIMIT is 200%
+          The max value of LIMIT depends on the number of logical processors:
+          * on a 8 core **MacBook Air** LIMIT is 800%
+          * on a **Intel** single core with 2 hyperthreads LIMIT is 200%
           """
      :examples '(
           """
@@ -545,7 +544,7 @@
 
   { :pre [(string? clamd-pid) (long? limit) (pos? limit)] } 
 
-  (. :admin :activateClamdCpuLimit clamd-pid limit))
+  (. :Admin :activateClamdCpuLimit clamd-pid limit))
 
 
 (defn
@@ -570,7 +569,7 @@
 
   { :pre [(string? clamd-pid)] } 
 
-  (. :admin :deactivateClamdCpuLimit clamd-pid))
+  (. :Admin :deactivateClamdCpuLimit clamd-pid))
 
 
 (defn
@@ -594,4 +593,4 @@
 
   cpus []
 
-  (long (. :admin :getNrOfCpus)))
+  (long (. :Admin :getNrOfCpus)))
