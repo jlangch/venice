@@ -25,7 +25,11 @@
 
 (import :org.repackage.com.github.jlangch.aviron.Client)
 (import :org.repackage.com.github.jlangch.aviron.FileSeparator)
+(import :org.repackage.com.github.jlangch.aviron.QuarantineEvent)
 (import :org.repackage.com.github.jlangch.aviron.commands.scan.ScanResult)
+(import :org.repackage.com.github.jlangch.aviron.admin.Admin)
+
+(load-module :java)
 
 
 (defn 
@@ -48,6 +52,13 @@
                                        0 means indefinite. Defaults to 3'000ms |
           | :read-timeout n          | The read timeout in milliseconds, 0 \
                                        means indefinite. Defaults to 20'000ms |
+          | :quarantine-dir f        | A quarantine directory. If the quarantine \
+                                       action is `:MOVE` or `:COPY` infected \
+                                       files will be move/copied to the \
+                                       quarantine directory. |
+          | :quarantine-action e     | A quarantine file action for infected, \
+                                       one of {`:NONE`, `:MOVE`, `:COPY`}. \
+                                       files. Defaults to `:NONE` |
           """
      :examples '(
           """
@@ -91,6 +102,15 @@
       (. bld :connectionTimeout (:connection-timeout opts)))
     (when (contains? opts :read-timeout)
       (. bld :readTimeout (:read-timeout opts)))
+    (when (contains? opts :quarantine-dir)
+      (. bld :quarantineDir (:quarantine-dir opts)))
+    (when (contains? opts :quarantine-action)
+      (. bld :quarantineFileAction (:quarantine-action opts)))
+    (when (contains? opts :quarantine-action)
+      (. bld :quarantineFileAction (:quarantine-action opts)))
+    (when (contains? opts :quarantine-listener)
+      (. bld :quarantineEventListener 
+             (java/as-consumer (:quarantine-listener opts))))
     (. bld :build)))
 
 
@@ -449,3 +469,129 @@
   { :pre [(instance-of? :ScanResult scan-result)] } 
 
   (. scan-result :getVirusFound))
+
+
+(defn
+  ^{ :arglists '(
+         "(clamd-pid)")
+     :doc """
+          Returns the clamd PID or `nil` the clamd daemon is not running.
+
+          Runs a `pgrep clamd` shell command to get the pid.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/clamd-pid))
+          """)
+     :see-also '(
+          "aviron/clamd-load-pid"
+          "aviron/clamd-cpu-limit"
+          "aviron/clamd-cpu-limit-off"
+          "aviron/cpus") }
+
+  clamd-pid []
+
+  (. :admin :getClamdPID))
+
+
+(defn
+  ^{ :arglists '(
+         "(clamd-load-pid file)")
+     :doc """
+          Loads the clamd PID from a file
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/clamd-load-pid))
+          """)
+     :see-also '(
+          "aviron/clamd-pid"
+          "aviron/clamd-cpu-limit"
+          "aviron/clamd-cpu-limit-off"
+          "aviron/cpus") }
+
+  clamd-load-pid [file]
+
+  (sh/load-pid file))
+
+(defn
+  ^{ :arglists '(
+         "(clamd-cpu-limit clamd-pid limit)")
+     :doc """
+          Activates a CPU limit [1..LIMIT] percent on a clamd daemon process.
+           
+          The value of LIMIT depends on the number of logical processors:
+
+          - on a 8 core **MacBook Air** LIMIT is 800%
+          - on a **Intel** single core with 2 hyperthreads LIMIT is 200%
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/clamd-cpu-limit (aviron/clamd-pid) 50))
+          """)
+     :see-also '(
+          "aviron/clamd-cpu-limit-off"
+          "aviron/clamd-pid"
+          "aviron/clamd-load-pid"
+          "aviron/cpus") }
+
+  clamd-cpu-limit [clamd-pid limit]
+
+  { :pre [(string? clamd-pid) (long? limit) (pos? limit)] } 
+
+  (. :admin :activateClamdCpuLimit clamd-pid limit))
+
+
+(defn
+  ^{ :arglists '(
+         "(clamd-cpu-limit-off clamd-pid)")
+     :doc """
+          Deactivates a CPU limit on a clamd daemon process.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/clamd-cpu-limit-off (aviron/clamd-pid)))
+          """)
+     :see-also '(
+          "aviron/clamd-cpu-limit"
+          "aviron/clamd-pid"
+          "aviron/clamd-load-pid"
+          "aviron/cpus") }
+
+  clamd-cpu-limit-off [clamd-pid]
+
+  { :pre [(string? clamd-pid)] } 
+
+  (. :admin :deactivateClamdCpuLimit clamd-pid))
+
+
+(defn
+  ^{ :arglists '(
+         "(cpus)")
+     :doc """
+          Returns the number of available processors or the number of
+          hyperthreads if the CPU supports hyperthreads. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/cpus))
+          """)
+     :see-also '(
+          "aviron/clamd-pid"
+          "aviron/clamd-load-pid"
+          "aviron/clamd-cpu-limit"
+          "aviron/clamd-cpu-limit-off") }
+
+  cpus []
+
+  (long (. :admin :getNrOfCpus)))
