@@ -33,16 +33,21 @@
          "(create-client & options)")
      :doc """
           The ClamAV client provides access to the ClamAV daemon (clamd) functions 
-          like file scanning, updating the daemon's ClamAV virus databases, or getting 
-          the scanning stats.
+          like file scanning, updating the daemon's ClamAV virus databases, or
+          getting the scanning stats.
  
           Options:
 
-          | :server-hostname s       | The ClamAV server hostname. Defaults to "localhost" |
+          | :server-hostname s       | The ClamAV server hostname. Defaults to \
+                                       "localhost" |
           | :server-port n           | The ClamAV server port. Defaults to 3310 |
-          | :server-file-separator k | The ClamAV server file separator, one of {`:UNIX`, `:WINDOWS`, `:JVM_PLATFORM`} . Defaults to `:JVM_PLATFORM` |
-          | :connection-timeout n    | The connection timeout in milliseconds, 0 means indefinite. Defaults to 3'000ms |
-          | :read-timeout n          | The read timeout in milliseconds, 0 means indefinite. Defaults to 20'000ms |
+          | :server-file-separator k | The ClamAV server file separator, one of \
+                                       {`:UNIX`, `:WINDOWS`, `:JVM_PLATFORM`}. \
+                                       Defaults to `:JVM_PLATFORM` |
+          | :connection-timeout n    | The connection timeout in milliseconds, \
+                                       0 means indefinite. Defaults to 3'000ms |
+          | :read-timeout n          | The read timeout in milliseconds, 0 \
+                                       means indefinite. Defaults to 20'000ms |
           """
      :examples '(
           """
