@@ -594,3 +594,26 @@
   cpus []
 
   (long (. :Admin :getNrOfCpus)))
+
+
+(defn
+  ^{ :arglists '(
+         "(library-version)")
+     :doc """
+          Returns the verion of the aviron library. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/library-version))
+          """)
+     :see-also '(
+          "aviron/clamd-pid"
+          "aviron/clamd-load-pid"
+          "aviron/clamd-cpu-limit"
+          "aviron/clamd-cpu-limit-off") }
+
+  library-version []
+
+  (. :Admin :getAvironVersion))
