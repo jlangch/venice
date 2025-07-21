@@ -157,6 +157,50 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_consumer3() {
+        final Venice venice = new Venice();
+
+        final String script =
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+               "                                                                 \n" +
+               "  (defn func [x] (reset! sink x))                                \n" +
+               "                                                                 \n" +
+               "  (def sink (atom 0))                                            \n" +
+               "  (. :FunctionalInterfaces                                       \n" +
+               "     :testConsumer                                               \n" +
+               "     (j/as-consumer func)                                        \n" +
+               "     4)                                                          \n" +
+               "  @sink)                                                         ";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
+    public void test_as_consumer4() {
+        final Venice venice = new Venice();
+
+        final String script =
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+               "                                                                 \n" +
+               "  (defn func [x] (reset! sink x))                                \n" +
+               "                                                                 \n" +
+               "  (def dict {:func func})                                        \n" +
+               "                                                                 \n" +
+               "  (def sink (atom 0))                                            \n" +
+               "  (. :FunctionalInterfaces                                       \n" +
+               "     :testConsumer                                               \n" +
+               "     (j/as-consumer (:func dict))                                \n" +
+               "     4)                                                          \n" +
+               "  @sink)                                                         ";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_supplier() {
         final Venice venice = new Venice();
 
