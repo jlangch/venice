@@ -66,6 +66,7 @@ public class ModuleAvironSection implements ISectionBuilder {
         admin.addItem(diBuilder.getDocItem("aviron/version", false));
         admin.addItem(diBuilder.getDocItem("aviron/stats", false));
         admin.addItem(diBuilder.getDocItem("aviron/reload-virus-databases", false));
+        admin.addItem(diBuilder.getDocItem("aviron/print-config", false));
 
         final DocSection debug = new DocSection("Debug", id());
         all.addSection(debug);

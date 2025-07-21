@@ -106,8 +106,6 @@
       (. bld :quarantineDir (:quarantine-dir opts)))
     (when (contains? opts :quarantine-action)
       (. bld :quarantineFileAction (:quarantine-action opts)))
-    (when (contains? opts :quarantine-action)
-      (. bld :quarantineFileAction (:quarantine-action opts)))
     (when (contains? opts :quarantine-listener)
       (. bld :quarantineEventListener 
              (java/as-consumer (:quarantine-listener opts))))
@@ -617,3 +615,27 @@
   library-version []
 
   (. :Admin :getAvironVersion))
+
+
+(defn
+  ^{ :arglists '(
+         "(print-config)"
+         "(print-config ps)")
+     :doc """
+          Print the client configuration in human readable form to a 
+          :java.io.PrintStream
+
+          If the passed stream is `nil` prints to stdout
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/print-config))
+          """) }
+
+  print-config
+
+  ([] (. :Client :printConfig *out*))
+
+  ([ps] (. :Client :printConfig ps)))
