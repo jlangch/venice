@@ -15,9 +15,13 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Added
+
+- the newest Aviron features to the :aviron module
+
 ### Updated dependencies:
 
-- bumped the Aviron (ClamAV client) library to V 1.3.2
+- bumped the Aviron (ClamAV client) library to V 1.3.3
 
 
 

@@ -619,8 +619,8 @@
 
 (defn
   ^{ :arglists '(
-         "(print-config)"
-         "(print-config ps)")
+         "(print-config client)"
+         "(print-config client ps)")
      :doc """
           Print the client configuration in human readable form to a 
           :java.io.PrintStream
@@ -631,11 +631,16 @@
           """
           (do
             (load-module :aviron)
-            (aviron/print-config))
+            (let [client (aviron/create-client)]
+              (aviron/print-config client)))
           """) }
 
   print-config
 
-  ([] (. :Client :printConfig *out*))
+  ([client] 
+    { :pre [(instance-of? :Client client)] }
+    (. client :printConfig *out*))
 
-  ([ps] (. :Client :printConfig ps)))
+  ([client ps] 
+    { :pre [(instance-of? :Client client)] }
+    (. client :printConfig ps)))
