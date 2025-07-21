@@ -45,6 +45,7 @@ public class ModuleAvironSection implements ISectionBuilder {
         final DocSection main = new DocSection("Client", id());
         all.addSection(main);
         main.addItem(diBuilder.getDocItem("aviron/create-client", false));
+        main.addItem(diBuilder.getDocItem("aviron/print-config", false));
 
         final DocSection scan = new DocSection("Scan", id());
         all.addSection(scan);
@@ -66,7 +67,6 @@ public class ModuleAvironSection implements ISectionBuilder {
         admin.addItem(diBuilder.getDocItem("aviron/version", false));
         admin.addItem(diBuilder.getDocItem("aviron/stats", false));
         admin.addItem(diBuilder.getDocItem("aviron/reload-virus-databases", false));
-        admin.addItem(diBuilder.getDocItem("aviron/print-config", false));
 
         final DocSection debug = new DocSection("Debug", id());
         all.addSection(debug);
