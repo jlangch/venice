@@ -30,18 +30,19 @@ import com.github.jlangch.venice.Venice;
 
 public class JavaModuleTest {
 
-
     @Test
     public void test_as_runnable() {
         final Venice venice = new Venice();
 
         final String script =
-               "(do                                         \n" +
-               "  (load-module :java ['java :as 'j])        \n" +
-               "                                            \n" +
-               "  (. (j/as-runnable (fn [] nil)) :run))     ";
+               "(do                                                 \n" +
+               "  (load-module :java ['java :as 'j])                \n" +
+               "                                                    \n" +
+               "  (def sink (atom 0))                               \n" +
+               "  (. (j/as-runnable (fn [] (reset! sink 4))) :run)  \n" +
+               "  @sink)                                            ";
 
-        assertEquals(null, venice.eval(script));
+        assertEquals(4L, venice.eval(script));
     }
 
     @Test
@@ -77,12 +78,14 @@ public class JavaModuleTest {
 
         final String script =
 
-               "(do                                                \n" +
-               "  (load-module :java ['java :as 'j])               \n" +
-               "                                                   \n" +
-               "  (. (j/as-consumer (fn [x] nil)) :accept 4))      ";
+               "(do                                                       \n" +
+               "  (load-module :java ['java :as 'j])                      \n" +
+               "                                                          \n" +
+               "  (def sink (atom 0))                                     \n" +
+               "  (. (j/as-consumer (fn [x] (reset! sink x))) :accept 4)  \n" +
+               "  @sink)                                                  ";
 
-        assertEquals(null, venice.eval(script));
+        assertEquals(4L, venice.eval(script));
     }
 
     @Test
@@ -136,7 +139,7 @@ public class JavaModuleTest {
                "(do                                                              \n" +
                "  (load-module :java ['java :as 'j])                             \n" +
                "                                                                 \n" +
-               "  (. (j/as-bifunction (fn [x y] (+ x y))) :apply 1 2))          ";
+               "  (. (j/as-bifunction (fn [x y] (+ x y))) :apply 1 2))           ";
 
         assertEquals(3L, venice.eval(script));
     }
@@ -147,12 +150,14 @@ public class JavaModuleTest {
 
         final String script =
 
-               "(do                                                              \n" +
-               "  (load-module :java ['java :as 'j])                             \n" +
-               "                                                                 \n" +
-               "  (. (j/as-biconsumer (fn [x y] nil)) :accept 1 2))              ";
+               "(do                                                                   \n" +
+               "  (load-module :java ['java :as 'j])                                  \n" +
+               "                                                                      \n" +
+               "  (def sink (atom 0))                                                 \n" +
+               "  (. (j/as-biconsumer (fn [x y] (reset! sink (+ x y)))) :accept 1 2)  \n" +
+               "  @sink)                                                              ";
 
-        assertEquals(null, venice.eval(script));
+        assertEquals(3L, venice.eval(script));
     }
 
     @Test
