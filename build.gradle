@@ -215,7 +215,7 @@ ext {
     vavr_Version = '0.10.6'
     xchart_Version = '3.8.6'
     zip4j_Version = '2.11.5'
-    aviron_Version = '1.3.2'
+    aviron_Version = '1.3.3'
 }
 
 
