@@ -46,6 +46,24 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_runnable2() {
+        final Venice venice = new Venice();
+
+        final String script =
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+               "                                                                 \n" +
+               "  (def sink (atom 0))                                            \n" +
+               "  (. :FunctionalInterfaces                                       \n" +
+               "     :testRunnable                                               \n" +
+               "     (j/as-runnable (fn [] (reset! sink 4))))                    \n" +
+               "  @sink)                                                         ";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_callable() {
         final Venice venice = new Venice();
 
@@ -59,11 +77,26 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_callable2() {
+        final Venice venice = new Venice();
+
+        final String script =
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+               "                                                                 \n" +
+               "  (. :FunctionalInterfaces                                       \n" +
+               "     :testCallable                                               \n" +
+               "     (j/as-callable (fn [] 4))))                                 ";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_function() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                \n" +
                "  (load-module :java ['java :as 'j])               \n" +
                "                                                   \n" +
@@ -73,11 +106,27 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_function2() {
+        final Venice venice = new Venice();
+
+        final String script =
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+               "                                                                 \n" +
+               "  (. :FunctionalInterfaces                                       \n" +
+               "     :testFunction                                               \n" +
+               "     (j/as-function (fn [x] (+ x 1)))                            \n" +
+               "     4))                                                         ";
+
+        assertEquals(5L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_consumer() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                       \n" +
                "  (load-module :java ['java :as 'j])                      \n" +
                "                                                          \n" +
@@ -89,11 +138,29 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_consumer2() {
+        final Venice venice = new Venice();
+
+        final String script =
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+               "                                                                 \n" +
+               "  (def sink (atom 0))                                            \n" +
+               "  (. :FunctionalInterfaces                                       \n" +
+               "     :testConsumer                                               \n" +
+               "     (j/as-consumer (fn [x] (reset! sink x)))                    \n" +
+               "     4)                                                          \n" +
+               "  @sink)                                                         ";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_supplier() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                \n" +
                "  (load-module :java ['java :as 'j])               \n" +
                "                                                   \n" +
@@ -103,15 +170,47 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_supplier2() {
+        final Venice venice = new Venice();
+
+        final String script =
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+               "                                                                 \n" +
+               "  (. :FunctionalInterfaces                                       \n" +
+               "     :testSupplier                                               \n" +
+               "     (j/as-supplier (fn [] 5))))                                 ";
+
+        assertEquals(5L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_predicate() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                  \n" +
                "  (load-module :java ['java :as 'j])                 \n" +
                "                                                     \n" +
-               "  (. (j/as-predicate (fn [x] (some? x))) :test 1))   ";
+               "  (. (j/as-predicate (fn [x] (> x 2))) :test 4))     ";
+
+        assertEquals(true, venice.eval(script));
+    }
+
+    @Test
+    public void test_as_predicate2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                              \n" +
+                "  (load-module :java ['java :as 'j])                             \n" +
+                "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+                "                                                                 \n" +
+                "  (. :FunctionalInterfaces                                       \n" +
+                "     :testPredicate                                              \n" +
+                "     (j/as-predicate (fn [x] (> x 2)))                           \n" +
+                "     4))                                                         ";
 
         assertEquals(true, venice.eval(script));
     }
@@ -121,7 +220,6 @@ public class JavaModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                              \n" +
                "  (load-module :java ['java :as 'j])                             \n" +
                "                                                                 \n" +
@@ -131,11 +229,28 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_bipredicate2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                              \n" +
+                "  (load-module :java ['java :as 'j])                             \n" +
+                "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+                "                                                                 \n" +
+                "  (. :FunctionalInterfaces                                       \n" +
+                "     :testBiPredicate                                            \n" +
+                "     (j/as-bipredicate (fn [x y] (> x y)))                       \n" +
+                "     2                                                           \n" +
+                "     1))                                                         ";
+
+        assertEquals(true, venice.eval(script));
+    }
+
+    @Test
     public void test_as_bifunction() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                              \n" +
                "  (load-module :java ['java :as 'j])                             \n" +
                "                                                                 \n" +
@@ -145,11 +260,28 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_bifunction2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                              \n" +
+                "  (load-module :java ['java :as 'j])                             \n" +
+                "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+                "                                                                 \n" +
+                "  (. :FunctionalInterfaces                                       \n" +
+                "     :testBiFunction                                             \n" +
+                "     (j/as-bifunction (fn [x y] (+ x y)))                        \n" +
+                "     2                                                           \n" +
+                "     1))                                                         ";
+
+        assertEquals(3L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_biconsumer() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                                   \n" +
                "  (load-module :java ['java :as 'j])                                  \n" +
                "                                                                      \n" +
@@ -161,11 +293,30 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_biconsumer2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                              \n" +
+                "  (load-module :java ['java :as 'j])                             \n" +
+                "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+                "                                                                 \n" +
+                "  (def sink (atom 0))                                            \n" +
+                "  (. :FunctionalInterfaces                                       \n" +
+                "     :testBiConsumer                                             \n" +
+                "     (j/as-biconsumer (fn [x y] (reset! sink (+ x y))))          \n" +
+                "     2                                                           \n" +
+                "     1)                                                          \n" +
+                "  @sink)                                                         ";
+
+        assertEquals(3L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_unaryoperator() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                              \n" +
                "  (load-module :java ['java :as 'j])                             \n" +
                "                                                                 \n" +
@@ -175,15 +326,49 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_unaryoperator2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                              \n" +
+                "  (load-module :java ['java :as 'j])                             \n" +
+                "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+                "                                                                 \n" +
+                "  (. :FunctionalInterfaces                                       \n" +
+                "     :testUnaryOperator                                          \n" +
+                "     (j/as-unaryoperator (fn [x] (+ x 1)))                       \n" +
+                "     1))                                                         ";
+
+        assertEquals(2L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_binaryoperator() {
         final Venice venice = new Venice();
 
         final String script =
-
                "(do                                                              \n" +
                "  (load-module :java ['java :as 'j])                             \n" +
                "                                                                 \n" +
                "  (. (j/as-binaryoperator (fn [x y] (+ x y))) :apply 1 2))           ";
+
+        assertEquals(3L, venice.eval(script));
+    }
+
+    @Test
+    public void test_as_binaryoperator2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                              \n" +
+                "  (load-module :java ['java :as 'j])                             \n" +
+                "  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)  \n" +
+                "                                                                 \n" +
+                "  (. :FunctionalInterfaces                                       \n" +
+                "     :testBinaryOperator                                         \n" +
+                "     (j/as-binaryoperator (fn [x y] (+ x y)))                    \n" +
+                "     2                                                           \n" +
+                "     1))                                                         ";
 
         assertEquals(3L, venice.eval(script));
     }
