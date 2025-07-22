@@ -80,6 +80,21 @@ public class FileWatcherQueue {
         }
     }
 
+    public File pop(final boolean existingFilesOnly) {
+        if (existingFilesOnly) {
+            synchronized(queue) {
+                while(!queue.isEmpty()) {
+                    final File file = queue.removeFirst();
+                    if (file.exists()) return file;
+                }
+                return null;
+            }
+        }
+        else {
+            return pop();
+        }
+    }
+
     public List<File> pop(final int n) {
         synchronized(queue) {
             final List<File> files = new ArrayList<>(n);
@@ -87,6 +102,22 @@ public class FileWatcherQueue {
                 files.add(queue.removeFirst());
             }
             return files;
+        }
+    }
+
+    public List<File> pop(final int n, final boolean existingFilesOnly) {
+        if (existingFilesOnly) {
+            synchronized(queue) {
+                final List<File> files = new ArrayList<>(n);
+                while(files.size() < n && !queue.isEmpty()) {
+                    final File file = queue.removeFirst();
+                    if (file.exists()) files.add(file);
+                }
+                return files;
+            }
+        }
+        else {
+            return pop(n);
         }
     }
 

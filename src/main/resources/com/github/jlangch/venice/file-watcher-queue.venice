@@ -67,4 +67,11 @@
   ([queue n]
     { :pre [(instance-of? :FileWatcherQueue queue)
             (long? n) (pos? n)] }
-    (into [] (. queue :pop n))))
+    (into [] (. queue :pop n)))
+
+  ([queue n existing-files-only]
+    { :pre [(instance-of? :FileWatcherQueue queue)
+            (long? n) (pos? n)
+            (boolean? existing-files-only)] }
+    (into [] (. queue :pop n existing-files-only))))
+
