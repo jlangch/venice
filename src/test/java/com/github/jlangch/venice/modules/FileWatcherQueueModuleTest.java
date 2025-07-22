@@ -35,10 +35,9 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (assert (wq/empty? q))                                          \n" +
-                "      (assert (== 0 (wq/size q)))                                     \n" +
-                "      (assert (nil? (wq/wal-file q)))))                               ";
+                "      (assert (== 0 (wq/size q)))))                                   ";
 
         venice.eval(script);
     }
@@ -50,11 +49,10 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (assert (not (wq/empty? q)))                                    \n" +
-                "      (assert (== 1 (wq/size q)))                                     \n" +
-                "      (assert (nil? (wq/wal-file q)))))                               ";
+                "      (assert (== 1 (wq/size q)))))                                   ";
 
         venice.eval(script);
     }
@@ -66,13 +64,12 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (wq/push q (io/file \"b\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
                 "      (assert (not (wq/empty? q)))                                    \n" +
-                "      (assert (== 3 (wq/size q)))                                     \n" +
-                "      (assert (nil? (wq/wal-file q)))))                               ";
+                "      (assert (== 3 (wq/size q)))))                                   ";
 
         venice.eval(script);
     }
@@ -84,15 +81,14 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (wq/push q (io/file \"b\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
                 "      (assert (not (wq/empty? q)))                                    \n" +
-                "      (assert (== 3 (wq/size q)))                                     \n" +
-                "      (assert (nil? (wq/wal-file q)))))                               ";
+                "      (assert (== 3 (wq/size q)))))                                   ";
 
         venice.eval(script);
     }
@@ -104,12 +100,11 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (assert (= \"a\" (io/file-path (wq/pop q))))                    \n" +
                 "      (assert (wq/empty? q))                                          \n" +
-                "      (assert (== 0 (wq/size q)))                                     \n" +
-                "      (assert (nil? (wq/wal-file q)))))                               ";
+                "      (assert (== 0 (wq/size q)))))                                   ";
 
         venice.eval(script);
    }
@@ -121,7 +116,7 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (wq/push q (io/file \"b\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
@@ -129,8 +124,7 @@ public class FileWatcherQueueModuleTest {
                 "      (assert (= \"b\" (io/file-path (wq/pop q))))                    \n" +
                 "      (assert (= \"c\" (io/file-path (wq/pop q))))                    \n" +
                 "      (assert (wq/empty? q))                                          \n" +
-                "      (assert (== 0 (wq/size q)))                                     \n" +
-                "      (assert (nil? (wq/wal-file q)))))                               ";
+                "      (assert (== 0 (wq/size q)))))                                   ";
 
         venice.eval(script);
     }
@@ -142,7 +136,7 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (wq/push q (io/file \"b\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
@@ -156,8 +150,7 @@ public class FileWatcherQueueModuleTest {
                 "        (assert (= \"b\" (io/file-path (second l1))))                 \n" +
                 "        (assert (= \"c\" (io/file-path (first l2))))                  \n" +
                 "        (assert (wq/empty? q))                                        \n" +
-                "        (assert (== 0 (wq/size q)))                                   \n" +
-                "        (assert (nil? (wq/wal-file q))))))                            ";
+                "        (assert (== 0 (wq/size q))))))                                ";
 
         venice.eval(script);
     }
@@ -169,7 +162,7 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (wq/push q (io/file \"b\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
@@ -179,8 +172,7 @@ public class FileWatcherQueueModuleTest {
                 "        (assert (= \"b\" (io/file-path (second l1))))                 \n" +
                 "        (assert (= \"c\" (io/file-path (third l1))))                  \n" +
                 "        (assert (wq/empty? q))                                        \n" +
-                "        (assert (== 0 (wq/size q)))                                   \n" +
-                "        (assert (nil? (wq/wal-file q))))))                            ";
+                "        (assert (== 0 (wq/size q))))))                                ";
 
         venice.eval(script);
     }
@@ -192,7 +184,7 @@ public class FileWatcherQueueModuleTest {
         final String script =
                 "(do                                                                   \n" +
                 "   (load-module :file-watcher-queue ['file-watcher-queue :as 'wq])    \n" +
-                "   (let [q (wq/create)]                                               \n" +
+                "   (let [q (wq/create 100)]                                           \n" +
                 "      (wq/push q (io/file \"a\"))                                     \n" +
                 "      (wq/push q (io/file \"b\"))                                     \n" +
                 "      (wq/push q (io/file \"c\"))                                     \n" +
@@ -200,8 +192,7 @@ public class FileWatcherQueueModuleTest {
                 "      (assert (== 3 (wq/size q)))                                     \n" +
                 "      (wq/clear q)                                                    \n" +
                 "      (assert (wq/empty? q))                                          \n" +
-                "      (assert (== 0 (wq/size q)))                                     \n" +
-                "      (assert (nil? (wq/wal-file q)))))                               ";
+                "      (assert (== 0 (wq/size q)))))                                   ";
 
         venice.eval(script);
     }

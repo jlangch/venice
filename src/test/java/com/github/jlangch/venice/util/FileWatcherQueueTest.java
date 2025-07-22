@@ -23,7 +23,6 @@ package com.github.jlangch.venice.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -36,17 +35,15 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_empty() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         assertTrue(q.isEmpty());
         assertEquals(0, q.size());
-
-        assertNull(q.getWalFile());
     }
 
     @Test
     public void test_push() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f = new File("a").getAbsoluteFile();
         q.push(f);
@@ -57,7 +54,7 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_push2() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f1 = new File("a").getAbsoluteFile();
         File f2 = new File("b").getAbsoluteFile();
@@ -72,7 +69,7 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_push3() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f1 = new File("a").getAbsoluteFile();
         File f2 = new File("b").getAbsoluteFile();
@@ -91,7 +88,7 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_pop() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f = new File("a").getAbsoluteFile();
         q.push(f);
@@ -103,7 +100,7 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_pop2() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f1 = new File("a").getAbsoluteFile();
         File f2 = new File("b").getAbsoluteFile();
@@ -122,7 +119,7 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_pop3() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f1 = new File("a").getAbsoluteFile();
         File f2 = new File("b").getAbsoluteFile();
@@ -149,7 +146,7 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_pop4() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f1 = new File("a").getAbsoluteFile();
         File f2 = new File("b").getAbsoluteFile();
@@ -172,7 +169,7 @@ public class FileWatcherQueueTest {
 
     @Test
     public void test_clear() {
-        final FileWatcherQueue q = FileWatcherQueue.create();
+        final FileWatcherQueue q = new FileWatcherQueue(100);
 
         File f1 = new File("a").getAbsoluteFile();
         File f2 = new File("b").getAbsoluteFile();

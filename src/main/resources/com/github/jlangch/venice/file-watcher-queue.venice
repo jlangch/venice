@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; File watcher queue with an optional WAL file
+;;;; File watcher queue
 
 
 (ns file-watcher-queue)
@@ -27,13 +27,9 @@
 (import :com.github.jlangch.venice.util.FileWatcherQueue)
 
 
-(defn create 
-  ([] 
-    (. :FileWatcherQueue :create))
-
-  ([wal-file] 
-    { :pre [(or (nil? wal-file) (io/file? wal-file))] }
-    (. :FileWatcherQueue :create wal-file)))
+(defn create [max-size]
+  { :pre [(long? max-size) (pos? max-size)] }
+  (. :FileWatcherQueue :new max-size))
 
 
 (defn size [queue] 
@@ -51,6 +47,12 @@
   (. queue :clear))
 
 
+(defn remove [queue file] 
+  { :pre [(instance-of? :FileWatcherQueue queue)
+          (io/file? file)] }
+  (. queue :remove file))
+
+
 (defn push [queue file] 
   { :pre [(instance-of? :FileWatcherQueue queue)
           (io/file? file)] }
@@ -65,30 +67,4 @@
   ([queue n]
     { :pre [(instance-of? :FileWatcherQueue queue)
             (long? n) (pos? n)] }
-    (into [] (. queue :pop n)))
-
-  ([queue n skip-missing-files]
-    { :pre [(instance-of? :FileWatcherQueue queue)
-            (long? n) (pos? n)
-            (boolean? skip-missing-files)] }
-    (into [] (. queue :pop n skip-missing-files))))
-
-
-(defn load [queue] 
-  { :pre [(instance-of? :FileWatcherQueue queue)] }
-  (. queue :load))
-
-
-(defn save [queue] 
-  { :pre [(instance-of? :FileWatcherQueue queue)] }
-  (. queue :save))
-
-
-(defn close [queue] 
-  { :pre [(instance-of? :FileWatcherQueue queue)] }
-  (. queue :close))
-
-
-(defn wal-file [queue]
-  { :pre [(instance-of? :FileWatcherQueue queue)] }
-  (. queue :getWalFile))
+    (into [] (. queue :pop n))))

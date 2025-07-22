@@ -21,38 +21,16 @@
  */
 package com.github.jlangch.venice.util;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.io.FileUtil;
 
+public class FileWatcherQueue {
 
-public class FileWatcherQueue implements Closeable {
-
-    private FileWatcherQueue(final File walFile) {
-        this.walFile = walFile;
-    }
-
-    public static FileWatcherQueue create() {
-        return create(null);
-    }
-
-    public static FileWatcherQueue create(final File walFile) {
-        // initialize
-        if (walFile != null && !walFile.isFile()) {
-            initWalFile(walFile);
-        }
-        final FileWatcherQueue queue = new FileWatcherQueue(walFile);
-        queue.init();
-        queue.save();  // save the compacted queue back
-        return queue;
+    public FileWatcherQueue(final int maxSize) {
+        this.maxSize = Math.max(10, maxSize);  // minimum 10
     }
 
     public int size() {
@@ -69,190 +47,50 @@ public class FileWatcherQueue implements Closeable {
 
     public void clear() {
         synchronized(queue) {
-            addToWalFile(WalAction.CLEAR, new File("/"));
             queue.clear();
+        }
+    }
+
+    public void remove(final File file) {
+        if (file != null) {
+            synchronized(queue) {
+                queue.removeIf(it -> it.equals(file));
+            }
         }
     }
 
     public void push(final File file) {
         if (file != null) {
             synchronized(queue) {
-                addToWalFile(WalAction.PUSH, file);
                 queue.removeIf(it -> it.equals(file));
+
+                // limit the size
+                while(queue.size() >= maxSize) {
+                    queue.removeFirst();
+                }
+
                 queue.add(file);
             }
         }
     }
 
     public File pop() {
-        final List<File> files = pop(1, false);
-        return files.isEmpty() ? null : files.get(0);
+        synchronized(queue) {
+            return queue.isEmpty() ? null : queue.removeFirst();
+        }
     }
 
     public List<File> pop(final int n) {
-        return pop(n, false);
-    }
-
-    public List<File> pop(final int n, final boolean skipMissingFiles) {
         synchronized(queue) {
             final List<File> files = new ArrayList<>(n);
-            for(int ii=0; ii<n && !queue.isEmpty(); ii++) {
-                final File file = queue.removeFirst();
-                addToWalFile(WalAction.POP, file);
-                if (!skipMissingFiles || file.exists()) {
-                    files.add(file);
-                }
+            for(int ii=0; ii<n  && !queue.isEmpty(); ii++) {
+                files.add(queue.removeFirst());
             }
             return files;
         }
     }
 
-    public void load() {
-        if (walFile == null) {
-            return;
-        }
 
-        synchronized(queue) {
-            queue.clear();
-
-            if (!walFile.isFile()) {
-                return;
-            }
-
-            StringUtil.splitIntoLines(
-                            new String(
-                                    FileUtil.load(walFile),
-                                    Charset.forName("UTF-8")))
-                      .stream()
-                      .filter(s -> StringUtil.isNotBlank(s))
-                      .map(s -> s.split("[|]"))
-                      .filter(e -> e.length == 2)
-                      .forEach(e -> {
-                          final File f = new File(e[1]);
-                          switch(e[0]) {
-                              case "CLEAR":
-                                  queue.clear();
-                                  break;
-                              case "PUSH":
-                                  queue.removeIf(it -> it.equals(f));
-                                  queue.add(f);
-                                  break;
-                              case "POP":
-                                  queue.removeIf(it -> it.equals(f));
-                                  break;
-                          }
-                      });
-        }
-    }
-
-    public void save() {
-        if (walFile == null) {
-            return;
-        }
-
-        synchronized(queue) {
-            try (FileWriter fw = new FileWriter(walFile, false)) {
-                queue.forEach(f -> {
-                    try {
-                        fw.write(walEntry(WalAction.PUSH, f));
-                    }
-                    catch(IOException ex) {
-                        throw new RuntimeException(
-                                "Failed to write FileWatcher WAL entry",
-                                ex);
-                    }});
-            }
-            catch(IOException ex) {
-                throw new RuntimeException(
-                        "Failed to save FileWatcher WAL entries",
-                        ex);
-            }
-        }
-    }
-
-    @Override
-    public void close() {
-        save();
-    }
-
-    public File getWalFile() {
-        return walFile;
-    }
-
-    public void removeWalFile() {
-        if (walFile != null && walFile.isFile()) {
-            walFile.delete();
-        }
-    }
-
-    public void clearWalFile() {
-        initWalFile(walFile);
-    }
-
-
-    private void init() {
-        synchronized(queue) {
-            if (walFile == null) {
-                return;
-            }
-
-            if (this.walFile.isFile()) {
-                try {
-                    load();
-                }
-                catch(Exception ex) {
-                    throw new RuntimeException(
-                            "Failed to initially load the FileWatcherQueue from the WAL file",
-                            ex);
-                }
-            }
-            else {
-                try {
-                    new FileWriter(walFile, false).close();
-                }
-                catch(IOException ex) {
-                    throw new RuntimeException(
-                            "Failed to initialize FileWatcher WAL file",
-                            ex);
-                }
-            }
-        }
-    }
-
-
-    private static void initWalFile(final File walFile) {
-        if (walFile != null) {
-            try {
-                new FileWriter(walFile, false).close();
-            }
-            catch(IOException ex) {
-                throw new RuntimeException(
-                        "Failed to initialize FileWatcher WAL file",
-                        ex);
-            }
-        }
-    }
-
-    private void addToWalFile(final WalAction action, final File file) {
-        if (walFile == null) {
-            return;
-        }
-
-        try (FileWriter fw = new FileWriter(walFile, true)) {
-            fw.write(walEntry(action, file));
-        }
-        catch(IOException ex) {
-            throw new RuntimeException("Failed to write FileWatcher WAL entry", ex);
-        }
-    }
-
-    private String walEntry(final WalAction action, final File file) {
-        return action.name() + "|" + file.getAbsolutePath() + "\n";
-    }
-
-
-    private static enum WalAction { CLEAR, PUSH, POP };
-
-    private final File walFile;
+    private final int maxSize;
     private final LinkedList<File> queue = new LinkedList<>();
 }
