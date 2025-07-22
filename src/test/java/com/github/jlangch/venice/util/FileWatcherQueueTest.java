@@ -186,4 +186,59 @@ public class FileWatcherQueueTest {
         assertTrue(q.isEmpty());
         assertEquals(0, q.size());
     }
+
+    @Test
+    public void test_remove() {
+        final FileWatcherQueue q = new FileWatcherQueue(100);
+
+        File f1 = new File("a").getAbsoluteFile();
+        File f2 = new File("b").getAbsoluteFile();
+        File f3 = new File("c").getAbsoluteFile();
+        q.push(f1);
+        q.push(f2);
+        q.push(f3);
+
+        assertFalse(q.isEmpty());
+        assertEquals(3, q.size());
+
+        q.remove(f2);
+
+        List<File> files = q.pop(20);
+
+        assertEquals(2, files.size());
+
+        assertEquals(f1, files.get(0));
+        assertEquals(f3, files.get(1));
+    }
+
+    @Test
+    public void test_limit() {
+        final FileWatcherQueue q = new FileWatcherQueue(5);
+
+        File f1 = new File("a").getAbsoluteFile();
+        File f2 = new File("b").getAbsoluteFile();
+        File f3 = new File("c").getAbsoluteFile();
+        File f4 = new File("d").getAbsoluteFile();
+        File f5 = new File("e").getAbsoluteFile();
+        File f6 = new File("f").getAbsoluteFile();
+        q.push(f1);
+        q.push(f2);
+        q.push(f3);
+        q.push(f4);
+        q.push(f5);
+        q.push(f6);
+
+        assertFalse(q.isEmpty());
+        assertEquals(5, q.size());
+
+        List<File> files = q.pop(20);
+
+        assertEquals(5, files.size());
+
+        assertEquals(f2, files.get(0));
+        assertEquals(f3, files.get(1));
+        assertEquals(f4, files.get(2));
+        assertEquals(f5, files.get(3));
+        assertEquals(f6, files.get(4));
+    }
 }
