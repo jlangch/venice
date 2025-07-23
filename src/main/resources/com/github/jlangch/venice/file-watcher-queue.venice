@@ -27,9 +27,12 @@
 (import :com.github.jlangch.venice.util.FileWatcherQueue)
 
 
-(defn create [max-size]
-  { :pre [(long? max-size) (pos? max-size)] }
-  (. :FileWatcherQueue :new max-size))
+(defn create 
+  ([]
+    (. :FileWatcherQueue :new 5000))
+  ([max-size]
+    { :pre [(long? max-size) (pos? max-size)] }
+    (. :FileWatcherQueue :new max-size)))
 
 
 (defn size [queue] 

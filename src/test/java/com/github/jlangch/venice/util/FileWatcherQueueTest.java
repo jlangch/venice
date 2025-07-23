@@ -127,6 +127,8 @@ public class FileWatcherQueueTest {
         q.push(f1);
         q.push(f2);
         q.push(f3);
+        q.push(f3);
+        q.push(f3);
 
         List<File> files1 = q.pop(2);
         List<File> files2 = q.pop(2);
