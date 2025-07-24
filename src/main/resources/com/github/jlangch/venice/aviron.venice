@@ -24,10 +24,10 @@
 (ns aviron)
 
 (import :org.repackage.com.github.jlangch.aviron.Client)
+(import :org.repackage.com.github.jlangch.aviron.ClamdAdmin)
 (import :org.repackage.com.github.jlangch.aviron.FileSeparator)
-(import :org.repackage.com.github.jlangch.aviron.QuarantineEvent)
-(import :org.repackage.com.github.jlangch.aviron.commands.scan.ScanResult)
-(import :org.repackage.com.github.jlangch.aviron.admin.Admin)
+(import :org.repackage.com.github.jlangch.aviron.dto.QuarantineEvent)
+(import :org.repackage.com.github.jlangch.aviron.dto.ScanResult)
 
 (load-module :java)
 
@@ -511,7 +511,7 @@
 
   clamd-pid []
 
-  (. :Admin :getClamdPID))
+  (. :ClamdAdmin :getClamdPID))
 
 
 (defn
@@ -564,7 +564,7 @@
 
   { :pre [(string? clamd-pid) (long? limit) (pos? limit)] } 
 
-  (. :Admin :activateClamdCpuLimit clamd-pid limit))
+  (. :ClamdAdmin :activateClamdCpuLimit clamd-pid limit))
 
 
 (defn
@@ -590,7 +590,7 @@
 
   { :pre [(string? clamd-pid)] } 
 
-  (. :Admin :deactivateClamdCpuLimit clamd-pid))
+  (. :ClamdAdmin :deactivateClamdCpuLimit clamd-pid))
 
 
 (defn
@@ -615,7 +615,7 @@
 
   cpus []
 
-  (long (. :Admin :getNrOfCpus)))
+  (long (. :ClamdAdmin :getNrOfCpus)))
 
 
 
