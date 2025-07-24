@@ -69,7 +69,7 @@
 
               (println (aviron/reachable? client))
 
-              (println (aviron/version client))
+              (println (aviron/clamav-version client))
 
               (let [result (aviron/scan-path client "/data/summary.docx")]
                 (when (aviron/virus? result)
@@ -81,7 +81,7 @@
           "aviron/scan-parallel" 
           "aviron/shutdown-server"
           "aviron/ping" 
-          "aviron/version" 
+          "aviron/clamav-version" 
           "aviron/stats" 
           "aviron/reachable?" 
           "aviron/reload-virus-databases"
@@ -127,7 +127,8 @@
             (aviron/ping (aviron/create-client)))
           """)
      :see-also '(
-          "aviron/version" 
+          "aviron/create-client"
+          "aviron/clamav-version" 
           "aviron/stats" 
           "aviron/reload-virus-databases"
           "aviron/shutdown-server") }
@@ -141,7 +142,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(version client)")
+         "(clamav-version client)")
      :doc """
           Return the ClamAV version
           """ 
@@ -149,19 +150,20 @@
           """
           (do
             (load-module :aviron)
-            (aviron/version (aviron/create-client)))
+            (aviron/clamav-version (aviron/create-client)))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ping" 
           "aviron/stats" 
           "aviron/reload-virus-databases"
           "aviron/shutdown-server") }
 
-  version [client]
+  clamav-version [client]
 
   { :pre [(instance-of? :Client client)] }
  
-  (. client :version))
+  (. client :clamAvVersion))
 
 
 (defn 
@@ -178,8 +180,9 @@
             (aviron/stats (aviron/create-client)))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ping" 
-          "aviron/version" 
+          "aviron/clamav-version" 
           "aviron/reload-virus-databases"
           "aviron/shutdown-server") }
 
@@ -203,8 +206,9 @@
             (aviron/reload-virus-databases (aviron/create-client)))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ping" 
-          "aviron/version" 
+          "aviron/clamav-version" 
           "aviron/stats" 
           "aviron/shutdown-server") }
 
@@ -228,8 +232,9 @@
             (aviron/shutdown-server  (aviron/create-client)))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ping" 
-          "aviron/version" 
+          "aviron/clamav-version" 
           "aviron/stats" 
           "aviron/reload-virus-databases") }
 
@@ -261,6 +266,7 @@
                 (aviron/ok? (aviron/scan-stream is)))))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ok?" 
           "aviron/virus?" 
           "aviron/viruses") }
@@ -297,6 +303,7 @@
               (aviron/ok? (aviron/scan-path "/data/document.pdf"))))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ok?" 
           "aviron/virus?" 
           "aviron/viruses") }
@@ -328,6 +335,7 @@
               (aviron/ok? (aviron/scan-parallel "/data"))))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ok?" 
           "aviron/virus?" 
           "aviron/viruses") }
@@ -354,7 +362,9 @@
           (do
             (load-module :aviron)
             (aviron/reachable? (aviron/create-client)))
-          """) }
+          """)
+     :see-also '(
+          "aviron/create-client" ) }
 
   reachable?
 
@@ -381,15 +391,17 @@
           (do
             (load-module :aviron)
             (let [client (aviron/create-client)]
-              (aviron/version client)
+              (aviron/clamav-version client)
               (println (aviron/last-command-run-details client))))
-          """) }
+          """)
+     :see-also '(
+          "aviron/create-client" ) }
 
   last-command-run-details [client]
 
   { :pre [(instance-of? :Client client)] }
 
-  (. client :getLastCommandRunDetails))
+  (. client :lastCommandRunDetails))
 
 
 (defn
@@ -407,6 +419,7 @@
               (aviron/ok? (aviron/scan-path "/data/document.pdf"))))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/virus?" 
           "aviron/viruses") }
 
@@ -432,6 +445,7 @@
               (aviron/virus? (aviron/scan-path "/data/document.pdf"))))
           """) 
      :see-also '(
+          "aviron/create-client"
           "aviron/ok?" 
           "aviron/viruses") }
 
@@ -459,6 +473,7 @@
               (println (aviron/viruses (aviron/scan-path "/data/document.pdf")))))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/ok?" 
           "aviron/virus?") }
 
@@ -468,6 +483,10 @@
 
   (. scan-result :getVirusFound))
 
+
+;; -----------------------------------------------------------------------------
+;; Clamd daemon management
+;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '(
@@ -484,6 +503,7 @@
             (aviron/clamd-pid))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/clamd-load-pid"
           "aviron/clamd-cpu-limit"
           "aviron/clamd-cpu-limit-off"
@@ -507,6 +527,7 @@
             (aviron/clamd-load-pid))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/clamd-pid"
           "aviron/clamd-cpu-limit"
           "aviron/clamd-cpu-limit-off"
@@ -533,6 +554,7 @@
             (aviron/clamd-cpu-limit (aviron/clamd-pid) 50))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/clamd-cpu-limit-off"
           "aviron/clamd-pid"
           "aviron/clamd-load-pid"
@@ -558,6 +580,7 @@
             (aviron/clamd-cpu-limit-off (aviron/clamd-pid)))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/clamd-cpu-limit"
           "aviron/clamd-pid"
           "aviron/clamd-load-pid"
@@ -584,6 +607,7 @@
             (aviron/cpus))
           """)
      :see-also '(
+          "aviron/create-client"
           "aviron/clamd-pid"
           "aviron/clamd-load-pid"
           "aviron/clamd-cpu-limit"
@@ -594,27 +618,138 @@
   (long (. :Admin :getNrOfCpus)))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Quarantine management
+;; -----------------------------------------------------------------------------
+
 (defn
   ^{ :arglists '(
-         "(library-version)")
+         "(quarantine-active? client)" )
      :doc """
-          Returns the verion of the aviron library. 
+          Returns `true` if the quarantine is active else `false`
           """
      :examples '(
           """
           (do
             (load-module :aviron)
-            (aviron/library-version))
+            (let [client (aviron/create-client)]
+              (aviron/quarantine-active? client)))
+          """) 
+     :see-also '(
+          "aviron/create-client"
+          "aviron/list-quarantine-files"
+          "aviron/remove-quarantine-file"
+          "aviron/remove-all-quarantine-files" ) }
+
+  quarantine-active? [client] 
+
+    { :pre [(instance-of? :Client client)] }
+
+    (. client :isQuarantineActive))
+
+
+(defn
+  ^{ :arglists '(
+         "(list-quarantine-files client)" )
+     :doc """
+          Returns a list of the quarantine files.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (aviron/list-quarantine-files client)))
+          """) 
+     :see-also '(
+          "aviron/create-client"
+          "aviron/quarantine-active?"
+          "aviron/remove-quarantine-file"
+          "aviron/remove-all-quarantine-files" ) }
+
+  list-quarantine-files [client] 
+
+    { :pre [(instance-of? :Client client)] }
+
+    (. client :listQuarantineFiles))
+
+
+(defn
+  ^{ :arglists '(
+         "(remove-quarantine-file client f)" )
+     :doc """
+          Removes a quarantine file.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (if-let [f (first (aviron/list-quarantine-files client))]
+                (aviron/remove-quarantine-file client f))))
+          """) 
+     :see-also '(
+          "aviron/create-client"
+          "aviron/quarantine-active?"
+          "aviron/list-quarantine-files"
+          "aviron/remove-all-quarantine-files" ) }
+
+  remove-quarantine-file [client f] 
+
+    { :pre [(instance-of? :Client client)] }
+    
+    (. client :removeQuarantineFile f))
+
+
+(defn
+  ^{ :arglists '(
+         "(remove-all-quarantine-files client)" )
+     :doc """
+          Removes all quarantine files.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (aviron/remove-all-quarantine-files client)))
+          """) 
+     :see-also '(
+          "aviron/create-client"
+          "aviron/quarantine-active?"
+          "aviron/list-quarantine-files"
+          "aviron/remove-quarantine-file" ) }
+
+  remove-all-quarantine-files [client] 
+
+    { :pre [(instance-of? :Client client)] }
+    (. client :listQuarantineFiles))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Utililies
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+         "(version)")
+     :doc """
+          Returns the version of the Aviron Java library. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/version))
           """)
      :see-also '(
-          "aviron/clamd-pid"
-          "aviron/clamd-load-pid"
-          "aviron/clamd-cpu-limit"
-          "aviron/clamd-cpu-limit-off") }
+          "aviron/create-client") }
 
-  library-version []
+  version []
 
-  (. :Admin :getAvironVersion))
+  library-version)
 
 
 (defn
@@ -633,7 +768,9 @@
             (load-module :aviron)
             (let [client (aviron/create-client)]
               (aviron/print-config client)))
-          """) }
+          """)
+     :see-also '(
+          "aviron/create-client") }
 
   print-config
 
@@ -644,3 +781,6 @@
   ([client ps] 
     { :pre [(instance-of? :Client client)] }
     (. client :printConfig ps)))
+
+
+(def- library-version "1.3.3")

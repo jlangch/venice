@@ -663,6 +663,15 @@ task updateReleaseVersion {
             fileset(dir: 'doc/examples', includes: 'repl.sh')
             fileset(dir: 'doc/examples', includes: 'repl.bat')
         }
+           
+        println "Updating Aviron lib version ${aviron_Version} -> 'aviron.venice'"
+        ant.replaceregexp(
+                match:   "(def- library-version \"[0-9]+[.][0-9]+[.][0-9]+\")",
+                replace: "(def- library-version \"${aviron_Version}\")",
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/resources', includes: 'com/github/jlangch/venice/aviron.venice')
+        }     
     }
 }
 

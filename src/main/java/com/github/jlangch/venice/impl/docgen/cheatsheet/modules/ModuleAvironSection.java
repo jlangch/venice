@@ -46,6 +46,7 @@ public class ModuleAvironSection implements ISectionBuilder {
         all.addSection(main);
         main.addItem(diBuilder.getDocItem("aviron/create-client", false));
         main.addItem(diBuilder.getDocItem("aviron/print-config", false));
+        main.addItem(diBuilder.getDocItem("aviron/version", false));
 
         final DocSection scan = new DocSection("Scan", id());
         all.addSection(scan);
@@ -64,13 +65,20 @@ public class ModuleAvironSection implements ISectionBuilder {
         admin.addItem(diBuilder.getDocItem("aviron/ping", false));
         admin.addItem(diBuilder.getDocItem("aviron/reachable?", false));
         admin.addItem(diBuilder.getDocItem("aviron/shutdown-server", false));
-        admin.addItem(diBuilder.getDocItem("aviron/version", false));
+        admin.addItem(diBuilder.getDocItem("aviron/clamav-version", false));
         admin.addItem(diBuilder.getDocItem("aviron/stats", false));
         admin.addItem(diBuilder.getDocItem("aviron/reload-virus-databases", false));
 
         final DocSection debug = new DocSection("Debug", id());
         all.addSection(debug);
         debug.addItem(diBuilder.getDocItem("aviron/last-command-run-details", false));
+
+        final DocSection quarantine = new DocSection("Quarantine", id());
+        all.addSection(quarantine);
+        quarantine.addItem(diBuilder.getDocItem("aviron/quarantine-active?", false));
+        quarantine.addItem(diBuilder.getDocItem("aviron/list-quarantine-files", false));
+        quarantine.addItem(diBuilder.getDocItem("aviron/remove-quarantine-file", false));
+        quarantine.addItem(diBuilder.getDocItem("aviron/remove-all-quarantine-files", false));
 
         final DocSection clamd = new DocSection("Clamd", id());
         all.addSection(clamd);
