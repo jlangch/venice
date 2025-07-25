@@ -490,11 +490,13 @@
 
 (defn
   ^{ :arglists '(
-         "(clamd-pid)")
+         "(clamd-pid)"
+         "(clamd-pid pid-file)")
      :doc """
           Returns the clamd PID or `nil` the clamd daemon is not running.
 
-          Runs a `pgrep clamd` shell command to get the pid.
+          Without 'pid-file' argument runs a `pgrep clamd` shell command to get 
+          the pid. With a 'pid-file' loads the pid from the pid file.
           """
      :examples '(
           """
@@ -504,38 +506,19 @@
           """)
      :see-also '(
           "aviron/create-client"
-          "aviron/clamd-load-pid"
           "aviron/clamd-cpu-limit"
           "aviron/clamd-cpu-limit-off"
           "aviron/cpus") }
 
-  clamd-pid []
+  clamd-pid 
+  
+  ([]          
+    (. :ClamdAdmin :getClamdPID))
 
-  (. :ClamdAdmin :getClamdPID))
+  ([pid-file]
+    { :pre [(or (string? clamd-pid) (io/file? clamd-pid))] } 
+    (. :ClamdAdmin :loadClamdPID (io/file pid-file))))
 
-
-(defn
-  ^{ :arglists '(
-         "(clamd-load-pid file)")
-     :doc """
-          Loads the clamd PID from a file
-          """
-     :examples '(
-          """
-          (do
-            (load-module :aviron)
-            (aviron/clamd-load-pid))
-          """)
-     :see-also '(
-          "aviron/create-client"
-          "aviron/clamd-pid"
-          "aviron/clamd-cpu-limit"
-          "aviron/clamd-cpu-limit-off"
-          "aviron/cpus") }
-
-  clamd-load-pid [file]
-
-  (sh/load-pid file))
 
 (defn
   ^{ :arglists '(
@@ -557,7 +540,6 @@
           "aviron/create-client"
           "aviron/clamd-cpu-limit-off"
           "aviron/clamd-pid"
-          "aviron/clamd-load-pid"
           "aviron/cpus") }
 
   clamd-cpu-limit [clamd-pid limit]
@@ -583,7 +565,6 @@
           "aviron/create-client"
           "aviron/clamd-cpu-limit"
           "aviron/clamd-pid"
-          "aviron/clamd-load-pid"
           "aviron/cpus") }
 
   clamd-cpu-limit-off [clamd-pid]
@@ -609,7 +590,6 @@
      :see-also '(
           "aviron/create-client"
           "aviron/clamd-pid"
-          "aviron/clamd-load-pid"
           "aviron/clamd-cpu-limit"
           "aviron/clamd-cpu-limit-off") }
 

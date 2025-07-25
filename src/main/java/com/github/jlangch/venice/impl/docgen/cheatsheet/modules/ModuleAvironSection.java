@@ -83,7 +83,6 @@ public class ModuleAvironSection implements ISectionBuilder {
         final DocSection clamd = new DocSection("Clamd", id());
         all.addSection(clamd);
         clamd.addItem(diBuilder.getDocItem("aviron/clamd-pid", false));
-        clamd.addItem(diBuilder.getDocItem("aviron/clamd-load-pid", false));
         clamd.addItem(diBuilder.getDocItem("aviron/clamd-cpu-limit", false));
         clamd.addItem(diBuilder.getDocItem("aviron/clamd-cpu-limit-off", false));
         clamd.addItem(diBuilder.getDocItem("aviron/cpus", false));
