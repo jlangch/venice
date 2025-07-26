@@ -883,8 +883,8 @@
           ;; a timestamp
           (do
             (load-module :aviron)
-            (defn limit-fn [ts] 100)
-            (aviron/create-clamd-cpu-limiter-fn limit-fn))
+            (defn limit-fn [ts] 100I)
+            (aviron/create-clamd-cpu-limiter limit-fn))
           """)
      :see-also '(
           "aviron/create-client"
@@ -902,8 +902,8 @@
                      (every? #(instance-of? :CpuProfile %) profiles-or-fn))
                 (fn? profiles-or-fn))] }
     (if (sequential? profiles-or-fn)
-      (. :ClamdCpuLimiter (. :DynamicCpuLimit :new profiles-or-fn))
-      (. :ClamdCpuLimiter (. :DynamicCpuLimit :new (java/as-function profiles-or-fn))))))
+      (. :ClamdCpuLimiter :new (. :DynamicCpuLimit :new profiles-or-fn))
+      (. :ClamdCpuLimiter :new (. :DynamicCpuLimit :new (java/as-function profiles-or-fn))))))
 
 
 (defn 
