@@ -80,12 +80,25 @@ public class ModuleAvironSection implements ISectionBuilder {
         quarantine.addItem(diBuilder.getDocItem("aviron/remove-quarantine-file", false));
         quarantine.addItem(diBuilder.getDocItem("aviron/remove-all-quarantine-files", false));
 
-        final DocSection clamd = new DocSection("Clamd", id());
+        final DocSection clamd = new DocSection("Clamd Admin", id());
         all.addSection(clamd);
         clamd.addItem(diBuilder.getDocItem("aviron/clamd-pid", false));
         clamd.addItem(diBuilder.getDocItem("aviron/clamd-cpu-limit", false));
         clamd.addItem(diBuilder.getDocItem("aviron/clamd-cpu-limit-off", false));
         clamd.addItem(diBuilder.getDocItem("aviron/cpus", false));
+
+        final DocSection limiter = new DocSection("CPU Limiter", id());
+        all.addSection(limiter);
+        limiter.addItem(diBuilder.getDocItem("aviron/create-clamd-cpu-limiter", false));
+        limiter.addItem(diBuilder.getDocItem("aviron/clamd-activate-cpu-limit", false));
+        limiter.addItem(diBuilder.getDocItem("aviron/clamd-deactivate-cpu-limit", false));
+
+        final DocSection profile = new DocSection("CPU Profiles", id());
+        all.addSection(profile);
+        profile.addItem(diBuilder.getDocItem("aviron/create-cpu-profile", false));
+        profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-entries", false));
+        profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-entries-as-map", false));
+        profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-limit", false));
 
         return section;
     }

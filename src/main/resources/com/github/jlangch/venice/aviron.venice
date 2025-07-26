@@ -24,8 +24,12 @@
 (ns aviron)
 
 (import :org.repackage.com.github.jlangch.aviron.Client)
-(import :org.repackage.com.github.jlangch.aviron.ClamdAdmin)
 (import :org.repackage.com.github.jlangch.aviron.FileSeparator)
+(import :org.repackage.com.github.jlangch.aviron.admin.ClamdAdmin)
+(import :org.repackage.com.github.jlangch.aviron.admin.ClamdCpuLimiter)
+(import :org.repackage.com.github.jlangch.aviron.admin.DynamicCpuLimit)
+(import :org.repackage.com.github.jlangch.aviron.admin.CpuProfile)
+(import :org.repackage.com.github.jlangch.aviron.admin.CpuProfileEntry)
 (import :org.repackage.com.github.jlangch.aviron.dto.QuarantineEvent)
 (import :org.repackage.com.github.jlangch.aviron.dto.ScanResult)
 
@@ -34,7 +38,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(create-client & options)")
+          "(create-client & options)")
      :doc """
           The ClamAV client provides access to the ClamAV daemon (clamd) functions 
           like file scanning, updating the daemon's ClamAV virus databases, or
@@ -114,7 +118,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(ping client)")
+          "(ping client)")
      :doc """
           Sends a "PING" command to the ClamAV server.
  
@@ -142,7 +146,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(clamav-version client)")
+          "(clamav-version client)")
      :doc """
           Return the ClamAV version
           """ 
@@ -168,7 +172,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(stats client)")
+          "(stats client)")
      :doc """
           Returns the formatted statistics about the scan queue, contents of 
           scan queue, and memory usage.
@@ -195,7 +199,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(reload-virus-databases client)")
+          "(reload-virus-databases client)")
      :doc """
           Reload the virus databases. 
           """ 
@@ -221,7 +225,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(shutdown-server client)")
+          "(shutdown-server client)")
      :doc """
           Shutdown the ClamAV server and perform a clean exit.
           """
@@ -247,8 +251,8 @@
 
 (defn 
   ^{ :arglists '(
-         "(scan-stream is)"
-         "(scan-stream is chunk-size)")
+          "(scan-stream is)"
+          "(scan-stream is chunk-size)")
      :doc """
           Scans a file's data passed in the 'is' stream. Uses a default chunk 
           size of 2048 bytes.
@@ -284,8 +288,8 @@
 
 (defn 
   ^{ :arglists '(
-         "(scan-path client path)"
-         "(scan-path client path continue)")
+          "(scan-path client path)"
+          "(scan-path client path continue)")
      :doc """
           Scans a single file or directory (recursively). Stops by default after 
           the first file with a detected virus.
@@ -321,7 +325,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(scan-parallel client path)")
+          "(scan-parallel client path)")
      :doc """
           Scans a single file or directory (recursively) using multiple threads.
  
@@ -349,8 +353,8 @@
 
 (defn
   ^{ :arglists '(
-         "(reachable? client)"
-         "(reachable? client timeout)")
+          "(reachable? client)"
+          "(reachable? client timeout)")
      :doc """
           Tests if the ClamAV server is reachable. Uses a default timeout of
           3'000ms.
@@ -379,7 +383,7 @@
 
 (defn
   ^{ :arglists '(
-         "(last-command-run-details client)")
+          "(last-command-run-details client)")
      :doc """
           Returns the raw command string and the server's result for the last
           command sent to the ClamAV server.
@@ -406,7 +410,7 @@
 
 (defn
   ^{ :arglists '(
-         "(ok? scan-result)")
+          "(ok? scan-result)")
      :doc """
           Returns `true` if the scan result does not contain any detected viruses
           else `false`
@@ -432,7 +436,7 @@
 
 (defn
   ^{ :arglists '(
-         "(virus? scan-result)")
+          "(virus? scan-result)")
      :doc """
           Returns `true` if the scan result does contain any detected viruses
           else `false`
@@ -458,7 +462,7 @@
 
 (defn
   ^{ :arglists '(
-         "(viruses scan-result)")
+          "(viruses scan-result)")
      :doc """
           Returns a map of the detected viruses. 
           
@@ -490,8 +494,8 @@
 
 (defn
   ^{ :arglists '(
-         "(clamd-pid)"
-         "(clamd-pid pid-file)")
+          "(clamd-pid)"
+          "(clamd-pid pid-file)")
      :doc """
           Returns the clamd PID or `nil` the clamd daemon is not running.
 
@@ -516,13 +520,13 @@
     (. :ClamdAdmin :getClamdPID))
 
   ([pid-file]
-    { :pre [(or (string? clamd-pid) (io/file? clamd-pid))] } 
+    { :pre [(or (string? pid-file) (io/file? pid-file))] } 
     (. :ClamdAdmin :loadClamdPID (io/file pid-file))))
 
 
 (defn
   ^{ :arglists '(
-         "(clamd-cpu-limit clamd-pid limit)")
+          "(clamd-cpu-limit clamd-pid limit)")
      :doc """
           Activates a CPU limit [1..LIMIT] percent on a clamd daemon process.
            
@@ -551,7 +555,7 @@
 
 (defn
   ^{ :arglists '(
-         "(clamd-cpu-limit-off clamd-pid)")
+          "(clamd-cpu-limit-off clamd-pid)")
      :doc """
           Deactivates a CPU limit on a clamd daemon process.
           """
@@ -576,7 +580,7 @@
 
 (defn
   ^{ :arglists '(
-         "(cpus)")
+          "(cpus)")
      :doc """
           Returns the number of available processors or the number of
           hyperthreads if the CPU supports hyperthreads. 
@@ -600,12 +604,438 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Clamd daemon CPU profiles
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(create-cpu-profile name data)")
+     :doc """
+          Create a named CPU profile.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/create-cpu-profile "weekday"
+                                       (str "00:00-05:59 @ 100%,"
+                                            "06:00-08:59 @  50%,"
+                                            "09:00-17:59 @   0%,"
+                                            "18:00-21:59 @  50%,"
+                                            "22:00-23:59 @ 100% ")))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/get-cpu-profile-entries"
+          "aviron/get-cpu-profile-entries-as-map"
+          "aviron/get-cpu-profile-limit") }
+
+  create-cpu-profile [name data]
+
+  { :pre [(string? name) (string? data)] }
+
+  (. :CpuProfile :new name data))
+
+
+(defn 
+  ^{ :arglists '(
+          "(get-cpu-profile-entries profile)")
+     :doc """
+          Returns the entries java CPU profile.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-08:59 @  50%,"
+                                                          "09:00-17:59 @   0%,"
+                                                          "18:00-21:59 @  50%,"
+                                                          "22:00-23:59 @ 100% "))]
+              (aviron/get-cpu-profile-entries profile)))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-cpu-profile"
+          "aviron/get-cpu-profile-entries-as-map"
+          "aviron/get-cpu-profile-limit") }
+
+  get-cpu-profile-entries [profile]
+
+  { :pre [(instance-of? :CpuProfile profile)] }
+
+  (into [] (. profile :getEntries)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(get-cpu-profile-entries-as-map profile)")
+     :doc """
+          Returns the entries of CPU profile as a list of entry maps. 
+
+          E.g.:
+
+          ```
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-11:59 @ 100%,"
+                                                          "12:00-23:59 @  50% "))]
+              (aviron/get-cpu-profile-entries-as-map profile)))
+
+          ;; Returns
+
+          [ { :start { :hour  0 :minute  0 }
+              :end   { :hour 11 :minute 59 }
+              :limit 100 }
+            { :start { :hour 12 :minute  0 }
+              :end   { :hour 23 :minute 59 }
+              :limit 50 } ]
+          ```
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-08:59 @  50%,"
+                                                          "09:00-17:59 @   0%,"
+                                                          "18:00-21:59 @  50%,"
+                                                          "22:00-23:59 @ 100% "))]
+              (aviron/get-cpu-profile-entries-as-map profile)))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-cpu-profile"
+          "aviron/get-cpu-profile-entries"
+          "aviron/get-cpu-profile-limit") }
+
+
+  get-cpu-profile-entries-as-map [profile]
+
+  { :pre [(instance-of? :CpuProfile profile)] }
+ 
+  (->> (get-cpu-profile-entries profile)
+       (map (fn [e] { :start { :hour   (long (. (. e :getStart) :getHour))
+                               :minute (long (. (. e :getStart) :getMinute)) } 
+                      :end   { :hour   (long (. (. e :getEnd) :getHour))
+                               :minute (long (. (. e :getEnd) :getMinute)) } 
+                      :limit (long (. e :getLimit)) } ))))
+
+
+(defn
+  ^{ :arglists '(
+          "(get-cpu-profile-limit profile hour minute)")
+     :doc """
+          Returns the CPU limit defined by the profile for a given hour and
+          minute.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-08:59 @  50%,"
+                                                          "09:00-17:59 @   0%,"
+                                                          "18:00-21:59 @  50%,"
+                                                          "22:00-23:59 @ 100% "))]
+              (aviron/get-cpu-profile-limit profile 18 45)))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-cpu-profile"
+          "aviron/get-cpu-profile-entries"
+          "aviron/get-cpu-profile-entries-as-map") }
+
+  get-cpu-profile-limit [profile hour minute]  
+
+  { :pre [(instance-of? :CpuProfile profile) 
+          (long? hour) (pos? hour)
+          (long? minute)  (pos? minute)] }
+
+  (. profile :getLimit hour minute))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Dynamic CPU limiter
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(create-dynamic-cpu-limiter)"
+          "(create-dynamic-cpu-limiter profiles)"
+          "(create-dynamic-cpu-limiter limit-fn)")
+     :doc """
+          Creates a new dynamic CPU limiter.
+          
+          Without an argument creates a limiter with a default profile (100% CPU 
+          usage).
+
+          Otherwise creates a limiter with a list of explicit profiles for each 
+          day in the week (Mon to Sun) or a limiter based on a limiter function 
+          that computes the CPU limit for a timestamp.
+          """
+     :examples '(
+          """
+          ;; [1] Limiter with default profile
+          (do
+            (load-module :aviron)
+            (aviron/create-dynamic-cpu-limiter))
+          """
+          """
+          ;; [2] Limiter with profiles for each day in the week (Mon to Sun)
+          (do
+            (load-module :aviron)
+            (let [weekday (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-21:59 @   0%,"
+                                                          "22:00-23:59 @ 100% "))
+                  weekend (aviron/create-cpu-profile "weekend"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-21:59 @  60%,"
+                                                          "22:00-23:59 @ 100% "))]
+              (aviron/create-dynamic-limiter (concat (repeat 5 weekday) 
+                                                     (repeat 2 weekend)))))
+          """
+          """
+          ;; [3] Limiter based on a limiter function that computes the CPU limit 
+          ;;     for a timestamp
+          (do
+            (load-module :aviron)
+            (defn limit-fn [ts] 100I)  ;; Important: must return an integer!
+            (aviron/create-dynamic-cpu-limiter limit-fn))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/compute-dynamic-cpu-limit") }
+
+  create-dynamic-cpu-limiter 
+  
+  ([]
+    (. :DynamicCpuLimiter :new))
+
+  ([profiles-or-fn]
+    { :pre [(or (and (sequential? profiles-or-fn)
+                     (== 7 (count profiles-or-fn)) 
+                     (every? #(instance-of? :CpuProfile %) profiles-or-fn))
+                (fn? profiles-or-fn))] }
+    (if (sequential? profiles-or-fn)
+      (. :DynamicCpuLimit :new profiles-or-fn)
+      (. :DynamicCpuLimit :new (java/as-function profiles-or-fn)))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(compute-dynamic-cpu-limit limiter)"
+          "(compute-dynamic-cpu-limit limiter timestamp)")
+     :doc """
+          Compute the CPU limit based on dynamic CPU limiter.
+          
+          Without an argument computes the CPU limit for the current date/time.
+
+          Otherwise computes the CPU limit for the given timestamp (type 
+          `time/local-date-time`).
+          """
+     :examples '(
+          """
+          ;; [1] Compute limit for current time based on a limit compute 
+          ;;     function
+          (do
+            (load-module :aviron)
+            (defn limit-fn [ts] 100I)  ;; Important: must return an integer!
+            (let [limiter (aviron/create-dynamic-cpu-limiter limit-fn)]
+              (aviron/compute-dynamic-cpu-limit limiter)))
+          """
+          """
+          ;; [2] Compute limit for a specific timestamp based on a limit compute 
+          ;;     function
+          (do
+            (load-module :aviron)
+            (defn limit-fn [ts] 100I)  ;; Important: must return an integer!
+            (let [limiter (aviron/create-dynamic-cpu-limiter limit-fn)
+                  ts      (time/local-date-time 2025 7 26 10 30 0)]
+              (aviron/compute-dynamic-cpu-limit limiter ts)))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-dynamic-cpu-limiter") }
+
+  compute-dynamic-cpu-limit 
+
+  ([limiter]
+    { :pre [(instance-of? :DynamicCpuLimit limiter)] }
+    (. limiter :computeCpuLimit))
+
+  ([limiter ts]
+    { :pre [(time/local-date-time? ts)] }
+    (. limiter :computeCpuLimit ts)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Clamd daemon CPU limiter
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(create-clamd-cpu-limiter)"
+          "(create-clamd-cpu-limiter profiles)"
+          "(create-clamd-cpu-limiter limit-fn)")
+     :doc """
+          Creates a new CPU limiter to operate on clamd daemons.
+          
+          Without an argument creates a limiter with a default profile (100% CPU 
+          usage).
+
+          Otherwise creates a limiter with a list of explicit profiles for each 
+          day in the week (Mon to Sun) or a limiter based on a limiter function 
+          that computes the CPU limit for a timestamp.
+          """
+     :examples '(
+          """
+          ;; [1] Limiter with default profile
+          (do
+            (load-module :aviron)
+            (aviron/create-clamd-cpu-limiter))
+          """
+          """
+          ;; [2] Limiter with profiles for each day in the week (Mon to Sun)
+          (do
+            (load-module :aviron)
+            (let [weekday (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-21:59 @   0%,"
+                                                          "22:00-23:59 @ 100% "))
+                  weekend (aviron/create-cpu-profile "weekend"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-21:59 @  60%,"
+                                                          "22:00-23:59 @ 100% "))]
+              (aviron/create-clamd-cpu-limiter (concat (repeat 5 weekday) 
+                                                       (repeat 2 weekend)))))
+          """
+          """
+          ;; [3] Limiter based on a limiter function that computes the CPU limit for 
+          ;; a timestamp
+          (do
+            (load-module :aviron)
+            (defn limit-fn [ts] 100)
+            (aviron/create-clamd-cpu-limiter-fn limit-fn))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/clamd-activate-cpu-limit"
+          "aviron/clamd-deactivate-cpu-limit") }
+
+  create-clamd-cpu-limiter 
+  
+  ([]
+    (. :ClamdCpuLimiter :new))
+
+  ([profiles-or-fn]
+    { :pre [(or (and (sequential? profiles-or-fn)
+                     (== 7 (count profiles-or-fn)) 
+                     (every? #(instance-of? :CpuProfile %) profiles-or-fn))
+                (fn? profiles-or-fn))] }
+    (if (sequential? profiles-or-fn)
+      (. :ClamdCpuLimiter (. :DynamicCpuLimit :new profiles-or-fn))
+      (. :ClamdCpuLimiter (. :DynamicCpuLimit :new (java/as-function profiles-or-fn))))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(clamd-activate-cpu-limit cpu-limiter pid)"
+          "(clamd-activate-cpu-limit cpu-limiter pid limit)")
+     :doc """
+          Activates a new CPU limit on the clamd daemon with the given 'pid'.
+
+          Without passing a 'limit' computes the CPU limit based on the limiter's
+          profile and the current date and time.
+
+          With a 'limit' activates this CPU limit on the clamd process.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-08:59 @  50%,"
+                                                          "09:00-17:59 @   0%,"
+                                                          "18:00-21:59 @  50%,"
+                                                          "22:00-23:59 @ 100% "))
+                  limiter (aviron/create-clamd-cpu-limiter (repeat 7 profile))
+                  pid     (clamd-pid)]]
+              (aviron/clamd-activate-cpu-limit limiter pid)))
+          """,
+          """
+          (do
+            (load-module :aviron)
+            (let [limiter (aviron/create-clamd-cpu-limiter)
+                  pid     (clamd-pid)]]
+              (aviron/clamd-activate-cpu-limit limiter pid 80)))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-clamd-cpu-limiter"
+          "aviron/clamd-deactivate-cpu-limit") }
+
+  clamd-activate-cpu-limit 
+
+  ([cpu-limiter pid] 
+    { :pre [(instance-of? :ClamdCpuLimiter cpu-limiter) (string? pid)] }
+    (. cpu-limiter :activateClamdCpuLimit pid))
+
+  ([cpu-limiter pid limit] 
+    { :pre [(instance-of? :ClamdCpuLimiter cpu-limiter) (string? pid)
+            (long? limit) (pos? limit)] }
+    (. cpu-limiter :activateClamdCpuLimit pid limit)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(clamd-deactivate-cpu-limit cpu-limiter pid)")
+     :doc """
+          Deactivates any CPU limitation on the clamd deamon with the given 
+          'pid'.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "weekday"
+                                                     (str "00:00-05:59 @ 100%,"
+                                                          "06:00-08:59 @  50%,"
+                                                          "09:00-17:59 @   0%,"
+                                                          "18:00-21:59 @  50%,"
+                                                          "22:00-23:59 @ 100% "))
+                  limiter (aviron/create-clamd-cpu-limiter (repeat 7 profile))
+                  pid     (clamd-pid)]
+              (aviron/clamd-deactivate-cpu-limit limiter pid)))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-clamd-cpu-limiter"
+          "aviron/clamd-activate-cpu-limit") }
+
+  clamd-deactivate-cpu-limit [cpu-limiter pid]
+  
+  { :pre [(instance-of? :ClamdCpuLimiter cpu-limiter) (string? pid)] }
+
+  (. cpu-limiter :deactivateClamdCpuLimit pid))
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Quarantine management
 ;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '(
-         "(quarantine-active? client)" )
+          "(quarantine-active? client)" )
      :doc """
           Returns `true` if the quarantine is active else `false`
           """
@@ -631,7 +1061,7 @@
 
 (defn
   ^{ :arglists '(
-         "(list-quarantine-files client)" )
+          "(list-quarantine-files client)" )
      :doc """
           Returns a list of the quarantine files.
           """
@@ -657,7 +1087,7 @@
 
 (defn
   ^{ :arglists '(
-         "(remove-quarantine-file client f)" )
+          "(remove-quarantine-file client f)" )
      :doc """
           Removes a quarantine file.
           """
@@ -684,7 +1114,7 @@
 
 (defn
   ^{ :arglists '(
-         "(remove-all-quarantine-files client)" )
+          "(remove-all-quarantine-files client)" )
      :doc """
           Removes all quarantine files.
           """
@@ -714,7 +1144,7 @@
 
 (defn
   ^{ :arglists '(
-         "(version)")
+          "(version)")
      :doc """
           Returns the version of the Aviron Java library. 
           """
@@ -734,8 +1164,8 @@
 
 (defn
   ^{ :arglists '(
-         "(print-config client)"
-         "(print-config client ps)")
+          "(print-config client)"
+          "(print-config client ps)")
      :doc """
           Print the client configuration in human readable form to a 
           :java.io.PrintStream
@@ -763,4 +1193,4 @@
     (. client :printConfig ps)))
 
 
-(def- library-version "1.3.3")
+(def- library-version "1.4.0")
