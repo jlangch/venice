@@ -618,12 +618,11 @@
           (do
             (load-module :aviron)
             (aviron/create-cpu-profile "weekday"
-                                       (str/join ","
-                                          [ "00:00-05:59 @ 100%"
-                                            "06:00-08:59 @  50%"
-                                            "09:00-17:59 @   0%"
-                                            "18:00-21:59 @  50%"
-                                            "22:00-23:59 @ 100%" ])))
+                                       [ "00:00-05:59 @ 100%"
+                                         "06:00-08:59 @  50%"
+                                         "09:00-17:59 @   0%"
+                                         "18:00-21:59 @  50%"
+                                         "22:00-23:59 @ 100%" ]))
           """)
      :see-also '(
           "aviron/create-client"
@@ -633,9 +632,9 @@
 
   create-cpu-profile [name data]
 
-  { :pre [(string? name) (string? data)] }
+  { :pre [(string? name) (sequential? data)] }
 
-  (. :CpuProfile :new name data))
+  (. :CpuProfile :new name (str/join "," data)))
 
 
 (defn 
@@ -649,12 +648,11 @@
           (do
             (load-module :aviron)
             (let [profile (aviron/create-cpu-profile "weekday"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-08:59 @  50%"
-                                                          "09:00-17:59 @   0%"
-                                                          "18:00-21:59 @  50%"
-                                                          "22:00-23:59 @ 100%" ]))]
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-08:59 @  50%"
+                                                       "09:00-17:59 @   0%"
+                                                       "18:00-21:59 @  50%"
+                                                       "22:00-23:59 @ 100%" ])]
               (aviron/get-cpu-profile-entries profile)))
           """)
      :see-also '(
@@ -682,12 +680,11 @@
           (do
             (load-module :aviron)
             (let [profile (aviron/create-cpu-profile "weekday"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-08:59 @  50%"
-                                                          "09:00-17:59 @   0%"
-                                                          "18:00-21:59 @  50%"
-                                                          "22:00-23:59 @ 100%" ]))]
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-08:59 @  50%"
+                                                       "09:00-17:59 @   0%"
+                                                       "18:00-21:59 @  50%"
+                                                       "22:00-23:59 @ 100%" ])]
               (aviron/get-cpu-profile-limit profile 18 45)))
           """)
      :see-also '(
@@ -739,15 +736,13 @@
           (do
             (load-module :aviron)
             (let [weekday (aviron/create-cpu-profile "weekday"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-21:59 @   0%"
-                                                          "22:00-23:59 @ 100%" ]))
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-21:59 @   0%"
+                                                       "22:00-23:59 @ 100%" ])
                   weekend (aviron/create-cpu-profile "weekend"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-21:59 @  60%"
-                                                          "22:00-23:59 @ 100%" ]))
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-21:59 @  60%"
+                                                       "22:00-23:59 @ 100%" ])
                   limiter (aviron/create-dynamic-cpu-limiter 
                                  (concat (repeat 5 weekday) (repeat 2 weekend)))
                   ts-mon      (time/local-date-time 2025 7 21 12 0 0)
@@ -866,15 +861,13 @@
           (do
             (load-module :aviron)
             (let [weekday (aviron/create-cpu-profile "weekday"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-21:59 @   0%"
-                                                          "22:00-23:59 @ 100%" ]))
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-21:59 @   0%"
+                                                       "22:00-23:59 @ 100%" ])
                   weekend (aviron/create-cpu-profile "weekend"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-21:59 @  60%"
-                                                          "22:00-23:59 @ 100%" ]))]
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-21:59 @  60%"
+                                                       "22:00-23:59 @ 100%" ])]
               (aviron/create-clamd-cpu-limiter (concat (repeat 5 weekday) 
                                                        (repeat 2 weekend)))))
           """
@@ -923,14 +916,13 @@
           (do
             (load-module :aviron)
             (let [profile (aviron/create-cpu-profile "weekday"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-08:59 @  50%"
-                                                          "09:00-17:59 @   0%"
-                                                          "18:00-21:59 @  50%"
-                                                          "22:00-23:59 @ 100%" ]))
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-08:59 @  50%"
+                                                       "09:00-17:59 @   0%"
+                                                       "18:00-21:59 @  50%"
+                                                       "22:00-23:59 @ 100%" ])
                   limiter (aviron/create-clamd-cpu-limiter (repeat 7 profile))
-                  pid     (clamd-pid)]]
+                  pid     (aviron/clamd-pid)]
               (aviron/clamd-activate-cpu-limit limiter pid)))
           """,
           """
@@ -969,14 +961,13 @@
           (do
             (load-module :aviron)
             (let [profile (aviron/create-cpu-profile "weekday"
-                                                     (str/join ","
-                                                        [ "00:00-05:59 @ 100%"
-                                                          "06:00-08:59 @  50%"
-                                                          "09:00-17:59 @   0%"
-                                                          "18:00-21:59 @  50%"
-                                                          "22:00-23:59 @ 100%" ]))
+                                                     [ "00:00-05:59 @ 100%"
+                                                       "06:00-08:59 @  50%"
+                                                       "09:00-17:59 @   0%"
+                                                       "18:00-21:59 @  50%"
+                                                       "22:00-23:59 @ 100%" ])
                   limiter (aviron/create-clamd-cpu-limiter (repeat 7 profile))
-                  pid     (clamd-pid)]
+                  pid     (aviron/clamd-pid)]
               (aviron/clamd-deactivate-cpu-limit limiter pid)))
           """)
      :see-also '(
