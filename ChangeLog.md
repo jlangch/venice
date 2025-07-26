@@ -18,11 +18,13 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - the new Aviron quarantine features to the :aviron module
-- the new Aviron CPU limiter features to the :aviron module
+- the new Aviron dynamic CPU limit features to the :aviron module
+- the new Aviron Clamd CPU limiter features to the :aviron module
 
 ### Updated dependencies:
 
 - bumped the Aviron (ClamAV client) library to V 1.5.0
+- bumped VAVR from 0.10.6 to 0.10.7
 
 
 
