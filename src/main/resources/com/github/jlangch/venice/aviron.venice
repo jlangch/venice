@@ -925,7 +925,7 @@
                   activated? (aviron/clamd-activate-cpu-limit limiter pid new-limit)]
               (when activated?
                 (println "Adjusted clamd CPU limit: ~{last-limit}% -> ~{new-limit}%"))))
-          """,
+          """
           """
           ;; [2] Activating current limit from CPU profile
           (do
@@ -949,7 +949,7 @@
           "aviron/create-clamd-cpu-limiter"
           "aviron/clamd-deactivate-cpu-limit"
           "aviron/clamd-last-seen-limit"
-          "aviron/clamd-limit-for-timestamp") }
+          "aviron/clamd-limit-for-timestamp" ) }
 
   clamd-activate-cpu-limit 
 
@@ -958,7 +958,8 @@
     (. limiter :activateClamdCpuLimit pid))
 
   ([limiter pid limit] 
-    { :pre [(instance-of? :ClamdCpuLimiter limiter) (string? pid)
+    { :pre [(instance-of? :ClamdCpuLimiter limiter) 
+            (string? pid)
             (long? limit) (pos? limit)] }
     (. limiter :activateClamdCpuLimit pid limit)))
 
@@ -1049,7 +1050,7 @@
           "aviron/create-clamd-cpu-limiter"
           "aviron/clamd-activate-cpu-limit"
           "aviron/clamd-deactivate-cpu-limit"
-          "aviron/clamd-limit-for-timestamp") }
+          "aviron/clamd-last-seen-limit") }
 
   clamd-limit-for-timestamp [limiter ts] 
 
