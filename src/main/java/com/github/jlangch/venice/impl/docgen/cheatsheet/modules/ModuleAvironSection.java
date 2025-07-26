@@ -104,7 +104,6 @@ public class ModuleAvironSection implements ISectionBuilder {
         all.addSection(profile);
         profile.addItem(diBuilder.getDocItem("aviron/create-cpu-profile", false));
         profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-entries", false));
-        profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-entries-as-map", false));
         profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-limit", false));
 
         return section;

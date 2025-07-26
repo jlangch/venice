@@ -627,7 +627,6 @@
      :see-also '(
           "aviron/create-client"
           "aviron/get-cpu-profile-entries"
-          "aviron/get-cpu-profile-entries-as-map"
           "aviron/get-cpu-profile-limit") }
 
   create-cpu-profile [name data]
@@ -658,7 +657,6 @@
      :see-also '(
           "aviron/create-client"
           "aviron/create-cpu-profile"
-          "aviron/get-cpu-profile-entries-as-map"
           "aviron/get-cpu-profile-limit") }
 
   get-cpu-profile-entries [profile]
@@ -690,8 +688,7 @@
      :see-also '(
           "aviron/create-client"
           "aviron/create-cpu-profile"
-          "aviron/get-cpu-profile-entries"
-          "aviron/get-cpu-profile-entries-as-map") }
+          "aviron/get-cpu-profile-entries") }
 
   get-cpu-profile-limit [profile hour minute]  
 
@@ -930,12 +927,12 @@
           ;; [2] Activating current limit from CPU profile
           (do
             (load-module :aviron)
-            (let [profile (aviron/create-cpu-profile "anyday"
-                                                     [ "00:00-05:59 @ 100%"
-                                                       "06:00-08:59 @  50%"
-                                                       "09:00-17:59 @   0%"
-                                                       "18:00-21:59 @  50%"
-                                                       "22:00-23:59 @ 100%" ])
+            (let [profile    (aviron/create-cpu-profile "anyday"
+                                                        [ "00:00-05:59 @ 100%"
+                                                          "06:00-08:59 @  50%"
+                                                          "09:00-17:59 @   0%"
+                                                          "18:00-21:59 @  50%"
+                                                          "22:00-23:59 @ 100%" ])
                   limiter    (aviron/create-clamd-cpu-limiter (repeat 7 profile))
                   pid        (aviron/clamd-pid)
                   last-limit (aviron/clamd-last-seen-limit limiter)
@@ -1091,9 +1088,9 @@
 
   quarantine-active? [client] 
 
-    { :pre [(instance-of? :Client client)] }
+  { :pre [(instance-of? :Client client)] }
 
-    (. client :isQuarantineActive))
+  (. client :isQuarantineActive))
 
 
 (defn
@@ -1117,9 +1114,9 @@
 
   list-quarantine-files [client] 
 
-    { :pre [(instance-of? :Client client)] }
+  { :pre [(instance-of? :Client client)] }
 
-    (. client :listQuarantineFiles))
+  (. client :listQuarantineFiles))
 
 
 (defn
@@ -1144,9 +1141,9 @@
 
   remove-quarantine-file [client f] 
 
-    { :pre [(instance-of? :Client client)] }
+  { :pre [(instance-of? :Client client)] }
     
-    (. client :removeQuarantineFile f))
+  (. client :removeQuarantineFile f))
 
 
 (defn
@@ -1170,8 +1167,8 @@
 
   remove-all-quarantine-files [client] 
 
-    { :pre [(instance-of? :Client client)] }
-    (. client :listQuarantineFiles))
+  { :pre [(instance-of? :Client client)] }
+  (. client :listQuarantineFiles))
 
 
 
@@ -1230,4 +1227,4 @@
     (. client :printConfig ps)))
 
 
-(def- library-version "1.4.0")
+(def- library-version "1.5.0")
