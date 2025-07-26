@@ -970,7 +970,7 @@
           """
      :examples '(
           """
-           (do
+          (do
             (load-module :aviron)
             (let [limiter  (aviron/create-clamd-cpu-limiter)
                   pid      (aviron/clamd-pid)]
@@ -1016,7 +1016,7 @@
           "aviron/clamd-deactivate-cpu-limit"
           "aviron/clamd-limit-for-timestamp") }
 
- clamd-last-seen-limit [limiter]
+  clamd-last-seen-limit [limiter]
 
   { :pre [(instance-of? :ClamdCpuLimiter limiter)] }
 
