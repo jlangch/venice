@@ -19,7 +19,16 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Aviron ClamAV client
+;;;; Aviron ClamAV client 
+;;;;
+;;;; Wraps the repackaged Aviron Java library. The library is available from the 
+;;;; central Maven repository:
+;;;;
+;;;;     <dependency>
+;;;;       <groupId>com.github.jlangch</groupId>
+;;;;       <artifactId>aviron</artifactId>
+;;;;       <version>1.5.0</version>
+;;;;     </dependency>
 
 (ns aviron)
 
