@@ -1033,7 +1033,8 @@
   ^{ :arglists '(
           "(clamd-limit-for-timestamp limiter)")
      :doc """
-          Returns the limit for a given timestamp.
+          Returns the limit for a given timestamp. If the timestamp is `nil` 
+          returns the limit for *now*.
           """
      :examples '(
           """
