@@ -924,7 +924,7 @@
                   new-limit  60
                   activated? (aviron/clamd-activate-cpu-limit limiter pid new-limit)]
               (when activated?
-                (println "Adjusted clamd CPU limit: ~{last-limit}% -> ~{new-limit}%"))))
+                (println "Adjusted clamd CPU limit:" last-limit "->" new-limit))))
           """
           """
           ;; [2] Activating current limit from CPU profile
@@ -942,7 +942,7 @@
                   activated? (aviron/clamd-activate-cpu-limit limiter pid)
                   new-limit  (aviron/clamd-last-seen-limit limiter)]
               (when activated?
-                (println "Adjusted clamd CPU limit: ~{last-limit}% -> ~{new-limit}%"))))
+                (println "Adjusted clamd CPU limit:" last-limit "->" new-limit))))
           """)
      :see-also '(
           "aviron/create-client"
@@ -1004,13 +1004,19 @@
           """
           (do
             (load-module :aviron)
+            (let [limiter (aviron/create-clamd-cpu-limiter)]
+              (aviron/clamd-last-seen-limit limiter)))
+          """
+          """
+          (do
+            (load-module :aviron)
             (let [limiter    (aviron/create-clamd-cpu-limiter)
                   pid        (aviron/clamd-pid)
                   last-limit (aviron/clamd-last-seen-limit limiter)
                   new-limit  60
                   activated? (aviron/clamd-activate-cpu-limit limiter pid new-limit)]
               (when activated?
-                (println "Adjusted clamd CPU limit: ~{last-limit}% -> ~{new-limit}%"))))
+                (println "Adjusted clamd CPU limit:" last-limit "->" new-limit))))
           """)
      :see-also '(
           "aviron/create-client"
