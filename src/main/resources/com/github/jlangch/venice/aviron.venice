@@ -882,7 +882,9 @@
      :see-also '(
           "aviron/create-client"
           "aviron/clamd-activate-cpu-limit"
-          "aviron/clamd-deactivate-cpu-limit") }
+          "aviron/clamd-deactivate-cpu-limit"
+          "aviron/clamd-last-seen-limit"
+          "aviron/clamd-limit-for-timestamp") }
 
   create-clamd-cpu-limiter 
   
@@ -901,8 +903,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(clamd-activate-cpu-limit cpu-limiter pid)"
-          "(clamd-activate-cpu-limit cpu-limiter pid limit)")
+          "(clamd-activate-cpu-limit limiter pid)"
+          "(clamd-activate-cpu-limit limiter pid limit)")
      :doc """
           Activates a new CPU limit on the clamd daemon with the given 'pid'.
 
@@ -913,73 +915,145 @@
           """
      :examples '(
           """
+          ;; [1] Activating explicit CPU limit
           (do
             (load-module :aviron)
-            (let [profile (aviron/create-cpu-profile "weekday"
+            (let [limiter    (aviron/create-clamd-cpu-limiter)
+                  pid        (aviron/clamd-pid)
+                  last-limit (aviron/clamd-last-seen-limit limiter)
+                  new-limit  60
+                  activated? (aviron/clamd-activate-cpu-limit limiter pid new-limit)]
+              (when activated?
+                (println "Adjusted clamd CPU limit: ~{last-limit}% -> ~{new-limit}%"))))
+          """,
+          """
+          ;; [2] Activating current limit from CPU profile
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "anyday"
                                                      [ "00:00-05:59 @ 100%"
                                                        "06:00-08:59 @  50%"
                                                        "09:00-17:59 @   0%"
                                                        "18:00-21:59 @  50%"
                                                        "22:00-23:59 @ 100%" ])
-                  limiter (aviron/create-clamd-cpu-limiter (repeat 7 profile))
-                  pid     (aviron/clamd-pid)]
-              (aviron/clamd-activate-cpu-limit limiter pid)))
-          """,
-          """
-          (do
-            (load-module :aviron)
-            (let [limiter (aviron/create-clamd-cpu-limiter)
-                  pid     (clamd-pid)]]
-              (aviron/clamd-activate-cpu-limit limiter pid 80)))
+                  limiter    (aviron/create-clamd-cpu-limiter (repeat 7 profile))
+                  pid        (aviron/clamd-pid)
+                  last-limit (aviron/clamd-last-seen-limit limiter)
+                  activated? (aviron/clamd-activate-cpu-limit limiter pid)
+                  new-limit  (aviron/clamd-last-seen-limit limiter)]
           """)
      :see-also '(
           "aviron/create-client"
           "aviron/create-clamd-cpu-limiter"
-          "aviron/clamd-deactivate-cpu-limit") }
+          "aviron/clamd-deactivate-cpu-limit"
+          "aviron/clamd-last-seen-limit"
+          "aviron/clamd-limit-for-timestamp") }
 
   clamd-activate-cpu-limit 
 
-  ([cpu-limiter pid] 
-    { :pre [(instance-of? :ClamdCpuLimiter cpu-limiter) (string? pid)] }
-    (. cpu-limiter :activateClamdCpuLimit pid))
+  ([limiter pid] 
+    { :pre [(instance-of? :ClamdCpuLimiter limiter) (string? pid)] }
+    (. limiter :activateClamdCpuLimit pid))
 
-  ([cpu-limiter pid limit] 
-    { :pre [(instance-of? :ClamdCpuLimiter cpu-limiter) (string? pid)
+  ([limiter pid limit] 
+    { :pre [(instance-of? :ClamdCpuLimiter limiter) (string? pid)
             (long? limit) (pos? limit)] }
-    (. cpu-limiter :activateClamdCpuLimit pid limit)))
+    (. limiter :activateClamdCpuLimit pid limit)))
 
 
 (defn 
   ^{ :arglists '(
-          "(clamd-deactivate-cpu-limit cpu-limiter pid)")
+          "(clamd-deactivate-cpu-limit limiter pid)")
      :doc """
           Deactivates any CPU limitation on the clamd deamon with the given 
           'pid'.
           """
      :examples '(
           """
+           (do
+            (load-module :aviron)
+            (let [limiter  (aviron/create-clamd-cpu-limiter)
+                  pid      (aviron/clamd-pid)]
+              (aviron/clamd-deactivate-cpu-limit limiter pid)))
+          """)
+
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-clamd-cpu-limiter"
+          "aviron/clamd-activate-cpu-limit"
+          "aviron/clamd-last-seen-limit"
+          "aviron/clamd-limit-for-timestamp") }
+
+  clamd-deactivate-cpu-limit [limiter pid]
+  
+  { :pre [(instance-of? :ClamdCpuLimiter limiter) (string? pid)] }
+
+  (. limiter :deactivateClamdCpuLimit pid))
+
+
+(defn 
+  ^{ :arglists '(
+          "(clamd-last-seen-limit limiter)")
+     :doc """
+          Returns the last seen (activated) CPU limit on the clamd daemon.
+          """
+     :examples '(
+          """
           (do
             (load-module :aviron)
-            (let [profile (aviron/create-cpu-profile "weekday"
+            (let [limiter    (aviron/create-clamd-cpu-limiter)
+                  pid        (aviron/clamd-pid)
+                  last-limit (aviron/clamd-last-seen-limit limiter)
+                  new-limit  60
+                  activated? (aviron/clamd-activate-cpu-limit limiter pid new-limit)]
+              (when activated?
+                (println "Adjusted clamd CPU limit: ~{last-limit}% -> ~{new-limit}%"))))
+          """)
+     :see-also '(
+          "aviron/create-client"
+          "aviron/create-clamd-cpu-limiter"
+          "aviron/clamd-activate-cpu-limit"
+          "aviron/clamd-deactivate-cpu-limit"
+          "aviron/clamd-limit-for-timestamp") }
+
+ clamd-last-seen-limit [limiter]
+
+  { :pre [(instance-of? :ClamdCpuLimiter limiter)] }
+
+  (. limiter :getLastSeenLimit))
+
+
+(defn 
+  ^{ :arglists '(
+          "(clamd-limit-for-timestamp limiter)")
+     :doc """
+          Returns the limit for a given timestamp.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [profile (aviron/create-cpu-profile "anyday"
                                                      [ "00:00-05:59 @ 100%"
                                                        "06:00-08:59 @  50%"
                                                        "09:00-17:59 @   0%"
                                                        "18:00-21:59 @  50%"
                                                        "22:00-23:59 @ 100%" ])
-                  limiter (aviron/create-clamd-cpu-limiter (repeat 7 profile))
-                  pid     (aviron/clamd-pid)]
-              (aviron/clamd-deactivate-cpu-limit limiter pid)))
+                  limiter    (aviron/create-clamd-cpu-limiter (repeat 7 profile))]
+              (aviron/clamd-limit-for-timestamp limiter (time/local-date-time 2025 7 1 18 30 0))))
           """)
      :see-also '(
           "aviron/create-client"
           "aviron/create-clamd-cpu-limiter"
-          "aviron/clamd-activate-cpu-limit") }
+          "aviron/clamd-activate-cpu-limit"
+          "aviron/clamd-deactivate-cpu-limit"
+          "aviron/clamd-limit-for-timestamp") }
 
-  clamd-deactivate-cpu-limit [cpu-limiter pid]
-  
-  { :pre [(instance-of? :ClamdCpuLimiter cpu-limiter) (string? pid)] }
+  clamd-limit-for-timestamp [limiter ts] 
 
-  (. cpu-limiter :deactivateClamdCpuLimit pid))
+  { :pre [(instance-of? :ClamdCpuLimiter limiter)] }
+
+  (. limiter :getLimitForTimestamp ts))
 
 
 

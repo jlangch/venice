@@ -92,6 +92,8 @@ public class ModuleAvironSection implements ISectionBuilder {
         limiter.addItem(diBuilder.getDocItem("aviron/create-clamd-cpu-limiter", false));
         limiter.addItem(diBuilder.getDocItem("aviron/clamd-activate-cpu-limit", false));
         limiter.addItem(diBuilder.getDocItem("aviron/clamd-deactivate-cpu-limit", false));
+        limiter.addItem(diBuilder.getDocItem("aviron/clamd-last-seen-limit", false));
+        limiter.addItem(diBuilder.getDocItem("aviron/clamd-limit-for-timestamp", false));
 
         final DocSection dynLimiter = new DocSection("Dynamic CPU Limiter", id());
         all.addSection(dynLimiter);
