@@ -798,8 +798,8 @@
                                                      (str "00:00-05:59 @ 100%,"
                                                           "06:00-21:59 @  60%,"
                                                           "22:00-23:59 @ 100% "))]
-              (aviron/create-dynamic-limiter (concat (repeat 5 weekday) 
-                                                     (repeat 2 weekend)))))
+              (aviron/create-dynamic-cpu-limiter (concat (repeat 5 weekday) 
+                                                         (repeat 2 weekend)))))
           """
           """
           ;; [3] Limiter based on a limiter function that computes the CPU limit 
@@ -894,6 +894,9 @@
           Otherwise creates a limiter with a list of explicit profiles for each 
           day in the week (Mon to Sun) or a limiter based on a limiter function 
           that computes the CPU limit for a timestamp.
+
+          Note: Uses internally the dynamic CPU limiter to compute the new
+                CPU limits for the clamd daemon.
           """
      :examples '(
           """
