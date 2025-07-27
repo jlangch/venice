@@ -642,7 +642,7 @@
 
   { :pre [(string? name) (sequential? data)] }
 
-  (. :CpuProfile :new name (str/join "," data)))
+  (. :CpuProfile :of name data))
 
 
 (defn 
@@ -1237,4 +1237,4 @@
     (. client :printConfig ps)))
 
 
-(def- library-version "1.5.0")
+(def- library-version "1.5.2")
