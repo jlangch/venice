@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 import com.github.jlangch.venice.impl.util.junit.EnableOnWindows;
 
 
+// Temporarily disabled the Maven repo is terrible slow on downloads
 @Disabled
 public class ReplSetupModuleTest {
 
