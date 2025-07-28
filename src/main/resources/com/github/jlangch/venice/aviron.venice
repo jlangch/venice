@@ -891,7 +891,7 @@
           "aviron/clamd-deactivate-cpu-limit"
           "aviron/clamd-last-seen-limit"
           "aviron/clamd-limit-for-timestamp"
-          "aviron/clamd-format-profiles-as-table-by-hour") }
+          "aviron/format-profiles-as-table-by-hour") }
 
   create-clamd-cpu-limiter 
   
@@ -957,7 +957,7 @@
           "aviron/clamd-deactivate-cpu-limit"
           "aviron/clamd-last-seen-limit"
           "aviron/clamd-limit-for-timestamp"
-          "aviron/clamd-format-profiles-as-table-by-hour" ) }
+          "aviron/format-profiles-as-table-by-hour" ) }
 
   clamd-activate-cpu-limit 
 
@@ -994,7 +994,7 @@
           "aviron/clamd-activate-cpu-limit"
           "aviron/clamd-last-seen-limit"
           "aviron/clamd-limit-for-timestamp"
-          "aviron/clamd-format-profiles-as-table-by-hour") }
+          "aviron/format-profiles-as-table-by-hour") }
 
   clamd-deactivate-cpu-limit [limiter pid]
   
@@ -1033,7 +1033,7 @@
           "aviron/clamd-activate-cpu-limit"
           "aviron/clamd-deactivate-cpu-limit"
           "aviron/clamd-limit-for-timestamp"
-          "aviron/clamd-format-profiles-as-table-by-hour") }
+          "aviron/format-profiles-as-table-by-hour") }
 
   clamd-last-seen-limit [limiter]
 
@@ -1068,7 +1068,7 @@
           "aviron/clamd-activate-cpu-limit"
           "aviron/clamd-deactivate-cpu-limit"
           "aviron/clamd-last-seen-limit"
-          "aviron/clamd-format-profiles-as-table-by-hour") }
+          "aviron/format-profiles-as-table-by-hour") }
 
   clamd-limit-for-timestamp [limiter ts] 
 
@@ -1079,9 +1079,13 @@
 
 (defn 
   ^{ :arglists '(
-          "(clamd-format-profiles-as-table-by-hour limiter)")
+          "(format-profiles-as-table-by-hour limiter)")
      :doc """
-          Returns clamd limiter's profile as string formated table.
+          Returns the limiter's profile data as a string formatted table.
+
+          The limiter may be a limiter obtained from: 
+          * `aviron/create-clamd-cpu-limiter`
+          * `aviron/create-dynamic-cpu-limiter`
           """
      :examples '(
           """
@@ -1093,8 +1097,8 @@
                                                        "09:00-17:59 @   0%"
                                                        "18:00-21:59 @  50%"
                                                        "22:00-23:59 @ 100%" ])
-                  limiter    (aviron/create-clamd-cpu-limiter (repeat 7 profile))]
-              (aviron/clamd-format-profiles-as-table-by-hour limiter)))
+                  limiter (aviron/create-clamd-cpu-limiter (repeat 7 profile))]
+              (aviron/format-profiles-as-table-by-hour limiter)))
           """)
      :see-also '(
           "aviron/create-client"
@@ -1104,9 +1108,10 @@
           "aviron/clamd-last-seen-limit"
           "aviron/clamd-limit-for-timestamp") }
 
-  clamd-format-profiles-as-table-by-hour [limiter] 
+  format-profiles-as-table-by-hour [limiter] 
 
-  { :pre [(instance-of? :ClamdCpuLimiter limiter)] }
+  { :pre [(or (instance-of? :ClamdCpuLimiter limiter)
+              (instance-of? :DynamicCpuLimit limiter))] }
 
   (. limiter :formatProfilesAsTableByHour))
 

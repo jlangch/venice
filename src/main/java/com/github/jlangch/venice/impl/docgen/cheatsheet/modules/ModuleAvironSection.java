@@ -94,11 +94,13 @@ public class ModuleAvironSection implements ISectionBuilder {
         limiter.addItem(diBuilder.getDocItem("aviron/clamd-deactivate-cpu-limit", false));
         limiter.addItem(diBuilder.getDocItem("aviron/clamd-last-seen-limit", false));
         limiter.addItem(diBuilder.getDocItem("aviron/clamd-limit-for-timestamp", false));
+        limiter.addItem(diBuilder.getDocItem("aviron/format-profiles-as-table-by-hour", false));
 
         final DocSection dynLimiter = new DocSection("Dynamic CPU Limiter", id());
         all.addSection(dynLimiter);
         dynLimiter.addItem(diBuilder.getDocItem("aviron/create-dynamic-cpu-limiter", false));
         dynLimiter.addItem(diBuilder.getDocItem("aviron/compute-dynamic-cpu-limit", false));
+        dynLimiter.addItem(diBuilder.getDocItem("aviron/format-profiles-as-table-by-hour", false));
 
         final DocSection profile = new DocSection("CPU Profiles", id());
         all.addSection(profile);
