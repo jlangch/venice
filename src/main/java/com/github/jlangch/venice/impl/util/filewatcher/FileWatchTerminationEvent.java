@@ -36,6 +36,5 @@ public class FileWatchTerminationEvent implements FileWatcherEvent {
     }
 
 
-
     private final Path path;
 }
