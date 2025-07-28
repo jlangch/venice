@@ -33,7 +33,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -834,7 +833,7 @@ public class IOFunctionsTest {
     }
 
 
-    @Disabled   // Java WatchService doesn't work on MacOS !?
+    // @Disabled   // Java WatchService doesn't work on MacOS !?
     @Test
     public void test_io_watch_dir() {
         final Venice venice = new Venice();
