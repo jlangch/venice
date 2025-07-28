@@ -1659,19 +1659,28 @@ public class IOFunctions {
                         "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
                         "a resource which should be closed with `(io/close-watcher w)`.")
                     .examples(
-                        " (try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))] \n" +
-                        "    ;; wait 30s and terminate                           \n" +
-                        "    (sleep 30 :seconds))",
+                        "(try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))]                  \n" +
+                        "  ;; wait 30s and terminate                                             \n" +
+                        "  (sleep 30 :seconds))                                                  ",
                         "(do                                                                     \n" +
-                        "  (defn log [msg] (locking log (println msg)))                          \n" +
+                        "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
+                        "  (io/delete-file-on-exit dir)                                          \n" +
                         "                                                                        \n" +
-                        "  (try-with [w (io/watch-dir \"/tmp\"                                   \n" +
-                        "                             #(log (str %1 \" \" %2))                   \n" +
-                        "                             #(log (str \"failure \" (:message %2)))    \n" +
-                        "                             #(log (str \"terminated watching \" %1))   \n" +
-                        "                             #(log (str \"registered dir \" %1)))]      \n" +
-                        "    ;; wait 30s and terminate                                           \n" +
-                        "    (sleep 30 :seconds)))")
+                        "  (println \"Watching:  \" dir)                                         \n" +
+                        "  (try-with [w (io/watch-dir dir                                        \n" +
+                        "                             #(println \"Event:     \" %1 %2)           \n" +
+                        "                             #(println \"Failure:   \" (:message %2))   \n" +
+                        "                             #(println \"Terminated:\" %1)              \n" +
+                        "                             #(println \"Registered:\" %1))]            \n" +
+                        "                                                                        \n" +
+                        "    (sleep 500)                                                         \n" +
+                        "                                                                        \n" +
+                        "    (let [f (io/file dir \"test1.txt\")]                                \n" +
+                        "      (io/spit f \"123456789\")                                         \n" +
+                        "      (io/delete-file-on-exit f)                                        \n" +
+                        "      (println \"Created:   \" f))                                      \n" +
+                        "                                                                        \n" +
+                        "    (sleep 1000)))                                                      ")
                     .seeAlso(
                         "io/add-watch-dir",
                         "io/registered-watch-dirs",
