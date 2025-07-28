@@ -33,6 +33,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -772,7 +773,6 @@ public class IOFunctionsTest {
         }
     }
 
-
     @Test
     public void test_io_mime_type() {
         final Venice venice = new Venice();
@@ -831,6 +831,48 @@ public class IOFunctionsTest {
         assertEquals("s: hello\n",  to_lf(venice.eval("(str \"s: \" (with-err-str (println *err* \"hello\")))")));
 
         assertEquals("s: abc: 100", venice.eval("(str \"s: \" (with-err-str (printf *err* \"%s: %d\" \"abc\" 100)))"));
+    }
+
+
+    @Disabled   // Java WatchService doesn't work on MacOS !?
+    @Test
+    public void test_io_watch_dir() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                     \n" +
+                "  (def event-count (atom 0))                                            \n" +
+                "                                                                        \n" +
+                "  (defn event [path mode]                                               \n" +
+                "    (swap! event-count inc)                                             \n" +
+                "    (println \"Event:      \" path mode))                               \n" +
+                "                                                                        \n" +
+                "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
+                "  (io/delete-file-on-exit dir)                                          \n" +
+                "                                                                        \n" +
+                "  (try-with [w (io/watch-dir dir                                        \n" +
+                "                             #(event %1 %2)                             \n" +
+                "                             #(println \"Failure:   \" (:message %2))   \n" +
+                "                             #(println \"Terminated:\" %1)              \n" +
+                "                             #(println \"Registered:\" %1))]            \n" +
+                "    (println \"Watching:  \" dir)                                       \n" +
+                "                                                                        \n" +
+                "    (sleep 1 :seconds)                                                  \n" +
+                "                                                                        \n" +
+                "    (let [f (io/file dir \"test1.txt\")]                                \n" +
+                "      (io/spit f \"123456789\")                                         \n" +
+                "      (io/delete-file-on-exit f)                                        \n" +
+                "      (println \"Created:   \" f))                                      \n" +
+                "                                                                        \n" +
+                "    (sleep 3 :seconds))                                                 \n" +
+                "                                                                        \n" +
+                "    (sleep 1 :seconds)                                                  \n" +
+                "    (println)                                                           \n" +
+                "    (println \"#Events:   \" @event-count)                              \n" +
+                "                                                                        \n" +
+                "    @event-count)                                                       ";
+
+        assertEquals(1L, venice.eval(script));
     }
 
 }
