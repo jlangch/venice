@@ -1680,7 +1680,8 @@ public class IOFunctions {
                         "      (io/delete-file-on-exit f)                                        \n" +
                         "      (println \"Created:   \" f))                                      \n" +
                         "                                                                        \n" +
-                        "    (sleep 1000)))                                                      ")
+                        "    (sleep 1000))                                                       \n" +
+                        "  (sleep 200))                                                           ")
                     .seeAlso(
                         "io/add-watch-dir",
                         "io/registered-watch-dirs",
