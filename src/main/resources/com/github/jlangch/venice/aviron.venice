@@ -1084,8 +1084,8 @@
           Returns the limiter's profile data as a string formatted table.
 
           The limiter may be a limiter obtained from: 
-          * `aviron/create-clamd-cpu-limiter`
           * `aviron/create-dynamic-cpu-limiter`
+          * `aviron/create-clamd-cpu-limiter`
           """
      :examples '(
           """
