@@ -30,8 +30,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.modules.ModuleLoader;
-import com.github.jlangch.venice.impl.util.StopWatch;
-import com.github.jlangch.venice.impl.util.StopWatch.Resolution;
+import com.github.jlangch.venice.impl.util.NanoStopWatch;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.OS;
 
@@ -149,7 +148,7 @@ public class HighlightParserTest {
         final String source_ = "(do\n" + source + "\n)";
         final long lines = StringUtil.splitIntoLines(source_).size();
 
-        final StopWatch sw = new StopWatch(Resolution.NANOS);
+        final NanoStopWatch sw = new NanoStopWatch();
         final List<HighlightItem> items = HighlightParser.parse(source_);
         sw.stop();
 

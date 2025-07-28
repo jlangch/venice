@@ -28,7 +28,7 @@
 
 package com.github.jlangch.venice.util.benchmark;
 
-import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.util.StopWatch;
 
 
 public class NBody {

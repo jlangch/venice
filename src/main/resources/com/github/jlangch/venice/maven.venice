@@ -564,6 +564,13 @@
           Installs Apache Maven to {repl-home-dir}/tools/apache-maven-x.y.z
 
           Installation is possible from within a REPL only!
+
+          Manually download Maven:
+
+          ``` 
+          curl https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip 
+               --output /Users/juerg/Desktop/apache-maven-3.9.6-bin.zip
+          ```
           """
      :examples '(
           """
@@ -684,7 +691,7 @@
     nil
     (ansi/progress-bar :caption     "            "
                        :start-msg   "    started "
-                       :end-msg     "            OK"
+                       :end-msg     "            OK ({{elapsed}})"
                        :failed-msg  "            FAILED")))
 
 

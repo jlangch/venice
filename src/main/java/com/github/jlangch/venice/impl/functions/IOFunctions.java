@@ -96,6 +96,7 @@ import com.github.jlangch.venice.impl.util.io.InternetUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.util.OS;
+import com.github.jlangch.venice.util.StopWatch;
 
 import net.lingala.zip4j.util.FileUtils;
 
@@ -3049,6 +3050,8 @@ public class IOFunctions {
 
                 sandboxFunctionCallValidation();
 
+                final StopWatch sw = new StopWatch();
+
                 final String uri = Coerce.toVncString(args.first()).getValue();
 
                 VncFunction progressFn = downloadDummyFn();
@@ -3101,7 +3104,7 @@ public class IOFunctions {
                                 "Please use 'http' or 'https'.", protocol));
                     }
 
-                    updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
+                    updateDownloadProgress(progressFn, 0L, -1L, new VncKeyword("start"));
 
                     final HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
@@ -3150,7 +3153,8 @@ public class IOFunctions {
                                                         ? new VncByteBuffer(data)
                                                         : new VncString(new String(data, charset));
 
-                                updateDownloadProgress(progressFn, 100L, new VncKeyword("end"));
+                                final long elapsed = sw.stop().elapsed(TimeUnit.MILLISECONDS);
+                                updateDownloadProgress(progressFn, 100L, elapsed, new VncKeyword("end"));
 
                                 return retVal;
                             }
@@ -3170,7 +3174,7 @@ public class IOFunctions {
                     }
                 }
                 catch(Exception ex) {
-                    updateDownloadProgress(progressFn, 0L, new VncKeyword("failed"));
+                    updateDownloadProgress(progressFn, 0L, -1L, new VncKeyword("failed"));
                     throw new VncException("Failed to download data from the URI: " + uri, ex);
                 }
             }
@@ -3660,11 +3664,18 @@ public class IOFunctions {
     private static void updateDownloadProgress(
             final VncFunction fn,
             final long percentage,
+            final long elapsedMillis,
             final VncKeyword status
     ) {
         if (fn != null) {
             try {
-                fn.apply(VncList.of(new VncLong(percentage), status));
+                final int arity = fn.getFixedArgsCount();
+                if (arity == 3) {
+                    fn.apply(VncList.of(new VncLong(percentage), status, new VncLong(elapsedMillis)));
+                }
+                else {
+                    fn.apply(VncList.of(new VncLong(percentage), status));
+                }
             }
             catch(Exception ex) {
                 // do nothing
@@ -3679,7 +3690,7 @@ public class IOFunctions {
     ) throws Exception {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
-            updateDownloadProgress(progressFn, 0L, new VncKeyword("progress"));
+            updateDownloadProgress(progressFn, 0L, -1L, new VncKeyword("progress"));
 
             final byte[] buffer = new byte[16 * 1024];
             int n;
@@ -3693,13 +3704,13 @@ public class IOFunctions {
                 long progress = Math.max(0, Math.min(100, (total * 100) / contentLength));
 
                 if (progress != progressLast && progress < 100L) {
-                    updateDownloadProgress(progressFn, progress, new VncKeyword("progress"));
+                    updateDownloadProgress(progressFn, progress, -1L, new VncKeyword("progress"));
                 }
 
                 progressLast = progress;
             }
 
-            updateDownloadProgress(progressFn, 100L, new VncKeyword("progress"));
+            updateDownloadProgress(progressFn, 100L, -1L, new VncKeyword("progress"));
             Thread.sleep(100); // leave the 100% progress for a blink of an eye
 
             return output.toByteArray();

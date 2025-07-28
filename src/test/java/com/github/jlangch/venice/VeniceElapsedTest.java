@@ -29,10 +29,10 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.support.AuditEvent;
 import com.github.jlangch.venice.support.AuditEventType;
 import com.github.jlangch.venice.util.FunctionExecutionMeter;
+import com.github.jlangch.venice.util.StopWatch;
 
 
 public class VeniceElapsedTest {
@@ -82,7 +82,7 @@ public class VeniceElapsedTest {
             result += res ? 0 : 1;
         }
         System.gc();
-        final StopWatch sw = StopWatch.millis();
+        final StopWatch sw = new StopWatch();
         for(int ii=0; ii<1000; ii++) {
             boolean res = event.getEventName().matches("webapp[.](started|stopped)")
                             || event.getEventKey().equals("superuser")

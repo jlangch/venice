@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.impl.util.NanoStopWatch;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
@@ -150,7 +150,7 @@ public class PrecompiledTest {
         }
 
         System.gc();
-        final StopWatch sw = StopWatch.nanos();
+        final NanoStopWatch sw = new NanoStopWatch();
         for(int ii=0; ii<1_000; ii++) {
             venice.eval("(do (nil? 1) (+ 1 3))");
         }
@@ -173,7 +173,7 @@ public class PrecompiledTest {
         venice = new Venice();
 
         System.gc();
-        final StopWatch sw = StopWatch.nanos();
+        final NanoStopWatch sw = new NanoStopWatch();
         for(int ii=0; ii<1_000; ii++) {
             venice.eval(precomp);
         }
@@ -196,7 +196,7 @@ public class PrecompiledTest {
         venice = new Venice();
 
         System.gc();
-        final StopWatch sw = StopWatch.nanos();
+        final NanoStopWatch sw = new NanoStopWatch();
         for(int ii=0; ii<1_000; ii++) {
             venice.eval(precomp, Parameters.of("x", 100, "y", 200));
         }

@@ -136,6 +136,15 @@ public class StopWatch {
     }
 
     /**
+     * Returns the elapsed time of this stop watch.
+     *
+     * @return the elapsed time or 0 if the watch has not been stopped.
+     */
+    public long elapsedMillis() {
+        return elapsedTime.get();
+    }
+
+    /**
      * Returns the split time regarding a time unit
      *
      * @param unit The unit of the split time if <code>null</code> milliseconds are used

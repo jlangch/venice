@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.modules.ModuleLoader;
-import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.impl.util.NanoStopWatch;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -704,7 +704,7 @@ public class TokenizerTest {
         final String core_ = "(do\n" + core + "\n)";
         final long lines = StringUtil.splitIntoLines(core_).size();
 
-        final StopWatch sw = StopWatch.nanos();
+        final NanoStopWatch sw = new NanoStopWatch();
         final List<Token> tokens = tokenize(core_, "core");
         sw.stop();
 

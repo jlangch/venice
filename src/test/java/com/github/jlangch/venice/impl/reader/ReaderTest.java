@@ -37,8 +37,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.StopWatch;
-import com.github.jlangch.venice.impl.util.StopWatch.Resolution;
+import com.github.jlangch.venice.impl.util.NanoStopWatch;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
@@ -398,7 +397,7 @@ public class ReaderTest {
         final String core_ = "(do\n" + core + "\n)";
         final long lines = StringUtil.splitIntoLines(core_).size();
 
-        final StopWatch sw = new StopWatch(Resolution.NANOS);
+        final NanoStopWatch sw = new NanoStopWatch();
         final VncVal ast = Reader.read_str(core_, "core");
         sw.stop();
 

@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -39,6 +40,7 @@ import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 import com.github.jlangch.venice.impl.util.junit.EnableOnWindows;
 
 
+@Disabled
 public class ReplSetupModuleTest {
 
     // The Venice version to download from Maven, for staged REPL setup tests

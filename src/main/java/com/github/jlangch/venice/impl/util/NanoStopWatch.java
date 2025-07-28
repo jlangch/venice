@@ -25,41 +25,13 @@ package com.github.jlangch.venice.impl.util;
 /**
  * A stop watch
  */
-public class StopWatch {
+public class NanoStopWatch {
 
     /**
-     * Create a new stop watch (with milliseconds resolution). Start time is now
+     * Create a new nano seconds based stop watch. Start time is now
      */
-    public StopWatch() {
-        this(Resolution.MILLIS);
-    }
-
-    /**
-     * Create a new stop watch. Start time is now
-     *
-     * @param resolution the resolution
-     */
-    public StopWatch(final Resolution resolution) {
-        this.resolution = resolution;
+    public NanoStopWatch() {
         this.startTime = currentTime();
-    }
-
-    /**
-     * Create a new stop watch (with milliseconds resolution). Start time is now
-     *
-     * @return a StopWatch with milliseconds resolution
-     */
-    public static StopWatch millis() {
-        return new StopWatch(Resolution.MILLIS);
-    }
-
-    /**
-     * Create a new stop watch (with nanoseconds resolution). Start time is now
-     *
-     * @return a StopWatch with nanoseconds resolution
-     */
-    public static StopWatch nanos() {
-        return new StopWatch(Resolution.NANOS);
     }
 
     /**
@@ -67,7 +39,7 @@ public class StopWatch {
      *
      * @return this stop watch
      */
-    public StopWatch start() {
+    public NanoStopWatch start() {
         startTime = currentTime();
         return this;
     }
@@ -80,7 +52,7 @@ public class StopWatch {
      *
      * @return this stop watch
      */
-    public StopWatch stop() {
+    public NanoStopWatch stop() {
         elapsedTime = splitTime();
         return this;
     }
@@ -91,7 +63,7 @@ public class StopWatch {
      * @return the elapsed time or 0 if the watch has not been stopped.
      */
     public long elapsedMillis() {
-        return resolution == Resolution.NANOS ? elapsedTime / 1_000_000L : elapsedTime;
+        return elapsedTime;
     }
 
     /**
@@ -100,7 +72,7 @@ public class StopWatch {
      * @return the elapsed time or 0 if the watch has not been stopped.
      */
     public long elapsedNanos() {
-        return resolution == Resolution.NANOS ? elapsedTime : elapsedTime * 1_000_000L;
+        return elapsedTime;
     }
 
     /**
@@ -115,7 +87,7 @@ public class StopWatch {
 
     @Override
     public String toString() {
-        return resolution == Resolution.NANOS ? formatNanos(elapsedTime) : formatMillis(elapsedTime);
+        return formatNanos(elapsedTime);
     }
 
     /**
@@ -179,12 +151,10 @@ public class StopWatch {
 
 
     private long currentTime() {
-        return resolution == Resolution.NANOS ? System.nanoTime() : System.currentTimeMillis();
+        return System.nanoTime();
     }
 
-    public static enum Resolution {MILLIS, NANOS};
 
-    private final Resolution resolution;
     private long startTime = 0L;
     private long elapsedTime = 0L;
 }

@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
+import com.github.jlangch.venice.util.StopWatch;
 
 
 public class Sandbox_MaxExecTime_Test {
