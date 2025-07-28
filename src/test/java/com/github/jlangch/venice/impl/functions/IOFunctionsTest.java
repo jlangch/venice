@@ -834,7 +834,9 @@ public class IOFunctionsTest {
     }
 
 
-    @Disabled   // Java WatchService doesn't work on MacOS !?
+    // [1] Java WatchService doesn't work on MacOS !?
+    // [2] The Github CI test containers do not like file watchers either!
+    @Disabled
     @Test
     public void test_io_watch_dir() {
         final Venice venice = new Venice();
