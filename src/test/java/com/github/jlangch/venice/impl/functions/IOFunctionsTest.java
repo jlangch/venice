@@ -836,6 +836,7 @@ public class IOFunctionsTest {
 
     // [1] Java WatchService doesn't work on MacOS !?
     // [2] The Github CI test containers do not like file watchers either!
+    //     Github aborts the CI action!
     @Disabled
     @Test
     public void test_io_watch_dir() {
