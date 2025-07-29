@@ -642,8 +642,10 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/which program)")
                     .doc(
-                        "Locates a program file in the user's path.\n\n" +
+                        "Locates a program's file in the user's path.\n\n" +
                         "Returns the program's full path or `nil` if not found.\n\n" +
+                        "E.g. `(sh/which \"ps\")` returns /\"bin/ps\" for MacOSX and " +
+                        "\"/usr/bin/ps\" for Linux RHEL variants.\n\n" +
                         "Note: This function is available for Linux and MacOS only!")
                     .examples(
                         "(sh/which \"ps\")")
