@@ -1794,7 +1794,7 @@ public class IOFunctions {
                 }
                 else {
                     throw new VncException(
-                            "Function 'io/watch-dir' is not supported on this operating system");
+                            "Function 'io/watch-dir' is not supported on this operating system!");
                 }
             }
 
@@ -1831,6 +1831,11 @@ public class IOFunctions {
                 ArityExceptions.assertArity(this, args, 2);
 
                 sandboxFunctionCallValidation();
+
+                if (!OS.isLinux()) {
+                    throw new VncException(
+                            "Function 'io/add-watch-dir' is not supported on this operating system!");
+                }
 
                 final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
 
