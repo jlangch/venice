@@ -1712,12 +1712,12 @@ public class IOFunctions {
                 final VncFunction termFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nthOrDefault(4, Nil));
 
-                final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
-                        (path, event) -> future.applyOf(
-                                           partial.applyOf(
+                final BiConsumer<Path,String> eventListener =
+                        (path, eventType) -> future.applyOf(
+                                               partial.applyOf(
                                                 eventFn,
                                                 new VncString(path.toString()),
-                                                FileWatcher.convertEvent(event)));
+                                                new VncKeyword(eventType)));
 
                 final BiConsumer<Path,Exception> errorListener =
                         failFn == null ? null
@@ -1743,12 +1743,14 @@ public class IOFunctions {
 
                 try {
                     final FileWatcher fw = new FileWatcher(
-                                                    new CallFrame[] { new CallFrame(this, args) },
                                                     dir.toPath(),
+                                                    false,
                                                     eventListener,
                                                     errorListener,
                                                     terminationListener,
                                                     registerListener);
+
+                    fw.start(new CallFrame[] { new CallFrame(this, args) });
 
                     return new VncJavaObject(fw);
                 }
@@ -1813,7 +1815,7 @@ public class IOFunctions {
 
                     return Nil;
                 }
-                catch(IOException ex) {
+                catch(Exception ex) {
                     throw new VncException(
                             "Function 'io/add-watch-dir' failed to add a new file with the watcher",
                             ex);
@@ -1878,7 +1880,7 @@ public class IOFunctions {
                     fw.close();
                     return Nil;
                 }
-                catch(IOException ex) {
+                catch(Exception ex) {
                     throw new VncException(
                             "Function 'io/close-watcher' failed to close watch service",
                             ex);
