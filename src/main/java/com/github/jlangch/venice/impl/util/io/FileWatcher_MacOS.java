@@ -62,7 +62,7 @@ public class FileWatcher_MacOS implements IFileWatcher {
             final BiConsumer<Path,Exception> errorListener,
             final Consumer<Path> terminationListener,
             final Consumer<Path> registerListener,
-            final Path fswatchProgram
+            final String fswatchProgram
     ) throws IOException {
         if (mainDir == null) {
             throw new IllegalArgumentException("The mainDir must not be null!");
@@ -70,7 +70,7 @@ public class FileWatcher_MacOS implements IFileWatcher {
         if (!Files.isDirectory(mainDir)) {
             throw new RuntimeException("The main dir " + mainDir + " does not exist or is not a directory");
         }
-        if (!Files.isExecutable(fswatchProgram)) {
+        if (fswatchProgram != null && !Files.isExecutable(Paths.get(fswatchProgram))) {
             throw new IllegalArgumentException("The fswatchProgram does not exist or is not executable!");
         }
 
@@ -80,7 +80,7 @@ public class FileWatcher_MacOS implements IFileWatcher {
         this.registerListener = registerListener;
         this.errorListener = errorListener;
         this.terminationListener = terminationListener;
-        this.fswatchProgram = fswatchProgram;
+        this.fswatchProgram = fswatchProgram == null ? "fswatch" : fswatchProgram;
     }
 
     @Override
@@ -151,9 +151,9 @@ public class FileWatcher_MacOS implements IFileWatcher {
 
             final ProcessBuilder pb = recursive
                                         ? new ProcessBuilder(
-                                                fswatchProgram.toString(), formatOpt, "-r", mainDir.toString())
+                                                fswatchProgram, formatOpt, "-r", mainDir.toString())
                                         : new ProcessBuilder(
-                                                fswatchProgram.toString(), formatOpt, mainDir.toString());
+                                                fswatchProgram, formatOpt, mainDir.toString());
             pb.redirectErrorStream(true);
 
             fswatchProcess.set(pb.start());
@@ -318,5 +318,5 @@ public class FileWatcher_MacOS implements IFileWatcher {
     private final Consumer<Path> registerListener;
     private final BiConsumer<Path,Exception> errorListener;
     private final Consumer<Path> terminationListener;
-    private final Path fswatchProgram;
+    private final String fswatchProgram;
 }
