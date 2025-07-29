@@ -87,11 +87,14 @@ import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
+import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher;
 import com.github.jlangch.venice.impl.util.http.BasicAuthentication;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
-import com.github.jlangch.venice.impl.util.io.FileWatcher;
+import com.github.jlangch.venice.impl.util.io.FileWatcher_Linux;
+import com.github.jlangch.venice.impl.util.io.FileWatcher_MacOS;
+import com.github.jlangch.venice.impl.util.io.IFileWatcher;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -1662,7 +1665,15 @@ public class IOFunctions {
                         "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
                         "a resource which should be closed with `(io/close-watcher w)`." +
                         "\n\n" +
-                        "**Note:** This file watcher doesn't run properly on MacOS due to Java limitations!")
+                        "**MacOS** " +
+                        "\n\n" +
+                        "This file watcher doesn't run properly on MacOS due to Java limitations!" +
+                        "\n\n" +
+                        "As a workaround [fswatch](https://formulae.brew.sh/formula/fswatch) can be used:\n" +
+                        "```\n"+
+                        "   # Homebrew\n" +
+                        "   $ brew install fswatch\n" +
+                        "```")
                     .examples(
                         "(try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))]                  \n" +
                         "  ;; wait 30s and terminate                                             \n" +
@@ -1746,25 +1757,39 @@ public class IOFunctions {
                                                             registerFn,
                                                             new VncString(path.toString())));
 
-                try {
-                    final FileWatcher fw = new FileWatcher(
-                                                    dir.toPath(),
-                                                    false,
-                                                    eventListener,
-                                                    errorListener,
-                                                    terminationListener,
-                                                    registerListener);
+                if (OS.isLinux() || OS.isMacOSX()) {
+                    try {
+                        final IFileWatcher fw =
+                            OS.isLinux() ? new FileWatcher_Linux(
+                                                 dir.toPath(),
+                                                 false,
+                                                 eventListener,
+                                                 errorListener,
+                                                 terminationListener,
+                                                 registerListener)
+                                         : new FileWatcher_MacOS(
+                                                 dir.toPath(),
+                                                 false,
+                                                 eventListener,
+                                                 errorListener,
+                                                 terminationListener,
+                                                 registerListener);
 
-                    fw.start(new CallFrame[] { new CallFrame(this, args) });
+                        fw.start(new CallFrame[] { new CallFrame(this, args) });
 
-                    return new VncJavaObject(fw);
+                        return new VncJavaObject(fw);
+                    }
+                    catch(IOException ex) {
+                        throw new VncException(
+                                String.format(
+                                        "Function 'io/watch-dir' failed to watching dir '%s'",
+                                        dir.toString()),
+                                ex);
+                    }
                 }
-                catch(IOException ex) {
+                else {
                     throw new VncException(
-                            String.format(
-                                    "Function 'io/watch-dir' failed to watch dir '%s'",
-                                    dir.toString()),
-                            ex);
+                            "Function 'io/watch-dir' is not supported on this operating system");
                 }
             }
 
