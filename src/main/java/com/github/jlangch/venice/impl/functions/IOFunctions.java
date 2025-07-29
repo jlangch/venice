@@ -1661,7 +1661,7 @@ public class IOFunctions {
                         "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
                         "a resource which should be closed with `(io/close-watcher w)`." +
                         "\n\n" +
-                        "Note: This file watcher doesn't run properly on MacOS due to Java limitations!")
+                        "**Note:** This file watcher doesn't run properly on MacOS due to Java limitations!")
                     .examples(
                         "(try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))]                  \n" +
                         "  ;; wait 30s and terminate                                             \n" +
