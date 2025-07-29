@@ -178,7 +178,7 @@ public class FileWatcher_MacOS implements IFileWatcher {
 
                         int ch;
                         while ((ch = reader.read()) != -1 && !closed.get()) {
-                            if (ch == '\n') { // Null terminator
+                            if (ch == '\n') { // event terminator
                                 final String line = buffer.toString();
                                 buffer.setLength(0);
 
@@ -212,7 +212,7 @@ public class FileWatcher_MacOS implements IFileWatcher {
                                     else if (isDir) {
                                         if (types.contains(CREATED)) {
                                             safeRun(() -> registerListener.accept(path));
-                                         }
+                                        }
                                     }
                                 }
                                 else {
