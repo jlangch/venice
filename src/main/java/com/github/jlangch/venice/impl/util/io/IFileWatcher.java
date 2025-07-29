@@ -32,6 +32,8 @@ public interface IFileWatcher extends Closeable {
 
     public void start(final CallFrame[] callFrame) ;
 
+    public Path getMainDir();
+
     public void register(final Path dir);
 
     public List<Path> getRegisteredPaths();

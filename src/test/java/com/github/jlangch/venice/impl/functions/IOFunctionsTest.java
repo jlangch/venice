@@ -33,13 +33,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 import com.github.jlangch.venice.util.OS;
 
@@ -837,8 +837,9 @@ public class IOFunctionsTest {
     // [1] Java WatchService doesn't work on MacOS !?
     // [2] The Github CI test containers do not like file watchers either!
     //     Github aborts the CI action!
-    @Disabled
+    //@Disabled
     @Test
+    @EnableOnMac
     public void test_io_watch_dir() {
         final Venice venice = new Venice();
 
@@ -848,7 +849,7 @@ public class IOFunctionsTest {
                 "                                                                        \n" +
                 "  (defn event [path mode]                                               \n" +
                 "    (swap! event-count inc)                                             \n" +
-                "    (println \"Event:      \" path mode))                               \n" +
+                "    (println \"Event:     \" path mode))                                \n" +
                 "                                                                        \n" +
                 "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
                 "  (io/delete-file-on-exit dir)                                          \n" +

@@ -60,7 +60,7 @@ public class FileWatcher_Linux implements IFileWatcher {
         if (mainDir == null) {
             throw new IllegalArgumentException("The mainDir must not be null!");
         }
-        if (!mainDir.toFile().isDirectory()) {
+        if (!Files.isDirectory(mainDir)) {
             throw new RuntimeException("The main dir " + mainDir + " does not exist or is not a directory");
         }
 
@@ -88,6 +88,11 @@ public class FileWatcher_Linux implements IFileWatcher {
     }
 
     @Override
+    public Path getMainDir() {
+        return mainDir;
+    }
+
+    @Override
     public void start(final CallFrame[] callFrame) {
         if (callFrame == null) {
             throw new IllegalArgumentException("The callFrame array must not be null!");
@@ -103,8 +108,8 @@ public class FileWatcher_Linux implements IFileWatcher {
 
     @Override
    public void register(final Path dir) {
-        if (!dir.toFile().exists() || !dir.toFile().isDirectory()) {
-            throw new RuntimeException("Folder " + dir + " does not exist or is not a directory");
+        if (!Files.isDirectory(dir)) {
+            throw new RuntimeException("The path " + dir + " does not exist or is not a directory");
         }
 
         final Path normalizedDir = dir.toAbsolutePath().normalize();

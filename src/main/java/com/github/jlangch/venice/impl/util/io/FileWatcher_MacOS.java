@@ -21,59 +21,71 @@
  */
 package com.github.jlangch.venice.impl.util.io;
 
+import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.CREATED;
+import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.DELETED;
+import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.MODIFIED;
+import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.OVERFLOW;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
 
+
+//
+// fswatch -0 -r --event-flags /Users/juerg/Desktop/venice/tmp
+
+// https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html/
 
 public class FileWatcher_MacOS implements IFileWatcher {
 
     public FileWatcher_MacOS(
             final Path mainDir,
-            final boolean registerAllSubDirs,
+            final boolean recursive,
             final BiConsumer<Path,FileWatchFileEventType> eventListener,
             final BiConsumer<Path,Exception> errorListener,
             final Consumer<Path> terminationListener,
-            final Consumer<Path> registerListener
+            final Consumer<Path> registerListener,
+            final Path fswatchProgram
     ) throws IOException {
         if (mainDir == null) {
             throw new IllegalArgumentException("The mainDir must not be null!");
         }
-        if (!mainDir.toFile().isDirectory()) {
+        if (!Files.isDirectory(mainDir)) {
             throw new RuntimeException("The main dir " + mainDir + " does not exist or is not a directory");
+        }
+        if (!Files.isExecutable(fswatchProgram)) {
+            throw new IllegalArgumentException("The fswatchProgram does not exist or is not executable!");
         }
 
         this.mainDir = mainDir.toAbsolutePath().normalize();
+        this.recursive = recursive;
         this.eventListener = eventListener;
-        this.errorListener = errorListener;
         this.registerListener = registerListener;
+        this.errorListener = errorListener;
         this.terminationListener = terminationListener;
+        this.fswatchProgram = fswatchProgram;
+    }
 
-        try {
-            // TODO: implement
-
-            if (registerAllSubDirs) {
-                Files.walk(mainDir)
-                     .filter(Files::isDirectory)
-                     .forEach(this::register);
-            }
-            else {
-                register(mainDir);
-            }
-        }
-        catch(Exception ex) {
-            throw new RuntimeException("Failed to create FileWatcher!", ex);
-        }
+    @Override
+    public Path getMainDir() {
+        return mainDir;
     }
 
     @Override
@@ -92,19 +104,13 @@ public class FileWatcher_MacOS implements IFileWatcher {
 
     @Override
     public void register(final Path dir) {
-        if (!dir.toFile().exists() || !dir.toFile().isDirectory()) {
-            throw new RuntimeException("Folder " + dir + " does not exist or is not a directory");
-        }
-
-        final Path normalizedDir = dir.toAbsolutePath().normalize();
-
-        register(normalizedDir, false);
+        throw new RuntimeException(
+                "Registering additional FileWatcher directories is not support on MacOS!");
     }
 
     @Override
     public List<Path> getRegisteredPaths() {
-        // TODO: implement
-        return new ArrayList<>();
+        return CollectionUtil.toList(mainDir);
     }
 
     @Override
@@ -116,7 +122,10 @@ public class FileWatcher_MacOS implements IFileWatcher {
     public void close() {
         if (closed.compareAndSet(false, true)) {
             try {
-                // TODO: implement
+                final Process process = fswatchProcess.get();
+                if (process != null && process.isAlive()) {
+                    process.destroyForcibly();
+                }
             }
             catch(Exception ex) {
                 throw new RuntimeException("Failed to close FileWatcher!", ex);
@@ -129,37 +138,97 @@ public class FileWatcher_MacOS implements IFileWatcher {
     }
 
 
-    private void register(final Path dir, final boolean sendEvent) {
-        try {
-
-            if (sendEvent && registerListener != null) {
-                safeRun(() -> registerListener.accept(dir));
-            }
-        }
-        catch(Exception e) {
-            if (errorListener != null) {
-                safeRun(() -> errorListener.accept(dir, e));
-            }
-        }
-    }
-
     private void startService(final CallFrame[] callFrame) {
+        try {
+            // fswatch options:
+            // -0                  null-separated output
+            // -r                  recursive
+            // --fire-idle-event   fire idle events
+            // --allow-overflow    allow a monitor to overflow and report it as a change event
+            // --event-flags       include event flags like Created, Updated, etc
+
+            final String formatOpt = "--format=%p" + SEPARATOR + "%f";
+
+            final ProcessBuilder pb = recursive
+                                        ? new ProcessBuilder(
+                                                fswatchProgram.toString(), formatOpt, "-r", mainDir.toString())
+                                        : new ProcessBuilder(
+                                                fswatchProgram.toString(), formatOpt, mainDir.toString());
+            pb.redirectErrorStream(true);
+
+            fswatchProcess.set(pb.start());
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to start FileWatcher!", ex);
+        }
+
         // Create a wrapper that inherits the Venice thread context
         // from the parent thread to the executer thread!
         final ThreadBridge threadBridge = ThreadBridge.create("thread", callFrame);
 
         final Runnable runnable = threadBridge.bridgeRunnable(
             () -> {
-                while (!closed.get()) {
-                    try {
-                        // TODO: implement
-                        Thread.sleep(2000);
-                    }
-                    catch(Exception ex) {
-                        if (errorListener != null) {
-                            safeRun(() -> errorListener.accept(mainDir, ex));
+                try {
+                    final Process process = fswatchProcess.get();
+
+                    try (BufferedReader reader = new BufferedReader(
+                         new InputStreamReader(process.getInputStream()))) {
+
+                        final StringBuilder buffer = new StringBuilder();
+
+                        int ch;
+                        while ((ch = reader.read()) != -1 && !closed.get()) {
+                            if (ch == '\n') { // Null terminator
+                                final String line = buffer.toString();
+                                buffer.setLength(0);
+
+                                if (isIdleEvent(line)) {
+                                   continue;
+                                }
+
+                                // Example line: /path/to/file.txt|#|Updated Created
+                                int separatorIdx = line.indexOf(SEPARATOR);
+                                if (separatorIdx != -1) {
+                                    final String filePath = line.substring(0, separatorIdx);
+                                    final String flags = line.substring(separatorIdx + SEPARATOR.length());
+                                    final Set<FileWatchFileEventType> types =  mapToEventTypes(flags);
+
+                                    final Path path = Paths.get(filePath);
+
+                                    final boolean isDir = flags.contains("IsDir");
+                                    final boolean isFile = flags.contains("IsFile");
+
+                                    if (isFile) {
+                                        if (types.contains(CREATED)) {
+                                           safeRun(() -> eventListener.accept(path, CREATED));
+                                        }
+                                        else if (types.contains(MODIFIED)) {
+                                            safeRun(() -> eventListener.accept(path, MODIFIED));
+                                        }
+                                        else if (types.contains(DELETED)) {
+                                            safeRun(() -> eventListener.accept(path, DELETED));
+                                        }
+                                    }
+                                    else if (isDir) {
+                                        if (types.contains(CREATED)) {
+                                            safeRun(() -> registerListener.accept(path));
+                                         }
+                                    }
+                                }
+                                else {
+                                    // fallback in case of no flags
+                                    safeRun(() -> eventListener.accept(Paths.get(line), MODIFIED));
+                                }
+                            }
+                            else {
+                                buffer.append((char) ch);
+                            }
                         }
-                        // continue
+                    }
+                }
+                catch (Exception ex) {
+                    if (errorListener != null) {
+                        safeRun(() -> errorListener.accept(mainDir, ex));
                     }
                 }
 
@@ -178,12 +247,76 @@ public class FileWatcher_MacOS implements IFileWatcher {
         catch(Exception e) { }
     }
 
+    private boolean isIdleEvent(final String line) {
+        return line.matches(" *NoOp *");
+    }
+
+    private Set<FileWatchFileEventType> mapToEventTypes(final String flags) {
+       return Arrays.stream(flags.split(" "))
+                    .map(s -> mapToEventType(s))
+                    .filter(e -> e != null)
+                    .collect(Collectors.toSet());
+    }
+
+    private FileWatchFileEventType mapToEventType(final String flag) {
+        switch(flag) {
+            // This event maps a platform-specific event that has no corresponding flag.
+            case "PlatformSpecific": return null;
+
+            // The object has been created
+            case "Created": return CREATED;
+
+            // The object has been updated. The kind of update is monitor-dependent
+            case "Updated": return MODIFIED;
+
+            // The object has been removed
+            case "Removed": return DELETED;
+
+            // The object has been renamed
+            case "Renamed": return null;
+
+            // The object’s owner has changed
+            case "OwnerModified": return null;
+
+            // An object’s attribute has changed
+            case "AttributeModified": return null;
+
+            // The object has moved from this location to a new location of the same file system
+            case "MovedFrom": return null;
+
+            // The object has moved from another location in the same file system into this location
+            case "MovedTo": return null;
+
+            // The object is a regular file
+            case "IsFile": return null;
+
+            // The object is a directory
+            case "IsDir": return null;
+
+            // The object is a symbolic link
+            case "IsSymLink": return null;
+
+            // The object link count has changed
+            case "Link": return null;
+
+            // The monitor has overflowed
+            case "Overflow": return OVERFLOW;
+
+            default: return null;
+        }
+    }
+
+
+    private static final String SEPARATOR = "|";
 
     private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicReference<Process> fswatchProcess = new AtomicReference<>();
 
     private final Path mainDir;
+    private final boolean recursive;
     private final BiConsumer<Path,FileWatchFileEventType> eventListener;
-    private final BiConsumer<Path,Exception> errorListener;
     private final Consumer<Path> registerListener;
+    private final BiConsumer<Path,Exception> errorListener;
     private final Consumer<Path> terminationListener;
+    private final Path fswatchProgram;
 }

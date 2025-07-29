@@ -44,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
@@ -1769,11 +1770,12 @@ public class IOFunctions {
                                                  registerListener)
                                          : new FileWatcher_MacOS(
                                                  dir.toPath(),
-                                                 false,
+                                                 true,
                                                  eventListener,
                                                  errorListener,
                                                  terminationListener,
-                                                 registerListener);
+                                                 registerListener,
+                                                 Paths.get("/opt/homebrew/bin/fswatch"));
 
                         fw.start(new CallFrame[] { new CallFrame(this, args) });
 
