@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -203,33 +204,28 @@ public class ShellFunctionsTest {
         pidFile.deleteOnExit();
 
         assertNull(new Venice().eval(
-                        "test",
                         "(sh/load-pid pid-file)",
                         Parameters.of("pid-file", "--unknown--")));
 
         assertNull(new Venice().eval(
-                        "test",
                         "(sh/load-pid pid-file)",
                         Parameters.of("pid-file", pidFile.getAbsolutePath())));
 
         FileUtil.save("", pidFile, true);
 
         assertNull(new Venice().eval(
-                        "test",
                         "(sh/load-pid pid-file)",
                         Parameters.of("pid-file", pidFile.getAbsolutePath())));
 
         FileUtil.save("abc", pidFile, true);
 
         assertNull(new Venice().eval(
-                        "test",
                         "(sh/load-pid pid-file)",
                         Parameters.of("pid-file", pidFile.getAbsolutePath())));
 
         FileUtil.save("123\n456", pidFile, true);
 
         assertNull(new Venice().eval(
-                        "test",
                         "(sh/load-pid pid-file)",
                         Parameters.of("pid-file", pidFile.getAbsolutePath())));
 
@@ -238,8 +234,21 @@ public class ShellFunctionsTest {
         assertEquals(
                 "1230",
                 new Venice().eval(
-                        "test",
                         "(sh/load-pid pid-file)",
                         Parameters.of("pid-file", pidFile.getAbsolutePath())));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_which() throws IOException {
+
+        final Object path = new Venice().eval("(sh/which \"ps\")");
+
+        assertTrue(path instanceof String);
+        assertTrue(((String)path).startsWith("/"));
+        assertTrue(((String)path).endsWith("/ps"));
+
+
+        assertNull(new Venice().eval("(sh/which \"an_inexistent_program\")"));
     }
 }

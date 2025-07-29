@@ -524,7 +524,7 @@ public class ShellFunctions {
             ) {
                 @Override
                 public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 1);
+                    ArityExceptions.assertArity(this, args, 1, 2);
 
                     sandboxFunctionCallValidation();
 
@@ -635,6 +635,43 @@ public class ShellFunctions {
         };
 
 
+     public static VncFunction which =
+        new VncFunction(
+                "sh/which",
+                VncFunction
+                    .meta()
+                    .arglists("(sh/which program)")
+                    .doc(
+                        "Locates a program file in the user's path.\n\n" +
+                        "Returns the program's full path or `nil` if not found.\n\n" +
+                        "Note: This function is available for Linux and MacOS only!")
+                    .examples(
+                        "(sh/which \"ps\")")
+                    .seeAlso(
+                        "sh", "sh/alive?",
+                        "sh/kill", "sh/killall",
+                        "sh/pgrep", "sh/pargs")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                SimpleShell.validateLinuxOrMacOSX("sh/which");
+
+                final String program = Coerce.toVncString(args.first()).getValue();
+
+                final String path = SimpleShell.which(program);
+
+                return path == null ? Nil : new VncString(path);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     ///////////////////////////////////////////////////////////////////////////
     // Util
     ///////////////////////////////////////////////////////////////////////////
@@ -712,6 +749,7 @@ public class ShellFunctions {
                     .add(pgrep)
                     .add(pkill)
                     .add(pargs)
+                    .add(which)
                     .add(alive_Q)
                     .add(load_pid)
                     .toMap();

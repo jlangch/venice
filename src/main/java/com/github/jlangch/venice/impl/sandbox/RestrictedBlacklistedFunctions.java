@@ -229,6 +229,7 @@ public class RestrictedBlacklistedFunctions {
                 "sh/pgrep",
                 "sh/pkill",
                 "sh/pargs",
+                "sh/which",
 
                 "mbean/platform-mbean-server",
                 "mbean/query-mbean-object-names",

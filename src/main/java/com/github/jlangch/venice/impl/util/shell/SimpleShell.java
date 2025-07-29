@@ -170,6 +170,19 @@ public class SimpleShell {
         }
     }
 
+    public static String which(final String program) {
+        validateLinuxOrMacOSX("Shell::which");
+
+        if (!StringUtil.isBlank(program)) {
+            final ShellResult r = SimpleShell.execCmd("/bin/sh", "-c", "which " + program);
+            if (r.isZeroExitCode()) {
+                return r.getStdoutLines().stream().findFirst().orElse(null);
+            }
+        }
+
+        return null;
+    }
+
     public static void validateLinuxOrMacOSX(final String fnName) {
          if (!(OS.isLinux() || OS.isMacOSX())) {
              throw new RuntimeException(fnName + " is available for Linux and MacOS only!");
