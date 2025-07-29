@@ -86,6 +86,7 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
 import com.github.jlangch.venice.impl.util.http.BasicAuthentication;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -1716,12 +1717,12 @@ public class IOFunctions {
                 final VncFunction termFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nthOrDefault(4, Nil));
 
-                final BiConsumer<Path,String> eventListener =
+                final BiConsumer<Path,FileWatchFileEventType> eventListener =
                         (path, eventType) -> future.applyOf(
                                                partial.applyOf(
                                                 eventFn,
                                                 new VncString(path.toString()),
-                                                new VncKeyword(eventType)));
+                                                new VncKeyword(eventType.name().toLowerCase())));
 
                 final BiConsumer<Path,Exception> errorListener =
                         failFn == null ? null

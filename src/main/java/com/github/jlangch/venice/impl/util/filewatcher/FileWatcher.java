@@ -43,7 +43,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
-
 public class FileWatcher implements Closeable {
 
     public FileWatcher(

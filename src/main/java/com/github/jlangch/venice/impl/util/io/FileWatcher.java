@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
 
 
 public class FileWatcher implements Closeable {
@@ -52,7 +53,7 @@ public class FileWatcher implements Closeable {
     public FileWatcher(
             final Path mainDir,
             final boolean registerAllSubDirs,
-            final BiConsumer<Path,String> eventListener,
+            final BiConsumer<Path,FileWatchFileEventType> eventListener,
             final BiConsumer<Path,Exception> errorListener,
             final Consumer<Path> terminationListener,
             final Consumer<Path> registerListener
@@ -220,17 +221,17 @@ public class FileWatcher implements Closeable {
         catch(Exception e) { }
     }
 
-    private String convertToEventType(final WatchEvent.Kind<?> kind) {
+    private FileWatchFileEventType convertToEventType(final WatchEvent.Kind<?> kind) {
         if (kind == null) {
-            return "unknown";
+            return null;
         }
         else {
             switch(kind.name()) {
-                case "ENTRY_CREATE": return "created";
-                case "ENTRY_DELETE": return "deleted";
-                case "ENTRY_MODIFY": return "modified";
-                case "OVERFLOW":     return "overflow";
-                default:             return "unknown";
+                case "ENTRY_CREATE": return FileWatchFileEventType.CREATED;
+                case "ENTRY_DELETE": return FileWatchFileEventType.DELETED;
+                case "ENTRY_MODIFY": return FileWatchFileEventType.MODIFIED;
+                case "OVERFLOW":     return FileWatchFileEventType.OVERFLOW;
+                default:             return null;
             }
         }
     }
@@ -241,7 +242,7 @@ public class FileWatcher implements Closeable {
     private final Path mainDir;
     private final WatchService ws;
     private final Map<WatchKey,Path> keys = new HashMap<>();
-    private final BiConsumer<Path,String> eventListener;
+    private final BiConsumer<Path,FileWatchFileEventType> eventListener;
     private final BiConsumer<Path,Exception> errorListener;
     private final Consumer<Path> registerListener;
     private final Consumer<Path> terminationListener;
