@@ -39,5 +39,6 @@ public interface IFileWatcher extends Closeable {
     public boolean isRunning() ;
 
     @Override
-	public void close();
+    public void close();
+
 }
