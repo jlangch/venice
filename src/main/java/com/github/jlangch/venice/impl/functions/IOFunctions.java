@@ -1674,6 +1674,7 @@ public class IOFunctions {
                         "   $ brew install fswatch  \n" +
                         "```                        \n" +
                         "\n" +
+                        "Documentation:\n" +
                         "* [fswatch Github](https://github.com/emcrisostomo/fswatch/)\n" +
                         "* [fswatch Manual](https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html)\n" +
                         "* [fswatch Installation](https://formulae.brew.sh/formula/fswatch)\n")
