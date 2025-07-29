@@ -1682,7 +1682,7 @@ public class IOFunctions {
                         "    (let [f (io/file dir \"test1.txt\")]                                \n" +
                         "      (io/spit f \"123456789\")                                         \n" +
                         "      (io/delete-file-on-exit f)                                        \n" +
-                        "      (println \"Created:   \" f))                                      \n" +
+                        "      (println \"New File:  \" f))                                      \n" +
                         "                                                                        \n" +
                         "    (sleep 1000))                                                       \n" +
                         "  (sleep 200))                                                           ")
