@@ -1667,13 +1667,16 @@ public class IOFunctions {
                         "\n\n" +
                         "**MacOS** " +
                         "\n\n" +
-                        "This file watcher doesn't run properly on MacOS due to Java limitations!" +
-                        "\n\n" +
-                        "As a workaround [fswatch](https://formulae.brew.sh/formula/fswatch) can be used:\n" +
-                        "```\n"+
-                        "   # Homebrew\n" +
-                        "   $ brew install fswatch\n" +
-                        "```")
+                        "The Java WatchService doesn't run properly on MacOS due to Java limitations! " +
+                        "As a workaround on MacOS the file watcher is impemented on top of the *fswatch* " +
+                        "tool. The required *fswatch* tool can be installed from *Homebrew*.\n\n" +
+                        "```                        \n" +
+                        "   $ brew install fswatch  \n" +
+                        "```                        \n" +
+                        "\n" +
+                        "* [fswatch Github](https://github.com/emcrisostomo/fswatch/)\n" +
+                        "* [fswatch Manual](https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html)\n" +
+                        "* [fswatch Installation](https://formulae.brew.sh/formula/fswatch)\n")
                     .examples(
                         "(try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))]                  \n" +
                         "  ;; wait 30s and terminate                                             \n" +

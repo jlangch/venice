@@ -48,11 +48,22 @@ import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
 
 
-//
-// fswatch -0 -r --event-flags /Users/juerg/Desktop/venice/tmp
-
-// https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html/
-
+/**
+ * FileWatcher implementation for MacOS
+ *
+ * <p>The Java WatchService does not work properly on MacOS. Therefore the MacOS
+ * file watcher is implemented on top of the fswatch tool.
+ *
+ * <p><i>fswatch</i> is installed via Homebrew:
+ *
+ * <pre>
+ *   brew install fswatch
+ * </pre>
+ *
+ * @see <a href="https://github.com/emcrisostomo/fswatch/">fswatch Github</a>
+ * @see <a href="https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html/">fswatch manual</a>
+ * @see <a href="https://formulae.brew.sh/formula/fswatch">fswatch install</a>
+ */
 public class FileWatcher_MacOS implements IFileWatcher {
 
     public FileWatcher_MacOS(
