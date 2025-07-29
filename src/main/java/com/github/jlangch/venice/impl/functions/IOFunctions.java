@@ -1648,16 +1648,20 @@ public class IOFunctions {
                     .doc(
                         "Watch a directory for changes, and call the function `event-fn` when it " +
                         "does. Calls the optional `failure-fn` if errors occur. On closing " +
-                        "the watcher `termination-fn` is called. \n\n" +
+                        "the watcher `termination-fn` is called." +
+                        "\n\n" +
                         "`event-fn` is a two argument function that receives the path and mode " +
                         "{:created, :deleted, :modified} of the changed file. \n\n" +
                         "`failure-fn` is a two argument function that receives the watch dir and the " +
-                        "failure exception. \n\n" +
+                        "failure exception." +
+                        "\n\n" +
                         "`termination-fn` is a one argument function that receives the watch dir.\n\n" +
                         "`register-fn` is a one argument function that is called when a newly created " +
                         "sub directory is dynamically registered. It receives the watch dir.\n\n" +
                         "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
-                        "a resource which should be closed with `(io/close-watcher w)`.")
+                        "a resource which should be closed with `(io/close-watcher w)`." +
+                        "\n\n" +
+                        "Note: This file watcher doesn't run properly on MacOS due to Java limitations!")
                     .examples(
                         "(try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))]                  \n" +
                         "  ;; wait 30s and terminate                                             \n" +
