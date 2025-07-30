@@ -84,7 +84,7 @@ public class IOFunctionsFileWatcherTest {
                 "      (io/delete-file-on-exit f)                                        \n" +
                 "      (log \"Added File: \" f))                                         \n" +
                 "                                                                        \n" +
-                "    (sleep 3 :seconds))                                                 \n" +
+                "    (sleep 2 :seconds))                                                 \n" +
                 "                                                                        \n" +
                 "    (sleep 1 :seconds)                                                  \n" +
                 "    (log \"\")                                                          \n" +
@@ -102,7 +102,7 @@ public class IOFunctionsFileWatcherTest {
         final List<Long> events = (List<Long>)venice.eval(script);
 
         assertEquals(1L, events.get(0));  // file events
-        assertEquals(1L, events.get(1));  // registration events
+        assertEquals(0L, events.get(1));  // registration events
         assertEquals(0L, events.get(2));  // error events
         assertEquals(1L, events.get(3));  // termination events
     }

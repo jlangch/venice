@@ -239,7 +239,12 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                                 final String flags = line.substring(separatorIdx + SEPARATOR.length());
                                 final Set<FileWatchFileEventType> types = mapToEventTypes(flags);
 
-                                final Path path = Paths.get(filePath);
+                                final Path path = Paths.get(filePath).normalize();
+
+                                // suppress registration event on mainDir
+                                if (path.toString().endsWith(mainDir.toString())) {
+                                	continue;
+                                }
 
                                 final boolean isDir = flags.contains("IsDir");
                                 final boolean isFile = flags.contains("IsFile");
