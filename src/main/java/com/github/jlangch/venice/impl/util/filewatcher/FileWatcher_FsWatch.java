@@ -109,7 +109,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                         "The callFrame array must not be null!");
         }
 
-       if (status.compareAndSet(
+        if (status.compareAndSet(
                     FileWatcherStatus.CREATED,
                     FileWatcherStatus.INITIALISING)
         ) {
@@ -184,6 +184,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                                                 fswatchProgram, formatOpt, mainDir.toString());
             pb.redirectErrorStream(true);
 
+            // start the fswatch process
             fswatchProcess.set(pb.start());
 
             // Create a wrapper that inherits the Venice thread context
