@@ -172,6 +172,9 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             pb.redirectErrorStream(true);
 
             fswatchProcess.set(pb.start());
+
+            // ensure the process is running and serving events
+            Thread.sleep(300);
         }
         catch(Exception ex) {
             throw new RuntimeException("Failed to start FileWatcher!", ex);

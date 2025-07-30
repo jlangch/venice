@@ -101,7 +101,7 @@ public class IOFunctionsFileWatcherTest {
                 "      @termination-event-count ])                                       ";
 
         @SuppressWarnings("unchecked")
-		final List<Long> events = (List<Long>)venice.eval(script);
+        final List<Long> events = (List<Long>)venice.eval(script);
 
         assertEquals(1L, events.get(0));  // file events
         assertEquals(1L, events.get(1));  // registration events
