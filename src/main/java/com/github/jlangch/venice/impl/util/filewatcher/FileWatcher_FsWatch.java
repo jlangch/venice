@@ -27,7 +27,6 @@ import static com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFi
 import static com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType.OVERFLOW;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -77,7 +76,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             final Consumer<FileWatchTerminationEvent> terminationListener,
             final Consumer<FileWatchRegisterEvent> registerListener,
             final String fswatchProgram
-    ) throws IOException {
+    ) {
         if (mainDir == null) {
             throw new IllegalArgumentException("The mainDir must not be null!");
         }
