@@ -27,7 +27,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -40,7 +39,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
@@ -132,9 +130,9 @@ public class IOFunctionsFileWatcher {
 
                 sandboxFunctionCallValidation();
 
-                final File dir = convertToFile(
-                                        args.first(),
-                                        "Function 'io/watch-dir' does not allow %s as file").getAbsoluteFile();
+                final File dir = IOFunctions.convertToFile(
+                                    args.first(),
+                                    "Function 'io/watch-dir' does not allow %s as file").getAbsoluteFile();
 
                 if (!dir.isDirectory()) {
                     throw new VncException(
@@ -231,9 +229,9 @@ public class IOFunctionsFileWatcher {
 
                 final IFileWatcher fw = Coerce.toVncJavaObject(args.first(), IFileWatcher.class);
 
-                final File dir = convertToFile(
-                                        args.second(),
-                                        "Function 'io/add-watch-dir' does not allow %s as file").getAbsoluteFile();
+                final File dir = IOFunctions.convertToFile(
+                                    args.second(),
+                                    "Function 'io/add-watch-dir' does not allow %s as file").getAbsoluteFile();
 
                 if (!dir.isDirectory()) {
                     throw new VncException(
@@ -365,31 +363,6 @@ public class IOFunctionsFileWatcher {
                                 partial.applyOf(
                                     fn,
                                     new VncString(event.getPath().toString())));
-    }
-
-    private static File convertToFile(final VncVal f, final String errFormat) {
-        final File file = convertToFile(f);
-        if (file == null) {
-            throw new VncException(String.format(errFormat, Types.getType(f)));
-        }
-        else {
-            return file;
-        }
-    }
-
-    private static File convertToFile(final VncVal f) {
-        if (Types.isVncString(f)) {
-            return new File(((VncString)f).getValue());
-        }
-        else if (Types.isVncJavaObject(f, File.class)) {
-            return Coerce.toVncJavaObject(f, File.class);
-        }
-        else if (Types.isVncJavaObject(f, Path.class)) {
-            return Coerce.toVncJavaObject(f, Path.class).toFile();
-        }
-        else {
-            return null;
-        }
     }
 
 
