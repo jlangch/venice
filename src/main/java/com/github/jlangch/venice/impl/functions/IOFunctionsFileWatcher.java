@@ -26,7 +26,6 @@ import static com.github.jlangch.venice.impl.functions.CoreFunctions.partial;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -177,7 +176,7 @@ public class IOFunctionsFileWatcher {
 
                         return new VncJavaObject(fw);
                     }
-                    catch(IOException ex) {
+                    catch(Exception ex) {
                         throw new VncException(
                                 String.format(
                                         "Function 'io/watch-dir' failed to watching dir '%s'",
