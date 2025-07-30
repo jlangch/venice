@@ -85,8 +85,8 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher_JavaWatchService;
 import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher_FsWatch;
+import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher_JavaWatchService;
 import com.github.jlangch.venice.impl.util.filewatcher.IFileWatcher;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
@@ -1720,7 +1720,6 @@ public class IOFunctions {
                                         args.first(),
                                         "Function 'io/watch-dir' does not allow %s as file").getAbsoluteFile();
 
-
                 if (!dir.isDirectory()) {
                     throw new VncException(
                             String.format(
@@ -1734,34 +1733,39 @@ public class IOFunctions {
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nthOrDefault(4, Nil));
 
                 final Consumer<FileWatchFileEvent> eventListener =
-                        (event) -> { if (!event.isDirectory()) {  // regular files only
+                        eventFn == null
+                            ? null
+                            : (event) -> { if (!event.isDirectory()) {  // regular files only
                                         future.applyOf(
-                                               partial.applyOf(
-                                                eventFn,
-                                                new VncString(event.getPath().toString()),
-                                                new VncKeyword(event.getType().name().toLowerCase()))); }};
+                                           partial.applyOf(
+                                            eventFn,
+                                            new VncString(event.getPath().toString()),
+                                            new VncKeyword(event.getType().name().toLowerCase()))); }};
 
                 final Consumer<FileWatchErrorEvent> errorListener =
-                        failFn == null ? null
-                                       : (event) -> future.applyOf(
-                                                        partial.applyOf(
-                                                            failFn,
-                                                            new VncString(event.getPath().toString()),
-                                                            new VncJavaObject(event.getException())));
+                        failFn == null
+                            ? null
+                            : (event) -> future.applyOf(
+                                            partial.applyOf(
+                                                failFn,
+                                                new VncString(event.getPath().toString()),
+                                                new VncJavaObject(event.getException())));
 
                 final Consumer<FileWatchTerminationEvent> terminationListener =
-                        termFn == null ? null
-                                       : (event) -> future.applyOf(
-                                                    partial.applyOf(
-                                                        termFn,
-                                                        new VncString(event.getPath().toString())));
+                        termFn == null
+                            ? null
+                            : (event) -> future.applyOf(
+                                            partial.applyOf(
+                                                termFn,
+                                                new VncString(event.getPath().toString())));
 
                 final Consumer<FileWatchRegisterEvent> registerListener =
-                        registerFn == null ? null
-                                           : (event) -> future.applyOf(
-                                                        partial.applyOf(
-                                                            registerFn,
-                                                            new VncString(event.getPath().toString())));
+                        registerFn == null
+                            ? null
+                            : (event) -> future.applyOf(
+                                            partial.applyOf(
+                                                registerFn,
+                                                new VncString(event.getPath().toString())));
 
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
