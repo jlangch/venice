@@ -45,6 +45,10 @@ public class FileWatchFileEvent implements FileWatcherEvent {
         return isDirectory;
     }
 
+    public boolean isRegularFile() {
+        return !isDirectory;
+    }
+
     public FileWatchFileEventType getType() {
         return type;
     }

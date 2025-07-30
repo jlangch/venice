@@ -141,6 +141,9 @@ public class IOFunctionsFileWatcher {
                                     dir.toString()));
                 }
 
+                final boolean registerAllSubDirs = true;
+                final boolean fireEventsForDirsToo = false;
+
                 final VncFunction eventFn = Coerce.toVncFunction(args.nth(1));
                 final VncFunction errorFn = Coerce.toVncFunctionOptional(args.nthOrDefault(2, Nil));
                 final VncFunction terminationFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
@@ -153,8 +156,8 @@ public class IOFunctionsFileWatcher {
                         if (OS.isLinux()) {
                             fw = new FileWatcher_JavaWatchService(
                                          dir.toPath(),
-                                         true,
-                                         createFileEventListener(eventFn),
+                                         registerAllSubDirs,
+                                         createFileEventListener(eventFn, fireEventsForDirsToo),
                                          createErrorEventListener(errorFn),
                                          createTerminationEventListener(terminationFn),
                                          createRegisterEventListener(registerFn));
@@ -162,8 +165,8 @@ public class IOFunctionsFileWatcher {
                         else {
                             fw = new FileWatcher_FsWatch(
                                          dir.toPath(),
-                                         true,
-                                         createFileEventListener(eventFn),
+                                         registerAllSubDirs,
+                                         createFileEventListener(eventFn, fireEventsForDirsToo),
                                          createErrorEventListener(errorFn),
                                          createTerminationEventListener(terminationFn),
                                          createRegisterEventListener(registerFn),
@@ -326,18 +329,25 @@ public class IOFunctionsFileWatcher {
     // Util
     ///////////////////////////////////////////////////////////////////////////
 
-    private static Consumer<FileWatchFileEvent> createFileEventListener(final VncFunction fn) {
+    private static Consumer<FileWatchFileEvent> createFileEventListener(
+            final VncFunction fn,
+            final boolean fireEventsForDirsToo
+    ) {
         return fn == null
                 ? null
-                : (event) -> { if (!event.isDirectory()) {  // regular files only
-                            future.applyOf(
-                               partial.applyOf(
-                                fn,
-                                new VncString(event.getPath().toString()),
-                                new VncKeyword(event.getType().name().toLowerCase()))); }};
+                : (event) -> { final boolean fireEvent = event.isRegularFile() || fireEventsForDirsToo;
+                			   if (fireEvent) {
+                                    future.applyOf(
+                                       partial.applyOf(
+                                        fn,
+                                        new VncString(event.getPath().toString()),
+                                        new VncKeyword(event.getType().name().toLowerCase())));
+                               }};
     }
 
-    private static Consumer<FileWatchErrorEvent> createErrorEventListener(final VncFunction fn) {
+    private static Consumer<FileWatchErrorEvent> createErrorEventListener(
+            final VncFunction fn
+    ) {
         return fn == null
                 ? null
                 : (event) -> future.applyOf(
@@ -347,7 +357,9 @@ public class IOFunctionsFileWatcher {
                                     new VncJavaObject(event.getException())));
     }
 
-    private static Consumer<FileWatchTerminationEvent> createTerminationEventListener(final VncFunction fn) {
+    private static Consumer<FileWatchTerminationEvent> createTerminationEventListener(
+            final VncFunction fn
+    ) {
         return fn == null
                 ? null
                 : (event) -> future.applyOf(
@@ -356,7 +368,9 @@ public class IOFunctionsFileWatcher {
                                     new VncString(event.getPath().toString())));
     }
 
-    private static Consumer<FileWatchRegisterEvent> createRegisterEventListener(final VncFunction fn) {
+    private static Consumer<FileWatchRegisterEvent> createRegisterEventListener(
+            final VncFunction fn
+    ) {
         return fn == null
                 ? null
                 : (event) -> future.applyOf(

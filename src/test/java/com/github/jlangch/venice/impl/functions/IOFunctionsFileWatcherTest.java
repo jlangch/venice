@@ -74,7 +74,7 @@ public class IOFunctionsFileWatcherTest {
                 "                                                                        \n" +
                 "    @event-count)                                                       ";
 
-        assertEquals(2L, venice.eval(script));
+        assertEquals(1L, venice.eval(script));
     }
 
 }

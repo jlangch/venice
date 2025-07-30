@@ -223,15 +223,15 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                                     if (isFile || isDir) {
                                         if (types.contains(CREATED)) {
                                            safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, false, CREATED)));
+                                                            new FileWatchFileEvent(path, isDir, CREATED)));
                                         }
                                         else if (types.contains(MODIFIED) && isFile) {
                                             safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, false, MODIFIED)));
+                                                            new FileWatchFileEvent(path, isDir, MODIFIED)));
                                         }
                                         else if (types.contains(DELETED)) {
                                             safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, false, DELETED)));
+                                                            new FileWatchFileEvent(path, isDir, DELETED)));
                                         }
                                     }
                                 }
