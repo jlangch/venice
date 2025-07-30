@@ -241,12 +241,15 @@ public class FileWatcher_FsWatch implements IFileWatcher {
 
                                 final Path path = Paths.get(filePath).normalize();
 
-                                fireEvents(path, types);
+                                final boolean isDir = flags.contains("IsDir");
+                                final boolean isFile = flags.contains("IsFile");
+
+                                fireFileEvents(path, isDir, isFile, types);
                             }
                             else {
                                 // fallback in case of no flags
                                 final Path path = Paths.get(line);
-                                fireFallbackEvents(path);
+                                fireFallbackFileEvents(path);
                             }
                         }
                         else {
@@ -275,11 +278,13 @@ public class FileWatcher_FsWatch implements IFileWatcher {
         catch(Exception e) { }
     }
 
-    private void fireEvents(
+    private void fireFileEvents(
             final Path path,
+            final boolean isDir,
+            final boolean isFile,
             final Set<FileWatchFileEventType> types
     ) {
-        if (Files.isDirectory(path)) {
+        if (isDir) {
             if (types.contains(CREATED)) {
                 safeRun(() -> registerListener.accept(
                                     new FileWatchRegisterEvent(path)));
@@ -287,37 +292,42 @@ public class FileWatcher_FsWatch implements IFileWatcher {
 
             if (types.contains(CREATED)) {
                 safeRun(() -> filesListener.accept(
-                                 new FileWatchFileEvent(path, true, CREATED)));
+                                 new FileWatchFileEvent(path, isDir, isFile, CREATED)));
             }
             else if (types.contains(DELETED)) {
                 safeRun(() -> filesListener.accept(
-                                new FileWatchFileEvent(path, true, DELETED)));
+                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
             }
         }
-        else if (Files.isRegularFile(path)) {
+        else if (isFile) {
             if (types.contains(CREATED)) {
                safeRun(() -> filesListener.accept(
-                                new FileWatchFileEvent(path, false, CREATED)));
+                                new FileWatchFileEvent(path, isDir, isFile, CREATED)));
             }
             else if (types.contains(MODIFIED)) {
                 safeRun(() -> filesListener.accept(
-                                new FileWatchFileEvent(path, false, MODIFIED)));
+                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
             }
             else if (types.contains(DELETED)) {
                 safeRun(() -> filesListener.accept(
-                                new FileWatchFileEvent(path, false, DELETED)));
+                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
             }
         }
     }
 
-    private void fireFallbackEvents(final Path path) {
+    private void fireFallbackFileEvents(final Path path) {
         if (Files.isDirectory(path)) {
             safeRun(() -> filesListener.accept(
-                    new FileWatchFileEvent(path, true, MODIFIED)));
+                    new FileWatchFileEvent(path, true, false, MODIFIED)));
         }
         else if (Files.isRegularFile(path)) {
             safeRun(() -> filesListener.accept(
-                    new FileWatchFileEvent(path, false, MODIFIED)));
+                    new FileWatchFileEvent(path, false, true, MODIFIED)));
+        }
+        else {
+            // if the file has been deleted its type cannot be checked
+            safeRun(() -> filesListener.accept(
+                    new FileWatchFileEvent(path, false, false, DELETED)));
         }
     }
 

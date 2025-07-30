@@ -232,19 +232,24 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
                            final Path p = ((WatchEvent<Path>)e).context();
                            final Path absPath = dirPath.resolve(p);
                            final FileWatchFileEventType eventType = convertToEventType(e.kind());
-                           if (absPath.toFile().isDirectory()) {
+                           if (Files.isDirectory(absPath)) {
                                if (eventType == FileWatchFileEventType.CREATED) {
                                    register(absPath, true);  // register the new subdir
                                }
 
                                if (eventType != FileWatchFileEventType.MODIFIED) {
                                    safeRun(() -> filesListener.accept(
-                                                   new FileWatchFileEvent(absPath, true, eventType)));
+                                                   new FileWatchFileEvent(absPath, true, false, eventType)));
                                }
                            }
-                           else {
+                           else if (Files.isRegularFile(absPath)) {
                                safeRun(() -> filesListener.accept(
-                                               new FileWatchFileEvent(absPath, false, eventType)));
+                                               new FileWatchFileEvent(absPath, false, true, eventType)));
+                           }
+                           else {
+                               // if the file has been deleted its type cannot be checked
+                               safeRun(() -> filesListener.accept(
+                                               new FileWatchFileEvent(absPath, false, false, eventType)));
                            }});
 
                     key.reset();

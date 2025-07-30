@@ -332,7 +332,7 @@ public class IOFunctionsFileWatcher {
     ) {
         return fn == null
                 ? null
-                : (event) -> { if (event.isRegularFile()) {
+                : (event) -> { if (event.isFile()) {
                                     future.applyOf(
                                        partial.applyOf(
                                         fn,
