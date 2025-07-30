@@ -218,20 +218,28 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                                             safeRun(() -> registerListener.accept(
                                                                 new FileWatchRegisterEvent(path)));
                                         }
-                                    }
 
-                                    if (isFile || isDir) {
                                         if (types.contains(CREATED)) {
-                                           safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, isDir, CREATED)));
-                                        }
-                                        else if (types.contains(MODIFIED) && isFile) {
                                             safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, isDir, MODIFIED)));
+                                                             new FileWatchFileEvent(path, true, CREATED)));
                                         }
                                         else if (types.contains(DELETED)) {
                                             safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, isDir, DELETED)));
+                                                            new FileWatchFileEvent(path, true, DELETED)));
+                                        }
+                                    }
+                                    else if (isFile) {
+                                        if (types.contains(CREATED)) {
+                                           safeRun(() -> eventListener.accept(
+                                                            new FileWatchFileEvent(path, false, CREATED)));
+                                        }
+                                        else if (types.contains(MODIFIED)) {
+                                            safeRun(() -> eventListener.accept(
+                                                            new FileWatchFileEvent(path, false, MODIFIED)));
+                                        }
+                                        else if (types.contains(DELETED)) {
+                                            safeRun(() -> eventListener.accept(
+                                                            new FileWatchFileEvent(path, false, DELETED)));
                                         }
                                     }
                                 }

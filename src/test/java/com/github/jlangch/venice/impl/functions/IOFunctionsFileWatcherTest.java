@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -41,24 +43,41 @@ public class IOFunctionsFileWatcherTest {
 
         final String script =
                 "(do                                                                     \n" +
-                "  (def event-count (atom 0))                                            \n" +
+                "  (def lock 0)                                                          \n" +
+                "                                                                        \n" +
+                "  (def file-event-count        (atom 0))                                \n" +
+                "  (def register-event-count    (atom 0))                                \n" +
+                "  (def error-event-count       (atom 0))                                \n" +
+                "  (def termination-event-count (atom 0))                                \n" +
                 "                                                                        \n" +
                 "  (defn event [path mode]                                               \n" +
-                "    (swap! event-count inc)                                             \n" +
+                "    (swap! file-event-count inc)                                        \n" +
                 "    (log \"Event:      \" path mode))                                   \n" +
                 "                                                                        \n" +
+                "  (defn register [path]                                                 \n" +
+                "    (swap! register-event-count inc)                                    \n" +
+                "    (log \"Registered: \" path))                                        \n" +
+                "                                                                        \n" +
+                "  (defn error [path e]                                                  \n" +
+                "    (swap! error-event-count inc)                                       \n" +
+                "    (log \"Failure:    \" (:message e)))                                \n" +
+                "                                                                        \n" +
+                "  (defn termination [path]                                              \n" +
+                "    (swap! termination-event-count inc)                                 \n" +
+                "    (log \"Terminated: \" path))                                        \n" +
+                "                                                                        \n" +
                 "  (defn log [& s]                                                       \n" +
-                "    (locking event-count (apply println s)))                            \n" +
+                "    (locking lock (apply println s)))                                   \n" +
                 "                                                                        \n" +
                 "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
                 "  (io/delete-file-on-exit dir)                                          \n" +
                 "                                                                        \n" +
                 "  (try-with [w (io/watch-dir dir                                        \n" +
                 "                             #(event %1 %2)                             \n" +
-                "                             #(log \"Failure:    \" (:message %2))      \n" +
-                "                             #(log \"Terminated: \" %1)                 \n" +
-                "                             #(log \"Registered: \" %1))]               \n" +
-                "    (log \"Watching:  \" dir)                                           \n" +
+                "                             #(error %1 %2)                             \n" +
+                "                             #(termination %1)                          \n" +
+                "                             #(register %1))]                           \n" +
+                "    (log \"Watching:   \" dir)                                          \n" +
                 "                                                                        \n" +
                 "    (sleep 1 :seconds)                                                  \n" +
                 "                                                                        \n" +
@@ -70,11 +89,24 @@ public class IOFunctionsFileWatcherTest {
                 "    (sleep 3 :seconds))                                                 \n" +
                 "                                                                        \n" +
                 "    (sleep 1 :seconds)                                                  \n" +
-                "    (log \"\n#Events:    \" @event-count)                               \n" +
+                "    (log \"\")                                                          \n" +
+                "    (log \"File Events:        \" @file-event-count)                    \n" +
+                "    (log \"Register Events:    \" @register-event-count)                \n" +
+                "    (log \"Error Events:       \" @error-event-count)                   \n" +
+                "    (log \"Termination Events: \" @termination-event-count)             \n" +
                 "                                                                        \n" +
-                "    @event-count)                                                       ";
+                "    [ @file-event-count                                                 \n" +
+                "      @register-event-count                                             \n" +
+                "      @error-event-count                                                \n" +
+                "      @termination-event-count ])                                       ";
 
-        assertEquals(1L, venice.eval(script));
+        @SuppressWarnings("unchecked")
+		final List<Long> events = (List<Long>)venice.eval(script);
+
+        assertEquals(1L, events.get(0));  // file events
+        assertEquals(1L, events.get(1));  // registration events
+        assertEquals(0L, events.get(2));  // error events
+        assertEquals(1L, events.get(3));  // termination events
     }
 
 }

@@ -142,7 +142,7 @@ public class IOFunctionsFileWatcher {
                 }
 
                 final boolean registerAllSubDirs = true;
-                final boolean fireEventsForDirsToo = false;
+                final boolean fireFileEventsForDirsToo = false;
 
                 final VncFunction eventFn = Coerce.toVncFunction(args.nth(1));
                 final VncFunction errorFn = Coerce.toVncFunctionOptional(args.nthOrDefault(2, Nil));
@@ -157,7 +157,7 @@ public class IOFunctionsFileWatcher {
                             fw = new FileWatcher_JavaWatchService(
                                          dir.toPath(),
                                          registerAllSubDirs,
-                                         createFileEventListener(eventFn, fireEventsForDirsToo),
+                                         createFileEventListener(eventFn, fireFileEventsForDirsToo),
                                          createErrorEventListener(errorFn),
                                          createTerminationEventListener(terminationFn),
                                          createRegisterEventListener(registerFn));
@@ -166,7 +166,7 @@ public class IOFunctionsFileWatcher {
                             fw = new FileWatcher_FsWatch(
                                          dir.toPath(),
                                          registerAllSubDirs,
-                                         createFileEventListener(eventFn, fireEventsForDirsToo),
+                                         createFileEventListener(eventFn, fireFileEventsForDirsToo),
                                          createErrorEventListener(errorFn),
                                          createTerminationEventListener(terminationFn),
                                          createRegisterEventListener(registerFn),
