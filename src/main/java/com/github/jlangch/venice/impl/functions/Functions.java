@@ -138,6 +138,7 @@ public class Functions {
         functions.putAll(ArrayFunctions.ns);
         functions.putAll(MathFunctions.ns);
         functions.putAll(IOFunctions.ns);
+        functions.putAll(IOFunctionsFileWatcher.ns);
         functions.putAll(IOFunctionsSpitSlurp.ns);
         functions.putAll(IOFunctionsStreams.ns);
         functions.putAll(ZipFunctions.ns);
