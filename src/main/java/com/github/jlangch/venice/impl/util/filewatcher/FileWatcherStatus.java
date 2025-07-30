@@ -62,8 +62,6 @@ public enum FileWatcherStatus {
 
     RUNNING,
 
-    CLOSING,
-
     CLOSED;
 
 }
