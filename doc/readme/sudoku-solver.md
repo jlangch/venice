@@ -143,5 +143,5 @@ The Sudoku solver:
 
 ------
 
-The documentation for the functions used in the Sudoku solver can be found in the Venice [cheatsheet](https://cdn.rawgit.com/jlangch/venice/f757d89/cheatsheet.pdf).
+The documentation for the functions used in the Sudoku solver can be found in the Venice [cheatsheet](https://cdn.rawgit.com/jlangch/venice/31377ae/cheatsheet.pdf).
 
