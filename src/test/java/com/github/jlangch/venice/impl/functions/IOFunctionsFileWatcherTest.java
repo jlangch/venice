@@ -102,7 +102,6 @@ public class IOFunctionsFileWatcherTest {
         final List<Long> events = (List<Long>)venice.eval(script);
 
         assertEquals(1L, events.get(0));  // file events
-        assertEquals(0L, events.get(1));  // registration events
         assertEquals(0L, events.get(2));  // error events
         assertEquals(1L, events.get(3));  // termination events
     }

@@ -57,7 +57,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     public FileWatcher_JavaWatchService(
             final Path mainDir,
             final boolean registerAllSubDirs,
-            final Consumer<FileWatchFileEvent> eventListener,
+            final Consumer<FileWatchFileEvent> filesListener,
             final Consumer<FileWatchErrorEvent> errorListener,
             final Consumer<FileWatchTerminationEvent> terminationListener,
             final Consumer<FileWatchRegisterEvent> registerListener
@@ -70,7 +70,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
         }
 
         this.mainDir = mainDir.toAbsolutePath().normalize();
-        this.eventListener = eventListener;
+        this.filesListener = filesListener;
         this.errorListener = errorListener;
         this.registerListener = registerListener;
         this.terminationListener = terminationListener;
@@ -238,12 +238,12 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
                                }
 
                                if (eventType != FileWatchFileEventType.MODIFIED) {
-                                   safeRun(() -> eventListener.accept(
+                                   safeRun(() -> filesListener.accept(
                                                    new FileWatchFileEvent( absPath, true, eventType)));
                                }
                            }
                            else {
-                               safeRun(() -> eventListener.accept(
+                               safeRun(() -> filesListener.accept(
                                                new FileWatchFileEvent( absPath, true, eventType)));
                            }});
 
@@ -298,7 +298,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     private final Path mainDir;
     private final WatchService ws;
     private final Map<WatchKey,Path> keys = new HashMap<>();
-    private final Consumer<FileWatchFileEvent> eventListener;
+    private final Consumer<FileWatchFileEvent> filesListener;
     private final Consumer<FileWatchErrorEvent> errorListener;
     private final Consumer<FileWatchRegisterEvent> registerListener;
     private final Consumer<FileWatchTerminationEvent> terminationListener;
