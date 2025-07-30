@@ -19,20 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.filewatcher;
+package com.github.jlangch.venice.impl.util.filewatcher.events;
 
 import java.nio.file.Path;
 
 
-public class FileWatchTerminationEvent implements FileWatcherEvent {
+public class FileWatchRegisterEvent implements FileWatcherEvent {
 
-    public FileWatchTerminationEvent(final Path path) {
+    public FileWatchRegisterEvent(final Path path) {
         this.path = path;
     }
 
 
     public Path getPath() {
         return path;
+    }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("Path: ");
+        sb.append(path);
+
+        return sb.toString();
     }
 
 

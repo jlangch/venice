@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.io;
+package com.github.jlangch.venice.impl.util.filewatcher;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
@@ -37,25 +37,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchRegisterEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchTerminationEvent;
 
 
-public class FileWatcher_Linux implements IFileWatcher {
+/**
+ * A FileWatcher based on the Java WatchService
+ */
+public class FileWatcher_JavaWatchService implements IFileWatcher {
 
-    public FileWatcher_Linux(
+    public FileWatcher_JavaWatchService(
             final Path mainDir,
             final boolean registerAllSubDirs,
-            final BiConsumer<Path,FileWatchFileEventType> eventListener,
-            final BiConsumer<Path,Exception> errorListener,
-            final Consumer<Path> terminationListener,
-            final Consumer<Path> registerListener
+            final Consumer<FileWatchFileEvent> eventListener,
+            final Consumer<FileWatchErrorEvent> errorListener,
+            final Consumer<FileWatchTerminationEvent> terminationListener,
+            final Consumer<FileWatchRegisterEvent> registerListener
     ) throws IOException {
         if (mainDir == null) {
             throw new IllegalArgumentException("The mainDir must not be null!");
@@ -138,7 +144,8 @@ public class FileWatcher_Linux implements IFileWatcher {
             }
 
             if (terminationListener != null) {
-                safeRun(() -> terminationListener.accept(mainDir));
+                safeRun(() -> terminationListener.accept(
+                                new FileWatchTerminationEvent(mainDir)));
             }
         }
     }
@@ -153,12 +160,12 @@ public class FileWatcher_Linux implements IFileWatcher {
             keys.put(dirKey, dir);
 
             if (sendEvent && registerListener != null) {
-                safeRun(() -> registerListener.accept(dir));
+                safeRun(() -> registerListener.accept(new FileWatchRegisterEvent(dir)));
             }
         }
         catch(Exception e) {
             if (errorListener != null) {
-                safeRun(() -> errorListener.accept(dir, e));
+                safeRun(() -> errorListener.accept(new FileWatchErrorEvent(dir, e)));
             }
         }
     }
@@ -189,14 +196,21 @@ public class FileWatcher_Linux implements IFileWatcher {
                                @SuppressWarnings("unchecked")
                                final Path p = ((WatchEvent<Path>)e).context();
                                final Path absPath = dirPath.resolve(p);
-                               if (absPath.toFile().isDirectory() && e.kind() == ENTRY_CREATE) {
-                                   // register the new subdir
-                                   register(absPath, true);
+                               final FileWatchFileEventType eventType = convertToEventType(e.kind());
+                               if (absPath.toFile().isDirectory()) {
+                                   if (eventType == FileWatchFileEventType.CREATED) {
+                                       register(absPath, true);  // register the new subdir
+                                   }
+
+                                   if (eventType != FileWatchFileEventType.MODIFIED) {
+                                       safeRun(() -> eventListener.accept(
+                                                       new FileWatchFileEvent( absPath, true, eventType)));
+                                   }
                                }
-                               safeRun(() -> eventListener.accept(
-                                                 absPath,
-                                                 convertToEventType(e.kind())));
-                             });
+                               else {
+                                   safeRun(() -> eventListener.accept(
+                                                   new FileWatchFileEvent( absPath, true, eventType)));
+                               }});
 
                         key.reset();
                     }
@@ -208,7 +222,8 @@ public class FileWatcher_Linux implements IFileWatcher {
                     }
                     catch(Exception ex) {
                         if (errorListener != null) {
-                            safeRun(() -> errorListener.accept(mainDir, ex));
+                            safeRun(() -> errorListener.accept(
+                                                new FileWatchErrorEvent(mainDir, ex)));
                         }
                         // continue
                     }
@@ -250,8 +265,8 @@ public class FileWatcher_Linux implements IFileWatcher {
     private final Path mainDir;
     private final WatchService ws;
     private final Map<WatchKey,Path> keys = new HashMap<>();
-    private final BiConsumer<Path,FileWatchFileEventType> eventListener;
-    private final BiConsumer<Path,Exception> errorListener;
-    private final Consumer<Path> registerListener;
-    private final Consumer<Path> terminationListener;
+    private final Consumer<FileWatchFileEvent> eventListener;
+    private final Consumer<FileWatchErrorEvent> errorListener;
+    private final Consumer<FileWatchRegisterEvent> registerListener;
+    private final Consumer<FileWatchTerminationEvent> terminationListener;
 }

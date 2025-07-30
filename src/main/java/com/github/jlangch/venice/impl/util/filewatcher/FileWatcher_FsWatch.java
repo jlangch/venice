@@ -19,12 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.io;
+package com.github.jlangch.venice.impl.util.filewatcher;
 
-import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.CREATED;
-import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.DELETED;
-import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.MODIFIED;
-import static com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType.OVERFLOW;
+import static com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType.CREATED;
+import static com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType.DELETED;
+import static com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType.MODIFIED;
+import static com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType.OVERFLOW;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -45,14 +44,18 @@ import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchRegisterEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchTerminationEvent;
 
 
 /**
- * FileWatcher implementation for MacOS
+ * FileWatcher implementation based on top of the <i>fswatch</i> tool.
  *
- * <p>The Java WatchService does not work properly on MacOS. Therefore the MacOS
- * file watcher is implemented on top of the <i>fswatch</i> tool.
+ * <p>The Java WatchService does not work properly on MacOS. This FileWatcher
+ * solves the problem on MacOS.
  *
  * <p><i>fswatch</i> is installed via Homebrew:
  *
@@ -64,15 +67,15 @@ import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
  * @see <a href="https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html/">fswatch Manual</a>
  * @see <a href="https://formulae.brew.sh/formula/fswatch">fswatch Installation</a>
  */
-public class FileWatcher_MacOS implements IFileWatcher {
+public class FileWatcher_FsWatch implements IFileWatcher {
 
-    public FileWatcher_MacOS(
+    public FileWatcher_FsWatch(
             final Path mainDir,
             final boolean recursive,
-            final BiConsumer<Path,FileWatchFileEventType> eventListener,
-            final BiConsumer<Path,Exception> errorListener,
-            final Consumer<Path> terminationListener,
-            final Consumer<Path> registerListener,
+            final Consumer<FileWatchFileEvent> eventListener,
+            final Consumer<FileWatchErrorEvent> errorListener,
+            final Consumer<FileWatchTerminationEvent> terminationListener,
+            final Consumer<FileWatchRegisterEvent> registerListener,
             final String fswatchProgram
     ) throws IOException {
         if (mainDir == null) {
@@ -143,7 +146,8 @@ public class FileWatcher_MacOS implements IFileWatcher {
             }
 
             if (terminationListener != null) {
-                safeRun(() -> terminationListener.accept(mainDir));
+                safeRun(() -> terminationListener.accept(
+                                new FileWatchTerminationEvent(mainDir)));
             }
         }
     }
@@ -209,26 +213,39 @@ public class FileWatcher_MacOS implements IFileWatcher {
                                     final boolean isDir = flags.contains("IsDir");
                                     final boolean isFile = flags.contains("IsFile");
 
-                                    if (isFile) {
+                                    if (isDir) {
                                         if (types.contains(CREATED)) {
-                                           safeRun(() -> eventListener.accept(path, CREATED));
-                                        }
-                                        else if (types.contains(MODIFIED)) {
-                                            safeRun(() -> eventListener.accept(path, MODIFIED));
-                                        }
-                                        else if (types.contains(DELETED)) {
-                                            safeRun(() -> eventListener.accept(path, DELETED));
+                                            safeRun(() -> registerListener.accept(
+                                                                new FileWatchRegisterEvent(path)));
                                         }
                                     }
-                                    else if (isDir) {
+
+                                    if (isFile || isDir) {
                                         if (types.contains(CREATED)) {
-                                            safeRun(() -> registerListener.accept(path));
+                                           safeRun(() -> eventListener.accept(
+                                                            new FileWatchFileEvent(path, false, CREATED)));
+                                        }
+                                        else if (types.contains(MODIFIED) && isFile) {
+                                            safeRun(() -> eventListener.accept(
+                                                            new FileWatchFileEvent(path, false, MODIFIED)));
+                                        }
+                                        else if (types.contains(DELETED)) {
+                                            safeRun(() -> eventListener.accept(
+                                                            new FileWatchFileEvent(path, false, DELETED)));
                                         }
                                     }
                                 }
                                 else {
                                     // fallback in case of no flags
-                                    safeRun(() -> eventListener.accept(Paths.get(line), MODIFIED));
+                                    final Path path = Paths.get(line);
+                                    if (Files.isDirectory(path)) {
+                                        safeRun(() -> eventListener.accept(
+                                                new FileWatchFileEvent(path, true, MODIFIED)));
+                                    }
+                                    else if (Files.isRegularFile(path)) {
+                                        safeRun(() -> eventListener.accept(
+                                                new FileWatchFileEvent(path, false, MODIFIED)));
+                                    }
                                 }
                             }
                             else {
@@ -239,7 +256,8 @@ public class FileWatcher_MacOS implements IFileWatcher {
                 }
                 catch (Exception ex) {
                     if (errorListener != null) {
-                        safeRun(() -> errorListener.accept(mainDir, ex));
+                        safeRun(() -> errorListener.accept(
+                                        new FileWatchErrorEvent(mainDir, ex)));
                     }
                 }
 
@@ -325,9 +343,9 @@ public class FileWatcher_MacOS implements IFileWatcher {
 
     private final Path mainDir;
     private final boolean recursive;
-    private final BiConsumer<Path,FileWatchFileEventType> eventListener;
-    private final Consumer<Path> registerListener;
-    private final BiConsumer<Path,Exception> errorListener;
-    private final Consumer<Path> terminationListener;
+    private final Consumer<FileWatchFileEvent> eventListener;
+    private final Consumer<FileWatchRegisterEvent> registerListener;
+    private final Consumer<FileWatchErrorEvent> errorListener;
+    private final Consumer<FileWatchTerminationEvent> terminationListener;
     private final String fswatchProgram;
 }

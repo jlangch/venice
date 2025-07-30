@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -86,15 +85,17 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.filewatcher.FileWatchFileEventType;
-import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher;
+import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher_JavaWatchService;
+import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher_FsWatch;
+import com.github.jlangch.venice.impl.util.filewatcher.IFileWatcher;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchRegisterEvent;
+import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchTerminationEvent;
 import com.github.jlangch.venice.impl.util.http.BasicAuthentication;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
-import com.github.jlangch.venice.impl.util.io.FileWatcher_Linux;
-import com.github.jlangch.venice.impl.util.io.FileWatcher_MacOS;
-import com.github.jlangch.venice.impl.util.io.IFileWatcher;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -1732,53 +1733,59 @@ public class IOFunctions {
                 final VncFunction termFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nthOrDefault(4, Nil));
 
-                final BiConsumer<Path,FileWatchFileEventType> eventListener =
-                        (path, eventType) -> future.applyOf(
+                final Consumer<FileWatchFileEvent> eventListener =
+                        (event) -> { if (!event.isDirectory()) {  // regular files only
+                                        future.applyOf(
                                                partial.applyOf(
                                                 eventFn,
-                                                new VncString(path.toString()),
-                                                new VncKeyword(eventType.name().toLowerCase())));
+                                                new VncString(event.getPath().toString()),
+                                                new VncKeyword(event.getType().name().toLowerCase()))); }};
 
-                final BiConsumer<Path,Exception> errorListener =
+                final Consumer<FileWatchErrorEvent> errorListener =
                         failFn == null ? null
-                                       : (path, ex) -> future.applyOf(
+                                       : (event) -> future.applyOf(
                                                         partial.applyOf(
                                                             failFn,
-                                                            new VncString(path.toString()),
-                                                            new VncJavaObject(ex)));
+                                                            new VncString(event.getPath().toString()),
+                                                            new VncJavaObject(event.getException())));
 
-                final Consumer<Path> terminationListener =
+                final Consumer<FileWatchTerminationEvent> terminationListener =
                         termFn == null ? null
-                                       : (path) -> future.applyOf(
+                                       : (event) -> future.applyOf(
                                                     partial.applyOf(
                                                         termFn,
-                                                        new VncString(path.toString())));
+                                                        new VncString(event.getPath().toString())));
 
-                final Consumer<Path> registerListener =
+                final Consumer<FileWatchRegisterEvent> registerListener =
                         registerFn == null ? null
-                                           : (path) -> future.applyOf(
+                                           : (event) -> future.applyOf(
                                                         partial.applyOf(
                                                             registerFn,
-                                                            new VncString(path.toString())));
+                                                            new VncString(event.getPath().toString())));
 
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
-                        final IFileWatcher fw =
-                            OS.isLinux() ? new FileWatcher_Linux(
-                                                 dir.toPath(),
-                                                 false,
-                                                 eventListener,
-                                                 errorListener,
-                                                 terminationListener,
-                                                 registerListener)
-                                         : new FileWatcher_MacOS(
-                                                 dir.toPath(),
-                                                 true,
-                                                 eventListener,
-                                                 errorListener,
-                                                 terminationListener,
-                                                 registerListener,
-                                                 "/opt/homebrew/bin/fswatch");
+                        final IFileWatcher fw;
+
+                        if (OS.isLinux()) {
+                            fw = new FileWatcher_JavaWatchService(
+                                         dir.toPath(),
+                                         true,
+                                         eventListener,
+                                         errorListener,
+                                         terminationListener,
+                                         registerListener);
+                        }
+                        else {
+                            fw = new FileWatcher_FsWatch(
+                                         dir.toPath(),
+                                         true,
+                                         eventListener,
+                                         errorListener,
+                                         terminationListener,
+                                         registerListener,
+                                         "/opt/homebrew/bin/fswatch");
+                        }
 
                         fw.start(new CallFrame[] { new CallFrame(this, args) });
 
@@ -1837,7 +1844,7 @@ public class IOFunctions {
                             "Function 'io/add-watch-dir' is not supported on this operating system!");
                 }
 
-                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
+                final IFileWatcher fw = Coerce.toVncJavaObject(args.first(), IFileWatcher.class);
 
                 final File dir = convertToFile(
                                         args.second(),
@@ -1884,7 +1891,7 @@ public class IOFunctions {
 
                 sandboxFunctionCallValidation();
 
-                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
+                final IFileWatcher fw = Coerce.toVncJavaObject(args.first(), IFileWatcher.class);
 
                 return VncList.ofColl(
                         fw.getRegisteredPaths()
@@ -1915,7 +1922,7 @@ public class IOFunctions {
 
                 sandboxFunctionCallValidation();
 
-                final FileWatcher fw = Coerce.toVncJavaObject(args.first(), FileWatcher.class);
+                final IFileWatcher fw = Coerce.toVncJavaObject(args.first(), IFileWatcher.class);
                 try {
                     fw.close();
                     return Nil;

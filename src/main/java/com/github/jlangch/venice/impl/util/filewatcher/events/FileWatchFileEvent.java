@@ -19,20 +19,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.filewatcher;
+package com.github.jlangch.venice.impl.util.filewatcher.events;
 
 import java.nio.file.Path;
 
 
-public class FileWatchRegisterEvent implements FileWatcherEvent {
+public class FileWatchFileEvent implements FileWatcherEvent {
 
-    public FileWatchRegisterEvent(final Path path) {
+    public FileWatchFileEvent(
+            final Path path,
+            final boolean isDirectory,
+            final FileWatchFileEventType type
+    ) {
         this.path = path;
+        this.isDirectory = isDirectory;
+        this.type = type;
     }
 
 
     public Path getPath() {
         return path;
+    }
+
+    public boolean isDirectory() {
+        return isDirectory;
+    }
+
+    public FileWatchFileEventType getType() {
+        return type;
     }
 
 
@@ -42,10 +56,18 @@ public class FileWatchRegisterEvent implements FileWatcherEvent {
 
         sb.append("Path: ");
         sb.append(path);
+        sb.append(System.lineSeparator());
+        sb.append("Dir:  ");
+        sb.append(isDirectory);
+        sb.append(System.lineSeparator());
+        sb.append("Type: ");
+        sb.append(type);
 
         return sb.toString();
     }
 
 
     private final Path path;
+    private final boolean isDirectory;
+    private final FileWatchFileEventType type;
 }

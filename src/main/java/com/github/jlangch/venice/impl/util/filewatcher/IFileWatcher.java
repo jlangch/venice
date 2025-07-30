@@ -21,16 +21,26 @@
  */
 package com.github.jlangch.venice.impl.util.filewatcher;
 
+import java.io.Closeable;
+import java.nio.file.Path;
+import java.util.List;
 
-public enum FileWatchFileEventType {
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 
-    CREATED,   // file created
 
-    MODIFIED,  // file modified
+public interface IFileWatcher extends Closeable {
 
-    DELETED,   // file deleted
+    public void start(final CallFrame[] callFrame) ;
 
-    OVERFLOW;  // a special event to indicate that events may have been
-	           // lost or discarded.
+    public Path getMainDir();
+
+    public void register(final Path dir);
+
+    public List<Path> getRegisteredPaths();
+
+    public boolean isRunning() ;
+
+    @Override
+    public void close();
 
 }

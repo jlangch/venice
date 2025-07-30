@@ -19,28 +19,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.io;
-
-import java.io.Closeable;
-import java.nio.file.Path;
-import java.util.List;
-
-import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+package com.github.jlangch.venice.impl.util.filewatcher.events;
 
 
-public interface IFileWatcher extends Closeable {
+public enum FileWatchFileEventType {
 
-    public void start(final CallFrame[] callFrame) ;
+    CREATED,   // file created
 
-    public Path getMainDir();
+    MODIFIED,  // file modified
 
-    public void register(final Path dir);
+    DELETED,   // file deleted
 
-    public List<Path> getRegisteredPaths();
-
-    public boolean isRunning() ;
-
-    @Override
-    public void close();
+    OVERFLOW;  // a special event to indicate that events may have been
+	           // lost or discarded.
 
 }
