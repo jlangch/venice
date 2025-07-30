@@ -31,11 +31,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -59,25 +61,20 @@ public class IOFunctionsFileWatcher {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/watch-dir dir event-fn)",
-                        "(io/watch-dir dir event-fn failure-fn)",
-                        "(io/watch-dir dir event-fn failure-fn termination-fn)",
-                        "(io/watch-dir dir event-fn failure-fn termination-fn register-fn)")
+                        "(io/watch-dir dir & options)")
                     .doc(
                         "Watch a directory for changes, and call the function `event-fn` when it " +
                         "does. Calls the optional `failure-fn` if errors occur. On closing " +
                         "the watcher `termination-fn` is called." +
                         "\n\n" +
-                        "`event-fn` is a two argument function that receives the path and mode " +
-                        "{:created, :deleted, :modified} of the changed file. \n\n" +
-                        "`failure-fn` is a two argument function that receives the watch dir and the " +
-                        "failure exception." +
-                        "\n\n" +
-                        "`termination-fn` is a one argument function that receives the watch dir.\n\n" +
-                        "`register-fn` is a one argument function that is called when a newly created " +
-                        "sub directory is dynamically registered. It receives the watch dir.\n\n" +
-                        "Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
-                        "a resource which should be closed with `(io/close-watcher w)`." +
+                        "Options: \n\n" +
+                        "| [![width: 25%]] | [![width: 75%]] |\n" +
+                        "| :include-all-subdirs true/false | If `true` includes in addtion to the main dir recursively all subdirs. If `false` just watches on the main dir. Defaults to `false`.|\n" +
+                        "| :event-fn fn | A two argument function that receives the path and mode {:created, :deleted, :modified} of the changed file. Defaults to `nil`.|\n" +
+                        "| :error-fn fn | A two argument function called in error case that receives the watch path and the failure exception. Defaults to `nil`.|\n" +
+                        "| :termination-fn fn | A one argument function called when the watcher terminates. It receives the watch dir.  Defaults to `nil`.|\n" +
+                        "| :register-fn fn | A one argument function that is called when a newly created sub directory is registered. It receives the registered dir. Defaults to `nil`.|\n" +
+                        "The *watcher* is a resource that must be closed with `(io/close-watcher w)`." +
                         "\n\n" +
                         "**MacOS** " +
                         "\n\n" +
@@ -93,29 +90,36 @@ public class IOFunctionsFileWatcher {
                         "* [fswatch Manual](https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html)\n" +
                         "* [fswatch Installation](https://formulae.brew.sh/formula/fswatch)\n")
                     .examples(
-                        "(try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))]                  \n" +
-                        "  ;; wait 30s and terminate                                             \n" +
-                        "  (sleep 30 :seconds))                                                  ",
-                        "(do                                                                     \n" +
-                        "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
-                        "  (io/delete-file-on-exit dir)                                          \n" +
-                        "                                                                        \n" +
-                        "  (println \"Watching:  \" dir)                                         \n" +
-                        "  (try-with [w (io/watch-dir dir                                        \n" +
-                        "                             #(println \"Event:     \" %1 %2)           \n" +
-                        "                             #(println \"Failure:   \" (:message %2))   \n" +
-                        "                             #(println \"Terminated:\" %1)              \n" +
-                        "                             #(println \"Registered:\" %1))]            \n" +
-                        "                                                                        \n" +
-                        "    (sleep 500)                                                         \n" +
-                        "                                                                        \n" +
-                        "    (let [f (io/file dir \"test1.txt\")]                                \n" +
-                        "      (io/spit f \"123456789\")                                         \n" +
-                        "      (io/delete-file-on-exit f)                                        \n" +
-                        "      (println \"New File:  \" f))                                      \n" +
-                        "                                                                        \n" +
-                        "    (sleep 1000))                                                       \n" +
-                        "  (sleep 200))                                                           ")
+                        "(try-with [w (io/watch-dir \"/tmp\" #(println %1 %2))]    \n" +
+                        "  ;; wait 30s and terminate                               \n" +
+                        "  (sleep 30 :seconds))                                    ",
+                        "(do                                                                                  \n" +
+                        "  (def dir (io/temp-dir \"watchdir-\"))                                              \n" +
+                        "  (io/delete-file-on-exit dir)                                                       \n" +
+                        "                                                                                     \n" +
+                        "  (println \"Watching:  \" dir)                                                      \n" +
+                        "                                                                                     \n" +
+                        "  (try-with [w (io/watch-dir dir                                                     \n" +
+                        "                   dir                                                               \n" +
+                        "                   :include-all-subdirs true                                         \n" +
+                        "                   :event-fn            #(println \"File Event: \" %1 %2)            \n" +
+                        "                   :error-fn            #(println \"Error:      \" %1 (:message %2)) \n" +
+                        "                   :termination-fn      #(println \"Terminated: \" %1)               \n" +
+                        "                   :register-fn         #(println \"Registered: \" %1))]             \n" +
+                        "                                                                                     \n" +
+                        "    (let [f (io/file dir \"test1.txt\")]                                             \n" +
+                        "      (io/touch-file f)                   ;; created                                 \n" +
+                        "      (io/delete-file-on-exit f)                                                     \n" +
+                        "      (sleep 1000)                                                                   \n" +
+                        "      (io/spit f \"AAA\" :append true)    ;; modifed                                 \n" +
+                        "      (sleep 1000)                                                                   \n" +
+                        "      (io/delete-file f))                 ;; deleted                                 \n" +
+                        "                                                                                     \n" +
+                        "    ;; wait that all events can be processed before the watcher is closed            \n" +
+                        "    (sleep 3000))                                                                    \n" +
+                        "                                                                                     \n" +
+                        "  ;; wait to receive the termination event                                           \n" +
+                        "  (sleep 1 :seconds))                                                                ")
                     .seeAlso(
                         "io/add-watch-dir",
                         "io/registered-watch-dirs",
@@ -125,7 +129,7 @@ public class IOFunctionsFileWatcher {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3, 4, 5);
+                ArityExceptions.assertMinArity(this, args, 1);
 
                 sandboxFunctionCallValidation();
 
@@ -140,12 +144,24 @@ public class IOFunctionsFileWatcher {
                                     dir.toString()));
                 }
 
-                final boolean registerAllSubDirs = true;
+                // parse options
+                final VncHashMap options = VncHashMap.ofAll(args.rest());
+                final VncVal registerAllSubDirsOpt = options.get(new VncKeyword("include-all-subdirs"),
+                                                                 VncBoolean.False);
+                final VncVal eventFnOpt = options.get(new VncKeyword("event-fn"));
+                final VncVal errorFnOpt = options.get(new VncKeyword("error-fn"));
+                final VncVal terminationFnOpt = options.get(new VncKeyword("termination-fn"));
+                final VncVal registerFnOpt = options.get(new VncKeyword("register-fn"));
+                final VncVal fswatchBinaryOpt = options.get(new VncKeyword("fswatch-binary"),
+                                                            new VncString("/opt/homebrew/bin/fswatch"));
 
-                final VncFunction eventFn = Coerce.toVncFunction(args.nth(1));
-                final VncFunction errorFn = Coerce.toVncFunctionOptional(args.nthOrDefault(2, Nil));
-                final VncFunction terminationFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
-                final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nthOrDefault(4, Nil));
+                final VncFunction eventFn = Coerce.toVncFunctionOptional(eventFnOpt);
+                final VncFunction errorFn = Coerce.toVncFunctionOptional(errorFnOpt);
+                final VncFunction terminationFn = Coerce.toVncFunctionOptional(terminationFnOpt);
+                final VncFunction registerFn = Coerce.toVncFunctionOptional(registerFnOpt);
+
+                final boolean registerAllSubDirs = Coerce.toVncBoolean(registerAllSubDirsOpt).getValue();
+                final String fswatchBinary = Coerce.toVncString(fswatchBinaryOpt).toString();
 
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
@@ -159,7 +175,7 @@ public class IOFunctionsFileWatcher {
                                          createErrorEventListener(errorFn),
                                          createTerminationEventListener(terminationFn),
                                          createRegisterEventListener(registerFn),
-                                         "/opt/homebrew/bin/fswatch");
+                                         fswatchBinary);
                         }
                         else {
                             fw = new FileWatcher_JavaWatchService(

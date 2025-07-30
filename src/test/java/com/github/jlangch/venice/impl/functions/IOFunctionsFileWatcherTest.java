@@ -35,10 +35,10 @@ public class IOFunctionsFileWatcherTest {
 
     // Note: The Github CI test containers do not like file watchers!
     //       Github simply aborts the CI action!
-	//
-	//       ==> Therefore the io/watch-dir unit tests are only run the
-	//           local MacOS.
-	//           Github CI actions will run on Linux and Windows
+    //
+    //       ==> Therefore the io/watch-dir unit tests are only run the
+    //           local MacOS.
+    //           Github CI actions will run on Linux and Windows
 
     @Test
     @EnableOnMac
@@ -76,15 +76,19 @@ public class IOFunctionsFileWatcherTest {
                 "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
                 "  (io/delete-file-on-exit dir)                                          \n" +
                 "                                                                        \n" +
-                "  (try-with [w (io/watch-dir dir                                        \n" +
-                "                             #(event %1 %2)                             \n" +
-                "                             #(error %1 %2)                             \n" +
-                "                             #(termination %1)                          \n" +
-                "                             #(register %1))]                           \n" +
+                "  (try-with [w (io/watch-dir                                            \n" +
+                "                   dir                                                  \n" +
+                "                   :include-all-subdirs true                            \n" +
+                "                   :event-fn            #(event %1 %2)                  \n" +
+                "                   :error-fn            #(error %1 %2)                  \n" +
+                "                   :termination-fn      #(termination %1)               \n" +
+                "                   :register-fn         #(register %1)                  \n" +
+                "                   :fswatch-binary      \"/opt/homebrew/bin/fswatch\")] \n" +
                 "    (log \"Watching:   \" dir)                                          \n" +
                 "                                                                        \n" +
                 "    (let [f (io/file dir \"test1.txt\")]                                \n" +
                 "      (io/touch-file f)                   ;; created                    \n" +
+                "      (io/delete-file-on-exit f)                                        \n" +
                 "      (log \"Test File:  \" f)                                          \n" +
                 "      (sleep 1000)                                                      \n" +
                 "      (io/spit f \"AAA\" :append true)    ;; modifed                    \n" +
@@ -95,6 +99,7 @@ public class IOFunctionsFileWatcherTest {
                 "                                                                        \n" +
                 "    (let [f (io/file dir \"test2.txt\")]                                \n" +
                 "      (io/spit f \"123\")                 ;; modifed                    \n" +
+                "      (io/delete-file-on-exit f)                                        \n" +
                 "      (log \"Test File:  \" f)                                          \n" +
                 "      (sleep 1000)                                                      \n" +
                 "      (io/spit f \"AAA\" :append true)    ;; modifed                    \n" +
@@ -104,7 +109,8 @@ public class IOFunctionsFileWatcherTest {
                 "    ;; wait for all events to be processed before closing the watcher   \n" +
                 "    (sleep 3 :seconds))                                                 \n" +
                 "                                                                        \n" +
-                "    (sleep 1 :seconds)  ;; wait for terminated event                    \n" +
+                "    ;; wait to receive the termination event                            \n" +
+                "    (sleep 1 :seconds)                                                  \n" +
                 "                                                                        \n" +
                 "    (log \"\")                                                          \n" +
                 "    (log \"File Events:        \" @file-event-count)                    \n" +
