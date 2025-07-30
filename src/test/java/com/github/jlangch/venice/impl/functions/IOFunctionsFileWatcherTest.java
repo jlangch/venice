@@ -35,6 +35,10 @@ public class IOFunctionsFileWatcherTest {
 
     // Note: The Github CI test containers do not like file watchers!
     //       Github simply aborts the CI action!
+	//
+	//       ==> Therefore the io/watch-dir unit tests are only run the
+	//           local MacOS.
+	//           Github CI actions will run on Linux and Windows
 
     @Test
     @EnableOnMac
