@@ -239,12 +239,12 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
 
                                if (eventType != FileWatchFileEventType.MODIFIED) {
                                    safeRun(() -> filesListener.accept(
-                                                   new FileWatchFileEvent( absPath, true, eventType)));
+                                                   new FileWatchFileEvent(absPath, true, eventType)));
                                }
                            }
                            else {
                                safeRun(() -> filesListener.accept(
-                                               new FileWatchFileEvent( absPath, true, eventType)));
+                                               new FileWatchFileEvent(absPath, false, eventType)));
                            }});
 
                     key.reset();

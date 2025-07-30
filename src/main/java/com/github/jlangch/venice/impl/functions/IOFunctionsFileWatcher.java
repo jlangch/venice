@@ -141,7 +141,6 @@ public class IOFunctionsFileWatcher {
                 }
 
                 final boolean registerAllSubDirs = true;
-                final boolean fireFileEventsForDirsToo = false;
 
                 final VncFunction eventFn = Coerce.toVncFunction(args.nth(1));
                 final VncFunction errorFn = Coerce.toVncFunctionOptional(args.nthOrDefault(2, Nil));
@@ -152,24 +151,24 @@ public class IOFunctionsFileWatcher {
                     try {
                         final IFileWatcher fw;
 
-                        if (OS.isLinux()) {
-                            fw = new FileWatcher_JavaWatchService(
-                                         dir.toPath(),
-                                         registerAllSubDirs,
-                                         createFileEventListener(eventFn, fireFileEventsForDirsToo),
-                                         createErrorEventListener(errorFn),
-                                         createTerminationEventListener(terminationFn),
-                                         createRegisterEventListener(registerFn));
-                        }
-                        else {
+                        if (OS.isMacOSX()) {
                             fw = new FileWatcher_FsWatch(
                                          dir.toPath(),
                                          registerAllSubDirs,
-                                         createFileEventListener(eventFn, fireFileEventsForDirsToo),
+                                         createFileEventListener(eventFn),
                                          createErrorEventListener(errorFn),
                                          createTerminationEventListener(terminationFn),
                                          createRegisterEventListener(registerFn),
                                          "/opt/homebrew/bin/fswatch");
+                        }
+                        else {
+                            fw = new FileWatcher_JavaWatchService(
+                                         dir.toPath(),
+                                         registerAllSubDirs,
+                                         createFileEventListener(eventFn),
+                                         createErrorEventListener(errorFn),
+                                         createTerminationEventListener(terminationFn),
+                                         createRegisterEventListener(registerFn));
                         }
 
                         fw.start(new CallFrame[] { new CallFrame(this, args) });
@@ -329,13 +328,11 @@ public class IOFunctionsFileWatcher {
     ///////////////////////////////////////////////////////////////////////////
 
     private static Consumer<FileWatchFileEvent> createFileEventListener(
-            final VncFunction fn,
-            final boolean fireEventsForDirsToo
+            final VncFunction fn
     ) {
         return fn == null
                 ? null
-                : (event) -> { final boolean fireEvent = event.isRegularFile() || fireEventsForDirsToo;
-                			   if (fireEvent) {
+                : (event) -> { if (event.isRegularFile()) {
                                     future.applyOf(
                                        partial.applyOf(
                                         fn,
@@ -353,7 +350,9 @@ public class IOFunctionsFileWatcher {
                                 partial.applyOf(
                                     fn,
                                     new VncString(event.getPath().toString()),
-                                    new VncJavaObject(event.getException())));
+                                    event.getException() == null
+                                    	? Nil
+                                    	: new VncJavaObject(event.getException())));
     }
 
     private static Consumer<FileWatchTerminationEvent> createTerminationEventListener(
