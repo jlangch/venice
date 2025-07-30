@@ -236,10 +236,16 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                             int separatorIdx = line.indexOf(SEPARATOR);
                             if (separatorIdx != -1) {
                                 final String filePath = line.substring(0, separatorIdx);
+                                final Path path = Paths.get(filePath).normalize();
+
+                                // fswatch is not really helpful with the flags:
+                                //
+                            	// Flags dir  created: Created IsDir AttributeModified
+                            	// Flags file created: Created IsFile Updated AttributeModified
+                            	// Flags file updated: Created IsFile Updated AttributeModified
+                            	// Flags file deleted: Created IsFile Updated Removed AttributeModified
                                 final String flags = line.substring(separatorIdx + SEPARATOR.length());
                                 final Set<FileWatchFileEventType> types = mapToEventTypes(flags);
-
-                                final Path path = Paths.get(filePath).normalize();
 
                                 final boolean isDir = flags.contains("IsDir");
                                 final boolean isFile = flags.contains("IsFile");
@@ -300,18 +306,30 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             }
         }
         else if (isFile) {
-            if (types.contains(CREATED)) {
-               safeRun(() -> filesListener.accept(
-                                new FileWatchFileEvent(path, isDir, isFile, CREATED)));
-            }
-            else if (types.contains(MODIFIED)) {
-                safeRun(() -> filesListener.accept(
-                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
-            }
-            else if (types.contains(DELETED)) {
-                safeRun(() -> filesListener.accept(
-                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
-            }
+        	if (Files.isRegularFile(path)) {
+	            if (types.contains(MODIFIED)) {
+	                safeRun(() -> filesListener.accept(
+	                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
+	            }
+	            else if (types.contains(CREATED)) {
+	               safeRun(() -> filesListener.accept(
+	                                new FileWatchFileEvent(path, isDir, isFile, CREATED)));
+	            }
+	            else if (types.contains(DELETED)) {
+	                safeRun(() -> filesListener.accept(
+	                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
+	            }
+        	}
+        	else {
+	            if (types.contains(DELETED)) {
+	                safeRun(() -> filesListener.accept(
+	                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
+	            }
+	            else {
+	                safeRun(() -> filesListener.accept(
+	                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
+	            }
+        	}
         }
     }
 

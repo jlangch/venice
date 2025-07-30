@@ -80,13 +80,28 @@ public class IOFunctionsFileWatcherTest {
                 "    (log \"Watching:   \" dir)                                          \n" +
                 "                                                                        \n" +
                 "    (let [f (io/file dir \"test1.txt\")]                                \n" +
-                "      (io/spit f \"123456789\")                                         \n" +
-                "      (io/delete-file-on-exit f)                                        \n" +
-                "      (log \"Added File: \" f))                                         \n" +
-                "                                                                        \n" +
-                "    (sleep 2 :seconds))                                                 \n" +
+                "      (io/touch-file f)                   ;; created                    \n" +
+                "      (log \"Test File:  \" f)                                          \n" +
+                "      (sleep 1000)                                                      \n" +
+                "      (io/spit f \"AAA\" :append true)    ;; modifed                    \n" +
+                "      (sleep 1000)                                                      \n" +
+                "      (io/delete-file f))                 ;; deleted                    \n" +
                 "                                                                        \n" +
                 "    (sleep 1 :seconds)                                                  \n" +
+                "                                                                        \n" +
+                "    (let [f (io/file dir \"test2.txt\")]                                \n" +
+                "      (io/spit f \"123\")                 ;; modifed                    \n" +
+                "      (log \"Test File:  \" f)                                          \n" +
+                "      (sleep 1000)                                                      \n" +
+                "      (io/spit f \"AAA\" :append true)    ;; modifed                    \n" +
+                "      (sleep 1000)                                                      \n" +
+                "      (io/delete-file f))                 ;; deleted                    \n" +
+                "                                                                        \n" +
+                "    ;; wait for all events to be processed before closing the watcher   \n" +
+                "    (sleep 3 :seconds))                                                 \n" +
+                "                                                                        \n" +
+                "    (sleep 1 :seconds)  ;; wait for terminated event                    \n" +
+                "                                                                        \n" +
                 "    (log \"\")                                                          \n" +
                 "    (log \"File Events:        \" @file-event-count)                    \n" +
                 "    (log \"Register Events:    \" @register-event-count)                \n" +
@@ -101,7 +116,7 @@ public class IOFunctionsFileWatcherTest {
         @SuppressWarnings("unchecked")
         final List<Long> events = (List<Long>)venice.eval(script);
 
-        assertEquals(1L, events.get(0));  // file events
+        assertEquals(6L, events.get(0));  // file events
         assertEquals(0L, events.get(2));  // error events
         assertEquals(1L, events.get(3));  // termination events
     }
