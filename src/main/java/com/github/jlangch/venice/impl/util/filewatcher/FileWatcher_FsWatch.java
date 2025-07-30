@@ -206,54 +206,19 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                                 if (separatorIdx != -1) {
                                     final String filePath = line.substring(0, separatorIdx);
                                     final String flags = line.substring(separatorIdx + SEPARATOR.length());
-                                    final Set<FileWatchFileEventType> types =  mapToEventTypes(flags);
+                                    final Set<FileWatchFileEventType> types = mapToEventTypes(flags);
 
                                     final Path path = Paths.get(filePath);
 
                                     final boolean isDir = flags.contains("IsDir");
                                     final boolean isFile = flags.contains("IsFile");
 
-                                    if (isDir) {
-                                        if (types.contains(CREATED)) {
-                                            safeRun(() -> registerListener.accept(
-                                                                new FileWatchRegisterEvent(path)));
-                                        }
-
-                                        if (types.contains(CREATED)) {
-                                            safeRun(() -> eventListener.accept(
-                                                             new FileWatchFileEvent(path, true, CREATED)));
-                                        }
-                                        else if (types.contains(DELETED)) {
-                                            safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, true, DELETED)));
-                                        }
-                                    }
-                                    else if (isFile) {
-                                        if (types.contains(CREATED)) {
-                                           safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, false, CREATED)));
-                                        }
-                                        else if (types.contains(MODIFIED)) {
-                                            safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, false, MODIFIED)));
-                                        }
-                                        else if (types.contains(DELETED)) {
-                                            safeRun(() -> eventListener.accept(
-                                                            new FileWatchFileEvent(path, false, DELETED)));
-                                        }
-                                    }
+                                    fireEvents(path, isDir, isFile, types);
                                 }
                                 else {
                                     // fallback in case of no flags
                                     final Path path = Paths.get(line);
-                                    if (Files.isDirectory(path)) {
-                                        safeRun(() -> eventListener.accept(
-                                                new FileWatchFileEvent(path, true, MODIFIED)));
-                                    }
-                                    else if (Files.isRegularFile(path)) {
-                                        safeRun(() -> eventListener.accept(
-                                                new FileWatchFileEvent(path, false, MODIFIED)));
-                                    }
+                                    fireFallbackEvents(path);
                                 }
                             }
                             else {
@@ -282,6 +247,54 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             r.run();
         }
         catch(Exception e) { }
+    }
+
+    private void fireEvents(
+            final Path path,
+            final boolean isDir,
+            final boolean isFile,
+            final Set<FileWatchFileEventType> types
+    ) {
+        if (isDir) {
+            if (types.contains(CREATED)) {
+                safeRun(() -> registerListener.accept(
+                                    new FileWatchRegisterEvent(path)));
+            }
+
+            if (types.contains(CREATED)) {
+                safeRun(() -> eventListener.accept(
+                                 new FileWatchFileEvent(path, true, CREATED)));
+            }
+            else if (types.contains(DELETED)) {
+                safeRun(() -> eventListener.accept(
+                                new FileWatchFileEvent(path, true, DELETED)));
+            }
+        }
+        else if (isFile) {
+            if (types.contains(CREATED)) {
+               safeRun(() -> eventListener.accept(
+                                new FileWatchFileEvent(path, false, CREATED)));
+            }
+            else if (types.contains(MODIFIED)) {
+                safeRun(() -> eventListener.accept(
+                                new FileWatchFileEvent(path, false, MODIFIED)));
+            }
+            else if (types.contains(DELETED)) {
+                safeRun(() -> eventListener.accept(
+                                new FileWatchFileEvent(path, false, DELETED)));
+            }
+        }
+    }
+
+    private void fireFallbackEvents(final Path path) {
+        if (Files.isDirectory(path)) {
+            safeRun(() -> eventListener.accept(
+                    new FileWatchFileEvent(path, true, MODIFIED)));
+        }
+        else if (Files.isRegularFile(path)) {
+            safeRun(() -> eventListener.accept(
+                    new FileWatchFileEvent(path, false, MODIFIED)));
+        }
     }
 
     private boolean isIdleEvent(final String line) {
@@ -344,7 +357,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
     }
 
 
-    private static final String SEPARATOR = "|";
+    private static final String SEPARATOR = "|#|";  // any reasonable string that does not appear in file names
 
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final AtomicReference<Process> fswatchProcess = new AtomicReference<>();
