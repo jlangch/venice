@@ -144,44 +144,9 @@ public class IOFunctionsFileWatcher {
                 }
 
                 final VncFunction eventFn = Coerce.toVncFunction(args.nth(1));
-                final VncFunction failFn = Coerce.toVncFunctionOptional(args.nthOrDefault(2, Nil));
-                final VncFunction termFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
+                final VncFunction errorFn = Coerce.toVncFunctionOptional(args.nthOrDefault(2, Nil));
+                final VncFunction terminationFn = Coerce.toVncFunctionOptional(args.nthOrDefault(3, Nil));
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(args.nthOrDefault(4, Nil));
-
-                final Consumer<FileWatchFileEvent> eventListener =
-                        eventFn == null
-                            ? null
-                            : (event) -> { if (!event.isDirectory()) {  // regular files only
-                                        future.applyOf(
-                                           partial.applyOf(
-                                            eventFn,
-                                            new VncString(event.getPath().toString()),
-                                            new VncKeyword(event.getType().name().toLowerCase()))); }};
-
-                final Consumer<FileWatchErrorEvent> errorListener =
-                        failFn == null
-                            ? null
-                            : (event) -> future.applyOf(
-                                            partial.applyOf(
-                                                failFn,
-                                                new VncString(event.getPath().toString()),
-                                                new VncJavaObject(event.getException())));
-
-                final Consumer<FileWatchTerminationEvent> terminationListener =
-                        termFn == null
-                            ? null
-                            : (event) -> future.applyOf(
-                                            partial.applyOf(
-                                                termFn,
-                                                new VncString(event.getPath().toString())));
-
-                final Consumer<FileWatchRegisterEvent> registerListener =
-                        registerFn == null
-                            ? null
-                            : (event) -> future.applyOf(
-                                            partial.applyOf(
-                                                registerFn,
-                                                new VncString(event.getPath().toString())));
 
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
@@ -191,19 +156,19 @@ public class IOFunctionsFileWatcher {
                             fw = new FileWatcher_JavaWatchService(
                                          dir.toPath(),
                                          true,
-                                         eventListener,
-                                         errorListener,
-                                         terminationListener,
-                                         registerListener);
+                                         createFileEventListener(eventFn),
+                                         createErrorEventListener(errorFn),
+                                         createTerminationEventListener(terminationFn),
+                                         createRegisterEventListener(registerFn));
                         }
                         else {
                             fw = new FileWatcher_FsWatch(
                                          dir.toPath(),
                                          true,
-                                         eventListener,
-                                         errorListener,
-                                         terminationListener,
-                                         registerListener,
+                                         createFileEventListener(eventFn),
+                                         createErrorEventListener(errorFn),
+                                         createTerminationEventListener(terminationFn),
+                                         createRegisterEventListener(registerFn),
                                          "/opt/homebrew/bin/fswatch");
                         }
 
@@ -359,34 +324,73 @@ public class IOFunctionsFileWatcher {
 
 
 
-        ///////////////////////////////////////////////////////////////////////////
-        // Util
-        ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    // Util
+    ///////////////////////////////////////////////////////////////////////////
 
-        public static File convertToFile(final VncVal f, final String errFormat) {
-            final File file = convertToFile(f);
-            if (file == null) {
-                throw new VncException(String.format(errFormat, Types.getType(f)));
-            }
-            else {
-                return file;
-            }
-        }
+    private static Consumer<FileWatchFileEvent> createFileEventListener(final VncFunction fn) {
+        return fn == null
+                ? null
+                : (event) -> { if (!event.isDirectory()) {  // regular files only
+                            future.applyOf(
+                               partial.applyOf(
+                                fn,
+                                new VncString(event.getPath().toString()),
+                                new VncKeyword(event.getType().name().toLowerCase()))); }};
+    }
 
-        private static File convertToFile(final VncVal f) {
-            if (Types.isVncString(f)) {
-                return new File(((VncString)f).getValue());
-            }
-            else if (Types.isVncJavaObject(f, File.class)) {
-                return Coerce.toVncJavaObject(f, File.class);
-            }
-            else if (Types.isVncJavaObject(f, Path.class)) {
-                return Coerce.toVncJavaObject(f, Path.class).toFile();
-            }
-            else {
-                return null;
-            }
+    private static Consumer<FileWatchErrorEvent> createErrorEventListener(final VncFunction fn) {
+        return fn == null
+                ? null
+                : (event) -> future.applyOf(
+                                partial.applyOf(
+                                    fn,
+                                    new VncString(event.getPath().toString()),
+                                    new VncJavaObject(event.getException())));
+    }
+
+    private static Consumer<FileWatchTerminationEvent> createTerminationEventListener(final VncFunction fn) {
+        return fn == null
+                ? null
+                : (event) -> future.applyOf(
+                                partial.applyOf(
+                                    fn,
+                                    new VncString(event.getPath().toString())));
+    }
+
+    private static Consumer<FileWatchRegisterEvent> createRegisterEventListener(final VncFunction fn) {
+        return fn == null
+                ? null
+                : (event) -> future.applyOf(
+                                partial.applyOf(
+                                    fn,
+                                    new VncString(event.getPath().toString())));
+    }
+
+    private static File convertToFile(final VncVal f, final String errFormat) {
+        final File file = convertToFile(f);
+        if (file == null) {
+            throw new VncException(String.format(errFormat, Types.getType(f)));
         }
+        else {
+            return file;
+        }
+    }
+
+    private static File convertToFile(final VncVal f) {
+        if (Types.isVncString(f)) {
+            return new File(((VncString)f).getValue());
+        }
+        else if (Types.isVncJavaObject(f, File.class)) {
+            return Coerce.toVncJavaObject(f, File.class);
+        }
+        else if (Types.isVncJavaObject(f, Path.class)) {
+            return Coerce.toVncJavaObject(f, Path.class).toFile();
+        }
+        else {
+            return null;
+        }
+    }
 
 
 
