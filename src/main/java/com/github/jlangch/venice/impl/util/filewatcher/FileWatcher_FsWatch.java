@@ -35,7 +35,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -62,6 +61,7 @@ import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchTerminati
  * <pre>
  *   brew install fswatch
  * </pre>
+ *
  *
  * @see <a href="https://github.com/emcrisostomo/fswatch/">fswatch Github</a>
  * @see <a href="https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html/">fswatch Manual</a>
@@ -105,21 +105,27 @@ public class FileWatcher_FsWatch implements IFileWatcher {
     @Override
     public void start(final CallFrame[] callFrame) {
         if (callFrame == null) {
-            throw new IllegalArgumentException("The callFrame array must not be null!");
+            throw new IllegalArgumentException(
+                        "The callFrame array must not be null!");
         }
 
-        try {
-            startService(callFrame);
+       if (status.compareAndSet(
+                    FileWatcherStatus.CREATED,
+                    FileWatcherStatus.INITIALISING)
+        ) {
+             startService(callFrame);
         }
-        catch(Exception ex) {
-            throw new RuntimeException("Failed to start FileWatcher");
+        else {
+            throw new RuntimeException(
+                    "Rejected to start the FileWatcher in status " + status.get());
         }
     }
 
     @Override
     public void register(final Path dir) {
         throw new RuntimeException(
-                "Registering additional FileWatcher directories is not support on MacOS!");
+                "Registering additional FileWatcher directories is not support on "
+                + "this FileWatcher!");
     }
 
     @Override
@@ -128,13 +134,16 @@ public class FileWatcher_FsWatch implements IFileWatcher {
     }
 
     @Override
-    public boolean isRunning() {
-        return !closed.get();
+    public FileWatcherStatus getStatus() {
+        return status.get();
     }
 
     @Override
     public void close() {
-        if (closed.compareAndSet(false, true)) {
+        if (status.compareAndSet(
+                FileWatcherStatus.RUNNING,
+                FileWatcherStatus.CLOSED)
+        ) {
             try {
                 final Process process = fswatchProcess.get();
                 if (process != null && process.isAlive()) {
@@ -149,6 +158,10 @@ public class FileWatcher_FsWatch implements IFileWatcher {
                 safeRun(() -> terminationListener.accept(
                                 new FileWatchTerminationEvent(mainDir)));
             }
+        }
+        else {
+            throw new RuntimeException(
+                    "Rejected to close the FileWatcher in status " + status.get());
         }
     }
 
@@ -173,76 +186,89 @@ public class FileWatcher_FsWatch implements IFileWatcher {
 
             fswatchProcess.set(pb.start());
 
-            // ensure the process is running and serving events
-            Thread.sleep(300);
+            // Create a wrapper that inherits the Venice thread context
+            // from the parent thread to the executer thread!
+            final ThreadBridge threadBridge = ThreadBridge.create("thread", callFrame);
+
+            final Runnable runnable = threadBridge.bridgeRunnable(createWorker());
+
+            final Thread th = GlobalThreadFactory.newThread("venice-watch-dir", runnable);
+            th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
+            th.start();
+
+            // spin wait max 5s for service to be ready or closed
+            final long ts = System.currentTimeMillis();
+            while(System.currentTimeMillis() < ts + 5_000) {
+                if (status.get() == FileWatcherStatus.RUNNING) break;
+                if (status.get() == FileWatcherStatus.CLOSED) break;
+                try { Thread.sleep(100); } catch(Exception ex) {}
+            }
         }
         catch(Exception ex) {
+            status.set(FileWatcherStatus.CLOSED);
             throw new RuntimeException("Failed to start FileWatcher!", ex);
         }
+    }
 
-        // Create a wrapper that inherits the Venice thread context
-        // from the parent thread to the executer thread!
-        final ThreadBridge threadBridge = ThreadBridge.create("thread", callFrame);
+    private Runnable createWorker() {
+        return () -> {
+            try {
+                final Process process = fswatchProcess.get();
 
-        final Runnable runnable = threadBridge.bridgeRunnable(
-            () -> {
-                try {
-                    final Process process = fswatchProcess.get();
+                try (BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(process.getInputStream()))) {
 
-                    try (BufferedReader reader = new BufferedReader(
-                         new InputStreamReader(process.getInputStream()))) {
+                    final StringBuilder buffer = new StringBuilder();
 
-                        final StringBuilder buffer = new StringBuilder();
+                    status.set(FileWatcherStatus.RUNNING);
 
-                        int ch;
-                        while ((ch = reader.read()) != -1 && !closed.get()) {
-                            if (ch == '\n') { // event terminator
-                                final String line = buffer.toString();
-                                buffer.setLength(0);
+                    int ch;
+                    while ((ch = reader.read()) != -1 && status.get() == FileWatcherStatus.RUNNING) {
+                        if (ch == '\n') { // event terminator
+                            final String line = buffer.toString();
+                            buffer.setLength(0);
 
-                                if (isIdleEvent(line)) {
-                                   continue;
-                                }
+                            if (isIdleEvent(line)) {
+                               continue;
+                            }
 
-                                // Example line: /path/to/file.txt|#|Updated Created
-                                int separatorIdx = line.indexOf(SEPARATOR);
-                                if (separatorIdx != -1) {
-                                    final String filePath = line.substring(0, separatorIdx);
-                                    final String flags = line.substring(separatorIdx + SEPARATOR.length());
-                                    final Set<FileWatchFileEventType> types = mapToEventTypes(flags);
+                            // Example line: /path/to/file.txt|#|Updated Created
+                            int separatorIdx = line.indexOf(SEPARATOR);
+                            if (separatorIdx != -1) {
+                                final String filePath = line.substring(0, separatorIdx);
+                                final String flags = line.substring(separatorIdx + SEPARATOR.length());
+                                final Set<FileWatchFileEventType> types = mapToEventTypes(flags);
 
-                                    final Path path = Paths.get(filePath);
+                                final Path path = Paths.get(filePath);
 
-                                    final boolean isDir = flags.contains("IsDir");
-                                    final boolean isFile = flags.contains("IsFile");
+                                final boolean isDir = flags.contains("IsDir");
+                                final boolean isFile = flags.contains("IsFile");
 
-                                    fireEvents(path, isDir, isFile, types);
-                                }
-                                else {
-                                    // fallback in case of no flags
-                                    final Path path = Paths.get(line);
-                                    fireFallbackEvents(path);
-                                }
+                                fireEvents(path, isDir, isFile, types);
                             }
                             else {
-                                buffer.append((char) ch);
+                                // fallback in case of no flags
+                                final Path path = Paths.get(line);
+                                fireFallbackEvents(path);
                             }
+                        }
+                        else {
+                            buffer.append((char) ch);
                         }
                     }
                 }
-                catch (Exception ex) {
-                    if (errorListener != null) {
-                        safeRun(() -> errorListener.accept(
-                                        new FileWatchErrorEvent(mainDir, ex)));
-                    }
+            }
+            catch (Exception ex) {
+                if (errorListener != null) {
+                    safeRun(() -> errorListener.accept(
+                                    new FileWatchErrorEvent(mainDir, ex)));
                 }
+            }
 
+            if (status.get() != FileWatcherStatus.CLOSED) {
                 close();
-            });
-
-        final Thread th = GlobalThreadFactory.newThread("venice-watch-dir", runnable);
-        th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
-        th.start();
+            }
+        };
     }
 
     private static void safeRun(final Runnable r) {
@@ -362,7 +388,8 @@ public class FileWatcher_FsWatch implements IFileWatcher {
 
     private static final String SEPARATOR = "|#|";  // any reasonable string that does not appear in file names
 
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+
+    private final AtomicReference<FileWatcherStatus> status = new AtomicReference<>(FileWatcherStatus.CREATED);
     private final AtomicReference<Process> fswatchProcess = new AtomicReference<>();
 
     private final Path mainDir;

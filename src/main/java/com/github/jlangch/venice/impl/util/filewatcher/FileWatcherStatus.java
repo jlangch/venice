@@ -21,26 +21,49 @@
  */
 package com.github.jlangch.venice.impl.util.filewatcher;
 
-import java.io.Closeable;
-import java.nio.file.Path;
-import java.util.List;
 
-import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+/**
+ * File watcher status
+ *
+ * <pre>
+ *            _
+ *           (_)
+ *            |
+ *            | new()
+ *            v
+ *     +--------------+
+ *     |   CREATED    |
+ *     +--------------+
+ *            |
+ *            | start()
+ *            v
+ *     +--------------+
+ *     | INITIALISING |
+ *     +--------------+
+ *            |
+ *            | startup finished
+ *            v
+ *     +--------------+
+ *     |   RUNNING    |
+ *     +--------------+
+ *            |
+ *            | close()
+ *            v
+ *     +--------------+
+ *     |    CLOSED    |
+ *     +--------------+
+ * </pre>
+ */
+public enum FileWatcherStatus {
 
+    CREATED,
 
-public interface IFileWatcher extends Closeable {
+    INITIALISING,
 
-    void start(final CallFrame[] callFrame) ;
+    RUNNING,
 
-    Path getMainDir();
+    CLOSING,
 
-    void register(final Path dir);
-
-    List<Path> getRegisteredPaths();
-
-    FileWatcherStatus getStatus();
-
-    @Override
-    public void close();
+    CLOSED;
 
 }

@@ -36,7 +36,7 @@ import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -104,11 +104,17 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
             throw new IllegalArgumentException("The callFrame array must not be null!");
         }
 
-        try {
-            startService(callFrame);
-        }
-        catch(Exception ex) {
-            throw new RuntimeException("Failed to start FileWatcher");
+        if (status.compareAndSet(
+                FileWatcherStatus.CREATED,
+                FileWatcherStatus.INITIALISING)
+        ) {
+            try {
+                startService(callFrame);
+            }
+            catch(Exception ex) {
+                throw new RuntimeException(
+                        "Rejected to start the FileWatcher in status " + status.get());
+            }
         }
     }
 
@@ -129,13 +135,16 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     }
 
     @Override
-    public boolean isRunning() {
-        return !closed.get();
+    public FileWatcherStatus getStatus() {
+        return status.get();
     }
 
     @Override
     public void close() {
-        if (closed.compareAndSet(false, true)) {
+        if (status.compareAndSet(
+                FileWatcherStatus.RUNNING,
+                FileWatcherStatus.CLOSED)
+        ) {
             try {
                 ws.close();
             }
@@ -147,6 +156,10 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
                 safeRun(() -> terminationListener.accept(
                                 new FileWatchTerminationEvent(mainDir)));
             }
+        }
+        else {
+            throw new RuntimeException(
+                    "Rejected to close the FileWatcher in status " + status.get());
         }
     }
 
@@ -171,70 +184,91 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     }
 
     private void startService(final CallFrame[] callFrame) {
-        // Create a wrapper that inherits the Venice thread context
-        // from the parent thread to the executer thread!
-        final ThreadBridge threadBridge = ThreadBridge.create("thread", callFrame);
+        try {
+            // Create a wrapper that inherits the Venice thread context
+            // from the parent thread to the executer thread!
+            final ThreadBridge threadBridge = ThreadBridge.create("thread", callFrame);
 
-        final Runnable runnable = threadBridge.bridgeRunnable(
-            () -> {
-                while (!closed.get()) {
-                    try {
-                        final WatchKey key = ws.take();
-                        if (key == null) {
-                            break;
-                        }
+            final Runnable runnable = threadBridge.bridgeRunnable(createWorker());
 
-                        final Path dirPath = keys.get(key);
-                        if (dirPath == null) {
-                            continue;
-                        }
+            final Thread th = GlobalThreadFactory.newThread("venice-watch-dir", runnable);
+            th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
+            th.start();
 
-                        key.pollEvents()
-                           .stream()
-                           .filter(e -> e.kind() != OVERFLOW)
-                           .forEach(e -> {
-                               @SuppressWarnings("unchecked")
-                               final Path p = ((WatchEvent<Path>)e).context();
-                               final Path absPath = dirPath.resolve(p);
-                               final FileWatchFileEventType eventType = convertToEventType(e.kind());
-                               if (absPath.toFile().isDirectory()) {
-                                   if (eventType == FileWatchFileEventType.CREATED) {
-                                       register(absPath, true);  // register the new subdir
-                                   }
+            // spin wait max 5s for service to be ready or closed
+            final long ts = System.currentTimeMillis();
+            while(System.currentTimeMillis() < ts + 5_000) {
+                if (status.get() == FileWatcherStatus.RUNNING) break;
+                if (status.get() == FileWatcherStatus.CLOSED) break;
+                try { Thread.sleep(100); } catch(Exception ex) {}
+            }
+        }
+        catch(Exception ex) {
+            status.set(FileWatcherStatus.CLOSED);
+            throw new RuntimeException("Failed to start FileWatcher!", ex);
+        }
+    }
 
-                                   if (eventType != FileWatchFileEventType.MODIFIED) {
-                                       safeRun(() -> eventListener.accept(
-                                                       new FileWatchFileEvent( absPath, true, eventType)));
-                                   }
+    private Runnable createWorker() {
+        return () -> {
+            status.set(FileWatcherStatus.RUNNING);
+
+            while (status.get() == FileWatcherStatus.RUNNING) {
+                try {
+                    final WatchKey key = ws.take();
+                    if (key == null) {
+                        break;
+                    }
+
+                    final Path dirPath = keys.get(key);
+                    if (dirPath == null) {
+                        continue;
+                    }
+
+                    key.pollEvents()
+                       .stream()
+                       .filter(e -> e.kind() != OVERFLOW)
+                       .forEach(e -> {
+                           @SuppressWarnings("unchecked")
+                           final Path p = ((WatchEvent<Path>)e).context();
+                           final Path absPath = dirPath.resolve(p);
+                           final FileWatchFileEventType eventType = convertToEventType(e.kind());
+                           if (absPath.toFile().isDirectory()) {
+                               if (eventType == FileWatchFileEventType.CREATED) {
+                                   register(absPath, true);  // register the new subdir
                                }
-                               else {
+
+                               if (eventType != FileWatchFileEventType.MODIFIED) {
                                    safeRun(() -> eventListener.accept(
                                                    new FileWatchFileEvent( absPath, true, eventType)));
-                               }});
+                               }
+                           }
+                           else {
+                               safeRun(() -> eventListener.accept(
+                                               new FileWatchFileEvent( absPath, true, eventType)));
+                           }});
 
-                        key.reset();
-                    }
-                    catch(ClosedWatchServiceException ex) {
-                        break; // stop watching
-                    }
-                    catch(InterruptedException ex) {
-                        break; // stop watching
-                    }
-                    catch(Exception ex) {
-                        if (errorListener != null) {
-                            safeRun(() -> errorListener.accept(
-                                                new FileWatchErrorEvent(mainDir, ex)));
-                        }
-                        // continue
-                    }
+                    key.reset();
                 }
+                catch(ClosedWatchServiceException ex) {
+                    break; // stop watching
+                }
+                catch(InterruptedException ex) {
+                    break; // stop watching
+                }
+                catch(Exception ex) {
+                    if (errorListener != null) {
+                        safeRun(() -> errorListener.accept(
+                                            new FileWatchErrorEvent(mainDir, ex)));
+                    }
+                    // continue
+                }
+            }
 
+            if (status.get() != FileWatcherStatus.CLOSED) {
                 close();
-            });
-
-        final Thread th = GlobalThreadFactory.newThread("venice-watch-dir", runnable);
-        th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
-        th.start();
+            }
+        };
     }
 
     private static void safeRun(final Runnable r) {
@@ -260,7 +294,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     }
 
 
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicReference<FileWatcherStatus> status = new AtomicReference<>(FileWatcherStatus.CREATED);
 
     private final Path mainDir;
     private final WatchService ws;
