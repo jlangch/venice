@@ -240,7 +240,7 @@ public class IOFunctionsFileWatcher {
                     .meta()
                     .arglists("(io/add-watch-dir watcher file)")
                     .doc(
-                    	"Register another file or directory with a watcher.\n\n" +
+                    	"Register another directory with a watcher.\n\n" +
                         "This function is only supported on Linux platforms!")
                     .examples(
                         "(do                                                                     \n" +
