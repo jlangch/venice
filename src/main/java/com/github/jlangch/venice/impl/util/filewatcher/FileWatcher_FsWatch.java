@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -75,6 +76,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             final Consumer<FileWatchErrorEvent> errorListener,
             final Consumer<FileWatchTerminationEvent> terminationListener,
             final Consumer<FileWatchRegisterEvent> registerListener,
+            final FsEventMonitor monitor,
             final String fswatchProgram
     ) {
         if (mainDir == null) {
@@ -93,6 +95,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
         this.registerListener = registerListener;
         this.errorListener = errorListener;
         this.terminationListener = terminationListener;
+        this.monitor = monitor;
         this.fswatchProgram = fswatchProgram == null ? "fswatch" : fswatchProgram;
     }
 
@@ -174,13 +177,14 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             // --allow-overflow    allow a monitor to overflow and report it as a change event
             // --event-flags       include event flags like Created, Updated, etc
 
-            final String formatOpt = "--format=%p" + SEPARATOR + "%f";
+            final List<String> options = new ArrayList<>();
+            options.add(fswatchProgram);
+            options.add("--format=%p" + SEPARATOR + "%f");
+            if (monitor != null) options.add("-monitor=" + monitor.name());
+            if (recursive) options.add("-r");
+            options.add(mainDir.toString());
 
-            final ProcessBuilder pb = recursive
-                                        ? new ProcessBuilder(
-                                                fswatchProgram, formatOpt, "-r", mainDir.toString())
-                                        : new ProcessBuilder(
-                                                fswatchProgram, formatOpt, mainDir.toString());
+            final ProcessBuilder pb = new ProcessBuilder(options.toArray(new String[] {}));
             pb.redirectErrorStream(true);
 
             // start the fswatch process
@@ -421,5 +425,6 @@ public class FileWatcher_FsWatch implements IFileWatcher {
     private final Consumer<FileWatchRegisterEvent> registerListener;
     private final Consumer<FileWatchErrorEvent> errorListener;
     private final Consumer<FileWatchTerminationEvent> terminationListener;
+    private final FsEventMonitor monitor;
     private final String fswatchProgram;
 }
