@@ -71,17 +71,31 @@ public class IOFunctionsFileWatcher {
                         "Options: \n\n" +
                         "| [![width: 25%]] | [![width: 75%]] |\n" +
                         "| :include-all-subdirs true/false | If `true` includes in addtion to the main dir recursively all subdirs. If `false` just watches on the main dir. Defaults to `false`.|\n" +
-                        "| :event-fn fn | A two argument function that receives the path and mode {:created, :deleted, :modified} of the changed file. Defaults to `nil`.|\n" +
+                        "| :event-fn fn | A two argument function that receives the path and action {:created, :deleted, :modified} of the changed file. Defaults to `nil`.|\n" +
                         "| :error-fn fn | A two argument function called in error case that receives the watch path and the failure exception. Defaults to `nil`.|\n" +
-                        "| :termination-fn fn | A one argument function called when the watcher terminates. It receives the watch dir.  Defaults to `nil`.|\n" +
+                        "| :termination-fn fn | A one argument function called when the watcher terminates. It receives the main watch dir.  Defaults to `nil`.|\n" +
                         "| :register-fn fn | A one argument function that is called when a newly created sub directory is registered. It receives the registered dir. Defaults to `nil`.|\n" +
-                        "The *watcher* is a resource that must be closed with `(io/close-watcher w)`." +
+                        "\n\n" +
+                        "Specific MacOS options (fswatch): \n\n" +
+                        "| [![width: 25%]] | [![width: 75%]] |\n" +
+                        "| :fswatch-monitor m | An optional platform dependent monitor {:fsevents_monitor, :kqueue_monitor, :poll_monitor} to use with `fswatch`. Pass `nil` to let `fswatch` choose the optimal platform. Defaults to `nil`.¶Run `fswatch --list-monitors` to get list of the available platform monitors.|\n" +
+                        "| :fswatch-program p | An optional path to the `fswatch` program, e.g.: \"fswatch\", \"/opt/homebrew/bin/fswatch\".¶Defaults to `\"/opt/homebrew/bin/fswatch\"`.|" +
+                        "\n\n" +
+                        "**Important**" +
+                        "\n\n" +
+                        "The *watcher* is a resource that **must be closed** with either `(io/close-watcher w)` or by " +
+                        "using a `(try-with [w (io/watch-dir ...` resource protection statement!"  +
+                        "\n\n" +
+                        "**Linux** " +
+                        "\n\n" +
+                        "On Linux the Java WatchService is used to watch dirs for file changes!" +
                         "\n\n" +
                         "**MacOS** " +
                         "\n\n" +
-                        "The Java WatchService doesn't run properly on MacOS due to Java limitations! " +
-                        "As a workaround on MacOS the file watcher is impemented on top of the *fswatch* " +
-                        "tool. The required *fswatch* tool can be installed from *Homebrew*.\n\n" +
+                        "The Java WatchService doesn't run properly on MacOS due to limitations in the Java " +
+                        "WatchService implementation! As a workaround on MacOS the file watcher is " +
+                        "impemented on top of the *fswatch* tool. The required *fswatch* tool can be installed " +
+                        "from *Homebrew*.\n\n" +
                         "```                        \n" +
                         "   $ brew install fswatch  \n" +
                         "```                        \n" +
@@ -107,6 +121,9 @@ public class IOFunctionsFileWatcher {
                         "                   :error-fn            #(println \"Error:      \" %1 (:message %2)) \n" +
                         "                   :termination-fn      #(println \"Terminated: \" %1)               \n" +
                         "                   :register-fn         #(println \"Registered: \" %1))]             \n" +
+                        "                                                                                     \n" +
+                        "                   ;; on MacOS you might want to add the option                      \n" +
+                        "                   ;; :fswatch-program  \"/opt/homebrew/bin/fswatch\"                \n" +
                         "                                                                                     \n" +
                         "    (let [f (io/file dir \"test1.txt\")]                                             \n" +
                         "      (io/touch-file f)                   ;; created                                 \n" +
@@ -153,7 +170,8 @@ public class IOFunctionsFileWatcher {
                 final VncVal errorFnOpt = options.get(new VncKeyword("error-fn"));
                 final VncVal terminationFnOpt = options.get(new VncKeyword("termination-fn"));
                 final VncVal registerFnOpt = options.get(new VncKeyword("register-fn"));
-                final VncVal fswatchBinaryOpt = options.get(new VncKeyword("fswatch-binary"),
+                final VncVal monitorOpt = options.get(new VncKeyword("fswatch-monitor"));
+                final VncVal fswatchBinaryOpt = options.get(new VncKeyword("fswatch-program"),
                                                             new VncString("/opt/homebrew/bin/fswatch"));
 
                 final VncFunction eventFn = Coerce.toVncFunctionOptional(eventFnOpt);
@@ -162,7 +180,11 @@ public class IOFunctionsFileWatcher {
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(registerFnOpt);
 
                 final boolean registerAllSubDirs = Coerce.toVncBoolean(registerAllSubDirsOpt).getValue();
-                final FsEventMonitor monitor = null;  // default platform monitor
+                final FsEventMonitor monitor = monitorOpt == Nil
+                                                    ? null
+                                                    : FsEventMonitor.valueOf(
+                                                            Coerce.toVncKeyword(registerAllSubDirsOpt)
+                                                                  .getSimpleName());
                 final String fswatchBinary = Coerce.toVncString(fswatchBinaryOpt).toString();
 
                 if (OS.isLinux() || OS.isMacOSX()) {
@@ -217,7 +239,9 @@ public class IOFunctionsFileWatcher {
                 VncFunction
                     .meta()
                     .arglists("(io/add-watch-dir watcher file)")
-                    .doc("Register another file or directory with a watcher.")
+                    .doc(
+                    	"Register another file or directory with a watcher.\n\n" +
+                        "This function is only supported on Linux platforms!")
                     .examples(
                         "(do                                                                     \n" +
                         "  (defn log [msg] (locking log (println msg)))                          \n" +
@@ -370,8 +394,8 @@ public class IOFunctionsFileWatcher {
                                     fn,
                                     new VncString(event.getPath().toString()),
                                     event.getException() == null
-                                    	? Nil
-                                    	: new VncJavaObject(event.getException())));
+                                        ? Nil
+                                        : new VncJavaObject(event.getException())));
     }
 
     private static Consumer<FileWatchTerminationEvent> createTerminationEventListener(

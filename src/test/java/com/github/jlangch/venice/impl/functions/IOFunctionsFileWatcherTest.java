@@ -83,7 +83,8 @@ public class IOFunctionsFileWatcherTest {
                 "                   :error-fn            #(error %1 %2)                  \n" +
                 "                   :termination-fn      #(termination %1)               \n" +
                 "                   :register-fn         #(register %1)                  \n" +
-                "                   :fswatch-binary      \"/opt/homebrew/bin/fswatch\")] \n" +
+                "                   :fswatch-monitor     nil                             \n" +
+                "                   :fswatch-program     \"/opt/homebrew/bin/fswatch\")] \n" +
                 "    (log \"Watching:   \" dir)                                          \n" +
                 "                                                                        \n" +
                 "    (let [f (io/file dir \"test1.txt\")]                                \n" +
