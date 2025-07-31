@@ -45,7 +45,7 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher_FsWatch;
 import com.github.jlangch.venice.impl.util.filewatcher.FileWatcher_JavaWatchService;
-import com.github.jlangch.venice.impl.util.filewatcher.FsEventMonitor;
+import com.github.jlangch.venice.impl.util.filewatcher.FsWatchMonitor;
 import com.github.jlangch.venice.impl.util.filewatcher.IFileWatcher;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
@@ -180,9 +180,9 @@ public class IOFunctionsFileWatcher {
                 final VncFunction registerFn = Coerce.toVncFunctionOptional(registerFnOpt);
 
                 final boolean registerAllSubDirs = Coerce.toVncBoolean(registerAllSubDirsOpt).getValue();
-                final FsEventMonitor monitor = monitorOpt == Nil
+                final FsWatchMonitor monitor = monitorOpt == Nil
                                                     ? null
-                                                    : FsEventMonitor.valueOf(
+                                                    : FsWatchMonitor.valueOf(
                                                             Coerce.toVncKeyword(registerAllSubDirsOpt)
                                                                   .getSimpleName());
                 final String fswatchBinary = Coerce.toVncString(fswatchBinaryOpt).toString();
