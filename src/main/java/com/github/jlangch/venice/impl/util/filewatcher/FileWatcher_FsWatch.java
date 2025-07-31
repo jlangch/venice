@@ -180,7 +180,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             final List<String> options = new ArrayList<>();
             options.add(fswatchProgram);
             options.add("--format=%p" + SEPARATOR + "%f");
-            if (monitor != null) options.add("-monitor=" + monitor.name());
+            if (monitor != null) options.add("--monitor=" + monitor.name());
             if (recursive) options.add("-r");
             options.add(mainDir.toString());
 
