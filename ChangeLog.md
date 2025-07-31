@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Added
+
+- the option to pass a 'fspath' monitor to the file watcher on MacOS.
+
 
 
 ## [1.12.52] - 2025-07-30
