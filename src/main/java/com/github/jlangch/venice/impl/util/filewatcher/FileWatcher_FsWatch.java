@@ -244,10 +244,10 @@ public class FileWatcher_FsWatch implements IFileWatcher {
 
                                 // fswatch is not really helpful with the flags:
                                 //
-                            	// Flags dir  created: Created IsDir AttributeModified
-                            	// Flags file created: Created IsFile Updated AttributeModified
-                            	// Flags file updated: Created IsFile Updated AttributeModified
-                            	// Flags file deleted: Created IsFile Updated Removed AttributeModified
+                                // Flags dir  created: Created IsDir AttributeModified
+                                // Flags file created: Created IsFile Updated AttributeModified
+                                // Flags file updated: Created IsFile Updated AttributeModified
+                                // Flags file deleted: Created IsFile Updated Removed AttributeModified
                                 final String flags = line.substring(separatorIdx + SEPARATOR.length());
                                 final Set<FileWatchFileEventType> types = mapToEventTypes(flags);
 
@@ -310,30 +310,30 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             }
         }
         else if (isFile) {
-        	if (Files.isRegularFile(path)) {
-	            if (types.contains(MODIFIED)) {
-	                safeRun(() -> fileListener.accept(
-	                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
-	            }
-	            else if (types.contains(CREATED)) {
-	               safeRun(() -> fileListener.accept(
-	                                new FileWatchFileEvent(path, isDir, isFile, CREATED)));
-	            }
-	            else if (types.contains(DELETED)) {
-	                safeRun(() -> fileListener.accept(
-	                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
-	            }
-        	}
-        	else {
-	            if (types.contains(DELETED)) {
-	                safeRun(() -> fileListener.accept(
-	                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
-	            }
-	            else {
-	                safeRun(() -> fileListener.accept(
-	                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
-	            }
-        	}
+            if (Files.isRegularFile(path)) {
+                if (types.contains(MODIFIED)) {
+                    safeRun(() -> fileListener.accept(
+                                    new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
+                }
+                else if (types.contains(CREATED)) {
+                   safeRun(() -> fileListener.accept(
+                                    new FileWatchFileEvent(path, isDir, isFile, CREATED)));
+                }
+                else if (types.contains(DELETED)) {
+                    safeRun(() -> fileListener.accept(
+                                    new FileWatchFileEvent(path, isDir, isFile, DELETED)));
+                }
+            }
+            else {
+                if (types.contains(DELETED)) {
+                    safeRun(() -> fileListener.accept(
+                                    new FileWatchFileEvent(path, isDir, isFile, DELETED)));
+                }
+                else {
+                    safeRun(() -> fileListener.accept(
+                                    new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
+                }
+            }
         }
     }
 
@@ -413,7 +413,8 @@ public class FileWatcher_FsWatch implements IFileWatcher {
     }
 
 
-    private static final String SEPARATOR = "|#|";  // any reasonable string that does not appear in file names
+    // any reasonable string that does not appear in file names
+    private static final String SEPARATOR = "|#|";
 
 
     private final AtomicReference<FileWatcherStatus> status = new AtomicReference<>(FileWatcherStatus.CREATED);
