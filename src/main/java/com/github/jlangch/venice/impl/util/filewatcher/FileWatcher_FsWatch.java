@@ -71,7 +71,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
     public FileWatcher_FsWatch(
             final Path mainDir,
             final boolean recursive,
-            final Consumer<FileWatchFileEvent> filesListener,
+            final Consumer<FileWatchFileEvent> fileListener,
             final Consumer<FileWatchErrorEvent> errorListener,
             final Consumer<FileWatchTerminationEvent> terminationListener,
             final Consumer<FileWatchRegisterEvent> registerListener,
@@ -84,12 +84,12 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             throw new RuntimeException("The main dir " + mainDir + " does not exist or is not a directory");
         }
         if (fswatchProgram != null && !Files.isExecutable(Paths.get(fswatchProgram))) {
-            throw new IllegalArgumentException("The fswatchProgram does not exist or is not executable!");
+            throw new IllegalArgumentException("The fswatch Program does not exist or is not executable!");
         }
 
         this.mainDir = mainDir.toAbsolutePath().normalize();
         this.recursive = recursive;
-        this.filesListener = filesListener;
+        this.fileListener = fileListener;
         this.registerListener = registerListener;
         this.errorListener = errorListener;
         this.terminationListener = terminationListener;
@@ -297,36 +297,36 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             }
 
             if (types.contains(CREATED)) {
-                safeRun(() -> filesListener.accept(
+                safeRun(() -> fileListener.accept(
                                  new FileWatchFileEvent(path, isDir, isFile, CREATED)));
             }
             else if (types.contains(DELETED)) {
-                safeRun(() -> filesListener.accept(
+                safeRun(() -> fileListener.accept(
                                 new FileWatchFileEvent(path, isDir, isFile, DELETED)));
             }
         }
         else if (isFile) {
         	if (Files.isRegularFile(path)) {
 	            if (types.contains(MODIFIED)) {
-	                safeRun(() -> filesListener.accept(
+	                safeRun(() -> fileListener.accept(
 	                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
 	            }
 	            else if (types.contains(CREATED)) {
-	               safeRun(() -> filesListener.accept(
+	               safeRun(() -> fileListener.accept(
 	                                new FileWatchFileEvent(path, isDir, isFile, CREATED)));
 	            }
 	            else if (types.contains(DELETED)) {
-	                safeRun(() -> filesListener.accept(
+	                safeRun(() -> fileListener.accept(
 	                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
 	            }
         	}
         	else {
 	            if (types.contains(DELETED)) {
-	                safeRun(() -> filesListener.accept(
+	                safeRun(() -> fileListener.accept(
 	                                new FileWatchFileEvent(path, isDir, isFile, DELETED)));
 	            }
 	            else {
-	                safeRun(() -> filesListener.accept(
+	                safeRun(() -> fileListener.accept(
 	                                new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
 	            }
         	}
@@ -335,16 +335,16 @@ public class FileWatcher_FsWatch implements IFileWatcher {
 
     private void fireFallbackFileEvents(final Path path) {
         if (Files.isDirectory(path)) {
-            safeRun(() -> filesListener.accept(
+            safeRun(() -> fileListener.accept(
                     new FileWatchFileEvent(path, true, false, MODIFIED)));
         }
         else if (Files.isRegularFile(path)) {
-            safeRun(() -> filesListener.accept(
+            safeRun(() -> fileListener.accept(
                     new FileWatchFileEvent(path, false, true, MODIFIED)));
         }
         else {
             // if the file has been deleted its type cannot be checked
-            safeRun(() -> filesListener.accept(
+            safeRun(() -> fileListener.accept(
                     new FileWatchFileEvent(path, false, false, DELETED)));
         }
     }
@@ -417,7 +417,7 @@ public class FileWatcher_FsWatch implements IFileWatcher {
 
     private final Path mainDir;
     private final boolean recursive;
-    private final Consumer<FileWatchFileEvent> filesListener;
+    private final Consumer<FileWatchFileEvent> fileListener;
     private final Consumer<FileWatchRegisterEvent> registerListener;
     private final Consumer<FileWatchErrorEvent> errorListener;
     private final Consumer<FileWatchTerminationEvent> terminationListener;

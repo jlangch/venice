@@ -57,7 +57,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     public FileWatcher_JavaWatchService(
             final Path mainDir,
             final boolean registerAllSubDirs,
-            final Consumer<FileWatchFileEvent> filesListener,
+            final Consumer<FileWatchFileEvent> fileListener,
             final Consumer<FileWatchErrorEvent> errorListener,
             final Consumer<FileWatchTerminationEvent> terminationListener,
             final Consumer<FileWatchRegisterEvent> registerListener
@@ -70,7 +70,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
         }
 
         this.mainDir = mainDir.toAbsolutePath().normalize();
-        this.filesListener = filesListener;
+        this.fileListener = fileListener;
         this.errorListener = errorListener;
         this.registerListener = registerListener;
         this.terminationListener = terminationListener;
@@ -238,17 +238,17 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
                                }
 
                                if (eventType != FileWatchFileEventType.MODIFIED) {
-                                   safeRun(() -> filesListener.accept(
+                                   safeRun(() -> fileListener.accept(
                                                    new FileWatchFileEvent(absPath, true, false, eventType)));
                                }
                            }
                            else if (Files.isRegularFile(absPath)) {
-                               safeRun(() -> filesListener.accept(
+                               safeRun(() -> fileListener.accept(
                                                new FileWatchFileEvent(absPath, false, true, eventType)));
                            }
                            else {
                                // if the file has been deleted its type cannot be checked
-                               safeRun(() -> filesListener.accept(
+                               safeRun(() -> fileListener.accept(
                                                new FileWatchFileEvent(absPath, false, false, eventType)));
                            }});
 
@@ -303,7 +303,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     private final Path mainDir;
     private final WatchService ws;
     private final Map<WatchKey,Path> keys = new HashMap<>();
-    private final Consumer<FileWatchFileEvent> filesListener;
+    private final Consumer<FileWatchFileEvent> fileListener;
     private final Consumer<FileWatchErrorEvent> errorListener;
     private final Consumer<FileWatchRegisterEvent> registerListener;
     private final Consumer<FileWatchTerminationEvent> terminationListener;
