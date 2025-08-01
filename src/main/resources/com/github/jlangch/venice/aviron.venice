@@ -1557,7 +1557,8 @@
               (aviron/queue-push q (io/file "/data/d.txt"))
               (aviron/queue-push q (io/file "/data/e.txt"))
               (aviron/queue-push q (io/file "/data/f.txt"))
-              (aviron/queue-push q (io/file "/data/g.txt")) ;; overflow event
+              ;; overflow event (the head element "/data/a.txt" is discarded)
+              (aviron/queue-push q (io/file "/data/g.txt"))
               (println (queue-overflow-count q))))
           """)
      :see-also '(
