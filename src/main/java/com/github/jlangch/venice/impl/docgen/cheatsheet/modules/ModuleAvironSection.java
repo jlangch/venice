@@ -118,6 +118,8 @@ public class ModuleAvironSection implements ISectionBuilder {
         watcher.addItem(diBuilder.getDocItem("aviron/queue-remove", false));
         watcher.addItem(diBuilder.getDocItem("aviron/queue-push", false));
         watcher.addItem(diBuilder.getDocItem("aviron/queue-pop", false));
+        watcher.addItem(diBuilder.getDocItem("aviron/queue-overflow-count", false));
+        watcher.addItem(diBuilder.getDocItem("aviron/queue-overflow-reset", false));
 
         return section;
     }

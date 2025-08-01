@@ -1235,15 +1235,16 @@
   ^{ :arglists '(
           "(queue-create)")
      :doc """
-          Create a new file queue with either a default capacity or an explicit 
-          capacity.
+          Create a new file queue with either the default capacity or an 
+          explicit capacity.
 
           The file queue has overflow protection to keep a all operations non 
           blocking. If the queue grows beyond the max size the oldest entries 
           will be removed that the new entries fit into the queue.
  
-          The queue never blocks and never grows beyond limits to protect
-          the system!
+          The queue never blocks and never grows beyond limits to protect the 
+          system! Therefore the queue is non blocking and has max capacity. As 
+          a consequence it must discard old events if overrun. 
 
           File watchers (like the Java `WatchService` or the `fswatch` tool) 
           have the same behavior. If they get overrun with file change events 
@@ -1428,6 +1429,14 @@
           "(queue-push queue file)")
      :doc """
           Push a new file to the tail of the queue
+
+          Whenever pushing a file to a full queue the queue's head element is
+          discarded in favor of pushing the new file. The overflow count is 
+          incremented in this case.
+ 
+          The queue never blocks and never grows beyond limits to protect the 
+          system! Therefore the queue is non blocking and has max capacity. As 
+          a consequence it must discard old events if overrun. 
           """
      :examples '(
           """
@@ -1521,6 +1530,85 @@
             (long? n) (pos? n)
             (boolean? existing-files-only)] }
     (into [] (. queue :pop n existing-files-only))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(queue-overflow-count queue)")
+     :doc """
+          Returns the overflow event count.
+
+          Whenever pushing a file to a full queue the queue's head element is 
+          discarded in favor of pushing the new file. The overflow count is 
+          incremented in this case.
+ 
+          The queue never blocks and never grows beyond limits to protect the 
+          system! Therefore the queue is non blocking and has max capacity. As 
+          a consequence it must discard old events if overrun. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create 5)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-push q (io/file "/data/b.txt"))
+              (aviron/queue-push q (io/file "/data/d.txt"))
+              (aviron/queue-push q (io/file "/data/e.txt"))
+              (aviron/queue-push q (io/file "/data/f.txt"))
+              (aviron/queue-push q (io/file "/data/g.txt")) ;; overflow event
+              (println (queue-overflow-count q))))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-pop" ) }
+
+  queue-overflow-count [queue] 
+
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
+  (. queue :overflowCount))
+
+
+(defn 
+  ^{ :arglists '(
+          "(queue-overflow-reset queue)")
+     :doc """
+          Resets the overflow count
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create 5)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-push q (io/file "/data/b.txt"))
+              (aviron/queue-push q (io/file "/data/d.txt"))
+              (aviron/queue-push q (io/file "/data/e.txt"))
+              (aviron/queue-push q (io/file "/data/f.txt"))
+              ;; overflow event (the head element "/data/a.txt" is discarded)
+              (aviron/queue-push q (io/file "/data/g.txt")) 
+              (println (queue-overflow-count q))
+              (println (queue-overflow-reset q))
+              (println (queue-overflow-count q))))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-pop" ) }
+
+  queue-overflow-reset [queue] 
+
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
+  (. queue :resetOverflowCount))
 
 
 
