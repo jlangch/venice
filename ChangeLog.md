@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
 
 - the option to pass a 'fspath' monitor to the file watcher on MacOS.
 
+### Updated dependencies:
+
+- bumped the Aviron (ClamAV client) library to V 1.6.0
+
 
 
 ## [1.12.52] - 2025-07-30
