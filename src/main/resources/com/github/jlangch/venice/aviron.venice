@@ -1233,18 +1233,23 @@
 
 (defn 
   ^{ :arglists '(
-          "(queue-create)")
+          "(queue-create)"
+          "(queue-create capacity)")
      :doc """
           Create a new file queue with either the default capacity or an 
           explicit capacity.
 
-          The file queue has overflow protection to keep a all operations non 
+          The file queue is buffering file watching events. It asynchronously 
+          decouples the event producing file watcher from the event consuming 
+          AV scanner client.
+
+          The file queue has overflow protection to keep all operations non 
           blocking. If the queue grows beyond the max size the oldest entries 
           will be removed that the new entries fit into the queue.
  
           The queue never blocks and never grows beyond limits to protect the 
-          system! Therefore the queue is non blocking and has max capacity. As 
-          a consequence it must discard old events if overrun. 
+          system! Therefore the queue is non blocking and has a fix capacity. 
+          As a consequence it must discard old events if overrun. 
 
           File watchers (like the Java `WatchService` or the `fswatch` tool) 
           have the same behavior. If they get overrun with file change events 
@@ -1435,8 +1440,8 @@
           incremented in this case.
  
           The queue never blocks and never grows beyond limits to protect the 
-          system! Therefore the queue is non blocking and has max capacity. As 
-          a consequence it must discard old events if overrun. 
+          system! Therefore the queue is non blocking and has a fix capacity. 
+          As a consequence it must discard old events if overrun. 
           """
      :examples '(
           """
@@ -1543,8 +1548,8 @@
           incremented in this case.
  
           The queue never blocks and never grows beyond limits to protect the 
-          system! Therefore the queue is non blocking and has max capacity. As 
-          a consequence it must discard old events if overrun. 
+          system! Therefore the queue is non blocking and has a fix capacity. 
+          As a consequence it must discard old events if overrun. 
           """
      :examples '(
           """
