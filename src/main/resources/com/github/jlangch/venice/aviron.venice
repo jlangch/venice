@@ -41,6 +41,7 @@
 (import :org.repackage.com.github.jlangch.aviron.admin.CpuProfileEntry)
 (import :org.repackage.com.github.jlangch.aviron.dto.QuarantineEvent)
 (import :org.repackage.com.github.jlangch.aviron.dto.ScanResult)
+(import :com.github.jlangch.aviron.filewatcher.FileWatcherQueue)
 
 (load-module :java)
 
@@ -1223,6 +1224,68 @@
 
   { :pre [(instance-of? :Client client)] }
   (. client :listQuarantineFiles))
+
+
+
+;; -----------------------------------------------------------------------------
+;; File watcher queue
+;; -----------------------------------------------------------------------------
+
+(defn queue-create 
+  ([]
+    (. :FileWatcherQueue :new))
+  ([capacity]
+    { :pre [(long? capacity) (pos? capacity)] }
+    (. :FileWatcherQueue :new capacity)))
+
+
+(defn queue-capacity [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
+  (. queue :capacity))
+
+
+(defn queue-empty? [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
+  (. queue :isEmpty))
+
+
+(defn queue-size [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
+  (. queue :size))
+
+
+(defn queue-clear [queue] 
+  { :pre [(instance-of? :FileWatcherQueue queue)] }
+  (. queue :clear))
+
+
+(defn queue-remove [queue file] 
+  { :pre [(instance-of? :FileWatcherQueue queue)
+          (io/file? file)] }
+  (. queue :remove file))
+
+
+(defn queue-push [queue file] 
+  { :pre [(instance-of? :FileWatcherQueue queue)
+          (io/file? file)] }
+  (. queue :push file))
+
+
+(defn queue-pop 
+  ([queue] 
+    { :pre [(instance-of? :FileWatcherQueue queue)] }
+    (. queue :pop))
+
+  ([queue n]
+    { :pre [(instance-of? :FileWatcherQueue queue)
+            (long? n) (pos? n)] }
+    (into [] (. queue :pop n)))
+
+  ([queue n existing-files-only]
+    { :pre [(instance-of? :FileWatcherQueue queue)
+            (long? n) (pos? n)
+            (boolean? existing-files-only)] }
+    (into [] (. queue :pop n existing-files-only))))
 
 
 
