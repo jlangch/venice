@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
@@ -182,6 +183,17 @@ public class IOFunctionsFileWatcher {
                                                                   .getSimpleName());
                 final String fswatchBinary = Coerce.toVncString(fswatchBinaryOpt).toString();
 
+                // TODO:  Migration to Aviron file watcher
+                // 1.  Test Venice 1.12.53 with Aviron 1.6.0 (drop in replacement for
+                //     avsan.venice)
+                // 2.  Migrate FileWatcherQueue to use the Aviron FileWatcherQueue and
+                //     the methods from the :aviron module
+                //     avscan.venice must be changed
+                // 3.  Use Aviron_FileWatcher_FsWatch and Aviron_FileWatcher_JavaWatchService
+                //     instead of the Venice built-in file watchers
+                // 4.  Migrate io/watch-dir to callbacks receiving a single event map arg
+                //     avsan.venice must be changed, especially for file-event to discard
+                //     dir action events.
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
                         final IFileWatcher fw;
@@ -334,6 +346,27 @@ public class IOFunctionsFileWatcher {
                                     new VncString(event.getPath().toString())));
     }
 
+    private VncMap toMap(final FileWatchFileEvent event) {
+        return VncHashMap.of(
+                new VncKeyword("type"),   new VncKeyword("file-event"),
+                new VncKeyword("file"),   new VncJavaObject(event.getPath().toFile()),
+                new VncKeyword("dir?"),   VncBoolean.of(event.isDir()),
+                new VncKeyword("file?"),  VncBoolean.of(event.isFile()),
+                new VncKeyword("action"), new VncKeyword(event.getType().name().toLowerCase()));
+    }
+
+    private VncMap toMap(final FileWatchErrorEvent event) {
+        return VncHashMap.of(
+                new VncKeyword("type"),      new VncKeyword("error-event"),
+                new VncKeyword("file"),      new VncJavaObject(event.getPath().toFile()),
+                new VncKeyword("exception"), new VncJavaObject(event.getException()));
+    }
+
+    private VncMap toMap(final FileWatchTerminationEvent event) {
+        return VncHashMap.of(
+                new VncKeyword("type"), new VncKeyword("termination-event"),
+                new VncKeyword("file"), new VncJavaObject(event.getPath().toFile()));
+    }
 
 
     ///////////////////////////////////////////////////////////////////////////
