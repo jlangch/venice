@@ -49,7 +49,6 @@ import com.github.jlangch.venice.impl.util.filewatcher.FsWatchMonitor;
 import com.github.jlangch.venice.impl.util.filewatcher.IFileWatcher;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
-import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchRegisterEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchTerminationEvent;
 import com.github.jlangch.venice.util.OS;
 
@@ -119,8 +118,7 @@ public class IOFunctionsFileWatcher {
                         "                   :include-all-subdirs true                                         \n" +
                         "                   :event-fn            #(println \"File Event: \" %1 %2)            \n" +
                         "                   :error-fn            #(println \"Error:      \" %1 (:message %2)) \n" +
-                        "                   :termination-fn      #(println \"Terminated: \" %1)               \n" +
-                        "                   :register-fn         #(println \"Registered: \" %1))]             \n" +
+                        "                   :termination-fn      #(println \"Terminated: \" %1))]             \n" +
                         "                                                                                     \n" +
                         "                   ;; on MacOS you might want to add the option                      \n" +
                         "                   ;; :fswatch-program  \"/opt/homebrew/bin/fswatch\"                \n" +
@@ -141,7 +139,6 @@ public class IOFunctionsFileWatcher {
                     .seeAlso(
                         "io/add-watch-dir",
                         "io/registered-watch-dirs",
-                        "io/close-watcher",
                         "io/await-for")
                     .build()
         ) {
@@ -169,7 +166,6 @@ public class IOFunctionsFileWatcher {
                 final VncVal eventFnOpt = options.get(new VncKeyword("event-fn"));
                 final VncVal errorFnOpt = options.get(new VncKeyword("error-fn"));
                 final VncVal terminationFnOpt = options.get(new VncKeyword("termination-fn"));
-                final VncVal registerFnOpt = options.get(new VncKeyword("register-fn"));
                 final VncVal monitorOpt = options.get(new VncKeyword("fswatch-monitor"));
                 final VncVal fswatchBinaryOpt = options.get(new VncKeyword("fswatch-program"),
                                                             new VncString("/opt/homebrew/bin/fswatch"));
@@ -177,7 +173,6 @@ public class IOFunctionsFileWatcher {
                 final VncFunction eventFn = Coerce.toVncFunctionOptional(eventFnOpt);
                 final VncFunction errorFn = Coerce.toVncFunctionOptional(errorFnOpt);
                 final VncFunction terminationFn = Coerce.toVncFunctionOptional(terminationFnOpt);
-                final VncFunction registerFn = Coerce.toVncFunctionOptional(registerFnOpt);
 
                 final boolean registerAllSubDirs = Coerce.toVncBoolean(registerAllSubDirsOpt).getValue();
                 final FsWatchMonitor monitor = monitorOpt == Nil
@@ -198,7 +193,6 @@ public class IOFunctionsFileWatcher {
                                          createFileEventListener(eventFn),
                                          createErrorEventListener(errorFn),
                                          createTerminationEventListener(terminationFn),
-                                         createRegisterEventListener(registerFn),
                                          monitor,
                                          fswatchBinary);
                         }
@@ -208,8 +202,7 @@ public class IOFunctionsFileWatcher {
                                          registerAllSubDirs,
                                          createFileEventListener(eventFn),
                                          createErrorEventListener(errorFn),
-                                         createTerminationEventListener(terminationFn),
-                                         createRegisterEventListener(registerFn));
+                                         createTerminationEventListener(terminationFn));
                         }
 
                         fw.start(new CallFrame[] { new CallFrame(this, args) });
@@ -233,72 +226,6 @@ public class IOFunctionsFileWatcher {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_add_watch_dir =
-        new VncFunction(
-                "io/add-watch-dir",
-                VncFunction
-                    .meta()
-                    .arglists("(io/add-watch-dir watcher file)")
-                    .doc(
-                    	"Register another directory with a watcher.\n\n" +
-                        "This function is only supported on Linux platforms!")
-                    .examples(
-                        "(do                                                                     \n" +
-                        "  (defn log [msg] (locking log (println msg)))                          \n" +
-                        "                                                                        \n" +
-                        "  (try-with [w (io/watch-dir \"/data/filestore\"                        \n" +
-                        "                             #(log (str %1 \" \" %2))                   \n" +
-                        "                             #(log (str \"failure \" (:message %2)))    \n" +
-                        "                             #(log (str \"terminated watching \" %1)))] \n" +
-                        "    (io/add-watch-dir w \"/data/filestore/0000\")                       \n" +
-                        "    (io/add-watch-dir w \"/data/filestore/0001\")                       \n" +
-                        "    (io/add-watch-dir w \"/data/filestore/0002\")                       \n" +
-                        "    (sleep 30 :seconds)))")
-                    .seeAlso(
-                        "io/watch-dir",
-                        "io/registered-watch-dirs",
-                        "io/close-watcher")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
-
-                sandboxFunctionCallValidation();
-
-                if (!OS.isLinux()) {
-                    throw new VncException(
-                            "Function 'io/add-watch-dir' is not supported on this operating system!");
-                }
-
-                final IFileWatcher fw = Coerce.toVncJavaObject(args.first(), IFileWatcher.class);
-
-                final File dir = IOFunctions.convertToFile(
-                                    args.second(),
-                                    "Function 'io/add-watch-dir' does not allow %s as file").getAbsoluteFile();
-
-                if (!dir.isDirectory()) {
-                    throw new VncException(
-                            String.format(
-                                    "Function 'io/add-watch-dir': dir '%s' is not a directory",
-                                    dir.toString()));
-                }
-
-                try {
-                    fw.register(dir.toPath());
-
-                    return Nil;
-                }
-                catch(Exception ex) {
-                    throw new VncException(
-                            "Function 'io/add-watch-dir' failed to add a new file with the watcher",
-                            ex);
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
     public static VncFunction io_registered_watch_dirs =
         new VncFunction(
                 "io/registered-watch-dirs",
@@ -308,7 +235,6 @@ public class IOFunctionsFileWatcher {
                     .doc("Returns the registred watch directories of a watcher.")
                     .seeAlso(
                         "io/watch-dir",
-                        "io/add-watch-dir",
                         "io/close-watcher")
                     .build()
         ) {
@@ -339,7 +265,6 @@ public class IOFunctionsFileWatcher {
                     .doc("Closes a watcher created from 'io/watch-dir'.")
                     .seeAlso(
                         "io/watch-dir",
-                        "io/add-watch-dir",
                         "io/registered-watch-dirs")
                     .build()
         ) {
@@ -409,17 +334,6 @@ public class IOFunctionsFileWatcher {
                                     new VncString(event.getPath().toString())));
     }
 
-    private static Consumer<FileWatchRegisterEvent> createRegisterEventListener(
-            final VncFunction fn
-    ) {
-        return fn == null
-                ? null
-                : (event) -> future.applyOf(
-                                partial.applyOf(
-                                    fn,
-                                    new VncString(event.getPath().toString())));
-    }
-
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -429,7 +343,6 @@ public class IOFunctionsFileWatcher {
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(io_watch_dir)
-                    .add(io_add_watch_dir)
                     .add(io_registered_watch_dirs)
                     .add(io_close_watcher)
                     .toMap();

@@ -45,7 +45,6 @@ import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType;
-import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchRegisterEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchTerminationEvent;
 
 
@@ -59,8 +58,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
             final boolean registerAllSubDirs,
             final Consumer<FileWatchFileEvent> fileListener,
             final Consumer<FileWatchErrorEvent> errorListener,
-            final Consumer<FileWatchTerminationEvent> terminationListener,
-            final Consumer<FileWatchRegisterEvent> registerListener
+            final Consumer<FileWatchTerminationEvent> terminationListener
     ) {
         if (mainDir == null) {
             throw new IllegalArgumentException("The mainDir must not be null!");
@@ -72,7 +70,6 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
         this.mainDir = mainDir.toAbsolutePath().normalize();
         this.fileListener = fileListener;
         this.errorListener = errorListener;
-        this.registerListener = registerListener;
         this.terminationListener = terminationListener;
 
         try {
@@ -118,17 +115,6 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     }
 
     @Override
-   public void register(final Path dir) {
-        if (!Files.isDirectory(dir)) {
-            throw new RuntimeException("The path " + dir + " does not exist or is not a directory");
-        }
-
-        final Path normalizedDir = dir.toAbsolutePath().normalize();
-
-        register(normalizedDir, false);
-    }
-
-    @Override
     public List<Path> getRegisteredPaths() {
         return keys.values().stream().sorted().collect(Collectors.toList());
     }
@@ -163,17 +149,13 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     }
 
 
-    private void register(final Path dir, final boolean sendEvent) {
+    private void register(final Path dir) {
         try {
             final WatchKey dirKey = dir.register(
                                       ws,
                                       ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
             keys.put(dirKey, dir);
-
-            if (sendEvent && registerListener != null) {
-                safeRun(() -> registerListener.accept(new FileWatchRegisterEvent(dir)));
-            }
         }
         catch(Exception e) {
             if (errorListener != null) {
@@ -234,7 +216,7 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
                            final FileWatchFileEventType eventType = convertToEventType(e.kind());
                            if (Files.isDirectory(absPath)) {
                                if (eventType == FileWatchFileEventType.CREATED) {
-                                   register(absPath, true);  // register the new subdir
+                                   register(absPath);  // register the new subdir
                                }
 
                                if (eventType != FileWatchFileEventType.MODIFIED) {
@@ -305,6 +287,5 @@ public class FileWatcher_JavaWatchService implements IFileWatcher {
     private final Map<WatchKey,Path> keys = new HashMap<>();
     private final Consumer<FileWatchFileEvent> fileListener;
     private final Consumer<FileWatchErrorEvent> errorListener;
-    private final Consumer<FileWatchRegisterEvent> registerListener;
     private final Consumer<FileWatchTerminationEvent> terminationListener;
 }

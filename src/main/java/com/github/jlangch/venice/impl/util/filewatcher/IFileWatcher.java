@@ -34,8 +34,6 @@ public interface IFileWatcher extends Closeable {
 
     Path getMainDir();
 
-    void register(final Path dir);
-
     List<Path> getRegisteredPaths();
 
     FileWatcherStatus getStatus();

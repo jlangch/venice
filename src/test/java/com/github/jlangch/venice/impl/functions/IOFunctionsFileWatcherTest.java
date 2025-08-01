@@ -50,17 +50,12 @@ public class IOFunctionsFileWatcherTest {
                 "  (def lock 0)                                                          \n" +
                 "                                                                        \n" +
                 "  (def file-event-count        (atom 0))                                \n" +
-                "  (def register-event-count    (atom 0))                                \n" +
                 "  (def error-event-count       (atom 0))                                \n" +
                 "  (def termination-event-count (atom 0))                                \n" +
                 "                                                                        \n" +
                 "  (defn event [path mode]                                               \n" +
                 "    (swap! file-event-count inc)                                        \n" +
                 "    (log \"Event:      \" path mode))                                   \n" +
-                "                                                                        \n" +
-                "  (defn register [path]                                                 \n" +
-                "    (swap! register-event-count inc)                                    \n" +
-                "    (log \"Registered: \" path))                                        \n" +
                 "                                                                        \n" +
                 "  (defn error [path e]                                                  \n" +
                 "    (swap! error-event-count inc)                                       \n" +
@@ -82,7 +77,6 @@ public class IOFunctionsFileWatcherTest {
                 "                   :event-fn            #(event %1 %2)                  \n" +
                 "                   :error-fn            #(error %1 %2)                  \n" +
                 "                   :termination-fn      #(termination %1)               \n" +
-                "                   :register-fn         #(register %1)                  \n" +
                 "                   :fswatch-monitor     nil                             \n" +
                 "                   :fswatch-program     \"/opt/homebrew/bin/fswatch\")] \n" +
                 "    (log \"Watching:   \" dir)                                          \n" +
@@ -115,12 +109,10 @@ public class IOFunctionsFileWatcherTest {
                 "                                                                        \n" +
                 "    (log \"\")                                                          \n" +
                 "    (log \"File Events:        \" @file-event-count)                    \n" +
-                "    (log \"Register Events:    \" @register-event-count)                \n" +
                 "    (log \"Error Events:       \" @error-event-count)                   \n" +
                 "    (log \"Termination Events: \" @termination-event-count)             \n" +
                 "                                                                        \n" +
                 "    [ @file-event-count                                                 \n" +
-                "      @register-event-count                                             \n" +
                 "      @error-event-count                                                \n" +
                 "      @termination-event-count ])                                       ";
 
@@ -128,8 +120,8 @@ public class IOFunctionsFileWatcherTest {
         final List<Long> events = (List<Long>)venice.eval(script);
 
         assertEquals(6L, events.get(0));  // file events
-        assertEquals(0L, events.get(2));  // error events
-        assertEquals(1L, events.get(3));  // termination events
+        assertEquals(0L, events.get(1));  // error events
+        assertEquals(1L, events.get(2));  // termination events
     }
 
 }

@@ -46,7 +46,6 @@ import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchErrorEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchFileEventType;
-import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchRegisterEvent;
 import com.github.jlangch.venice.impl.util.filewatcher.events.FileWatchTerminationEvent;
 
 
@@ -75,7 +74,6 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             final Consumer<FileWatchFileEvent> fileListener,
             final Consumer<FileWatchErrorEvent> errorListener,
             final Consumer<FileWatchTerminationEvent> terminationListener,
-            final Consumer<FileWatchRegisterEvent> registerListener,
             final FsWatchMonitor monitor,
             final String fswatchProgram
     ) {
@@ -92,7 +90,6 @@ public class FileWatcher_FsWatch implements IFileWatcher {
         this.mainDir = mainDir.toAbsolutePath().normalize();
         this.recursive = recursive;
         this.fileListener = fileListener;
-        this.registerListener = registerListener;
         this.errorListener = errorListener;
         this.terminationListener = terminationListener;
         this.monitor = monitor;
@@ -121,13 +118,6 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             throw new RuntimeException(
                     "Rejected to start the FileWatcher in status " + status.get());
         }
-    }
-
-    @Override
-    public void register(final Path dir) {
-        throw new RuntimeException(
-                "Registering additional FileWatcher directories is not support on "
-                + "this FileWatcher!");
     }
 
     @Override
@@ -295,33 +285,28 @@ public class FileWatcher_FsWatch implements IFileWatcher {
             final Set<FileWatchFileEventType> types
     ) {
         if (isDir) {
-            if (types.contains(CREATED)) {
-                safeRun(() -> registerListener.accept(
-                                    new FileWatchRegisterEvent(path)));
-            }
-
-            if (types.contains(CREATED)) {
-                safeRun(() -> fileListener.accept(
-                                 new FileWatchFileEvent(path, isDir, isFile, CREATED)));
-            }
-            else if (types.contains(DELETED)) {
+            if (types.contains(DELETED)) {
                 safeRun(() -> fileListener.accept(
                                 new FileWatchFileEvent(path, isDir, isFile, DELETED)));
+            }
+            else if (types.contains(CREATED)) {
+                safeRun(() -> fileListener.accept(
+                                 new FileWatchFileEvent(path, isDir, isFile, CREATED)));
             }
         }
         else if (isFile) {
             if (Files.isRegularFile(path)) {
-                if (types.contains(MODIFIED)) {
+                if (types.contains(DELETED)) {
+                    safeRun(() -> fileListener.accept(
+                                    new FileWatchFileEvent(path, isDir, isFile, DELETED)));
+                }
+                else if (types.contains(MODIFIED)) {
                     safeRun(() -> fileListener.accept(
                                     new FileWatchFileEvent(path, isDir, isFile, MODIFIED)));
                 }
                 else if (types.contains(CREATED)) {
                    safeRun(() -> fileListener.accept(
                                     new FileWatchFileEvent(path, isDir, isFile, CREATED)));
-                }
-                else if (types.contains(DELETED)) {
-                    safeRun(() -> fileListener.accept(
-                                    new FileWatchFileEvent(path, isDir, isFile, DELETED)));
                 }
             }
             else {
@@ -423,7 +408,6 @@ public class FileWatcher_FsWatch implements IFileWatcher {
     private final Path mainDir;
     private final boolean recursive;
     private final Consumer<FileWatchFileEvent> fileListener;
-    private final Consumer<FileWatchRegisterEvent> registerListener;
     private final Consumer<FileWatchErrorEvent> errorListener;
     private final Consumer<FileWatchTerminationEvent> terminationListener;
     private final FsWatchMonitor monitor;
