@@ -137,8 +137,8 @@ public class IOFunctionsFileWatcher {
                         "  ;; wait to receive the termination event                                           \n" +
                         "  (sleep 1 :seconds))                                                                ")
                     .seeAlso(
-                        "io/add-watch-dir",
                         "io/registered-watch-dirs",
+                        "io/close-watcher",
                         "io/await-for")
                     .build()
         ) {

@@ -41,7 +41,7 @@
 (import :org.repackage.com.github.jlangch.aviron.admin.CpuProfileEntry)
 (import :org.repackage.com.github.jlangch.aviron.dto.QuarantineEvent)
 (import :org.repackage.com.github.jlangch.aviron.dto.ScanResult)
-(import :com.github.jlangch.aviron.filewatcher.FileWatcherQueue)
+(import :org.repackage.com.github.jlangch.aviron.filewatcher.FileWatcherQueue)
 
 (load-module :java)
 
@@ -1231,7 +1231,46 @@
 ;; File watcher queue
 ;; -----------------------------------------------------------------------------
 
-(defn queue-create 
+(defn 
+  ^{ :arglists '(
+          "(queue-create)")
+     :doc """
+          Create a new file queue with either a default capacity or an explicit 
+          capacity.
+
+          The file queue has overflow protection to keep a all operations non 
+          blocking. If the queue grows beyond the max size the oldest entries 
+          will be removed that the new entries fit into the queue.
+ 
+          The queue never blocks and never grows beyond limits to protect
+          the system!
+
+          File watchers (like the Java `WatchService` or the `fswatch` tool) 
+          have the same behavior. If they get overrun with file change events 
+          they discard events and signal it by sending an 'OVERFLOW' event to 
+          their clients.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (aviron/queue-create))
+          """,
+          """
+          (do
+            (load-module :aviron)
+            (aviron/queue-create 5000))
+          """)
+     :see-also '(
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-push"
+          "aviron/queue-pop" ) }
+
+  queue-create 
   ([]
     (. :FileWatcherQueue :new))
   ([capacity]
@@ -1239,39 +1278,235 @@
     (. :FileWatcherQueue :new capacity)))
 
 
-(defn queue-capacity [queue] 
+(defn 
+  ^{ :arglists '(
+          "(queue-capacity queue)")
+     :doc """
+          Returns the capacity of the file queue
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-capacity q)))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-push"
+          "aviron/queue-pop" ) }
+
+  queue-capacity [queue] 
+
   { :pre [(instance-of? :FileWatcherQueue queue)] }
-  (. queue :capacity))
+  (long (. queue :capacity)))
 
 
-(defn queue-empty? [queue] 
+(defn 
+  ^{ :arglists '(
+          "(queue-empty? queue)")
+     :doc """
+          Returns `true` if the file queue is empty else `false`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-empty? q)))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-push"
+          "aviron/queue-pop" ) }
+
+  queue-empty? [queue] 
+
   { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :isEmpty))
 
 
-(defn queue-size [queue] 
+(defn 
+  ^{ :arglists '(
+          "(queue-size queue)")
+     :doc """
+          Returns the size of the file queue
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-size q)))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-push"
+          "aviron/queue-pop" ) }
+
+  queue-size [queue] 
+
   { :pre [(instance-of? :FileWatcherQueue queue)] }
-  (. queue :size))
+  (long (. queue :size)))
 
 
-(defn queue-clear [queue] 
+(defn 
+  ^{ :arglists '(
+          "(queue-clear queue)")
+     :doc """
+          Clears the file queue
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-clear q)))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-push"
+          "aviron/queue-pop" ) }
+
+  queue-clear [queue] 
+
   { :pre [(instance-of? :FileWatcherQueue queue)] }
   (. queue :clear))
 
 
-(defn queue-remove [queue file] 
+(defn 
+  ^{ :arglists '(
+          "(queue-remove queue file)")
+     :doc """
+          Removes a file form the queue.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-push q (io/file "/data/b.txt"))
+              (aviron/queue-push q (io/file "/data/c.txt"))
+              (aviron/queue-remove q (io/file "/data/b.txt"))))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-push"
+          "aviron/queue-pop" ) }
+
+  queue-remove [queue file] 
+
   { :pre [(instance-of? :FileWatcherQueue queue)
           (io/file? file)] }
   (. queue :remove file))
 
 
-(defn queue-push [queue file] 
+(defn 
+  ^{ :arglists '(
+          "(queue-push queue file)")
+     :doc """
+          Push a new file to the tail of the queue
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-push q (io/file "/data/b.txt"))
+              (println (aviron/queue-pop q))
+              (println (aviron/queue-pop q))))
+          """)
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-pop" ) }
+
+  queue-push [queue file] 
+
   { :pre [(instance-of? :FileWatcherQueue queue)
           (io/file? file)] }
   (. queue :push file))
 
 
-(defn queue-pop 
+(defn 
+  ^{ :arglists '(
+          "(queue-pop queue)",
+          "(queue-pop queue n)",
+          "(queue-pop queue n existing-files-only)")
+     :doc """
+          Pops the next or n next files from the head of the queue.
+
+          If 'existing-files-only' is `true` discards any queue head files that
+          are not existing.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-push q (io/file "/data/b.txt"))
+              (println (aviron/queue-pop q))
+              (println (aviron/queue-pop q))
+              (println (aviron/queue-pop q))))
+          """,
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-push q (io/file "/data/b.txt"))
+              (aviron/queue-push q (io/file "/data/c.txt"))
+              (println (aviron/queue-pop q 5))))
+          """,
+          """
+          (do
+            (load-module :aviron)
+            (let [q (aviron/queue-create)]
+              (aviron/queue-push q (io/file "/data/a.txt"))
+              (aviron/queue-push q (io/file "/data/b.txt"))
+              (aviron/queue-push q (io/file "/data/c.txt"))
+              (println (aviron/queue-pop q 5 true))))
+          """)
+
+     :see-also '(
+          "aviron/queue-create"
+          "aviron/queue-capacity"
+          "aviron/queue-empty?"
+          "aviron/queue-size"
+          "aviron/queue-clear"
+          "aviron/queue-remove"
+          "aviron/queue-push" ) }
+
+  queue-pop 
+
   ([queue] 
     { :pre [(instance-of? :FileWatcherQueue queue)] }
     (. queue :pop))
