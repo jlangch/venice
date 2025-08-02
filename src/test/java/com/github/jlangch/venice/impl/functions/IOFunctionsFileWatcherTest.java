@@ -80,7 +80,7 @@ public class IOFunctionsFileWatcherTest {
                 "                   :termination-fn      termination-event               \n" +
                 "                   :fswatch-monitor     nil                             \n" +
                 "                   :fswatch-program     \"/opt/homebrew/bin/fswatch\")] \n" +
-                "    (log \"Watching:   \" dir)                                          \n" +
+                "    (log \"Watching:   %s\" dir)                                        \n" +
                 "                                                                        \n" +
                 "    (let [f (io/file dir \"test1.txt\")]                                \n" +
                 "      (io/touch-file f)                   ;; created                    \n" +
