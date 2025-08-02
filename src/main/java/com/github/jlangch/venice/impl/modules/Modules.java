@@ -88,7 +88,6 @@ public class Modules {
                         "excel",
                         "esr",
                         "fam",
-                        "file-watcher-queue",
                         "fonts",
                         "geoip",
                         "gradle",
