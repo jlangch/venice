@@ -41,8 +41,7 @@ extends com.github.jlangch.aviron.filewatcher.FileWatcher_JavaWatchService {
             final boolean recursive,
             final Consumer<FileWatchFileEvent> fileListener,
             final Consumer<FileWatchErrorEvent> errorListener,
-            final Consumer<FileWatchTerminationEvent> terminationListener,
-            final CallFrame[] callFrame
+            final Consumer<FileWatchTerminationEvent> terminationListener
     ) {
        super(mainDir,
               recursive,
