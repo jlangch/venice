@@ -186,9 +186,11 @@ public class IOFunctionsFileWatcher {
                 // TODO:  Migration to Aviron file watcher
                 // 1.  Test Venice 1.12.53 with Aviron 1.6.0 (drop-in replacement for
                 //     avsan.venice)
+                //     => done
                 // 2.  Migrate FileWatcherQueue to use the Aviron FileWatcherQueue and
                 //     the methods from the :aviron module
                 //     avscan.venice must be changed
+                //     => done
                 // 3.  Use Aviron_FileWatcher_FsWatch and Aviron_FileWatcher_JavaWatchService
                 //     instead of the Venice built-in file watchers (drop-in replacement)
                 // 4.  Migrate io/watch-dir to callbacks receiving a single event map arg
