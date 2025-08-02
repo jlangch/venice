@@ -53,15 +53,15 @@ public class IOFunctionsFileWatcherTest {
                 "  (def error-event-count       (atom 0))                                \n" +
                 "  (def termination-event-count (atom 0))                                \n" +
                 "                                                                        \n" +
-                "  (defn event [path mode]                                               \n" +
+                "  (defn file-event [path action]                                        \n" +
                 "    (swap! file-event-count inc)                                        \n" +
-                "    (log \"Event:      \" path mode))                                   \n" +
+                "    (log \"Event:      \" path action))                                 \n" +
                 "                                                                        \n" +
-                "  (defn error [path e]                                                  \n" +
+                "  (defn error-event [path e]                                            \n" +
                 "    (swap! error-event-count inc)                                       \n" +
                 "    (log \"Failure:    \" (:message e)))                                \n" +
                 "                                                                        \n" +
-                "  (defn termination [path]                                              \n" +
+                "  (defn termination-event [path]                                        \n" +
                 "    (swap! termination-event-count inc)                                 \n" +
                 "    (log \"Terminated: \" path))                                        \n" +
                 "                                                                        \n" +
@@ -74,9 +74,9 @@ public class IOFunctionsFileWatcherTest {
                 "  (try-with [w (io/watch-dir                                            \n" +
                 "                   dir                                                  \n" +
                 "                   :include-all-subdirs true                            \n" +
-                "                   :event-fn            #(event %1 %2)                  \n" +
-                "                   :error-fn            #(error %1 %2)                  \n" +
-                "                   :termination-fn      #(termination %1)               \n" +
+                "                   :file-fn             #(file-event %1 %2)             \n" +
+                "                   :error-fn            #(error-event %1 %2)            \n" +
+                "                   :termination-fn      #(termination-event %1)         \n" +
                 "                   :fswatch-monitor     nil                             \n" +
                 "                   :fswatch-program     \"/opt/homebrew/bin/fswatch\")] \n" +
                 "    (log \"Watching:   \" dir)                                          \n" +

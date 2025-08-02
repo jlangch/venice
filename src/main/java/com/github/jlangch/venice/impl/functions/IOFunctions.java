@@ -43,8 +43,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
 import java.nio.file.attribute.FileTime;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -52,7 +50,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1537,92 +1534,6 @@ public class IOFunctions {
                 }
                 catch(URISyntaxException ex) {
                     throw new VncException("Malformed URI: " + ex.getMessage(), ex);
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-    // https://github.com/juxt/dirwatch/blob/master/src/juxt/dirwatch.clj
-    public static VncFunction io_await_for =
-        new VncFunction(
-                "io/await-for",
-                VncFunction
-                    .meta()
-                    .arglists("(io/await-for timeout time-unit file & modes)")
-                    .doc(
-                        "Blocks the current thread until the file has been created, deleted, or " +
-                        "modified according to the passed modes {:created, :deleted, :modified}, " +
-                        "or the timeout has elapsed. Returns logical false if returning due to " +
-                        "timeout, logical true otherwise. \n\n" +
-                        "Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
-                    .examples(
-                        "(io/await-for 10 :seconds \"/tmp/data.json\" :created)")
-                    .seeAlso(
-                        "io/watch-dir")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertMinArity(this, args, 3);
-
-                sandboxFunctionCallValidation();
-
-                final long timeout = Coerce.toVncLong(args.first()).getValue();
-
-                final TimeUnit unit = toTimeUnit(Coerce.toVncKeyword(args.second()));
-
-                final long timeoutMillis = unit.toMillis(Math.max(0,timeout));
-
-                final File file = convertToFile(
-                                        args.third(),
-                                        "Function 'io/await-for' does not allow %s as file").getAbsoluteFile();
-
-
-                final Set<WatchEvent.Kind<?>> events = new HashSet<>();
-                for(VncVal v : args.slice(3)) {
-                    final VncKeyword mode = Coerce.toVncKeyword(v);
-                    switch(mode.getSimpleName()) {
-                        case "created":
-                            events.add(StandardWatchEventKinds.ENTRY_CREATE);
-                            break;
-                        case "deleted":
-                            events.add(StandardWatchEventKinds.ENTRY_DELETE);
-                            break;
-                        case "modified":
-                            events.add(StandardWatchEventKinds.ENTRY_MODIFY);
-                            break;
-                        default:
-                            throw new VncException(
-                                    String.format(
-                                            "Function 'io/await-for' invalid mode '%s'. Use one or " +
-                                            "multiple of {:created, :deleted, :modified}",
-                                            mode.toString()));
-                    }
-                }
-
-                if (events.isEmpty()) {
-                    throw new VncException(
-                            "Function 'io/await-for' missing a mode. Pass one or " +
-                            "multiple of {:created, :deleted, :modified}");
-                }
-
-                try {
-                    return VncBoolean.of(FileUtil.awaitFile(
-                                            file.getCanonicalFile().toPath(),
-                                            timeoutMillis,
-                                            events));
-                }
-                catch(InterruptedException ex) {
-                    throw new com.github.jlangch.venice.InterruptedException(
-                            "Interrupted while calling function 'io/await-for'", ex);
-                }
-                catch(IOException ex) {
-                    throw new VncException(
-                            String.format(
-                                    "Function 'io/await-for' failed to await for file '%s'",
-                                    file.getPath()),
-                            ex);
                 }
             }
 
@@ -3475,19 +3386,6 @@ public class IOFunctions {
         return new File(Normalizer.normalize(file.getPath(), form));
     }
 
-    private static TimeUnit toTimeUnit(final VncKeyword unit) {
-        switch(unit.getValue()) {
-            case "milliseconds": return TimeUnit.MILLISECONDS;
-            case "seconds": return TimeUnit.SECONDS;
-            case "minutes":  return TimeUnit.MINUTES;
-            case "hours": return TimeUnit.HOURS;
-            case "days": return TimeUnit.DAYS;
-            default: throw new VncException(
-                            "Invalid time-unit " + unit.getValue() + ". "
-                                + "Use one of {:milliseconds, :seconds, :minutes, :hours, :days}");
-        }
-    }
-
     private static final String globPatternHelp() {
         return
             "**Globbing patterns**\n" +
@@ -3575,7 +3473,6 @@ public class IOFunctions {
                     .add(io_file_within_dir_Q)
                     .add(io_to_url)
                     .add(io_to_uri)
-                    .add(io_await_for)
                     .add(io_list_files)
                     .add(io_list_file_tree)
                     .add(io_list_file_tree_lazy)
