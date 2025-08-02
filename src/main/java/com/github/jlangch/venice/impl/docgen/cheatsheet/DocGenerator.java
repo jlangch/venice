@@ -99,6 +99,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ExceptionsSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.FunctionsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.InetSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoFileSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoFileWatchSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoZipSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JavaInteropSection;
@@ -365,6 +366,7 @@ public class DocGenerator {
         final DocSection io = new DocSection("I/O", "io");
         io.addSection(new DocSection("I/O", "io.util"));
         io.addSection(new DocSection("File", "io.file"));
+        io.addSection(new DocSection("File Watcher", "io.file-watcher"));
         io.addSection(new DocSection("Zip/GZip", "io.zip"));
         content.add(io);
 
@@ -534,6 +536,7 @@ public class DocGenerator {
                 new ModuleStopWatchSection(diBuilder).section(),
                 new IoSection(diBuilder).section(),
                 new IoFileSection(diBuilder).section(),
+                new IoFileWatchSection(diBuilder).section(),
                 new JsonSection(diBuilder).section(),
                 new InetSection(diBuilder).section(),
                 new CidrSection(diBuilder).section(),
