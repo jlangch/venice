@@ -184,13 +184,13 @@ public class IOFunctionsFileWatcher {
                 final String fswatchBinary = Coerce.toVncString(fswatchBinaryOpt).toString();
 
                 // TODO:  Migration to Aviron file watcher
-                // 1.  Test Venice 1.12.53 with Aviron 1.6.0 (drop in replacement for
+                // 1.  Test Venice 1.12.53 with Aviron 1.6.0 (drop-in replacement for
                 //     avsan.venice)
                 // 2.  Migrate FileWatcherQueue to use the Aviron FileWatcherQueue and
                 //     the methods from the :aviron module
                 //     avscan.venice must be changed
                 // 3.  Use Aviron_FileWatcher_FsWatch and Aviron_FileWatcher_JavaWatchService
-                //     instead of the Venice built-in file watchers
+                //     instead of the Venice built-in file watchers (drop-in replacement)
                 // 4.  Migrate io/watch-dir to callbacks receiving a single event map arg
                 //     avsan.venice must be changed, especially for file-event to discard
                 //     dir action events.
