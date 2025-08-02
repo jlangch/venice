@@ -34,7 +34,7 @@ import java.util.List;
  * <pre>
  *
  * +------------+    +-------------+                   +-----------+    +-------+
- * | Filesystem |--->| FileWatcher |--->|  Queue  |--->| AV Client |--->| Clamd |
+ * | Filesystem |---&gt;| FileWatcher |---&gt;|  Queue  |---&gt;| AV Client |---&gt;| Clamd |
  * +------------+    +-------------+    +---------+    +-----------+    +-------+
  *
  * </pre>
