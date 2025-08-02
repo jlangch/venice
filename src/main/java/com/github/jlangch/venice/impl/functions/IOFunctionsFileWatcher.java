@@ -196,6 +196,7 @@ public class IOFunctionsFileWatcher {
                 // 4.  Migrate io/watch-dir to callbacks receiving a single event map arg
                 //     avsan.venice must be changed, especially for file-event to discard
                 //     dir action events.
+                // 5.  Remove Venice :file-watcher-queue module and FileWatcherQueue
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
                         final IFileWatcher fw;
