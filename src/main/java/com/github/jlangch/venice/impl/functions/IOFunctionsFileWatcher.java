@@ -50,7 +50,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
@@ -81,7 +80,8 @@ public class IOFunctionsFileWatcher {
                                "If `true` includes in addtion to the main dir recursively all subdirs. " +
                                "If `false` just watches on the main dir. Defaults to `false`.|\n" +
                         "| :file-fn fn | "+
-                               "A two argument function that receives the path and action {:created, " +
+                               "A four argument function that receives the 'path', a dir? (true if path " +
+                               "is a dir), a file? (true if path is a file), and an 'action' {:created, " +
                                ":deleted, :modified} of the changed file. Defaults to `nil`.|\n" +
                         "| :error-fn fn | " +
                                "A two argument function called in error case that receives the watch " +
@@ -135,14 +135,15 @@ public class IOFunctionsFileWatcher {
                         "                                                                             \n" +
                         "  (def lock 0)                                                               \n" +
                         "                                                                             \n" +
-                        "  (defn log [& s]                                                            \n" +
-                        "    (locking lock (apply println s)))                                        \n" +
+                        "  (defn log [format & args]                                                  \n" +
+                        "    (locking lock (println (apply str/format format args))))                 \n" +
                         "                                                                             \n" +
-                        "  (defn file-event [path action]                                             \n" +
-                        "    (log \"File Event: %s %s\" path action))                                 \n" +
+                        "  (defn file-event [path dir? file? action]                                  \n" +
+                        "    (log \"File:       %s %-9s, dir: %b, file: %b\"                          \n" +
+                        "         path action dir? file?))                                            \n" +
                         "                                                                             \n" +
                         "  (defn error-event [path exception]                                         \n" +
-                        "    (log \"Error:      %s %s\" path (:message exception)))                   \n" +
+                        "    (log \"Failure:    %s %s\" path (:message e)))                           \n" +
                         "                                                                             \n" +
                         "  (defn termination-event [path]                                             \n" +
                         "    (log \"Terminated: %s\" path))                                           \n" +
@@ -229,9 +230,8 @@ public class IOFunctionsFileWatcher {
                 // 3.  Use Aviron_FileWatcher_FsWatch and Aviron_FileWatcher_JavaWatchService
                 //     instead of the Venice built-in file watchers (drop-in replacement)
                 //     => done
-                // 4.  Migrate io/watch-dir to callbacks receiving a single event map arg
-                //     avsan.venice must be changed, especially for file-event to discard
-                //     dir action events.
+                // 4.  Migrate io/watch-dir to callbacks.
+                //     => done
                 // 5.  Remove Venice :file-watcher-queue module and FileWatcherQueue
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
@@ -439,13 +439,14 @@ public class IOFunctionsFileWatcher {
     ) {
         return fn == null
                 ? null
-                : (event) -> { if (event.isFile()) {
-                                    future.applyOf(
-                                       partial.applyOf(
-                                        fn,
-                                        new VncString(event.getPath().toString()),
-                                        new VncKeyword(event.getType().name().toLowerCase())));
-                               }};
+                : (event) -> { future.applyOf(
+                                   partial.applyOf(
+                                    fn,
+                                    new VncString(event.getPath().toString()),
+                                    VncBoolean.of(event.isDir()),
+                                    VncBoolean.of(event.isFile()),
+                                    new VncKeyword(event.getType().name().toLowerCase())));
+                               };
     }
 
     private static Consumer<FileWatchErrorEvent> createErrorEventListener(
@@ -473,38 +474,38 @@ public class IOFunctionsFileWatcher {
                                     new VncString(event.getPath().toString())));
     }
 
-    private VncMap toMap(final FileWatchFileEvent event) {
-        return VncHashMap.of(
-                new VncKeyword("type"),   new VncKeyword("file-event"),
-                new VncKeyword("file"),   new VncJavaObject(event.getPath().toFile()),
-                new VncKeyword("dir?"),   VncBoolean.of(event.isDir()),
-                new VncKeyword("file?"),  VncBoolean.of(event.isFile()),
-                new VncKeyword("action"), new VncKeyword(event.getType().name().toLowerCase()));
-    }
-
-    private VncMap toMap(final FileWatchErrorEvent event) {
-        return VncHashMap.of(
-                new VncKeyword("type"),      new VncKeyword("error-event"),
-                new VncKeyword("file"),      new VncJavaObject(event.getPath().toFile()),
-                new VncKeyword("exception"), new VncJavaObject(event.getException()));
-    }
-
-    private VncMap toMap(final FileWatchTerminationEvent event) {
-        return VncHashMap.of(
-                new VncKeyword("type"), new VncKeyword("termination-event"),
-                new VncKeyword("file"), new VncJavaObject(event.getPath().toFile()));
-    }
+//    private VncMap toMap(final FileWatchFileEvent event) {
+//        return VncHashMap.of(
+//                new VncKeyword("type"),   new VncKeyword("file-event"),
+//                new VncKeyword("file"),   new VncJavaObject(event.getPath().toFile()),
+//                new VncKeyword("dir?"),   VncBoolean.of(event.isDir()),
+//                new VncKeyword("file?"),  VncBoolean.of(event.isFile()),
+//                new VncKeyword("action"), new VncKeyword(event.getType().name().toLowerCase()));
+//    }
+//
+//    private VncMap toMap(final FileWatchErrorEvent event) {
+//        return VncHashMap.of(
+//                new VncKeyword("type"),      new VncKeyword("error-event"),
+//                new VncKeyword("file"),      new VncJavaObject(event.getPath().toFile()),
+//                new VncKeyword("exception"), new VncJavaObject(event.getException()));
+//    }
+//
+//    private VncMap toMap(final FileWatchTerminationEvent event) {
+//        return VncHashMap.of(
+//                new VncKeyword("type"), new VncKeyword("termination-event"),
+//                new VncKeyword("file"), new VncJavaObject(event.getPath().toFile()));
+//    }
 
     private static TimeUnit toTimeUnit(final VncKeyword unit) {
         switch(unit.getValue()) {
             case "milliseconds": return TimeUnit.MILLISECONDS;
-            case "seconds": return TimeUnit.SECONDS;
-            case "minutes":  return TimeUnit.MINUTES;
-            case "hours": return TimeUnit.HOURS;
-            case "days": return TimeUnit.DAYS;
-            default: throw new VncException(
-                            "Invalid time-unit " + unit.getValue() + ". "
-                                + "Use one of {:milliseconds, :seconds, :minutes, :hours, :days}");
+            case "seconds":      return TimeUnit.SECONDS;
+            case "minutes":      return TimeUnit.MINUTES;
+            case "hours":        return TimeUnit.HOURS;
+            case "days":         return TimeUnit.DAYS;
+            default:             throw new VncException(
+                                            "Invalid time-unit " + unit.getValue() + ". "
+                                            + "Use one of {:milliseconds, :seconds, :minutes, :hours, :days}");
         }
     }
 

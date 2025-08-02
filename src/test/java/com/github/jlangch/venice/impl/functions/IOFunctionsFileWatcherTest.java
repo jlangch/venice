@@ -49,24 +49,25 @@ public class IOFunctionsFileWatcherTest {
                 "(do                                                                     \n" +
                 "  (def lock 0)                                                          \n" +
                 "                                                                        \n" +
+                "  (defn log [format & args]                                             \n" +
+                "    (locking lock (println (apply str/format format args))))            \n" +
+                "                                                                        \n" +
                 "  (def file-event-count        (atom 0))                                \n" +
                 "  (def error-event-count       (atom 0))                                \n" +
                 "  (def termination-event-count (atom 0))                                \n" +
                 "                                                                        \n" +
-                "  (defn file-event [path action]                                        \n" +
+                "  (defn file-event [path dir? file? action]                             \n" +
                 "    (swap! file-event-count inc)                                        \n" +
-                "    (log \"Event:      \" path action))                                 \n" +
+                "    (log \"File:       %s %-9s, dir: %b, file: %b\"                     \n" +
+                "         path action dir? file?))                                       \n" +
                 "                                                                        \n" +
                 "  (defn error-event [path e]                                            \n" +
                 "    (swap! error-event-count inc)                                       \n" +
-                "    (log \"Failure:    \" (:message e)))                                \n" +
+                "    (log \"Failure:    %s %s\" path (:message e)))                      \n" +
                 "                                                                        \n" +
                 "  (defn termination-event [path]                                        \n" +
                 "    (swap! termination-event-count inc)                                 \n" +
-                "    (log \"Terminated: \" path))                                        \n" +
-                "                                                                        \n" +
-                "  (defn log [& s]                                                       \n" +
-                "    (locking lock (apply println s)))                                   \n" +
+                "    (log \"Terminated: %s\" path))                                      \n" +
                 "                                                                        \n" +
                 "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
                 "  (io/delete-file-on-exit dir)                                          \n" +
@@ -74,9 +75,9 @@ public class IOFunctionsFileWatcherTest {
                 "  (try-with [w (io/watch-dir                                            \n" +
                 "                   dir                                                  \n" +
                 "                   :include-all-subdirs true                            \n" +
-                "                   :file-fn             #(file-event %1 %2)             \n" +
-                "                   :error-fn            #(error-event %1 %2)            \n" +
-                "                   :termination-fn      #(termination-event %1)         \n" +
+                "                   :file-fn             file-event                      \n" +
+                "                   :error-fn            error-event                     \n" +
+                "                   :termination-fn      termination-event               \n" +
                 "                   :fswatch-monitor     nil                             \n" +
                 "                   :fswatch-program     \"/opt/homebrew/bin/fswatch\")] \n" +
                 "    (log \"Watching:   \" dir)                                          \n" +
@@ -84,7 +85,7 @@ public class IOFunctionsFileWatcherTest {
                 "    (let [f (io/file dir \"test1.txt\")]                                \n" +
                 "      (io/touch-file f)                   ;; created                    \n" +
                 "      (io/delete-file-on-exit f)                                        \n" +
-                "      (log \"Test File:  \" f)                                          \n" +
+                "      (log \"Test File:  %s\" f)                                        \n" +
                 "      (sleep 1000)                                                      \n" +
                 "      (io/spit f \"AAA\" :append true)    ;; modifed                    \n" +
                 "      (sleep 1000)                                                      \n" +
@@ -95,7 +96,7 @@ public class IOFunctionsFileWatcherTest {
                 "    (let [f (io/file dir \"test2.txt\")]                                \n" +
                 "      (io/spit f \"123\")                 ;; modifed                    \n" +
                 "      (io/delete-file-on-exit f)                                        \n" +
-                "      (log \"Test File:  \" f)                                          \n" +
+                "      (log \"Test File:  %s\" f)                                        \n" +
                 "      (sleep 1000)                                                      \n" +
                 "      (io/spit f \"AAA\" :append true)    ;; modifed                    \n" +
                 "      (sleep 1000)                                                      \n" +
@@ -108,9 +109,9 @@ public class IOFunctionsFileWatcherTest {
                 "    (sleep 1 :seconds)                                                  \n" +
                 "                                                                        \n" +
                 "    (log \"\")                                                          \n" +
-                "    (log \"File Events:        \" @file-event-count)                    \n" +
-                "    (log \"Error Events:       \" @error-event-count)                   \n" +
-                "    (log \"Termination Events: \" @termination-event-count)             \n" +
+                "    (log \"File Events:        %s\" @file-event-count)                  \n" +
+                "    (log \"Error Events:       %s\" @error-event-count)                 \n" +
+                "    (log \"Termination Events: %s\" @termination-event-count)           \n" +
                 "                                                                        \n" +
                 "    [ @file-event-count                                                 \n" +
                 "      @error-event-count                                                \n" +
@@ -119,7 +120,7 @@ public class IOFunctionsFileWatcherTest {
         @SuppressWarnings("unchecked")
         final List<Long> events = (List<Long>)venice.eval(script);
 
-        assertEquals(6L, events.get(0));  // file events
+        assertEquals(7L, events.get(0));  // file events
         assertEquals(0L, events.get(1));  // error events
         assertEquals(1L, events.get(2));  // termination events
     }
