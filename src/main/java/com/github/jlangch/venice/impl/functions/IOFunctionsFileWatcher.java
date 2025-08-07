@@ -36,11 +36,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.aviron.events.FileWatchErrorEvent;
+import com.github.jlangch.aviron.events.FileWatchFileEvent;
+import com.github.jlangch.aviron.events.FileWatchTerminationEvent;
 import com.github.jlangch.aviron.filewatcher.FsWatchMonitor;
 import com.github.jlangch.aviron.filewatcher.IFileWatcher;
-import com.github.jlangch.aviron.filewatcher.events.FileWatchErrorEvent;
-import com.github.jlangch.aviron.filewatcher.events.FileWatchFileEvent;
-import com.github.jlangch.aviron.filewatcher.events.FileWatchTerminationEvent;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -219,20 +219,6 @@ public class IOFunctionsFileWatcher {
                                                                   .getSimpleName());
                 final String fswatchBinary = Coerce.toVncString(fswatchBinaryOpt).toString();
 
-                // TODO:  Migration to Aviron file watcher
-                // 1.  Test Venice 1.12.53 with Aviron 1.6.0 (drop-in replacement for
-                //     avsan.venice)
-                //     => done
-                // 2.  Migrate FileWatcherQueue to use the Aviron FileWatcherQueue and
-                //     the methods from the :aviron module
-                //     avscan.venice must be changed
-                //     => done
-                // 3.  Use Aviron_FileWatcher_FsWatch and Aviron_FileWatcher_JavaWatchService
-                //     instead of the Venice built-in file watchers (drop-in replacement)
-                //     => done
-                // 4.  Migrate io/watch-dir to callbacks.
-                //     => done
-                // 5.  Remove Venice :file-watcher-queue module and FileWatcherQueue
                 if (OS.isLinux() || OS.isMacOSX()) {
                     try {
                         final IFileWatcher fw;

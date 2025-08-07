@@ -27,7 +27,7 @@
 ;;;;     <dependency>
 ;;;;       <groupId>com.github.jlangch</groupId>
 ;;;;       <artifactId>aviron</artifactId>
-;;;;       <version>1.5.0</version>
+;;;;       <version>1.7.0</version>
 ;;;;     </dependency>
 
 (ns aviron)
@@ -35,13 +35,16 @@
 (import :org.repackage.com.github.jlangch.aviron.Client)
 (import :org.repackage.com.github.jlangch.aviron.FileSeparator)
 (import :org.repackage.com.github.jlangch.aviron.admin.ClamdAdmin)
-(import :org.repackage.com.github.jlangch.aviron.admin.ClamdCpuLimiter)
-(import :org.repackage.com.github.jlangch.aviron.admin.DynamicCpuLimit)
-(import :org.repackage.com.github.jlangch.aviron.admin.CpuProfile)
-(import :org.repackage.com.github.jlangch.aviron.admin.CpuProfileEntry)
+(import :org.repackage.com.github.jlangch.aviron.limiter.ClamdCpuLimiter)
+(import :org.repackage.com.github.jlangch.aviron.limiter.ClamdPid)
+(import :org.repackage.com.github.jlangch.aviron.limiter.CpuProfile)
+(import :org.repackage.com.github.jlangch.aviron.limiter.CpuProfileEntry)
+(import :org.repackage.com.github.jlangch.aviron.limiter.DynamicCpuLimit)
+(import :org.repackage.com.github.jlangch.aviron.limiter.ScheduledClamdCpuLimiter)
 (import :org.repackage.com.github.jlangch.aviron.dto.QuarantineEvent)
 (import :org.repackage.com.github.jlangch.aviron.dto.ScanResult)
 (import :org.repackage.com.github.jlangch.aviron.filewatcher.FileWatcherQueue)
+(import :org.repackage.com.github.jlangch.aviron.util.DirCycler)
 
 (load-module :java)
 
@@ -884,7 +887,7 @@
           (do
             (load-module :aviron)
             (defn limit-fn [ts] 100I)
-            (aviron/create-clamd-cpu-limiter limit-fn))
+            (aviron/create-clamd-cpu-limiter (io/file "clamd-pid-file") limit-fn))
           """)
      :see-also '(
           "aviron/create-client"
@@ -896,25 +899,29 @@
 
   create-clamd-cpu-limiter 
   
-  ([]
-    (. :ClamdCpuLimiter :new))
+  ([clamd-pid-file]
+    { :pre [(io/file? clamd-pid-file)] }
+    (. :ClamdCpuLimiter :new (. :ClamdPid :new clamd-pid-file)))
 
-  ([profiles-or-fn]
-    { :pre [(or (and (sequential? profiles-or-fn)
+  ([clamd-pid-file profiles-or-fn]
+    { :pre [(io/file? clamd-pid-file)
+            (or (and (sequential? profiles-or-fn)
                      (== 7 (count profiles-or-fn)) 
                      (every? #(instance-of? :CpuProfile %) profiles-or-fn))
                 (fn? profiles-or-fn))] }
     (if (sequential? profiles-or-fn)
-      (. :ClamdCpuLimiter :new (. :DynamicCpuLimit :new profiles-or-fn))
-      (. :ClamdCpuLimiter :new (. :DynamicCpuLimit :new (java/as-function profiles-or-fn))))))
+      (. :ClamdCpuLimiter :new (. :ClamdPid :new clamd-pid-file) 
+                               (. :DynamicCpuLimit :new profiles-or-fn))
+      (. :ClamdCpuLimiter :new (. :ClamdPid :new clamd-pid-file)
+                               (. :DynamicCpuLimit :new (java/as-function profiles-or-fn))))))
 
 
 (defn 
   ^{ :arglists '(
-          "(clamd-activate-cpu-limit limiter pid)"
-          "(clamd-activate-cpu-limit limiter pid limit)")
+          "(clamd-activate-cpu-limit limiter)"
+          "(clamd-activate-cpu-limit limiter limit)")
      :doc """
-          Activates a new CPU limit on the clamd daemon with the given 'pid'.
+          Activates a new CPU limit on the clamd daemon .
 
           Without passing a 'limit' computes the CPU limit based on the limiter's
           profile and the current date and time.
@@ -926,8 +933,8 @@
           ;; [1] Activating explicit CPU limit
           (do
             (load-module :aviron)
-            (let [limiter    (aviron/create-clamd-cpu-limiter)
-                  pid        (aviron/clamd-pid)
+            (let [pid-file   (io/file "clamd-pid-file")
+                  limiter    (aviron/create-clamd-cpu-limiter pid-file)
                   last-limit (aviron/clamd-last-seen-limit limiter)
                   new-limit  60
                   activated? (aviron/clamd-activate-cpu-limit limiter pid new-limit)]
@@ -944,10 +951,10 @@
                                                           "09:00-17:59 @   0%"
                                                           "18:00-21:59 @  50%"
                                                           "22:00-23:59 @ 100%" ])
-                  limiter    (aviron/create-clamd-cpu-limiter (repeat 7 profile))
-                  pid        (aviron/clamd-pid)
+                  pid-file   (io/file "clamd-pid-file")
+                  limiter    (aviron/create-clamd-cpu-limiter pid-file (repeat 7 profile))
                   last-limit (aviron/clamd-last-seen-limit limiter)
-                  activated? (aviron/clamd-activate-cpu-limit limiter pid)
+                  activated? (aviron/clamd-activate-cpu-limit limiter)
                   new-limit  (aviron/clamd-last-seen-limit limiter)]
               (when activated?
                 (println "Adjusted clamd CPU limit:" last-limit "->" new-limit))))
@@ -962,31 +969,29 @@
 
   clamd-activate-cpu-limit 
 
-  ([limiter pid] 
-    { :pre [(instance-of? :ClamdCpuLimiter limiter) (string? pid)] }
-    (. limiter :activateClamdCpuLimit pid))
+  ([limiter] 
+    { :pre [(instance-of? :ClamdCpuLimiter limiter)] }
+    (. limiter :activateClamdCpuLimit))
 
-  ([limiter pid limit] 
-    { :pre [(instance-of? :ClamdCpuLimiter limiter) 
-            (string? pid)
+  ([limiter limit] 
+    { :pre [(instance-of? :ClamdCpuLimiter limiter)
             (long? limit) (pos? limit)] }
-    (. limiter :activateClamdCpuLimit pid limit)))
+    (. limiter :activateClamdCpuLimit limit)))
 
 
 (defn 
   ^{ :arglists '(
-          "(clamd-deactivate-cpu-limit limiter pid)")
+          "(clamd-deactivate-cpu-limit limiter)")
      :doc """
-          Deactivates any CPU limitation on the clamd deamon with the given 
-          'pid'.
+          Deactivates any CPU limitation on the clamd deamon.
           """
      :examples '(
           """
           (do
             (load-module :aviron)
-            (let [limiter  (aviron/create-clamd-cpu-limiter)
-                  pid      (aviron/clamd-pid)]
-              (aviron/clamd-deactivate-cpu-limit limiter pid)))
+            (let [pid-file (io/file "clamd-pid-file")
+                  limiter  (aviron/create-clamd-cpu-limiter pid-file)]
+              (aviron/clamd-deactivate-cpu-limit limiter)))
           """)
 
      :see-also '(
@@ -997,11 +1002,11 @@
           "aviron/clamd-limit-for-timestamp"
           "aviron/format-profiles-as-table-by-hour") }
 
-  clamd-deactivate-cpu-limit [limiter pid]
+  clamd-deactivate-cpu-limit [limiter]
   
-  { :pre [(instance-of? :ClamdCpuLimiter limiter) (string? pid)] }
+  { :pre [(instance-of? :ClamdCpuLimiter limiter)] }
 
-  (. limiter :deactivateClamdCpuLimit pid))
+  (. limiter :deactivateClamdCpuLimit))
 
 
 (defn 
@@ -1021,8 +1026,8 @@
           (do
             (load-module :aviron)
             (let [limiter    (aviron/create-clamd-cpu-limiter)
-                  pid        (aviron/clamd-pid)
-                  last-limit (aviron/clamd-last-seen-limit limiter)
+                  pid-file   (io/file "clamd-pid-file")
+                  last-limit (aviron/clamd-last-seen-limit pid-file limiter)
                   new-limit  60
                   activated? (aviron/clamd-activate-cpu-limit limiter pid new-limit)]
               (when activated?
@@ -1060,7 +1065,8 @@
                                                        "09:00-17:59 @   0%"
                                                        "18:00-21:59 @  50%"
                                                        "22:00-23:59 @ 100%" ])
-                  limiter    (aviron/create-clamd-cpu-limiter (repeat 7 profile))]
+                  pid-file (io/file "clamd-pid-file")
+                  limiter  (aviron/create-clamd-cpu-limiter pid-file (repeat 7 profile))]
               (aviron/clamd-limit-for-timestamp limiter (time/local-date-time 2025 7 1 18 30 0))))
           """)
      :see-also '(
@@ -1669,4 +1675,4 @@
     (. client :printConfig ps)))
 
 
-(def- library-version "1.5.3")
+(def- library-version "1.7.0")
