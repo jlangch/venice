@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updated dependencies:
 
-- bumped the Aviron (ClamAV client) library to V 1.6.0
+- bumped the Aviron (ClamAV client) library to V 1.7.0
 
 
 
