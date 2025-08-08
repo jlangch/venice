@@ -34,9 +34,8 @@
 
 (import :org.repackage.com.github.jlangch.aviron.Client)
 (import :org.repackage.com.github.jlangch.aviron.FileSeparator)
-(import :org.repackage.com.github.jlangch.aviron.admin.ClamdAdmin)
+(import :org.repackage.com.github.jlangch.aviron.Clamd)
 (import :org.repackage.com.github.jlangch.aviron.limiter.ClamdCpuLimiter)
-(import :org.repackage.com.github.jlangch.aviron.limiter.ClamdPid)
 (import :org.repackage.com.github.jlangch.aviron.limiter.CpuProfile)
 (import :org.repackage.com.github.jlangch.aviron.limiter.CpuProfileEntry)
 (import :org.repackage.com.github.jlangch.aviron.limiter.DynamicCpuLimit)
@@ -510,7 +509,7 @@
           "(clamd-pid)"
           "(clamd-pid pid-file)")
      :doc """
-          Returns the clamd PID or `nil` the clamd daemon is not running.
+          Returns the clamd PID or `nil` if the clamd daemon is not running.
 
           Without 'pid-file' argument runs a `pgrep clamd` shell command to get 
           the pid. With a 'pid-file' loads the pid from the pid file.
@@ -530,11 +529,12 @@
   clamd-pid 
   
   ([]          
-    (. :ClamdAdmin :getClamdPID))
+    (first (. :Clamd :getPids)))
 
   ([pid-file]
     { :pre [(or (string? pid-file) (io/file? pid-file))] } 
-    (. :ClamdAdmin :loadClamdPID (io/file pid-file))))
+    (-> (. :Clamd :new (io/file pid-file))
+        (. :getPid))))
 
 
 (defn
@@ -563,7 +563,8 @@
 
   { :pre [(string? clamd-pid) (long? limit) (pos? limit)] } 
 
-  (. :ClamdAdmin :activateClamdCpuLimit clamd-pid limit))
+  (-> (. :Clamd :new clamd-pid)
+      (. :activateCpuLimit limit)))
 
 
 (defn
@@ -588,7 +589,8 @@
 
   { :pre [(string? clamd-pid)] } 
 
-  (. :ClamdAdmin :deactivateClamdCpuLimit clamd-pid))
+  (-> (. :Clamd :new clamd-pid)
+      (. :deactivateCpuLimit)))
 
 
 (defn
@@ -612,7 +614,7 @@
 
   cpus []
 
-  (long (. :ClamdAdmin :getNrOfCpus)))
+  (long (. :Clamd :getNrOfCpus)))
 
 
 
@@ -901,7 +903,8 @@
   
   ([clamd-pid-file]
     { :pre [(io/file? clamd-pid-file)] }
-    (. :ClamdCpuLimiter :new (. :ClamdPid :new clamd-pid-file)))
+    (. :ClamdCpuLimiter :new (. :Clamd :new clamd-pid-file)
+                             (. :DynamicCpuLimit :new)))
 
   ([clamd-pid-file profiles-or-fn]
     { :pre [(io/file? clamd-pid-file)
@@ -910,9 +913,9 @@
                      (every? #(instance-of? :CpuProfile %) profiles-or-fn))
                 (fn? profiles-or-fn))] }
     (if (sequential? profiles-or-fn)
-      (. :ClamdCpuLimiter :new (. :ClamdPid :new clamd-pid-file) 
+      (. :ClamdCpuLimiter :new (. :Clamd :new clamd-pid-file) 
                                (. :DynamicCpuLimit :new profiles-or-fn))
-      (. :ClamdCpuLimiter :new (. :ClamdPid :new clamd-pid-file)
+      (. :ClamdCpuLimiter :new (. :Clamd :new clamd-pid-file)
                                (. :DynamicCpuLimit :new (java/as-function profiles-or-fn))))))
 
 
@@ -1675,4 +1678,4 @@
     (. client :printConfig ps)))
 
 
-(def- library-version "1.7.0")
+(def- library-version "1.8.0")
