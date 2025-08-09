@@ -87,27 +87,6 @@ public class ModuleAvironSection implements ISectionBuilder {
         clamd.addItem(diBuilder.getDocItem("aviron/clamd-cpu-limit-off", false));
         clamd.addItem(diBuilder.getDocItem("aviron/cpus", false));
 
-        final DocSection limiter = new DocSection("Clamd CPU Limiter", id());
-        all.addSection(limiter);
-        limiter.addItem(diBuilder.getDocItem("aviron/create-clamd-cpu-limiter", false));
-        limiter.addItem(diBuilder.getDocItem("aviron/clamd-activate-cpu-limit", false));
-        limiter.addItem(diBuilder.getDocItem("aviron/clamd-deactivate-cpu-limit", false));
-        limiter.addItem(diBuilder.getDocItem("aviron/clamd-last-seen-limit", false));
-        limiter.addItem(diBuilder.getDocItem("aviron/clamd-limit-for-timestamp", false));
-        limiter.addItem(diBuilder.getDocItem("aviron/format-profiles-as-table-by-hour", false));
-
-        final DocSection dynLimiter = new DocSection("Dynamic CPU Limiter", id());
-        all.addSection(dynLimiter);
-        dynLimiter.addItem(diBuilder.getDocItem("aviron/create-dynamic-cpu-limiter", false));
-        dynLimiter.addItem(diBuilder.getDocItem("aviron/compute-dynamic-cpu-limit", false));
-        dynLimiter.addItem(diBuilder.getDocItem("aviron/format-profiles-as-table-by-hour", false));
-
-        final DocSection profile = new DocSection("CPU Profiles", id());
-        all.addSection(profile);
-        profile.addItem(diBuilder.getDocItem("aviron/create-cpu-profile", false));
-        profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-entries", false));
-        profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-limit", false));
-
         return section;
     }
 

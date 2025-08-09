@@ -68,6 +68,7 @@ public class Modules {
                         "ascii-canvas",
                         "ascii-charts",
                         "aviron",
+                        "aviron-limiter",
                         "aviron-queue",
                         "aviron-cycler",
                         "benchmark",

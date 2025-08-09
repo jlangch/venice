@@ -42,6 +42,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironCyclerSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironLimiterSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironQueueSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
@@ -167,7 +168,7 @@ public class DocGenerator {
                         "ring-util",     "server-side-events",  "pretty-print",
                         "qrcode",        "qrref",               "qrbill",
                         "ascii-canvas",  "ascii-charts",        "ascii-table",
-                        "aviron",        "aviron-queue",        "aviron-cycler"));
+                        "aviron",        "aviron-queue",        "aviron-cycler",    "aviron-limiter"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -401,6 +402,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("Aviron", "modules.aviron"));
+        extmod.addSection(new DocSection("Aviron\u00A0Limiter", "modules.aviron-limiter"));
         extmod.addSection(new DocSection("Aviron\u00A0Queue", "modules.aviron-queue"));
         extmod.addSection(new DocSection("Aviron\u00A0Cycler", "modules.aviron-cycler"));
         extmod.addSection(new DocSection("App", "modules.app"));
@@ -575,6 +577,7 @@ public class DocGenerator {
                 new ModuleJdbcPostgreSQLSection(diBuilder).section(),
                 new ModuleChinookPostgreSQLSection(diBuilder).section(),
                 new ModuleAvironSection(diBuilder).section(),
+                new ModuleAvironLimiterSection(diBuilder).section(),
                 new ModuleAvironQueueSection(diBuilder).section(),
                 new ModuleAvironCyclerSection(diBuilder).section()
                 // new ModuleHttpClientSection(diBuilder).section(),
