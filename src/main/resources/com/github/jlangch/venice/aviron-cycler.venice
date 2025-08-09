@@ -48,7 +48,7 @@
           """
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (aviron-cycler/create "/data/filestore" "/data/filestore-state"))
           """)
      :see-also '(
@@ -80,7 +80,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
                (aviron-cycler/root-dir cycler)))
           """)
@@ -106,7 +106,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
                (aviron-cycler/dirs cycler)))
           """)
@@ -132,7 +132,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
                (aviron-cycler/dir-names cycler)))
           """)
@@ -159,7 +159,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
                (aviron-cycler/next-dir cycler)))
           """)
@@ -185,7 +185,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
                (aviron-cycler/refresh cycler)))
           """)
@@ -212,7 +212,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
                (aviron-cycler/last-dir-name cycler)))
           """)
@@ -239,7 +239,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
                (aviron-cycler/last-dir-timestamp cycler)))
           """)

@@ -49,12 +49,12 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (aviron-queue/create))
           """,
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (aviron-queue/create 5000))
           """)
      :see-also '(
@@ -83,7 +83,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/capacity q)))
           """)
@@ -111,7 +111,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/empty? q)))
           """)
@@ -139,7 +139,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/size q)))
           """)
@@ -167,7 +167,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/clear q)))
@@ -196,7 +196,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/push q (io/file "/data/b.txt"))
@@ -236,7 +236,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/push q (io/file "/data/b.txt"))
@@ -273,7 +273,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/push q (io/file "/data/b.txt"))
@@ -283,7 +283,7 @@
           """,
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/push q (io/file "/data/b.txt"))
@@ -292,7 +292,7 @@
           """,
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/push q (io/file "/data/b.txt"))
@@ -344,7 +344,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create 5)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/push q (io/file "/data/b.txt"))
@@ -379,7 +379,7 @@
      :examples '(
           """
           (do
-            (load-module :aviron)
+            (load-module :aviron-queue)
             (let [q (aviron-queue/create 5)]
               (aviron-queue/push q (io/file "/data/a.txt"))
               (aviron-queue/push q (io/file "/data/b.txt"))
