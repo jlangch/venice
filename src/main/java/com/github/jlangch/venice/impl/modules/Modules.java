@@ -71,6 +71,7 @@ public class Modules {
                         "aviron-limiter",
                         "aviron-queue",
                         "aviron-cycler",
+                        "aviron-demo-filestore",
                         "benchmark",
                         "cargo",
                         "cargo-arangodb",

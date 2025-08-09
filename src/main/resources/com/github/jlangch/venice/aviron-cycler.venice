@@ -44,12 +44,22 @@
           """
           (do
             (load-module :aviron-cycler)
-            (aviron-cycler/create "/data/filestore"))
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/root-dir demo-fs)]
+              (aviron-cycler/create filestore-dir)))
           """
           """
           (do
             (load-module :aviron-cycler)
-            (aviron-cycler/create "/data/filestore" "/data/filestore-state"))
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  root-dir      (aviron-demo-filestore/root-dir demo-fs)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  state-file    (io/file root-dir "cycler.state")]
+              (aviron-cycler/create filestore-dir state-file)))
           """)
      :see-also '(
           "aviron-cycler/root-dir"
@@ -81,7 +91,11 @@
           """
           (do
             (load-module :aviron-cycler)
-            (let [cycler (aviron-cycler/create "/data/filestore")]
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
               (aviron-cycler/root-dir cycler)))
           """)
      :see-also '(
@@ -95,7 +109,7 @@
 
   root-dir [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
-    (. :cycler :rootDir))
+    (. cycler :rootDir))
 
 (defn
   ^{ :arglists '(
@@ -107,7 +121,11 @@
           """
           (do
             (load-module :aviron-cycler)
-            (let [cycler (aviron-cycler/create "/data/filestore")]
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
               (aviron-cycler/dirs cycler)))
           """)
      :see-also '(
@@ -121,7 +139,7 @@
 
   dirs [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
-    (. :cycler :dirs))
+    (. cycler :dirs))
 
 (defn
   ^{ :arglists '(
@@ -133,8 +151,12 @@
           """
           (do
             (load-module :aviron-cycler)
-            (let [cycler (aviron-cycler/create "/data/filestore")]
-              (aviron-cycler/dir-names cycler)))
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+            (aviron-cycler/dir-names cycler)))
           """)
      :see-also '(
           "aviron-cycler/create"
@@ -147,7 +169,7 @@
 
   dir-names [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
-    (->> (. :cycler :dirs)
+    (->> (. cycler :dirs)
          (map #(io/file-name %))))
 
 (defn
@@ -160,7 +182,11 @@
           """
           (do
             (load-module :aviron-cycler)
-            (let [cycler (aviron-cycler/create "/data/filestore")]
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
               (aviron-cycler/next-dir cycler)))
           """)
      :see-also '(
@@ -174,7 +200,7 @@
 
   next-dir [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
-    (. :cycler :nextDir))
+    (. cycler :nextDir))
 
 (defn
   ^{ :arglists '(
@@ -186,7 +212,11 @@
           """
           (do
             (load-module :aviron-cycler)
-            (let [cycler (aviron-cycler/create "/data/filestore")]
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
               (aviron-cycler/refresh cycler)))
           """)
      :see-also '(
@@ -200,7 +230,7 @@
 
   refresh [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
-    (. :cycler :refresh))
+    (. cycler :refresh))
 
 (defn
   ^{ :arglists '(
@@ -213,7 +243,12 @@
           """
           (do
             (load-module :aviron-cycler)
-            (let [cycler (aviron-cycler/create "/data/filestore")]
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+               (aviron-cycler/next-dir cycler)
                (aviron-cycler/last-dir-name cycler)))
           """)
      :see-also '(
@@ -227,7 +262,7 @@
 
   last-dir-name [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
-    (. :cycler :lastDirName))
+    (. cycler :lastDirName))
 
 (defn
   ^{ :arglists '(
@@ -240,7 +275,12 @@
           """
           (do
             (load-module :aviron-cycler)
-            (let [cycler (aviron-cycler/create "/data/filestore")]
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+              (aviron-cycler/next-dir cycler)
               (aviron-cycler/last-dir-timestamp cycler)))
           """)
      :see-also '(
@@ -254,5 +294,5 @@
 
   last-dir-timestamp [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
-    (. :cycler :lastDirTimestamp))
+    (. cycler :lastDirTimestamp))
 

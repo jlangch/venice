@@ -1,0 +1,126 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2025 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Aviron ClamAV client demo file store
+
+(ns aviron-demo-filestore)
+
+(import :org.repackage.com.github.jlangch.aviron.util.DemoFilestore)
+
+
+(defn create []
+  (. :DemoFilestore :new))
+    
+  
+(defn root-dir [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :getRootDir))
+
+
+(defn filestore-dir [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :getFilestoreDir))
+
+
+(defn quarantine-dir [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :getQuarantineDir))
+
+
+(defn clamd-pid-file [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :getClamdPidFile))
+
+
+(defn close [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :close))
+
+
+(defn populate-with-demo-files [fs dirs files-per-dir]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :populateWithDemoFiles dirs files-per-dir))
+
+
+(defn create-filestore-subdir [fs name]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :createFilestoreSubDir name))
+
+
+(defn list-filestore-subdirs [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :listFilestoreSubDirs))
+
+
+(defn create-filestore-file 
+  ([fs subdir-name file-name]
+    { :pre [(instance-of? :DemoFilestore fs)
+            (string? subdir-name)
+            (string? file-name)] }
+    (. fs :createFilestoreFile subdir-name file-name))
+  ([fs subdir-name file-name data]
+    { :pre [(instance-of? :DemoFilestore fs)
+            (string? subdir-name)
+            (string? file-name)
+            (string? data)] }
+    (. fs :createFilestoreFile subdir-name file-name data)))
+
+
+(defn touchFilestoreFile [fs subdir-name file-name]
+  { :pre [(instance-of? :DemoFilestore fs)
+          (string? subdir-name)
+          (string? file-name)] }
+  (. fs :touchFilestoreFile subdir-name file-name))
+
+
+(defn appendToFilestoreFile [fs subdir-name file-name]
+  { :pre [(instance-of? :DemoFilestore fs)
+          (string? subdir-name)
+          (string? file-name)] }
+  (. fs :appendToFilestoreFile subdir-name file-name))
+
+
+(defn deleteFilestoreFile [fs subdir-name file-name]
+  { :pre [(instance-of? :DemoFilestore fs)
+          (string? subdir-name)
+          (string? file-name)] }
+  (. fs :deleteFilestoreFile subdir-name file-name))
+
+
+(defn createEicarAntiMalwareTestFile[fs subdir-name]
+  { :pre [(instance-of? :DemoFilestore fs)
+          (string? subdir-name)] }
+  (. fs :createEicarAntiMalwareTestFile subdir-name))
+
+
+(defn count-filestore-files [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :countFilestoreFiles))
+
+
+(defn count-quarantine-files [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :countQuarantineFiles))
+
+
+(defn clear-quarantine [fs]
+  { :pre [(instance-of? :DemoFilestore fs)] }
+  (. fs :clearQuarantine))
