@@ -108,19 +108,6 @@ public class ModuleAvironSection implements ISectionBuilder {
         profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-entries", false));
         profile.addItem(diBuilder.getDocItem("aviron/get-cpu-profile-limit", false));
 
-        final DocSection watcher = new DocSection("File Queue", id());
-        all.addSection(watcher);
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-create", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-capacity", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-empty?", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-size", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-clear", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-remove", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-push", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-pop", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-overflow-count", false));
-        watcher.addItem(diBuilder.getDocItem("aviron/queue-overflow-reset", false));
-
         return section;
     }
 

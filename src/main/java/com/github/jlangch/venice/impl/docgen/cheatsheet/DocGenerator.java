@@ -41,6 +41,8 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironCyclerSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironQueueSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArangoDBSection;
@@ -164,7 +166,8 @@ public class DocGenerator {
                         "ring",          "ring-multipart",      "ring-session",     "ring-mw",
                         "ring-util",     "server-side-events",  "pretty-print",
                         "qrcode",        "qrref",               "qrbill",
-                        "ascii-canvas",  "ascii-charts",        "ascii-table",      "aviron"));
+                        "ascii-canvas",  "ascii-charts",        "ascii-table",
+                        "aviron",        "aviron-queue",        "aviron-cycler"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -398,6 +401,8 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("Aviron", "modules.aviron"));
+        extmod.addSection(new DocSection("Aviron\u00A0Queue", "modules.aviron-queue"));
+        extmod.addSection(new DocSection("Aviron\u00A0Cycler", "modules.aviron-cycler"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
         extmod.addSection(new DocSection("QR\u00A0Bill", "modules.qrbill"));
@@ -569,7 +574,9 @@ public class DocGenerator {
                 new ModuleInstallerSection(diBuilder).section(),
                 new ModuleJdbcPostgreSQLSection(diBuilder).section(),
                 new ModuleChinookPostgreSQLSection(diBuilder).section(),
-                new ModuleAvironSection(diBuilder).section()
+                new ModuleAvironSection(diBuilder).section(),
+                new ModuleAvironQueueSection(diBuilder).section(),
+                new ModuleAvironCyclerSection(diBuilder).section()
                 // new ModuleHttpClientSection(diBuilder).section(),
          );
     }
