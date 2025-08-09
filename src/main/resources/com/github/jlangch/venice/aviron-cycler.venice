@@ -64,12 +64,12 @@
   
   ([root-dir]          
     { :pre [(or (string? root-dir) (io/file? root-dir))] }
-    (. :DirCycler :new root-dir))
+    (. :DirCycler :new (io/file root-dir)))
 
   ([root-dir state-file]
     { :pre [(or (string? root-dir) (io/file? root-dir))
             (or (string? state-file) (io/file? state-file))] } 
-    (. :DirCycler :new root-dir state-file)))
+    (. :DirCycler :new (io/file root-dir) (io/file state-file))))
 
 (defn
   ^{ :arglists '(
@@ -82,7 +82,7 @@
           (do
             (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
-               (aviron-cycler/root-dir cycler)))
+              (aviron-cycler/root-dir cycler)))
           """)
      :see-also '(
           "aviron-cycler/create"
@@ -108,7 +108,7 @@
           (do
             (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
-               (aviron-cycler/dirs cycler)))
+              (aviron-cycler/dirs cycler)))
           """)
      :see-also '(
           "aviron-cycler/create"
@@ -134,7 +134,7 @@
           (do
             (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
-               (aviron-cycler/dir-names cycler)))
+              (aviron-cycler/dir-names cycler)))
           """)
      :see-also '(
           "aviron-cycler/create"
@@ -161,7 +161,7 @@
           (do
             (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
-               (aviron-cycler/next-dir cycler)))
+              (aviron-cycler/next-dir cycler)))
           """)
      :see-also '(
           "aviron-cycler/create"
@@ -187,7 +187,7 @@
           (do
             (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
-               (aviron-cycler/refresh cycler)))
+              (aviron-cycler/refresh cycler)))
           """)
      :see-also '(
           "aviron-cycler/create"
@@ -241,7 +241,7 @@
           (do
             (load-module :aviron-cycler)
             (let [cycler (aviron-cycler/create "/data/filestore")]
-               (aviron-cycler/last-dir-timestamp cycler)))
+              (aviron-cycler/last-dir-timestamp cycler)))
           """)
      :see-also '(
           "aviron-cycler/create"

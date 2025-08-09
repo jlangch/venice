@@ -25,6 +25,9 @@
 
 (import :org.repackage.com.github.jlangch.aviron.filewatcher.FileWatcherQueue)
 
+(load-module :java)
+
+
 (defn 
   ^{ :arglists '(
           "(create)"

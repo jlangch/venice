@@ -23,11 +23,14 @@
 
 (ns aviron-limiter)
 
+(import :org.repackage.com.github.jlangch.aviron.Clamd)
 (import :org.repackage.com.github.jlangch.aviron.limiter.ClamdCpuLimiter)
 (import :org.repackage.com.github.jlangch.aviron.limiter.CpuProfile)
 (import :org.repackage.com.github.jlangch.aviron.limiter.CpuProfileEntry)
 (import :org.repackage.com.github.jlangch.aviron.limiter.DynamicCpuLimit)
 (import :org.repackage.com.github.jlangch.aviron.limiter.ScheduledClamdCpuLimiter)
+
+(load-module :java)
 
 
 ;; -----------------------------------------------------------------------------
@@ -173,7 +176,8 @@
                                               "06:00-21:59 @  60%"
                                               "22:00-23:59 @ 100%" ])
                   limiter (aviron-limiter/create-dynamic-cpu-limiter 
-                                 (concat (repeat 5 weekday) (repeat 2 weekend)))
+                                 (concat (repeat 5 weekday) 
+                                         (repeat 2 weekend)))
                   ts-mon      (time/local-date-time 2025 7 21 12 0 0)
                   ts-sat      (time/local-date-time 2025 7 26 12 0 0)]
               (println "Monday:  " (aviron-limiter/compute-dynamic-cpu-limit limiter ts-mon))
@@ -299,6 +303,7 @@
                                               "06:00-21:59 @  60%"
                                               "22:00-23:59 @ 100%" ])]
               (aviron-limiter/create-clamd-cpu-limiter 
+                                            (io/file "clamd-pid-file")
                                             (concat (repeat 5 weekday) 
                                                     (repeat 2 weekend)))))
           """
@@ -359,7 +364,7 @@
                   limiter    (aviron-limiter/create-clamd-cpu-limiter pid-file)
                   last-limit (aviron-limiter/clamd-last-seen-limit limiter)
                   new-limit  60
-                  activated? (aviron-limiter/clamd-activate-cpu-limit limiter pid new-limit)]
+                  activated? (aviron-limiter/clamd-activate-cpu-limit limiter new-limit)]
               (when activated?
                 (println "Adjusted clamd CPU limit:" last-limit "->" new-limit))))
           """
@@ -448,11 +453,11 @@
           """
           (do
             (load-module :aviron-limiter)
-            (let [limiter    (aviron-limiter/create-clamd-cpu-limiter)
-                  pid-file   (io/file "clamd-pid-file")
-                  last-limit (aviron-limiter/clamd-last-seen-limit pid-file limiter)
+            (let [pid-file   (io/file "clamd-pid-file")
+                  limiter    (aviron-limiter/create-clamd-cpu-limiter pid-file)
+                  last-limit (aviron-limiter/clamd-last-seen-limit limiter)
                   new-limit  60
-                  activated? (aviron-limiter/clamd-activate-cpu-limit limiter pid new-limit)]
+                  activated? (aviron-limiter/clamd-activate-cpu-limit limiter new-limit)]
               (when activated?
                 (println "Adjusted clamd CPU limit:" last-limit "->" new-limit))))
           """)
@@ -533,8 +538,11 @@
                                               "09:00-17:59 @   0%"
                                               "18:00-21:59 @  50%"
                                               "22:00-23:59 @ 100%" ])
-                  limiter (aviron-limiter/create-clamd-cpu-limiter (repeat 7 profile))]
-              (aviron-limiter/format-profiles-as-table-by-hour limiter)))
+                  pid-file (io/file "clamd-pid-file")
+                  limiter (aviron-limiter/create-clamd-cpu-limiter 
+                                           pid-file 
+                                           (repeat 7 profile))]
+              (println (aviron-limiter/format-profiles-as-table-by-hour limiter))))
           """)
      :see-also '(
           "aviron/create-client"
