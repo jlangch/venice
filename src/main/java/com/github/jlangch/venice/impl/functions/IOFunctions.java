@@ -50,10 +50,16 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
@@ -2913,6 +2919,132 @@ public class IOFunctions {
 
 
     ///////////////////////////////////////////////////////////////////////////
+    // IO log functions
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static VncFunction io_log_filehandler =
+        new VncFunction(
+                "io/log-filehandler",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/log-filehandler logger-name file-name-pattern)",
+                        "(io/log-filehandler logger-name file-name-pattern file-size-limit file-count)")
+                    .doc(
+                        "Creates a file handler for a logger.")
+                    .examples(
+                        "(do                                                                            \n" +
+                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000 8)   \n" +
+                        "  (io/log \"venice\" :info \"message 1\")                                      \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                                   \n" +
+                        "  (io/log \"venice\" :severe \"message 3\"))                                   ")
+                    .seeAlso(
+                        "io/log")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 4);
+
+                sandboxFunctionCallValidation();
+
+                final String loggerName = Coerce.toVncString(args.first()).getValue();
+                final String pattern = Coerce.toVncString(args.second()).getValue();
+                final int limit = args.size() > 2 ? Coerce.toVncLong(args.third()).getIntValue() : 0;
+                final int count = args.size() > 3 ? Coerce.toVncLong(args.fourth()).getIntValue() : 1;
+
+                try {
+                	// Format for SimpleFormatter - detailed breakdown of each parameter:
+            		// %1$t... = timestamp (various time/date formats)
+            		// %2$s = source class and method
+            		// %3$s = logger name
+            		// %4$s = log level
+            		// %5$s = message
+                	// %6$s = thrown exception (if any)
+            		// %n = platform-specific line separator
+                	// "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$s %3$s %5$s%6$s%n"
+
+                    final FileHandler handler = new FileHandler(pattern, limit, count, true);
+                    handler.setEncoding("UTF-8");
+                    handler.setFormatter(new SimpleFormatter() {
+                        private static final String format = "%1$tF %1$tT|%4$s|%5$s%6$s%n";
+
+                        @Override
+                        public synchronized String format(final LogRecord logRecord) {
+                            return String.format(
+	                                format,
+	                                new Date(logRecord.getMillis()),
+	                                logRecord.getLevel().getLocalizedName(),
+	                                logRecord.getMessage());
+                        }
+                    });
+
+                    final Logger logger = Logger.getLogger(loggerName);
+                    logger.addHandler(handler);
+
+                    return Nil;
+                }
+                catch(IOException ex) {
+                    throw new VncException(
+                            "Failed to create file handler for logger '" + loggerName + "'!",
+                            ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_log =
+        new VncFunction(
+                "io/log",
+                VncFunction
+                    .meta()
+                    .arglists(
+                    	"(io/log logger-name level message)",
+                    	"(io/log logger-name level message exception)")
+                    .doc(
+                        "Creates an empty temp file with the given prefix and " +
+                        "suffix. Returns a :java.io.File.")
+                    .examples(
+	                    "(do                                                                            \n" +
+                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000 8)   \n" +
+                        "  (io/log \"venice\" :info \"message 1\")                                      \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                                   \n" +
+                        "  (io/log \"venice\" :severe \"message 3\"))                                   ")
+                    .seeAlso(
+                        "io/log-filehandler")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3, 4);
+
+                sandboxFunctionCallValidation();
+
+                final String loggerName = Coerce.toVncString(args.first()).getValue();
+                final String level = Coerce.toVncKeyword(args.second()).getSimpleName().toUpperCase();
+                final String message = Coerce.toVncString(args.third()).getValue();
+                final Throwable th = args.size() > 3 ? Coerce.toVncJavaObject(args.fourth(), Throwable.class) : null;
+
+                final Logger logger = Logger.getLogger(loggerName);
+                try {
+                     logger.log(Level.parse(level), message, th);
+                }
+                catch(IllegalArgumentException ex) {
+                    throw new VncException(
+                            "Invalid log level '" + level + "'! "
+                            + "Use one of { :SEVERE, :WARNING, :INFO, "
+                            + ":CONFIG, :FINE, :FINER, :FINEST}.");
+                }
+
+                return Nil;
+              }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    ///////////////////////////////////////////////////////////////////////////
     // IO TEMP functions
     ///////////////////////////////////////////////////////////////////////////
 
@@ -3503,5 +3635,7 @@ public class IOFunctions {
                     .add(io_load_classpath_resource)
                     .add(io_classpath_resource_Q)
                     .add(io_make_venice_filename)
+                    .add(io_log_filehandler)
+                    .add(io_log)
                     .toMap();
 }
