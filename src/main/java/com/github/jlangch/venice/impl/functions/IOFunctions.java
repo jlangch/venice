@@ -3054,8 +3054,8 @@ public class IOFunctions {
                 catch(IllegalArgumentException ex) {
                     throw new VncException(
                             "Invalid log level '" + level + "'! "
-                            + "Use one of { :SEVERE, :WARNING, :INFO, "
-                            + ":CONFIG, :FINE, :FINER, :FINEST}.");
+                            + "Use one of { :severe, :warning, :info, "
+                            + ":config, :fine, :finer, :finest}.");
                 }
 
                 return Nil;
