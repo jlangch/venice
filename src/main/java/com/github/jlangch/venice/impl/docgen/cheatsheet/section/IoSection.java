@@ -94,7 +94,6 @@ public class IoSection implements ISectionBuilder {
         stream.addItem(diBuilder.getDocItem("io/flush"));
         stream.addItem(diBuilder.getDocItem("io/close"));
 
-
         final DocSection stream_wrap = new DocSection("stream wrap", "io.stream.wrap");
         all.addSection(stream_wrap);
         stream_wrap.addItem(diBuilder.getDocItem("io/wrap-os-with-buffered-writer"));
@@ -138,6 +137,11 @@ public class IoSection implements ISectionBuilder {
         vars.addItem(diBuilder.getDocItem("*out*"));
         vars.addItem(diBuilder.getDocItem("*err*"));
         vars.addItem(diBuilder.getDocItem("*in*"));
+
+        final DocSection log = new DocSection("logger", "Java Util Logger (JUL)", "io.logger");
+        all.addSection(log);
+        log.addItem(diBuilder.getDocItem("io/log", false));
+        log.addItem(diBuilder.getDocItem("io/log-filehandler", false));
 
         return section;
     }

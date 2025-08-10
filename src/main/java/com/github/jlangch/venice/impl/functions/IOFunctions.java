@@ -2933,7 +2933,7 @@ public class IOFunctions {
                         "(io/log-filehandler logger-name file-name-pattern)",
                         "(io/log-filehandler logger-name file-name-pattern file-size-limit)")
                     .doc(
-                        "Creates a file handler for a logger.                           \n\n" +
+                        "Creates a file handler for a Java Util Logger (JUL).           \n\n" +
                         "The file name pattern determines the output file location and  \n" +
                         "naming scheme:                                                 \n\n" +
                         " * %t = system temp directory                                  \n" +
@@ -2946,13 +2946,13 @@ public class IOFunctions {
                         " * `%t/app_%g.log`                                             \n" +
                         " * `%h/app_%g.log`                                             ")
                     .examples(
-                        "(do                                                                        \n" +
-                        "  ;; note: define the log filehandler just once at app startup!            \n" +
-                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000) \n" +
-                        "                                                                           \n" +
-                        "  (io/log \"venice\" :info    \"message 1\")                               \n" +
-                        "  (io/log \"venice\" :warning \"message 2\")                               \n" +
-                        "  (io/log \"venice\" :severe  \"message 3\"))                               ")
+                        "(do                                                                          \n" +
+                        "  ;; note: define the log filehandler just once at app startup!              \n" +
+                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1_000_000) \n" +
+                        "                                                                             \n" +
+                        "  (io/log \"venice\" :info    \"message 1\")                                 \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                                 \n" +
+                        "  (io/log \"venice\" :severe  \"message 3\"))                                ")
                     .seeAlso(
                         "io/log")
                     .build()
@@ -3023,15 +3023,15 @@ public class IOFunctions {
                         "(io/log logger-name level message)",
                         "(io/log logger-name level message exception)")
                     .doc(
-                        "Logs a message at a given level to a logger.")
+                        "Logs a message at a given level to a Java Util Logger (JUL).")
                     .examples(
-                            "(do                                                                        \n" +
-                            "  ;; note: define the log filehandler just once at app startup!            \n" +
-                            "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000) \n" +
-                            "                                                                           \n" +
-                            "  (io/log \"venice\" :info    \"message 1\")                               \n" +
-                            "  (io/log \"venice\" :warning \"message 2\")                               \n" +
-                            "  (io/log \"venice\" :severe  \"message 3\"))                               ")
+                        "(do                                                                        \n" +
+                        "  ;; note: define the log file handler just once at app startup!           \n" +
+                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000) \n" +
+                        "                                                                           \n" +
+                        "  (io/log \"venice\" :info    \"message 1\")                               \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                               \n" +
+                        "  (io/log \"venice\" :severe  \"message 3\"))                               ")
                     .seeAlso(
                         "io/log-filehandler")
                     .build()
