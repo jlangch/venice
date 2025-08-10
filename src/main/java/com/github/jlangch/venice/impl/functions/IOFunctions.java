@@ -28,6 +28,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -2929,22 +2931,35 @@ public class IOFunctions {
                     .meta()
                     .arglists(
                         "(io/log-filehandler logger-name file-name-pattern)",
-                        "(io/log-filehandler logger-name file-name-pattern file-size-limit file-count)")
+                        "(io/log-filehandler logger-name file-name-pattern file-size-limit)")
                     .doc(
-                        "Creates a file handler for a logger.")
+                        "Creates a file handler for a logger.                           \n\n" +
+                        "The file name pattern determines the output file location and  \n" +
+                        "naming scheme:                                                 \n\n" +
+                        " * %t = system temp directory                                  \n" +
+                        " * %h = user home directory                                    \n" +
+                        " * %u = unique number to resolve conflicts                     \n" +
+                        " * %g = generation number for rotated logs                     \n" +
+                        " * %% = escapes the % character                                \n\n" +
+                        "Examples:                                                      \n\n" +
+                        " * `/var/log/myapp/app_%g.log`                                 \n" +
+                        " * `%t/app_%g.log`                                             \n" +
+                        " * `%h/app_%g.log`                                             ")
                     .examples(
-                        "(do                                                                            \n" +
-                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000 8)   \n" +
-                        "  (io/log \"venice\" :info \"message 1\")                                      \n" +
-                        "  (io/log \"venice\" :warning \"message 2\")                                   \n" +
-                        "  (io/log \"venice\" :severe \"message 3\"))                                   ")
+                        "(do                                                                        \n" +
+                        "  ;; note: define the log filehandler just once at app startup!            \n" +
+                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000) \n" +
+                        "                                                                           \n" +
+                        "  (io/log \"venice\" :info    \"message 1\")                               \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                               \n" +
+                        "  (io/log \"venice\" :severe  \"message 3\"))                               ")
                     .seeAlso(
                         "io/log")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 4);
+                ArityExceptions.assertArity(this, args, 2, 3, 4);
 
                 sandboxFunctionCallValidation();
 
@@ -2954,33 +2969,38 @@ public class IOFunctions {
                 final int count = args.size() > 3 ? Coerce.toVncLong(args.fourth()).getIntValue() : 1;
 
                 try {
-                	// Format for SimpleFormatter - detailed breakdown of each parameter:
-            		// %1$t... = timestamp (various time/date formats)
-            		// %2$s = source class and method
-            		// %3$s = logger name
-            		// %4$s = log level
-            		// %5$s = message
-                	// %6$s = thrown exception (if any)
-            		// %n = platform-specific line separator
-                	// "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$s %3$s %5$s%6$s%n"
-
                     final FileHandler handler = new FileHandler(pattern, limit, count, true);
                     handler.setEncoding("UTF-8");
                     handler.setFormatter(new SimpleFormatter() {
-                        private static final String format = "%1$tF %1$tT|%4$s|%5$s%6$s%n";
+                        private static final String format = "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL|%2$s|%3$s%4$s%n";
 
                         @Override
-                        public synchronized String format(final LogRecord logRecord) {
+                        public synchronized String format(final LogRecord record) {
+                            String throwable = "";
+                            if (record.getThrown() != null) {
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                pw.println();
+                                record.getThrown().printStackTrace(pw);
+                                pw.close();
+                                throwable = sw.toString();
+                            }
+
                             return String.format(
-	                                format,
-	                                new Date(logRecord.getMillis()),
-	                                logRecord.getLevel().getLocalizedName(),
-	                                logRecord.getMessage());
+                                    format,
+                                    new Date(record.getMillis()),
+                                    record.getLevel().getLocalizedName(),
+                                    record.getMessage(),
+                                    throwable);
                         }
                     });
 
                     final Logger logger = Logger.getLogger(loggerName);
                     logger.addHandler(handler);
+
+                    // disable passing the logs up to the parent logger
+                    // -> no output to console logger
+                    logger.setUseParentHandlers(false);
 
                     return Nil;
                 }
@@ -3000,17 +3020,18 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(io/log logger-name level message)",
-                    	"(io/log logger-name level message exception)")
+                        "(io/log logger-name level message)",
+                        "(io/log logger-name level message exception)")
                     .doc(
-                        "Creates an empty temp file with the given prefix and " +
-                        "suffix. Returns a :java.io.File.")
+                        "Logs a message at a given level to a logger.")
                     .examples(
-	                    "(do                                                                            \n" +
-                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000 8)   \n" +
-                        "  (io/log \"venice\" :info \"message 1\")                                      \n" +
-                        "  (io/log \"venice\" :warning \"message 2\")                                   \n" +
-                        "  (io/log \"venice\" :severe \"message 3\"))                                   ")
+                            "(do                                                                        \n" +
+                            "  ;; note: define the log filehandler just once at app startup!            \n" +
+                            "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000) \n" +
+                            "                                                                           \n" +
+                            "  (io/log \"venice\" :info    \"message 1\")                               \n" +
+                            "  (io/log \"venice\" :warning \"message 2\")                               \n" +
+                            "  (io/log \"venice\" :severe  \"message 3\"))                               ")
                     .seeAlso(
                         "io/log-filehandler")
                     .build()
