@@ -436,7 +436,7 @@
               max-wait-time 
               (keyword (str/upper-case (name time-unit)))))
   
-  ([client max-wait-time unit listener]
+  ([client max-wait-time time-unit listener]
     { :pre [(instance-of? :Client client)
             (long? max-wait-time)
             (>= max-wait-time 0)
