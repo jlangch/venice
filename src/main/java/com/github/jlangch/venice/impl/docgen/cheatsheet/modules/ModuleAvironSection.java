@@ -64,6 +64,7 @@ public class ModuleAvironSection implements ISectionBuilder {
         all.addSection(admin);
         admin.addItem(diBuilder.getDocItem("aviron/ping", false));
         admin.addItem(diBuilder.getDocItem("aviron/reachable?", false));
+        admin.addItem(diBuilder.getDocItem("aviron/wait-for-operational-clamd", false));
         admin.addItem(diBuilder.getDocItem("aviron/shutdown-server", false));
         admin.addItem(diBuilder.getDocItem("aviron/clamav-version", false));
         admin.addItem(diBuilder.getDocItem("aviron/stats", false));
