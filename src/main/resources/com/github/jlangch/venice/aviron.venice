@@ -85,14 +85,15 @@
                   (println (aviron/viruses result))))))
           """)
      :see-also '(
-          "aviron/scan-stream" 
-          "aviron/scan-path" 
-          "aviron/scan-parallel" 
+          "aviron/scan-stream"
+          "aviron/scan-path"
+          "aviron/scan-parallel"
           "aviron/shutdown-server"
-          "aviron/ping" 
-          "aviron/clamav-version" 
-          "aviron/stats" 
-          "aviron/reachable?" 
+          "aviron/ping"
+          "aviron/clamav-version"
+          "aviron/stats"
+          "aviron/reachable?"
+          "wait-for-operational-clamd"
           "aviron/reload-virus-databases"
           "aviron/shutdown-server"
           "aviron/last-command-run-details") }
@@ -384,6 +385,56 @@
   ([client timeout]
     { :pre [(instance-of? :Client client) (long timeout)] }
     (. client :isReachable timeout)))
+
+
+(defn
+  ^{ :arglists '(
+          "(wait-for-operational-clamd max-wait-time time-unit)"
+          "(wait-for-operational-clamd max-wait-time time-unit listener)")
+     :doc """
+          Wait for Clamd to get operational.
+
+          Returns `true` if the associated clamd daemon is operational else 
+          `false`.
+          
+          Checks first if the clamd daemon process is running followed by ping
+          command to verify that clamd is operational and ready to accept commands.
+          
+          Clamd has pretty long startup time due the the time expensive virus
+          database loading.
+
+          `time-unit` is one of {:milliseconds, :seconds, :minutes, :hours}
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (println (aviron/viruses (aviron/scan-path "/data/document.pdf")))))
+          """)
+     :see-also '(
+          "aviron/create-client") }
+
+  wait-for-operational-clamd 
+  
+  ([client max-wait-time time-unit]
+    { :pre [(instance-of? :Client client)
+            (long? max-wait-time)
+            (>= max-wait-time 0)
+            (keyword? time-unit)] }
+    (. client :waitForOperationalClamd 
+              max-wait-time 
+              (keyword (str/upper-case (name time-unit)))))
+  
+  ([client max-wait-time unit listener]
+    { :pre [(instance-of? :Client client)
+            (long? max-wait-time)
+            (>= max-wait-time 0)
+            (keyword? time-unit)] }
+    (. client :waitForOperationalClamd 
+              max-wait-time 
+              (keyword (str/upper-case (name time-unit)))
+              (if (some? listener) (java/as-consumer listener) nil))))
 
 
 (defn
@@ -774,4 +825,4 @@
     (. client :printConfig ps)))
 
 
-(def- library-version "1.8.0")
+(def- library-version "1.9.0")
