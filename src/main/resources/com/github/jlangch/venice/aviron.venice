@@ -93,7 +93,7 @@
           "aviron/clamav-version"
           "aviron/stats"
           "aviron/reachable?"
-          "wait-for-operational-clamd"
+          "aviron/wait-for-operational-clamd"
           "aviron/reload-virus-databases"
           "aviron/shutdown-server"
           "aviron/last-command-run-details") }
@@ -410,7 +410,17 @@
           (do
             (load-module :aviron)
             (let [client (aviron/create-client)]
-              (println (aviron/viruses (aviron/scan-path "/data/document.pdf")))))
+              (println (aviron/wait-for-operational-clamd client 1 :minutes))))
+          """,
+          """
+          (do
+            (load-module :aviron)
+            (let [client (aviron/create-client)]
+              (println (aviron/wait-for-operational-clamd 
+                           client 
+                           1 
+                           :minutes
+                           #(println "Clamd:" (. % :getStatus))))))
           """)
      :see-also '(
           "aviron/create-client") }
