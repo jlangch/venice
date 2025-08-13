@@ -66,6 +66,7 @@
           "aviron-cycler/dirs"
           "aviron-cycler/dir-names"
           "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/refresh"
           "aviron-cycler/last-dir-name"
           "aviron-cycler/last-dir-timestamp") }
@@ -103,6 +104,7 @@
           "aviron-cycler/dirs"
           "aviron-cycler/dir-names"
           "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/refresh"
           "aviron-cycler/last-dir-name"
           "aviron-cycler/last-dir-timestamp") }
@@ -133,6 +135,7 @@
           "aviron-cycler/root-dir"
           "aviron-cycler/dir-names"
           "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/refresh"
           "aviron-cycler/last-dir-name"
           "aviron-cycler/last-dir-timestamp") }
@@ -163,6 +166,7 @@
           "aviron-cycler/root-dir"
           "aviron-cycler/dirs"
           "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/refresh"
           "aviron-cycler/last-dir-name"
           "aviron-cycler/last-dir-timestamp") }
@@ -172,11 +176,148 @@
     (->> (. cycler :dirs)
          (map #(io/file-name %))))
 
+
+(defn
+  ^{ :arglists '(
+          "(empty?)")
+     :doc """
+          Returns `true` if the number of sub dirs is zero else `false`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron-cycler)
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+              (aviron-cycler/size empty?)))
+          """)
+     :see-also '(
+          "aviron-cycler/create"
+          "aviron-cycler/root-dir"
+          "aviron-cycler/dirs"
+          "aviron-cycler/dir-names"
+          "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
+          "aviron-cycler/refresh"
+          "aviron-cycler/last-dir-name"
+          "aviron-cycler/last-dir-timestamp") }
+
+  empty? [cycler]          
+    { :pre [(instance-of? :IDirCycler cycler)] }
+    (. cycler :isEmpty))
+
+
+(defn
+  ^{ :arglists '(
+          "(size)")
+     :doc """
+          Returns the number of sub dirs
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron-cycler)
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+              (aviron-cycler/size cycler)))
+          """)
+     :see-also '(
+          "aviron-cycler/create"
+          "aviron-cycler/root-dir"
+          "aviron-cycler/dirs"
+          "aviron-cycler/dir-names"
+          "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
+          "aviron-cycler/refresh"
+          "aviron-cycler/last-dir-name"
+          "aviron-cycler/last-dir-timestamp") }
+
+  size [cycler]          
+    { :pre [(instance-of? :IDirCycler cycler)] }
+    (. cycler :size))
+
+
+(defn
+  ^{ :arglists '(
+          "(first?)")
+     :doc """
+          Returns `true` if the current sub dir is the first one else `false`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron-cycler)
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+              (aviron-cycler/first? cycler)
+              (aviron-cycler/next-dir cycler)))
+          """)
+     :see-also '(
+          "aviron-cycler/create"
+          "aviron-cycler/root-dir"
+          "aviron-cycler/dirs"
+          "aviron-cycler/dir-names"
+          "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
+          "aviron-cycler/refresh"
+          "aviron-cycler/last-dir-name"
+          "aviron-cycler/last-dir-timestamp") }
+
+  first? [cycler]          
+    { :pre [(instance-of? :IDirCycler cycler)] }
+    (. cycler :isFirst))
+
+
+(defn
+  ^{ :arglists '(
+          "(last?)")
+     :doc """
+          Returns `true` if the current sub dir is the last one (before starting 
+          over again with the first one) else `false`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron-cycler)
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+              (aviron-cycler/next-dir cycler)
+              (aviron-cycler/last? cycler)))
+          """)
+     :see-also '(
+          "aviron-cycler/create"
+          "aviron-cycler/root-dir"
+          "aviron-cycler/dirs"
+          "aviron-cycler/dir-names"
+          "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
+          "aviron-cycler/refresh"
+          "aviron-cycler/last-dir-name"
+          "aviron-cycler/last-dir-timestamp") }
+
+  last? [cycler]          
+    { :pre [(instance-of? :IDirCycler cycler)] }
+    (. cycler :isLast))
+
+
 (defn
   ^{ :arglists '(
           "(next-dir)")
      :doc """
-          Returns the next dir in the cycle
+          Returns the next dir in the cycle or `nil` if the root dir does not 
+          have any sub dirs
           """
      :examples '(
           """
@@ -194,6 +335,7 @@
           "aviron-cycler/root-dir"
           "aviron-cycler/dirs"
           "aviron-cycler/dir-names"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/refresh"
           "aviron-cycler/last-dir-name"
           "aviron-cycler/last-dir-timestamp") }
@@ -201,6 +343,40 @@
   next-dir [cycler]          
     { :pre [(instance-of? :IDirCycler cycler)] }
     (. cycler :nextDir))
+
+
+(defn
+  ^{ :arglists '(
+          "(peek-next-dir)")
+     :doc """
+          Returns the next dir in the cycle without advancing the cycler or 
+          `nil` if the root dir does not have any sub dirs
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron-cycler)
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+              (aviron-cycler/peek-next-dir cycler)))
+          """)
+     :see-also '(
+          "aviron-cycler/create"
+          "aviron-cycler/root-dir"
+          "aviron-cycler/dirs"
+          "aviron-cycler/dir-names"
+          "aviron-cycler/next-dir"
+          "aviron-cycler/refresh"
+          "aviron-cycler/last-dir-name"
+          "aviron-cycler/last-dir-timestamp") }
+
+  peek-next-dir [cycler]          
+    { :pre [(instance-of? :IDirCycler cycler)] }
+    (. cycler :peekNextDir))
+
 
 (defn
   ^{ :arglists '(
@@ -225,6 +401,7 @@
           "aviron-cycler/dirs"
           "aviron-cycler/dir-names"
           "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/last-dir-name"
           "aviron-cycler/last-dir-timestamp") }
 
@@ -257,6 +434,7 @@
           "aviron-cycler/dirs"
           "aviron-cycler/dir-names"
           "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/refresh"
           "aviron-cycler/last-dir-timestamp") }
 
@@ -289,6 +467,7 @@
           "aviron-cycler/dirs"
           "aviron-cycler/dir-names"
           "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
           "aviron-cycler/refresh"
           "aviron-cycler/last-dir-name") }
 

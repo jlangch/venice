@@ -47,9 +47,14 @@ public class ModuleAvironCyclerSection implements ISectionBuilder {
         all.addSection(cycler);
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/create", false));
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/root-dir", false));
+        cycler.addItem(diBuilder.getDocItem("aviron-cycler/empty?", false));
+        cycler.addItem(diBuilder.getDocItem("aviron-cycler/size", false));
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/dirs", false));
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/dir-names", false));
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/next-dir", false));
+        cycler.addItem(diBuilder.getDocItem("aviron-cycler/peek-next-dir", false));
+        cycler.addItem(diBuilder.getDocItem("aviron-cycler/first?", false));
+        cycler.addItem(diBuilder.getDocItem("aviron-cycler/last?", false));
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/refresh", false));
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/last-dir-name", false));
         cycler.addItem(diBuilder.getDocItem("aviron-cycler/last-dir-timestamp", false));

@@ -577,9 +577,7 @@ public class DocGenerator {
                 new ModuleJdbcPostgreSQLSection(diBuilder).section(),
                 new ModuleChinookPostgreSQLSection(diBuilder).section(),
                 new ModuleAvironSection(diBuilder).section(),
-                new ModuleAvironLimiterSection(diBuilder).section(),
-                new ModuleAvironQueueSection(diBuilder).section(),
-                new ModuleAvironCyclerSection(diBuilder).section()
+                new ModuleAvironLimiterSection(diBuilder).section()
                 // new ModuleHttpClientSection(diBuilder).section(),
          );
     }
@@ -610,7 +608,10 @@ public class DocGenerator {
                 new ModuleHttpClientJ8Section(diBuilder).section(),
                 new ModuleOpenAiSection(diBuilder).section(),
                 new ModuleJTokkitSection(diBuilder).section(),
-                new ModuleImagesSection(diBuilder).section());
+                new ModuleImagesSection(diBuilder).section(),
+                new ModuleAvironQueueSection(diBuilder).section(),
+                new ModuleAvironCyclerSection(diBuilder).section()
+        );
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {
