@@ -84,7 +84,7 @@
 
 (defn
   ^{ :arglists '(
-          "(root-dir)")
+          "(root-dir cycler)")
      :doc """
           Returns the root dir
           """
@@ -115,7 +115,7 @@
 
 (defn
   ^{ :arglists '(
-          "(dirs)")
+          "(dirs cycler)")
      :doc """
           Returns a list of the managed subdirs
           """
@@ -146,7 +146,7 @@
 
 (defn
   ^{ :arglists '(
-          "(dir-names)")
+          "(dir-names cycler)")
      :doc """
           Returns a list of the managed subdir names
           """
@@ -179,7 +179,7 @@
 
 (defn
   ^{ :arglists '(
-          "(empty?)")
+          "(empty? cycler)")
      :doc """
           Returns `true` if the number of sub dirs is zero else `false`
           """
@@ -212,7 +212,7 @@
 
 (defn
   ^{ :arglists '(
-          "(size)")
+          "(size cycler)")
      :doc """
           Returns the number of sub dirs
           """
@@ -245,7 +245,7 @@
 
 (defn
   ^{ :arglists '(
-          "(first?)")
+          "(first? cycler)")
      :doc """
           Returns `true` if the current sub dir is the first one else `false`
           """
@@ -279,7 +279,7 @@
 
 (defn
   ^{ :arglists '(
-          "(last?)")
+          "(last? cycler)")
      :doc """
           Returns `true` if the current sub dir is the last one (before starting 
           over again with the first one) else `false`
@@ -314,7 +314,7 @@
 
 (defn
   ^{ :arglists '(
-          "(next-dir)")
+          "(next-dir cycler)")
      :doc """
           Returns the next dir in the cycle or `nil` if the root dir does not 
           have any sub dirs
@@ -347,7 +347,7 @@
 
 (defn
   ^{ :arglists '(
-          "(peek-next-dir)")
+          "(peek-next-dir cycler)")
      :doc """
           Returns the next dir in the cycle without advancing the cycler or 
           `nil` if the root dir does not have any sub dirs
@@ -380,7 +380,7 @@
 
 (defn
   ^{ :arglists '(
-          "(refresh)")
+          "(refresh cycler)")
      :doc """
           Refreshes the cycler. Rescans all sub dirs.
           """
@@ -411,7 +411,7 @@
 
 (defn
   ^{ :arglists '(
-          "(last-dir-name)")
+          "(last-dir-name cycler)")
      :doc """
           Returns the last sub dir name in the cycle or `nil` if there was not 
           yet a call to `next`
@@ -444,7 +444,7 @@
 
 (defn
   ^{ :arglists '(
-          "(last-dir-timestamp)")
+          "(last-dir-timestamp cycler)")
      :doc """
           Returns the timestamp the last sub dir was run or `nil` if there was 
           no run yet.
