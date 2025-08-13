@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.53] - 2025-08-xx
+## [1.12.53] - 2025-08-13
 
 ### Added
 
@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updated dependencies:
 
-- migrated the :aviron module to the Aviron library to V1.8.0
+- migrated the :aviron module to the Aviron library to V1.9.0
 - bumped the Aviron (ClamAV client) library to V1.9.0
 
 
