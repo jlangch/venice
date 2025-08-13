@@ -80,6 +80,9 @@ public class IOFunctionsFileWatcherTest {
                 "                   :termination-fn      termination-event               \n" +
                 "                   :fswatch-monitor     nil                             \n" +
                 "                   :fswatch-program     \"/opt/homebrew/bin/fswatch\")] \n" +
+                "                                                                        \n" +
+                "    (sleep 1 :seconds)                                                  \n" +
+                "                                                                        \n" +
                 "    (log \"Watching:   %s\" dir)                                        \n" +
                 "                                                                        \n" +
                 "    (let [f (io/file dir \"test1.txt\")]                                \n" +
