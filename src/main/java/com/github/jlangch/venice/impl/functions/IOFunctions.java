@@ -3014,7 +3014,7 @@ public class IOFunctions {
                         "  (io/log \"venice\" :info    \"message 1\")                     \n" +
                         "  (io/log \"venice\" :warning \"message 2\")                     \n" +
                         "  (io/log \"venice\" :severe  \"message 3\"                      \n" +
-                        "                              (ex :VncEXception \"test\")))       ")
+                        "                              (ex :VncException \"test\")))       ")
 
                     .seeAlso(
                         "io/log")
@@ -3111,7 +3111,7 @@ public class IOFunctions {
                         "  (io/log \"venice\" :info    \"message 1\")                     \n" +
                         "  (io/log \"venice\" :warning \"message 2\")                     \n" +
                         "  (io/log \"venice\" :severe  \"message 3\"                      \n" +
-                        "                              (ex :VncEXception \"test\")))      ")
+                        "                              (ex :VncException \"test\")))      ")
                     .seeAlso(
                         "io/log-filehandler")
                     .build()
