@@ -2931,28 +2931,67 @@ public class IOFunctions {
                     .meta()
                     .arglists(
                         "(io/log-filehandler logger-name file-name-pattern)",
-                        "(io/log-filehandler logger-name file-name-pattern file-size-limit)")
+                        "(io/log-filehandler logger-name file-name-pattern file-size-limit)",
+                        "(io/log-filehandler logger-name file-name-pattern file-size-limit max-file-count)")
                     .doc(
-                        "Creates a file handler for a Java Util Logger (JUL).           \n\n" +
+                        "Creates a file handler for a Java Util Logger (JUL).           \n" +
+                        "                                                               \n" +
                         "The file name pattern determines the output file location and  \n" +
-                        "naming scheme:                                                 \n\n" +
+                        "naming scheme:                                                 \n" +
+                        "                                                               \n" +
                         " * %t = system temp directory                                  \n" +
                         " * %h = user home directory                                    \n" +
                         " * %u = unique number to resolve conflicts                     \n" +
                         " * %g = generation number for rotated logs                     \n" +
-                        " * %% = escapes the % character                                \n\n" +
-                        "Examples:                                                      \n\n" +
+                        " * %% = escapes the % character                                \n" +
+                        "                                                               \n" +
+                        "If no \"%g\" field has been specified and the file count is    \n" +
+                        "greater than one, then the generation number will be added to  \n" +
+                        "the end of the generated filename, after a dot.                \n" +
+                        "Thus for example a pattern of \"%t/java%g.log\" with a count   \n" +
+                        "of 2 would typically cause log files to be written on Linux to \n" +
+                        "/var/tmp/java0.log and /var/tmp/java1.log whereas on Windows   \n" +
+                        "they would be typically written to C:\\TEMP\\java0.log and     \n" +
+                        "C:\\TEMP\\java1.log                                            \n" +
+                        "                                                               \n" +
+                        "Generation numbers follow the sequence 0, 1, 2, etc.           \n" +
+                        "                                                               \n" +
+                        "Normally the \"%u\" unique field is set to 0. However, if the  \n" +
+                        "FileHandler tries to open the filename and finds the file is   \n" +
+                        "currently in use by another process it will increment the      \n" +
+                        "unique number field and try again. This will be repeated       \n" +
+                        "until FileHandler finds a file name that is not currently in   \n" +
+                        "use. If there is a conflict and no \"%u\" field has been       \n" +
+                        "specified, it will be added at the end of the filename after   \n" +
+                        "a dot. (This will be after any automatically added generation  \n" +
+                        "number.)                                                       \n" +
+                        "                                                               \n" +
+                        "Thus if three processes were all trying to log to              \n" +
+                        "fred%u.%g.txt then they might end up using fred0.0.txt,        \n" +
+                        "fred1.0.txt, fred2.0.txt as the first file in their            \n" +
+                        "rotating sequences.                                            \n" +
+                        "                                                               \n" +
+                        "Note that the use of unique ids to avoid conflicts is only     \n" +
+                        "guaranteed to work reliably when using a local disk file       \n" +
+                        "system.                                                        \n" +
+                        "                                                               \n" +
+                        "Examples:                                                      \n" +
+                        "                                                               \n" +
+                        " * `/var/log/myapp/app.log`                                    \n" +
                         " * `/var/log/myapp/app_%g.log`                                 \n" +
                         " * `%t/app_%g.log`                                             \n" +
                         " * `%h/app_%g.log`                                             ")
                     .examples(
-                        "(do                                                                          \n" +
-                        "  ;; note: define the log filehandler just once at app startup!              \n" +
-                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1_000_000) \n" +
-                        "                                                                             \n" +
-                        "  (io/log \"venice\" :info    \"message 1\")                                 \n" +
-                        "  (io/log \"venice\" :warning \"message 2\")                                 \n" +
-                        "  (io/log \"venice\" :severe  \"message 3\"))                                ")
+                        "(do                                                              \n" +
+                        "  ;; note: define the log filehandler just once at app startup!  \n" +
+                        "  (io/log-filehandler \"venice\"                                 \n" +
+                        "                      \"/var/log/myapp/venice_%g.log\"           \n" +
+                        "                      16_000_000)                                \n" +
+                        "                      8)                                         \n" +
+                        "                                                                 \n" +
+                        "  (io/log \"venice\" :info    \"message 1\")                     \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                     \n" +
+                        "  (io/log \"venice\" :severe  \"message 3\"))                    ")
                     .seeAlso(
                         "io/log")
                     .build()
@@ -2988,10 +3027,10 @@ public class IOFunctions {
 
                             return String.format(
                                     format,
-                                    new Date(record.getMillis()),
-                                    record.getLevel().getLocalizedName(),
-                                    record.getMessage(),
-                                    throwable);
+                                    new Date(record.getMillis()),         // %1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL
+                                    record.getLevel().getLocalizedName(), // %2$s
+                                    record.getMessage(),                  // %3$s
+                                    throwable);                           // %4$s
                         }
                     });
 
@@ -3025,13 +3064,16 @@ public class IOFunctions {
                     .doc(
                         "Logs a message at a given level to a Java Util Logger (JUL).")
                     .examples(
-                        "(do                                                                        \n" +
-                        "  ;; note: define the log file handler just once at app startup!           \n" +
-                        "  (io/log-filehandler \"venice\" \"/var/log/myapp/venice_%g.log\" 1000000) \n" +
-                        "                                                                           \n" +
-                        "  (io/log \"venice\" :info    \"message 1\")                               \n" +
-                        "  (io/log \"venice\" :warning \"message 2\")                               \n" +
-                        "  (io/log \"venice\" :severe  \"message 3\" (ex :VncException \"test\")))  ")
+                        "(do                                                              \n" +
+                        "  ;; note: define the log filehandler just once at app startup!  \n" +
+                        "  (io/log-filehandler \"venice\"                                 \n" +
+                        "                      \"/var/log/myapp/venice_%g.log\"           \n" +
+                        "                      16_000_000)                                \n" +
+                        "                      8)                                         \n" +
+                        "                                                                 \n" +
+                        "  (io/log \"venice\" :info    \"message 1\")                     \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                     \n" +
+                        "  (io/log \"venice\" :severe  \"message 3\"))                    ")
                     .seeAlso(
                         "io/log-filehandler")
                     .build()
