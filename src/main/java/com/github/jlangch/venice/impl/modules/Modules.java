@@ -113,6 +113,7 @@ public class Modules {
                         "keystores",
                         "kira",
                         "langchain",
+                        "logger",
                         "math",
                         "matrix",
                         "maven",
