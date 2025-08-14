@@ -54,9 +54,10 @@
     (throw (ex :VncException 
                "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
   (locking mutex
-    (let [prev-day (time/minus (time/local-date) :days 1)
+    (let [prev-day (time/minus (time/local-date))
           year     (time/year prev-day)
           month    (time/month prev-day)
+          day      (time/day-of-month prev-day)
           archive  (io/file archive-dir
                      (str/format "%s-%d-%02d-%02d.log" 
                                  (io/file-basename file) year month day))]
