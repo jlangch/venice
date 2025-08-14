@@ -79,6 +79,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -2932,7 +2933,8 @@ public class IOFunctions {
                     .arglists(
                         "(io/log-filehandler logger-name file-name-pattern)",
                         "(io/log-filehandler logger-name file-name-pattern file-size-limit)",
-                        "(io/log-filehandler logger-name file-name-pattern file-size-limit max-file-count)")
+                        "(io/log-filehandler logger-name file-name-pattern file-size-limit max-file-count)",
+                        "(io/log-filehandler logger-name file-name-pattern file-size-limit max-file-count, formatter)")
                     .doc(
                         "Creates a file handler for a Java Util Logger (JUL).           \n" +
                         "                                                               \n" +
@@ -2986,19 +2988,40 @@ public class IOFunctions {
                         "  ;; note: define the log filehandler just once at app startup!  \n" +
                         "  (io/log-filehandler \"venice\"                                 \n" +
                         "                      \"/var/log/myapp/venice_%g.log\"           \n" +
-                        "                      16_000_000)                                \n" +
+                        "                      16_000_000                                 \n" +
                         "                      8)                                         \n" +
                         "                                                                 \n" +
                         "  (io/log \"venice\" :info    \"message 1\")                     \n" +
                         "  (io/log \"venice\" :warning \"message 2\")                     \n" +
+                        "  (io/log \"venice\" :severe  \"message 3\"))                    ",
+                        "(do                                                              \n" +
+                        "  (def tf (time/formatter \"yyyy-MM-dd HH:mm:ss.SSS\"))          \n" +
+                        "                                                                 \n" +
+                        "  (defn formatter [log-record]                                   \n" +
+                        "     (str/format \"%s|%s|%s%s%n\"                                \n" +
+                        "                 (time/format (:timestamp log-record) tf)        \n" +
+                        "                 (:level log-record)                             \n" +
+                        "                 (:message log-record)                           \n" +
+                        "                 (:throwable log-record)))                       \n" +
+                        "                                                                 \n" +
+                        "  ;; note: define the log filehandler just once at app startup!  \n" +
+                        "  (io/log-filehandler \"venice\"                                 \n" +
+                        "                      \"/var/log/myapp/venice_%g.log\"           \n" +
+                        "                      16_000_000                                 \n" +
+                        "                      8                                          \n" +
+                        "                      formatter)                                 \n" +
+                        "                                                                 \n" +
+                        "  (io/log \"venice\" :info    \"message 1\")                     \n" +
+                        "  (io/log \"venice\" :warning \"message 2\")                     \n" +
                         "  (io/log \"venice\" :severe  \"message 3\"))                    ")
+
                     .seeAlso(
                         "io/log")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3, 4);
+                ArityExceptions.assertArity(this, args, 2, 3, 4, 5);
 
                 sandboxFunctionCallValidation();
 
@@ -3006,33 +3029,46 @@ public class IOFunctions {
                 final String pattern = Coerce.toVncString(args.second()).getValue();
                 final int limit = args.size() > 2 ? Coerce.toVncLong(args.third()).getIntValue() : 0;
                 final int count = args.size() > 3 ? Coerce.toVncLong(args.fourth()).getIntValue() : 1;
+                final VncFunction formatFn = args.size() > 4 ? Coerce.toVncFunction(args.nth(4)) : null;
 
                 try {
                     final FileHandler handler = new FileHandler(pattern, limit, count, true);
                     handler.setEncoding("UTF-8");
-                    handler.setFormatter(new SimpleFormatter() {
-                        private static final String format = "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL|%2$s|%3$s%4$s%n";
+                    handler.setFormatter(
+                        formatFn == null
+                            ? new SimpleFormatter() {
+                                    //private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+                                    private static final String format = "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL|%2$s|%3$s%4$s%n";
 
-                        @Override
-                        public synchronized String format(final LogRecord record) {
-                            String throwable = "";
-                            if (record.getThrown() != null) {
-                                StringWriter sw = new StringWriter();
-                                PrintWriter pw = new PrintWriter(sw);
-                                pw.println();
-                                record.getThrown().printStackTrace(pw);
-                                pw.close();
-                                throwable = sw.toString();
+                                    @Override
+                                    public synchronized String format(final LogRecord record) {
+                                        return String.format(
+                                                format,
+                                                new Date(record.getMillis()),               // %1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL
+                                                record.getLevel().getLocalizedName(),       // %2$s
+                                                record.getMessage(),                        // %3$s
+                                                IOFunctions.toString(record.getThrown()));  // %4$s
+                                    }
+                              }
+                            : new SimpleFormatter() {
+                                    @Override
+                                    public synchronized String format(final LogRecord record) {
+                                        final VncMap map = VncHashMap.of(
+                                                                new VncKeyword("timestamp"),
+                                                                new VncJavaObject(
+                                                                        Instant.ofEpochMilli(record.getMillis())
+                                                                               .atZone(ZoneId.systemDefault())
+                                                                               .toLocalDateTime()),
+                                                                new VncKeyword("level"),
+                                                                new VncString(record.getLevel().getLocalizedName()),
+                                                                new VncKeyword("message"),
+                                                                new VncString(record.getMessage()),
+                                                                new VncKeyword("throwable"),
+                                                                new VncString(IOFunctions.toString(record.getThrown())));
+                                        return formatFn.applyOf(map).toString();
+                                    }
                             }
-
-                            return String.format(
-                                    format,
-                                    new Date(record.getMillis()),         // %1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL
-                                    record.getLevel().getLocalizedName(), // %2$s
-                                    record.getMessage(),                  // %3$s
-                                    throwable);                           // %4$s
-                        }
-                    });
+                       );
 
                     final Logger logger = Logger.getLogger(loggerName);
                     logger.addHandler(handler);
@@ -3579,6 +3615,25 @@ public class IOFunctions {
 
     private static File normalize(final File file, final Form form) {
         return new File(Normalizer.normalize(file.getPath(), form));
+    }
+
+    private static String toString(final Throwable th) {
+        if (th != null) {
+            if (th instanceof VncException) {
+                return ((VncException)th).getCallStackAsString(null);
+            }
+            else {
+                final StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                pw.println();
+                th.printStackTrace(pw);
+                pw.close();
+                return sw.toString();
+            }
+        }
+        else {
+            return "";
+        }
     }
 
     private static final String globPatternHelp() {
