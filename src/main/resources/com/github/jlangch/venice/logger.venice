@@ -28,25 +28,25 @@
   ([file level principal msg]
     (locking mutex
       (io/spit file
-              (str/format "%s|%s|%s|%s%n"
-                          (format-timestamp (time/local-date-time)) 
-                          (str/upper-case (name level)) 
-                          principal
-                          msg)
-              :append true)))
+               (str/format "%s|%s|%s|%s%n"
+                           (format-timestamp (time/local-date-time)) 
+                           (str/upper-case (name level)) 
+                           principal
+                           msg)
+               :append true)))
 
   ([file level principal msg exc]
     (locking mutex
       (io/spit file
-              (str/format "%s|%s|%s|%s%n"
-                          (format-timestamp (time/local-date-time)) 
-                          (str/upper-case (name level)) 
-                          principal
-                          (cond
-                            (nil? exc)       msg
-                            (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
-                            :else            "~{msg}\n~(ex-java-stacktrace exc)"))
-              :append true))))
+               (str/format "%s|%s|%s|%s%n"
+                           (format-timestamp (time/local-date-time)) 
+                           (str/upper-case (name level)) 
+                           principal
+                           (cond
+                             (nil? exc)       msg
+                             (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
+                             :else            "~{msg}\n~(ex-java-stacktrace exc)"))
+               :append true))))
 
 
 (defn rotate-log-file-by-day [file archive-dir]
@@ -58,8 +58,8 @@
           year     (time/year prev-day)
           month    (time/month prev-day)
           archive  (io/file archive-dir
-                    (str/format "%s-%d-%02d-%02d.log" 
-                                (io/file-basename file) year month day))]
+                     (str/format "%s-%d-%02d-%02d.log" 
+                                 (io/file-basename file) year month day))]
       (when (io/exists-file? file)
         (io/move-file file archive)))))
 
@@ -73,8 +73,8 @@
           year     (time/year prev-day)
           month    (time/month prev-day)
           archive  (io/file archive-dir
-                    (str/format "%s-%d-%02d.log" 
-                                (io/file-basename file) year month))]
+                     (str/format "%s-%d-%02d.log" 
+                                 (io/file-basename file) year month))]
       (when (io/exists-file? file)
         (io/move-file file archive)))))
 
