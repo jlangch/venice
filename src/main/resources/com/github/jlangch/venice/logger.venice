@@ -31,7 +31,7 @@
                (str/format "%s|%s|%s|%s%n"
                            (format-timestamp (time/local-date-time)) 
                            (str/upper-case (name level)) 
-                           principal
+                           (if (keyword? principal) (name principal) (str principal))
                            msg)
                :append true)))
 
@@ -41,7 +41,7 @@
                (str/format "%s|%s|%s|%s%n"
                            (format-timestamp (time/local-date-time)) 
                            (str/upper-case (name level)) 
-                           principal
+                           (if (keyword? principal) (name principal) (str principal))
                            (cond
                              (nil? exc)       msg
                              (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
@@ -77,6 +77,10 @@
                                  (io/file-basename file) year month))]
       (when (io/exists-file? file)
         (io/move-file file archive)))))
+ 
+
+(defn- format-timestamp [ts]
+  (time/format ts "yyyy-MM-dd HH:mm:ss.SSS"))
 
 
 (def- mutex nil)
