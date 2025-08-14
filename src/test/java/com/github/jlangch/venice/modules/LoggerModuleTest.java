@@ -35,31 +35,55 @@ public class LoggerModuleTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void test() {
+    public void logTest() {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                   \n" +
-                "  (load-module :logger)                               \n" +
-                "                                                      \n" +
-                "  (def dir (io/temp-dir \"logger-\"))                 \n" +
-                "  (io/delete-file-on-exit dir)                        \n" +
-                "                                                      \n" +
-                "  (let [t (io/file dir \"test.log\")]                 \n" +
-                "    (io/touch-file t)                                 \n" +
-                "    (io/delete-file-on-exit t)                        \n" +
-                "                                                      \n" +
-                "    (logger/log t :info :base \"test message 1\")     \n" +
-                "    (logger/log t :info :base \"test message 2\")     \n" +
-                "                                                      \n" +
-                "    (let [lines (io/slurp-lines t)]                   \n" +
-                "      lines)))                                       ";
+                "(do                                                     \n" +
+                "  (load-module :logger)                                 \n" +
+                "                                                        \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                   \n" +
+                "                                                        \n" +
+                "  (try                                                  \n" +
+                "    (let [t (io/file dir \"test.log\")]                 \n" +
+                "      (logger/log t :info :base \"test message 1\")     \n" +
+                "      (logger/log t :info :base \"test message 2\")     \n" +
+                "                                                        \n" +
+                "      (io/slurp-lines t))                               \n" +
+                "    (finally                                            \n" +
+                "      (io/delete-file-tree dir))))                      ";
 
         final List<String> lines = (List<String>)venice.eval(script);
 
         assertEquals(2, lines.size());
         assertTrue(lines.get(0).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]base[|]test message 1"));
         assertTrue(lines.get(1).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]base[|]test message 2"));
+    }
+
+    @Test
+    public void rotateTest() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                     \n" +
+                "  (load-module :logger)                                 \n" +
+                "                                                        \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                   \n" +
+                "                                                        \n" +
+                "  (try                                                  \n" +
+                "    (def archive-dir (io/file dir \"archive\"))         \n" +
+                "    (io/mkdir archive-dir)                              \n" +
+                "                                                        \n" +
+                "    (let [t (io/file dir \"test.log\")]                 \n" +
+                "      (logger/log t :info :base \"test message 1\")     \n" +
+                "      (logger/log t :info :base \"test message 2\")     \n" +
+                "                                                        \n" +
+                "      (logger/rotate-log-file-by-month t archive-dir)   \n" +
+                "      (and (not (io/exists-file? t))                    \n" +
+                "           (== 1 (count (io/list-files dir)))))         \n" +
+                "    (finally                                            \n" +
+                "      (io/delete-file-tree dir))))                      ";
+        assertTrue((Boolean)venice.eval(script));
     }
 
 }
