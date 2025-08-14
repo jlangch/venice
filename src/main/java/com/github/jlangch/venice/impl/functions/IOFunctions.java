@@ -3013,7 +3013,8 @@ public class IOFunctions {
                         "                                                                 \n" +
                         "  (io/log \"venice\" :info    \"message 1\")                     \n" +
                         "  (io/log \"venice\" :warning \"message 2\")                     \n" +
-                        "  (io/log \"venice\" :severe  \"message 3\"))                    ")
+                        "  (io/log \"venice\" :severe  \"message 3\"                      \n" +
+                        "                              (ex :VncEXception \"test\")))       ")
 
                     .seeAlso(
                         "io/log")
@@ -3104,12 +3105,13 @@ public class IOFunctions {
                         "  ;; note: define the log filehandler just once at app startup!  \n" +
                         "  (io/log-filehandler \"venice\"                                 \n" +
                         "                      \"/var/log/myapp/venice_%g.log\"           \n" +
-                        "                      16_000_000)                                \n" +
+                        "                      16_000_000                                 \n" +
                         "                      8)                                         \n" +
                         "                                                                 \n" +
                         "  (io/log \"venice\" :info    \"message 1\")                     \n" +
                         "  (io/log \"venice\" :warning \"message 2\")                     \n" +
-                        "  (io/log \"venice\" :severe  \"message 3\"))                    ")
+                        "  (io/log \"venice\" :severe  \"message 3\"                      \n" +
+                        "                              (ex :VncEXception \"test\")))      ")
                     .seeAlso(
                         "io/log-filehandler")
                     .build()
