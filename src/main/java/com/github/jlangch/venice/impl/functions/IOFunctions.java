@@ -3013,8 +3013,7 @@ public class IOFunctions {
                         "                                                                 \n" +
                         "  (io/log \"venice\" :info    \"message 1\")                     \n" +
                         "  (io/log \"venice\" :warning \"message 2\")                     \n" +
-                        "  (io/log \"venice\" :severe  \"message 3\"                      \n" +
-                        "                            (ex :VncException \"test\")))        ")
+                        "  (io/log \"venice\" :severe  \"message 3\" (ex :VncException \"test\"))) ")
 
                     .seeAlso(
                         "io/log")
@@ -3110,8 +3109,7 @@ public class IOFunctions {
                         "                                                                 \n" +
                         "  (io/log \"venice\" :info    \"message 1\")                     \n" +
                         "  (io/log \"venice\" :warning \"message 2\")                     \n" +
-                        "  (io/log \"venice\" :severe  \"message 3\"                      \n" +
-                        "                            (ex :VncException \"test\")))        ")
+                        "  (io/log \"venice\" :severe  \"message 3\" (ex :VncException \"test\"))) ")
                     .seeAlso(
                         "io/log-filehandler")
                     .build()
