@@ -29,33 +29,13 @@
 
 (defn log 
   ([handler level principal msg]
-    (locking mutex
-      (let [f (:file handler)
-            m (:max-size handler -1)]
-        (io/spit f
-                 (str/format "%s|%s|%s|%s%n"
-                             (format-timestamp (time/local-date-time)) 
-                             (str/upper-case (name level)) 
-                             (if (keyword? principal) (name principal) (str principal))
-                             msg)
-                 :append true)
-        (when (pos? m)
-          (io/truncate-from-start-keep-lines f m)))))
+    (log handler level principal msg nil))
 
   ([handler level principal msg exc]
     (locking mutex
       (let [f (:file handler)
             m (:max-size handler -1)]
-        (io/spit f
-                 (str/format "%s|%s|%s|%s%n"
-                             (format-timestamp (time/local-date-time)) 
-                             (str/upper-case (name level)) 
-                             (if (keyword? principal) (name principal) (str principal))
-                             (cond
-                               (nil? exc)       msg
-                               (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
-                               :else            "~{msg}\n~(ex-java-stacktrace exc)"))
-                 :append true)
+        (io/spit f (format-msg level principal msg exc) :append true)
         (when (pos? m)
           (io/truncate-from-start-keep-lines f m))))))
 
@@ -90,6 +70,17 @@
       (when (io/exists-file? file)
         (io/move-file file archive)))))
  
+
+(defn- format-msg [level principal msg exc]
+  (str/format "%s|%s|%s|%s%n"
+              (format-timestamp (time/local-date-time)) 
+              (str/upper-case (name level)) 
+              (if (keyword? principal) (name principal) (str principal))
+              (cond
+                (nil? exc)       msg
+                (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
+                :else            "~{msg}\n~(ex-java-stacktrace exc)")))
+
 
 (defn- format-timestamp [ts]
   (time/format ts "yyyy-MM-dd HH:mm:ss.SSS"))
