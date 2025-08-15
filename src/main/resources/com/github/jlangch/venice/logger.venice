@@ -23,9 +23,11 @@
 
 (ns logger)
 
+
 (defn handler 
   ([file] { :file file, :max-size -1 })
   ([file max-size] { :file file, :max-size max-size }))
+
 
 (defn log 
   ([handler level principal msg]
