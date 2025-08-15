@@ -26,9 +26,13 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -1548,6 +1552,93 @@ public class IOFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+    public static VncFunction io_truncate_from_start_keep_lines =
+            new VncFunction(
+                    "io/truncate-from-start-keep-lines",
+                    VncFunction
+                        .meta()
+                        .arglists("(io/truncate-from-start-keep-lines f size)")
+                        .doc("Truncates a text file beginning at the start, honoring " +
+                             "complete lines. f must be a file or a string (file path).")
+                        .examples("(io/truncate-from-start-keep-lines \"/tmp/test.txt\" 1_000_000)")
+                        .seeAlso("io/file")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 2);
+
+                    sandboxFunctionCallValidation();
+
+                    final File f = convertToFile(
+                                        args.first(),
+                                        "Function 'io/truncate-from-start-keep-lines' does not allow %s as f");
+
+                    final long maxBytes = Coerce.toVncLong(args.second()).toJavaLong();
+
+                    validateReadableFile(f);
+
+                    final Path filePath = f.toPath();
+
+                    try {
+                        final long fileSize = Files.size(filePath);
+                        if (fileSize <= maxBytes) {
+                            return Nil; // nothing to truncate
+                        }
+
+                        try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "r")) {
+                            long pos = fileSize - maxBytes;
+
+                            // Move forward to the next newline
+                            while (pos < fileSize) {
+                                raf.seek(pos);
+                                int b = raf.read();
+                                if (b == '\n') { // Found a line boundary
+                                    break;
+                                }
+                                pos++;
+                            }
+
+                            long startPos = pos + 1;
+                            if (startPos >= fileSize) {
+                                startPos = fileSize - maxBytes;  // hard cut
+                            }
+
+                            // Copy from startPos to end into a temp file
+                            final Path tempFile = Files.createTempFile("truncate", ".tmp");
+                            try (InputStream in = new FileInputStream(filePath.toFile());
+                                 OutputStream out = new FileOutputStream(tempFile.toFile())) {
+
+                                long skipped = 0;
+                                while (skipped < startPos) {
+                                    long skipNow = in.skip(startPos - skipped);
+                                    if (skipNow <= 0) {
+                                        break; // shouldn't happen unless EOF
+                                    }
+                                    skipped += skipNow;
+                                }
+
+                                final byte[] buffer = new byte[8192];
+                                int read;
+                                while ((read = in.read(buffer)) != -1) {
+                                    out.write(buffer, 0, read);
+                                }
+                            }
+
+                            // Replace original file with truncated file
+                            Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to truncate text file " + f, ex);
+                    }
+
+                    return Nil;
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
     public static VncFunction io_delete_file =
         new VncFunction(
@@ -3731,6 +3822,7 @@ public class IOFunctions {
                     .add(io_delete_file_on_exit)
                     .add(io_delete_file_tree)
                     .add(io_delete_files_glob)
+                    .add(io_truncate_from_start_keep_lines)
                     .add(io_copy_file)
                     .add(io_copy_files_glob)
                     .add(io_copy_file_tree)

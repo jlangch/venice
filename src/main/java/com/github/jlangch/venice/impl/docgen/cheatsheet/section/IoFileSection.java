@@ -96,6 +96,10 @@ public class IoFileSection implements ISectionBuilder {
         all.addSection(file_touch);
         file_touch.addItem(diBuilder.getDocItem("io/touch-file"));
 
+        final DocSection file_trunc = new DocSection("truncate", "io.truncate");
+        all.addSection(file_trunc);
+        file_trunc.addItem(diBuilder.getDocItem("io/truncate-from-start-keep-lines", false));
+
         final DocSection file_perm = new DocSection("permissions", "io.filepermissions");
         all.addSection(file_perm);
         file_perm.addItem(diBuilder.getDocItem("io/file-can-read?", false));

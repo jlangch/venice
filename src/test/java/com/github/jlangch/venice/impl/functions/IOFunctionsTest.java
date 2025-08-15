@@ -679,6 +679,50 @@ public class IOFunctionsTest {
     }
 
     @Test
+    public void test_io_truncate_from_start_keep_lines_1() {
+        final Venice venice = new Venice();
+
+        try {
+            final File file = Files.createTempFile("from__", ".txt").normalize().toFile();
+            file.deleteOnExit();
+            venice.eval(
+                    "(io/spit file \"111\n222\n333\n444\n555\n666\n777\" :append true)",
+                    Parameters.of("file", file));
+
+            venice.eval(
+                    "(io/truncate-from-start-keep-lines file 21)",
+                    Parameters.of("file", file));
+
+            assertEquals("333\n444\n555\n666\n777", venice.eval("(io/slurp file)", Parameters.of("file", file)));
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_io_truncate_from_start_keep_lines_2() {
+        final Venice venice = new Venice();
+
+        try {
+            final File file = Files.createTempFile("from__", ".txt").normalize().toFile();
+            file.deleteOnExit();
+            venice.eval(
+                    "(io/spit file \"111222333444555666777\" :append true)",
+                    Parameters.of("file", file));
+
+            venice.eval(
+                    "(io/truncate-from-start-keep-lines file 17)",
+                    Parameters.of("file", file));
+
+            assertEquals("22333444555666777", venice.eval("(io/slurp file)", Parameters.of("file", file)));
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
     public void test_io_temp_dir() {
         final Venice venice = new Venice();
 
