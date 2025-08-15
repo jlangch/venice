@@ -45,11 +45,12 @@ public class LoggerModuleTest {
                 "  (def dir (io/temp-dir \"logger-\"))                   \n" +
                 "                                                        \n" +
                 "  (try                                                  \n" +
-                "    (let [t (io/file dir \"test.log\")]                 \n" +
-                "      (logger/log t :info :base \"test message 1\")     \n" +
-                "      (logger/log t :info :base \"test message 2\")     \n" +
+                "    (let [f   (io/file dir \"test.log\")                \n" +
+                "          log (partial logger/log (logger/handler f))]  \n" +
+                "      (log :info :base \"test message 1\")              \n" +
+                "      (log :info :base \"test message 2\")              \n" +
                 "                                                        \n" +
-                "      (io/slurp-lines t))                               \n" +
+                "      (io/slurp-lines f))                               \n" +
                 "    (finally                                            \n" +
                 "      (io/delete-file-tree dir))))                      ";
 
@@ -74,12 +75,13 @@ public class LoggerModuleTest {
                 "    (def archive-dir (io/file dir \"archive\"))         \n" +
                 "    (io/mkdir archive-dir)                              \n" +
                 "                                                        \n" +
-                "    (let [t (io/file dir \"test.log\")]                 \n" +
-                "      (logger/log t :info :base \"test message 1\")     \n" +
-                "      (logger/log t :info :base \"test message 2\")     \n" +
+                "    (let [f   (io/file dir \"test.log\")                \n" +
+                "          log (partial logger/log (logger/handler f))]  \n" +
+                "      (log :info :base \"test message 1\")              \n" +
+                "      (log :info :base \"test message 2\")              \n" +
                 "                                                        \n" +
-                "      (logger/rotate-log-file-by-month t archive-dir)   \n" +
-                "      (and (not (io/exists-file? t))                    \n" +
+                "      (logger/rotate-log-file-by-month f archive-dir)   \n" +
+                "      (and (not (io/exists-file? f))                    \n" +
                 "           (== 1 (count (io/list-files dir)))))         \n" +
                 "    (finally                                            \n" +
                 "      (io/delete-file-tree dir))))                      ";

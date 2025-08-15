@@ -23,30 +23,41 @@
 
 (ns logger)
 
+(defn handler 
+  ([file] { :file file, :max-size -1 })
+  ([file max-size] { :file file, :max-size max-size }))
 
 (defn log 
-  ([file level principal msg]
+  ([handler level principal msg]
     (locking mutex
-      (io/spit file
-               (str/format "%s|%s|%s|%s%n"
-                           (format-timestamp (time/local-date-time)) 
-                           (str/upper-case (name level)) 
-                           (if (keyword? principal) (name principal) (str principal))
-                           msg)
-               :append true)))
+      (let [f (:file handler)
+            m (:max-size handler -1)]
+        (io/spit f
+                 (str/format "%s|%s|%s|%s%n"
+                             (format-timestamp (time/local-date-time)) 
+                             (str/upper-case (name level)) 
+                             (if (keyword? principal) (name principal) (str principal))
+                             msg)
+                 :append true)
+        (when (pos? m)
+          (io/truncate-from-start-keep-lines f m)))))
 
-  ([file level principal msg exc]
+  ([handler level principal msg exc]
     (locking mutex
-      (io/spit file
-               (str/format "%s|%s|%s|%s%n"
-                           (format-timestamp (time/local-date-time)) 
-                           (str/upper-case (name level)) 
-                           (if (keyword? principal) (name principal) (str principal))
-                           (cond
-                             (nil? exc)       msg
-                             (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
-                             :else            "~{msg}\n~(ex-java-stacktrace exc)"))
-               :append true))))
+      (let [f (:file handler)
+            m (:max-size handler -1)]
+        (io/spit f
+                 (str/format "%s|%s|%s|%s%n"
+                             (format-timestamp (time/local-date-time)) 
+                             (str/upper-case (name level)) 
+                             (if (keyword? principal) (name principal) (str principal))
+                             (cond
+                               (nil? exc)       msg
+                               (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
+                               :else            "~{msg}\n~(ex-java-stacktrace exc)"))
+                 :append true)
+        (when (pos? m)
+          (io/truncate-from-start-keep-lines f m))))))
 
 
 (defn rotate-log-file-by-day [file archive-dir]
