@@ -1627,7 +1627,14 @@ public class IOFunctions {
                             }
 
                             // Replace original file with truncated file
-                            Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+                            if (OS.isWindows()) {
+                                // required for windows ?!
+                                f.delete();
+                                Files.move(tempFile, filePath, StandardCopyOption.ATOMIC_MOVE);
+                            }
+                            else {
+                                Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+                            }
                         }
                     }
                     catch(Exception ex) {

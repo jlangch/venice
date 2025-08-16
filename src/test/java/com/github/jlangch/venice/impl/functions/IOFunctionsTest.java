@@ -32,7 +32,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -684,8 +683,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            // due to Github CI problems on Windows use a random file name part
-            final File file = Files.createTempFile("truncate__" + rand.nextLong() + "__", ".txt").toFile();
+            final File file = Files.createTempFile("truncate__", ".txt").toFile();
             file.deleteOnExit();
 
             // lf
@@ -724,8 +722,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            // due to Github CI problems on Windows use a random file name part
-            final File file = Files.createTempFile("truncate__" + rand.nextLong() + "__", ".txt").toFile();
+            final File file = Files.createTempFile("truncate__", ".txt").toFile();
             file.deleteOnExit();
 
             venice.eval(
@@ -899,6 +896,4 @@ public class IOFunctionsTest {
         assertEquals("s: abc: 100", venice.eval("(str \"s: \" (with-err-str (printf *err* \"%s: %d\" \"abc\" 100)))"));
     }
 
-
-    private static final Random rand = new Random();
 }
