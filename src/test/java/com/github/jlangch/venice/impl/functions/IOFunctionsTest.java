@@ -683,30 +683,30 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file = Files.createTempFile("truncate__", ".txt").normalize().toFile();
+            final File file = Files.createTempFile("truncate__", ".txt").toFile();
             file.deleteOnExit();
 
             // lf
             venice.eval(
-                    "(io/spit file \"111\n222\n333\n444\n555\n666\n777\" :append false)",
+                    "(io/spit file \"111\n222\n333\n444\n555\n666\n777\")",
                     Parameters.of("file", file));
 
             venice.eval(
                     "(io/truncate-from-start-keep-lines file 21)",
                     Parameters.of("file", file));
 
-            assertEquals("333\n444\n555\n666\n777", venice.eval("(io/slurp file)", Parameters.of("file", file)));
+            assertEquals("333\n444\n555\n666\n777", venice.eval("(io/slurp file)", Parameters.of("file", file.getAbsolutePath())));
 
             // cr-lf
             venice.eval(
-                    "(io/spit file \"111\r\n222\r\n333\r\n444\r\n555\r\n666\r\n777\" :append false)",
+                    "(io/spit file \"111\r\n222\r\n333\r\n444\r\n555\r\n666\r\n777\")",
                     Parameters.of("file", file));
 
             venice.eval(
                     "(io/truncate-from-start-keep-lines file 25)",
                     Parameters.of("file", file));
 
-            assertEquals("333\r\n444\r\n555\r\n666\r\n777", venice.eval("(io/slurp file)", Parameters.of("file", file)));
+            assertEquals("333\r\n444\r\n555\r\n666\r\n777", venice.eval("(io/slurp file)", Parameters.of("file", file.getAbsolutePath())));
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);
@@ -718,18 +718,18 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file = Files.createTempFile("truncate__", ".txt").normalize().toFile();
+            final File file = Files.createTempFile("truncate__", ".txt").toFile();
             file.deleteOnExit();
 
             venice.eval(
-                    "(io/spit file \"111222333444555666777\" :append false)",
+                    "(io/spit file \"111222333444555666777\")",
                     Parameters.of("file", file));
 
             venice.eval(
                     "(io/truncate-from-start-keep-lines file 17)",
                     Parameters.of("file", file));
 
-            assertEquals("22333444555666777", venice.eval("(io/slurp file)", Parameters.of("file", file)));
+            assertEquals("22333444555666777", venice.eval("(io/slurp file)", Parameters.of("file", file.getAbsolutePath())));
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);
