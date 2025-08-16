@@ -683,10 +683,12 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file = Files.createTempFile("from__", ".txt").normalize().toFile();
+            final File file = Files.createTempFile("truncate__", ".txt").normalize().toFile();
             file.deleteOnExit();
+
+            // lf
             venice.eval(
-                    "(io/spit file \"111\n222\n333\n444\n555\n666\n777\" :append true)",
+                    "(io/spit file \"111\n222\n333\n444\n555\n666\n777\" :append false)",
                     Parameters.of("file", file));
 
             venice.eval(
@@ -694,6 +696,17 @@ public class IOFunctionsTest {
                     Parameters.of("file", file));
 
             assertEquals("333\n444\n555\n666\n777", venice.eval("(io/slurp file)", Parameters.of("file", file)));
+
+            // cr-lf
+            venice.eval(
+                    "(io/spit file \"111\r\n222\r\n333\r\n444\r\n555\r\n666\r\n777\" :append false)",
+                    Parameters.of("file", file));
+
+            venice.eval(
+                    "(io/truncate-from-start-keep-lines file 25)",
+                    Parameters.of("file", file));
+
+            assertEquals("333\r\n444\r\n555\r\n666\r\n777", venice.eval("(io/slurp file)", Parameters.of("file", file)));
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);
@@ -705,10 +718,11 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file = Files.createTempFile("from__", ".txt").normalize().toFile();
+            final File file = Files.createTempFile("truncate__", ".txt").normalize().toFile();
             file.deleteOnExit();
+
             venice.eval(
-                    "(io/spit file \"111222333444555666777\" :append true)",
+                    "(io/spit file \"111222333444555666777\" :append false)",
                     Parameters.of("file", file));
 
             venice.eval(
