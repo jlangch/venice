@@ -32,6 +32,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -683,7 +684,8 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file = Files.createTempFile("truncate__", ".txt").toFile();
+            // due to Github CI problems on Windows use a random file name part
+            final File file = Files.createTempFile("truncate__" + rand.nextLong() + "__", ".txt").toFile();
             file.deleteOnExit();
 
             // lf
@@ -696,8 +698,8 @@ public class IOFunctionsTest {
                     Parameters.of("file", file));
 
             assertEquals(
-            		"333\n444\n555\n666\n777",
-            		venice.eval("(io/slurp file)", Parameters.of("file", file)));
+                    "333\n444\n555\n666\n777",
+                    venice.eval("(io/slurp file)", Parameters.of("file", file)));
 
             // cr-lf
             venice.eval(
@@ -709,8 +711,8 @@ public class IOFunctionsTest {
                     Parameters.of("file", file));
 
             assertEquals(
-            		"333\r\n444\r\n555\r\n666\r\n777",
-            		venice.eval("(io/slurp file)", Parameters.of("file", file)));
+                    "333\r\n444\r\n555\r\n666\r\n777",
+                    venice.eval("(io/slurp file)", Parameters.of("file", file)));
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);
@@ -722,7 +724,8 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file = Files.createTempFile("truncate__", ".txt").toFile();
+            // due to Github CI problems on Windows use a random file name part
+            final File file = Files.createTempFile("truncate__" + rand.nextLong() + "__", ".txt").toFile();
             file.deleteOnExit();
 
             venice.eval(
@@ -734,8 +737,8 @@ public class IOFunctionsTest {
                     Parameters.of("file", file));
 
             assertEquals(
-            		"22333444555666777",
-            		venice.eval("(io/slurp file)", Parameters.of("file", file)));
+                    "22333444555666777",
+                    venice.eval("(io/slurp file)", Parameters.of("file", file)));
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);
@@ -896,4 +899,6 @@ public class IOFunctionsTest {
         assertEquals("s: abc: 100", venice.eval("(str \"s: \" (with-err-str (printf *err* \"%s: %d\" \"abc\" 100)))"));
     }
 
+
+    private static final Random rand = new Random();
 }
