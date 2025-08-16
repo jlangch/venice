@@ -1581,11 +1581,14 @@ public class IOFunctions {
 
                     final Path filePath = f.toPath();
 
+
                     try {
                         final long fileSize = Files.size(filePath);
                         if (fileSize <= maxBytes) {
                             return Nil; // nothing to truncate
                         }
+
+                        final Path tempFile = Files.createTempFile("truncate", ".tmp");
 
                         try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "r")) {
                             long pos = fileSize - maxBytes;
@@ -1606,7 +1609,6 @@ public class IOFunctions {
                             }
 
                             // Copy from startPos to end into a temp file
-                            final Path tempFile = Files.createTempFile("truncate", ".tmp");
                             try (InputStream in = new FileInputStream(filePath.toFile());
                                  OutputStream out = new FileOutputStream(tempFile.toFile())) {
 
@@ -1625,16 +1627,16 @@ public class IOFunctions {
                                     out.write(buffer, 0, read);
                                 }
                             }
+                        }
 
-                            // Replace original file with truncated file
-                            if (OS.isWindows()) {
-                                // required for windows ?!
-                                f.delete();
-                                Files.move(tempFile, filePath, StandardCopyOption.ATOMIC_MOVE);
-                            }
-                            else {
-                                Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
-                            }
+                        // Replace original file with truncated file
+                        if (OS.isWindows()) {
+                            // required for windows ?!
+                            f.delete();
+                            Files.move(tempFile, filePath);
+                        }
+                        else {
+                            Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
                         }
                     }
                     catch(Exception ex) {
