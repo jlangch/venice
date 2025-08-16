@@ -1581,7 +1581,6 @@ public class IOFunctions {
 
                     final Path filePath = f.toPath();
 
-
                     try {
                         final long fileSize = Files.size(filePath);
                         if (fileSize <= maxBytes) {
@@ -1630,17 +1629,9 @@ public class IOFunctions {
                         }
 
                         // Replace original file with truncated file
-                        if (OS.isWindows()) {
-                            // required for windows ?!
-                            f.delete();
-                            Files.move(tempFile, filePath);
-                        }
-                        else {
-                            Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
-                        }
+                        Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
                     }
                     catch(Exception ex) {
-                    	ex.printStackTrace();
                         throw new VncException("Failed to truncate text file " + f, ex);
                     }
 
