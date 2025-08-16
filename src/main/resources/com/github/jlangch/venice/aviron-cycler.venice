@@ -475,3 +475,69 @@
     { :pre [(instance-of? :IDirCycler cycler)] }
     (. cycler :lastDirTimestamp))
 
+
+(defn
+  ^{ :arglists '(
+          "(last-dir-name cycler)")
+     :doc """
+          Returns the last sub dir name in the cycle or `nil` if there was not 
+          yet a call to `next`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron-cycler)
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+               (aviron-cycler/next-dir cycler)
+               (aviron-cycler/last-dir-name cycler)))
+          """)
+     :see-also '(
+          "aviron-cycler/create"
+          "aviron-cycler/root-dir"
+          "aviron-cycler/dirs"
+          "aviron-cycler/dir-names"
+          "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
+          "aviron-cycler/refresh"
+          "aviron-cycler/last-dir-timestamp") }
+
+  last-dir-name [cycler]          
+    { :pre [(instance-of? :IDirCycler cycler)] }
+    (. cycler :lastDirName))
+
+(defn
+  ^{ :arglists '(
+          "(statistics cycler)")
+     :doc """
+          Returns the cycler's statistics.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :aviron-cycler)
+            (load-module :aviron-demo-filestore)
+            (let [demo-fs       (aviron-demo-filestore/create)
+                  _             (aviron-demo-filestore/populate-with-demo-files demo-fs 3 5)
+                  filestore-dir (aviron-demo-filestore/filestore-dir demo-fs)
+                  cycler        (aviron-cycler/create filestore-dir)]
+              (aviron-cycler/next-dir cycler)
+              (aviron-cycler/statistics cycler)))
+          """)
+     :see-also '(
+          "aviron-cycler/create"
+          "aviron-cycler/root-dir"
+          "aviron-cycler/dirs"
+          "aviron-cycler/dir-names"
+          "aviron-cycler/next-dir"
+          "aviron-cycler/peek-next-dir"
+          "aviron-cycler/refresh"
+          "aviron-cycler/last-dir-name") }
+
+  statistics [cycler]          
+    { :pre [(instance-of? :IDirCycler cycler)] }
+    (. cycler :getStatistics))
+
