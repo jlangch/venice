@@ -695,7 +695,9 @@ public class IOFunctionsTest {
                     "(io/truncate-from-start-keep-lines file 21)",
                     Parameters.of("file", file));
 
-            assertEquals("333\n444\n555\n666\n777", venice.eval("(io/slurp file)", Parameters.of("file", file.getAbsolutePath())));
+            assertEquals(
+            		"333\n444\n555\n666\n777",
+            		venice.eval("(io/slurp file)", Parameters.of("file", file)));
 
             // cr-lf
             venice.eval(
@@ -706,7 +708,9 @@ public class IOFunctionsTest {
                     "(io/truncate-from-start-keep-lines file 25)",
                     Parameters.of("file", file));
 
-            assertEquals("333\r\n444\r\n555\r\n666\r\n777", venice.eval("(io/slurp file)", Parameters.of("file", file.getAbsolutePath())));
+            assertEquals(
+            		"333\r\n444\r\n555\r\n666\r\n777",
+            		venice.eval("(io/slurp file)", Parameters.of("file", file)));
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);
@@ -729,7 +733,9 @@ public class IOFunctionsTest {
                     "(io/truncate-from-start-keep-lines file 17)",
                     Parameters.of("file", file));
 
-            assertEquals("22333444555666777", venice.eval("(io/slurp file)", Parameters.of("file", file.getAbsolutePath())));
+            assertEquals(
+            		"22333444555666777",
+            		venice.eval("(io/slurp file)", Parameters.of("file", file)));
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);

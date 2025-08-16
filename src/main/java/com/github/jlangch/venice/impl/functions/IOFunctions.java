@@ -1631,6 +1631,7 @@ public class IOFunctions {
                         }
                     }
                     catch(Exception ex) {
+                    	ex.printStackTrace();
                         throw new VncException("Failed to truncate text file " + f, ex);
                     }
 
