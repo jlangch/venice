@@ -25,8 +25,12 @@
 
 
 (defn handler 
-  ([file] { :file file, :max-size -1 })
-  ([file max-size] { :file file, :max-size max-size }))
+  ([file] 
+    { :file file, :max-size -1, :formatter format-msg})
+  ([file max-size] 
+    { :file file, :max-size max-size, :formatter format-msg })
+  ([file max-size formatter] 
+    { :file file, :max-size max-size, :formatter formatter }))
 
 
 (defn log 
@@ -35,12 +39,17 @@
 
   ([handler level principal msg exc]
     (locking mutex
-      (let [f (:file handler)
-            m (:max-size handler -1)]
-        (io/spit f (format-msg level principal msg exc) :append true)
+      (let [f   (:file handler)
+            m   (:max-size handler -1)
+            fmt (:formatter handler format-msg)]
+        (io/spit f (fmt level principal msg exc) :append true)
         (when (pos? m)
           (io/truncate-from-start-keep-lines f m))))))
 
+
+;; -----------------------------------------------------------------------------
+;; Log file rotation
+;; -----------------------------------------------------------------------------
 
 (defn rotate-log-file-by-day [file archive-dir]
   (when (not (io/exists-dir? archive-dir))
@@ -51,9 +60,9 @@
           year     (time/year prev-day)
           month    (time/month prev-day)
           day      (time/day-of-month prev-day)
-          archive  (io/file archive-dir
-                     (str/format "%s-%d-%02d-%02d.log" 
-                                 (io/file-basename file) year month day))]
+          archive  (io/file archive-dir (str/format 
+                                           "%s-%d-%02d-%02d.log" 
+                                           (io/file-basename file) year month day))]
       (when (io/exists-file? file)
         (io/move-file file archive)))))
 
@@ -66,25 +75,34 @@
     (let [prev-day (time/minus (time/local-date) :days 1)
           year     (time/year prev-day)
           month    (time/month prev-day)
-          archive  (io/file archive-dir
-                     (str/format "%s-%d-%02d.log" 
-                                 (io/file-basename file) year month))]
+          archive  (io/file archive-dir (str/format 
+                                          "%s-%d-%02d.log" 
+                                          (io/file-basename file) year month))]
       (when (io/exists-file? file)
         (io/move-file file archive)))))
  
 
-(defn- format-msg [level principal msg exc]
+;; -----------------------------------------------------------------------------
+;; Formatter
+;; -----------------------------------------------------------------------------
+
+(defn format-msg [level principal msg exc]
   (str/format "%s|%s|%s|%s%n"
               (format-timestamp (time/local-date-time)) 
-              (str/upper-case (name level)) 
+              (format-level level)
               (if (keyword? principal) (name principal) (str principal))
-              (cond
-                (nil? exc)       msg
-                (ex-venice? exc) "~{msg}\n~(ex-venice-stacktrace exc)"
-                :else            "~{msg}\n~(ex-java-stacktrace exc)")))
+              (if (nil? exc) msg "~{msg}\n~(format-ex exc)")))
 
+(defn format-level [level]
+  (str/upper-case (name level)))
 
-(defn- format-timestamp [ts]
+(defn format-ex [e]
+  (cond
+    (nil? exc)       ""
+    (ex-venice? exc) (ex-venice-stacktrace exc)
+    :else            (ex-java-stacktrace exc)))
+
+(defn format-timestamp [ts]
   (time/format ts "yyyy-MM-dd HH:mm:ss.SSS"))
 
 
