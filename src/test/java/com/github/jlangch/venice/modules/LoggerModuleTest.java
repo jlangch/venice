@@ -62,7 +62,41 @@ public class LoggerModuleTest {
     }
 
     @Test
-    public void rotateTest() {
+    @SuppressWarnings("unchecked")
+    public void logTruncateTest() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                         \n" +
+                "  (load-module :logger)                                     \n" +
+                "                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                       \n" +
+                "                                                            \n" +
+                "  (try                                                      \n" +
+                "    (let [f   (io/file dir \"test.log\")                    \n" +
+                "          log (partial logger/log (logger/handler f 120))]  \n" +
+                "      (log :info :base \"test message 1\")                  \n" +
+                "      (log :info :base \"test message 2\")                  \n" +
+                "      (log :info :base \"test message 3\")                  \n" +
+                "      (log :info :base \"test message 4\")                  \n" +
+                "      (log :info :base \"test message 5\")                  \n" +
+                "      (log :info :base \"test message 6\")                  \n" +
+                "                                                            \n" +
+                "      (io/slurp-lines f))                                   \n" +
+                "    (finally                                                \n" +
+                "      (io/delete-file-tree dir))))                          ";
+
+        final List<String> lines = (List<String>)venice.eval(script);
+
+        assertEquals(2, lines.size());
+        assertEquals(48, lines.get(0).length());
+        assertEquals(48, lines.get(1).length());
+        assertTrue(lines.get(0).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]base[|]test message 5"));
+        assertTrue(lines.get(1).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]base[|]test message 6"));
+    }
+
+    @Test
+    public void logRotateTest() {
         final Venice venice = new Venice();
 
         final String script =

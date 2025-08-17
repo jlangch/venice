@@ -26,11 +26,17 @@
 
 (defn handler 
   ([file] 
-    { :file file, :max-size -1, :formatter format-msg})
+    (handler file -1 nil))
   ([file max-size] 
-    { :file file, :max-size max-size, :formatter format-msg })
+    (handler file max-size nil))
   ([file max-size formatter] 
-    { :file file, :max-size max-size, :formatter formatter }))
+    (let [max-size      (if (pos? max-size) (max 100 max-size) -1) ;; -1, 100, 101, ...
+          max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1)  ;; 10% hystersis
+          formatter     (coalesce formatter format-msg)]
+      { :file file, 
+        :max-size max-size 
+        :max-size-hystersis max-size-hyst
+        :formatter formatter})))
 
 
 (defn log 
@@ -40,10 +46,10 @@
   ([handler level principal msg exc]
     (locking mutex
       (let [f   (:file handler)
-            m   (:max-size handler -1)
+            m   (:max-size-hystersis handler -1)
             fmt (:formatter handler format-msg)]
         (io/spit f (fmt level principal msg exc) :append true)
-        (when (pos? m)
+        (when (and (pos? m) (> (io/file-size f) m))
           (io/truncate-from-start-keep-lines f m))))))
 
 
