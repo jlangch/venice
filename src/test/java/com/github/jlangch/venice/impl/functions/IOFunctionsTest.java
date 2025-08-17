@@ -734,7 +734,7 @@ public class IOFunctionsTest {
                     Parameters.of("file", file));
 
             assertEquals(
-                    "22333444555666777",
+                    "",
                     venice.eval("(io/slurp file)", Parameters.of("file", file)));
         }
         catch(Exception ex) {

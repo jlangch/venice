@@ -40,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileStore;
@@ -48,6 +49,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.text.Normalizer;
@@ -1558,9 +1560,15 @@ public class IOFunctions {
                     "io/truncate-from-start-keep-lines",
                     VncFunction
                         .meta()
-                        .arglists("(io/truncate-from-start-keep-lines f size)")
-                        .doc("Truncates a text file beginning at the start, honoring " +
-                             "complete lines. f must be a file or a string (file path).")
+                        .arglists("(io/truncate-from-start-keep-lines f max-size)")
+                        .doc("Truncates a text file to the given max size beginning " +
+                        	 "at the start, honoring complete lines. \n\n" +
+                        	 "The ideal `cutoff` position is `file-size - max-size`. If " +
+                        	 "there is no newline found after cutoff, the tail is a single (too long) " +
+                        	 "line; to keep line integrity and size limit, keep nothing. If " +
+                        	 "there is a newline found after cutoff, the effective cutoff will be the " +
+                        	 "character position after the newline.\n\n" +
+                             "f must be a file or a string (file path).")
                         .examples("(io/truncate-from-start-keep-lines \"/tmp/test.txt\" 1_000_000)")
                         .seeAlso("io/file")
                         .build()
@@ -1587,49 +1595,72 @@ public class IOFunctions {
                             return Nil; // nothing to truncate
                         }
 
-                        final Path tempFile = Files.createTempFile("truncate", ".tmp");
+                        final long cutoff = fileSize - maxBytes;
 
+                        long startPos;
+
+                        // 1) Find start position: first '\n' at or after 'cutoff'
+                        //    (so the remainder starts exactly at the beginning of a line)
                         try (RandomAccessFile raf = new RandomAccessFile(filePath.toFile(), "r")) {
-                            long pos = fileSize - maxBytes;
+                            raf.seek(cutoff);
+                            startPos = -1L;
 
-                            // Move forward to the next newline
-                            while (pos < fileSize) {
-                                raf.seek(pos);
-                                int b = raf.read();
-                                if (b == '\n') { // Found a line boundary
+                            int b;
+                            while ((b = raf.read()) != -1) {
+                                if (b == '\n') {
+                                    // We are positioned AFTER reading '\n' -> file pointer is at the start of the next line
+                                    startPos = raf.getFilePointer();
                                     break;
                                 }
-                                pos++;
                             }
 
-                            long startPos = pos + 1;
-                            if (startPos >= fileSize) {
-                                startPos = fileSize - maxBytes;  // hard cut
-                            }
-
-                            // Copy from startPos to end into a temp file
-                            try (InputStream in = new FileInputStream(filePath.toFile());
-                                 OutputStream out = new FileOutputStream(tempFile.toFile())) {
-
-                                long skipped = 0;
-                                while (skipped < startPos) {
-                                    long skipNow = in.skip(startPos - skipped);
-                                    if (skipNow <= 0) {
-                                        break; // shouldn't happen unless EOF
-                                    }
-                                    skipped += skipNow;
-                                }
-
-                                final byte[] buffer = new byte[8192];
-                                int read;
-                                while ((read = in.read(buffer)) != -1) {
-                                    out.write(buffer, 0, read);
-                                }
+                            if (startPos == -1L) {
+                                // No newline found after cutoff:
+                                // The tail is a single (too long) line; to keep line integrity and size limit, keep nothing.
+                                startPos = fileSize;
                             }
                         }
 
-                        // Replace original file with truncated file
-                        Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+                        // 2) Copy [startPos .. EOF] into a temp file in the SAME directory
+                        Path dir = filePath.getParent();
+                        if (dir == null) dir = Paths.get(".");
+                        Path tempFile = Files.createTempFile(dir, "truncate-", ".tmp");
+
+                        try {
+                            try (InputStream in = new FileInputStream(filePath.toFile());
+                                 OutputStream out = new FileOutputStream(tempFile.toFile())
+                            ) {
+                                long skipped = 0;
+                                while (skipped < startPos) {
+                                    long n = in.skip(startPos - skipped);
+                                    if (n <= 0) break; // EOF protection (shouldn't happen)
+                                    skipped += n;
+                                }
+
+                                final byte[] buf = new byte[8192];
+                                int read;
+                                while ((read = in.read(buf)) != -1) {
+                                    out.write(buf, 0, read);
+                                }
+                            }
+
+                            // 3) Replace original with temp (try atomic move first)
+                            try {
+                                Files.move(tempFile, filePath,
+                                        StandardCopyOption.REPLACE_EXISTING,
+                                        StandardCopyOption.ATOMIC_MOVE);
+                            }
+                            catch (AtomicMoveNotSupportedException e) {
+                                // Fallback if atomic move not available
+                                Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+                            }
+
+                        }
+                        catch (IOException ex) {
+                            // Clean up temp on failure
+                            try { Files.deleteIfExists(tempFile); } catch (IOException ignore) {}
+                            throw ex;
+                        }
                     }
                     catch(Exception ex) {
                         throw new VncException("Failed to truncate text file " + f, ex);
