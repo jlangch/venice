@@ -32,10 +32,13 @@
     (handler file max-size nil))
 
   ([file max-size formatter] 
+    { :pre [(or (string? file) (io/file? file))
+            (long? max-size) 
+            (or (nil? formatter) (fn? formatter))] }
     (let [max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
           max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1) ;; 10% hystersis
           formatter     (coalesce formatter format-msg)]
-      { :file               file
+      { :file               (io/file file)
         :max-size           max-size 
         :max-size-hystersis max-size-hyst
         :formatter          formatter })))
