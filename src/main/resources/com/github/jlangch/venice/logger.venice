@@ -27,19 +27,24 @@
 (defn handler 
   ([file] 
     (handler file -1 nil))
+
   ([file max-size] 
     (handler file max-size nil))
+
   ([file max-size formatter] 
-    (let [max-size      (if (pos? max-size) (max 100 max-size) -1) ;; -1, 100, 101, ...
-          max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1)  ;; 10% hystersis
+    (let [max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
+          max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1) ;; 10% hystersis
           formatter     (coalesce formatter format-msg)]
-      { :file file, 
-        :max-size max-size 
+      { :file               file
+        :max-size           max-size 
         :max-size-hystersis max-size-hyst
-        :formatter formatter})))
+        :formatter          formatter })))
 
 
 (defn log 
+  ([handler level msg]
+    (log handler level nil msg nil))
+
   ([handler level principal msg]
     (log handler level principal msg nil))
 
