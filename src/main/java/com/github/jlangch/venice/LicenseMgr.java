@@ -55,7 +55,15 @@ public abstract class LicenseMgr {
         return new ClassPathResource("META-INF/" + LICENSE_VAVR).getResourceAsString("UTF-8");
     }
 
-    public static String loadZip4Jicense() {
+    public static String loadAvironLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_AVIRON).getResourceAsString("UTF-8");
+    }
+
+    public static String loadCronSchedulerLicense() {
+        return new ClassPathResource("META-INF/" + LICENSE_CRON).getResourceAsString("UTF-8");
+    }
+
+    public static String loadZip4jLicense() {
         return new ClassPathResource("META-INF/" + LICENSE_ZIP4J).getResourceAsString("UTF-8");
     }
 
@@ -71,18 +79,31 @@ public abstract class LicenseMgr {
         final List<String> licenses = CollectionUtil.toList(
                                             header("Venice License"),
                                             loadVeniceLicenseText(),
-                                            header("Venice License"),
-                                            loadJLine3License(),
+
                                             header("JLine3 License"),
+                                            loadJLine3License(),
+
+                                            header("NanoJson License"),
                                             loadNanojsonLicense(),
-                                            header("NanJson License"),
-                                            loadVavrLicense(),
+
                                             header("Vavr License"),
-                                            loadZip4Jicense(),
+                                            loadVavrLicense(),
+
+                                            header("Aviron License"),
+                                            loadAvironLicense(),
+
+                                            header("CronScheduler License"),
+                                            loadCronSchedulerLicense(),
+
+                                            header("Zip4J License"),
+                                            loadZip4jLicense(),
+
                                             header("SIL Open Font License"),
                                             loadOflLicense(),
+
                                             header("Audowide Font License"),
                                             loadAudiowideLicense(),
+
                                             header("OpenSans Font License"),
                                             loadOpenSansLicense());
 
@@ -104,6 +125,8 @@ public abstract class LicenseMgr {
     private final static String LICENSE_JLINE3 = "LICENSE-JLine3.txt";
     private final static String LICENSE_NANOJSON = "LICENSE-nanojson.txt";
     private final static String LICENSE_VAVR = "LICENSE-Vavr.txt";
+    private final static String LICENSE_AVIRON = "LICENSE-Aviron.txt";
+    private final static String LICENSE_CRON = "LICENSE-CronScheduler.txt";
     private final static String LICENSE_ZIP4J = "LICENSE-Zip4J.txt";
     private final static String LICENSE_OFL = "LICENSE-OFL.txt";
     private final static String LICENSE_OPENSANS = "LICENSE-OpenSans.txt";
