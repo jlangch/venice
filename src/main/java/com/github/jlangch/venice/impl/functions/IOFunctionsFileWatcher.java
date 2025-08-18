@@ -53,9 +53,9 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.aviron.filewatcher.Aviron_FileWatcher_FsWatch;
+import com.github.jlangch.venice.impl.util.aviron.filewatcher.Aviron_FileWatcher_JavaWatchService;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.filewatcher.aviron.Aviron_FileWatcher_FsWatch;
-import com.github.jlangch.venice.impl.util.filewatcher.aviron.Aviron_FileWatcher_JavaWatchService;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.util.OS;
 

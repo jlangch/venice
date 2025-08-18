@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.filewatcher.aviron;
+package com.github.jlangch.venice.impl.util.aviron.filewatcher;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -27,32 +27,27 @@ import java.util.function.Consumer;
 import com.github.jlangch.aviron.events.FileWatchErrorEvent;
 import com.github.jlangch.aviron.events.FileWatchFileEvent;
 import com.github.jlangch.aviron.events.FileWatchTerminationEvent;
-import com.github.jlangch.aviron.filewatcher.FsWatchMonitor;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 
 
-public class Aviron_FileWatcher_FsWatch
-extends com.github.jlangch.aviron.filewatcher.FileWatcher_FsWatch {
+public class Aviron_FileWatcher_JavaWatchService
+extends com.github.jlangch.aviron.filewatcher.FileWatcher_JavaWatchService {
 
-    public Aviron_FileWatcher_FsWatch(
+    public Aviron_FileWatcher_JavaWatchService(
             final CallFrame[] veniceCallFrame,
             final Path mainDir,
             final boolean recursive,
             final Consumer<FileWatchFileEvent> fileListener,
             final Consumer<FileWatchErrorEvent> errorListener,
-            final Consumer<FileWatchTerminationEvent> terminationListener,
-            final FsWatchMonitor monitor,
-            final String fswatchProgram
+            final Consumer<FileWatchTerminationEvent> terminationListener
     ) {
-        super(mainDir,
+       super(mainDir,
               recursive,
               fileListener,
               errorListener,
-              terminationListener,
-              monitor,
-              fswatchProgram);
+              terminationListener);
 
         this.callFrame = veniceCallFrame;
     }
