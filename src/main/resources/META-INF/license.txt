@@ -216,7 +216,7 @@ referred to below. Your use of the source code for these subcomponents
 is subject to the terms and conditions of the following licenses.
 
 
-VAVR 0.10.4 (io.vavr:vavr:0.10.4)                      LICENSE-Vavr.txt
+VAVR 0.10.7 (io.vavr:vavr:0.10.7)                      LICENSE-Vavr.txt
 JLine3 3.21.0 (org.jline:jline:3.21.0)               LICENSE-JLine3.txt
 NanoJson 1.6 (com.grack:nanojson:1.6)              LICENSE-nanojson.txt
 Zip4j 2.11.5 (net.lingala.zip4j:zip4j:2.11.5)         LICENSE-Zip4J.txt
