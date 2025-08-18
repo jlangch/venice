@@ -200,26 +200,26 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-=======================================================================
+===============================================================================
 
 
 
 
------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 VENICE SUBCOMPONENTS
------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-The Venice Release 1.12.53 includes a number of subcomponents with 
-separate copyright notices and license terms. The product that includes 
-this file does not necessarily use all the open source subcomponents 
-referred to below. Your use of the source code for these subcomponents 
-is subject to the terms and conditions of the following licenses.
+The Venice Release 1.12.53 includes a number of subcomponents with separate 
+copyright notices and license terms. The product that includes this file does 
+not necessarily use all the open source subcomponents referred to below. Your 
+use of the source code for these subcomponents is subject to the terms and 
+conditions of the following licenses.
 
 
-VAVR 0.10.7 (io.vavr:vavr:0.10.7)                      LICENSE-Vavr.txt
-JLine3 3.21.0 (org.jline:jline:3.21.0)               LICENSE-JLine3.txt
-NanoJson 1.6 (com.grack:nanojson:1.6)              LICENSE-nanojson.txt
-Zip4j 2.11.5 (net.lingala.zip4j:zip4j:2.11.5)         LICENSE-Zip4J.txt
-Aviron 1.9.1 (com.github.jlangch:aviron:1.9.1)       LICENSE-Aviron.txt
-Cron 0.1 (io.timeandspace:cron-scheduler:0.1) LICENSE-CronScheduler.txt
-Audiowide Regular Open Font                       LICENSE-Audiowide.txt
+VAVR 0.10.7 (io.vavr:vavr:0.10.7)                              LICENSE-Vavr.txt
+JLine3 3.21.0 (org.jline:jline:3.21.0)                       LICENSE-JLine3.txt
+NanoJson 1.6 (com.grack:nanojson:1.6)                      LICENSE-nanojson.txt
+Zip4j 2.11.5 (net.lingala.zip4j:zip4j:2.11.5)                 LICENSE-Zip4J.txt
+Aviron 1.9.1 (com.github.jlangch:aviron:1.9.1)               LICENSE-Aviron.txt
+CronSched 0.1 (io.timeandspace:cron-scheduler:0.1)    LICENSE-CronScheduler.txt
+Audiowide Regular Open Font                               LICENSE-Audiowide.txt
