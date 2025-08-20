@@ -1562,12 +1562,12 @@ public class IOFunctions {
                         .meta()
                         .arglists("(io/truncate-from-start-keep-lines f max-size)")
                         .doc("Truncates a text file to the given max size beginning " +
-                        	 "at the start, honoring complete lines. \n\n" +
-                        	 "The ideal `cutoff` position is `file-size - max-size`. If " +
-                        	 "there is no newline found after cutoff, the tail is a single (too long) " +
-                        	 "line; to keep line integrity and size limit, keep nothing. If " +
-                        	 "there is a newline found after cutoff, the effective cutoff will be the " +
-                        	 "character position after the newline.\n\n" +
+                             "at the start, honoring complete lines. \n\n" +
+                             "The ideal `cutoff` position is `file-size - max-size`. If " +
+                             "there is no newline found after cutoff, the tail is a single (too long) " +
+                             "line; to keep line integrity and size limit, keep nothing. If " +
+                             "there is a newline found after cutoff, the effective cutoff will be the " +
+                             "character position after the newline.\n\n" +
                              "f must be a file or a string (file path).")
                         .examples("(io/truncate-from-start-keep-lines \"/tmp/test.txt\" 1_000_000)")
                         .seeAlso("io/file")
@@ -1646,7 +1646,9 @@ public class IOFunctions {
 
                             // 3) Replace original with temp (try atomic move first)
                             try {
-                                Files.move(tempFile, filePath,
+                                Files.move(
+                                        tempFile,
+                                        filePath,
                                         StandardCopyOption.REPLACE_EXISTING,
                                         StandardCopyOption.ATOMIC_MOVE);
                             }
