@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+- function `io/truncate-from-start-keep-lines` to truncate text files honoring
+  lines
+
 ### Updated dependencies:
 
 - bumped the Aviron (ClamAV client) library to V1.9.1
