@@ -167,5 +167,6 @@ public class Modules {
                         new VncKeyword("inet"),
                         new VncKeyword("cidr"),
                         new VncKeyword("csv"),
+                        new VncKeyword("cron"),
                         new VncKeyword("mbean"))));
 }

@@ -148,6 +148,7 @@ public class Functions {
         functions.putAll(MBeanFunctions.ns);
         functions.putAll(SandboxFunctions.ns);
         functions.putAll(ScheduleFunctions.ns);
+        functions.putAll(CronSchedulerFunctions.ns);
         functions.putAll(ConcurrencyFunctions.ns);
         functions.putAll(JsonFunctions.ns);
         functions.putAll(PdfFunctions.ns);
