@@ -98,31 +98,121 @@ public class LoggerModuleTest {
     }
 
     @Test
-    public void logRotateTest() {
+    public void logRotateDayTest_1() {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                     \n" +
-                "  (load-module :logger)                                 \n" +
-                "                                                        \n" +
-                "  (def dir (io/temp-dir \"logger-\"))                   \n" +
-                "                                                        \n" +
-                "  (try                                                  \n" +
-                "    (def archive-dir (io/file dir \"archive\"))         \n" +
-                "    (io/mkdir archive-dir)                              \n" +
-                "                                                        \n" +
-                "    (let [f       (io/file dir \"test.log\")            \n" +
-                "          handler (logger/handler f)                    \n" +
-                "          log     (partial logger/log handler)]         \n" +
-                "      (log :info :base \"test message 1\")              \n" +
-                "      (log :info :base \"test message 2\")              \n" +
-                "                                                        \n" +
-                "      (logger/rotate-log-file-by-month f archive-dir)   \n" +
-                "      (and (not (io/exists-file? f))                    \n" +
-                "           (== 1 (count (io/list-files dir)))))         \n" +
-                "    (finally                                            \n" +
-                "      (io/delete-file-tree dir))))                      ";
+                "(do                                                           \n" +
+                "  (load-module :logger)                                       \n" +
+                "                                                              \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
+                "                                                              \n" +
+                "  (try                                                        \n" +
+                "    (def archive-dir (io/file dir \"archive\"))               \n" +
+                "    (io/mkdir archive-dir)                                    \n" +
+                "                                                              \n" +
+                "    (let [f       (io/file dir \"test.log\")                  \n" +
+                "          handler (logger/handler f)                          \n" +
+                "          log     (partial logger/log handler)]               \n" +
+                "      (log :info :base \"test message 1\")                    \n" +
+                "      (log :info :base \"test message 2\")                    \n" +
+                "                                                              \n" +
+                "      (logger/rotate-log-file-by-day handler archive-dir)     \n" +
+                "      (and (io/exists-file? f)                                \n" +
+                "           (== 2 (count (io/list-files dir)))))               \n" +
+                "    (finally                                                  \n" +
+                "      (io/delete-file-tree dir))))                            ";
         assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void logRotateDayTest_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                           \n" +
+                "  (load-module :logger)                                       \n" +
+                "                                                              \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
+                "                                                              \n" +
+                "  (try                                                        \n" +
+                "    (def archive-dir (io/file dir \"archive\"))               \n" +
+                "    (io/mkdir archive-dir)                                    \n" +
+                "                                                              \n" +
+                "    (let [f       (io/file dir \"test.log\")                  \n" +
+                "          handler (logger/handler f)                          \n" +
+                "          log     (partial logger/log handler)]               \n" +
+                "      (log :info :base \"test message 1\")                    \n" +
+                "      (log :info :base \"test message 2\")                    \n" +
+                "                                                              \n" +
+                "      (logger/rotate-log-file-by-day handler archive-dir)     \n" +
+                "      (io/slurp-lines f))                                     \n" +
+                "    (finally                                                  \n" +
+                "      (io/delete-file-tree dir))))                            ";
+        final List<String> lines = (List<String>)venice.eval(script);
+
+        assertEquals(1, lines.size());
+        assertTrue(lines.get(0).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]system[|]Rotated log file"));
+    }
+
+    @Test
+    public void logRotateMonthTest_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                           \n" +
+                "  (load-module :logger)                                       \n" +
+                "                                                              \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
+                "                                                              \n" +
+                "  (try                                                        \n" +
+                "    (def archive-dir (io/file dir \"archive\"))               \n" +
+                "    (io/mkdir archive-dir)                                    \n" +
+                "                                                              \n" +
+                "    (let [f       (io/file dir \"test.log\")                  \n" +
+                "          handler (logger/handler f)                          \n" +
+                "          log     (partial logger/log handler)]               \n" +
+                "      (log :info :base \"test message 1\")                    \n" +
+                "      (log :info :base \"test message 2\")                    \n" +
+                "                                                              \n" +
+                "      (logger/rotate-log-file-by-month handler archive-dir)   \n" +
+                "      (and (io/exists-file? f)                                \n" +
+                "           (== 2 (count (io/list-files dir)))))               \n" +
+                "    (finally                                                  \n" +
+                "      (io/delete-file-tree dir))))                            ";
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void logRotateMonthTest_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                           \n" +
+                "  (load-module :logger)                                       \n" +
+                "                                                              \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
+                "                                                              \n" +
+                "  (try                                                        \n" +
+                "    (def archive-dir (io/file dir \"archive\"))               \n" +
+                "    (io/mkdir archive-dir)                                    \n" +
+                "                                                              \n" +
+                "    (let [f       (io/file dir \"test.log\")                  \n" +
+                "          handler (logger/handler f)                          \n" +
+                "          log     (partial logger/log handler)]               \n" +
+                "      (log :info :base \"test message 1\")                    \n" +
+                "      (log :info :base \"test message 2\")                    \n" +
+                "                                                              \n" +
+                "      (logger/rotate-log-file-by-month handler archive-dir)   \n" +
+                "      (io/slurp-lines f))                                     \n" +
+                "    (finally                                                  \n" +
+                "      (io/delete-file-tree dir))))                            ";
+        final List<String> lines = (List<String>)venice.eval(script);
+
+        assertEquals(1, lines.size());
+        assertTrue(lines.get(0).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]system[|]Rotated log file"));
     }
 
 }

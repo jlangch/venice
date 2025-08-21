@@ -65,12 +65,16 @@
 ;; Log file rotation
 ;; -----------------------------------------------------------------------------
 
-(defn rotate-log-file-by-day [file archive-dir]
+(defn rotate-log-file-by-day [handler archive-dir]
+  { :pre [(map? handler) (some? archive-dir)] }
+
   (when (not (io/exists-dir? archive-dir))
     (throw (ex :VncException 
                "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
+
   (locking mutex
-    (let [prev-day (time/minus (time/local-date))
+    (let [file     (:file handler)
+          prev-day (time/minus (time/local-date) :days 1)
           year     (time/year prev-day)
           month    (time/month prev-day)
           day      (time/day-of-month prev-day)
@@ -78,22 +82,28 @@
                                            "%s-%d-%02d-%02d.log" 
                                            (io/file-basename file) year month day))]
       (when (io/exists-file? file)
-        (io/move-file file archive)))))
+        (io/move-file file archive)
+        (logger/log handler :info :system "Rotated log file")))))
 
 
-(defn rotate-log-file-by-month [file archive-dir]
+(defn rotate-log-file-by-month [handler archive-dir]
+  { :pre [(map? handler) (some? archive-dir)] }
+
   (when (not (io/exists-dir? archive-dir))
     (throw (ex :VncException 
                "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
+
   (locking mutex
-    (let [prev-day (time/minus (time/local-date) :days 1)
+    (let [file     (:file handler)
+          prev-day (time/minus (time/local-date) :days 1)
           year     (time/year prev-day)
           month    (time/month prev-day)
           archive  (io/file archive-dir (str/format 
                                           "%s-%d-%02d.log" 
                                           (io/file-basename file) year month))]
       (when (io/exists-file? file)
-        (io/move-file file archive)))))
+        (io/move-file file archive)
+        (logger/log handler :info :system "Rotated log file")))))
  
 
 ;; -----------------------------------------------------------------------------
