@@ -78,11 +78,10 @@
           year     (time/year prev-day)
           month    (time/month prev-day)
           day      (time/day-of-month prev-day)
-          archive  (io/file archive-dir (str/format 
-                                           "%s-%d-%02d-%02d.log" 
-                                           (io/file-basename file) year month day))]
+          archive  (str/format "%s-%d-%02d-%02d" 
+                               (io/file-basename file) year month day)]
       (when (io/exists-file? file)
-        (io/move-file file archive)
+        (rotate-log-file file archive-dir archive)
         (logger/log handler :info :system "Rotated log file")))))
 
 
@@ -98,13 +97,24 @@
           prev-day (time/minus (time/local-date) :days 1)
           year     (time/year prev-day)
           month    (time/month prev-day)
-          archive  (io/file archive-dir (str/format 
-                                          "%s-%d-%02d.log" 
-                                          (io/file-basename file) year month))]
+          archive  (str/format "%s-%d-%02d" 
+                               (io/file-basename file) year month)]
       (when (io/exists-file? file)
-        (io/move-file file archive)
+        (rotate-log-file file archive-dir archive)
         (logger/log handler :info :system "Rotated log file")))))
- 
+
+
+(defn- rotate-log-file [file archive-dir archive-base]
+  (loop [x 0]
+    (when (> x 50)   ;; set an upper limit
+      (throw (ex :VncException 
+                 "Log rotation failed. Too many target archive files!")))
+    (let [name    (str archive-base (if (zero? x) "" (str "-" x)) ".log")
+          archive (io/file archive-dir name)]
+      (if (io/exists-file? archive)
+        (recur (inc x))
+        (io/move-file file archive)))))
+  
 
 ;; -----------------------------------------------------------------------------
 ;; Formatter
