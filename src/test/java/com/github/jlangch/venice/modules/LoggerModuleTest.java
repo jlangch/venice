@@ -45,8 +45,9 @@ public class LoggerModuleTest {
                 "  (def dir (io/temp-dir \"logger-\"))                   \n" +
                 "                                                        \n" +
                 "  (try                                                  \n" +
-                "    (let [f   (io/file dir \"test.log\")                \n" +
-                "          log (partial logger/log (logger/handler f))]  \n" +
+                "    (let [f       (io/file dir \"test.log\")            \n" +
+                "          handler (logger/handler f)                    \n" +
+                "          log     (partial logger/log handler)]         \n" +
                 "      (log :info :base \"test message 1\")              \n" +
                 "      (log :info :base \"test message 2\")              \n" +
                 "                                                        \n" +
@@ -73,8 +74,9 @@ public class LoggerModuleTest {
                 "  (def dir (io/temp-dir \"logger-\"))                       \n" +
                 "                                                            \n" +
                 "  (try                                                      \n" +
-                "    (let [f   (io/file dir \"test.log\")                    \n" +
-                "          log (partial logger/log (logger/handler f 120))]  \n" +
+                "    (let [f       (io/file dir \"test.log\")                \n" +
+                "          handler (logger/handler f 120)                    \n" +
+                "          log     (partial logger/log handler)]             \n" +
                 "      (log :info :base \"test message 1\")                  \n" +
                 "      (log :info :base \"test message 2\")                  \n" +
                 "      (log :info :base \"test message 3\")                  \n" +
@@ -109,8 +111,9 @@ public class LoggerModuleTest {
                 "    (def archive-dir (io/file dir \"archive\"))         \n" +
                 "    (io/mkdir archive-dir)                              \n" +
                 "                                                        \n" +
-                "    (let [f   (io/file dir \"test.log\")                \n" +
-                "          log (partial logger/log (logger/handler f))]  \n" +
+                "    (let [f       (io/file dir \"test.log\")            \n" +
+                "          handler (logger/handler f)                    \n" +
+                "          log     (partial logger/log handler)]         \n" +
                 "      (log :info :base \"test message 1\")              \n" +
                 "      (log :info :base \"test message 2\")              \n" +
                 "                                                        \n" +
