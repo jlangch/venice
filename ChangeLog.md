@@ -19,6 +19,8 @@ All notable changes to this project will be documented in this file.
   lines
 - function `cron/schedule-at-round-times-in-day`. A scheduler that is not prone
   to clock shifts
+- function `cron/schedule-at-fixed-rate`. A scheduler that is not prone
+  to clock shifts
 
 ### Updated dependencies:
 
