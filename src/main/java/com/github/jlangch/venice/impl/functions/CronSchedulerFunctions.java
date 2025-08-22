@@ -63,7 +63,8 @@ public class CronSchedulerFunctions {
                             "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`, " +
                             "and `(done? f)` will work on the returned future.¶" +
                             "\n\n" +
-                            "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
+                            "This function is built on the [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler) " +
+                            "project.")
                         .examples(
                             "(let [sync-period     (. :java.time.Duration :ofMinutes 10)                  \n" +
                             "      at              (time/plus (time/local-date-time) :seconds 2)          \n" +
@@ -127,7 +128,8 @@ public class CronSchedulerFunctions {
                         "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`,              " +
                         "and `(done? f)` will work on the returned future.                        " +
                         "\n\n" +
-                        "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
+                        "This function is built on the [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler) " +
+                        "project.")
                     .examples(
                         "(let [sync-period     (. :java.time.Duration :ofMinutes 10)                                   \n" +
                         "      schedule-period (. :java.time.Duration :ofHours 4)                                      \n" +
@@ -200,7 +202,8 @@ public class CronSchedulerFunctions {
                         "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`,    " +
                         "and `(done? f)` will work on the returned future.              " +
                         "\n\n" +
-                        "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
+                        "This function is built on the [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler) " +
+                        "project.")
                     .examples(
                         "(let [sync-period (. :java.time.Duration :ofMinutes 10)                        \n" +
                         "      task        (fn [] (println \"Task:\" (time/local-date-time)))           \n" +
