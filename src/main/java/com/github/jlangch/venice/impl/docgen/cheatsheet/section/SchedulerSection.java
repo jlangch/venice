@@ -39,13 +39,13 @@ public class SchedulerSection implements ISectionBuilder {
         final DocSection all = new DocSection("", id());
         section.addSection(all);
 
-        final DocSection sched = new DocSection("JDK Scheduler", "scheduler.standard");
+        final DocSection sched = new DocSection("JDK", "scheduler.standard");
         all.addSection(sched);
         sched.addItem(diBuilder.getDocItem("schedule-delay", false));
         sched.addItem(diBuilder.getDocItem("schedule-at-fixed-rate", false));
 
 
-        final DocSection cron = new DocSection("Cron Scheduler", "Schedulers not prone to clock shifts", "scheduler.cron");
+        final DocSection cron = new DocSection("Cron", "Schedulers not prone to clock shifts", "scheduler.cron");
         all.addSection(cron);
         cron.addItem(diBuilder.getDocItem("cron/schedule-at", false));
         cron.addItem(diBuilder.getDocItem("cron/schedule-at-round-times-in-day", false));
