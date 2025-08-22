@@ -53,14 +53,16 @@ public class CronSchedulerFunctions {
                         "Submits a periodic task that becomes enabled at round clock times within " +
                         "a day, with the given period.                                            " +
                         "\n\n" +
+                        "This scheduled task is not prone to clock shifts.                        " +
+                        "\n\n" +
                         "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`,              " +
                         "and `(done? f)` will work on the returned future.                        ")
                     .examples(
                         "(let [sync-period     (. :java.time.Duration :ofMinutes 10)                  \n" +
-                        "      schedule-period (. :java.time.Duration :ofSeconds 5)                   \n" +
+                        "      schedule-period (. :java.time.Duration :ofHours 4)                     \n" +
                         "      f               (fn [] (println (time/local-date-time)))               \n" +
                         "      s (cron/schedule-at-round-times-in-day f sync-period schedule-period)] \n" +
-                        "   (sleep 16 :seconds) \n" +
+                        "   (sleep 24 :hours) \n" +
                         "   (cancel s))")
                     .build()
         ) {
@@ -79,7 +81,7 @@ public class CronSchedulerFunctions {
                 // Create a wrapper that inherits the Venice thread context
                 // from the parent thread to the executer thread!
                 final ThreadBridge threadBridge = ThreadBridge.create(
-                                                    "schedule-delay",
+                                                    "cron/schedule-at-round-times-in-day",
                                                     new CallFrame[] {
                                                         new CallFrame(this, args),
                                                         new CallFrame(fn)});
@@ -90,7 +92,7 @@ public class CronSchedulerFunctions {
                 CronScheduler scheduler = CronScheduler.newBuilder(syncPeriod)
                                                        .setThreadFactory(
                                                                ThreadPoolUtil.createCountedThreadFactory(
-                                                                       "cron",
+                                                                       "cron-scheduler",
                                                                        true))
                                                        .build();
 
