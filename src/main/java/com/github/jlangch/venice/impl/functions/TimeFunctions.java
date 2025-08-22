@@ -1633,6 +1633,104 @@ public class TimeFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction first_day_of_month_Q =
+        new VncFunction(
+                "time/first-day-of-month?",
+                VncFunction
+                    .meta()
+                    .arglists("(time/first-day-of-month? date)")
+                    .doc("Returns `true` if the date is the first day of a month otherwise `false`.")
+                    .examples(
+                        "(time/first-day-of-month? (time/local-date))",
+                        "(time/first-day-of-month? (time/local-date-time))",
+                        "(time/first-day-of-month? (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year", "time/month",
+                        "time/day-of-year",
+                        "time/day-of-month", "time/first-day-of-month",
+                        "time/day-of-week")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
+
+                if (dt instanceof ZonedDateTime) {
+                    final LocalDate date = ((ZonedDateTime)dt).toLocalDateTime().toLocalDate();
+                    final int dayOfMonth = date.getDayOfMonth();
+                    return VncBoolean.of(dayOfMonth == 1);
+                }
+                else if (dt instanceof LocalDateTime) {
+                    final LocalDate date = ((LocalDateTime)dt).toLocalDate();
+                    final int dayOfMonth = date.getDayOfMonth();
+                    return VncBoolean.of(dayOfMonth == 1);
+                }
+                else if (dt instanceof LocalDate) {
+                    final LocalDate date = ((LocalDate)dt);
+                    final int dayOfMonth = date.getDayOfMonth();
+                    return VncBoolean.of(dayOfMonth == 1);
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'time/last-day-of-month?' does not allow %s as parameter",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction last_day_of_month_Q =
+        new VncFunction(
+                "time/last-day-of-month?",
+                VncFunction
+                    .meta()
+                    .arglists("(time/last-day-of-month? date)")
+                    .doc("Returns `true` if the date is the last day of a month otherwise `false`.")
+                    .examples(
+                        "(time/last-day-of-month? (time/local-date))",
+                        "(time/last-day-of-month? (time/local-date-time))",
+                        "(time/last-day-of-month? (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year", "time/month",
+                        "time/day-of-year",
+                        "time/day-of-month", "time/first-day-of-month",
+                        "time/day-of-week")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
+
+                if (dt instanceof ZonedDateTime) {
+                    final LocalDate date = ((ZonedDateTime)dt).toLocalDateTime().toLocalDate();
+                    final int dayOfMonth = date.getDayOfMonth();
+                    return VncBoolean.of(dayOfMonth == date.lengthOfMonth());
+                }
+                else if (dt instanceof LocalDateTime) {
+                    final LocalDate date = ((LocalDateTime)dt).toLocalDate();
+                    final int dayOfMonth = date.getDayOfMonth();
+                    return VncBoolean.of(dayOfMonth == date.lengthOfMonth());
+                }
+                else if (dt instanceof LocalDate) {
+                    final LocalDate date = ((LocalDate)dt);
+                    final int dayOfMonth = date.getDayOfMonth();
+                    return VncBoolean.of(dayOfMonth == date.lengthOfMonth());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'time/last-day-of-month?' does not allow %s as parameter",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction hour =
         new VncFunction(
                 "time/hour",
@@ -2599,6 +2697,8 @@ public class TimeFunctions {
                     .add(day_of_year)
                     .add(first_day_of_month)
                     .add(last_day_of_month)
+                    .add(first_day_of_month_Q)
+                    .add(last_day_of_month_Q)
                     .add(hour)
                     .add(minute)
                     .add(second)

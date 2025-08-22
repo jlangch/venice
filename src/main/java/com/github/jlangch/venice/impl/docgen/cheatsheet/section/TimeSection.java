@@ -104,6 +104,8 @@ public class TimeSection implements ISectionBuilder {
         compare.addItem(diBuilder.getDocItem("time/not-before?"));
         compare.addItem(diBuilder.getDocItem("time/within?"));
         compare.addItem(diBuilder.getDocItem("time/leap-year?"));
+        compare.addItem(diBuilder.getDocItem("time/first-day-of-month?"));
+        compare.addItem(diBuilder.getDocItem("time/last-day-of-month?"));
 
         final DocSection misc = new DocSection("Miscellaneous", "time.misc");
         all.addSection(misc);

@@ -857,4 +857,92 @@ public class TimeFunctionsTest {
         assertFalse((Boolean)venice.eval("(time/leap-year? (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));
     }
 
+    @Test
+    public void test_first_day_of_month_Q() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date \"2024-01-01\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date-time \"2024-01-01T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/zoned-date-time \"2024-01-01T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date \"2024-02-01\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date-time \"2024-02-01T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/zoned-date-time \"2024-02-01T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date \"2024-11-01\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date-time \"2024-11-01T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/zoned-date-time \"2024-11-01T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date \"2024-12-01\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/local-date-time \"2024-12-01T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/first-day-of-month? (time/zoned-date-time \"2024-12-01T10:00:00.000+01:00\"))"));
+
+
+        assertFalse((Boolean)venice.eval("(time/first-day-of-month? (time/local-date \"2024-01-09\"))"));
+        assertFalse((Boolean)venice.eval("(time/first-day-of-month? (time/local-date-time \"2024-01-09T10:00:00.000\"))"));
+        assertFalse((Boolean)venice.eval("(time/first-day-of-month? (time/zoned-date-time \"2024-01-09T10:00:00.000+01:00\"))"));
+    }
+
+    @Test
+    public void test_last_day_of_month_Q() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-01-31\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-01-31T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-01-31T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-02-29\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-02-29T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-02-29T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2025-02-28\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2025-02-28T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2025-02-28T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-03-31\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-03-31T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-03-31T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-04-30\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-04-30T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-04-30T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-05-31\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-05-31T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-05-31T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-06-30\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-06-30T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-06-30T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-07-31\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-07-31T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-07-31T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-08-31\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-08-31T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-08-31T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-09-30\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-09-30T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-09-30T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-10-31\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-10-31T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-10-31T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-11-30\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-11-30T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-11-30T10:00:00.000+01:00\"))"));
+
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-12-31\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-12-31T10:00:00.000\"))"));
+        assertTrue((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-12-31T10:00:00.000+01:00\"))"));
+
+
+        assertFalse((Boolean)venice.eval("(time/last-day-of-month? (time/local-date \"2024-01-09\"))"));
+        assertFalse((Boolean)venice.eval("(time/last-day-of-month? (time/local-date-time \"2024-01-09T10:00:00.000\"))"));
+        assertFalse((Boolean)venice.eval("(time/last-day-of-month? (time/zoned-date-time \"2024-01-09T10:00:00.000+01:00\"))"));
+    }
+
 }
