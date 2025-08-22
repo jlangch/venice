@@ -22,8 +22,11 @@
 package com.github.jlangch.venice.impl.functions;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
@@ -45,6 +48,67 @@ import io.timeandspace.cronscheduler.CronTask;
 
 
 public class CronSchedulerFunctions {
+
+    public static VncFunction schedule_at =
+            new VncFunction(
+                    "cron/schedule-at",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(schedule-at-round-times-in-day fn sync-period schedule-at)")
+                        .doc(
+                            "Creates and executes a one-shot scheduled task that becomes enabled " +
+                            "at a given time.\n\n" +
+                            "This scheduled task is not prone to clock shifts.\n\n" +
+                            "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`, " +
+                            "and `(done? f)` will work on the returned future.¶" +
+                            "\n\n" +
+                            "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
+                        .examples(
+                            "(let [sync-period     (. :java.time.Duration :ofMinutes 10)                  \n" +
+                            "      at              (time/plus (time/local-date-time) :seconds 2)          \n" +
+                            "      task            (fn [] (println \"Task:\" (time/local-date-time)) 100) \n" +
+                            "      sched           (cron/schedule-at task sync-period at)]                \n" +
+                            "   (deref sched))                                                            ")
+                        .seeAlso(
+                            "cron/schedule-at-fixed-rate",
+                            "cron/schedule-at-round-times-in-day")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 3);
+
+                    sandboxFunctionCallValidation();
+
+                    final VncFunction fn = Coerce.toVncFunction(args.first());
+                    final Duration syncPeriod = Coerce.toVncJavaObject(args.second(), Duration.class);
+                    final LocalDateTime scheduleAt = Coerce.toVncJavaObject(args.third(), LocalDateTime.class);
+
+                    fn.sandboxFunctionCallValidation();
+
+                    // Create a wrapper that inherits the Venice thread context
+                    // from the parent thread to the executer thread!
+                    final ThreadBridge threadBridge = ThreadBridge.create(
+                                                        "cron/schedule-at",
+                                                        new CallFrame[] {
+                                                            new CallFrame(this, args),
+                                                            new CallFrame(fn)});
+                    final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
+
+                    final CronScheduler scheduler = createCronScheduler(syncPeriod);
+
+                    final ZoneId zoneId = ZoneId.systemDefault();
+
+                    final Instant instant = scheduleAt.atZone(zoneId).toInstant();
+
+                    final Future<VncVal> future = scheduler.scheduleAt(instant, taskWrapper);
+                    return new VncJavaObject(future);
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
 
     public static VncFunction schedule_at_round_times_in_day =
         new VncFunction(
@@ -71,7 +135,9 @@ public class CronSchedulerFunctions {
                         "      sched           (cron/schedule-at-round-times-in-day task sync-period schedule-period)] \n" +
                         "   (sleep 24 :hours)                                                                          \n" +
                         "   (cancel sched))                                                                            ")
-                    .seeAlso("cron/schedule-at-fixed-rate")
+                    .seeAlso(
+                        "cron/schedule-at-fixed-rate",
+                        "cron/schedule-at")
                     .build()
         ) {
             @Override
@@ -98,13 +164,7 @@ public class CronSchedulerFunctions {
 
                 final CronTask task = (millis) -> taskWrapper.run();
 
-                final CronScheduler scheduler = CronScheduler
-                                                        .newBuilder(syncPeriod)
-                                                        .setThreadFactory(
-                                                               ThreadPoolUtil.createCountedThreadFactory(
-                                                                       "cron-scheduler",
-                                                                       true))
-                                                        .build();
+                final CronScheduler scheduler = createCronScheduler(syncPeriod);
 
                 final Future<?> future = skipToLatest
                                             ? scheduler.scheduleAtRoundTimesInDaySkippingToLatest(
@@ -147,7 +207,9 @@ public class CronSchedulerFunctions {
                         "      sched       (cron/schedule-at-fixed-rate task sync-period 1 2 :seconds)] \n" +
                         "   (sleep 16 :seconds)                                                         \n" +
                         "   (cancel sched))                                                             ")
-                    .seeAlso("cron/schedule-at-round-times-in-day")
+                    .seeAlso(
+                        "cron/schedule-at-round-times-in-day",
+                        "cron/schedule-at")
                     .build()
         ) {
             @Override
@@ -176,13 +238,7 @@ public class CronSchedulerFunctions {
 
                 final CronTask task = (millis) -> taskWrapper.run();
 
-                final CronScheduler scheduler = CronScheduler
-                                                        .newBuilder(syncPeriod)
-                                                        .setThreadFactory(
-                                                               ThreadPoolUtil.createCountedThreadFactory(
-                                                                       "cron-scheduler",
-                                                                       true))
-                                                        .build();
+                final CronScheduler scheduler = createCronScheduler(syncPeriod);
 
                 final Future<?> future = skipToLatest
                                             ? scheduler.scheduleAtFixedRateSkippingToLatest(
@@ -202,13 +258,25 @@ public class CronSchedulerFunctions {
         };
 
 
+    private static CronScheduler createCronScheduler(final Duration syncPeriod) {
+        return CronScheduler
+                    .newBuilder(syncPeriod)
+                    .setThreadFactory(
+                           ThreadPoolUtil.createCountedThreadFactory(
+                                   "cron-scheduler",
+                                   true))
+                    .build();
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-                    .add(schedule_at_round_times_in_day)
+		            .add(schedule_at)
+		            .add(schedule_at_round_times_in_day)
                     .add(schedule_at_fixed_rate)
                     .toMap();
 }
