@@ -61,7 +61,9 @@ public class CronSchedulerFunctions {
                         "This scheduled task is not prone to clock shifts.                        " +
                         "\n\n" +
                         "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`,              " +
-                        "and `(done? f)` will work on the returned future.                        ")
+                        "and `(done? f)` will work on the returned future.                        " +
+                        "\n\n" +
+                        "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
                     .examples(
                         "(let [sync-period     (. :java.time.Duration :ofMinutes 10)                  \n" +
                         "      schedule-period (. :java.time.Duration :ofHours 4)                     \n" +
@@ -135,7 +137,9 @@ public class CronSchedulerFunctions {
                         "This scheduled task is not prone to clock shifts.              " +
                         "\n\n" +
                         "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`,    " +
-                        "and `(done? f)` will work on the returned future.              ")
+                        "and `(done? f)` will work on the returned future.              " +
+                        "\n\n" +
+                        "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
                     .examples(
                         "(let [sync-period     (. :java.time.Duration :ofMinutes 10)          \n" +
                         "      f               (fn [] (println (time/local-date-time)))       \n" +
