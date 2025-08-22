@@ -20,8 +20,6 @@ All notable changes to this project will be documented in this file.
 - function `cron/schedule-at-round-times-in-day`. A scheduler that is not prone
   to clock shifts
 
-
-
 ### Updated dependencies:
 
 - bumped the Aviron (ClamAV client) library to V1.9.1
