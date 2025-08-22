@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run steps api (...)
 
 - function `io/truncate-from-start-keep-lines` to truncate text files honoring
-  lines
+  complete lines
 - function `cron/schedule-at-round-times-in-day`. A scheduler that is not prone
   to clock shifts
 - function `cron/schedule-at-fixed-rate`. A scheduler that is not prone
