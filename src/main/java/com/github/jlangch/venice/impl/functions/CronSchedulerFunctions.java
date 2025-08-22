@@ -200,12 +200,13 @@ public class CronSchedulerFunctions {
                         "after the given initial delay, and subsequently with the given " +
                         "period." +
                         "\n\n" +
-                        "This scheduled task is not prone to clock shifts.              " +
+                        "This scheduled task is not prone to clock shifts. " +
                         "\n\n" +
-                        "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`,    " +
-                        "and `(done? f)` will work on the returned future.              " +
+                        "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`, " +
+                        "and `(done? f)` will work on the returned future." +
                         "\n\n" +
-                        "This function is built on the [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler) " +
+                        "This function is built on the " +
+                        "[CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler) " +
                         "project.")
                     .examples(
                         "(let [sync-period (. :java.time.Duration :ofMinutes 10)                        \n" +
