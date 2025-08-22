@@ -48,7 +48,9 @@ public class CronSchedulerFunctions {
                 "cron/schedule-at-round-times-in-day",
                 VncFunction
                     .meta()
-                    .arglists("(schedule-at-round-times-in-day fn sync-period schedule-period)")
+                    .arglists(
+                        "(schedule-at-round-times-in-day fn sync-period schedule-period)",
+                        "(schedule-at-round-times-in-day fn sync-period schedule-period skipping-to-latest)")
                     .doc(
                         "Submits a periodic task that becomes enabled at round clock times within " +
                         "a day, with the given period.                                            " +
@@ -68,13 +70,14 @@ public class CronSchedulerFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 3, 4);
 
                 sandboxFunctionCallValidation();
 
                 final VncFunction fn = Coerce.toVncFunction(args.first());
                 final Duration syncPeriod = Coerce.toVncJavaObject(args.second(), Duration.class);
                 final Duration schedulePeriod = Coerce.toVncJavaObject(args.third(), Duration.class);
+                final boolean skipToLatest = args.size() > 3 ? Coerce.toVncBoolean(args.fourth()).getValue() : false;
 
                 fn.sandboxFunctionCallValidation();
 
@@ -96,11 +99,15 @@ public class CronSchedulerFunctions {
                                                                        true))
                                                        .build();
 
-                final Future<?> future = scheduler.scheduleAtRoundTimesInDay(
+                final Future<?> future = skipToLatest
+                                            ? scheduler.scheduleAtRoundTimesInDaySkippingToLatest(
+                                                schedulePeriod,
+                                                ZoneId.systemDefault(),
+                                                task)
+                                            : scheduler.scheduleAtRoundTimesInDay(
                                                 schedulePeriod,
                                                 ZoneId.systemDefault(),
                                                 task);
-
                 return new VncJavaObject(future);
             }
 
