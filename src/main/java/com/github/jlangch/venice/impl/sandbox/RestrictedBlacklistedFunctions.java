@@ -364,7 +364,9 @@ public class RestrictedBlacklistedFunctions {
 
                 // Scheduler
                 "schedule-at-fixed-rate",
-                "schedule-delay"
+                "schedule-delay",
+                "cron/schedule-at-round-times-in-day",
+                "cron/schedule-at-fixed-rate"
         ));
     }
 

@@ -120,6 +120,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ProtocolsSection
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.RegexSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ReplSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SandboxSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SchedulerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ShellCoreSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SpecialFormsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemSection;
@@ -327,10 +328,14 @@ public class DocGenerator {
         concurrency.addSection(new DocSection("Promises", "concurrency.promises"));
         concurrency.addSection(new DocSection("Delay", "concurrency.delay"));
         concurrency.addSection(new DocSection("Agents", "concurrency.agents"));
-        concurrency.addSection(new DocSection("Scheduler", "concurrency.scheduler"));
         concurrency.addSection(new DocSection("Volatiles", "concurrency.volatiles"));
         concurrency.addSection(new DocSection("Parallel", "concurrency.parallel"));
         content.add(concurrency);
+
+        final DocSection scheduler = new DocSection("Scheduler", "scheduler");
+        scheduler.addSection(new DocSection("JDK Scheduler", "scheduler.standard"));
+        scheduler.addSection(new DocSection("Cron Scheduler", "scheduler.cron"));
+        content.add(scheduler);
 
         final DocSection threads = new DocSection("Threads", "concurrency.threads");
         threads.addSection(new DocSection("ThreadLocal", "concurrency.threadlocal"));
@@ -535,6 +540,7 @@ public class DocGenerator {
                 new LazySequencesSection(diBuilder).section(),
                 new ArraySection(diBuilder).section(),
                 new ConcurrencySection(diBuilder).section(),
+                new SchedulerSection(diBuilder).section(),
                 new SystemSection(diBuilder).section(),
                 new ShellCoreSection(diBuilder).section(),
                 new SystemVarSection(diBuilder).section(),

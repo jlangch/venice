@@ -130,14 +130,6 @@ public class ConcurrencySection implements ISectionBuilder {
         agents.addItem(diBuilder.getDocItem("agent-send-thread-pool-info"));
         agents.addItem(diBuilder.getDocItem("agent-send-off-thread-pool-info"));
 
-
-        final DocSection sched = new DocSection("Scheduler", "concurrency.scheduler");
-        all.addSection(sched);
-        sched.addItem(diBuilder.getDocItem("schedule-delay", false));
-        sched.addItem(diBuilder.getDocItem("schedule-at-fixed-rate", false));
-        sched.addItem(diBuilder.getDocItem("cron/schedule-at-round-times-in-day", false));
-        sched.addItem(diBuilder.getDocItem("cron/schedule-at-fixed-rate", false));
-
         final DocSection volatiles = new DocSection("Volatiles", "concurrency.volatiles");
         all.addSection(volatiles);
         volatiles.addItem(diBuilder.getDocItem("volatile"));

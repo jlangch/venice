@@ -65,12 +65,13 @@ public class CronSchedulerFunctions {
                         "\n\n" +
                         "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
                     .examples(
-                        "(let [sync-period     (. :java.time.Duration :ofMinutes 10)                  \n" +
-                        "      schedule-period (. :java.time.Duration :ofHours 4)                     \n" +
-                        "      f               (fn [] (println (time/local-date-time)))               \n" +
-                        "      s (cron/schedule-at-round-times-in-day f sync-period schedule-period)] \n" +
-                        "   (sleep 24 :hours)                                                         \n" +
-                        "   (cancel s))")
+                        "(let [sync-period     (. :java.time.Duration :ofMinutes 10)                                   \n" +
+                        "      schedule-period (. :java.time.Duration :ofHours 4)                                      \n" +
+                        "      task            (fn [] (println \"Task:\" (time/local-date-time)))                      \n" +
+                        "      sched           (cron/schedule-at-round-times-in-day task sync-period schedule-period)] \n" +
+                        "   (sleep 24 :hours)                                                                          \n" +
+                        "   (cancel sched))                                                                            ")
+                    .seeAlso("cron/schedule-at-fixed-rate")
                     .build()
         ) {
             @Override
@@ -141,11 +142,12 @@ public class CronSchedulerFunctions {
                         "\n\n" +
                         "See [CronScheduler](https://github.com/TimeAndSpaceIO/CronScheduler)")
                     .examples(
-                        "(let [sync-period     (. :java.time.Duration :ofMinutes 10)          \n" +
-                        "      f               (fn [] (println (time/local-date-time)))       \n" +
-                        "      s (cron/schedule-at-fixed-rate f sync-period 1 2 :seconds)]    \n" +
-                        "   (sleep 16 :seconds)                                               \n" +
-                        "   (cancel s))")
+                        "(let [sync-period (. :java.time.Duration :ofMinutes 10)                        \n" +
+                        "      task        (fn [] (println \"Task:\" (time/local-date-time)))           \n" +
+                        "      sched       (cron/schedule-at-fixed-rate task sync-period 1 2 :seconds)] \n" +
+                        "   (sleep 16 :seconds)                                                         \n" +
+                        "   (cancel sched))                                                             ")
+                    .seeAlso("cron/schedule-at-round-times-in-day")
                     .build()
         ) {
             @Override
