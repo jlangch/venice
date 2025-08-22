@@ -80,7 +80,7 @@ public class CronSchedulerFunctions {
                 final VncFunction fn = Coerce.toVncFunction(args.first());
                 final Duration syncPeriod = Coerce.toVncJavaObject(args.second(), Duration.class);
                 final Duration schedulePeriod = Coerce.toVncJavaObject(args.third(), Duration.class);
-                final boolean skipToLatest = args.size() > 3 ? Coerce.toVncBoolean(args.fourth()).getValue() : false;
+                final boolean skipToLatest = args.size() > 3 ? Coerce.toVncBoolean(args.fourth()).getValue() : true;
 
                 fn.sandboxFunctionCallValidation();
 
@@ -155,7 +155,7 @@ public class CronSchedulerFunctions {
                 final VncLong delay = Coerce.toVncLong(args.nth(2));
                 final VncLong period = Coerce.toVncLong(args.nth(3));
                 final VncKeyword unit = Coerce.toVncKeyword(args.nth(4));
-                final boolean skipToLatest = args.size() > 5 ? Coerce.toVncBoolean(args.nth(5)).getValue() : false;
+                final boolean skipToLatest = args.size() > 5 ? Coerce.toVncBoolean(args.nth(5)).getValue() : true;
 
                 fn.sandboxFunctionCallValidation();
 
