@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 
 - function `io/truncate-from-start-keep-lines` to truncate text files honoring
   lines
+- function `cron/schedule-at-round-times-in-day`. A scheduler that is not prone
+  to clock shifts
+
+
 
 ### Updated dependencies:
 
