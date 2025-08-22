@@ -48,8 +48,8 @@ public class SchedulerSection implements ISectionBuilder {
         final DocSection cron = new DocSection("Cron", "Schedulers not prone to clock shifts", "scheduler.cron");
         all.addSection(cron);
         cron.addItem(diBuilder.getDocItem("cron/schedule-at", false));
-        cron.addItem(diBuilder.getDocItem("cron/schedule-at-round-times-in-day", false));
         cron.addItem(diBuilder.getDocItem("cron/schedule-at-fixed-rate", false));
+        cron.addItem(diBuilder.getDocItem("cron/schedule-at-round-times-in-day", false));
 
         return section;
     }
