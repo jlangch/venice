@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
   to clock shifts
 - function `cron/schedule-at-fixed-rate`. A scheduler that is not prone
   to clock shifts
+- function `cron/schedule-at`. A scheduler that is not prone to clock shifts
 
 ### Updated dependencies:
 

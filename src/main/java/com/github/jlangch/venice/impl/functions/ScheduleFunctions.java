@@ -136,7 +136,10 @@ public class ScheduleFunctions {
                                                     new CallFrame[] {
                                                         new CallFrame(this, args),
                                                         new CallFrame(fn)});
-                final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
+                final Runnable taskWrapper = threadBridge.bridgeRunnable(
+                                                    () -> { try { fn.applyOf(); }
+                                                            catch(Exception ignore) { };
+                                                          } );
 
                 final ScheduledFuture<?> future = getScheduledExecutorService()
                                                     .scheduleAtFixedRate(

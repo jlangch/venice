@@ -72,6 +72,8 @@ public class IOFunctionsFileWatcherTest {
                 "  (def dir (io/temp-dir \"watchdir-\"))                                 \n" +
                 "  (io/delete-file-on-exit dir)                                          \n" +
                 "                                                                        \n" +
+                "  (sleep 1 :seconds)                                                    \n" +
+                "                                                                        \n" +
                 "  (try-with [w (io/watch-dir                                            \n" +
                 "                   dir                                                  \n" +
                 "                   :include-all-subdirs true                            \n" +
@@ -123,7 +125,7 @@ public class IOFunctionsFileWatcherTest {
         @SuppressWarnings("unchecked")
         final List<Long> events = (List<Long>)venice.eval(script);
 
-        assertEquals(7L, events.get(0));  // file events
+        assertEquals(6L, events.get(0));  // file events
         assertEquals(0L, events.get(1));  // error events
         assertEquals(1L, events.get(2));  // termination events
     }

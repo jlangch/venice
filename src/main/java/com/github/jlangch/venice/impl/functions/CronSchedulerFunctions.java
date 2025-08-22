@@ -162,7 +162,10 @@ public class CronSchedulerFunctions {
                                                     new CallFrame[] {
                                                         new CallFrame(this, args),
                                                         new CallFrame(fn)});
-                final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
+                final Runnable taskWrapper = threadBridge.bridgeRunnable(
+                                                    () -> { try { fn.applyOf(); }
+                                                            catch(Exception ignore) { };
+                                                          } );
 
                 final CronTask task = (millis) -> taskWrapper.run();
 
@@ -237,7 +240,10 @@ public class CronSchedulerFunctions {
                                                     new CallFrame[] {
                                                         new CallFrame(this, args),
                                                         new CallFrame(fn)});
-                final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
+                final Runnable taskWrapper = threadBridge.bridgeRunnable(
+                                                    () -> { try { fn.applyOf(); }
+                                                            catch(Exception ignore) { };
+                                                          } );
 
                 final CronTask task = (millis) -> taskWrapper.run();
 
@@ -278,8 +284,8 @@ public class CronSchedulerFunctions {
 
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-		            .add(schedule_at)
-		            .add(schedule_at_round_times_in_day)
+                    .add(schedule_at)
+                    .add(schedule_at_round_times_in_day)
                     .add(schedule_at_fixed_rate)
                     .toMap();
 }
