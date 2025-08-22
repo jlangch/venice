@@ -135,6 +135,7 @@ public class ConcurrencySection implements ISectionBuilder {
         all.addSection(sched);
         sched.addItem(diBuilder.getDocItem("schedule-delay", false));
         sched.addItem(diBuilder.getDocItem("schedule-at-fixed-rate", false));
+        sched.addItem(diBuilder.getDocItem("cron/schedule-at-round-times-in-day", false));
 
         final DocSection volatiles = new DocSection("Volatiles", "concurrency.volatiles");
         all.addSection(volatiles);
