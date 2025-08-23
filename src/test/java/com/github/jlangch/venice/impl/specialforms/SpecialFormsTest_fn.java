@@ -94,4 +94,17 @@ public class SpecialFormsTest_fn {
         assertEquals(3L, venice.eval(script));
     }
 
+    @Test
+    public void test_fn_multi_arity() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                             \n" +
+                "  (ns foo)                                      \n" +
+                "  (def f (fn ([] 0) ([x] x) ([x y] (+ x y))))   \n" +
+                "  (str [(foo/f ) (foo/f 4) (foo/f 4 6)]))       ";
+
+        assertEquals("[0 4 10]", venice.eval(script));
+    }
+
 }
