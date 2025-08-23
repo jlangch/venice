@@ -73,15 +73,15 @@
                "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
 
   (locking mutex
-    (let [file     (:file handler)
-          prev-day (time/minus (time/local-date) :days 1)
-          year     (time/year prev-day)
-          month    (time/month prev-day)
-          day      (time/day-of-month prev-day)
-          archive  (str/format "%s-%d-%02d-%02d" 
-                               (io/file-basename file) year month day)]
+    (let [file          (:file handler)
+          prev-day      (time/minus (time/local-date) :days 1)
+          archive-base  (str/format "%s-%d-%02d-%02d" 
+                                    (io/file-basename file) 
+                                    (time/year prev-day)
+                                    (time/month prev-day)
+                                    (time/day-of-month prev-day)) ]
       (when (io/exists-file? file)
-        (rotate-log-file file archive-dir archive)
+        (rotate-log-file file archive-dir archive-base)
         (logger/log handler :info :system "Rotated log file")))))
 
 
@@ -93,14 +93,14 @@
                "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
 
   (locking mutex
-    (let [file     (:file handler)
-          prev-day (time/minus (time/local-date) :days 1)
-          year     (time/year prev-day)
-          month    (time/month prev-day)
-          archive  (str/format "%s-%d-%02d" 
-                               (io/file-basename file) year month)]
+    (let [file          (:file handler)
+          prev-day      (time/minus (time/local-date) :days 1)
+          archive-base  (str/format "%s-%d-%02d" 
+                                    (io/file-basename file) 
+                                    (time/year prev-day) 
+                                    (time/month prev-day))]
       (when (io/exists-file? file)
-        (rotate-log-file file archive-dir archive)
+        (rotate-log-file file archive-dir archive-base)
         (logger/log handler :info :system "Rotated log file")))))
 
 
