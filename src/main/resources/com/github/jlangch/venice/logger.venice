@@ -39,34 +39,51 @@
         :type       :console
         :formatter  fmt
         :handler    (fn [level principal msg exc] 
-                      (println (fmt level principal msg exc))) })
+                      (println (fmt level principal msg exc)))
+        :rotate     (fn [] ) })
     nil))
 
 
-(defn file-logger [id file max-size formatter]
-  { :pre [(and (keyword? id) (not (= id :console)))
-          (or (string? file) (io/file? file))
-          (long? max-size) 
-          (or (nil? formatter) (fn? formatter))] }
-  (when (not (io/exists-dir? (io/file-parent file)))
-    (throw (ex :VncException 
-               "Failed to create file logger ~{id}. The files's parent directory does not exist!")))
-  (let [max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
-        max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1) ;; 10% hystersis
-        fmt           (coalesce formatter format-msg)
-        mutex         0]
-    (register-logger
-      { :id                 id
-        :type               :file
-        :file               (io/file file)
-        :max-size           max-size 
-        :max-size-hystersis max-size-hyst
-        :formatter          fmt
-        :handler            (fn [level principal msg exc] 
-                              (locking mutex
-                                (io/spit file (fmt level principal msg exc) :append true)
-                                (when (and (pos? max-size) (> (io/file-size file) max-size))
-                                  (io/truncate-from-start-keep-lines f max-size-hyst)))) })))
+(defn file-logger 
+  ([id file] 
+    (file-logger id file -1 nil :none nil))
+
+  ([id file max-size formatter] 
+    (file-logger id file max-size formatter :none nil))
+
+  ([id file max-size formatter rotate-mode rotate-dir]
+    { :pre [(and (keyword? id) (not (= id :console)))
+            (or (string? file) (io/file? file))
+            (long? max-size) 
+            (or (nil? formatter) (fn? formatter))
+            (keyword? rotate-node)
+            (some? (rotate-mode #{:none :daily :monthly}))
+            (or (nil? rotate-dir) (string? rotate-dir) (io/file? rotate-dir))] }
+    (when (not (io/exists-dir? (io/file-parent file)))
+      (throw (ex :VncException 
+                "Failed to create file logger ~{id}. The files's parent directory does not exist!")))
+    (let [max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
+          max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1) ;; 10% hystersis
+          fmt           (coalesce formatter format-msg)
+          mutex         0]
+      (register-logger
+        { :id                 id
+          :type               :file
+          :file               (io/file file)
+          :max-size           max-size 
+          :max-size-hystersis max-size-hyst
+          :formatter          fmt
+          :handler            (fn [level principal msg exc] 
+                                (locking mutex
+                                  (io/spit file (fmt level principal msg exc) :append true)
+                                  (when (and (pos? max-size) (> (io/file-size file) max-size))
+                                    (io/truncate-from-start-keep-lines f max-size-hyst)))) 
+          :rotate             (fn [] 
+                                (case rotate-mode
+                                  :none    nil
+                                  :daily   (locking mutex nil)
+                                  :monthly (locking mutex nil)
+                                  nil))}))))
 
 
 (defn logger [id]
