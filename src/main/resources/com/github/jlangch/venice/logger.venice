@@ -24,6 +24,64 @@
 (ns logger)
 
 
+(def- loggers (atom {}))
+
+
+(defn- register-logger [logger]
+  (swap! loggers assoc (:id logger) logger))
+
+
+(defn console-logger [formatter]
+  { :pre [(or (nil? formatter) (fn? formatter))] }
+  (let [fmt  (coalesce formatter format-msg)]
+    (register-logger
+      { :id         :console
+        :type       :console
+        :formatter  fmt
+        :handler    (fn [level principal msg exc] 
+                      (println (fmt level principal msg exc))) })
+    nil))
+
+
+(defn file-logger [id file max-size formatter]
+  { :pre [(and (keyword? id) (not (= id :console)))
+          (or (string? file) (io/file? file))
+          (long? max-size) 
+          (or (nil? formatter) (fn? formatter))] }
+  (when (not (io/exists-dir? (io/file-parent file)))
+    (throw (ex :VncException 
+               "Failed to create file logger ~{id}. The files's parent directory does not exist!")))
+  (let [max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
+        max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1) ;; 10% hystersis
+        fmt           (coalesce formatter format-msg)
+        mutex         0]
+    (register-logger
+      { :id                 id
+        :type               :file
+        :file               (io/file file)
+        :max-size           max-size 
+        :max-size-hystersis max-size-hyst
+        :formatter          fmt
+        :handler            (fn [level principal msg exc] 
+                              (locking mutex
+                                (io/spit file (fmt level principal msg exc) :append true)
+                                (when (and (pos? max-size) (> (io/file-size file) max-size))
+                                  (io/truncate-from-start-keep-lines f max-size-hyst)))) })))
+
+
+(defn logger [id]
+  { :pre [(keyword? id)] }
+  (let [l (id @loggers (:console @loggers))
+        h (:handler l)]
+    (fn ([level msg]               (h level nil msg nil))
+        ([level principal msg]     (h level principal msg nil))
+        ([level principal msg exc] (h level principal msg exc)))))
+
+
+;; -----------------------------------------------------------------------------
+;; Old, deprecated API
+;; -----------------------------------------------------------------------------
+
 (defn handler 
   ([file] 
     (handler file -1 nil))
@@ -53,12 +111,13 @@
 
   ([handler level principal msg exc]
     (locking mutex
-      (let [f   (:file handler)
-            m   (:max-size-hystersis handler -1)
-            fmt (:formatter handler format-msg)]
-        (io/spit f (fmt level principal msg exc) :append true)
-        (when (and (pos? m) (> (io/file-size f) m))
-          (io/truncate-from-start-keep-lines f m))))))
+      (let [file           (:file handler)
+            max-size       (:max-size handler -1)
+            max-size-hyst  (:max-size-hystersis handler -1)
+            fmt            (:formatter handler format-msg)]
+        (io/spit file (fmt level principal msg exc) :append true)
+        (when (and (pos? max-size) (> (io/file-size file) max-size))
+          (io/truncate-from-start-keep-lines file max-size-hyst))))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -114,7 +173,8 @@
       (if (io/exists-file? archive)
         (recur (inc x))
         (io/move-file file archive)))))
-  
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Formatter
@@ -138,6 +198,11 @@
 
 (defn format-timestamp [ts]
   (time/format ts "yyyy-MM-dd HH:mm:ss.SSS"))
+
+
+
+;; register a default console logger
+(register-logger (console-logger nil))
 
 
 (def- mutex nil)
