@@ -75,6 +75,8 @@
           :max-size           max-size 
           :max-size-hystersis max-size-hyst
           :formatter          fmt
+          :rotate-mode        rotate-mode
+          :rotate-dir         rotate-dir
           :handler            (fn [level principal msg exc] 
                                 { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
                                 (locking mutex
@@ -174,6 +176,12 @@
             true))))
     false))
 
+(defn requires-rotation? []
+  (->> (vals @loggers)
+       (map :rotate-mode)
+       (filter #(or (= % :daily) (= % :monthly)))
+       (not-empty?)))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -213,6 +221,8 @@
 ;; -----------------------------------------------------------------------------
 ;; Main
 ;; -----------------------------------------------------------------------------
+
+(def- auto-start-rotation-scheduler false)
 
 (def- loggers (atom {}))
 

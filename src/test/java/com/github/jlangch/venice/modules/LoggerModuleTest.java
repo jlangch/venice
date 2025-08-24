@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -153,6 +154,134 @@ public class LoggerModuleTest {
 
         assertEquals(1, lines.size());
         assertTrue(lines.get(0).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]system[|]Rotated log file"));
+    }
+
+    @Test
+    public void logRequiresRotationTest_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (logger/requires-rotation?))                                              ";
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void logRequiresRotationTest_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    (logger/console-logger nil)                                             \n" +
+                "                                                                            \n" +
+                "    (logger/requires-rotation?)                                             \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void logRequiresRotationTest_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    (logger/console-logger nil)                                             \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :none nil)  \n" +
+                "                                                                            \n" +
+                "    (logger/requires-rotation?)                                             \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void logRequiresRotationTest_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    (logger/console-logger nil)                                             \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :daily archive-dir)  \n" +
+                "                                                                            \n" +
+                "    (logger/requires-rotation?)                                             \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void logRequiresRotationTest_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    (logger/console-logger nil)                                             \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :monthly archive-dir)  \n" +
+                "                                                                            \n" +
+                "    (logger/requires-rotation?)                                             \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void logRequiresRotationTest_6() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    (logger/console-logger nil)                                             \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :none nil)  \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :daily archive-dir)    \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :monthly archive-dir)  \n" +
+                "                                                                            \n" +
+                "    (logger/requires-rotation?)                                             \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
+        assertTrue((Boolean)venice.eval(script));
     }
 
 }
