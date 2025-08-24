@@ -24,12 +24,10 @@
 (ns logger)
 
 
-(def- loggers (atom {}))
 
-
-(defn- register-logger [logger]
-  (swap! loggers assoc (:id logger) logger))
-
+;; -----------------------------------------------------------------------------
+;; Logger
+;; -----------------------------------------------------------------------------
 
 (defn console-logger [formatter]
   { :pre [(or (nil? formatter) (fn? formatter))] }
@@ -48,6 +46,9 @@
   ([id file] 
     (file-logger id file -1 nil :none nil))
 
+  ([id file max-size] 
+    (file-logger id file max-size nil :none nil))
+
   ([id file max-size formatter] 
     (file-logger id file max-size formatter :none nil))
 
@@ -56,7 +57,7 @@
             (or (string? file) (io/file? file))
             (long? max-size) 
             (or (nil? formatter) (fn? formatter))
-            (keyword? rotate-node)
+            (keyword? rotate-mode)
             (some? (rotate-mode #{:none :daily :monthly}))
             (or (nil? rotate-dir) (string? rotate-dir) (io/file? rotate-dir))] }
     (when (not (io/exists-dir? (io/file-parent file)))
@@ -77,12 +78,15 @@
                                 (locking mutex
                                   (io/spit file (fmt level principal msg exc) :append true)
                                   (when (and (pos? max-size) (> (io/file-size file) max-size))
-                                    (io/truncate-from-start-keep-lines f max-size-hyst)))) 
+                                    (io/truncate-from-start-keep-lines file max-size-hyst)))) 
           :rotate             (fn [] 
                                 (case rotate-mode
                                   :none    nil
-                                  :daily   (locking mutex nil)
-                                  :monthly (locking mutex nil)
+                                  :daily   (locking mutex 
+                                             (rotate-by-day id file rotate-dir))
+                                  :monthly (if (first-day-of-month?)
+                                             (locking mutex 
+                                               (rotate-by-month id file rotate-dir)))
                                   nil))}))))
 
 
@@ -95,101 +99,56 @@
         ([level principal msg exc] (h level principal msg exc)))))
 
 
-;; -----------------------------------------------------------------------------
-;; Old, deprecated API
-;; -----------------------------------------------------------------------------
+(defn rotate [id]
+  { :pre [(keyword? id)] }
+  (let [l (id @loggers (:console @loggers))
+        r (:rotate l)]
+    (r)))
 
-(defn handler 
-  ([file] 
-    (handler file -1 nil))
-
-  ([file max-size] 
-    (handler file max-size nil))
-
-  ([file max-size formatter] 
-    { :pre [(or (string? file) (io/file? file))
-            (long? max-size) 
-            (or (nil? formatter) (fn? formatter))] }
-    (let [max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
-          max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1) ;; 10% hystersis
-          formatter     (coalesce formatter format-msg)]
-      { :file               (io/file file)
-        :max-size           max-size 
-        :max-size-hystersis max-size-hyst
-        :formatter          formatter })))
-
-
-(defn log 
-  ([handler level msg]
-    (log handler level nil msg nil))
-
-  ([handler level principal msg]
-    (log handler level principal msg nil))
-
-  ([handler level principal msg exc]
-    (locking mutex
-      (let [file           (:file handler)
-            max-size       (:max-size handler -1)
-            max-size-hyst  (:max-size-hystersis handler -1)
-            fmt            (:formatter handler format-msg)]
-        (io/spit file (fmt level principal msg exc) :append true)
-        (when (and (pos? max-size) (> (io/file-size file) max-size))
-          (io/truncate-from-start-keep-lines file max-size-hyst))))))
 
 
 ;; -----------------------------------------------------------------------------
 ;; Log file rotation
 ;; -----------------------------------------------------------------------------
 
-(defn rotate-log-file-by-day [handler archive-dir]
-  { :pre [(map? handler) (some? archive-dir)] }
+(defn- rotate-by-day [id file archive-dir]
+  { :pre [(or (string? file) (io/file? file))] }
+  (let [prev-day      (time/minus (time/local-date) :days 1)
+        archive-base  (str/format "%s-%d-%02d-%02d" 
+                                  (io/file-basename file) 
+                                  (time/year prev-day)
+                                  (time/month prev-day)
+                                  (time/day-of-month prev-day))]
+    (rotate-log id file archive-dir archive-base)))
 
+
+(defn- rotate-by-month [id file archive-dir]
+  { :pre [(or (string? file) (io/file? file))] }
+  (let [prev-day      (time/minus (time/local-date) :days 1)
+        archive-base  (str/format "%s-%d-%02d" 
+                                  (io/file-basename file) 
+                                  (time/year prev-day) 
+                                  (time/month prev-day))]
+    (rotate-log id file archive-dir archive-base)))
+
+
+(defn- rotate-log [id file archive-dir archive-base]
   (when (not (io/exists-dir? archive-dir))
     (throw (ex :VncException 
                "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
-
-  (locking mutex
-    (let [file          (:file handler)
-          prev-day      (time/minus (time/local-date) :days 1)
-          archive-base  (str/format "%s-%d-%02d-%02d" 
-                                    (io/file-basename file) 
-                                    (time/year prev-day)
-                                    (time/month prev-day)
-                                    (time/day-of-month prev-day)) ]
-      (when (io/exists-file? file)
-        (rotate-log-file file archive-dir archive-base)
-        (logger/log handler :info :system "Rotated log file")))))
-
-
-(defn rotate-log-file-by-month [handler archive-dir]
-  { :pre [(map? handler) (some? archive-dir)] }
-
-  (when (not (io/exists-dir? archive-dir))
-    (throw (ex :VncException 
-               "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
-
-  (locking mutex
-    (let [file          (:file handler)
-          prev-day      (time/minus (time/local-date) :days 1)
-          archive-base  (str/format "%s-%d-%02d" 
-                                    (io/file-basename file) 
-                                    (time/year prev-day) 
-                                    (time/month prev-day))]
-      (when (io/exists-file? file)
-        (rotate-log-file file archive-dir archive-base)
-        (logger/log handler :info :system "Rotated log file")))))
-
-
-(defn- rotate-log-file [file archive-dir archive-base]
-  (loop [x 0]
-    (when (> x 50)   ;; set an upper limit
-      (throw (ex :VncException 
-                 "Log rotation failed. Too many target archive files!")))
-    (let [suffix  (if (zero? x) ".log" (str/format "-r%02d.log" x))
-          archive (io/file archive-dir (str archive-base suffix))]
-      (if (io/exists-file? archive)
-        (recur (inc x))
-        (io/move-file file archive)))))
+  (when (io/exists-file? file)
+    (loop [x 0]
+      (when (> x 50)   ;; set an upper limit
+        (throw (ex :VncException 
+                  "Log rotation failed. Too many target archive files!")))
+      (let [suffix  (if (zero? x) ".log" (str/format "-r%02d.log" x))
+            archive (io/file archive-dir (str archive-base suffix))
+            log     (logger id)]
+        (if (io/exists-file? archive)
+          (recur (inc x))
+          (do 
+            (io/move-file file archive)
+            (log :info :system "Rotated log file")))))))
 
 
 
@@ -218,8 +177,23 @@
 
 
 
+;; -----------------------------------------------------------------------------
+;; Util
+;; -----------------------------------------------------------------------------
+
+(defn first-day-of-month? [] 
+  (time/first-day-of-month? (time/local-date-time)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Main
+;; -----------------------------------------------------------------------------
+
+(def- loggers (atom {}))
+
+(defn- register-logger [logger]
+  (swap! loggers assoc (:id logger) logger))
+
 ;; register a default console logger
 (register-logger (console-logger nil))
-
-
-(def- mutex nil)

@@ -45,13 +45,12 @@ public class LoggerModuleTest {
                 "  (def dir (io/temp-dir \"logger-\"))                   \n" +
                 "                                                        \n" +
                 "  (try                                                  \n" +
-                "    (let [f       (io/file dir \"test.log\")            \n" +
-                "          handler (logger/handler f)                    \n" +
-                "          log     (partial logger/log handler)]         \n" +
+                "    (let [file    (io/file dir \"test.log\")            \n" +
+                "          _       (logger/file-logger :test file)       \n" +
+                "          log     (logger/logger :test)]                \n" +
                 "      (log :info :base \"test message 1\")              \n" +
                 "      (log :info :base \"test message 2\")              \n" +
-                "                                                        \n" +
-                "      (io/slurp-lines f))                               \n" +
+                "      (io/slurp-lines file))                            \n" +
                 "    (finally                                            \n" +
                 "      (io/delete-file-tree dir))))                      ";
 
@@ -74,9 +73,9 @@ public class LoggerModuleTest {
                 "  (def dir (io/temp-dir \"logger-\"))                       \n" +
                 "                                                            \n" +
                 "  (try                                                      \n" +
-                "    (let [f       (io/file dir \"test.log\")                \n" +
-                "          handler (logger/handler f 120)                    \n" +
-                "          log     (partial logger/log handler)]             \n" +
+                "    (let [file    (io/file dir \"test.log\")                \n" +
+                "          _       (logger/file-logger :test file 120)       \n" +
+                "          log     (logger/logger :test)]                    \n" +
                 "      (log :info :base \"test message 1\")                  \n" +
                 "      (log :info :base \"test message 2\")                  \n" +
                 "      (log :info :base \"test message 3\")                  \n" +
@@ -84,7 +83,7 @@ public class LoggerModuleTest {
                 "      (log :info :base \"test message 5\")                  \n" +
                 "      (log :info :base \"test message 6\")                  \n" +
                 "                                                            \n" +
-                "      (io/slurp-lines f))                                   \n" +
+                "      (io/slurp-lines file))                                \n" +
                 "    (finally                                                \n" +
                 "      (io/delete-file-tree dir))))                          ";
 
@@ -102,26 +101,26 @@ public class LoggerModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                           \n" +
-                "  (load-module :logger)                                       \n" +
-                "                                                              \n" +
-                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
-                "                                                              \n" +
-                "  (try                                                        \n" +
-                "    (def archive-dir (io/file dir \"archive\"))               \n" +
-                "    (io/mkdir archive-dir)                                    \n" +
-                "                                                              \n" +
-                "    (let [f       (io/file dir \"test.log\")                  \n" +
-                "          handler (logger/handler f)                          \n" +
-                "          log     (partial logger/log handler)]               \n" +
-                "      (log :info :base \"test message 1\")                    \n" +
-                "      (log :info :base \"test message 2\")                    \n" +
-                "                                                              \n" +
-                "      (logger/rotate-log-file-by-day handler archive-dir)     \n" +
-                "      (and (io/exists-file? f)                                \n" +
-                "           (== 2 (count (io/list-files dir)))))               \n" +
-                "    (finally                                                  \n" +
-                "      (io/delete-file-tree dir))))                            ";
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    (let [file    (io/file dir \"test.log\")                                \n" +
+                "          _       (logger/file-logger :test file -1 nil :daily archive-dir) \n" +
+                "          log     (logger/logger :test)]                                    \n" +
+                "      (log :info :base \"test message 1\")                                  \n" +
+                "      (log :info :base \"test message 2\")                                  \n" +
+                "                                                                            \n" +
+                "      (logger/rotate :test)                                                 \n" +
+                "      (and (io/exists-file? file)                                           \n" +
+                "           (== 2 (count (io/list-files dir)))))                             \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
         assertTrue((Boolean)venice.eval(script));
     }
 
@@ -131,84 +130,25 @@ public class LoggerModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                           \n" +
-                "  (load-module :logger)                                       \n" +
-                "                                                              \n" +
-                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
-                "                                                              \n" +
-                "  (try                                                        \n" +
-                "    (def archive-dir (io/file dir \"archive\"))               \n" +
-                "    (io/mkdir archive-dir)                                    \n" +
-                "                                                              \n" +
-                "    (let [f       (io/file dir \"test.log\")                  \n" +
-                "          handler (logger/handler f)                          \n" +
-                "          log     (partial logger/log handler)]               \n" +
-                "      (log :info :base \"test message 1\")                    \n" +
-                "      (log :info :base \"test message 2\")                    \n" +
-                "                                                              \n" +
-                "      (logger/rotate-log-file-by-day handler archive-dir)     \n" +
-                "      (io/slurp-lines f))                                     \n" +
-                "    (finally                                                  \n" +
-                "      (io/delete-file-tree dir))))                            ";
-        final List<String> lines = (List<String>)venice.eval(script);
-
-        assertEquals(1, lines.size());
-        assertTrue(lines.get(0).matches("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}[|]INFO[|]system[|]Rotated log file"));
-    }
-
-    @Test
-    public void logRotateMonthTest_1() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                           \n" +
-                "  (load-module :logger)                                       \n" +
-                "                                                              \n" +
-                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
-                "                                                              \n" +
-                "  (try                                                        \n" +
-                "    (def archive-dir (io/file dir \"archive\"))               \n" +
-                "    (io/mkdir archive-dir)                                    \n" +
-                "                                                              \n" +
-                "    (let [f       (io/file dir \"test.log\")                  \n" +
-                "          handler (logger/handler f)                          \n" +
-                "          log     (partial logger/log handler)]               \n" +
-                "      (log :info :base \"test message 1\")                    \n" +
-                "      (log :info :base \"test message 2\")                    \n" +
-                "                                                              \n" +
-                "      (logger/rotate-log-file-by-month handler archive-dir)   \n" +
-                "      (and (io/exists-file? f)                                \n" +
-                "           (== 2 (count (io/list-files dir)))))               \n" +
-                "    (finally                                                  \n" +
-                "      (io/delete-file-tree dir))))                            ";
-        assertTrue((Boolean)venice.eval(script));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void logRotateMonthTest_2() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                           \n" +
-                "  (load-module :logger)                                       \n" +
-                "                                                              \n" +
-                "  (def dir (io/temp-dir \"logger-\"))                         \n" +
-                "                                                              \n" +
-                "  (try                                                        \n" +
-                "    (def archive-dir (io/file dir \"archive\"))               \n" +
-                "    (io/mkdir archive-dir)                                    \n" +
-                "                                                              \n" +
-                "    (let [f       (io/file dir \"test.log\")                  \n" +
-                "          handler (logger/handler f)                          \n" +
-                "          log     (partial logger/log handler)]               \n" +
-                "      (log :info :base \"test message 1\")                    \n" +
-                "      (log :info :base \"test message 2\")                    \n" +
-                "                                                              \n" +
-                "      (logger/rotate-log-file-by-month handler archive-dir)   \n" +
-                "      (io/slurp-lines f))                                     \n" +
-                "    (finally                                                  \n" +
-                "      (io/delete-file-tree dir))))                            ";
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    (let [file    (io/file dir \"test.log\")                                \n" +
+                "          _       (logger/file-logger :test file -1 nil :daily archive-dir) \n" +
+                "          log     (logger/logger :test)]                                    \n" +
+                "      (log :info :base \"test message 1\")                                  \n" +
+                "      (log :info :base \"test message 2\")                                  \n" +
+                "                                                                            \n" +
+                "      (logger/rotate :test)                                                 \n" +
+                "      (io/slurp-lines file))                                                \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
         final List<String> lines = (List<String>)venice.eval(script);
 
         assertEquals(1, lines.size());
