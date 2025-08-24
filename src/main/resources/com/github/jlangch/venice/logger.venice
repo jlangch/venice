@@ -103,6 +103,20 @@
         ([level principal msg]     (h level principal msg nil))
         ([level principal msg exc] (h level principal msg exc)))))
 
+(defn- register-logger [logger]
+  (swap! loggers assoc (:id logger) logger)
+  (when (and auto-start-rotation-scheduler? (requires-rotation?))
+    (start-rotation-scheduler)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Log file rotation
+;; -----------------------------------------------------------------------------
+
+(defn rotation-scheduler-running? []
+  (deref rotation-scheduler-started?))
+
 
 (defn rotate [id]
   { :pre [(keyword? id)] }
@@ -116,7 +130,7 @@
 
 
 (defn start-rotation-scheduler []
-  (if (compare-and-set! rotation-scheduler false true)
+  (if (compare-and-set! rotation-scheduler-started? false true)
     (do
       (cron/schedule-at-round-times-in-day
           rotate-all
@@ -125,15 +139,6 @@
       true)
     false)) 
 
-
-(defn rotation-scheduler? []
-  (deref rotation-scheduler))
-
-
-
-;; -----------------------------------------------------------------------------
-;; Log file rotation
-;; -----------------------------------------------------------------------------
 
 (defn- rotate-by-day [id file archive-dir]
   { :pre [(or (string? file) (io/file? file))] }
@@ -222,14 +227,15 @@
 ;; Main
 ;; -----------------------------------------------------------------------------
 
-(def- auto-start-rotation-scheduler false)
+;; if true, start a rotation scheduler implicitely if a logger with file
+;; rotation has been registered
+(def- auto-start-rotation-scheduler? false)
 
+;; a map of all registered loggers (key: id, value: config map)
 (def- loggers (atom {}))
 
-(def- rotation-scheduler (atom false))
-
-(defn- register-logger [logger]
-  (swap! loggers assoc (:id logger) logger))
+;; if true the rotation scheduler has been started 
+(def- rotation-scheduler-started? (atom false))
 
 ;; register a default console logger
 (register-logger (console-logger nil))
