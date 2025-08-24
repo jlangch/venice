@@ -110,6 +110,21 @@
   (doseq [r (map :rotate (vals @loggers))] (try (r) (catch :Exception ex))))
 
 
+(defn start-rotation-scheduler []
+  (if (compare-and-set! rotation-scheduler false true)
+    (do
+      (cron/schedule-at-round-times-in-day
+          rotate-all
+          (. :java.time.Duration :ofMinutes 10)    ;; sync period
+          (. :java.time.Duration :ofHours 24))     ;; schedule period
+      true)
+    false)) 
+
+
+(defn rotation-scheduler? []
+  (deref rotation-scheduler))
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Log file rotation
@@ -195,6 +210,8 @@
 ;; -----------------------------------------------------------------------------
 
 (def- loggers (atom {}))
+
+(def- rotation-scheduler (atom false))
 
 (defn- register-logger [logger]
   (swap! loggers assoc (:id logger) logger))
