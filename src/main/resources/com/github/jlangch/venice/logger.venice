@@ -39,7 +39,7 @@
         :handler    (fn [level principal msg exc] 
                       { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
                       (println (fmt level principal msg exc)))
-        :rotate     (fn [] ) })
+        :rotate     (fn [] false) })
     nil))
 
 
@@ -88,7 +88,8 @@
                                              (rotate-by-day id file rotate-dir))
                                   :monthly (if (first-day-of-month?)
                                              (locking mutex 
-                                               (rotate-by-month id file rotate-dir)))
+                                               (rotate-by-month id file rotate-dir))
+                                             false)
                                   nil))}))))
 
 
@@ -157,7 +158,7 @@
   (when (not (io/exists-dir? archive-dir))
     (throw (ex :VncException 
                "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
-  (when (io/exists-file? file)
+  (if (io/exists-file? file)
     (loop [x 0]
       (when (> x 50)   ;; set an upper limit
         (throw (ex :VncException 
@@ -169,7 +170,9 @@
           (recur (inc x))
           (do 
             (io/move-file file archive)
-            (log :info :system "Rotated log file")))))))
+            (log :info :system "Rotated log file")
+            true))))
+    false))
 
 
 

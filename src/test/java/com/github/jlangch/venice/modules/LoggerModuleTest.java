@@ -116,8 +116,8 @@ public class LoggerModuleTest {
                 "      (log :info :base \"test message 1\")                                  \n" +
                 "      (log :info :base \"test message 2\")                                  \n" +
                 "                                                                            \n" +
-                "      (logger/rotate :test)                                                 \n" +
-                "      (and (io/exists-file? file)                                           \n" +
+                "      (and (logger/rotate :test)                                            \n" +
+                "           (io/exists-file? file)                                           \n" +
                 "           (== 2 (count (io/list-files dir)))))                             \n" +
                 "    (finally                                                                \n" +
                 "      (io/delete-file-tree dir))))                                          ";
