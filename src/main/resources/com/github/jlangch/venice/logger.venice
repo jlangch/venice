@@ -155,7 +155,6 @@
 
 
 (defn- rotate-log-by-day [id file archive-dir]
-  { :pre [(or (string? file) (io/file? file))] }
   (try
     (let [prev-day      (time/minus (time/local-date) :days 1)
           archive-base  (str/format "%s-%d-%02d-%02d" 
@@ -170,7 +169,6 @@
 
 
 (defn- rotate-log-by-month [id file archive-dir]
-  { :pre [(or (string? file) (io/file? file))] }
   (try
     (let [prev-day      (time/minus (time/local-date) :days 1)
           archive-base  (str/format "%s-%d-%02d" 
