@@ -41,7 +41,7 @@
           :formatter  fmt
           :handler    (fn [level principal msg exc] 
                         { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-                        (println (fmt level principal msg exc)))
+                        (spit-to-stdout (format fmt level principal msg exc)))
           :rotate     (fn [] false) } )
       nil)))
 
@@ -83,19 +83,25 @@
           :handler            (fn [level principal msg exc] 
                                 { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
                                 (locking mutex
-                                  (io/spit file (fmt level principal msg exc) :append true)
+                                  (spit-to-file file (format fmt level principal msg exc))
                                   (when (and (pos? max-size) (> (io/file-size file) max-size))
-                                    (io/truncate-from-start-keep-lines file max-size-hyst)))) 
+                                    (try
+                                      (io/truncate-from-start-keep-lines file max-size-hyst)
+                                      (catch :Exception ex 
+                                        (spit-to-file file (format fmt :error :system 
+                                                                   "Failed to truncate log file" 
+                                                                   nil)))))))
           :rotate             (fn [] 
-                                (case rotate-mode
-                                  :none    nil
-                                  :daily   (locking mutex (rotate-log-by-day id file rotate-dir))
-                                  :monthly (if (first-day-of-month?)
-                                             (locking mutex (rotate-log-by-month id file rotate-dir))
-                                             (do
-                                               (handler :debug :system "No log file rotation today" nil)
-                                               false))
-                                  nil)) } )
+                                (let [log (logger id)]
+                                  (case rotate-mode
+                                    :none    nil
+                                    :daily   (locking mutex (rotate-log-by-day id file rotate-dir))
+                                    :monthly (if (first-day-of-month?)
+                                              (locking mutex (rotate-log-by-month id file rotate-dir))
+                                              (do
+                                                (log :debug :system "No log file rotation today")
+                                                false))
+                                    nil))) } )
       nil)))
 
 
@@ -206,6 +212,12 @@
 ;; Formatter
 ;; -----------------------------------------------------------------------------
 
+(defn format [formatter level principal msg exc]
+  (try
+    (formatter level principal msg exc)
+    (catch :Exception e "[Failed to format the log message]")))
+
+
 (defn format-msg [level principal msg exc]
   (str/format "%s|%s|%s|%s%n"
               (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
@@ -233,6 +245,11 @@
 (defn first-day-of-month? [] 
   (time/first-day-of-month? (time/local-date-time)))
 
+(defn spit-to-stdout [text]
+  (println file text))
+
+(defn spit-to-file [file text]
+  (io/spit file text :append true))
 
 
 ;; -----------------------------------------------------------------------------
