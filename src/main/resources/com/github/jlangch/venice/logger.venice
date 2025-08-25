@@ -54,8 +54,8 @@
 
             ;; log some messages
             (log-console :info "test message")
-            (log-console :info  "kermit" "test message")
-            (log-console :info  "kermit" "test message" (ex :VncException "test exception")))
+            (log-console :info "kermit" "test message")
+            (log-console :info "kermit" "test message" (ex :VncException "test exception")))
           """
           """
           (do
@@ -67,7 +67,7 @@
                           (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
                           (logger/format-level level)
                           (if (keyword? principal) (name principal) (str principal))
-                          (if (nil? exc) msg "~{msg}~(str/platform-lf)~(logger/format-ex exc)")))
+                          (if (nil? exc) msg (str msg (str/platform-lf) (logger/format-ex exc)))))
 
             ;; create the console logger with a custom formatter
             (logger/console-logger custom-msg-formatter)
@@ -77,8 +77,8 @@
 
             ;; log some messages
             (log-console :info "test message")
-            (log-console :info  "kermit" "test message")
-            (log-console :info  "kermit" "test message" (ex :VncException "test exception")))
+            (log-console :info "kermit" "test message")
+            (log-console :info "kermit" "test message" (ex :VncException "test exception")))
           """)
      :see-also '(
           "logger/logger"
@@ -141,8 +141,8 @@
 
             ;; log some messages
             (log-venice :info "test message")
-            (log-venice :info  "kermit" "test message")
-            (log-venice :info  "kermit" "test message" (ex :VncException "test exception"))
+            (log-venice :info "kermit" "test message")
+            (log-venice :info "kermit" "test message" (ex :VncException "test exception"))
             (log-database :info "test message"))
           """
           """
@@ -160,8 +160,8 @@
 
             ;; log some messages
             (log :info "test message")
-            (log :info  "kermit" "test message")
-            (log :info  "kermit" "test message" (ex :VncException "test exception")))
+            (log :info "kermit" "test message")
+            (log :info "kermit" "test message" (ex :VncException "test exception")))
           """
           """
           (do
@@ -173,7 +173,7 @@
                           (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
                           (logger/format-level level)
                           (if (keyword? principal) (name principal) (str principal))
-                          (if (nil? exc) msg "~{msg}~(str/platform-lf)~(logger/format-ex exc)")))
+                          (if (nil? exc) msg (str msg (str/platform-lf) (logger/format-ex exc)))))
 
             ;; create the file logger with a custom formatter
             (logger/file-logger :venice "/data/logs/venice.log" nil custom-msg-formatter)
@@ -183,8 +183,8 @@
 
             ;; log some messages
             (log :info "test message")
-            (log :info  "kermit" "test message")
-            (log :info  "kermit" "test message" (ex :VncException "test exception")))
+            (log :info "kermit" "test message")
+            (log :info "kermit" "test message" (ex :VncException "test exception")))
           """)
      :see-also '(
           "logger/logger"

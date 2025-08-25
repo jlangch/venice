@@ -72,6 +72,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJdbcPostgr
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKeystoresSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleLoggerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMimetypesSection;
@@ -152,24 +153,24 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",           "xml",                 "crypt",            "gradle",
-                        "trace",         "ansi",                "maven",            "kira",
-                        "java",          "semver",              "excel",            "hexdump",
-                        "shell",         "geoip",               "benchmark",        "component",
-                        "config",        "parsifal",            "grep",             "test",
-                        "fonts",         "jsonl",               "timing",           "stopwatch",
+                        "app",           "xml",                 "crypt",              "gradle",
+                        "trace",         "ansi",                "maven",              "kira",
+                        "java",          "semver",              "excel",              "hexdump",
+                        "shell",         "geoip",               "benchmark",          "component",
+                        "config",        "parsifal",            "grep",               "test",
+                        "fonts",         "jsonl",               "timing",             "stopwatch",
                         "zipvault",      "gradlew",             "matrix",
-                        "docker",        "cargo",               "cargo-arangodb",   "cargo-qdrant",
+                        "docker",        "cargo",               "cargo-arangodb",     "cargo-qdrant",
                         "cargo-postgresql",
-                        "installer",     "mimetypes",           "multipart",        "images",
-                        "tomcat",        "jetty",               "http-client",       "http-client-j8",
-                        "openai",        "jtokkit",             "keystores",
+                        "installer",     "mimetypes",           "multipart",          "images",
+                        "tomcat",        "jetty",               "http-client",        "http-client-j8",
+                        "openai",        "jtokkit",             "keystores",          "logger",
                         "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
-                        "ring",          "ring-multipart",      "ring-session",     "ring-mw",
+                        "ring",          "ring-multipart",      "ring-session",       "ring-mw",
                         "ring-util",     "server-side-events",  "pretty-print",
                         "qrcode",        "qrref",               "qrbill",
                         "ascii-canvas",  "ascii-charts",        "ascii-table",
-                        "aviron",        "aviron-queue",        "aviron-cycler",    "aviron-limiter"));
+                        "aviron",        "aviron-queue",        "aviron-cycler",      "aviron-limiter"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -406,6 +407,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
+        extmod.addSection(new DocSection("Logger", "modules.logger"));
         extmod.addSection(new DocSection("Aviron", "modules.aviron"));
         extmod.addSection(new DocSection("Aviron\u00A0Limiter", "modules.aviron-limiter"));
         extmod.addSection(new DocSection("Aviron\u00A0Queue", "modules.aviron-queue"));
@@ -583,7 +585,8 @@ public class DocGenerator {
                 new ModuleJdbcPostgreSQLSection(diBuilder).section(),
                 new ModuleChinookPostgreSQLSection(diBuilder).section(),
                 new ModuleAvironSection(diBuilder).section(),
-                new ModuleAvironLimiterSection(diBuilder).section()
+                new ModuleAvironLimiterSection(diBuilder).section(),
+                new ModuleLoggerSection(diBuilder).section()
                 // new ModuleHttpClientSection(diBuilder).section(),
          );
     }
