@@ -364,7 +364,7 @@
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
-            (def log(logger/logger :venice))
+            (def log (logger/logger :venice))
 
             (log :info "test message 1")
             (log :info "test message 2"))
@@ -396,7 +396,7 @@
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
-            (def log(logger/logger :venice))
+            (def log (logger/logger :venice))
 
             (log :info "test message 1")
             (log :info "test message 2"))
@@ -434,7 +434,7 @@
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
-            (def log(logger/logger :venice))
+            (def log (logger/logger :venice))
 
             (log :info "test message 1")
             (log :info "test message 2")
@@ -470,7 +470,7 @@
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
-            (def log(logger/logger :venice))
+            (def log (logger/logger :venice))
 
             (log :info "test message 1")
             (log :info "test message 2")
@@ -503,7 +503,7 @@
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
-            (def log(logger/logger :venice))
+            (def log (logger/logger :venice))
 
             (log :info "test message 1")
             (log :info "test message 2")
