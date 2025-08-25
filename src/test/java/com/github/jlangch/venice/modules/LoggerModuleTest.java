@@ -111,6 +111,9 @@ public class LoggerModuleTest {
                 "    (def archive-dir (io/file dir \"archive\"))                             \n" +
                 "    (io/mkdir archive-dir)                                                  \n" +
                 "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
+                "                                                                            \n" +
                 "    (let [file    (io/file dir \"test.log\")                                \n" +
                 "          _       (logger/file-logger :test file -1 nil :daily archive-dir) \n" +
                 "          log     (logger/logger :test)]                                    \n" +
@@ -139,6 +142,9 @@ public class LoggerModuleTest {
                 "  (try                                                                      \n" +
                 "    (def archive-dir (io/file dir \"archive\"))                             \n" +
                 "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (let [file    (io/file dir \"test.log\")                                \n" +
                 "          _       (logger/file-logger :test file -1 nil :daily archive-dir) \n" +
@@ -182,6 +188,9 @@ public class LoggerModuleTest {
                 "    (def archive-dir (io/file dir \"archive\"))                             \n" +
                 "    (io/mkdir archive-dir)                                                  \n" +
                 "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
+                "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
                 "                                                                            \n" +
                 "    (logger/requires-rotation?)                                             \n" +
@@ -203,6 +212,9 @@ public class LoggerModuleTest {
                 "  (try                                                                      \n" +
                 "    (def archive-dir (io/file dir \"archive\"))                             \n" +
                 "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
                 "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :none nil)  \n" +
@@ -227,6 +239,9 @@ public class LoggerModuleTest {
                 "    (def archive-dir (io/file dir \"archive\"))                             \n" +
                 "    (io/mkdir archive-dir)                                                  \n" +
                 "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
+                "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
                 "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :daily archive-dir)  \n" +
                 "                                                                            \n" +
@@ -250,6 +265,9 @@ public class LoggerModuleTest {
                 "    (def archive-dir (io/file dir \"archive\"))                             \n" +
                 "    (io/mkdir archive-dir)                                                  \n" +
                 "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
+                "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
                 "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :monthly archive-dir)  \n" +
                 "                                                                            \n" +
@@ -272,6 +290,9 @@ public class LoggerModuleTest {
                 "  (try                                                                      \n" +
                 "    (def archive-dir (io/file dir \"archive\"))                             \n" +
                 "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
                 "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :none nil)  \n" +
