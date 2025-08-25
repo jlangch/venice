@@ -179,11 +179,16 @@ public class PrimitivesSection implements ISectionBuilder {
         strip.addItem(diBuilder.getDocItem("str/strip-indent"));
         strip.addItem(diBuilder.getDocItem("str/strip-margin"));
 
+        final DocSection linefeed = new DocSection("Linefeed", "primitives.strings.linefeed");
+        strings.addSection(linefeed);
+        linefeed.addItem(diBuilder.getDocItem("str/platform-lf", false));
+        linefeed.addItem(diBuilder.getDocItem("str/cr-lf", false));
+        linefeed.addItem(diBuilder.getDocItem("str/crlf-to-lf", false));
+
         final DocSection conv = new DocSection("Conversion", "primitives.strings.conversion");
         strings.addSection(conv);
         conv.addItem(diBuilder.getDocItem("str/lower-case"));
         conv.addItem(diBuilder.getDocItem("str/upper-case"));
-        conv.addItem(diBuilder.getDocItem("str/cr-lf", false));
 
         final DocSection regex = new DocSection("Regex", "primitives.strings.regex");
         strings.addSection(regex);

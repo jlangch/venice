@@ -1448,6 +1448,27 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction str_platform_lf =
+        new VncFunction(
+                "str/platform-lf",
+                VncFunction
+                    .meta()
+                    .arglists("(str/platform-lf)")
+                    .doc("Returns the platform linefeed: LF or CR-LF.")
+                    .examples(
+                        "(str/platform-lf")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                return new VncString(System.lineSeparator());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction str_cr_lf =
         new VncFunction(
                 "str/cr-lf",
@@ -3087,7 +3108,9 @@ public class StringFunctions {
                     .add(str_split_at)
                     .add(str_split_lines)
                     .add(str_split_columns)
+                    .add(str_platform_lf)
                     .add(str_cr_lf)
+                    .add(str_crlf_to_lf)
                     .add(str_format)
                     .add(str_rest)
                     .add(str_nrest)

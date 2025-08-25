@@ -24,12 +24,70 @@
 (ns logger)
 
 
+(def linefeed (str/platform-lf))
+
 
 ;; -----------------------------------------------------------------------------
 ;; Logger
 ;; -----------------------------------------------------------------------------
 
-(defn console-logger 
+(defn 
+  ^{ :arglists '(
+          "(console-logger)",
+          "(console-logger formatter)")
+     :doc """
+          Create a console logger with either the default log message formatter
+          or a custom formatter.
+
+          The console logger has the fix id `:console`
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            ;; create the console logger
+            (logger/console-logger)
+
+            ;; get the :console logger
+            (def log-console (logger/logger :console))
+
+            ;; log some messages
+            (log-console :info "test message")
+            (log-console :info  "kermit" "test message")
+            (log-console :info  "kermit" "test message" (ex :VncException "test exception")))
+          """
+          """
+          (do
+            (load-module :logger)
+
+            ;; custom formatter
+            (defn custom-msg-formatter [level principal msg exc]
+              (str/format "%s [%s] [%s] %s%n"
+                          (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
+                          (logger/format-level level)
+                          (if (keyword? principal) (name principal) (str principal))
+                          (if (nil? exc) msg "~{msg}~(str/platform-lf)~(logger/format-ex exc)")))
+
+            ;; create the console logger with a custom formatter
+            (logger/console-logger custom-msg-formatter)
+
+            ;; get the :console logger
+            (def log-console (logger/logger :console))
+
+            ;; log some messages
+            (log-console :info "test message")
+            (log-console :info  "kermit" "test message")
+            (log-console :info  "kermit" "test message" (ex :VncException "test exception")))
+          """)
+     :see-also '(
+          "logger/logger"
+          "logger/file-logger"
+          "logger/format-level"
+          "logger/format-ex") }
+
+  console-logger 
+
   ([] (console-logger nil))
 
   ([formatter]
@@ -46,7 +104,96 @@
       nil)))
 
 
-(defn file-logger 
+(defn 
+  ^{ :arglists '(
+          "(file-logger id file)"
+          "(file-logger id file max-size)"
+          "(file-logger id file max-size formatter)"
+          "(file-logger id file max-size formatter rotate-mode rotate-dir)")
+     :doc """
+          Create a file logger.
+
+          Arguments:
+
+          | id          | The mandatory logger ID. A keyword like :venice |
+          | file        | The mandatory file to log to. The parent dir must exist |
+          | max-size    | The max size of the file in bytes. If the size is \
+                          reached the file will be auto truncated |
+          | formatter   | A custom formatter|
+          | rotate-mode | A file rotation mode {:none, :daily, :montly}. \
+                          Defaults to :none|
+          | rotate-dir  | The file rotation directory. The directory must be \
+                          specified and must exist if the rotate mode is :daily \
+                          or :monthly |
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            ;; create the file loggers
+            (logger/file-logger :venice "/data/logs/venice.log")
+            (logger/file-logger :database "/data/logs/database.log" 20_000_000)
+
+            ;; get the loggers
+            (def log-venice (logger/logger :venice))
+            (def log-database (logger/logger :database))
+
+            ;; log some messages
+            (log-venice :info "test message")
+            (log-venice :info  "kermit" "test message")
+            (log-venice :info  "kermit" "test message" (ex :VncException "test exception"))
+            (log-database :info "test message"))
+          """
+          """
+          (do
+            (load-module :logger)
+
+            ;; create the rotating file logger
+            (logger/file-logger :venice "/data/logs/venice.log" 
+                                20_000_000 
+                                nil
+                                :daily "/data/logs/archive")
+
+            ;; get the logger
+            (def log (logger/logger :venice))
+
+            ;; log some messages
+            (log :info "test message")
+            (log :info  "kermit" "test message")
+            (log :info  "kermit" "test message" (ex :VncException "test exception")))
+          """
+          """
+          (do
+            (load-module :logger)
+
+            ;; custom formatter
+            (defn custom-msg-formatter [level principal msg exc]
+              (str/format "%s [%s] [%s] %s%n"
+                          (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
+                          (logger/format-level level)
+                          (if (keyword? principal) (name principal) (str principal))
+                          (if (nil? exc) msg "~{msg}~(str/platform-lf)~(logger/format-ex exc)")))
+
+            ;; create the file logger with a custom formatter
+            (logger/file-logger :venice "/data/logs/venice.log" nil custom-msg-formatter)
+
+            ;; get the :venice logger
+            (def log (logger/logger :venice))
+
+            ;; log some messages
+            (log :info "test message")
+            (log :info  "kermit" "test message")
+            (log :info  "kermit" "test message" (ex :VncException "test exception")))
+          """)
+     :see-also '(
+          "logger/logger"
+          "logger/console-logger"
+          "logger/format-level"
+          "logger/format-ex") }
+
+  file-logger 
+  
   ([id file] 
     (file-logger id file -1 nil :none nil))
 
@@ -99,13 +246,43 @@
                                     :monthly (if (first-day-of-month?)
                                               (locking mutex (rotate-log-by-month id file rotate-dir))
                                               (do
-                                                (log :debug :system "No log file rotation today")
+                                                (log :debug :system "No monthly log file rotation today")
                                                 false))
                                     nil))) } )
       nil)))
 
 
-(defn logger [id]
+(defn 
+  ^{ :arglists '(
+          "(logger id)")
+     :doc """
+          Returns the logger withe the specified ID.
+
+          If there is no logger with the id returns the default :console logger. 
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            ;; create a file logger
+            (logger/file-logger :venice "/data/logs/venice.log")
+
+            ;; get the logger
+            (def log (logger/logger :venice))
+
+            ;; log some messages
+            (log :info "test message 1")
+            (log :info "test message 2"))
+          """)
+     :see-also '(
+          "logger/console-logger"
+          "logger/file-logger"
+          "logger/format-level"
+          "logger/format-ex") }
+
+  logger [id]
+
   { :pre [(keyword? id)] }
   (let [l (id @loggers (:console @loggers))
         h (:handler l)]
@@ -124,26 +301,102 @@
 ;; Log file rotation
 ;; -----------------------------------------------------------------------------
 
-(defn rotation-scheduler-running? []
+(defn 
+  ^{ :arglists '(
+          "(rotation-scheduler-running?)")
+     :doc """
+          Returns `true` if a rotation scheduler is running else `false`. 
+
+          The scheduler is started when the first file logger that has file
+          rotation enabled is created!
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (logger/enable-auto-start-rotation-scheduler true)
+
+            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+
+            (logger/rotation-scheduler-running?))
+          """)
+     :see-also '(
+          "logger/enable-auto-start-rotation-scheduler"
+          "logger/start-rotation-scheduler"
+          "logger/rotate"
+          "logger/rotate-all"
+          "logger/requires-rotation?") }
+
+  rotation-scheduler-running? []
+
   (deref rotation-scheduler-started?))
 
 
-(defn rotate [id]
-  { :pre [(keyword? id)] }
-  (let [l (id @loggers (:console @loggers))
-        r (:rotate l)]
-    (r)))
+(defn 
+  ^{ :arglists '(
+          "(enable-auto-start-rotation-scheduler activate)")
+     :doc """
+          Enables or disables the auto start of the rotation scheduler. Default
+          is deactivated.
 
+          Must be called before any file loggers are created.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
 
-(defn rotate-all []
-  (doseq [r (map :rotate (vals @loggers))] (try (r) (catch :Exception ex))))
+            (logger/enable-auto-start-rotation-scheduler true)
 
+            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
-(defn enable-auto-start-rotation-scheduler [activate]
+            (def log(logger/logger :venice))
+
+            (log :info "test message 1")
+            (log :info "test message 2"))
+          """)
+     :see-also '(
+          "logger/rotation-scheduler-running?"
+          "logger/start-rotation-scheduler"
+          "logger/rotate"
+          "logger/rotate-all"
+          "logger/requires-rotation?") }
+
+  enable-auto-start-rotation-scheduler [activate]
+
   (reset! auto-start-rotation-scheduler? activate))
 
 
-(defn start-rotation-scheduler []
+(defn 
+  ^{ :arglists '(
+          "(start-rotation-scheduler)")
+     :doc """
+          Manually start the rotation scheduler. 
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (logger/start-rotation-scheduler)
+
+            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+
+            (def log(logger/logger :venice))
+
+            (log :info "test message 1")
+            (log :info "test message 2"))
+          """)
+     :see-also '(
+          "logger/rotation-scheduler-running?"
+          "logger/enable-auto-start-rotation-scheduler"
+          "logger/rotate"
+          "logger/rotate-all"
+          "logger/requires-rotation?") }
+  
+  start-rotation-scheduler []
+
   (if (compare-and-set! rotation-scheduler-started? false true)
     (do
       (cron/schedule-at-round-times-in-day
@@ -154,7 +407,105 @@
     false)) 
 
 
-(defn requires-rotation? []
+(defn 
+  ^{ :arglists '(
+          "(rotate id)")
+     :doc """
+          Manually rotates the log file of the logger with the ID 'id' if the 
+          logger has file rotation enabled.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+
+            (def log(logger/logger :venice))
+
+            (log :info "test message 1")
+            (log :info "test message 2")
+
+            (logger/rotate :venice))
+          """)
+     :see-also '(
+          "logger/rotation-scheduler-running?"
+          "logger/enable-auto-start-rotation-scheduler"
+          "logger/start-rotation-scheduler"
+          "logger/rotate-all"
+          "logger/requires-rotation?") }
+
+  rotate [id]
+
+  { :pre [(keyword? id)] }
+  (let [l (id @loggers (:console @loggers))
+        r (:rotate l)]
+    (r)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(rotate-all)")
+     :doc """
+          Manually rotates the log files of all loggers that have file rotation 
+          enabled.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+
+            (def log(logger/logger :venice))
+
+            (log :info "test message 1")
+            (log :info "test message 2")
+
+            (logger/rotate-all))
+          """)
+     :see-also '(
+          "logger/rotation-scheduler-running?"
+          "logger/enable-auto-start-rotation-scheduler"
+          "logger/start-rotation-scheduler"
+          "logger/rotate"
+          "logger/requires-rotation?") }
+
+  rotate-all []
+
+  (doseq [r (map :rotate (vals @loggers))] (try (r) (catch :Exception ex))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(requires-rotation?)")
+     :doc """
+          Returns `true` if there is at least on logger that has log file 
+          rotation enabled. 
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+
+            (def log(logger/logger :venice))
+
+            (log :info "test message 1")
+            (log :info "test message 2")
+
+            (logger/requires-rotation?))
+          """)
+     :see-also '(
+          "logger/rotation-scheduler-running?"
+          "logger/enable-auto-start-rotation-scheduler"
+          "logger/start-rotation-scheduler"
+          "logger/rotate"
+          "logger/rotate-all") }
+
+  requires-rotation? []
+
   (->> (vals @loggers)
        (map :rotate-mode)
        (filter #(or (= % :daily) (= % :monthly)))
@@ -223,18 +574,56 @@
               (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
               (format-level level)
               (if (keyword? principal) (name principal) (str principal))
-              (if (nil? exc) msg "~{msg}\n~(format-ex exc)")))
+              (if (nil? exc) msg "~{msg}~{linefeed}~(format-ex exc)")))
 
 
-(defn format-level [level]
-  (str/upper-case (name level)))
+(defn 
+  ^{ :arglists '(
+          "(format-level level)")
+     :doc """
+          Formats a log level. level mus be a keyword!
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (logger/format-level :info)
+            (logger/format-level :warn))
+          """) }
+
+  format-level [level]
+
+  (if (keyword? level)
+    (str/upper-case (name level))
+    "???"))
 
 
-(defn format-ex [e]
+(defn 
+  ^{ :arglists '(
+          "(format-ex e)")
+     :doc """
+          Formats an exception. The exception my be a Venice exception or a
+          Java exception. 
+          
+          Returns a Venice stack trace in the former case and a Java stack trace 
+          in the ladder.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (logger/format-ex (ex :VncException "test")))
+          """) }
+
+  format-ex [e]
+
   (cond
     (nil? e)       ""
     (ex-venice? e) (ex-venice-stacktrace e)
-    :else          (ex-java-stacktrace e)))
+    (ex? e)        (ex-java-stacktrace e)
+    :else.         ""))
 
 
 
@@ -246,7 +635,7 @@
   (time/first-day-of-month? (time/local-date-time)))
 
 (defn spit-to-stdout [text]
-  (println file text))
+  (print text))
 
 (defn spit-to-file [file text]
   (io/spit file text :append true))
