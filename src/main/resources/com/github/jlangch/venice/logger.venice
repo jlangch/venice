@@ -151,6 +151,8 @@
           (do
             (load-module :logger)
 
+            (logger/enable-auto-start-rotation-scheduler true)
+
             ;; create the rotating file logger
             (logger/file-logger :venice "/data/logs/venice.log" 
                                 20_000_000 
