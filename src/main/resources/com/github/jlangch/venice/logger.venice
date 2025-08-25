@@ -202,22 +202,21 @@
 
 (defn format-msg [level principal msg exc]
   (str/format "%s|%s|%s|%s%n"
-              (format-timestamp (time/local-date-time)) 
+              (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
               (format-level level)
               (if (keyword? principal) (name principal) (str principal))
               (if (nil? exc) msg "~{msg}\n~(format-ex exc)")))
 
+
 (defn format-level [level]
   (str/upper-case (name level)))
 
+
 (defn format-ex [e]
   (cond
-    (nil? exc)       ""
-    (ex-venice? exc) (ex-venice-stacktrace exc)
-    :else            (ex-java-stacktrace exc)))
-
-(defn format-timestamp [ts]
-  (time/format ts "yyyy-MM-dd HH:mm:ss.SSS"))
+    (nil? e)       ""
+    (ex-venice? e) (ex-venice-stacktrace e)
+    :else          (ex-java-stacktrace e)))
 
 
 
