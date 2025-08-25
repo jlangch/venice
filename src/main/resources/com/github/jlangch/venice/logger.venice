@@ -42,7 +42,7 @@
           :handler    (fn [level principal msg exc] 
                         { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
                         (println (fmt level principal msg exc)))
-          :rotate     (fn [] false) })
+          :rotate     (fn [] false) } )
       nil)))
 
 
@@ -95,7 +95,8 @@
                                              (do
                                                (handler :debug :system "No log file rotation today" nil)
                                                false))
-                                  nil))}))))
+                                  nil)) } )
+      nil)))
 
 
 (defn logger [id]
