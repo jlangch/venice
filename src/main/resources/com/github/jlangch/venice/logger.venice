@@ -111,20 +111,22 @@
           "(file-logger id file max-size formatter)"
           "(file-logger id file max-size formatter rotate-mode rotate-dir)")
      :doc """
-          Create a file logger.
+          Create a file logger. The logger is identified by it's ID.
 
           Arguments:
 
-          | id          | The mandatory logger ID. A keyword like :venice |
+          | id          | The mandatory logger ID. ID's are of type keyword |
           | file        | The mandatory file to log to. The parent dir must exist |
           | max-size    | The max size of the file in bytes. If the size is \
-                          reached the file will be auto truncated |
-          | formatter   | A custom formatter|
+                          reached the file will be auto truncated. -1 means \
+                          there is no limit in size. |
+          | formatter   | A custom formatter. Maybe null to use the default \
+                          formatter |
           | rotate-mode | A file rotation mode {:none, :daily, :montly}. \
                           Defaults to :none|
           | rotate-dir  | The file rotation directory. The directory must be \
                           specified and must exist if the rotate mode is :daily \
-                          or :monthly |
+                          or :monthly. `nil` is passed for mode :none |
           """ 
      :examples '(
           """
@@ -297,17 +299,23 @@
   logger [id]
 
   { :pre [(keyword? id)] }
-  (let [l (id @loggers (:console @loggers))
+  (let [l (id @loggers (default-logger))
         h (:handler l)]
     (fn ([level msg]               (h level nil msg nil))
         ([level principal msg]     (h level principal msg nil))
         ([level principal msg exc] (h level principal msg exc)))))
 
+
 (defn- register-logger [logger]
   (swap! loggers assoc (:id logger) logger)
+
+  ;; lazy start the rotation scheduler
   (when (and @auto-start-rotation-scheduler? (requires-rotation?))
     (start-rotation-scheduler)))
 
+
+(defn- default-logger []
+  (:console @loggers))
 
 
 ;; -----------------------------------------------------------------------------
@@ -350,10 +358,12 @@
   ^{ :arglists '(
           "(enable-auto-start-rotation-scheduler activate)")
      :doc """
-          Enables or disables the auto start of the rotation scheduler. Default
-          is deactivated.
+          Enables or disables the auto starting of the rotation scheduler. 
+          Default is deactivated. 
 
-          Must be called before any file loggers are created.
+          If enabled, the scheduler starts when the first rotating file logger 
+          is created. As long as no rotating file logger exists, the scheduler 
+          remains inactive to conserve resources.
           """ 
      :examples '(
           """
@@ -378,7 +388,11 @@
 
   enable-auto-start-rotation-scheduler [activate]
 
-  (reset! auto-start-rotation-scheduler? activate))
+  (reset! auto-start-rotation-scheduler? activate)
+  
+  ;; start the scheduler if rotating file loggers have been created early
+  (when (and activate (requires-rotation?))
+    (start-rotation-scheduler)))
 
 
 (defn 
@@ -386,6 +400,9 @@
           "(start-rotation-scheduler)")
      :doc """
           Manually start the rotation scheduler. 
+
+          Note: Consider to use `(logger/enable-auto-start-rotation-scheduler true)`
+          instead of manually starting the scheduler.
           """ 
      :examples '(
           """
@@ -410,6 +427,7 @@
   
   start-rotation-scheduler []
 
+  ;; start the scheduler just once!
   (if (compare-and-set! rotation-scheduler-started? false true)
     (do
       (cron/schedule-at-round-times-in-day
@@ -451,7 +469,7 @@
   rotate [id]
 
   { :pre [(keyword? id)] }
-  (let [l (id @loggers (:console @loggers))
+  (let [l (id @loggers (default-logger))
         r (:rotate l)]
     (r)))
 
