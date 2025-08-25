@@ -256,9 +256,21 @@
   ^{ :arglists '(
           "(logger id)")
      :doc """
-          Returns the logger withe the specified ID.
+          Returns the logger with the specified ID.
 
-          If there is no logger with the id returns the default :console logger. 
+          The returned logger is a function with 2, 3, and 4 arguments to log 
+          messages.
+
+          2-arg log fn: `(fn [level msg] ...)` 
+
+          3-arg log fn: `(fn [level principal msg] ...)`
+
+          4-arg log fn: `(fn [level principal msg exc] ...)`
+
+          The logger supports the levels :debug, :info, :warn, :error, and :fatal 
+
+          If there is no logger with the specified id returns the default
+          :console logger. 
           """ 
      :examples '(
           """
@@ -272,8 +284,9 @@
             (def log (logger/logger :venice))
 
             ;; log some messages
-            (log :info "test message 1")
-            (log :info "test message 2"))
+            (log :info "test message")
+            (log :info "kermit" "test message")
+            (log :info "kermit" "test message" (ex :VncException "test")))
           """)
      :see-also '(
           "logger/console-logger"
