@@ -146,6 +146,12 @@
       true)
     false)) 
 
+(defn requires-rotation? []
+  (->> (vals @loggers)
+       (map :rotate-mode)
+       (filter #(or (= % :daily) (= % :monthly)))
+       (not-empty?)))
+
 
 (defn- rotate-by-day [id file archive-dir]
   { :pre [(or (string? file) (io/file? file))] }
@@ -187,12 +193,6 @@
             (log :info :system "Rotated log file")
             true))))
     false))
-
-(defn requires-rotation? []
-  (->> (vals @loggers)
-       (map :rotate-mode)
-       (filter #(or (= % :daily) (= % :monthly)))
-       (not-empty?)))
 
 
 
@@ -238,7 +238,7 @@
 ;; rotation has been registered
 (def- auto-start-rotation-scheduler? (atom true))
 
-;; a map of all registered loggers (key: id, value: config map)
+;; a map of all registered loggers (key: id, value: data map)
 (def- loggers (atom {}))
 
 ;; if true the rotation scheduler has been started 
