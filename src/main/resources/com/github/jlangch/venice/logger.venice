@@ -89,9 +89,9 @@
           :rotate             (fn [] 
                                 (case rotate-mode
                                   :none    nil
-                                  :daily   (locking mutex (rotate-by-day id file rotate-dir))
+                                  :daily   (locking mutex (rotate-log-by-day id file rotate-dir))
                                   :monthly (if (first-day-of-month?)
-                                             (locking mutex (rotate-by-month id file rotate-dir))
+                                             (locking mutex (rotate-log-by-month id file rotate-dir))
                                              (do
                                                (handler :debug :system "No log file rotation today" nil)
                                                false))
@@ -146,6 +146,7 @@
       true)
     false)) 
 
+
 (defn requires-rotation? []
   (->> (vals @loggers)
        (map :rotate-mode)
@@ -153,7 +154,7 @@
        (not-empty?)))
 
 
-(defn- rotate-by-day [id file archive-dir]
+(defn- rotate-log-by-day [id file archive-dir]
   { :pre [(or (string? file) (io/file? file))] }
   (let [prev-day      (time/minus (time/local-date) :days 1)
         archive-base  (str/format "%s-%d-%02d-%02d" 
@@ -164,7 +165,7 @@
     (rotate-log id file archive-dir archive-base)))
 
 
-(defn- rotate-by-month [id file archive-dir]
+(defn- rotate-log-by-month [id file archive-dir]
   { :pre [(or (string? file) (io/file? file))] }
   (let [prev-day      (time/minus (time/local-date) :days 1)
         archive-base  (str/format "%s-%d-%02d" 
@@ -175,24 +176,26 @@
 
 
 (defn- rotate-log [id file archive-dir archive-base]
-  (when (not (io/exists-dir? archive-dir))
-    (throw (ex :VncException 
-               "Log rotation failed. The archive dir ~{archive-dir} does not exist!")))
-  (if (io/exists-file? file)
-    (loop [x 0]
-      (when (> x 50)   ;; set an upper limit
-        (throw (ex :VncException 
-                  "Log rotation failed. Too many target archive files!")))
-      (let [suffix  (if (zero? x) ".log" (str/format "-r%02d.log" x))
-            archive (io/file archive-dir (str archive-base suffix))
-            log     (logger id)]
-        (if (io/exists-file? archive)
-          (recur (inc x))
-          (do 
-            (io/move-file file archive)
-            (log :info :system "Rotated log file")
-            true))))
-    false))
+  (try
+    (when (not (io/exists-dir? archive-dir))
+      (throw (ex :VncException "The archive dir ~{archive-dir} does not exist!")))
+    (if (io/exists-file? file)
+      (loop [x 0]
+        (when (> x 50)   ;; set an upper limit
+          (throw (ex :VncException "Too many archive index files!")))
+        (let [suffix  (if (zero? x) ".log" (str/format "-r%02d.log" x))
+              archive (io/file archive-dir (str archive-base suffix))
+              log     (logger id)]
+          (if (io/exists-file? archive)
+            (recur (inc x))
+            (do 
+              (io/move-file file archive)
+              (log :info :system "Rotated log file")
+              true))))
+      false)
+    (catch :Exception e 
+        (log :error :system (str "Log rotation failed. " (ex-message e)))
+        false)))
 
 
 
