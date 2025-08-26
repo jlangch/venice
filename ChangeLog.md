@@ -18,10 +18,13 @@ All notable changes to this project will be documented in this file.
 - function `io/truncate-from-start-keep-lines` to truncate text files honoring
   complete lines
 - function `cron/schedule-at-round-times-in-day`. A scheduler that is not prone
-  to clock shifts
+  to clock shifts/drifts
 - function `cron/schedule-at-fixed-rate`. A scheduler that is not prone
-  to clock shifts
-- function `cron/schedule-at`. A scheduler that is not prone to clock shifts
+  to clock shifts/drifts
+- function `cron/schedule-at`. A scheduler that is not prone to clock shifts/drifts
+- a logger with console and file handlers. The file handlers support a max
+  size and daily/monthly file rotation. The scheduler for file rotation handling 
+  is not prone to clock shifts/drifts.
 
 ### Updated dependencies:
 
