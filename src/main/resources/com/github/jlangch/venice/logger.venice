@@ -652,11 +652,12 @@
 
 
 (defn format-msg [level principal msg exc]
-  (str/format "%s|%s|%s|%s%n"
-              (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
-              (format-level level)
-              (if (keyword? principal) (name principal) (str principal))
-              (if (nil? exc) msg "~{msg}~{linefeed}~(format-ex exc)")))
+  (let [ex-msg (format-ex exc)]
+    (str/format "%s|%s|%s|%s%n"
+                (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
+                (format-level level)
+                (if (keyword? principal) (name principal) (str principal))
+                (if (nil? ex-msg) msg "~{msg}~{linefeed}~{ex-msg}"))))
 
 
 (defn 
@@ -702,10 +703,10 @@
   format-ex [e]
 
   (cond
-    (nil? e)       ""
+    (nil? e)       nil
     (ex-venice? e) (ex-venice-stacktrace e)
     (ex? e)        (ex-java-stacktrace e)
-    :else.         ""))
+    :else.         nil))
 
 
 
