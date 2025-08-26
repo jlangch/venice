@@ -143,11 +143,19 @@
           "aviron/reload-virus-databases"
           "aviron/shutdown-server") }
 
-  ping [client]
-
-  { :pre [(instance-of? :Client client)] }
+  ping 
   
-  (. client :ping))
+  ([client]
+    { :pre [(instance-of? :Client client)] }
+    (. client :ping))
+
+  ([client map-exception-to-false]
+    { :pre [(instance-of? :Client client)  (boolean? map-exception-to-false)] }
+    (if map-exception-to-false
+      (try
+        (. client :ping)
+        (catch :Exception ex false))
+      (. client :ping))))
 
 
 (defn 
@@ -383,8 +391,16 @@
     (. client :isReachable))
 
   ([client timeout]
-    { :pre [(instance-of? :Client client) (long timeout)] }
-    (. client :isReachable timeout)))
+    { :pre [(instance-of? :Client client) (long? timeout)] }
+    (. client :isReachable timeout))
+
+  ([client timeout map-exception-to-false]
+    { :pre [(instance-of? :Client client) (long? timeout) (boolean? map-exception-to-false)] }
+    (if map-exception-to-false
+      (try
+         (. client :isReachable timeout)
+         (catch :Exception ex false))
+      (. client :isReachable timeout))))
 
 
 (defn
