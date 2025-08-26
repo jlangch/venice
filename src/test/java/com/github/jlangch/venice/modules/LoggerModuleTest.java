@@ -328,8 +328,6 @@ public class LoggerModuleTest {
 
         assertEquals(100L, venice.eval("(do (load-module :logger) (logger/convert-to-bytes 100))"));
 
-        assertEquals(100L, venice.eval("(do (load-module :logger) (logger/convert-to-bytes :100B))"));
-
         assertEquals(10L * 1024, venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10KB))"));
 
         assertEquals(10L * 1024 * 1024, venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10MB))"));

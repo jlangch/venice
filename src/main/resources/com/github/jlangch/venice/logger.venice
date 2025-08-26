@@ -92,14 +92,15 @@
 
   ([formatter]
     { :pre [(or (nil? formatter) (fn? formatter))] }
-    (let [fmt (coalesce formatter format-msg)]
+    (let [fmt    (coalesce formatter format-msg)
+          mutex  0]
       (register-logger
         { :id         :console
           :type       :console
           :formatter  fmt
           :handler    (fn [level principal msg exc] 
                         { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-                        (spit-to-stdout (format fmt level principal msg exc)))
+                        (spit-to-stdout mutex (format fmt level principal msg exc)))
           :rotate     (fn [] false) } )
       nil)))
 
@@ -215,7 +216,8 @@
           max-size-hyst (- 100 (clamp max-size-hysteresis 0 30))
           max-size-hyst (if (pos? max-size) (* (/ max-size 100) max-size-hyst) -1) ;; hystersis
           fmt           (coalesce formatter format-msg)
-          mutex         0]
+          mutex         0
+          trunc-err-msg (format fmt :error :system  "Failed to truncate log file" nil)]
       (register-logger
         { :id                 id
           :type               :file
@@ -227,26 +229,18 @@
           :rotate-dir         rotate-dir
           :handler            (fn [level principal msg exc] 
                                 { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-                                (locking mutex
-                                  (spit-to-file file (format fmt level principal msg exc))
-                                  (when (and (pos? max-size) (> (io/file-size file) max-size))
-                                    (try
-                                      (io/truncate-from-start-keep-lines file max-size-hyst)
-                                      (catch :Exception ex 
-                                        (spit-to-file file (format fmt :error :system 
-                                                                    "Failed to truncate log file" 
-                                                                    nil)))))))
+                                (spit-to-file mutex
+                                              file 
+                                              (format fmt level principal msg exc) 
+                                              max-size 
+                                              max-size-hyst
+                                              trunc-err-msg))
           :rotate             (fn [] 
-                                (let [log (logger id)]
-                                  (case rotate-mode
-                                    :none    nil
-                                    :daily   (locking mutex (rotate-log-by-day id file rotate-dir))
-                                    :monthly (if (first-day-of-month?)
-                                                (locking mutex (rotate-log-by-month id file rotate-dir))
-                                                (do
-                                                  (log :debug :system "No monthly log file rotation today")
-                                                  false))
-                                    nil))) } )
+                                (case rotate-mode
+                                  :none    nil
+                                  :daily   (rotate-log-by-day mutex id file rotate-dir)
+                                  :monthly (rotate-log-by-month mutex id file rotate-dir)
+                                  nil)) } )
       nil)))
 
 
@@ -297,7 +291,9 @@
   { :pre [(keyword? id)] }
   (let [l (id @loggers (default-logger))
         h (:handler l)]
-    (fn ([level msg]               (h level nil msg nil))
+    (fn ([]                        (h :info nil "" nil))
+        ([msg]                     (h :info nil (str msg) nil))
+        ([level msg]               (h level nil msg nil))
         ([level principal msg]     (h level principal msg nil))
         ([level principal msg exc] (h level principal msg exc)))))
 
@@ -589,31 +585,40 @@
        (not-empty?)))
 
 
-(defn- rotate-log-by-day [id file archive-dir]
-  (try
-    (let [prev-day      (time/minus (time/local-date) :days 1)
-          archive-base  (str/format "%s-%d-%02d-%02d" 
-                                    (io/file-basename file) 
-                                    (time/year prev-day)
-                                    (time/month prev-day)
-                                    (time/day-of-month prev-day))]
-      (rotate-log id file archive-dir archive-base))
-    (catch :Exception e 
-        (log :error :system (str "Log daily rotation failed. " (ex-message e)))
-        false)))
+(defn- rotate-log-by-day [mutex id file archive-dir]
+  (locking mutex 
+      (try
+        (let [prev-day      (time/minus (time/local-date) :days 1)
+              archive-base  (str/format "%s-%d-%02d-%02d" 
+                                        (io/file-basename file) 
+                                        (time/year prev-day)
+                                        (time/month prev-day)
+                                        (time/day-of-month prev-day))]
+          (rotate-log id file archive-dir archive-base))
+        (catch :Exception e 
+               (let [log (id logger)]
+                 (log :error :system (str "Log daily rotation failed. " (ex-message e)))
+                 false)))))
 
 
-(defn- rotate-log-by-month [id file archive-dir]
-  (try
-    (let [prev-day      (time/minus (time/local-date) :days 1)
-          archive-base  (str/format "%s-%d-%02d" 
-                                    (io/file-basename file) 
-                                    (time/year prev-day) 
-                                    (time/month prev-day))]
-      (rotate-log id file archive-dir archive-base))
-    (catch :Exception e 
-        (log :error :system (str "Log monthly rotation failed. " (ex-message e)))
-        false)))
+(defn- rotate-log-by-month [mutex id file archive-dir]
+  (if (first-day-of-month?)
+    (locking mutex 
+      (try
+        (let [prev-day      (time/minus (time/local-date) :days 1)
+              archive-base  (str/format "%s-%d-%02d" 
+                                        (io/file-basename file) 
+                                        (time/year prev-day) 
+                                        (time/month prev-day))]
+          (rotate-log id file archive-dir archive-base))
+        (catch :Exception e 
+            (let [log (id logger)]
+              (log :error :system (str "Log monthly rotation failed. " (ex-message e)))
+              false))))
+    (let [log (logger id)]
+      (log :debug :system "No monthly log file rotation today")
+      false)))
+
 
 
 (defn- rotate-log [id file archive-dir archive-base]
@@ -711,11 +716,16 @@
 (defn first-day-of-month? [] 
   (time/first-day-of-month? (time/local-date-time)))
 
-(defn spit-to-stdout [text]
-  (print text))
+(defn spit-to-stdout [mutex text]
+  (locking mutex (print text)))
 
-(defn spit-to-file [file text]
-  (io/spit file text :append true))
+(defn spit-to-file [mutex file text max-size max-size-hyst truncate-err-msg]
+  (locking mutex
+    (io/spit file text :append true)
+    (when (and (pos? max-size) (> (io/file-size file) max-size))
+      (try
+        (io/truncate-from-start-keep-lines file max-size-hyst)
+        (catch :Exception ex (io/spit file truncate-err-msg :append true))))))
 
 (defn convert-to-bytes [value]
   (let [err-msg "Invalid size value '~{value}'! Use 20000, 10MB, 2GB, ..."]
