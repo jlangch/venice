@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- the option to pass a 'fspath' monitor to the file watcher on MacOS.
+- the option to pass a 'fswatch' monitor to the file watcher on MacOS.
 
 ### Updated dependencies:
 
