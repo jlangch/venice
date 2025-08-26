@@ -200,70 +200,54 @@
 
   file-logger [id file & options] 
 
-    (let [opts                (apply hash-map options)
-          max-size            (:max-size opts -1)
-          max-size-hysteresis (:max-size-hysteresis opts 10) ;; default 10%
-          formatter           (:formatter opts)
-          rotate-mode         (:rotate-mode opts :none)
-          rotate-dir          (:rotate-dir opts)
-          err-msg             "Failed to create file logger ~{id}!"]
-      (when-not (keyword? id)
-        (throw (ex :VncException "~{err-msg} The id must be a keyword!")))
-      (when-not (or (string? file) (io/file? file))
-        (throw (ex :VncException "~{err-msg} The file must be a string or an io/file!")))
-      (when-not (io/exists-dir? (io/file-parent file))
-        (throw (ex :VncException "~{err-msg} The files's parent directory does not exist!")))
-      (when-not (or (long? max-size) (keyword? max-size))
-        (throw (ex :VncException "~{err-msg} The max-size must be a long or a keyword (:10MB, : 2GB)!")))
-      (when-not (long? max-size-hysteresis)
-        (throw (ex :VncException "~{err-msg} The max-size-hysteresis must be a long!")))
-      (when-not (or (nil? formatter) (fn? formatter))
-        (throw (ex :VncException "~{err-msg} The formatter must be nil or a function!")))
-      (when-not (and (keyword? rotate-mode) (rotate-mode #{:none :daily :monthly}))
-        (throw (ex :VncException "~{err-msg} The rotate-mode must be a keyword {:none :daily :monthly}!")))
-      (when-not (or (nil? rotate-dir) (string? rotate-dir) (io/file? rotate-dir))
-        (throw (ex :VncException "~{err-msg} The rotate-dir must be nil, a string or a io/file!")))
-      (when (and (rotate-mode #{:daily :monthly}) (or (nil? rotate-dir) (not (io/exists-dir? rotate-dir))))
-        (throw (ex :VncException "~{err-msg} The rotate-dir does not exist!")))
+  (let [opts                (apply hash-map options)
+        max-size            (:max-size opts -1)
+        max-size-hysteresis (:max-size-hysteresis opts 10) ;; default 10%
+        formatter           (:formatter opts)
+        rotate-mode         (:rotate-mode opts :none)
+        rotate-dir          (:rotate-dir opts)]
 
-      (let [max-size      (convert-to-bytes max-size)
-            max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
-            max-size-hyst (- 100 (clamp max-size-hysteresis 0 30))
-            max-size-hyst (if (pos? max-size) (* (/ max-size 100) max-size-hyst) -1) ;; hystersis
-            fmt           (coalesce formatter format-msg)
-            mutex         0]
-        (register-logger
-          { :id                 id
-            :type               :file
-            :file               (io/file file)
-            :max-size           max-size 
-            :max-size-hystersis max-size-hyst
-            :formatter          fmt
-            :rotate-mode        rotate-mode
-            :rotate-dir         rotate-dir
-            :handler            (fn [level principal msg exc] 
-                                  { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-                                  (locking mutex
-                                    (spit-to-file file (format fmt level principal msg exc))
-                                    (when (and (pos? max-size) (> (io/file-size file) max-size))
-                                      (try
-                                        (io/truncate-from-start-keep-lines file max-size-hyst)
-                                        (catch :Exception ex 
-                                          (spit-to-file file (format fmt :error :system 
-                                                                     "Failed to truncate log file" 
-                                                                     nil)))))))
-            :rotate             (fn [] 
-                                  (let [log (logger id)]
-                                    (case rotate-mode
-                                      :none    nil
-                                      :daily   (locking mutex (rotate-log-by-day id file rotate-dir))
-                                      :monthly (if (first-day-of-month?)
-                                                 (locking mutex (rotate-log-by-month id file rotate-dir))
-                                                 (do
-                                                   (log :debug :system "No monthly log file rotation today")
-                                                   false))
-                                      nil))) } )
-        nil)))
+    (validate-file-logger-args id file max-size max-size-hysteresis 
+                               formatter rotate-mode rotate-dir)
+
+    (let [max-size      (convert-to-bytes max-size)
+          max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
+          max-size-hyst (- 100 (clamp max-size-hysteresis 0 30))
+          max-size-hyst (if (pos? max-size) (* (/ max-size 100) max-size-hyst) -1) ;; hystersis
+          fmt           (coalesce formatter format-msg)
+          mutex         0]
+      (register-logger
+        { :id                 id
+          :type               :file
+          :file               (io/file file)
+          :max-size           max-size 
+          :max-size-hystersis max-size-hyst
+          :formatter          fmt
+          :rotate-mode        rotate-mode
+          :rotate-dir         rotate-dir
+          :handler            (fn [level principal msg exc] 
+                                { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
+                                (locking mutex
+                                  (spit-to-file file (format fmt level principal msg exc))
+                                  (when (and (pos? max-size) (> (io/file-size file) max-size))
+                                    (try
+                                      (io/truncate-from-start-keep-lines file max-size-hyst)
+                                      (catch :Exception ex 
+                                        (spit-to-file file (format fmt :error :system 
+                                                                    "Failed to truncate log file" 
+                                                                    nil)))))))
+          :rotate             (fn [] 
+                                (let [log (logger id)]
+                                  (case rotate-mode
+                                    :none    nil
+                                    :daily   (locking mutex (rotate-log-by-day id file rotate-dir))
+                                    :monthly (if (first-day-of-month?)
+                                                (locking mutex (rotate-log-by-month id file rotate-dir))
+                                                (do
+                                                  (log :debug :system "No monthly log file rotation today")
+                                                  false))
+                                    nil))) } )
+      nil)))
 
 
 (defn 
@@ -328,6 +312,29 @@
 
 (defn- default-logger []
   (:console @loggers))
+
+
+(defn- validate-file-logger-args [id file max-size max-size-hysteresis formatter rotate-mode rotate-dir]
+  (let [err-msg "Failed to create file logger ~{id}!"]
+    (when-not (keyword? id)
+      (throw (ex :VncException "~{err-msg} The id must be a keyword!")))
+    (when-not (or (string? file) (io/file? file))
+      (throw (ex :VncException "~{err-msg} The file must be a string or an io/file!")))
+    (when-not (io/exists-dir? (io/file-parent file))
+      (throw (ex :VncException "~{err-msg} The files's parent directory does not exist!")))
+    (when-not (or (long? max-size) (keyword? max-size))
+      (throw (ex :VncException "~{err-msg} The max-size must be a long or a keyword (:10MB, : 2GB)!")))
+    (when-not (long? max-size-hysteresis)
+      (throw (ex :VncException "~{err-msg} The max-size-hysteresis must be a long!")))
+    (when-not (or (nil? formatter) (fn? formatter))
+      (throw (ex :VncException "~{err-msg} The formatter must be nil or a function!")))
+    (when-not (and (keyword? rotate-mode) (rotate-mode #{:none :daily :monthly}))
+      (throw (ex :VncException "~{err-msg} The rotate-mode must be a keyword {:none :daily :monthly}!")))
+    (when-not (or (nil? rotate-dir) (string? rotate-dir) (io/file? rotate-dir))
+      (throw (ex :VncException "~{err-msg} The rotate-dir must be nil, a string or a io/file!")))
+    (when (and (rotate-mode #{:daily :monthly}) (or (nil? rotate-dir) (not (io/exists-dir? rotate-dir))))
+      (throw (ex :VncException "~{err-msg} The rotate-dir does not exist!")))))
+
 
 
 ;; -----------------------------------------------------------------------------
