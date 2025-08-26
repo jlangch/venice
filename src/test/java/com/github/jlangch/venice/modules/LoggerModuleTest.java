@@ -77,7 +77,8 @@ public class LoggerModuleTest {
                 "                                                            \n" +
                 "  (try                                                      \n" +
                 "    (let [file    (io/file dir \"test.log\")                \n" +
-                "          _       (logger/file-logger :test file 120)       \n" +
+                "          _       (logger/file-logger :test file            \n" +
+                "                                            :max-size 120)  \n" +
                 "          log     (logger/logger :test)]                    \n" +
                 "      (log :info :base \"test message 1\")                  \n" +
                 "      (log :info :base \"test message 2\")                  \n" +
@@ -117,7 +118,9 @@ public class LoggerModuleTest {
                 "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (let [file    (io/file dir \"test.log\")                                \n" +
-                "          _       (logger/file-logger :test file -1 nil :daily archive-dir) \n" +
+                "          _       (logger/file-logger :test file                            \n" +
+                "                                            :rotate-mode :daily             \n" +
+                "                                            :rotate-dir archive-dir)        \n" +
                 "          log     (logger/logger :test)]                                    \n" +
                 "      (log :info :base \"test message 1\")                                  \n" +
                 "      (log :info :base \"test message 2\")                                  \n" +
@@ -149,7 +152,9 @@ public class LoggerModuleTest {
                 "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (let [file    (io/file dir \"test.log\")                                \n" +
-                "          _       (logger/file-logger :test file -1 nil :daily archive-dir) \n" +
+                "          _       (logger/file-logger :test file                            \n" +
+                "                                            :rotate-mode :daily             \n" +
+                "                                            :rotate-dir archive-dir)        \n" +
                 "          log     (logger/logger :test)]                                    \n" +
                 "      (log :info :base \"test message 1\")                                  \n" +
                 "      (log :info :base \"test message 2\")                                  \n" +
@@ -219,7 +224,7 @@ public class LoggerModuleTest {
                 "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
-                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :none nil)  \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\"))                   \n" +
                 "                                                                            \n" +
                 "    (logger/requires-rotation?)                                             \n" +
                 "    (finally                                                                \n" +
@@ -245,7 +250,9 @@ public class LoggerModuleTest {
                 "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
-                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :daily archive-dir)  \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\")                    \n" +
+                "                              :rotate-mode :daily                           \n" +
+                "                              :rotate-dir archive-dir)                      \n" +
                 "                                                                            \n" +
                 "    (logger/requires-rotation?)                                             \n" +
                 "    (finally                                                                \n" +
@@ -271,7 +278,9 @@ public class LoggerModuleTest {
                 "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
-                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :monthly archive-dir)  \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\")                    \n" +
+                "                              :rotate-mode :monthly                         \n" +
+                "                              :rotate-dir archive-dir)                      \n" +
                 "                                                                            \n" +
                 "    (logger/requires-rotation?)                                             \n" +
                 "    (finally                                                                \n" +
@@ -297,9 +306,13 @@ public class LoggerModuleTest {
                 "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
                 "                                                                            \n" +
                 "    (logger/console-logger nil)                                             \n" +
-                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :none nil)  \n" +
-                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :daily archive-dir)    \n" +
-                "    (logger/file-logger :test (io/file dir \"test.log\") -1 nil :monthly archive-dir)  \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\"))                   \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\")                    \n" +
+                "                              :rotate-mode :daily                           \n" +
+                "                              :rotate-dir archive-dir)                      \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\")                    \n" +
+                "                              :rotate-mode :monthly                         \n" +
+                "                              :rotate-dir archive-dir)                      \n" +
                 "                                                                            \n" +
                 "    (logger/requires-rotation?)                                             \n" +
                 "    (finally                                                                \n" +
