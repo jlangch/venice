@@ -118,9 +118,11 @@
           | id          | The mandatory logger ID. ID's are of type keyword |
           | file        | The mandatory file to log to. The parent dir must exist |
           | max-size    | The max size of the file in bytes. If the size is \
-                          reached the file will be auto truncated. -1 means \
-                          there is no limit in size. |
-          | formatter   | A custom formatter. Maybe null to use the default \
+                          reached, the file will be auto truncated. -1 means \
+                          there is no limit in size.¶\
+                          The max size can be specified as a number like 20000 \
+                          or a number with a unit like :20KB, :20MB, or :2GB|
+          | formatter   | A custom formatter. Maybe `nil` to use the default \
                           formatter |
           | rotate-mode | A file rotation mode {:none, :daily, :montly}. \
                           Defaults to :none|
@@ -135,7 +137,7 @@
 
             ;; create the file loggers
             (logger/file-logger :venice "/data/logs/venice.log")
-            (logger/file-logger :database "/data/logs/database.log" 20_000_000)
+            (logger/file-logger :database "/data/logs/database.log" :20MB)
 
             ;; get the loggers
             (def log-venice (logger/logger :venice))
@@ -151,13 +153,10 @@
           (do
             (load-module :logger)
 
-            (logger/enable-auto-start-rotation-scheduler true)
-
             ;; create the rotating file logger
-            (logger/file-logger :venice "/data/logs/venice.log" 
-                                20_000_000 
-                                nil
-                                :daily "/data/logs/archive")
+            (logger/file-logger :venice 
+                                "/data/logs/venice.log" 
+                                :20MB nil :daily "/data/logs/archive")
 
             ;; get the logger
             (def log (logger/logger :venice))
@@ -210,7 +209,7 @@
   ([id file max-size formatter rotate-mode rotate-dir]
     { :pre [(and (keyword? id) (not (= id :console)))
             (or (string? file) (io/file? file))
-            (long? max-size) 
+            (or (long? max-size) (keyword? max-size))
             (or (nil? formatter) (fn? formatter))
             (keyword? rotate-mode)
             (some? (rotate-mode #{:none :daily :monthly}))
@@ -218,7 +217,8 @@
     (when (not (io/exists-dir? (io/file-parent file)))
       (throw (ex :VncException 
                 "Failed to create file logger ~{id}. The files's parent directory does not exist!")))
-    (let [max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
+    (let [max-size      (convert-to-bytes max-size)
+          max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
           max-size-hyst (if (pos? max-size) (/ (* max-size 9) 10) -1) ;; 10% hystersis
           fmt           (coalesce formatter format-msg)
           mutex         0]
@@ -338,10 +338,9 @@
           (do
             (load-module :logger)
 
-            (logger/enable-auto-start-rotation-scheduler true)
-
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
+            ;; check after creation of the first file logger with file rotation
             (logger/rotation-scheduler-running?))
           """)
      :see-also '(
@@ -372,7 +371,8 @@
           (do
             (load-module :logger)
 
-            (logger/enable-auto-start-rotation-scheduler true)
+            ;; disable auto start (auto start is enabled by default)
+            (logger/enable-auto-start-rotation-scheduler false)
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
@@ -411,6 +411,10 @@
           (do
             (load-module :logger)
 
+            ;; disable auto start (auto start is enabled by default)
+            (logger/enable-auto-start-rotation-scheduler false)
+
+            ;; start the scheduler manually
             (logger/start-rotation-scheduler)
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
@@ -452,6 +456,9 @@
           (do
             (load-module :logger)
 
+            ;; disable auto start (auto start is enabled by default)
+            (logger/enable-auto-start-rotation-scheduler false)
+
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
             (def log (logger/logger :venice))
@@ -459,6 +466,7 @@
             (log :info "test message 1")
             (log :info "test message 2")
 
+            ;; rotate the :venice logger manually
             (logger/rotate :venice))
           """)
      :see-also '(
@@ -488,6 +496,9 @@
           (do
             (load-module :logger)
 
+            ;; disable auto start (auto start is enabled by default)
+            (logger/enable-auto-start-rotation-scheduler false)
+
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
             (def log (logger/logger :venice))
@@ -495,6 +506,7 @@
             (log :info "test message 1")
             (log :info "test message 2")
 
+            ;; rotate all loggers manually
             (logger/rotate-all))
           """)
      :see-also '(
@@ -520,6 +532,9 @@
           """
           (do
             (load-module :logger)
+
+            ;; disable auto start (auto start is enabled by default)
+            (logger/enable-auto-start-rotation-scheduler false)
 
             (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
 
@@ -672,6 +687,23 @@
 
 (defn spit-to-file [file text]
   (io/spit file text :append true))
+
+(defn convert-to-bytes [value]
+  (let [err-msg "Invalid size value '~{value}'! Use 20000, 10MB, 2GB, ..."]
+    (cond
+      (long? value)     
+          value
+      (keyword? value)  
+          (let [s (name value)]
+            (cond 
+              (match? s "^[1-9][0-9]*B$")   (long (str/strip-end s "B"))
+              (match? s "^[1-9][0-9]*KB$")  (* (long (str/strip-end s "KB")) 1024)
+              (match? s "^[1-9][0-9]*MB$")  (* (long (str/strip-end s "MB")) 1024 1024)
+              (match? s "^[1-9][0-9]*GB$")  (* (long (str/strip-end s "GB")) 1024 1024 1024)
+              :else (throw (ex :VncException err-msg))))
+      :else 
+          (throw (ex :VncException err-msg)))))
+
 
 
 ;; -----------------------------------------------------------------------------

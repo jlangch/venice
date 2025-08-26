@@ -23,6 +23,7 @@ package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class LoggerModuleTest {
@@ -303,6 +305,28 @@ public class LoggerModuleTest {
                 "    (finally                                                                \n" +
                 "      (io/delete-file-tree dir))))                                          ";
         assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void convertToBytesTest() {
+        final Venice venice = new Venice();
+
+        assertEquals(-1L, venice.eval("(do (load-module :logger) (logger/convert-to-bytes -1))"));
+
+        assertEquals(100L, venice.eval("(do (load-module :logger) (logger/convert-to-bytes 100))"));
+
+        assertEquals(100L, venice.eval("(do (load-module :logger) (logger/convert-to-bytes :100B))"));
+
+        assertEquals(10L * 1024, venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10KB))"));
+
+        assertEquals(10L * 1024 * 1024, venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10MB))"));
+
+        assertEquals(10L * 1024 * 1024 * 1024, venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10GB))"));
+
+        assertThrows(VncException.class, () ->  venice.eval("(do (load-module :logger) (logger/convert-to-bytes :x))"));
+        assertThrows(VncException.class, () ->  venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10))"));
+        assertThrows(VncException.class, () ->  venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10MBx))"));
+        assertThrows(VncException.class, () ->  venice.eval("(do (load-module :logger) (logger/convert-to-bytes :10PB))"));
     }
 
 }
