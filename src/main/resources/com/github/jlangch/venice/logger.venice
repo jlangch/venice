@@ -117,18 +117,18 @@
 
           Options:
 
-          | max-size n   | The max size of the file in bytes. If the size is \
-                           reached, the file will be auto truncated. -1 means \
-                           there is no limit in size.¶\
-                           The max size can be specified as a number like 20000 \
-                           or a number with a unit like :20KB, :20MB, or :2GB|
-          | formatter f   | A custom formatter. Maybe `nil` to use the default \
-                           formatter |
-          | rotate-mode k | A file rotation mode {:none, :daily, :montly}. \
-                           Defaults to :none|
-          | rotate-dir f | The file rotation directory. The directory must be \
-                           specified and must exist if the rotate mode is :daily \
-                           or :monthly. `nil` is passed for mode :none |
+          | :max-size n   | The max size of the file in bytes. If the size is \
+                            reached, the file will be auto truncated. -1 means \
+                            there is no limit in size.¶\
+                            The max size can be specified as a number like 20000 \
+                            or a number with a unit like :20KB, :20MB, or :2GB|
+          | :formatter f   | A custom formatter. Maybe `nil` to use the default \
+                            formatter |
+          | :rotate-mode k | A file rotation mode {:none, :daily, :montly}. \
+                            Defaults to :none|
+          | :rotate-dir f | The file rotation directory. The directory must be \
+                            specified and must exist if the rotate mode is :daily \
+                            or :monthly. `nil` is passed for mode :none |
           """ 
      :examples '(
           """
@@ -137,7 +137,7 @@
 
             ;; create the file loggers
             (logger/file-logger :venice "/data/logs/venice.log")
-            (logger/file-logger :database "/data/logs/database.log" :20MB)
+            (logger/file-logger :database "/data/logs/database.log" :max-size :20MB)
 
             ;; get the loggers
             (def log-venice (logger/logger :venice))
@@ -156,7 +156,9 @@
             ;; create the rotating file logger
             (logger/file-logger :venice 
                                 "/data/logs/venice.log" 
-                                :20MB nil :daily "/data/logs/archive")
+                                :max-size :20MB 
+                                :rotate-mode :daily 
+                                :rotate-dir "/data/logs/archive")
 
             ;; get the logger
             (def log (logger/logger :venice))
@@ -179,7 +181,8 @@
                           (if (nil? exc) msg (str msg (str/platform-lf) (logger/format-ex exc)))))
 
             ;; create the file logger with a custom formatter
-            (logger/file-logger :venice "/data/logs/venice.log" nil custom-msg-formatter)
+            (logger/file-logger :venice "/data/logs/venice.log" 
+                                        :formatter custom-msg-formatter)
 
             ;; get the :venice logger
             (def log (logger/logger :venice))
@@ -342,7 +345,9 @@
           (do
             (load-module :logger)
 
-            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+            (logger/file-logger :venice "/logs/venice.log" 
+                                        :rotate-mode :daily 
+                                        :rotate-dir "/logs/archive")
 
             ;; check after creation of the first file logger with file rotation
             (logger/rotation-scheduler-running?))
@@ -378,7 +383,9 @@
             ;; disable auto start (auto start is enabled by default)
             (logger/enable-auto-start-rotation-scheduler false)
 
-            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+            (logger/file-logger :venice "/logs/venice.log"
+                                        :rotate-mode :daily 
+                                        :rotate-dir "/logs/archive")
 
             (def log (logger/logger :venice))
 
@@ -421,7 +428,9 @@
             ;; start the scheduler manually
             (logger/start-rotation-scheduler)
 
-            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+            (logger/file-logger :venice "/logs/venice.log" 
+                                        :rotate-mode :daily 
+                                        :rotate-dir "/logs/archive")
 
             (def log (logger/logger :venice))
 
@@ -463,7 +472,9 @@
             ;; disable auto start (auto start is enabled by default)
             (logger/enable-auto-start-rotation-scheduler false)
 
-            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+            (logger/file-logger :venice "/logs/venice.log"
+                                        :rotate-mode :daily
+                                        :rotate-dir "/logs/archive")
 
             (def log (logger/logger :venice))
 
@@ -503,7 +514,9 @@
             ;; disable auto start (auto start is enabled by default)
             (logger/enable-auto-start-rotation-scheduler false)
 
-            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+            (logger/file-logger :venice "/logs/venice.log"
+                                        :rotate-mode :daily
+                                        :rotate-dir "/logs/archive")
 
             (def log (logger/logger :venice))
 
@@ -540,7 +553,9 @@
             ;; disable auto start (auto start is enabled by default)
             (logger/enable-auto-start-rotation-scheduler false)
 
-            (logger/file-logger :venice "/logs/venice.log" -1 nil :daily "/logs/archive")
+            (logger/file-logger :venice "/logs/venice.log"
+                                        :rotate-mode :daily
+                                        :rotate-dir "/logs/archive")
 
             (def log (logger/logger :venice))
 
