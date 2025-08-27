@@ -63,11 +63,12 @@
 
             ;; custom formatter
             (defn custom-formatter [level principal msg exc]
-              (str/format "%s [%s] [%s] %s%n"
-                          (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
-                          (logger/format-level level)
-                          (if (keyword? principal) (name principal) (str principal))
-                          (if (nil? exc) msg (str msg (str/platform-lf) (logger/format-ex exc)))))
+              (let [ex-msg (logger/format-ex exc)]
+                (str/format "%s [%s] [%s] %s%n"
+                            (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
+                            (logger/format-level level)
+                            (if (keyword? principal) (name principal) (str principal))
+                            (if (nil? ex-msg) msg (str msg logger/linefeed ex-msg)))))
 
             ;; create the console logger with a custom formatter
             (logger/console-logger custom-formatter)
@@ -92,15 +93,18 @@
 
   ([formatter]
     { :pre [(or (nil? formatter) (fn? formatter))] }
-    (let [fmt    (coalesce formatter format-msg)
-          mutex  0]
+    (let [fmt             (coalesce formatter format-msg)
+          level-threshold (volatile :debug)
+          mutex           0]
       (register-logger
         { :id         :console
           :type       :console
           :formatter  fmt
+          :level      level-threshold
           :handler    (fn [level principal msg exc] 
                         { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-                        (spit-to-stdout mutex (format fmt level principal msg exc)))
+                        (when (can-log? level @level-threshold)
+                          (spit-to-stdout mutex (format fmt level principal msg exc))))
           :rotate     (fn [] false) } )
       nil)))
 
@@ -175,11 +179,12 @@
 
             ;; custom formatter
             (defn custom-formatter [level principal msg exc]
-              (str/format "%s [%s] [%s] %s%n"
-                          (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
-                          (logger/format-level level)
-                          (if (keyword? principal) (name principal) (str principal))
-                          (if (nil? exc) msg (str msg (str/platform-lf) (logger/format-ex exc)))))
+              (let [ex-msg (logger/format-ex exc)]
+                (str/format "%s [%s] [%s] %s%n"
+                            (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
+                            (logger/format-level level)
+                            (if (keyword? principal) (name principal) (str principal))
+                            (if (nil? ex-msg) msg (str msg logger/linefeed ex-msg)))))
 
             ;; create the file logger with a custom formatter
             (logger/file-logger :venice "/data/logs/venice.log" 
@@ -211,13 +216,14 @@
     (validate-file-logger-args id file max-size max-size-hysteresis 
                                formatter rotate-mode rotate-dir)
 
-    (let [max-size      (convert-to-bytes max-size)
-          max-size      (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
-          max-size-hyst (- 100 (clamp max-size-hysteresis 0 30))
-          max-size-hyst (if (pos? max-size) (* (/ max-size 100) max-size-hyst) -1) ;; hystersis
-          fmt           (coalesce formatter format-msg)
-          mutex         0
-          trunc-err-msg (format fmt :error :system  "Failed to truncate log file" nil)]
+    (let [max-size        (convert-to-bytes max-size)
+          max-size        (if (pos? max-size) (max 100 max-size) -1)    ;; -1, 100, 101, ...
+          max-size-hyst   (- 100 (clamp max-size-hysteresis 0 30))
+          max-size-hyst   (if (pos? max-size) (* (/ max-size 100) max-size-hyst) -1) ;; hystersis
+          fmt             (coalesce formatter format-msg)
+          level-threshold (volatile :debug)
+          mutex           0
+          trunc-err-msg   (format fmt :error :system  "Failed to truncate log file" nil)]
       (register-logger
         { :id                 id
           :type               :file
@@ -227,14 +233,16 @@
           :formatter          fmt
           :rotate-mode        rotate-mode
           :rotate-dir         rotate-dir
+          :level              level-threshold
           :handler            (fn [level principal msg exc] 
                                 { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-                                (spit-to-file mutex
-                                              file 
-                                              (format fmt level principal msg exc) 
-                                              max-size 
-                                              max-size-hyst
-                                              trunc-err-msg))
+                                (when (can-log? level @level-threshold)
+                                  (spit-to-file mutex
+                                                file 
+                                                (format fmt level principal msg exc) 
+                                                max-size 
+                                                max-size-hyst
+                                                trunc-err-msg)))
           :rotate             (fn [] 
                                 (case rotate-mode
                                   :none    nil
@@ -296,6 +304,26 @@
         ([level msg]               (h level nil msg nil))
         ([level principal msg]     (h level principal msg nil))
         ([level principal msg exc] (h level principal msg exc)))))
+
+
+(defn level
+  ([id]      
+    (if-let [l (id @loggers)] @(:level l)))
+
+  ([id level]
+    { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
+    (if-let [l (id @loggers)] (reset! (:level l) level))))
+
+
+(defn level-all [level]
+  { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
+  (doseq [l (vals @loggers)] (reset! (:level l) level)))
+
+
+(defn- can-log? [level-msg level-logger]
+   (if (= level-logger :debug)  
+     true
+     (> (level-msg levels) (level-logger levels))))
 
 
 (defn- register-logger [logger]
@@ -657,7 +685,7 @@
                 (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
                 (format-level level)
                 (if (keyword? principal) (name principal) (str principal))
-                (if (nil? ex-msg) msg "~{msg}~{linefeed}~{ex-msg}"))))
+                (if (nil? ex-msg) msg (str msg linefeed ex-msg)))))
 
 
 (defn 
@@ -749,6 +777,8 @@
 ;; -----------------------------------------------------------------------------
 ;; Main
 ;; -----------------------------------------------------------------------------
+
+(def- levels { :debug 0, :info 1, :warn 2, :error 3, :fatal 4 })
 
 ;; if true, start a rotation scheduler implicitely if a logger with file
 ;; rotation has been registered
