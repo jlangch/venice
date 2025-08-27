@@ -47,6 +47,11 @@ public class ModuleLoggerSection implements ISectionBuilder {
         main.addItem(diBuilder.getDocItem("logger/console-logger", false));
         main.addItem(diBuilder.getDocItem("logger/file-logger", false));
 
+        final DocSection level = new DocSection("Level", id());
+        all.addSection(level);
+        level.addItem(diBuilder.getDocItem("logger/level", false));
+        level.addItem(diBuilder.getDocItem("logger/level-all", false));
+
         final DocSection rot = new DocSection("Rotation", id());
         all.addSection(rot);
         rot.addItem(diBuilder.getDocItem("logger/rotation-scheduler-running?", false));
@@ -58,8 +63,6 @@ public class ModuleLoggerSection implements ISectionBuilder {
 
         final DocSection util = new DocSection("Util", id());
         all.addSection(util);
-        util.addItem(diBuilder.getDocItem("logger/level", false));
-        util.addItem(diBuilder.getDocItem("logger/level-all", false));
         util.addItem(diBuilder.getDocItem("logger/format-level", false));
         util.addItem(diBuilder.getDocItem("logger/format-level", false));
 
