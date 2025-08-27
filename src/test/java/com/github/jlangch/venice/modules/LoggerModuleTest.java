@@ -350,7 +350,7 @@ public class LoggerModuleTest {
     }
 
     @Test
-    public void logConsoleLevelSetTest_3() {
+    public void logConsoleLevelAllSetTest() {
         final Venice venice = new Venice();
 
         final String script =
@@ -418,7 +418,7 @@ public class LoggerModuleTest {
     }
 
     @Test
-    public void logFileLevelSetTest_3() {
+    public void logFileLevelAllSetTest() {
         final Venice venice = new Venice();
 
         final String script =
