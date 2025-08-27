@@ -350,6 +350,21 @@ public class LoggerModuleTest {
     }
 
     @Test
+    public void logConsoleLevelSetTest_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                   \n" +
+                "  (load-module :logger)               \n" +
+                "                                      \n" +
+                "  (logger/console-logger nil)         \n" +
+                "                                      \n" +
+                "  (logger/level-all :warn)            \n" +
+                "  (logger/level :console))            ";
+        assertEquals("warn", venice.eval(script));
+    }
+
+    @Test
     public void logFileLevelSetTest_1() {
         final Venice venice = new Venice();
 
@@ -396,6 +411,33 @@ public class LoggerModuleTest {
                 "    (logger/file-logger :test (io/file dir \"test.log\"))                   \n" +
                 "                                                                            \n" +
                 "    (logger/level :test :warn)                                              \n" +
+                "    (logger/level :test)                                                    \n" +
+                "    (finally                                                                \n" +
+                "      (io/delete-file-tree dir))))                                          ";
+        assertEquals("warn", venice.eval(script));
+    }
+
+    @Test
+    public void logFileLevelSetTest_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                         \n" +
+                "  (load-module :logger)                                                     \n" +
+                "                                                                            \n" +
+                "  (def dir (io/temp-dir \"logger-\"))                                       \n" +
+                "                                                                            \n" +
+                "  (try                                                                      \n" +
+                "    (def archive-dir (io/file dir \"archive\"))                             \n" +
+                "    (io/mkdir archive-dir)                                                  \n" +
+                "                                                                            \n" +
+                "    ;; disable for unit tests, rotation is started explicitly               \n" +
+                "    (logger/enable-auto-start-rotation-scheduler false)                     \n" +
+                "                                                                            \n" +
+                "    (logger/console-logger nil)                                             \n" +
+                "    (logger/file-logger :test (io/file dir \"test.log\"))                   \n" +
+                "                                                                            \n" +
+                "    (logger/level-all :warn)                                                \n" +
                 "    (logger/level :test)                                                    \n" +
                 "    (finally                                                                \n" +
                 "      (io/delete-file-tree dir))))                                          ";

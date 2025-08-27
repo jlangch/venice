@@ -330,9 +330,9 @@
   ([id]      
     (if-let [l (id @loggers)] @(:level l)))
 
-  ([id level]
-    { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-    (if-let [l (id @loggers)] (reset! (:level l) level))))
+  ([id new-level]
+    { :pre [(some? (new-level #{:debug :info :warn :error :fatal}))] }
+    (if-let [l (id @loggers)] (reset! (:level l) new-level))))
 
 
 (defn 
@@ -355,10 +355,10 @@
      :see-also '(
           "logger/level") }
 
-  level-all [level]
+  level-all [new-level]
 
-  { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
-  (doseq [l (vals @loggers)] (reset! (:level l) level)))
+  { :pre [(some? (new-level #{:debug :info :warn :error :fatal}))] }
+  (doseq [l (vals @loggers)] (reset! (:level l) new-level)))
 
 
 (defn- can-log? [level-msg level-logger]
@@ -826,10 +826,10 @@
 (def- auto-start-rotation-scheduler? (atom true))
 
 ;; a map of all registered loggers (key: id, value: data map)
-(def- loggers (atom {}))
+(def loggers (atom {}))
 
 ;; if true the rotation scheduler has been started 
 (def- rotation-scheduler-started? (atom false))
 
 ;; register a default console logger
-(register-logger (console-logger nil))
+(console-logger nil)
