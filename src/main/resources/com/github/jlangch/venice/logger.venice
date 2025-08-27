@@ -245,10 +245,10 @@
                                                 trunc-err-msg)))
           :rotate             (fn [] 
                                 (case rotate-mode
-                                  :none    nil
+                                  :none    false
                                   :daily   (rotate-log-by-day mutex id file rotate-dir)
                                   :monthly (rotate-log-by-month mutex id file rotate-dir)
-                                  nil)) } )
+                                  false)) } )
       nil)))
 
 
