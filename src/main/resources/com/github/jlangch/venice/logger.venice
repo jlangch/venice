@@ -306,7 +306,7 @@
         ([level principal msg exc] (h level principal msg exc)))))
 
 
-(defn level
+(defn
   ^{ :arglists '(
           "(level id)"
           "(level id new-level)")
@@ -326,6 +326,8 @@
           """)
      :see-also '(
           "logger/level-all") }
+
+  level
 
   ([id]      
     (if-let [l (id @loggers)] @(:level l)))
@@ -829,10 +831,10 @@
 (def- auto-start-rotation-scheduler? (atom true))
 
 ;; a map of all registered loggers (key: id, value: data map)
-(def loggers (atom {}))
+(def- loggers (atom {}))
 
 ;; if true the rotation scheduler has been started 
 (def- rotation-scheduler-started? (atom false))
 
-;; register a default console logger
+;; create and register a default console logger
 (console-logger nil)
