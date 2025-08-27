@@ -307,6 +307,26 @@
 
 
 (defn level
+  ^{ :arglists '(
+          "(level id)"
+          "(level id new-level)")
+     :doc """
+          Returns or sets the log level of logger with the specified ID.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (println (logger/level :console)) ;; get log level
+
+            (logger/level :console :warn)  ;; set log level
+
+            (println (logger/level :console))) ;; get log level
+          """)
+     :see-also '(
+          "logger/level-all") }
+
   ([id]      
     (if-let [l (id @loggers)] @(:level l)))
 
@@ -315,7 +335,28 @@
     (if-let [l (id @loggers)] (reset! (:level l) level))))
 
 
-(defn level-all [level]
+(defn 
+  ^{ :arglists '(
+          "(level-all new-level)")
+     :doc """
+          Sets the log level of all registered loggers.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :logger)
+
+            (println (logger/level :console)) ;; get log level
+
+            (logger/level-all :warn)  ;; set log level
+
+            (println (logger/level :console))) ;; get log level
+          """)
+     :see-also '(
+          "logger/level") }
+
+  level-all [level]
+
   { :pre [(some? (level #{:debug :info :warn :error :fatal}))] }
   (doseq [l (vals @loggers)] (reset! (:level l) level)))
 
@@ -323,7 +364,7 @@
 (defn- can-log? [level-msg level-logger]
    (if (= level-logger :debug)  
      true
-     (> (level-msg levels) (level-logger levels))))
+     (>= (level-msg levels) (level-logger levels))))
 
 
 (defn- register-logger [logger]
