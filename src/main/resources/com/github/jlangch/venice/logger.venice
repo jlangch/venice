@@ -39,7 +39,7 @@
           Create a console logger with either the default log message formatter
           or a custom formatter.
 
-          The console logger has the fix id `:console`
+          The console logger has the fix id `:console`.
           """ 
      :examples '(
           """
@@ -50,12 +50,12 @@
             (logger/console-logger)
 
             ;; get the :console logger
-            (def log-console (logger/logger :console))
+            (def log(logger/logger :console))
 
             ;; log some messages
-            (log-console :info "test message")
-            (log-console :info "kermit" "test message")
-            (log-console :info "kermit" "test message" (ex :VncException "test exception")))
+            (log :info "test message")
+            (log :info "kermit" "test message")
+            (log :info "kermit" "test message" (ex :VncException "test exception")))
           """
           """
           (do
@@ -64,9 +64,10 @@
             ;; custom formatter
             (defn custom-formatter [level principal msg exc]
               (let [ex-msg (logger/format-ex exc)]
-                (str/format "%s [%s] [%s] %s%n"
+                (str/format "%s [%s] [%s] [%s] %s%n"
                             (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
                             (logger/format-level level)
+                            (thread-name)
                             (if (keyword? principal) (name principal) (str principal))
                             (if (nil? ex-msg) msg (str msg logger/linefeed ex-msg)))))
 
@@ -74,12 +75,12 @@
             (logger/console-logger custom-formatter)
 
             ;; get the :console logger
-            (def log-console (logger/logger :console))
+            (def log (logger/logger :console))
 
             ;; log some messages
-            (log-console :info "test message")
-            (log-console :info "kermit" "test message")
-            (log-console :info "kermit" "test message" (ex :VncException "test exception")))
+            (log :info "test message")
+            (log :info "kermit" "test message")
+            (log :info "kermit" "test message" (ex :VncException "test exception")))
           """)
      :see-also '(
           "logger/logger"
@@ -117,23 +118,28 @@
 
           Arguments:
 
-          | id      | The mandatory logger ID. ID's are of type keyword |
-          | file    | The mandatory file to log to. The parent dir must exist |
+          | id      | The mandatory logger ID. ID's are of type keyword like `:venice`. |
+          | file    | The mandatory file to log to. The parent dir must exist! |
 
           Options:
 
           | :max-size n    | The max size of the file in bytes. If the size is \
                              reached, the file will be truncated at a line boundary \
-                             to max size. -1 means there is no limit in size.¶\
-                             The max size can be specified as a number like 20000 \
-                             or a number with a unit like :20KB, :20MB, or :2GB|
-          | :formatter f   | A custom formatter. Maybe `nil` to use the default \
-                             formatter |
-          | :rotate-mode k | A file rotation mode {:none, :daily, :montly}. \
-                             Defaults to :none|
+                             to the given max size. Defaults to `-1` meaning there \
+                             is no limit in size.¶\
+                             The max size can be specified as a number like `20000` \
+                             or a number with a unit like `:20KB`, `:20MB`, or `:2GB` |
+          | :formatter f   | A custom formatter. Defaults to `nil` to activate \
+                             the default formatter |
+          | :rotate-mode k | A file rotation mode {`:none`, `:daily`, `:montly`}. \
+                             Defaults to `:none`¶\
+                             Name convetion for rotated files:¶\
+                             daily: venice.log → venice-{yyyy.mm.dd}.log¶\
+                             monthly: venice.log → venice-{yyyy.mm}.log|
           | :rotate-dir f  | The file rotation directory. The directory must be \
-                             specified and must exist if the rotate mode is :daily \
-                             or :monthly. `nil` is passed for mode :none |
+                             specified and must exist if the rotate mode is \
+                             `:daily` or `:monthly`. `nil` is passed for mode \
+                             `:none`|
           """ 
      :examples '(
           """
@@ -179,10 +185,11 @@
 
             ;; custom formatter
             (defn custom-formatter [level principal msg exc]
-              (let [ex-msg (logger/format-ex exc)]
-                (str/format "%s [%s] [%s] %s%n"
+              (let [ex-msg  (logger/format-ex exc)]
+                (str/format "%s [%s] [%s] [%s] %s%n"
                             (time/format (time/local-date-time) "yyyy-MM-dd HH:mm:ss.SSS") 
                             (logger/format-level level)
+                            (thread-name)
                             (if (keyword? principal) (name principal) (str principal))
                             (if (nil? ex-msg) msg (str msg logger/linefeed ex-msg)))))
 
@@ -258,8 +265,10 @@
      :doc """
           Returns the logger with the specified ID.
 
-          The returned logger is a function with 2, 3, and 4 arguments to log 
+          The returned logger is a function with 1, 2, 3, and 4 arguments to log 
           messages.
+
+          1-arg log fn: `(fn [msg] ...)` (logs at :info level)
 
           2-arg log fn: `(fn [level msg] ...)` 
 
@@ -267,10 +276,11 @@
 
           4-arg log fn: `(fn [level principal msg exc] ...)`
 
-          The logger supports the levels :debug, :info, :warn, :error, and :fatal 
+          The logger supports the levels `:debug`, `:info`, `:warn`, `:error`, 
+          and `:fatal`
 
           If there is no logger with the specified id returns the default
-          :console logger. 
+          `:console` logger. 
           """ 
      :examples '(
           """
@@ -297,6 +307,7 @@
   logger [id]
 
   { :pre [(keyword? id)] }
+
   (let [l (id @loggers (default-logger))
         h (:handler l)]
     (fn ([]                        (h :info nil "" nil))
@@ -417,8 +428,8 @@
      :doc """
           Returns `true` if a rotation scheduler is running else `false`. 
 
-          The scheduler is started when the first file logger that has file
-          rotation enabled is created!
+          The scheduler is started when the first file logger with enabled file
+          rotation is created!
           """ 
      :examples '(
           """
@@ -448,7 +459,7 @@
   ^{ :arglists '(
           "(enable-auto-start-rotation-scheduler activate)")
      :doc """
-          Enables or disables the auto starting of the rotation scheduler. 
+          Enable or disable the auto starting of the rotation scheduler. 
           Default is deactivated. 
 
           If enabled, the scheduler starts when the first rotating file logger 
@@ -481,11 +492,13 @@
 
   enable-auto-start-rotation-scheduler [activate]
 
-  (reset! auto-start-rotation-scheduler? activate)
-  
-  ;; start the scheduler if rotating file loggers have been created early
-  (when (and activate (requires-rotation?))
-    (start-rotation-scheduler)))
+  ;; as soon as the scheduler is running it can not be deactivated
+  (when-not (rotation-scheduler-running?)
+    (reset! auto-start-rotation-scheduler? activate)
+    
+    ;; start the scheduler if rotating file loggers have been created early
+    (when (and activate (requires-rotation?))
+      (start-rotation-scheduler))))
 
 
 (defn 
@@ -694,7 +707,6 @@
       false)))
 
 
-
 (defn- rotate-log [id file archive-dir archive-base]
   (when (not (io/exists-dir? archive-dir))
     (throw (ex :VncException "The archive dir ~{archive-dir} does not exist!")))
@@ -738,7 +750,7 @@
   ^{ :arglists '(
           "(format-level level)")
      :doc """
-          Formats a log level. level mus be a keyword!
+          Formats a log level. The 'level' must be a keyword!
           """ 
      :examples '(
           """
@@ -751,20 +763,18 @@
 
   format-level [level]
 
-  (if (keyword? level)
-    (str/upper-case (name level))
-    "???"))
+  (if (keyword? level) (str/upper-case (name level)) "???"))
 
 
 (defn 
   ^{ :arglists '(
           "(format-ex e)")
      :doc """
-          Formats an exception. The exception my be a Venice exception or a
+          Formats an exception. The exception may be a Venice exception or a
           Java exception. 
           
-          Returns a Venice stack trace in the former case and a Java stack trace 
-          in the ladder.
+          Returns either a Venice stack trace or a Java stack trace depending
+          on the exception type.
           """ 
      :examples '(
           """
