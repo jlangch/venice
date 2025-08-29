@@ -131,7 +131,7 @@
                              or a number with a unit like `:20KB`, `:20MB`, or `:2GB` |
           | :formatter f   | A custom formatter. Defaults to `nil` to activate \
                              the default formatter |
-          | :rotate-mode k | A file rotation mode {`:none`, `:daily`, `:montly`}. \
+          | :rotate-mode k | A file rotation mode {`:none`, `:daily`, `:monthly`}. \
                              Defaults to `:none`¶\
                              Name convetion for rotated files:¶\
                              daily: venice.log → venice-{yyyy.mm.dd}.log¶\
@@ -323,6 +323,8 @@
           "(level id new-level)")
      :doc """
           Returns or sets the log level of logger with the specified ID.
+
+          Level is one of `:debug`, `:info`, `:warn`, `:error`, or `:fatal`
           """ 
      :examples '(
           """
@@ -353,6 +355,8 @@
           "(level-all new-level)")
      :doc """
           Sets the log level of all registered loggers.
+
+          Level is one of `:debug`, `:info`, `:warn`, `:error`, or `:fatal`
           """ 
      :examples '(
           """
