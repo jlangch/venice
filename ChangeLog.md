@@ -4,8 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-
-## [1.12.54] - 2025-08-xx
+## [1.12.55] - 2025-08-xx
 
 ### Added
 
@@ -14,6 +13,12 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.54] - 2025-08-29
+
+### Added
 
 - function `io/truncate-from-start-keep-lines` to truncate text files honoring
   complete lines
