@@ -50,7 +50,7 @@ public class IO {
             return data;
         }
         catch(IOException ex) {
-            throw new VncException("", ex);
+            throw new VncException("Failed to read data", ex);
         }
     }
 
@@ -68,7 +68,7 @@ public class IO {
             throw ex;
         }
         catch(Exception ex) {
-            throw new VncException("", ex);
+            throw new VncException("Failed to write data", ex);
         }
     }
 
@@ -84,7 +84,7 @@ public class IO {
             }
         }
         catch(Exception ex) {
-            throw new VncException("", ex);
+            throw new VncException("Failed to read data", ex);
         }
     }
 
@@ -96,7 +96,7 @@ public class IO {
             while (buf.hasRemaining()) ch.write(buf);
         }
         catch(Exception ex) {
-            throw new VncException("", ex);
+            throw new VncException("Failed to write data", ex);
         }
     }
 
