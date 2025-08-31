@@ -724,8 +724,9 @@
         (if (io/exists-file? archive)
           (recur (inc x))
           (do 
+            (log :info :system "Rotated log file")  ;; old log file
             (io/move-file file archive)
-            (log :info :system "Rotated log file")
+            (log :info :system "Rotated log file")  ;; new log file
             true))))
     false))
 
