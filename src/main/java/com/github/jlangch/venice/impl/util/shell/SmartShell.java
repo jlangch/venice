@@ -393,6 +393,6 @@ public class SmartShell {
     }
 
 
-    private static ManagedCachedThreadPoolExecutor mngdExecutor =
+    private static final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-shell-pool", 6);  // 3 is the absolute minimum
 }
