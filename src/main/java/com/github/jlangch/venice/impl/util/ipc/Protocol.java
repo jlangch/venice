@@ -27,6 +27,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -105,12 +106,12 @@ public class Protocol {
             final Status status = Status.fromCode(statusCode);
 
             if (magic1 != 'v' || magic2 != 'n') {
-                throw new RuntimeException(
+                throw new VncException(
                         "Received unknow message (bad magic bytes)!");
             }
 
             if (version != PROTOCOL_VERSION) {
-                throw new RuntimeException(
+                throw new VncException(
                         "Received message with unsupported protocol version" + version + "!");
             }
 
@@ -131,14 +132,14 @@ public class Protocol {
             final byte[] data = payloadFrame.array();
 
             if (status == null) {
-                throw new RuntimeException(
+                throw new VncException(
                         "Received illegal status code " + statusCode + "!");
             }
 
             return new Message(status, charset, mimetype, data);
         }
         catch(IOException ex) {
-            throw new RuntimeException(
+            throw new VncException(
                     "Failed to receive message!", ex);
         }
     }

@@ -25,6 +25,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -39,7 +40,7 @@ public class TcpClient implements Closeable {
     }
 
     public void open() {
-        if (!opened.compareAndSet(false, true)) {
+        if (opened.compareAndSet(false, true)) {
             SocketChannel ch = null;
             try {
                 ch = SocketChannel.open(new InetSocketAddress(host, port));
@@ -67,13 +68,27 @@ public class TcpClient implements Closeable {
         }
     }
 
+    public Message sendMessage(final Message msg) {
+        Objects.requireNonNull(msg);
+
+        final SocketChannel ch = channel.get();
+
+        if (ch == null) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        Protocol.sendMessage(ch, msg);
+
+        return Protocol.receiveMessage(ch);
+    }
+
 
     private void safeClose(final SocketChannel ch) {
         if (ch != null) {
             try {
                 ch.close();
             }
-            catch(Exception ignore) {}
+            catch(Exception ignore) { }
         }
     }
 

@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.util.ipc;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
+import com.github.jlangch.venice.VncException;
+
 
 public class Message {
 
@@ -95,7 +97,7 @@ public class Message {
             return new String(data, Charset.forName(charset));
         }
         else {
-            throw new RuntimeException("A binary message can be converted to text data!");
+            throw new VncException("A binary message can be converted to text data!");
         }
     }
 

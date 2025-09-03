@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,17 +45,19 @@ public class TcpServer implements Closeable {
 
 
     public void start(final Function<Message,Message> handler) {
-        if (!started.compareAndSet(false, true)) {
+        Objects.requireNonNull(handler);
+
+        if (started.compareAndSet(false, true)) {
             final ServerSocketChannel ch = startServer();
 
             try {
                 final ExecutorService executor = mngdExecutor.getExecutor();
 
+                // run in a thread to not block the caller
                 executor.execute(() -> {
-                    while (true) {
+                    while (started.get()) {
                         try {
                             final SocketChannel socket = ch.accept();
-
                             final Connection conn = new Connection(socket, handler);
                             executor.execute(conn);
                         }
@@ -90,6 +93,9 @@ public class TcpServer implements Closeable {
         }
     }
 
+    public boolean isRunning() {
+        return started.get();
+    }
 
     private void safeClose(final ServerSocketChannel ch) {
         if (ch != null) {
