@@ -47,14 +47,15 @@ public class Protocol {
         // [1] header
         final ByteBuffer header = ByteBuffer.allocate(10);
         // 2 bytes magic chars
-        header.putChar('v');
-        header.putChar('c');
+        header.put((byte)'v');
+        header.put((byte)'n');
         // 4 bytes (integer) protocol version
         header.putInt(PROTOCOL_VERSION);
         // 4 bytes (integer) request/response status
         header.putInt(message.getStatus().getValue());
         header.flip();
-        IO.writeFrame(ch, header);
+
+        IO.writeFully(ch, header);
 
         // [2] charset frame
         if (StringUtil.isBlank(message.getCharset())) {
@@ -65,8 +66,7 @@ public class Protocol {
         }
         else {
             final byte[] charsetData = message.getCharset().getBytes(Charset.forName("UTF8"));
-            final ByteBuffer charset = ByteBuffer.allocate(4 + charsetData.length);
-            charset.putInt(charsetData.length);
+            final ByteBuffer charset = ByteBuffer.allocate(charsetData.length);
             charset.put(charsetData);
             charset.flip();
             IO.writeFrame(ch, charset);
@@ -74,16 +74,14 @@ public class Protocol {
 
         // [3] mimetype frame
         final byte[] mimetypeData = message.getMimetype().getBytes(Charset.forName("UTF8"));
-        final ByteBuffer mimetype = ByteBuffer.allocate(4 + mimetypeData.length);
-        mimetype.putInt(mimetypeData.length);
+        final ByteBuffer mimetype = ByteBuffer.allocate(mimetypeData.length);
         mimetype.put(mimetypeData);
         mimetype.flip();
         IO.writeFrame(ch, mimetype);
 
         // [4] payload data
         final byte[] payloadData = message.getData();
-        final ByteBuffer payload = ByteBuffer.allocate(4 + payloadData.length);
-        payload.putInt(payloadData.length);
+        final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
         IO.writeFrame(ch, payload);
@@ -98,6 +96,8 @@ public class Protocol {
             // [1] header
             final ByteBuffer header = ByteBuffer.allocate(10);
             ch.read(header);
+
+            header.flip();
 
             final byte magic1 = header.get();
             final byte magic2 = header.get();

@@ -72,7 +72,7 @@ public class IO {
         }
     }
 
-    private static void readFully(
+    public static void readFully(
             final SocketChannel ch,
             final ByteBuffer buf
     ) {
@@ -88,7 +88,7 @@ public class IO {
         }
     }
 
-    private static void writeFully(
+    public static void writeFully(
             final SocketChannel ch,
             final ByteBuffer buf
     ) {

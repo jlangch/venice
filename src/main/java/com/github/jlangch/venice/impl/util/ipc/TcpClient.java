@@ -34,6 +34,11 @@ import com.github.jlangch.venice.VncException;
 
 public class TcpClient implements Closeable {
 
+    public TcpClient(final int port) {
+        this.host = "127.0.0.1";
+        this.port = port;
+    }
+
     public TcpClient(final String host, final int port) {
         this.host = host;
         this.port = port;

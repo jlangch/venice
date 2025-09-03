@@ -75,6 +75,14 @@ public class Message {
                 data);
     }
 
+    public static Message hello() {
+        return Message.text(Status.REQUEST, "text/plain", "UTF-8", "Hello!");
+    }
+
+    public Message echo() {
+        return new Message(Status.RESPONSE_OK, mimetype, charset, data);
+    }
+
 
     public Status getStatus() {
         return status;

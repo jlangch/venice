@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.impl.util.ipc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -50,9 +52,7 @@ public class TcpServerTest {
         server.close();
 
         assertFalse(server.isRunning());
-
     }
-
 
     @Test
     public void test_start_stop_err() throws Exception {
@@ -82,7 +82,36 @@ public class TcpServerTest {
             server2.close();
             assertFalse(server.isRunning());
         }
+    }
 
+    @Test
+    public void test_echo_server() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> { return req.echo(); };
+
+        server.start(echoHandler);
+
+        Thread.sleep(300);
+
+        client.open();
+
+        try {
+            final Message request = Message.hello();
+
+            final Message response = client.sendMessage(request);
+
+            assertNotNull(response);
+            assertEquals(Status.RESPONSE_OK,    response.getStatus());
+            assertEquals(request.getMimetype(), response.getMimetype());
+            assertEquals(request.getCharset(),  response.getCharset());
+            assertEquals(request.getText(),     response.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
     }
 
 }

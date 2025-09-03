@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.ipc;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -116,6 +117,14 @@ public class TcpServer implements Closeable {
 
             return srv;
         }
+        catch(BindException ex) {
+            safeClose(srv);
+            started.set(false);
+            server.set(null);
+            throw new VncException(
+                    "Failed to start TcpServer @ 127.0.0.1 on port " + port + "! " + ex.getMessage(),
+                    ex);
+        }
         catch(Exception ex) {
             safeClose(srv);
             started.set(false);
@@ -144,7 +153,7 @@ public class TcpServer implements Closeable {
                 Protocol.sendMessage(ch, response);
             }
             catch(Exception ex) {
-
+                ex.printStackTrace();
             }
         }
 
