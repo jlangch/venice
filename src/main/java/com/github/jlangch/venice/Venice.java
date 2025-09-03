@@ -598,7 +598,7 @@ public class Venice {
         }
     }
 
-    private static ManagedCachedThreadPoolExecutor mngdExecutor =
+    private static final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-timeout-pool", 100);
 
 

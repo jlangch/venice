@@ -3156,6 +3156,6 @@ public class ConcurrencyFunctions {
 
 
 
-    private static ManagedCachedThreadPoolExecutor mngdExecutor =
+    private static final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-future-pool", 200);
 }
