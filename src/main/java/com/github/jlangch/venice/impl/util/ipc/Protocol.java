@@ -72,14 +72,21 @@ public class Protocol {
             IO.writeFrame(ch, charset);
         }
 
-        // [3] mimetype frame
+        // [3] topic frame
+        final byte[] topicData = message.getTopic().getBytes(Charset.forName("UTF8"));
+        final ByteBuffer topic = ByteBuffer.allocate(topicData.length);
+        topic.put(topicData);
+        topic.flip();
+        IO.writeFrame(ch, topic);
+
+        // [4] mimetype frame
         final byte[] mimetypeData = message.getMimetype().getBytes(Charset.forName("UTF8"));
         final ByteBuffer mimetype = ByteBuffer.allocate(mimetypeData.length);
         mimetype.put(mimetypeData);
         mimetype.flip();
         IO.writeFrame(ch, mimetype);
 
-        // [4] payload data
+        // [5] payload data
         final byte[] payloadData = message.getData();
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
@@ -121,13 +128,19 @@ public class Protocol {
                                     ? new String(charsetFrame.array(), Charset.forName("UTF8"))
                                     : null;
 
-            // [3] mimetype frame
+            // [3] topic frame
+            final ByteBuffer topicFrame = IO.readFrame(ch);
+            final String topic = charsetFrame.hasRemaining()
+                                        ? new String(topicFrame.array(), Charset.forName("UTF8"))
+                                        : "*";
+
+            // [4] mimetype frame
             final ByteBuffer mimetypeFrame = IO.readFrame(ch);
             final String mimetype = charsetFrame.hasRemaining()
                                         ? new String(mimetypeFrame.array(), Charset.forName("UTF8"))
                                         : "application/octet-stream";
 
-            // [4] payload data
+            // [5] payload data
             final ByteBuffer payloadFrame = IO.readFrame(ch);
             final byte[] data = payloadFrame.array();
 
@@ -136,7 +149,7 @@ public class Protocol {
                         "Received illegal status code " + statusCode + "!");
             }
 
-            return new Message(status, charset, mimetype, data);
+            return new Message(status, topic, mimetype, charset, data);
         }
         catch(IOException ex) {
             throw new VncException(

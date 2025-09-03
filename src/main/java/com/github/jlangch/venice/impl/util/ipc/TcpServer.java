@@ -92,7 +92,6 @@ public class TcpServer implements Closeable {
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
             mngdExecutor.shutdown();
-
             safeClose(server.get());
             server.set(null);
         }
@@ -120,7 +119,6 @@ public class TcpServer implements Closeable {
                 srv.socket().setSoTimeout(timeout);
             }
             server.set(srv);
-
             return srv;
         }
         catch(BindException ex) {
@@ -154,7 +152,6 @@ public class TcpServer implements Closeable {
         public void run() {
             try {
                 final Message request = Protocol.receiveMessage(ch);
-
                 final Message response = handler.apply(request);
                 Protocol.sendMessage(ch, response);
             }

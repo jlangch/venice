@@ -99,6 +99,9 @@ public class TcpClient implements Closeable {
         try {
             return sendMessageAsync(msg).get(timeout, unit);
         }
+        catch(VncException ex) {
+            throw ex;
+        }
         catch(TimeoutException ex) {
             throw new com.github.jlangch.venice.TimeoutException(
                     "Timeout while waiting for IPC response.");

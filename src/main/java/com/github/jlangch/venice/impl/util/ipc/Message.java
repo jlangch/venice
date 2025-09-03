@@ -31,11 +31,13 @@ public class Message {
 
     Message(
             final Status status,
+            final String topic,
             final String mimetype,
             final String charset,
             final byte[] data
     ) {
         this.status = status;
+        this.topic = topic;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -43,17 +45,20 @@ public class Message {
 
     public static Message text(
             final Status status,
+            final String topic,
             final String mimetype,
             final String charset,
             final String data
     ) {
         Objects.requireNonNull(status);
+        Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(data);
 
         return new Message(
                 status,
+                topic,
                 mimetype,
                 charset,
                 data.getBytes(Charset.forName(charset)));
@@ -61,31 +66,42 @@ public class Message {
 
     public static Message binary(
             final Status status,
+            final String topic,
             final String mimetype,
             final byte[] data
     ) {
         Objects.requireNonNull(status);
+        Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
 
         return new Message(
                 status,
+                topic,
                 mimetype,
                 null,
                 data);
     }
 
     public static Message hello() {
-        return Message.text(Status.REQUEST, "text/plain", "UTF-8", "Hello!");
+        return Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
     }
 
-    public Message echo() {
-        return new Message(Status.RESPONSE_OK, mimetype, charset, data);
+    public static Message echo() {
+        return Message.text(Status.REQUEST, "echo", "text/plain", "UTF-8", "Hello!");
+    }
+
+    public Message asEcho() {
+        return new Message(Status.RESPONSE_OK, topic, mimetype, charset, data);
     }
 
 
     public Status getStatus() {
         return status;
+    }
+
+    public String getTopic() {
+        return topic;
     }
 
     public String getMimetype() {
@@ -111,6 +127,7 @@ public class Message {
 
 
     private final Status status;
+    private final String topic;
     private final String mimetype;
     private final String charset;
     private final byte[] data;

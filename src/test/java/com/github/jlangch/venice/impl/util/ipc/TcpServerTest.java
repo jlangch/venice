@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.BindException;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -85,11 +86,11 @@ public class TcpServerTest {
     }
 
     @Test
-    public void test_echo_server() throws Exception {
+    public void test_echo_server_1() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.echo(); };
+        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
 
         server.start(echoHandler);
 
@@ -104,6 +105,71 @@ public class TcpServerTest {
 
             assertNotNull(response);
             assertEquals(Status.RESPONSE_OK,    response.getStatus());
+            assertEquals(request.getTopic(),    response.getTopic());
+            assertEquals(request.getMimetype(), response.getMimetype());
+            assertEquals(request.getCharset(),  response.getCharset());
+            assertEquals(request.getText(),     response.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_echo_server_2() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+
+        server.start(echoHandler);
+
+        Thread.sleep(300);
+
+        client.open();
+
+        try {
+            final Message request = Message.echo();
+
+            final Message response = client.sendMessage(request);
+
+            assertNotNull(response);
+            assertEquals(Status.RESPONSE_OK, response.getStatus());
+            assertEquals("echo",             response.getTopic());
+            assertEquals("text/plain",       response.getMimetype());
+            assertEquals("UTF-8",            response.getCharset());
+            assertEquals("Hello!",           response.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_client_async() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+
+        server.start(echoHandler);
+
+        Thread.sleep(300);
+
+        client.open();
+
+        try {
+            final Message request = Message.hello();
+
+            final Future<Message> future = client.sendMessageAsync(request);
+
+            final Message response = future.get();
+
+            assertNotNull(response);
+            assertEquals(Status.RESPONSE_OK,    response.getStatus());
+            assertEquals(request.getTopic(),    response.getTopic());
             assertEquals(request.getMimetype(), response.getMimetype());
             assertEquals(request.getCharset(),  response.getCharset());
             assertEquals(request.getText(),     response.getText());
