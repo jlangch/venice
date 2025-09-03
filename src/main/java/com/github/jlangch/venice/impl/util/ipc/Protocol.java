@@ -29,6 +29,7 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
 
+
 public class Protocol {
 
     public Protocol() {

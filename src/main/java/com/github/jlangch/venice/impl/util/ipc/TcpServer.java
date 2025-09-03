@@ -25,11 +25,16 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 
+// https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
 
 public class TcpServer implements Closeable {
 
@@ -38,20 +43,33 @@ public class TcpServer implements Closeable {
     }
 
 
-    public void start() {
+    public void start(final Function<Message,Message> handler) {
         if (!started.compareAndSet(false, true)) {
-            ServerSocketChannel srv = null;
+            final ServerSocketChannel ch = startServer();
+
             try {
-                srv = ServerSocketChannel.open();
-                srv.bind(new InetSocketAddress("127.0.0.1", port));
-                server.set(srv);
+                final ExecutorService executor = mngdExecutor.getExecutor();
+
+                executor.execute(() -> {
+                    while (true) {
+                        try {
+                            final SocketChannel socket = ch.accept();
+
+                            final Connection conn = new Connection(socket, handler);
+                            executor.execute(conn);
+                        }
+                        catch (IOException ignored) {
+                            return; // finish listener
+                        }
+                    }
+                });
             }
             catch(Exception ex) {
-                safeClose(srv);
+                safeClose(ch);
                 started.set(false);
                 server.set(null);
                 throw new VncException(
-                        "Failed to start TcpServer @ 127.0.0.1 on port " + port + "!",
+                        "Closed TcpServer @ 127.0.0.1 on port " + port + "!",
                         ex);
             }
         }
@@ -65,6 +83,8 @@ public class TcpServer implements Closeable {
     @Override
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
+            mngdExecutor.shutdown();
+
             safeClose(server.get());
             server.set(null);
         }
@@ -80,8 +100,58 @@ public class TcpServer implements Closeable {
         }
     }
 
+    private ServerSocketChannel startServer() {
+        ServerSocketChannel srv = null;
+        try {
+            srv = ServerSocketChannel.open();
+            srv.bind(new InetSocketAddress("127.0.0.1", port));
+            // srv.socket().setSoTimeout(4000);
+            server.set(srv);
+
+            return srv;
+        }
+        catch(Exception ex) {
+            safeClose(srv);
+            started.set(false);
+            server.set(null);
+            throw new VncException(
+                    "Failed to start TcpServer @ 127.0.0.1 on port " + port + "!",
+                    ex);
+        }
+    }
+
+    private static class Connection implements Runnable {
+        public Connection(
+                final SocketChannel ch,
+                final Function<Message,Message> handler
+        ) {
+            this.ch = ch;
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            try {
+                final Message request = Protocol.receiveMessage(ch);
+
+                final Message response = handler.apply(request);
+                Protocol.sendMessage(ch, response);
+            }
+            catch(Exception ex) {
+
+            }
+        }
+
+        private final SocketChannel ch;
+        private final Function<Message,Message> handler;
+    }
+
+
 
     private final int port;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
+
+    private final ManagedCachedThreadPoolExecutor mngdExecutor =
+            new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 10);
 }
