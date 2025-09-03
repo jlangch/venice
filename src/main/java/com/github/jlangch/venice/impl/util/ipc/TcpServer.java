@@ -49,6 +49,11 @@ public class TcpServer implements Closeable {
         this.timeout = Math.max(0, timeout);
     }
 
+
+    public void setMaximumParallelConnections(final int count) {
+        mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
+    }
+
     public void start(final Function<Message,Message> handler) {
         Objects.requireNonNull(handler);
 
@@ -58,12 +63,13 @@ public class TcpServer implements Closeable {
             try {
                 final ExecutorService executor = mngdExecutor.getExecutor();
 
-                // run in a thread to not block the caller
+                // run in an executor thread to not block the caller
                 executor.execute(() -> {
                     while (started.get()) {
                         try {
-                            final SocketChannel socket = ch.accept();
-                            final Connection conn = new Connection(socket, handler);
+                            final SocketChannel channel = ch.accept();
+                            channel.configureBlocking(true);
+                            final Connection conn = new Connection(channel, handler);
                             executor.execute(conn);
                         }
                         catch (IOException ignored) {
@@ -151,9 +157,15 @@ public class TcpServer implements Closeable {
         @Override
         public void run() {
             try {
-                final Message request = Protocol.receiveMessage(ch);
-                final Message response = handler.apply(request);
-                Protocol.sendMessage(ch, response);
+                while(ch.isConnected()) {
+                    final Message request = Protocol.receiveMessage(ch);
+                    if (request == null) {
+                        // client closed connection
+                        break;
+                    }
+                    final Message response = handler.apply(request);
+                    Protocol.sendMessage(ch, response);
+                }
             }
             catch(Exception ex) {
                 ex.printStackTrace();
@@ -172,5 +184,5 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
-            new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 10);
+            new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 20);
 }

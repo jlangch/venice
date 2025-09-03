@@ -102,7 +102,10 @@ public class Protocol {
         try {
             // [1] header
             final ByteBuffer header = ByteBuffer.allocate(10);
-            ch.read(header);
+            final int bytesRead = ch.read(header);
+            if (bytesRead < 0) {
+            	return null;  // end of stream, client closed connection
+            }
 
             header.flip();
 

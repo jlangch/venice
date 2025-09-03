@@ -28,7 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.BindException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -176,6 +180,100 @@ public class TcpServerTest {
         }
         finally {
             client.close();
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_echo_server_multiple_messages() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+
+        server.start(echoHandler);
+
+        Thread.sleep(300);
+
+        client.open();
+
+        try {
+            for(int ii=0; ii<10; ii++) {
+                final String msg = "Hello " + ii;
+
+                final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
+
+                final Message response = client.sendMessage(request);
+
+                assertNotNull(response);
+                assertEquals(Status.RESPONSE_OK, response.getStatus());
+                assertEquals("hello",            response.getTopic());
+                assertEquals("text/plain",       response.getMimetype());
+                assertEquals("UTF-8",            response.getCharset());
+                assertEquals(msg,                response.getText());
+            }
+        }
+        finally {
+            client.close();
+
+            Thread.sleep(300);
+
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_echo_server_multiple_clients() throws Exception {
+
+        final TcpServer server = new TcpServer(33333);
+
+        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+
+        server.start(echoHandler);
+
+        Thread.sleep(300);
+
+        try {
+
+            final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+
+            // start 10 clients (the server supports up to 20 parallel connections as default)
+            final List<Future<?>> futures = new ArrayList<>();
+            for(int cc=0; cc<10; cc++) {
+                final int clientNr = cc;
+                futures.add(es.submit(() -> {
+                    final TcpClient client = new TcpClient(33333);
+                    try {
+                        client.open();
+
+                        // 10 messages per client
+                        for(int ii=0; ii<10; ii++) {
+                            final String msg = "Hello " + clientNr + " / " + ii;
+
+                            final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
+
+                            final Message response = client.sendMessage(request);
+
+                            assertNotNull(response);
+                            assertEquals(Status.RESPONSE_OK, response.getStatus());
+                            assertEquals("hello",            response.getTopic());
+                            assertEquals("text/plain",       response.getMimetype());
+                            assertEquals("UTF-8",            response.getCharset());
+                            assertEquals(msg,                response.getText());
+
+                            // synchronized (server) { System.out.println(msg); }
+                        }
+                    }
+                    finally {
+                        try { client.close(); } catch (Exception ignore) {}
+                    }
+                }));
+            }
+
+            // wait for all clients to be finished
+            futures.forEach(f ->  { try { f.get(); } catch (Exception ignore) {}});
+        }
+        finally {
             server.close();
         }
     }
