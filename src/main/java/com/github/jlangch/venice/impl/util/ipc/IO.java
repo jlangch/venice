@@ -50,7 +50,7 @@ public class IO {
             return data;
         }
         catch(IOException ex) {
-            throw new VncException("Failed to read data", ex);
+            throw new VncException("Failed to read frame data", ex);
         }
     }
 
@@ -68,7 +68,7 @@ public class IO {
             throw ex;
         }
         catch(Exception ex) {
-            throw new VncException("Failed to write data", ex);
+            throw new VncException("Failed to write frame data", ex);
         }
     }
 

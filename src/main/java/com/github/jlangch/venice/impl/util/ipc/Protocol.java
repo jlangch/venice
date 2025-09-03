@@ -107,7 +107,7 @@ public class Protocol {
 
             if (magic1 != 'v' || magic2 != 'n') {
                 throw new VncException(
-                        "Received unknow message (bad magic bytes)!");
+                        "Received unknown message (bad magic bytes)!");
             }
 
             if (version != PROTOCOL_VERSION) {

@@ -41,9 +41,13 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 public class TcpServer implements Closeable {
 
     public TcpServer(final int port) {
-        this.port = port;
+        this(port, 0);
     }
 
+    public TcpServer(final int port, final int timeout) {
+        this.port = port;
+        this.timeout = Math.max(0, timeout);
+    }
 
     public void start(final Function<Message,Message> handler) {
         Objects.requireNonNull(handler);
@@ -112,7 +116,9 @@ public class TcpServer implements Closeable {
         try {
             srv = ServerSocketChannel.open();
             srv.bind(new InetSocketAddress("127.0.0.1", port));
-            // srv.socket().setSoTimeout(4000);
+            if (timeout > 0) {
+                srv.socket().setSoTimeout(timeout);
+            }
             server.set(srv);
 
             return srv;
@@ -164,6 +170,7 @@ public class TcpServer implements Closeable {
 
 
     private final int port;
+    private final int timeout;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
 

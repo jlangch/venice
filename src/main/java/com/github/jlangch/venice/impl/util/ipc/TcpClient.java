@@ -26,10 +26,16 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 
 
 public class TcpClient implements Closeable {
@@ -87,6 +93,50 @@ public class TcpClient implements Closeable {
         return Protocol.receiveMessage(ch);
     }
 
+    public Message sendMessage(final Message msg, final long timeout, final TimeUnit unit) {
+        Objects.requireNonNull(msg);
+
+        try {
+            return sendMessageAsync(msg).get(timeout, unit);
+        }
+        catch(TimeoutException ex) {
+            throw new com.github.jlangch.venice.TimeoutException(
+                    "Timeout while waiting for IPC response.");
+        }
+        catch(ExecutionException ex) {
+            final Throwable cause = ex.getCause();
+            if (cause instanceof VncException) {
+                throw (VncException)cause;
+            }
+            else {
+                throw new VncException("Error in IPC call", cause);
+            }
+        }
+        catch(InterruptedException ex) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                    "Interrupted while waiting for IPC response.");
+        }
+    }
+
+    public Future<Message> sendMessageAsync(final Message msg) {
+        Objects.requireNonNull(msg);
+
+        final SocketChannel ch = channel.get();
+
+        if (ch == null) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        final Callable<Message> task = () -> {
+            Protocol.sendMessage(ch, msg);
+            return Protocol.receiveMessage(ch);
+        };
+
+        return mngdExecutor
+                .getExecutor()
+                .submit(task);
+    }
+
 
     private void safeClose(final SocketChannel ch) {
         if (ch != null) {
@@ -102,4 +152,7 @@ public class TcpClient implements Closeable {
     private final int port;
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
+
+    private final ManagedCachedThreadPoolExecutor mngdExecutor =
+            new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
 }
