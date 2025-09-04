@@ -37,6 +37,7 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
 
@@ -345,6 +346,52 @@ public class TcpServerTest {
             futures.forEach(f ->  { try { f.get(); } catch (Exception ignore) {}});
         }
         finally {
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_remote_code_execution() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Venice venice = new Venice();
+
+        final Function<Message,Message> echoHandler = req -> {
+            final String result = venice.eval(req.getText()).toString();
+            return Message.text(
+                        Status.RESPONSE_OK,
+                        "venice.response",
+                        "text/plain",
+                        "UTF-8",
+                        result);
+        };
+
+        server.start(echoHandler);
+
+        Thread.sleep(300);
+
+        client.open();
+
+        try {
+            final Message request = Message.text(
+                                        Status.REQUEST,
+                                        "venice",
+                                        "application/venice",
+                                        "UTF-8",
+                                        "(+ 1 2)");
+
+            final Message response = client.sendMessage(request);
+
+            assertNotNull(response);
+            assertEquals(Status.RESPONSE_OK, response.getStatus());
+            assertEquals("venice.response",  response.getTopic());
+            assertEquals("text/plain",       response.getMimetype());
+            assertEquals("UTF-8",            response.getCharset());
+            assertEquals("3",                response.getText());
+        }
+        finally {
+            client.close();
             server.close();
         }
     }
