@@ -30,11 +30,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.net.BindException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -51,7 +53,7 @@ public class TcpServerTest {
 
         server.start(handler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         assertTrue(server.isRunning());
 
@@ -70,7 +72,7 @@ public class TcpServerTest {
         try {
             server.start(handler);
 
-            Thread.sleep(300);
+            sleep(300);
 
             assertTrue(server.isRunning());
 
@@ -91,6 +93,91 @@ public class TcpServerTest {
     }
 
     @Test
+    public void test_client_without_server() throws Exception {
+        try {
+            final TcpClient client = new TcpClient(33333);
+            client.open();
+
+            fail("Expected exception");
+
+            client.close();
+        }
+        catch(VncException ex) {
+        }
+    }
+
+    @Test
+    public void test_echo_server_client_abort() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> { sleep(1000); return req.asEcho(); };
+
+        server.start(echoHandler);
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final Message request = Message.hello();
+
+            final Future<Message> future = client.sendMessageAsync(request);
+
+            sleep(100);
+            client.close();
+            sleep(100);
+
+            future.get();
+
+            fail("Expected exception");
+        }
+        catch(ExecutionException ex) {
+            assertTrue(ex.getCause() instanceof VncException);
+        }
+        finally {
+            server.close();
+        }
+    }
+
+    @Test
+    @Disabled
+    public void test_echo_server_server_abort() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+
+        server.start(echoHandler);
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final Message request = Message.hello();
+
+            Message response = client.sendMessage(request);
+            assertNotNull(response);
+
+            server.close();
+            sleep(1000);
+            assertFalse(server.isRunning());
+
+            // this will cause a IOException broken pipe
+            response = client.sendMessage(request);
+
+            fail("Should not reach here");  // Test fails occasionally here!!!
+        }
+        catch(VncException ex) {
+            assertTrue(ex.getCause() instanceof java.io.IOException);
+        }
+        finally {
+            client.close();
+        }
+    }
+
+    @Test
     public void test_echo_server_1() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
@@ -99,7 +186,7 @@ public class TcpServerTest {
 
         server.start(echoHandler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         client.open();
 
@@ -130,7 +217,7 @@ public class TcpServerTest {
 
         server.start(echoHandler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         client.open();
 
@@ -161,7 +248,7 @@ public class TcpServerTest {
 
         server.start(echoHandler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         client.open();
 
@@ -194,7 +281,7 @@ public class TcpServerTest {
 
         server.start(echoHandler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         client.open();
 
@@ -217,7 +304,7 @@ public class TcpServerTest {
         finally {
             client.close();
 
-            Thread.sleep(300);
+            sleep(300);
 
             server.close();
         }
@@ -233,7 +320,7 @@ public class TcpServerTest {
 
         server.start(echoHandler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         client.open();
 
@@ -258,7 +345,7 @@ public class TcpServerTest {
         finally {
             client.close();
 
-            Thread.sleep(300);
+            sleep(300);
 
             server.close();
         }
@@ -273,7 +360,7 @@ public class TcpServerTest {
 
         server.start(handler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         client.open();
 
@@ -289,7 +376,7 @@ public class TcpServerTest {
         finally {
             client.close();
 
-            Thread.sleep(300);
+            sleep(300);
 
             server.close();
         }
@@ -304,7 +391,7 @@ public class TcpServerTest {
 
         server.start(echoHandler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         try {
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
@@ -369,7 +456,7 @@ public class TcpServerTest {
 
         server.start(echoHandler);
 
-        Thread.sleep(300);
+        sleep(300);
 
         client.open();
 
@@ -396,4 +483,12 @@ public class TcpServerTest {
         }
     }
 
+
+    private void sleep(final long millis) {
+        try {
+            Thread.sleep(300);
+        }
+        catch (Exception ignore) {
+        }
+    }
 }

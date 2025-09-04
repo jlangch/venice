@@ -124,7 +124,7 @@ public class TcpServer implements Closeable {
     @Override
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
-            mngdExecutor.shutdown();
+            mngdExecutor.shutdownNow();
             safeClose(server.get());
             server.set(null);
         }
@@ -134,7 +134,8 @@ public class TcpServer implements Closeable {
      * @return <code>true</code> if the server is running else <code>false</code>
      */
     public boolean isRunning() {
-        return started.get();
+       final ServerSocketChannel ch = server.get();
+       return ch != null && ch.isOpen();
     }
 
     private void safeClose(final ServerSocketChannel ch) {
@@ -187,7 +188,7 @@ public class TcpServer implements Closeable {
         @Override
         public void run() {
             try {
-                while(ch.isConnected()) {
+                while(ch.isOpen()) {
                     final Message request = Protocol.receiveMessage(ch);
                     if (request == null) {
                         // client closed connection
@@ -200,7 +201,7 @@ public class TcpServer implements Closeable {
                 }
             }
             catch(Exception ex) {
-                ex.printStackTrace();
+                // when client closed the connection -> java.io.IOException: Broken pipe
             }
         }
 
