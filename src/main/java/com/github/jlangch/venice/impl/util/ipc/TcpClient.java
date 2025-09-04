@@ -40,16 +40,30 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 
 public class TcpClient implements Closeable {
 
+    /**
+     * Create a new TcpClient on the specified port on the local host
+     *
+     * @param port a port
+     */
     public TcpClient(final int port) {
         this.host = "127.0.0.1";
         this.port = port;
     }
 
+    /**
+     * Create a new TcpClient on the specified host and port
+     *
+     * @param host a host
+     * @param port a port
+     */
     public TcpClient(final String host, final int port) {
         this.host = host;
         this.port = port;
     }
 
+    /**
+     * Opens the client
+     */
     public void open() {
         if (opened.compareAndSet(false, true)) {
             SocketChannel ch = null;
@@ -71,6 +85,9 @@ public class TcpClient implements Closeable {
         }
     }
 
+    /**
+     * Closes the client
+     */
     @Override
     public void close() throws IOException {
         if (opened.compareAndSet(true, false)) {
@@ -79,6 +96,15 @@ public class TcpClient implements Closeable {
         }
     }
 
+    /**
+     * Sends a message to the server and returns the server's
+     * response.
+     *
+     * <p>Blocks while waiting for the server's reponse.
+     *
+     * @param msg a message
+     * @return the response
+     */
     public Message sendMessage(final Message msg) {
         Objects.requireNonNull(msg);
 
@@ -93,6 +119,12 @@ public class TcpClient implements Closeable {
         return Protocol.receiveMessage(ch);
     }
 
+    /**
+     * Sends a oneway message to the server. Does not wait for any
+     * response.
+     *
+     * @param msg a message
+     */
     public void sendMessageOneWay(final Message msg) {
         Objects.requireNonNull(msg);
 
@@ -105,8 +137,18 @@ public class TcpClient implements Closeable {
         Protocol.sendMessage(ch, msg);
     }
 
+    /**
+     * Sends a message to the server. Throws a TimeoutException if the response
+     * is not received within the given timeout.
+     *
+     * @param msg     a message
+     * @param timeout the maximum time to wait
+     * @param unit    the time unit of the timeout argument
+     * @return the server's response
+     */
     public Message sendMessage(final Message msg, final long timeout, final TimeUnit unit) {
         Objects.requireNonNull(msg);
+        Objects.requireNonNull(unit);
 
         try {
             return sendMessageAsync(msg).get(timeout, unit);
@@ -133,6 +175,13 @@ public class TcpClient implements Closeable {
         }
     }
 
+    /**
+     * Sends a message asynchronously to the server and returns a Future
+     * for the server's response message.
+     *
+     * @param msg  a message
+     * @return the future for the server's response
+     */
     public Future<Message> sendMessageAsync(final Message msg) {
         Objects.requireNonNull(msg);
 
@@ -152,6 +201,11 @@ public class TcpClient implements Closeable {
                 .submit(task);
     }
 
+    /**
+     * Receive a message asynchronously from the server.
+     *
+     * @return the future for the server's response
+     */
     public Future<Message> receiveMessageAsync() {
         final SocketChannel ch = channel.get();
 
@@ -165,6 +219,7 @@ public class TcpClient implements Closeable {
                 .getExecutor()
                 .submit(task);
     }
+
 
     private void safeClose(final SocketChannel ch) {
         if (ch != null) {

@@ -40,20 +40,44 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 
 public class TcpServer implements Closeable {
 
+    /**
+     * Create a new TcpServer on the specified port
+     *
+     * @param port a port
+     */
     public TcpServer(final int port) {
         this(port, 0);
     }
 
+    /**
+     * Create a new TcpServer on the specified port and connection accept timeout
+     *
+     * @param port a port
+     * @param timeout a connection accept timeout
+     */
     public TcpServer(final int port, final int timeout) {
         this.port = port;
         this.timeout = Math.max(0, timeout);
     }
 
 
+    /**
+     * Set the executors maximum of parallel connections.
+     *
+     * <p>Defaults to 20
+     *
+     * @param count the max parallel connection count
+     */
     public void setMaximumParallelConnections(final int count) {
         mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
     }
 
+    /**
+     * Start the TcpServer
+     *
+     * @param handler to handle the incoming messages. The handler may return a
+     *        <code>null</code> message
+     */
     public void start(final Function<Message,Message> handler) {
         Objects.requireNonNull(handler);
 
@@ -94,6 +118,9 @@ public class TcpServer implements Closeable {
         }
     }
 
+    /**
+     * Close this TcpServer
+     */
     @Override
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
@@ -103,6 +130,9 @@ public class TcpServer implements Closeable {
         }
     }
 
+    /**
+     * @return <code>true</code> if the server is running else <code>false</code>
+     */
     public boolean isRunning() {
         return started.get();
     }
