@@ -164,7 +164,9 @@ public class TcpServer implements Closeable {
                         break;
                     }
                     final Message response = handler.apply(request);
-                    Protocol.sendMessage(ch, response);
+                    if (response != null) {
+                        Protocol.sendMessage(ch, response);
+                    }
                 }
             }
             catch(Exception ex) {

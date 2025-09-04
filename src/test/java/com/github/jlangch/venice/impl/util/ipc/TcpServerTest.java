@@ -222,6 +222,78 @@ public class TcpServerTest {
         }
     }
 
+
+    @Test
+    public void test_echo_server_multiple_messages_2() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+
+        server.start(echoHandler);
+
+        Thread.sleep(300);
+
+        client.open();
+
+        try {
+            for(int ii=0; ii<10; ii++) {
+                final String msg = "Hello " + ii;
+
+                final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
+
+                client.sendMessageOneWay(request);
+
+                final Message response = client.receiveMessageAsync().get();
+
+                assertNotNull(response);
+                assertEquals(Status.RESPONSE_OK, response.getStatus());
+                assertEquals("hello",            response.getTopic());
+                assertEquals("text/plain",       response.getMimetype());
+                assertEquals("UTF-8",            response.getCharset());
+                assertEquals(msg,                response.getText());
+            }
+        }
+        finally {
+            client.close();
+
+            Thread.sleep(300);
+
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_echo_server_multiple_messages_without_response() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> handler = req -> { return null; };
+
+        server.start(handler);
+
+        Thread.sleep(300);
+
+        client.open();
+
+        try {
+            for(int ii=0; ii<10; ii++) {
+                final String msg = "Hello " + ii;
+
+                final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
+
+                client.sendMessageOneWay(request);
+            }
+        }
+        finally {
+            client.close();
+
+            Thread.sleep(300);
+
+            server.close();
+        }
+    }
+
     @Test
     public void test_echo_server_multiple_clients() throws Exception {
 
@@ -234,7 +306,6 @@ public class TcpServerTest {
         Thread.sleep(300);
 
         try {
-
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
 
             // start 10 clients (the server supports up to 20 parallel connections as default)

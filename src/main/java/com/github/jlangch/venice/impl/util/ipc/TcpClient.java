@@ -93,6 +93,18 @@ public class TcpClient implements Closeable {
         return Protocol.receiveMessage(ch);
     }
 
+    public void sendMessageOneWay(final Message msg) {
+        Objects.requireNonNull(msg);
+
+        final SocketChannel ch = channel.get();
+
+        if (ch == null) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        Protocol.sendMessage(ch, msg);
+    }
+
     public Message sendMessage(final Message msg, final long timeout, final TimeUnit unit) {
         Objects.requireNonNull(msg);
 
@@ -140,6 +152,19 @@ public class TcpClient implements Closeable {
                 .submit(task);
     }
 
+    public Future<Message> receiveMessageAsync() {
+        final SocketChannel ch = channel.get();
+
+        if (ch == null) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        final Callable<Message> task = () -> Protocol.receiveMessage(ch);
+
+        return mngdExecutor
+                .getExecutor()
+                .submit(task);
+    }
 
     private void safeClose(final SocketChannel ch) {
         if (ch != null) {
