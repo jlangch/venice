@@ -150,7 +150,7 @@ public class Message {
 
     /**
      * @return the message's payload data charset if the payload data is of
-     *         type string else <code>null</null>
+     *         type string else <code>null</code>
      */
     public String getCharset() {
         return charset;
