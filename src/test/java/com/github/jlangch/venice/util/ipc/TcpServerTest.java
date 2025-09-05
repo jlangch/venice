@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 
 
 public class TcpServerTest {
@@ -107,6 +108,7 @@ public class TcpServerTest {
     }
 
     @Test
+    @EnableOnMac
     public void test_echo_server_client_abort() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);

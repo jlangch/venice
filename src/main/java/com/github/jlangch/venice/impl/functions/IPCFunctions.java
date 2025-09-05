@@ -202,7 +202,12 @@ public class IPCFunctions {
                     .doc(
                         "Return `true` if the server or client is running else `false`")
                     .examples(
-                        "(io/file \"/tmp/test.txt\")")
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (println \"Server running:\" (ipc/running? server))           \n" +
+                        "     (println \"Client running:\" (ipc/running? client))))         ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
@@ -247,7 +252,22 @@ public class IPCFunctions {
                     .doc(
                         "Closes the server or client")
                     .examples(
-                        "(io/file \"/tmp/test.txt\")")
+                        ";; prefer try-with-resources to safely close server and client     \n" +
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (println \"Server running:\" (ipc/running? server))           \n" +
+                        "     (println \"Client running:\" (ipc/running? client))))         ",
+                        ";; explicitly closing server and client                            \n" +
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (let [server (ipc/server 33333 handler)                         \n" +
+                        "         client (ipc/client \"localhost\" 33333)]                  \n" +
+                        "     (println \"Server running:\" (ipc/running? server))           \n" +
+                        "     (println \"Client running:\" (ipc/running? client))           \n" +
+                        "     (ipc/close client)                                            \n" +
+                        "     (ipc/close server)))                                           ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -299,8 +319,8 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/client-send client message)",
-                        "(ipc/client-send client timeout message)")
+                        "(ipc/send client message)",
+                        "(ipc/send client timeout message)")
                     .doc(
                         "Sends a message to the TCP/IP port the client is associated with. \n\n" +
                         "Returns the servers response message or `nil` if the message is a " +
