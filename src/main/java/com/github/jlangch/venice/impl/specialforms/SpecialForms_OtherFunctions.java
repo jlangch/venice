@@ -331,8 +331,9 @@ public class SpecialForms_OtherFunctions {
                     .examples(
                         "(eval '(let [a 10] (+ 3 4 a)))",
                         "(eval (list + 1 2 3))",
-                        "(let [s \"(+ 2 x)\" x 10]     \n" +
-                        "   (eval (read-string s))))     ")
+                        "(eval (read-string \"(+ 1 2)\"))",
+                        "(let [s \"(+ 2 x)\" x 10]  \n" +
+                        "  (eval (read-string s)))  ")
                     .seeAlso("read-string")
                     .build()
         ) {
