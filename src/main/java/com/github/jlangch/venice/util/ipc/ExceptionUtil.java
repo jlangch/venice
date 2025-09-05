@@ -22,6 +22,10 @@
 package com.github.jlangch.venice.util.ipc;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import com.github.jlangch.venice.VncException;
 
 
 public class ExceptionUtil {
@@ -52,6 +56,18 @@ public class ExceptionUtil {
         }
     }
 
+    public static String printStackTraceToString(final Exception ex) {
+        if  (ex instanceof VncException) {
+            return String.join("\n", ((VncException)ex).getCallStackAsStringList());
+        }
+        else {
+            final StringWriter sw = new StringWriter();
+            final PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            pw.flush();
+            return sw.toString();
+        }
+    }
 
     private static boolean hasExMsg(final String msg, final Throwable th) {
         if (msg == null || th == null || th.getMessage() == null) {

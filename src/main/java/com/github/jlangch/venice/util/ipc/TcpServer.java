@@ -29,8 +29,6 @@ import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_OK;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
@@ -103,7 +101,7 @@ public class TcpServer implements Closeable {
                         try {
                             final SocketChannel channel = ch.accept();
                             channel.configureBlocking(true);
-                            final Connection conn = new Connection(channel, handler);
+                            final Connection conn = new Connection(this, channel, handler);
                             executor.execute(conn);
                         }
                         catch (IOException ignored) {
@@ -134,9 +132,9 @@ public class TcpServer implements Closeable {
     @Override
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
-            mngdExecutor.shutdownNow();
             safeClose(server.get());
             server.set(null);
+            mngdExecutor.shutdownNow();
         }
     }
 
@@ -188,9 +186,11 @@ public class TcpServer implements Closeable {
 
     private static class Connection implements Runnable {
         public Connection(
+                final TcpServer server,
                 final SocketChannel ch,
                 final Function<Message,Message> handler
         ) {
+            this.server = server;
             this.ch = ch;
             this.handler = handler;
         }
@@ -198,15 +198,17 @@ public class TcpServer implements Closeable {
         @Override
         public void run() {
             try {
-                while(ch.isOpen()) {
+                while(server.isRunning() && ch.isOpen()) {
                     final Message request = Protocol.receiveMessage(ch);
                     if (request == null) {
                         // client closed connection
                         break;
                     }
 
-                    // send an error back if the request does not have a request status
-                    if (!(request.getStatus() == REQUEST || request.getStatus() == REQUEST_ONE_WAY)) {
+                    if (!server.isRunning()) break;
+
+                    // send an error back if the request message is not a request
+                    if (!(isRequestMsg(request) || isRequestOneWayMsg(request))) {
                         Protocol.sendMessage(
                             ch,
                             Message.text(
@@ -224,7 +226,7 @@ public class TcpServer implements Closeable {
                     try {
                         response = handler.apply(request);
 
-                        if (response == null && request.getStatus() == REQUEST) {
+                        if (response == null && isRequestMsg(request)) {
                             // send an empty ok response back
                             response = Message.text(
                                          RESPONSE_OK,
@@ -236,15 +238,17 @@ public class TcpServer implements Closeable {
                     }
                     catch(Exception ex) {
                         // do not send an error back for a request of type REQUEST_ONE_WAY
-                        response = request.getStatus() == REQUEST
+                        response = isRequestMsg(request)
                                     ? Message.text(
                                         RESPONSE_HANDLER_ERROR,
                                         request.getTopic(),
                                         "text/plain",
                                         "UTF-8",
-                                        printStackTraceToString(ex))
+                                        ExceptionUtil.printStackTraceToString(ex))
                                     : null;
                     }
+
+                    if (!server.isRunning()) break;
 
                     if (response != null) {
                         Protocol.sendMessage(ch, response);
@@ -253,26 +257,26 @@ public class TcpServer implements Closeable {
             }
             catch(Exception ex) {
                 // when client closed the connection -> java.io.IOException: Broken pipe
-            	// -> quit
+                // -> quit
+            }
+            finally {
+                IO.safeClose(ch);
             }
         }
 
+        private final TcpServer server;
         private final SocketChannel ch;
         private final Function<Message,Message> handler;
     }
 
 
-    private static String printStackTraceToString(final Exception ex) {
-        if  (ex instanceof VncException) {
-            return String.join("\n", ((VncException)ex).getCallStackAsStringList());
-        }
-        else {
-            final StringWriter sw = new StringWriter();
-            final PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            pw.flush();
-            return sw.toString();
-        }
+
+    private static boolean isRequestMsg(final Message msg) {
+        return msg.getStatus() == REQUEST;
+    }
+
+    private static boolean isRequestOneWayMsg(final Message msg) {
+        return msg.getStatus() == REQUEST_ONE_WAY;
     }
 
 

@@ -74,7 +74,7 @@ public class TcpClient implements Closeable {
                 channel.set(ch);
             }
             catch(Exception ex) {
-                safeClose(ch);
+                IO.safeClose(ch);
                 opened.set(false);
                 channel.set(null);
                 throw new VncException(
@@ -101,7 +101,7 @@ public class TcpClient implements Closeable {
     @Override
     public void close() throws IOException {
         if (opened.compareAndSet(true, false)) {
-            safeClose(channel.get());
+            IO.safeClose(channel.get());
             channel.set(null);
         }
     }
@@ -195,16 +195,6 @@ public class TcpClient implements Closeable {
         return mngdExecutor
                 .getExecutor()
                 .submit(task);
-    }
-
-
-    private void safeClose(final SocketChannel ch) {
-        if (ch != null) {
-            try {
-                ch.close();
-            }
-            catch(Exception ignore) { }
-        }
     }
 
 

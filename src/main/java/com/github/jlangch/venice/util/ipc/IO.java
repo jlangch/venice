@@ -53,12 +53,12 @@ public class IO {
             throw ex;
         }
         catch(IOException ex) {
-        	if (ExceptionUtil.isBrokenPipeException(ex)) {
-        		throw new VncException("Failed to read data from channel, channel was closed!", ex);
-        	}
-        	else {
-        		throw new VncException("Failed to read data from channel!", ex);
-        	}
+            if (ExceptionUtil.isBrokenPipeException(ex)) {
+                throw new VncException("Failed to read data from channel, channel was closed!", ex);
+            }
+            else {
+                throw new VncException("Failed to read data from channel!", ex);
+            }
         }
     }
 
@@ -76,12 +76,12 @@ public class IO {
             throw ex;
         }
         catch(Exception ex) {
-        	if (ExceptionUtil.isBrokenPipeException(ex)) {
-        		throw new VncException("Failed to write data to channel, channel was closed!", ex);
-        	}
-        	else {
-        		throw new VncException("Failed to write data to channel!", ex);
-        	}
+            if (ExceptionUtil.isBrokenPipeException(ex)) {
+                throw new VncException("Failed to write data to channel, channel was closed!", ex);
+            }
+            else {
+                throw new VncException("Failed to write data to channel!", ex);
+            }
         }
     }
 
@@ -97,15 +97,15 @@ public class IO {
             }
         }
         catch(Exception ex) {
-        	if ((ex instanceof IOException) && ("EOF".equals(ex.getMessage()))) {
-        		throw new VncException("Failed to read data from channel, channel EOF reached!", ex);
-        	}
-        	else if (ExceptionUtil.isBrokenPipeException(ex)) {
-        		throw new VncException("Failed to read data from channel, channel was closed!", ex);
-        	}
-        	else {
-        		throw new VncException("Failed to read data from channel!", ex);
-        	}
+            if ((ex instanceof IOException) && ("EOF".equals(ex.getMessage()))) {
+                throw new VncException("Failed to read data from channel, channel EOF reached!", ex);
+            }
+            else if (ExceptionUtil.isBrokenPipeException(ex)) {
+                throw new VncException("Failed to read data from channel, channel was closed!", ex);
+            }
+            else {
+                throw new VncException("Failed to read data from channel!", ex);
+            }
         }
     }
 
@@ -117,12 +117,22 @@ public class IO {
             while (buf.hasRemaining()) ch.write(buf);
         }
         catch(Exception ex) {
-        	if (ExceptionUtil.isBrokenPipeException(ex)) {
-        		throw new VncException("Failed to write data to channel, channel was closed!", ex);
-        	}
-        	else {
-        		throw new VncException("Failed to write data to channel!", ex);
-        	}
+            if (ExceptionUtil.isBrokenPipeException(ex)) {
+                throw new VncException("Failed to write data to channel, channel was closed!", ex);
+            }
+            else {
+                throw new VncException("Failed to write data to channel!", ex);
+            }
+        }
+    }
+    
+    
+    public static void safeClose(final SocketChannel ch) {
+        if (ch != null) {
+            try {
+                ch.close();
+            }
+            catch(Exception ignore) { }
         }
     }
 }
