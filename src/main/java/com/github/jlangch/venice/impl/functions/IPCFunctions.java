@@ -721,10 +721,9 @@ public class IPCFunctions {
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(ipc_server)
+                    .add(ipc_client)
                     .add(ipc_close)
                     .add(ipc_runnningQ)
-
-                    .add(ipc_client)
 
                     .add(ipc_send)
                     .add(ipc_send_async)
