@@ -64,15 +64,14 @@ public class IPCFunctions {
                     .doc(
                         "....")
                     .examples(
-                        "(do                                                              \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                  \n" +
-                        "              client (ipc/client \"localhost\" 33333)]           \n" +
-                        "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
-                        "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (->> (ipc/send client m)                                  \n" +
-                        "            (ipc/message->map)                                   \n" +
-                        "            (println)))))                                        ")
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
+                        "       (->> (ipc/send client m)                                    \n" +
+                        "            (ipc/message->map)                                     \n" +
+                        "            (println)))))                                          ")
                     .seeAlso(
                         "ipc/xx")
                     .build()
@@ -128,15 +127,14 @@ public class IPCFunctions {
                         .doc(
                             "....")
                         .examples(
-                            "(do                                                              \n" +
-                            "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                            "   (try-with [server (ipc/server 33333 handler)                  \n" +
-                            "              client (ipc/client \"localhost\" 33333)]           \n" +
-                            "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
-                            "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                            "       (->> (ipc/send client m)                                  \n" +
-                            "            (ipc/message->map)                                   \n" +
-                            "            (println)))))                                        ")
+                            "(do                                                                \n" +
+                            "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                            "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                            "              client (ipc/client \"localhost\" 33333)]             \n" +
+                            "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
+                            "       (->> (ipc/send client m)                                    \n" +
+                            "            (ipc/message->map)                                     \n" +
+                            "            (println)))))                                          ")
                         .seeAlso(
                             "ipc/xx")
                         .build()
@@ -256,24 +254,22 @@ public class IPCFunctions {
                     .doc(
                         "....")
                     .examples(
-                        "(do                                                              \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                  \n" +
-                        "              client (ipc/client \"localhost\" 33333)]           \n" +
-                        "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
-                        "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (->> (ipc/send client m)                                  \n" +
-                        "            (ipc/message->map)                                   \n" +
-                        "            (println)))))                                        ",
-                        "(do                                                              \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                  \n" +
-                        "              client (ipc/client \"localhost\" 33333)]           \n" +
-                        "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
-                        "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (->> (ipc/send client m 2000)                             \n" +
-                        "            (ipc/message->map)                                   \n" +
-                        "            (println)))))                                        ")
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
+                        "       (->> (ipc/send client m)                                    \n" +
+                        "            (ipc/message->map)                                     \n" +
+                        "            (println)))))                                          ",
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
+                        "       (->> (ipc/send client m 2000)                               \n" +
+                        "            (ipc/message->map)                                     \n" +
+                        "            (println)))))                                          ")
                  .seeAlso(
                         "ipc/xx")
                     .build()
@@ -309,16 +305,15 @@ public class IPCFunctions {
                         .doc(
                             "....")
                         .examples(
-                            "(do                                                              \n" +
-                            "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                            "   (try-with [server (ipc/server 33333 handler)                  \n" +
-                            "              client (ipc/client \"localhost\" 33333)]           \n" +
-                            "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
-                            "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                            "       (->> (ipc/send-async client m)                            \n" +
-                            "            (deref)                                              \n" +
-                            "            (ipc/message->map)                                   \n" +
-                            "            (println)))))                                        ")
+                            "(do                                                                \n" +
+                            "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                            "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                            "              client (ipc/client \"localhost\" 33333)]             \n" +
+                            "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
+                            "       (->> (ipc/send-async client m)                              \n" +
+                            "            (deref)                                                \n" +
+                            "            (ipc/message->map)                                     \n" +
+                            "            (println)))))                                          ")
                         .seeAlso(
                             "ipc/xx")
                         .build()
@@ -377,6 +372,44 @@ public class IPCFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+
+    public static VncFunction ipc_plain_text_message =
+        new VncFunction(
+                "ipc/plain-text-message",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/plain-text-message status topic text)")
+                    .doc(
+	                    "(ipc/plain-text-message :REQUEST \"test\" \"hello\")")
+                    .examples(
+                        "(io/file \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "ipc/xx")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final VncKeyword status = Coerce.toVncKeyword(args.nth(0));
+                final VncString topic = Coerce.toVncString(args.nth(1));
+                final VncString text = Coerce.toVncString(args.nth(2));
+
+                final Message msg = Message.text(
+                                        convertToStatus(status),
+                                        topic.getValue(),
+                                        "text/plain",
+                                        "UTF-8",
+                                        text.getValue());
+
+                return new VncJavaObject(msg);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
     public static VncFunction ipc_binary_message =
             new VncFunction(
@@ -525,6 +558,7 @@ public class IPCFunctions {
                     .add(ipc_send_async)
 
                     .add(ipc_text_message)
+                    .add(ipc_plain_text_message)
                     .add(ipc_binary_message)
                     .add(ipc_message_to_map)
 
