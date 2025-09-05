@@ -68,10 +68,10 @@ public class IPCFunctions {
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
-                        "       (->> (ipc/send client m)                                    \n" +
-                        "            (ipc/message->map)                                     \n" +
-                        "            (println)))))                                          ")
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          (ipc/send client)                                        \n" +
+                        "          (ipc/message->map)                                       \n" +
+                        "          (println))))                                             ")
                     .seeAlso(
                         "ipc/xx")
                     .build()
@@ -131,10 +131,10 @@ public class IPCFunctions {
                             "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                             "   (try-with [server (ipc/server 33333 handler)                    \n" +
                             "              client (ipc/client \"localhost\" 33333)]             \n" +
-                            "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
-                            "       (->> (ipc/send client m)                                    \n" +
-                            "            (ipc/message->map)                                     \n" +
-                            "            (println)))))                                          ")
+                            "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                            "          (ipc/send client)                                        \n" +
+                            "          (ipc/message->map)                                       \n" +
+                            "          (println))))                                             ")
                         .seeAlso(
                             "ipc/xx")
                         .build()
@@ -250,7 +250,7 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/client-send client message)",
-                        "(ipc/client-send client message timeout)")
+                        "(ipc/client-send client timeout message)")
                     .doc(
                         "....")
                     .examples(
@@ -258,18 +258,18 @@ public class IPCFunctions {
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
-                        "       (->> (ipc/send client m)                                    \n" +
-                        "            (ipc/message->map)                                     \n" +
-                        "            (println)))))                                          ",
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          (ipc/send client)                                        \n" +
+                        "          (ipc/message->map)                                       \n" +
+                        "          (println))))                                             ",
                         "(do                                                                \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
-                        "       (->> (ipc/send client m 2000)                               \n" +
-                        "            (ipc/message->map)                                     \n" +
-                        "            (println)))))                                          ")
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          (ipc/send client 2000)                                   \n" +
+                        "          (ipc/message->map)                                       \n" +
+                        "          (println))))                                             ")
                  .seeAlso(
                         "ipc/xx")
                     .build()
@@ -278,9 +278,11 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-                final Message request = Coerce.toVncJavaObject(args.second(), Message.class);
-                final long timeout = args.size() > 2 ? Coerce.toVncLong(args.third()).toJavaLong() : 0;
+                final boolean hasTimeout =  args.size() > 2;
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final long timeout = hasTimeout ? Coerce.toVncLong(args.nth(1)).toJavaLong() : 0;
+                final Message request = Coerce.toVncJavaObject(args.nth(hasTimeout ? 2 : 1), Message.class);
 
                 if (timeout <= 0) {
                     final Message response = client.sendMessage(request);
@@ -309,11 +311,11 @@ public class IPCFunctions {
                             "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                             "   (try-with [server (ipc/server 33333 handler)                    \n" +
                             "              client (ipc/client \"localhost\" 33333)]             \n" +
-                            "     (let [m (ipc/plain-text-message :REQUEST \"test\" \"hello\")] \n" +
-                            "       (->> (ipc/send-async client m)                              \n" +
-                            "            (deref)                                                \n" +
-                            "            (ipc/message->map)                                     \n" +
-                            "            (println)))))                                          ")
+                            "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                            "          (ipc/send-async client)                                  \n" +
+                            "          (deref)                                                  \n" +
+                            "          (ipc/message->map)                                       \n" +
+                            "          (println))))                                             ")
                         .seeAlso(
                             "ipc/xx")
                         .build()
