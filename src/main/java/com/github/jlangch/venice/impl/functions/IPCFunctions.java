@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
@@ -69,9 +70,9 @@ public class IPCFunctions {
                         "              client (ipc/client \"localhost\" 33333)]           \n" +
                         "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                         "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (-<> (ipc/send client m)                                  \n" +
-                        "            (. <> :getText)                                      \n" +
-                        "            (println <>)))))                                     ")
+                        "       (->> (ipc/send client m)                                  \n" +
+                        "            (ipc/message->map)                                   \n" +
+                        "            (println)))))                                        ")
                     .seeAlso(
                         "ipc/xx")
                     .build()
@@ -127,7 +128,15 @@ public class IPCFunctions {
                         .doc(
                             "....")
                         .examples(
-                            "(io/file \"/tmp/test.txt\")")
+                            "(do                                                              \n" +
+                            "   (defn handler [m] (. m :asEchoResponse))                      \n" +
+                            "   (try-with [server (ipc/server 33333 handler)                  \n" +
+                            "              client (ipc/client \"localhost\" 33333)]           \n" +
+                            "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
+                            "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
+                            "       (->> (ipc/send client m)                                  \n" +
+                            "            (ipc/message->map)                                   \n" +
+                            "            (println)))))                                        ")
                         .seeAlso(
                             "ipc/xx")
                         .build()
@@ -179,9 +188,7 @@ public class IPCFunctions {
                 }
                 else {
                     throw new VncException(
-                            String.format(
-                                    "Function 'ipc/running?' does not allow %s as argument",
-                                    args.first().getType()));
+                           "Function 'ipc/running?' expects either a TcpServer or a TcpClient!");
                 }
             }
 
@@ -230,9 +237,7 @@ public class IPCFunctions {
                 }
                 else {
                     throw new VncException(
-                            String.format(
-                                    "Function 'ipc/close' does not allow %s as argument",
-                                    args.first().getType()));
+                           "Function 'ipc/close' expects either a TcpServer or a TcpClient!");
                 }
             }
 
@@ -257,19 +262,19 @@ public class IPCFunctions {
                         "              client (ipc/client \"localhost\" 33333)]           \n" +
                         "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                         "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (-<> (ipc/send client m)                                  \n" +
-                        "            (. <> :getText)                                      \n" +
-                        "            (println <>)))))                                     ",
+                        "       (->> (ipc/send client m)                                  \n" +
+                        "            (ipc/message->map)                                   \n" +
+                        "            (println)))))                                        ",
                         "(do                                                              \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                      \n" +
                         "   (try-with [server (ipc/server 33333 handler)                  \n" +
                         "              client (ipc/client \"localhost\" 33333)]           \n" +
                         "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                         "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (-<> (ipc/send client m 2000)                             \n" +
-                        "            (. <> :getText)                                      \n" +
-                        "            (println <>)))))                                     ")
-                    .seeAlso(
+                        "       (->> (ipc/send client m 2000)                             \n" +
+                        "            (ipc/message->map)                                   \n" +
+                        "            (println)))))                                        ")
+                 .seeAlso(
                         "ipc/xx")
                     .build()
         ) {
@@ -310,10 +315,10 @@ public class IPCFunctions {
                             "              client (ipc/client \"localhost\" 33333)]           \n" +
                             "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                             "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                            "       (-<> (ipc/send-async client m)                            \n" +
-                            "            (deref <>)                                           \n" +
-                            "            (. <> :getText)                                      \n" +
-                            "            (println <>)))))                                     ")
+                            "       (->> (ipc/send-async client m)                            \n" +
+                            "            (deref)                                              \n" +
+                            "            (ipc/message->map)                                   \n" +
+                            "            (println)))))                                        ")
                         .seeAlso(
                             "ipc/xx")
                         .build()
@@ -410,6 +415,48 @@ public class IPCFunctions {
             };
 
 
+    public static VncFunction ipc_message_to_map =
+        new VncFunction(
+                "ipc/message->map",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/message->map message)")
+                    .doc(
+                        "....")
+                    .examples(
+                        "(io/file \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "ipc/xx")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Message m = Coerce.toVncJavaObject(args.first(), Message.class);
+
+                if (m.getCharset() != null) {
+                    return VncOrderedMap.of(
+                            new VncKeyword("status"),   new VncKeyword(m.getStatus().name()),
+                            new VncKeyword("topic"),    new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"), new VncString(m.getMimetype()),
+                            new VncKeyword("charset"),  new VncKeyword(m.getCharset()),
+                            new VncKeyword("text"),     new VncString(m.getText()));
+                }
+                else {
+                    return VncOrderedMap.of(
+                            new VncKeyword("status"),   new VncKeyword(m.getStatus().name()),
+                            new VncKeyword("topic"),    new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"), new VncString(m.getMimetype()),
+                            new VncKeyword("data"),     new VncByteBuffer(m.getData()));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     ///////////////////////////////////////////////////////////////////////////
     // Utils
     ///////////////////////////////////////////////////////////////////////////
@@ -479,6 +526,7 @@ public class IPCFunctions {
 
                     .add(ipc_text_message)
                     .add(ipc_binary_message)
+                    .add(ipc_message_to_map)
 
                     .toMap();
 }
