@@ -50,7 +50,12 @@ public class IO {
             return data;
         }
         catch(IOException ex) {
-            throw new VncException("Failed to read frame data", ex);
+        	if (ExceptionUtil.isBrokenPipeException(ex)) {
+        		throw new VncException("Failed to read data from channel, channel was closed!", ex);
+        	}
+        	else {
+        		throw new VncException("Failed to read data from channel!", ex);
+        	}
         }
     }
 
@@ -68,7 +73,12 @@ public class IO {
             throw ex;
         }
         catch(Exception ex) {
-            throw new VncException("Failed to write frame data", ex);
+        	if (ExceptionUtil.isBrokenPipeException(ex)) {
+        		throw new VncException("Failed to write data to channel, channel was closed!", ex);
+        	}
+        	else {
+        		throw new VncException("Failed to write data to channel!", ex);
+        	}
         }
     }
 
@@ -84,7 +94,12 @@ public class IO {
             }
         }
         catch(Exception ex) {
-            throw new VncException("Failed to read data", ex);
+        	if (ExceptionUtil.isBrokenPipeException(ex)) {
+        		throw new VncException("Failed to read data from channel, channel was closed!", ex);
+        	}
+        	else {
+        		throw new VncException("Failed to read data from channel!", ex);
+        	}
         }
     }
 
@@ -96,8 +111,12 @@ public class IO {
             while (buf.hasRemaining()) ch.write(buf);
         }
         catch(Exception ex) {
-            throw new VncException("Failed to write data", ex);
+        	if (ExceptionUtil.isBrokenPipeException(ex)) {
+        		throw new VncException("Failed to write data to channel, channel was closed!", ex);
+        	}
+        	else {
+        		throw new VncException("Failed to write data to channel!", ex);
+        	}
         }
     }
-
 }

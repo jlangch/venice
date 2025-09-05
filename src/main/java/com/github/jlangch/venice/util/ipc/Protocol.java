@@ -155,8 +155,12 @@ public class Protocol {
             return new Message(status, topic, mimetype, charset, data);
         }
         catch(IOException ex) {
-            throw new VncException(
-                    "Failed to receive message!", ex);
+        	if (ExceptionUtil.isBrokenPipeException(ex)) {
+        		throw new VncException("Failed to read data from channel, channel was closed!", ex);
+        	}
+        	else {
+        		throw new VncException("Failed to read data from channel!", ex);
+        	}
         }
     }
 

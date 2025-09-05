@@ -253,6 +253,7 @@ public class TcpServer implements Closeable {
             }
             catch(Exception ex) {
                 // when client closed the connection -> java.io.IOException: Broken pipe
+            	// -> quit
             }
         }
 
