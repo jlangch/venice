@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
@@ -64,10 +65,10 @@ public class IPCFunctions {
                     .doc(
                         "Create a new TcpServer on the specified port.       \n\n" +
                         "The server must be closed after use!                \n\n" +
-                        "Arguments:                                          \n\n" +
-                        "| port p    | The TCP/IP port |                     \n" +
-                        "| handler h | A single argument handler function. E.g.: a simple echo handler: `(fn [m] (. m :asEchoResponse))` |\n\n" +
-                        "Options:                                            \n\n" +
+                        "*Arguments:* \n\n" +
+                        "| port p    | The TCP/IP port |\n" +
+                        "| handler h | A single argument handler function. E.g.: a simple echo handler: `(fn [m] (. m :asEchoResponse))`. The handler receives the request messsage and returns a response message. In case of a one-way request message the handler returns `nil`.|\n\n" +
+                        "*Options:* \n\n" +
                         "| :max-connections n | The number of the max connections the server can handle in parallel. Defaults to 20 |\n")
                     .examples(
                         "(do                                                                \n" +
@@ -305,6 +306,8 @@ public class IPCFunctions {
                         "Returns the servers response message or `nil` if the message is a " +
                         "declared as one-way message.")
                     .examples(
+                    	";; echo handler                                                    \n" +
+                        ";; request: \"hello\" => echo => response: \"hello\"               \n" +
                         "(do                                                                \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
@@ -313,12 +316,36 @@ public class IPCFunctions {
                         "          (ipc/send client)                                        \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ",
+                    	";; handler processing JSON message data                            \n" +
+                        ";; request: {\"x\": 100, \"y\": 200} => add => response: {\"z\": 300}  \n" +
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (defn handler [m]                                               \n" +
+                        "     (let [data   (json/read-str (. m :getText))                   \n" +
+                        "           result (json/write-str { \"z\" (+ (get data \"x\") (get data \"y\"))})]  \n" +
+                        "       (ipc/text-message :RESPONSE_OK (. m :getTopic)              \n" +
+                        "                         \"application/json\" :UTF-8               \n" +
+                        "                         result)))                                 \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "     (->> (ipc/text-message :REQUEST \"test\"                      \n" +
+                        "                            \"application/json\" :UTF-8            \n" +
+                        "                            (json/write-str {\"x\" 100 \"y\" 200}))\n" +
                         "          (ipc/send client 2000)                                   \n" +
+                        "          (ipc/message->map)                                       \n" +
+                        "          (println))))                                             ",
+                    	";; handler with remote code execution                              \n" +
+                        ";; request: \"(+ 1 2)\" => exec => response: \"3\"                 \n" +
+                        "(do                                                                \n" +
+                        "   (defn handler [m]                                               \n" +
+                        "     (let [cmd    (. m :getText)                                   \n" +
+                        "           result (str (eval (read-string cmd)))]                  \n" +
+                        "       (ipc/plain-text-message :RESPONSE_OK                        \n" +
+                        "                               (. m :getTopic)                     \n" +
+                        "                               result)))                           \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"exec\" \"(+ 1 2)\")   \n" +
+                        "          (ipc/send client)                                        \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ")
                  .seeAlso(
@@ -413,10 +440,20 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/text-message status topic mimetype charset text)")
                     .doc(
-                        "Creates a text message")
+                        "Creates a text message                      \n\n" +
+                        "Clients use these status to send requests to ther server:\n\n" +
+                        "| :REQUEST         | send a request and wait for a server response |\n" +
+                        "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
+                        "Servers use these status to send reponses back to the client: \n\n" +
+                        "| :RESPONSE_OK            | processing successful |\n" +
+                        "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
+                        "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
+                        "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
                     .examples(
-                        "(ipc/text-message :REQUEST \"test\"                 \n" +
-                        "                  \"text/plain\" :UTF-8 \"hello\")  ")
+                        "(->> (ipc/text-message :REQUEST \"test\"                 \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -437,14 +474,17 @@ public class IPCFunctions {
                 final VncString topic = Coerce.toVncString(args.nth(1));
                 final VncString mimetype = Coerce.toVncString(args.nth(2));
                 final VncKeyword charset = Coerce.toVncKeyword(args.nth(3));
-                final VncString text = Coerce.toVncString(args.nth(4));
+                final VncVal textVal = args.nth(4);
+                final String text = Types.isVncString(textVal)
+                                        ? ((VncString)textVal).getValue()
+                                        : textVal.toString(true);  // aggressively convert to string
 
                 final Message msg = Message.text(
                                         convertToStatus(status),
                                         topic.getValue(),
                                         mimetype.getValue(),
                                         charset.getSimpleName(),
-                                        text.getValue());
+                                        text);
 
                 return new VncJavaObject(msg);
             }
@@ -461,9 +501,19 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/plain-text-message status topic text)")
                     .doc(
-                        "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`")
+                        "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n" +
+                        "Clients use these status to send requests to ther server:\n\n" +
+                        "| :REQUEST         | send a request and wait for a server response |\n" +
+                        "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
+                        "Servers use these status to send reponses back to the client: \n\n" +
+                        "| :RESPONSE_OK            | processing successful |\n" +
+                        "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
+                        "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
+                        "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
                     .examples(
-                        "(io/file \"/tmp/test.txt\")")
+                        "(->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")  \n" +
+                        "     (ipc/message->map)                                    \n" +
+                        "     (println))                                            ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -482,14 +532,17 @@ public class IPCFunctions {
 
                 final VncKeyword status = Coerce.toVncKeyword(args.nth(0));
                 final VncString topic = Coerce.toVncString(args.nth(1));
-                final VncString text = Coerce.toVncString(args.nth(2));
+                final VncVal textVal = args.nth(2);
+                final String text = Types.isVncString(textVal)
+                                        ? ((VncString)textVal).getValue()
+                                        : textVal.toString(true);  // aggressively convert to string
 
                 final Message msg = Message.text(
                                         convertToStatus(status),
                                         topic.getValue(),
                                         "text/plain",
                                         "UTF-8",
-                                        text.getValue());
+                                        text);
 
                 return new VncJavaObject(msg);
             }
@@ -506,9 +559,21 @@ public class IPCFunctions {
                         .arglists(
                             "(ipc/binary-message status topic mimetype data)")
                         .doc(
-                            "Creates a binary message")
-                        .examples(
-                            "(io/file \"/tmp/test.txt\")")
+                            "Creates a binary message.\n\n" +
+                            "Clients use these status to send requests to ther server:\n\n" +
+                            "| :REQUEST         | send a request and wait for a server response |\n" +
+                            "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
+                            "Servers use these status to send reponses back to the client: \n\n" +
+                            "| :RESPONSE_OK            | processing successful |\n" +
+                            "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
+                            "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
+                            "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
+                .examples(
+                            "(->> (ipc/binary-message :REQUEST \"test\"               \n" +
+                            "                       \"application/octet-stream\"      \n" +
+                            "                       (bytebuf [0 1 2 3 4 5 6 7]))      \n" +
+                            "     (ipc/message->map)                                  \n" +
+                            "     (println))                                          ")
                         .seeAlso(
                             "ipc/server",
                             "ipc/client",
@@ -551,9 +616,11 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/message->map message)")
                     .doc(
-                        "....")
+                        "Converts a Java IPC `Message` to a Venice map")
                     .examples(
-                        "(io/file \"/tmp/test.txt\")")
+                        "(->> (ipc/text-message :REQUEST \"test\"                 \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "     (ipc/message->map))                                 ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
