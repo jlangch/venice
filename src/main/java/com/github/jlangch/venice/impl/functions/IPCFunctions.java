@@ -53,23 +53,23 @@ import com.github.jlangch.venice.util.ipc.TcpServer;
 
 public class IPCFunctions {
 
-    public static VncFunction ipc_start_server =
+    public static VncFunction ipc_server =
         new VncFunction(
-                "ipc/start-server",
+                "ipc/server",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/start-server port handler & options)")
+                        "(ipc/server port handler & options)")
                     .doc(
                         "....")
                     .examples(
                         "(do                                                              \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                        "   (try-with [server (ipc/start-server 33333 handler)            \n" +
-                        "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                  \n" +
+                        "              client (ipc/client \"localhost\" 33333)]           \n" +
                         "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                         "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (-<> (ipc/client-send client m)                           \n" +
+                        "       (-<> (ipc/send client m)                                  \n" +
                         "            (. <> :getText)                                      \n" +
                         "            (println <>)))))                                     ")
                     .seeAlso(
@@ -117,13 +117,13 @@ public class IPCFunctions {
         };
 
 
-    public static VncFunction ipc_start_client =
+    public static VncFunction ipc_client =
             new VncFunction(
-                    "ipc/start-client",
+                    "ipc/client",
                     VncFunction
                         .meta()
                         .arglists(
-                            "(ipc/start-client host port)")
+                            "(ipc/client host port)")
                         .doc(
                             "....")
                         .examples(
@@ -150,13 +150,14 @@ public class IPCFunctions {
             };
 
 
-    public static VncFunction ipc_server_runnningQ =
+    public static VncFunction ipc_runnningQ =
         new VncFunction(
-                "ipc/server-running?",
+                "ipc/running?",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/close-server server)")
+                        "(ipc/running? server)",
+                        "(ipc/running? client)")
                     .doc(
                         "....")
                     .examples(
@@ -169,57 +170,33 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
-
-                return VncBoolean.of(server.isRunning());
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-
-    public static VncFunction ipc_close_server =
-        new VncFunction(
-                "ipc/close-server",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(ipc/close-server server)")
-                    .doc(
-                        "....")
-                    .examples(
-                        "(io/file \"/tmp/test.txt\")")
-                    .seeAlso(
-                        "ipc/xx")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
-
-                try {
-                    server.close();
+                final Object delegate =  Coerce.toVncJavaObject(args.first()).getDelegate();
+                if (delegate instanceof TcpServer) {
+                    return VncBoolean.of(((TcpServer)delegate).isRunning());
                 }
-                catch(Exception ex) {
-                    throw new VncException("Failed to close IPC server", ex);
+                else if (delegate instanceof TcpClient) {
+                    return VncBoolean.of(((TcpClient)delegate).isRunning());
                 }
-
-                return Nil;
+                else {
+                    throw new VncException(
+                            String.format(
+                                    "Function 'ipc/running?' does not allow %s as argument",
+                                    args.first().getType()));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
 
-    public static VncFunction ipc_client_runnningQ =
+    public static VncFunction ipc_close =
         new VncFunction(
-                "ipc/client-running?",
+                "ipc/clos",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/close-server server)")
+                        "(ipc/close server)",
+                        "(ipc/close client)")
                     .doc(
                         "....")
                     .examples(
@@ -232,18 +209,40 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-
-                return VncBoolean.of(client.isRunning());
+                final Object delegate =  Coerce.toVncJavaObject(args.first()).getDelegate();
+                if (delegate instanceof TcpServer) {
+                    try {
+                        ((TcpServer)delegate).close();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close IPC server", ex);
+                    }
+                    return Nil;
+                }
+                else if (delegate instanceof TcpClient) {
+                    try {
+                        ((TcpClient)delegate).close();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close IPC client", ex);
+                    }
+                    return Nil;
+                }
+                else {
+                    throw new VncException(
+                            String.format(
+                                    "Function 'ipc/close' does not allow %s as argument",
+                                    args.first().getType()));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
 
-    public static VncFunction ipc_client_send =
+    public static VncFunction ipc_send =
         new VncFunction(
-                "ipc/client-send",
+                "ipc/send",
                 VncFunction
                     .meta()
                     .arglists(
@@ -254,20 +253,20 @@ public class IPCFunctions {
                     .examples(
                         "(do                                                              \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                        "   (try-with [server (ipc/start-server 33333 handler)            \n" +
-                        "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                  \n" +
+                        "              client (ipc/client \"localhost\" 33333)]           \n" +
                         "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                         "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (-<> (ipc/client-send client m)                           \n" +
+                        "       (-<> (ipc/send client m)                                  \n" +
                         "            (. <> :getText)                                      \n" +
                         "            (println <>)))))                                     ",
                         "(do                                                              \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                        "   (try-with [server (ipc/start-server 33333 handler)            \n" +
-                        "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                  \n" +
+                        "              client (ipc/client \"localhost\" 33333)]           \n" +
                         "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                         "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                        "       (-<> (ipc/client-send client m 2000)                      \n" +
+                        "       (-<> (ipc/send client m 2000)                             \n" +
                         "            (. <> :getText)                                      \n" +
                         "            (println <>)))))                                     ")
                     .seeAlso(
@@ -295,23 +294,23 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-        public static VncFunction ipc_client_send_async =
+        public static VncFunction ipc_send_async =
             new VncFunction(
-                    "ipc/client-send-async",
+                    "ipc/send-async",
                     VncFunction
                         .meta()
                         .arglists(
-                            "(ipc/client-send-async client message)")
+                            "(ipc/send-async client message)")
                         .doc(
                             "....")
                         .examples(
                             "(do                                                              \n" +
                             "   (defn handler [m] (. m :asEchoResponse))                      \n" +
-                            "   (try-with [server (ipc/start-server 33333 handler)            \n" +
-                            "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                            "   (try-with [server (ipc/server 33333 handler)                  \n" +
+                            "              client (ipc/client \"localhost\" 33333)]           \n" +
                             "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
                             "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
-                            "       (-<> (ipc/client-send-async client m)                     \n" +
+                            "       (-<> (ipc/send-async client m)                            \n" +
                             "            (deref <>)                                           \n" +
                             "            (. <> :getText)                                      \n" +
                             "            (println <>)))))                                     ")
@@ -333,40 +332,6 @@ public class IPCFunctions {
 
                 private static final long serialVersionUID = -1848883965231344442L;
             };
-
-    public static VncFunction ipc_close_client =
-        new VncFunction(
-                "ipc/close-client",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(ipc/close-client client)")
-                    .doc(
-                        "....")
-                    .examples(
-                        "(io/file \"/tmp/test.txt\")")
-                    .seeAlso(
-                        "ipc/xx")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-
-                try {
-                    client.close();
-                }
-                catch(Exception ex) {
-                    throw new VncException("Failed to close IPC client", ex);
-                }
-
-                return Nil;
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
 
 
     public static VncFunction ipc_text_message =
@@ -503,16 +468,14 @@ public class IPCFunctions {
 
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-                    .add(ipc_start_server)
-                    .add(ipc_close_server)
-                    .add(ipc_server_runnningQ)
+                    .add(ipc_server)
+                    .add(ipc_close)
+                    .add(ipc_runnningQ)
 
-                    .add(ipc_start_client)
-                    .add(ipc_client_runnningQ)
-                    .add(ipc_close_client)
+                    .add(ipc_client)
 
-                    .add(ipc_client_send)
-                    .add(ipc_client_send_async)
+                    .add(ipc_send)
+                    .add(ipc_send_async)
 
                     .add(ipc_text_message)
                     .add(ipc_binary_message)
