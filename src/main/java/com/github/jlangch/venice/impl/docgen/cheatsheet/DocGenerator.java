@@ -106,6 +106,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoFileSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoFileWatchSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoZipSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IpcSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JavaInteropSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JsonSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LazySequencesSection;
@@ -378,6 +379,7 @@ public class DocGenerator {
         io.addSection(new DocSection("File", "io.file"));
         io.addSection(new DocSection("File Watcher", "io.file-watcher"));
         io.addSection(new DocSection("Zip/GZip", "io.zip"));
+        io.addSection(new DocSection("IPC", "ipc"));
         content.add(io);
 
         final DocSection documents = new DocSection("Documents", "miscellaneous");
@@ -552,6 +554,7 @@ public class DocGenerator {
                 new IoSection(diBuilder).section(),
                 new IoFileSection(diBuilder).section(),
                 new IoFileWatchSection(diBuilder).section(),
+                new IpcSection(diBuilder).section(),
                 new JsonSection(diBuilder).section(),
                 new InetSection(diBuilder).section(),
                 new CidrSection(diBuilder).section(),

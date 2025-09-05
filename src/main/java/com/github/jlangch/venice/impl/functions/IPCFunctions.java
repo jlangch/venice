@@ -62,18 +62,33 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/server port handler & options)")
                     .doc(
-                        "....")
+                        "Create a new TcpServer on the specified port.       \n\n" +
+                        "The server must be closed after use!                \n\n" +
+                        "Arguments:                                          \n\n" +
+                        "| port p    | The TCP/IP port |                     \n" +
+                        "| handler h | A single argument handler function. E.g.: a simple echo handler: `(fn [m] (. m :asEchoResponse))` |\n\n" +
+                        "Options:                                            \n\n" +
+                        "| :max-connections n | The number of the max connections the server can handle in parallel. Defaults to 20 |\n")
                     .examples(
                         "(do                                                                \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
                         "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          ((fn [m] (println (ipc/message->map m)) m))              \n" +
                         "          (ipc/send client)                                        \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ")
                     .seeAlso(
-                        "ipc/xx")
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -123,34 +138,52 @@ public class IPCFunctions {
                     VncFunction
                         .meta()
                         .arglists(
+                            "(ipc/client port)",
                             "(ipc/client host port)")
                         .doc(
-                            "....")
+                            "Create a new TcpClient on the specified host and port")
                         .examples(
                             "(do                                                                \n" +
                             "   (defn handler [m] (. m :asEchoResponse))                        \n" +
                             "   (try-with [server (ipc/server 33333 handler)                    \n" +
                             "              client (ipc/client \"localhost\" 33333)]             \n" +
                             "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                            "          ((fn [m] (println (ipc/message->map m)) m))              \n" +
                             "          (ipc/send client)                                        \n" +
                             "          (ipc/message->map)                                       \n" +
                             "          (println))))                                             ")
                         .seeAlso(
-                            "ipc/xx")
+                            "ipc/server",
+                            "ipc/client",
+                            "ipc/close",
+                            "ipc/running?",
+                            "ipc/send",
+                            "ipc/send-async",
+                            "ipc/text-message",
+                            "ipc/plain-text-message",
+                            "ipc/binary-message",
+                            "ipc/message->map")
                         .build()
             ) {
                 @Override
                 public VncVal apply(final VncList args) {
-                    ArityExceptions.assertMinArity(this, args, 2);
+                    ArityExceptions.assertArity(this, args, 1, 2);
 
-                    final String host = Coerce.toVncString(args.first()).getValue();
-                    final int port = Coerce.toVncLong(args.second()).getIntValue();
+                    if ( args.size() == 1) {
+                        final int port = Coerce.toVncLong(args.first()).getIntValue();
 
-                    final TcpClient client = new TcpClient(host, port);
+                        final TcpClient client = new TcpClient(port);
+                        client.open();
+                        return new VncJavaObject(client);
+                    }
+                    else {
+                        final String host = Coerce.toVncString(args.first()).getValue();
+                        final int port = Coerce.toVncLong(args.second()).getIntValue();
 
-                    client.open();
-
-                    return new VncJavaObject(client);
+                        final TcpClient client = new TcpClient(host, port);
+                        client.open();
+                        return new VncJavaObject(client);
+                    }
                 }
 
                 private static final long serialVersionUID = -1848883965231344442L;
@@ -166,11 +199,19 @@ public class IPCFunctions {
                         "(ipc/running? server)",
                         "(ipc/running? client)")
                     .doc(
-                        "....")
+                        "Return `true` if the server or client is running else `false`")
                     .examples(
                         "(io/file \"/tmp/test.txt\")")
                     .seeAlso(
-                        "ipc/xx")
+                        "ipc/server",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -196,18 +237,26 @@ public class IPCFunctions {
 
     public static VncFunction ipc_close =
         new VncFunction(
-                "ipc/clos",
+                "ipc/close",
                 VncFunction
                     .meta()
                     .arglists(
                         "(ipc/close server)",
                         "(ipc/close client)")
                     .doc(
-                        "....")
+                        "Closes the server or client")
                     .examples(
                         "(io/file \"/tmp/test.txt\")")
                     .seeAlso(
-                        "ipc/xx")
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -252,7 +301,9 @@ public class IPCFunctions {
                         "(ipc/client-send client message)",
                         "(ipc/client-send client timeout message)")
                     .doc(
-                        "....")
+                        "Sends a message to the TCP/IP port the client is associated with. \n\n" +
+                        "Returns the servers response message or `nil` if the message is a " +
+                        "declared as one-way message.")
                     .examples(
                         "(do                                                                \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
@@ -271,7 +322,15 @@ public class IPCFunctions {
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ")
                  .seeAlso(
-                        "ipc/xx")
+                     "ipc/server",
+                     "ipc/client",
+                     "ipc/close",
+                     "ipc/running?",
+                     "ipc/send-async",
+                     "ipc/text-message",
+                     "ipc/plain-text-message",
+                     "ipc/binary-message",
+                     "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -305,7 +364,9 @@ public class IPCFunctions {
                         .arglists(
                             "(ipc/send-async client message)")
                         .doc(
-                            "....")
+                            "Sends a message asynchronously to the TCP/IP port the client is " +
+                            "associated with. \n\n" +
+                            "Retruns a future to get the server's response message.")
                         .examples(
                             "(do                                                                \n" +
                             "   (defn handler [m] (. m :asEchoResponse))                        \n" +
@@ -317,7 +378,15 @@ public class IPCFunctions {
                             "          (ipc/message->map)                                       \n" +
                             "          (println))))                                             ")
                         .seeAlso(
-                            "ipc/xx")
+                            "ipc/server",
+                            "ipc/client",
+                            "ipc/close",
+                            "ipc/running?",
+                            "ipc/send",
+                            "ipc/text-message",
+                            "ipc/plain-text-message",
+                            "ipc/binary-message",
+                            "ipc/message->map")
                         .build()
             ) {
                 @Override
@@ -344,12 +413,20 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/text-message status topic mimetype charset text)")
                     .doc(
-	                    "(ipc/text-message :REQUEST \"test\"                 \n" +
-	                    "                  \"text/plain\" :UTF-8 \"hello\")  ")
+                        "Creates a text message")
                     .examples(
-                        "(io/file \"/tmp/test.txt\")")
+                        "(ipc/text-message :REQUEST \"test\"                 \n" +
+                        "                  \"text/plain\" :UTF-8 \"hello\")  ")
                     .seeAlso(
-                        "ipc/xx")
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -384,11 +461,19 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/plain-text-message status topic text)")
                     .doc(
-	                    "(ipc/plain-text-message :REQUEST \"test\" \"hello\")")
+                        "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`")
                     .examples(
                         "(io/file \"/tmp/test.txt\")")
                     .seeAlso(
-                        "ipc/xx")
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -421,11 +506,19 @@ public class IPCFunctions {
                         .arglists(
                             "(ipc/binary-message status topic mimetype data)")
                         .doc(
-                            "....")
+                            "Creates a binary message")
                         .examples(
                             "(io/file \"/tmp/test.txt\")")
                         .seeAlso(
-                            "ipc/xx")
+                            "ipc/server",
+                            "ipc/client",
+                            "ipc/close",
+                            "ipc/running?",
+                            "ipc/send",
+                            "ipc/send-async",
+                            "ipc/text-message",
+                            "ipc/plain-text-message",
+                            "ipc/message->map")
                         .build()
             ) {
                 @Override
@@ -462,7 +555,15 @@ public class IPCFunctions {
                     .examples(
                         "(io/file \"/tmp/test.txt\")")
                     .seeAlso(
-                        "ipc/xx")
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message")
                     .build()
         ) {
             @Override
@@ -473,18 +574,20 @@ public class IPCFunctions {
 
                 if (m.getCharset() != null) {
                     return VncOrderedMap.of(
-                            new VncKeyword("status"),   new VncKeyword(m.getStatus().name()),
-                            new VncKeyword("topic"),    new VncString(m.getTopic()),
-                            new VncKeyword("mimetype"), new VncString(m.getMimetype()),
-                            new VncKeyword("charset"),  new VncKeyword(m.getCharset()),
-                            new VncKeyword("text"),     new VncString(m.getText()));
+                            new VncKeyword("status"),    new VncKeyword(m.getStatus().name()),
+                            new VncKeyword("timestamp"), new VncJavaObject(m.getTimestamp()),
+                            new VncKeyword("topic"),     new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
+                            new VncKeyword("charset"),   new VncKeyword(m.getCharset()),
+                            new VncKeyword("text"),      new VncString(m.getText()));
                 }
                 else {
                     return VncOrderedMap.of(
-                            new VncKeyword("status"),   new VncKeyword(m.getStatus().name()),
-                            new VncKeyword("topic"),    new VncString(m.getTopic()),
-                            new VncKeyword("mimetype"), new VncString(m.getMimetype()),
-                            new VncKeyword("data"),     new VncByteBuffer(m.getData()));
+                            new VncKeyword("status"),    new VncKeyword(m.getStatus().name()),
+                            new VncKeyword("timestamp"), new VncJavaObject(m.getTimestamp()),
+                            new VncKeyword("topic"),     new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
+                            new VncKeyword("data"),      new VncByteBuffer(m.getData()));
                 }
             }
 

@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.ipc;
 
 import java.nio.charset.Charset;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import com.github.jlangch.venice.VncException;
@@ -41,6 +42,7 @@ public class Message {
             final byte[] data
     ) {
         this.status = status;
+        this.timestamp = ZonedDateTime.now();
         this.topic = topic;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -129,6 +131,13 @@ public class Message {
     }
 
     /**
+     * @return the message timestamp
+     */
+    public ZonedDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    /**
      * @return the message topic
      */
     public String getTopic() {
@@ -171,6 +180,7 @@ public class Message {
 
 
     private final Status status;
+    private final ZonedDateTime timestamp;
     private final String topic;
     private final String mimetype;
     private final String charset;
