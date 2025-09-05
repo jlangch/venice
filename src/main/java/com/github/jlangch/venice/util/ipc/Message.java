@@ -28,8 +28,8 @@ import com.github.jlangch.venice.VncException;
 
 
 /**
- * Represents a message exchanged between the <code>TcpClient</code>
- * and <code>TcpServer</code>
+ * Represents a request or reponse message exchanged between the
+ * <code>TcpClient</code> and <code>TcpServer</code>.
  */
 public class Message {
 
@@ -54,7 +54,7 @@ public class Message {
      * @param status the message's status
      * @param topic a topic
      * @param mimetype the mimetype of the message's payload data
-     * @param charset the chartset of the message's payload data
+     * @param charset the charset of the message's payload data
      * @param data the textual payload data
      * @return the message
      */

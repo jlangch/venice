@@ -63,7 +63,15 @@ public class IPCFunctions {
                     .doc(
                         "....")
                     .examples(
-                        "(io/file \"/tmp/test.txt\")")
+                        "(do                                                              \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                      \n" +
+                        "   (try-with [server (ipc/start-server 33333 handler)            \n" +
+                        "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                        "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
+                        "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
+                        "       (-<> (ipc/client-send client m)                           \n" +
+                        "            (. <> :getText)                                      \n" +
+                        "            (println <>)))))                                     ")
                     .seeAlso(
                         "ipc/xx")
                     .build()
@@ -239,25 +247,49 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/client-send client message)")
+                        "(ipc/client-send client message)",
+                        "(ipc/client-send client message timeout)")
                     .doc(
                         "....")
                     .examples(
-                        "(io/file \"/tmp/test.txt\")")
+                        "(do                                                              \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                      \n" +
+                        "   (try-with [server (ipc/start-server 33333 handler)            \n" +
+                        "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                        "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
+                        "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
+                        "       (-<> (ipc/client-send client m)                           \n" +
+                        "            (. <> :getText)                                      \n" +
+                        "            (println <>)))))                                     ",
+                        "(do                                                              \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                      \n" +
+                        "   (try-with [server (ipc/start-server 33333 handler)            \n" +
+                        "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                        "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
+                        "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
+                        "       (-<> (ipc/client-send client m 2000)                      \n" +
+                        "            (. <> :getText)                                      \n" +
+                        "            (println <>)))))                                     ")
                     .seeAlso(
                         "ipc/xx")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
                 final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
                 final Message request = Coerce.toVncJavaObject(args.second(), Message.class);
+                final long timeout = args.size() > 2 ? Coerce.toVncLong(args.third()).toJavaLong() : 0;
 
-                final Message response = client.sendMessage(request);
-
-                return response == null ? Nil : new VncJavaObject(response);
+                if (timeout <= 0) {
+                    final Message response = client.sendMessage(request);
+                    return response == null ? Nil : new VncJavaObject(response);
+                }
+                else {
+                    final Message response = client.sendMessage(request, timeout, TimeUnit.MILLISECONDS);
+                    return response == null ? Nil : new VncJavaObject(response);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -273,7 +305,16 @@ public class IPCFunctions {
                         .doc(
                             "....")
                         .examples(
-                            "(io/file \"/tmp/test.txt\")")
+                            "(do                                                              \n" +
+                            "   (defn handler [m] (. m :asEchoResponse))                      \n" +
+                            "   (try-with [server (ipc/start-server 33333 handler)            \n" +
+                            "              client (ipc/start-client \"localhost\" 33333)]     \n" +
+                            "     (let [m (ipc/text-message :REQUEST \"test\"                 \n" +
+                            "                               \"text/plain\" :UTF-8 \"hello\")] \n" +
+                            "       (-<> (ipc/client-send-async client m)                     \n" +
+                            "            (deref <>)                                           \n" +
+                            "            (. <> :getText)                                      \n" +
+                            "            (println <>)))))                                     ")
                         .seeAlso(
                             "ipc/xx")
                         .build()
@@ -336,7 +377,8 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/text-message status topic mimetype charset text)")
                     .doc(
-                        "....")
+	                    "(ipc/text-message :REQUEST \"test\"                 \n" +
+	                    "                  \"text/plain\" :UTF-8 \"hello\")  ")
                     .examples(
                         "(io/file \"/tmp/test.txt\")")
                     .seeAlso(
