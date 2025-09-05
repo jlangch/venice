@@ -306,7 +306,7 @@ public class IPCFunctions {
                         "Returns the servers response message or `nil` if the message is a " +
                         "declared as one-way message.")
                     .examples(
-                    	";; echo handler                                                    \n" +
+                        ";; echo handler                                                    \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"               \n" +
                         "(do                                                                \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
@@ -316,7 +316,7 @@ public class IPCFunctions {
                         "          (ipc/send client)                                        \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ",
-                    	";; handler processing JSON message data                            \n" +
+                        ";; handler processing JSON message data                            \n" +
                         ";; request: {\"x\": 100, \"y\": 200} => add => response: {\"z\": 300}  \n" +
                         "(do                                                                \n" +
                         "   (defn handler [m]                                               \n" +
@@ -333,7 +333,7 @@ public class IPCFunctions {
                         "          (ipc/send client 2000)                                   \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ",
-                    	";; handler with remote code execution                              \n" +
+                        ";; handler with remote code execution                              \n" +
                         ";; request: \"(+ 1 2)\" => exec => response: \"3\"                 \n" +
                         "(do                                                                \n" +
                         "   (defn handler [m]                                               \n" +
