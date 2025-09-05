@@ -224,7 +224,7 @@ public class VeniceTest {
     public void test_loaded_modules() {
         final Venice venice = new Venice();
 
-        assertEquals(14L, venice.eval("(count (sort *loaded-modules*))"));
+        assertEquals(15L, venice.eval("(count (sort *loaded-modules*))"));
     }
 
     @Test
