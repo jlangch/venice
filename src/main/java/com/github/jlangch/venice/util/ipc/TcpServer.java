@@ -21,8 +21,16 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static com.github.jlangch.venice.util.ipc.Status.REQUEST;
+import static com.github.jlangch.venice.util.ipc.Status.REQUEST_ONE_WAY;
+import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_BAD_REQUEST;
+import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_HANDLER_ERROR;
+import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_OK;
+
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
@@ -41,7 +49,9 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 public class TcpServer implements Closeable {
 
     /**
-     * Create a new TcpServer on the specified port
+     * Create a new TcpServer on the specified port.
+     *
+     * <p>The server must be closed after use!
      *
      * @param port a port
      */
@@ -194,7 +204,48 @@ public class TcpServer implements Closeable {
                         // client closed connection
                         break;
                     }
-                    final Message response = handler.apply(request);
+
+                    // send an error back if the request does not have a request status
+                    if (!(request.getStatus() == REQUEST || request.getStatus() == REQUEST_ONE_WAY)) {
+                        Protocol.sendMessage(
+                            ch,
+                            Message.text(
+                               RESPONSE_BAD_REQUEST,
+                               request.getTopic(),
+                               "text/plain",
+                               "UTF-8",
+                               "Bad request status: " + request.getStatus().name()));
+                        continue;
+                    }
+
+                    // Process request
+
+                    Message response = null;
+                    try {
+                        response = handler.apply(request);
+
+                        if (response == null && request.getStatus() == REQUEST) {
+                            // send an empty ok response back
+                            response = Message.text(
+                                         RESPONSE_OK,
+                                         request.getTopic(),
+                                         "text/plain",
+                                         "UTF-8",
+                                         "");
+                        }
+                    }
+                    catch(Exception ex) {
+                        // do not send an error back for a request of type REQUEST_ONE_WAY
+                        response = request.getStatus() == REQUEST
+                                    ? Message.text(
+                                        RESPONSE_HANDLER_ERROR,
+                                        request.getTopic(),
+                                        "text/plain",
+                                        "UTF-8",
+                                        printStackTraceToString(ex))
+                                    : null;
+                    }
+
                     if (response != null) {
                         Protocol.sendMessage(ch, response);
                     }
@@ -209,6 +260,19 @@ public class TcpServer implements Closeable {
         private final Function<Message,Message> handler;
     }
 
+
+    private static String printStackTraceToString(final Exception ex) {
+        if  (ex instanceof VncException) {
+            return String.join("\n", ((VncException)ex).getCallStackAsStringList());
+        }
+        else {
+            final StringWriter sw = new StringWriter();
+            final PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            pw.flush();
+            return sw.toString();
+        }
+    }
 
 
     private final int port;

@@ -162,6 +162,7 @@ public class Modules {
                         new VncKeyword("regex"),
                         new VncKeyword("time"),
                         new VncKeyword("io"),
+                        new VncKeyword("ipc"),
                         new VncKeyword("json"),
                         new VncKeyword("pdf"),
                         new VncKeyword("inet"),

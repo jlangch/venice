@@ -111,7 +111,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { sleep(1000); return req.asEcho(); };
+        final Function<Message,Message> echoHandler = req -> { sleep(1000); return req.asEchoResponse(); };
 
         server.start(echoHandler);
 
@@ -122,11 +122,11 @@ public class TcpServerTest {
         try {
             final Message request = Message.hello();
 
+            // the server waits 1000ms with replying on the received request
             final Future<Message> future = client.sendMessageAsync(request);
 
             sleep(100);
             client.close();
-            sleep(100);
 
             future.get();
 
@@ -146,7 +146,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
 
         server.start(echoHandler);
 
@@ -182,7 +182,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
 
         server.start(echoHandler);
 
@@ -213,7 +213,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
 
         server.start(echoHandler);
 
@@ -222,13 +222,13 @@ public class TcpServerTest {
         client.open();
 
         try {
-            final Message request = Message.echo();
+            final Message request = Message.hello();
 
             final Message response = client.sendMessage(request);
 
             assertNotNull(response);
             assertEquals(Status.RESPONSE_OK, response.getStatus());
-            assertEquals("echo",             response.getTopic());
+            assertEquals("hello",            response.getTopic());
             assertEquals("text/plain",       response.getMimetype());
             assertEquals("UTF-8",            response.getCharset());
             assertEquals("Hello!",           response.getText());
@@ -244,7 +244,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
 
         server.start(echoHandler);
 
@@ -277,7 +277,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
 
         server.start(echoHandler);
 
@@ -312,47 +312,7 @@ public class TcpServerTest {
 
 
     @Test
-    public void test_echo_server_multiple_messages_2() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
-
-        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
-
-        server.start(echoHandler);
-
-        sleep(300);
-
-        client.open();
-
-        try {
-            for(int ii=0; ii<10; ii++) {
-                final String msg = "Hello " + ii;
-
-                final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
-
-                client.sendMessageOneWay(request);
-
-                final Message response = client.receiveMessageAsync().get();
-
-                assertNotNull(response);
-                assertEquals(Status.RESPONSE_OK, response.getStatus());
-                assertEquals("hello",            response.getTopic());
-                assertEquals("text/plain",       response.getMimetype());
-                assertEquals("UTF-8",            response.getCharset());
-                assertEquals(msg,                response.getText());
-            }
-        }
-        finally {
-            client.close();
-
-            sleep(300);
-
-            server.close();
-        }
-    }
-
-    @Test
-    public void test_echo_server_multiple_messages_without_response() throws Exception {
+    public void test_echo_server_multiple_messages_oneway() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
@@ -368,9 +328,10 @@ public class TcpServerTest {
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
 
-                final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
+                final Message request = Message.text(Status.REQUEST_ONE_WAY, "hello", "text/plain", "UTF-8", msg);
 
-                client.sendMessageOneWay(request);
+                // one way message -> no response
+                client.sendMessage(request);
             }
         }
         finally {
@@ -387,7 +348,7 @@ public class TcpServerTest {
 
         final TcpServer server = new TcpServer(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEcho(); };
+        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
 
         server.start(echoHandler);
 

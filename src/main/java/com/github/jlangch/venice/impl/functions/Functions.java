@@ -141,6 +141,7 @@ public class Functions {
         functions.putAll(IOFunctionsFileWatcher.ns);
         functions.putAll(IOFunctionsSpitSlurp.ns);
         functions.putAll(IOFunctionsStreams.ns);
+        functions.putAll(IPCFunctions.ns);
         functions.putAll(ZipFunctions.ns);
         functions.putAll(TimeFunctions.ns);
         functions.putAll(ShellFunctions.ns);

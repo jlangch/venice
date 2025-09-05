@@ -47,6 +47,7 @@ public class Message {
         this.data = data;
     }
 
+
     /**
      * Create a text message
      *
@@ -114,16 +115,9 @@ public class Message {
     }
 
     /**
-     * @return a simple echo message (topic: "echo", data; "Hello!")
+     * @return this message as echoed message with status RESPONSE_OK
      */
-    public static Message echo() {
-        return Message.text(Status.REQUEST, "echo", "text/plain", "UTF-8", "Hello!");
-    }
-
-    /**
-     * @return this message as echoed message
-     */
-    public Message asEcho() {
+    public Message asEchoResponse() {
         return new Message(Status.RESPONSE_OK, topic, mimetype, charset, data);
     }
 

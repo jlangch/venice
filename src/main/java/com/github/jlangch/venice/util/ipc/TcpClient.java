@@ -43,6 +43,8 @@ public class TcpClient implements Closeable {
     /**
      * Create a new TcpClient on the specified port on the local host
      *
+     * <p>The client must be closed after use!
+     *
      * @param port a port
      */
     public TcpClient(final int port) {
@@ -86,6 +88,14 @@ public class TcpClient implements Closeable {
     }
 
     /**
+     * @return <code>true</code> if the client is running else <code>false</code>
+     */
+    public boolean isRunning() {
+       final SocketChannel ch = channel.get();
+       return ch != null && ch.isOpen();
+    }
+
+    /**
      * Closes the client
      */
     @Override
@@ -114,27 +124,11 @@ public class TcpClient implements Closeable {
             throw new VncException("This TcpClient is not open!");
         }
 
-        Protocol.sendMessage(ch, msg);
-
-        return Protocol.receiveMessage(ch);
-    }
-
-    /**
-     * Sends a oneway message to the server. Does not wait for any
-     * response.
-     *
-     * @param msg a message
-     */
-    public void sendMessageOneWay(final Message msg) {
-        Objects.requireNonNull(msg);
-
-        final SocketChannel ch = channel.get();
-
-        if (ch == null) {
-            throw new VncException("This TcpClient is not open!");
-        }
+        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
 
         Protocol.sendMessage(ch, msg);
+
+        return oneway ? null : Protocol.receiveMessage(ch);
     }
 
     /**
@@ -191,29 +185,12 @@ public class TcpClient implements Closeable {
             throw new VncException("This TcpClient is not open!");
         }
 
+        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
+
         final Callable<Message> task = () -> {
             Protocol.sendMessage(ch, msg);
-            return Protocol.receiveMessage(ch);
+            return oneway ? null : Protocol.receiveMessage(ch);
         };
-
-        return mngdExecutor
-                .getExecutor()
-                .submit(task);
-    }
-
-    /**
-     * Receive a message asynchronously from the server.
-     *
-     * @return the future for the server's response
-     */
-    public Future<Message> receiveMessageAsync() {
-        final SocketChannel ch = channel.get();
-
-        if (ch == null) {
-            throw new VncException("This TcpClient is not open!");
-        }
-
-        final Callable<Message> task = () -> Protocol.receiveMessage(ch);
 
         return mngdExecutor
                 .getExecutor()

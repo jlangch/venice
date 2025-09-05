@@ -218,6 +218,12 @@ public class RestrictedBlacklistedFunctions {
                 "io/zip-size",
                 "io/zip?",
 
+                // IPC
+                "ipc/start-server",
+                "ipc/close-server",
+                "ipc/start-client",
+                "ipc/close-client",
+
                 // Shell
                 "sh",
                 "sh/open",

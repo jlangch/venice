@@ -25,11 +25,13 @@ package com.github.jlangch.venice.util.ipc;
 public enum Status {
 
     REQUEST(0),
+    REQUEST_ONE_WAY(1),
 
     RESPONSE_OK(400),
     RESPONSE_INTERNAL_SERVER_ERROR(500),
     RESPONSE_SERVICE_UNAVAILABLE(501),
-    RESPONSE_BAD_REQUEST(502);
+    RESPONSE_HANDLER_ERROR(502),
+    RESPONSE_BAD_REQUEST(503);
 
 
     public static Status fromCode(int code) {
