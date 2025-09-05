@@ -49,6 +49,9 @@ public class IO {
 
             return data;
         }
+        catch(VncException ex) {
+            throw ex;
+        }
         catch(IOException ex) {
         	if (ExceptionUtil.isBrokenPipeException(ex)) {
         		throw new VncException("Failed to read data from channel, channel was closed!", ex);
@@ -94,7 +97,10 @@ public class IO {
             }
         }
         catch(Exception ex) {
-        	if (ExceptionUtil.isBrokenPipeException(ex)) {
+        	if ((ex instanceof IOException) && ("EOF".equals(ex.getMessage()))) {
+        		throw new VncException("Failed to read data from channel, channel EOF reached!", ex);
+        	}
+        	else if (ExceptionUtil.isBrokenPipeException(ex)) {
         		throw new VncException("Failed to read data from channel, channel was closed!", ex);
         	}
         	else {
