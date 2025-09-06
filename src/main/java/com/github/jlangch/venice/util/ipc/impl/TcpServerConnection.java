@@ -49,61 +49,8 @@ public class TcpServerConnection implements Runnable {
     @Override
     public void run() {
         try {
-            while(server.isRunning() && ch.isOpen()) {
-                final Message request = Protocol.receiveMessage(ch);
-                if (request == null) {
-                    // client closed connection
-                    break;
-                }
-
-                if (!server.isRunning()) break;
-
-                // send an error back if the request message is not a request
-                if (!(isRequestMsg(request) || isRequestOneWayMsg(request))) {
-                    Protocol.sendMessage(
-                        ch,
-                        Message.text(
-                           RESPONSE_BAD_REQUEST,
-                           request.getTopic(),
-                           "text/plain",
-                           "UTF-8",
-                           "Bad request status: " + request.getStatus().name()));
-                    continue;
-                }
-
-                // Process request
-
-                Message response = null;
-                try {
-                    response = handler.apply(request);
-
-                    if (response == null && isRequestMsg(request)) {
-                        // send an empty ok response back
-                        response = Message.text(
-                                     RESPONSE_OK,
-                                     request.getTopic(),
-                                     "text/plain",
-                                     "UTF-8",
-                                     "");
-                    }
-                }
-                catch(Exception ex) {
-                    // do not send an error back for a request of type REQUEST_ONE_WAY
-                    response = isRequestMsg(request)
-                                ? Message.text(
-                                    RESPONSE_HANDLER_ERROR,
-                                    request.getTopic(),
-                                    "text/plain",
-                                    "UTF-8",
-                                    ExceptionUtil.printStackTraceToString(ex))
-                                : null;
-                }
-
-                if (!server.isRunning()) break;
-
-                if (response != null) {
-                    Protocol.sendMessage(ch, response);
-                }
+            while(mode != State.Terminated && server.isRunning() && ch.isOpen()) {
+                mode = processRequestResponse();
             }
         }
         catch(Exception ex) {
@@ -115,6 +62,88 @@ public class TcpServerConnection implements Runnable {
         }
     }
 
+    private State processRequestResponse() {
+        // [1] receive message
+        final Message request = Protocol.receiveMessage(ch);
+        if (request == null) {
+            return State.Terminated; // client closed connection
+        }
+
+        if (!server.isRunning()) {
+            return State.Terminated;  // this server was closed
+        }
+
+        // send an error back if the request message is not a request
+        if (!(isRequestMsg(request) || isRequestOneWayMsg(request))) {
+            Protocol.sendMessage(
+                ch,
+                Message.text(
+                   RESPONSE_BAD_REQUEST,
+                   request.getTopic(),
+                   "text/plain",
+                   "UTF-8",
+                   "Bad request status: " + request.getStatus().name()));
+
+            return State.Request_Response;
+        }
+
+        // [2] Handle the request to get a response
+        final Message response = handleRequest(request);
+
+
+        if (!server.isRunning()) {
+            return State.Terminated;  // this server was closed
+        }
+
+        // [3] Send response
+        if (response != null) {
+            Protocol.sendMessage(ch, response);
+        }
+
+        return State.Request_Response;
+    }
+
+    private Message handleRequest(final Message request) {
+        try {
+            final Message response = handler.apply(request);
+
+            if (isRequestMsg(request)) {
+                return response == null
+                        ?  Message.text(
+                                RESPONSE_OK,
+                                request.getTopic(),
+                                "text/plain",
+                                "UTF-8",
+                                "")
+                        : response;
+            }
+            else if (isRequestOneWayMsg(request)) {
+                return null; // do not reply on one-way messages
+            }
+            else {
+                return null; // already handled by caller, should not reach here
+            }
+        }
+        catch(Exception ex) {
+            // do not send an error back for a request of type REQUEST_ONE_WAY
+            if (isRequestMsg(request)) {
+                return Message.text(
+                         RESPONSE_HANDLER_ERROR,
+                         request.getTopic(),
+                         "text/plain",
+                         "UTF-8",
+                         ExceptionUtil.printStackTraceToString(ex));
+            }
+            else if (isRequestOneWayMsg(request)) {
+               return null; // do not reply on one-way messages
+            }
+            else {
+               return null; // already handled by caller, should not reach here
+            }
+        }
+    }
+
+
     private static boolean isRequestMsg(final Message msg) {
         return msg.getStatus() == REQUEST;
     }
@@ -123,6 +152,11 @@ public class TcpServerConnection implements Runnable {
         return msg.getStatus() == REQUEST_ONE_WAY;
     }
 
+
+    private static enum State { Request_Response, Terminated };
+
+
+    private State mode = State.Request_Response;
 
     private final TcpServer server;
     private final SocketChannel ch;
