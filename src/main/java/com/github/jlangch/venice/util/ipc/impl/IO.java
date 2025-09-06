@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 
 
@@ -92,15 +93,15 @@ public class IO {
         try {
             while (buf.hasRemaining()) {
                 if (ch.read(buf) < 0) {
-                    throw new IOException("EOF");
+                    throw new EofException("Failed to read data from channel, channel EOF reached!");
                 }
             }
         }
+        catch(VncException ex) {
+            throw ex;
+        }
         catch(Exception ex) {
-            if ((ex instanceof IOException) && ("EOF".equals(ex.getMessage()))) {
-                throw new VncException("Failed to read data from channel, channel EOF reached!", ex);
-            }
-            else if (ExceptionUtil.isBrokenPipeException(ex)) {
+            if (ExceptionUtil.isBrokenPipeException(ex)) {
                 throw new VncException("Failed to read data from channel, channel was closed!", ex);
             }
             else {
@@ -125,8 +126,8 @@ public class IO {
             }
         }
     }
-    
-    
+
+
     public static void safeClose(final SocketChannel ch) {
         if (ch != null) {
             try {

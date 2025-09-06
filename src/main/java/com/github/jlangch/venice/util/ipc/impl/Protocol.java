@@ -27,6 +27,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
+import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.Message;
@@ -106,7 +107,7 @@ public class Protocol {
             final ByteBuffer header = ByteBuffer.allocate(10);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
-                return null;  // end of stream, client closed connection
+                throw new EofException("Failed to read data from channel, channel EOF reached!");
             }
 
             header.flip();
@@ -124,7 +125,7 @@ public class Protocol {
 
             if (version != PROTOCOL_VERSION) {
                 throw new VncException(
-                        "Received message with unsupported protocol version" + version + "!");
+                        "Received message with unsupported protocol version " + version + "!");
             }
 
             // [2] charset frame
@@ -161,7 +162,7 @@ public class Protocol {
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
                 throw new VncException("Failed to read data from channel, channel was closed!", ex);
-                }
+            }
             else {
                 throw new VncException("Failed to read data from channel!", ex);
             }

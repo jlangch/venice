@@ -57,10 +57,12 @@ public class ExceptionUtil {
     }
 
     public static String printStackTraceToString(final Exception ex) {
-        if  (ex instanceof VncException) {
+        if (ex instanceof VncException && ((VncException)ex).hasCallStack()) {
+            // Venice callstack
             return String.join("\n", ((VncException)ex).getCallStackAsStringList());
         }
         else {
+            // Java stacktrace
             final StringWriter sw = new StringWriter();
             final PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);

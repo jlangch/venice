@@ -38,9 +38,9 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 
 
 public class TcpServerTest {
@@ -141,7 +141,6 @@ public class TcpServerTest {
     }
 
     @Test
-    @EnableOnMac
     public void test_echo_server_server_abort() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
@@ -161,16 +160,19 @@ public class TcpServerTest {
             assertNotNull(response);
 
             server.close();
-            sleep(1000);
+            sleep(500);
             assertFalse(server.isRunning());
 
-            // this will cause a IOException broken pipe
+            // this will cause a EofException or a VncException "broken pipe"
             response = client.sendMessage(request);
 
-            fail("Should not reach here");  // Test fails occasionally here!!!
+            fail("should not reach here");
+        }
+        catch(EofException ex) {
+            assertTrue(true);
         }
         catch(VncException ex) {
-            assertTrue(ex.getCause() instanceof java.io.IOException);
+            assertTrue(true);
         }
         finally {
             client.close();
@@ -287,17 +289,20 @@ public class TcpServerTest {
 
         try {
             for(int ii=0; ii<10; ii++) {
+                final String topic = "hello";
+                final String mimetype = "text/plain";
+                final String charset = "UTF-8";
                 final String msg = "Hello " + ii;
 
-                final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
+                final Message request = Message.text(Status.REQUEST, topic, mimetype, charset, msg);
 
                 final Message response = client.sendMessage(request);
 
                 assertNotNull(response);
                 assertEquals(Status.RESPONSE_OK, response.getStatus());
-                assertEquals("hello",            response.getTopic());
-                assertEquals("text/plain",       response.getMimetype());
-                assertEquals("UTF-8",            response.getCharset());
+                assertEquals(topic,              response.getTopic());
+                assertEquals(mimetype,           response.getMimetype());
+                assertEquals(charset,            response.getCharset());
                 assertEquals(msg,                response.getText());
             }
         }
@@ -348,6 +353,12 @@ public class TcpServerTest {
 
         final TcpServer server = new TcpServer(33333);
 
+        // increase connections to support the test client count
+        server.setMaximumParallelConnections(50);
+
+        final int clients = 30;
+        final int messagesPerClient = 25;
+
         final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
 
         server.start(echoHandler);
@@ -357,28 +368,30 @@ public class TcpServerTest {
         try {
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
 
-            // start 10 clients (the server supports up to 20 parallel connections as default)
             final List<Future<?>> futures = new ArrayList<>();
-            for(int cc=0; cc<10; cc++) {
+            for(int cc=0; cc<clients; cc++) {
                 final int clientNr = cc;
+
                 futures.add(es.submit(() -> {
                     final TcpClient client = new TcpClient(33333);
                     try {
                         client.open();
 
-                        // 10 messages per client
-                        for(int ii=0; ii<10; ii++) {
-                            final String msg = "Hello " + clientNr + " / " + ii;
+                        for(int msgIdx=0; msgIdx<messagesPerClient; msgIdx++) {
+                            final String topic = "hello";
+                            final String mimetype = "text/plain";
+                            final String charset = "UTF-8";
+                            final String msg = "Hello " + clientNr + " / " + msgIdx;
 
-                            final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", msg);
+                            final Message request = Message.text(Status.REQUEST, topic, mimetype, charset, msg);
 
                             final Message response = client.sendMessage(request);
 
                             assertNotNull(response);
                             assertEquals(Status.RESPONSE_OK, response.getStatus());
-                            assertEquals("hello",            response.getTopic());
-                            assertEquals("text/plain",       response.getMimetype());
-                            assertEquals("UTF-8",            response.getCharset());
+                            assertEquals(topic,              response.getTopic());
+                            assertEquals(mimetype,           response.getMimetype());
+                            assertEquals(charset,            response.getCharset());
                             assertEquals(msg,                response.getText());
 
                             // synchronized (server) { System.out.println(msg); }

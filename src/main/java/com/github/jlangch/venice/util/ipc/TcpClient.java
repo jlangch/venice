@@ -34,6 +34,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.util.ipc.impl.IO;
@@ -112,11 +113,14 @@ public class TcpClient implements Closeable {
      * Sends a message to the server and returns the server's
      * response.
      *
-     * <p>Blocks while waiting for the server's reponse.
+     * <p>Blocks while waiting for the server's response.
+     *
+     * <p>Returns <code>null</code> if a one way message was sent
      *
      * @param msg a message
      * @return the response
-     */
+     * @throws EofException if the channel has reached end-of-stream while reading the response
+    */
     public Message sendMessage(final Message msg) {
         Objects.requireNonNull(msg);
 
@@ -137,10 +141,14 @@ public class TcpClient implements Closeable {
      * Sends a message to the server. Throws a TimeoutException if the response
      * is not received within the given timeout.
      *
+     * <p>Returns <code>null</code> if a one way message was sent.
+     *
      * @param msg     a message
      * @param timeout the maximum time to wait
      * @param unit    the time unit of the timeout argument
      * @return the server's response
+     * @throws TimeoutException if the send timed out
+     * @throws EofException if the channel has reached end-of-stream while reading the response
      */
     public Message sendMessage(final Message msg, final long timeout, final TimeUnit unit) {
         Objects.requireNonNull(msg);
@@ -175,8 +183,11 @@ public class TcpClient implements Closeable {
      * Sends a message asynchronously to the server and returns a Future
      * for the server's response message.
      *
+     * <p>Returns <code>null</code> if a one way message was sent
+     *
      * @param msg  a message
      * @return the future for the server's response
+     * @throws EofException if the channel has reached end-of-stream while reading the response
      */
     public Future<Message> sendMessageAsync(final Message msg) {
         Objects.requireNonNull(msg);
