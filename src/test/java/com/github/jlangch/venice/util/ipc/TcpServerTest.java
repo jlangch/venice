@@ -36,11 +36,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Function;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 
 
 public class TcpServerTest {
@@ -141,7 +141,7 @@ public class TcpServerTest {
     }
 
     @Test
-    @Disabled
+    @EnableOnMac
     public void test_echo_server_server_abort() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);

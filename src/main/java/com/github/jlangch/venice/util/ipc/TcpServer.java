@@ -21,12 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST;
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST_ONE_WAY;
-import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_BAD_REQUEST;
-import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_HANDLER_ERROR;
-import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_OK;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.BindException;
@@ -41,6 +35,7 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 
 // https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
 
@@ -101,7 +96,7 @@ public class TcpServer implements Closeable {
                         try {
                             final SocketChannel channel = ch.accept();
                             channel.configureBlocking(true);
-                            final Connection conn = new Connection(this, channel, handler);
+                            final TcpServerConnection conn = new TcpServerConnection(this, channel, handler);
                             executor.execute(conn);
                         }
                         catch (IOException ignored) {
@@ -184,100 +179,6 @@ public class TcpServer implements Closeable {
         }
     }
 
-    private static class Connection implements Runnable {
-        public Connection(
-                final TcpServer server,
-                final SocketChannel ch,
-                final Function<Message,Message> handler
-        ) {
-            this.server = server;
-            this.ch = ch;
-            this.handler = handler;
-        }
-
-        @Override
-        public void run() {
-            try {
-                while(server.isRunning() && ch.isOpen()) {
-                    final Message request = Protocol.receiveMessage(ch);
-                    if (request == null) {
-                        // client closed connection
-                        break;
-                    }
-
-                    if (!server.isRunning()) break;
-
-                    // send an error back if the request message is not a request
-                    if (!(isRequestMsg(request) || isRequestOneWayMsg(request))) {
-                        Protocol.sendMessage(
-                            ch,
-                            Message.text(
-                               RESPONSE_BAD_REQUEST,
-                               request.getTopic(),
-                               "text/plain",
-                               "UTF-8",
-                               "Bad request status: " + request.getStatus().name()));
-                        continue;
-                    }
-
-                    // Process request
-
-                    Message response = null;
-                    try {
-                        response = handler.apply(request);
-
-                        if (response == null && isRequestMsg(request)) {
-                            // send an empty ok response back
-                            response = Message.text(
-                                         RESPONSE_OK,
-                                         request.getTopic(),
-                                         "text/plain",
-                                         "UTF-8",
-                                         "");
-                        }
-                    }
-                    catch(Exception ex) {
-                        // do not send an error back for a request of type REQUEST_ONE_WAY
-                        response = isRequestMsg(request)
-                                    ? Message.text(
-                                        RESPONSE_HANDLER_ERROR,
-                                        request.getTopic(),
-                                        "text/plain",
-                                        "UTF-8",
-                                        ExceptionUtil.printStackTraceToString(ex))
-                                    : null;
-                    }
-
-                    if (!server.isRunning()) break;
-
-                    if (response != null) {
-                        Protocol.sendMessage(ch, response);
-                    }
-                }
-            }
-            catch(Exception ex) {
-                // when client closed the connection -> java.io.IOException: Broken pipe
-                // -> quit
-            }
-            finally {
-                IO.safeClose(ch);
-            }
-        }
-
-        private final TcpServer server;
-        private final SocketChannel ch;
-        private final Function<Message,Message> handler;
-    }
-
-
-
-    private static boolean isRequestMsg(final Message msg) {
-        return msg.getStatus() == REQUEST;
-    }
-
-    private static boolean isRequestOneWayMsg(final Message msg) {
-        return msg.getStatus() == REQUEST_ONE_WAY;
-    }
 
 
     private final int port;

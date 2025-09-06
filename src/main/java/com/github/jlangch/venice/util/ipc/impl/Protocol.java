@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc;
+package com.github.jlangch.venice.util.ipc.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,6 +29,8 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.Message;
+import com.github.jlangch.venice.util.ipc.Status;
 
 
 public class Protocol {
@@ -152,15 +154,17 @@ public class Protocol {
                         "Received illegal status code " + statusCode + "!");
             }
 
-            return new Message(status, topic, mimetype, charset, data);
+            return charset == null
+                    ? Message.binary(status, topic, mimetype, data)
+                    : Message.text(status, topic, mimetype, charset, data);
         }
         catch(IOException ex) {
-        	if (ExceptionUtil.isBrokenPipeException(ex)) {
-        		throw new VncException("Failed to read data from channel, channel was closed!", ex);
-        	}
-        	else {
-        		throw new VncException("Failed to read data from channel!", ex);
-        	}
+            if (ExceptionUtil.isBrokenPipeException(ex)) {
+                throw new VncException("Failed to read data from channel, channel was closed!", ex);
+                }
+            else {
+                throw new VncException("Failed to read data from channel!", ex);
+            }
         }
     }
 

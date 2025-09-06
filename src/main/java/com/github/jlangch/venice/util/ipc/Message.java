@@ -34,7 +34,7 @@ import com.github.jlangch.venice.VncException;
  */
 public class Message {
 
-    Message(
+    private Message(
             final Status status,
             final String topic,
             final String mimetype,
@@ -79,6 +79,37 @@ public class Message {
                 mimetype,
                 charset,
                 data.getBytes(Charset.forName(charset)));
+    }
+
+    /**
+     * Create a text message
+     *
+     * @param status the message's status
+     * @param topic a topic
+     * @param mimetype the mimetype of the message's payload data
+     * @param charset the charset of the message's payload data
+     * @param data the textual payload data (given as binary). At your risk!
+     * @return the message
+     */
+    public static Message text(
+            final Status status,
+            final String topic,
+            final String mimetype,
+            final String charset,
+            final byte[] data
+    ) {
+        Objects.requireNonNull(status);
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(mimetype);
+        Objects.requireNonNull(charset);
+        Objects.requireNonNull(data);
+
+        return new Message(
+                status,
+                topic,
+                mimetype,
+                charset,
+                data);
     }
 
     /**
