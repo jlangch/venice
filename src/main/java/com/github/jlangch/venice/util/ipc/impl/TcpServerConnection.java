@@ -125,8 +125,8 @@ public class TcpServerConnection implements Runnable {
             }
         }
         catch(Exception ex) {
-            // do not send an error back for a request of type REQUEST_ONE_WAY
             if (isRequestMsg(request)) {
+                // send error response
                 return Message.text(
                          RESPONSE_HANDLER_ERROR,
                          request.getTopic(),
