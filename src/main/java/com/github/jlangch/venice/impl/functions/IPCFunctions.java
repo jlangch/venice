@@ -467,7 +467,22 @@ public class IPCFunctions {
                         "Puts this client in subscription mode and listens for subscriptions " +
                         "on the specified topic.")
                     .examples(
-                        "")
+                        "(do                                                                             \n" +
+                        "   (defn server-echo-handler [m] (. m :asEchoResponse))                         \n" +
+                        "   (defn client-subscribe-handler [m] (println \"SUB:\" (ipc/message->map m)))  \n" +
+                        "                                                                                \n" +
+                        "   (try-with [server     (ipc/server 33333 server-echo-handler)                 \n" +
+                        "              client-sub (ipc/client \"localhost\" 33333)                       \n" +
+                        "              client-pub (ipc/client \"localhost\" 33333)]                      \n" +
+                        "     ;; client 'client-sub' subscribes to 'test' messages                       \n" +
+                        "     (ipc/subscribe client-sub \"test\" client-subscribe-handler)               \n" +
+                        "                                                                                \n" +
+                        "     ;; client 'client-pub' publishes a 'test' message                          \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")                  \n" +
+                        "          (ipc/send client-pub))                                                \n" +
+                        "                                                                                \n" +
+                        "     ;; print server status and statistics                                      \n" +
+                        "     (println (ipc/server-status client-pub))))                                 ")
                  .seeAlso(
                      "ipc/server",
                      "ipc/client",
@@ -520,10 +535,25 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/publish client message")
                     .doc(
-                        "Publishes a messages to all clients that have subscribed to. \n\n" +
-                        "the message's topic.")
+                        "Publishes a messages to all clients that have subscribed to the" +
+                        "message's topic.")
                     .examples(
-                        "")
+                        "(do                                                                             \n" +
+                        "   (defn server-echo-handler [m] (. m :asEchoResponse))                         \n" +
+                        "   (defn client-subscribe-handler [m] (println \"SUB:\" (ipc/message->map m)))  \n" +
+                        "                                                                                \n" +
+                        "   (try-with [server     (ipc/server 33333 server-echo-handler)                 \n" +
+                        "              client-sub (ipc/client \"localhost\" 33333)                       \n" +
+                        "              client-pub (ipc/client \"localhost\" 33333)]                      \n" +
+                        "     ;; client 'client-sub' subscribes to 'test' messages                       \n" +
+                        "     (ipc/subscribe client-sub \"test\" client-subscribe-handler)               \n" +
+                        "                                                                                \n" +
+                        "     ;; client 'client-pub' publishes a 'test' message                          \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")                  \n" +
+                        "          (ipc/send client-pub))                                                \n" +
+                        "                                                                                \n" +
+                        "     ;; print server status and statistics                                      \n" +
+                        "     (println (ipc/server-status client-pub))))                                 ")
                  .seeAlso(
                      "ipc/server",
                      "ipc/client",
@@ -560,9 +590,16 @@ public class IPCFunctions {
                         .arglists(
                             "(ipc/server-status client")
                         .doc(
-                            "Returns the status of server the client is connected to.")
+                            "Returns the status and statistics of the server the client is " +
+                            "connected to.")
                         .examples(
-                            "")
+                            "(do                                                                \n" +
+                            "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                            "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                            "              client (ipc/client \"localhost\" 33333)]             \n" +
+                            "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                            "          (ipc/send client))                                       \n" +
+                            "     (println (ipc/server-status client))))                        ")
                      .seeAlso(
                          "ipc/server",
                          "ipc/client",
@@ -611,6 +648,7 @@ public class IPCFunctions {
 
                 private static final long serialVersionUID = -1848883965231344442L;
             };
+
 
     public static VncFunction ipc_text_message =
         new VncFunction(

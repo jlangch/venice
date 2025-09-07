@@ -51,12 +51,21 @@ public class IpcSection implements ISectionBuilder {
         send.addItem(diBuilder.getDocItem("ipc/send", false));
         send.addItem(diBuilder.getDocItem("ipc/send-async", false));
 
+        final DocSection pub = new DocSection("Publish", "ipc.publish");
+        all.addSection(pub);
+        pub.addItem(diBuilder.getDocItem("ipc/publish", false));
+        pub.addItem(diBuilder.getDocItem("ipc/subscribe", false));
+
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);
         msg.addItem(diBuilder.getDocItem("ipc/text-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/plain-text-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/binary-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/message->map", false));
+
+        final DocSection util = new DocSection("Util", "ipc.util");
+        all.addSection(util);
+        util.addItem(diBuilder.getDocItem("ipc/server-status", false));
 
         return section;
     }
