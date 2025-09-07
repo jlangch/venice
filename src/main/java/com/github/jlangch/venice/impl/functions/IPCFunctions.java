@@ -464,8 +464,8 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/subscribe client topic handler)")
                     .doc(
-                        "Puts this client in subscription mode and listens for subscriptions " +
-                        "on the specified topic.")
+                        "Puts this client into the subscription mode and listens for messages " +
+                        "of the specified topic.")
                     .examples(
                         "(do                                                                             \n" +
                         "   (defn server-echo-handler [m] (. m :asEchoResponse))                         \n" +
@@ -533,7 +533,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/publish client message")
+                        "(ipc/publish client message)")
                     .doc(
                         "Publishes a messages to all clients that have subscribed to the" +
                         "message's topic.")
@@ -588,7 +588,7 @@ public class IPCFunctions {
                     VncFunction
                         .meta()
                         .arglists(
-                            "(ipc/server-status client")
+                            "(ipc/server-status client)")
                         .doc(
                             "Returns the status and statistics of the server the client is " +
                             "connected to.")
