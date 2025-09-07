@@ -479,7 +479,7 @@ public class IPCFunctions {
                         "                                                                                \n" +
                         "     ;; client 'client-pub' publishes a 'test' message                          \n" +
                         "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")                  \n" +
-                        "          (ipc/send client-pub))                                                \n" +
+                        "          (ipc/publish client-pub))                                             \n" +
                         "                                                                                \n" +
                         "     ;; print server status and statistics                                      \n" +
                         "     (println (ipc/server-status client-pub))))                                 ")
@@ -550,7 +550,7 @@ public class IPCFunctions {
                         "                                                                                \n" +
                         "     ;; client 'client-pub' publishes a 'test' message                          \n" +
                         "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")                  \n" +
-                        "          (ipc/send client-pub))                                                \n" +
+                        "          (ipc/publish client-pub))                                             \n" +
                         "                                                                                \n" +
                         "     ;; print server status and statistics                                      \n" +
                         "     (println (ipc/server-status client-pub))))                                 ")
