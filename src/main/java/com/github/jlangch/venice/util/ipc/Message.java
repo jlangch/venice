@@ -140,6 +140,7 @@ public class Message {
                 data);
     }
 
+
     /**
      * @return a simple hello message (topic: "hello", data; "Hello!")
      */
@@ -151,7 +152,18 @@ public class Message {
      * @return this message as echoed message with status RESPONSE_OK
      */
     public Message asEchoResponse() {
-        return new Message(Status.RESPONSE_OK, topic, mimetype, charset, data);
+        return withStatus(Status.RESPONSE_OK);
+    }
+
+    /**
+     * Change the status of a message
+     *
+     * @param status a status
+     * @return a new message with the topic
+     */
+    public Message withStatus(final Status status) {
+        Objects.requireNonNull(status);
+        return new Message(status, topic, mimetype, charset, data);
     }
 
     /**

@@ -19,39 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc;
+package com.github.jlangch.venice.util.ipc.impl;
+
+import com.github.jlangch.venice.util.ipc.Message;
 
 
-public enum Status {
+public interface IPublisher {
 
-    REQUEST(0),
-    REQUEST_ONE_WAY(1),
+    void publish(Message msg);
 
-    REQUEST_PUBLISH(10),
-    REQUEST_SUBSCRIBE(11),
-    REQUEST_START_SUBSCRIPTION(12),
-
-    RESPONSE_OK(400),
-    RESPONSE_SERVER_ERROR(500),
-    RESPONSE_HANDLER_ERROR(501),
-    RESPONSE_BAD_REQUEST(502);
-
-
-    public static Status fromCode(int code) {
-        for (Status s : Status.values()) {
-            if (s.value == code) {
-                return s;
-            }
-        }
-        return null;
-    }
-
-    private final int value;
-
-    private Status(final int val) {
-        value = val;
-    }
-
-
-    public int getValue() { return value; }
 }

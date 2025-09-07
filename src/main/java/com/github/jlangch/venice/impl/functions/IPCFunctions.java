@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
@@ -47,6 +48,8 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.json.VncJsonReader;
+import com.github.jlangch.venice.nanojson.JsonReader;
 import com.github.jlangch.venice.util.ipc.Message;
 import com.github.jlangch.venice.util.ipc.Status;
 import com.github.jlangch.venice.util.ipc.TcpClient;
@@ -403,6 +406,7 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
         public static VncFunction ipc_send_async =
             new VncFunction(
                     "ipc/send-async",
@@ -451,6 +455,162 @@ public class IPCFunctions {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+
+    public static VncFunction ipc_subscribe =
+        new VncFunction(
+                "ipc/subscribe",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/subscribe client topic handler)")
+                    .doc(
+                        "Puts this client in subscription mode and listens for subscriptions " +
+                        "on the specified topic.")
+                    .examples(
+                        "")
+                 .seeAlso(
+                     "ipc/server",
+                     "ipc/client",
+                     "ipc/close",
+                     "ipc/running?",
+                     "ipc/send-async",
+                     "ipc/text-message",
+                     "ipc/plain-text-message",
+                     "ipc/binary-message",
+                     "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final String topic = Coerce.toVncString(args.nth(1)).getValue();
+                final VncFunction handler = Coerce.toVncFunction(args.nth(2));
+
+
+                final CallFrame[] cf = new CallFrame[] {
+                                            new CallFrame(this, args),
+                                            new CallFrame(handler) };
+
+                // Create a wrapper that inherits the Venice thread context!
+                final ThreadBridge threadBridge = ThreadBridge.create("tcp-subscribe-handler", cf);
+
+                final Consumer<Message> handlerWrapper = threadBridge.bridgeConsumer(m -> {
+                    try {
+                        handler.applyOf(new VncJavaObject(m));
+                    }
+                    catch(Exception ignore) { }
+                });
+
+                final Message response = client.subscribe(topic, handlerWrapper);
+
+                return new VncJavaObject(response);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction ipc_publish =
+        new VncFunction(
+                "ipc/publish",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/publish client message")
+                    .doc(
+                        "Publishes a messages to all clients that have subscribed to. \n\n" +
+                        "the message's topic.")
+                    .examples(
+                        "")
+                 .seeAlso(
+                     "ipc/server",
+                     "ipc/client",
+                     "ipc/close",
+                     "ipc/running?",
+                     "ipc/send-async",
+                     "ipc/text-message",
+                     "ipc/plain-text-message",
+                     "ipc/binary-message",
+                     "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Message request =  Coerce.toVncJavaObject(args.nth(1), Message.class);
+
+                final Message response = client.publish(request);
+
+                return new VncJavaObject(response);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+        public static VncFunction ipc_server_status =
+            new VncFunction(
+                    "ipc/server-status",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(ipc/server-status client")
+                        .doc(
+                            "Returns the status of server the client is connected to.")
+                        .examples(
+                            "")
+                     .seeAlso(
+                         "ipc/server",
+                         "ipc/client",
+                         "ipc/close",
+                         "ipc/running?",
+                         "ipc/send-async",
+                         "ipc/text-message",
+                         "ipc/plain-text-message",
+                         "ipc/binary-message",
+                         "ipc/message->map")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+
+                    final Message response = client.sendMessage(
+                                                Message.text(
+                                                    Status.REQUEST,
+                                                    "server/status",
+                                                    "appliaction/json",
+                                                    "UTF-8",
+                                                    ""),
+                                                5,
+                                                TimeUnit.SECONDS);
+
+                    if (response.getStatus() == Status.RESPONSE_OK) {
+                        final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
+                        try {
+                            return new VncJsonReader(
+                                        JsonReader.from(response.getText()),
+                                        keyFn,
+                                        null,
+                                        false).read();
+                        }
+                        catch(Exception ex) {
+                            throw new VncException ("Failed to get server status", ex);
+                        }
+                    }
+                    else {
+                        throw new VncException ("Failed to get server status");
+                    }
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
     public static VncFunction ipc_text_message =
         new VncFunction(
@@ -748,10 +908,15 @@ public class IPCFunctions {
                     .add(ipc_send)
                     .add(ipc_send_async)
 
+                    .add(ipc_subscribe)
+                    .add(ipc_publish)
+
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)
                     .add(ipc_binary_message)
                     .add(ipc_message_to_map)
+
+                    .add(ipc_server_status)
 
                     .toMap();
 }

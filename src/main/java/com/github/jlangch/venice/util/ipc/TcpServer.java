@@ -28,13 +28,16 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 
 // https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
@@ -61,6 +64,7 @@ public class TcpServer implements Closeable {
     public TcpServer(final int port, final int timeout) {
         this.port = port;
         this.timeout = Math.max(0, timeout);
+        this.endpointId = UUID.randomUUID().toString();
     }
 
 
@@ -73,6 +77,27 @@ public class TcpServer implements Closeable {
      */
     public void setMaximumParallelConnections(final int count) {
         mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
+    }
+
+    /**
+     * @return the endpoint ID of this server
+     */
+    public String getEndpointId() {
+        return endpointId;
+    }
+
+    /**
+     * @return the server's message count
+     */
+    public long getMessageCount() {
+        return messageCount.get();
+    }
+
+    /**
+     * @return the server's publish count
+     */
+    public long getPublishCount() {
+        return publishCount.get();
     }
 
     /**
@@ -96,7 +121,9 @@ public class TcpServer implements Closeable {
                         try {
                             final SocketChannel channel = ch.accept();
                             channel.configureBlocking(true);
-                            final TcpServerConnection conn = new TcpServerConnection(this, channel, handler);
+                            final TcpServerConnection conn = new TcpServerConnection(
+                                                                   this, channel, handler, subscriptions,
+                                                                   messageCount, publishCount);
                             executor.execute(conn);
                         }
                         catch (IOException ignored) {
@@ -183,8 +210,12 @@ public class TcpServer implements Closeable {
 
     private final int port;
     private final int timeout;
+    private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
+    private final AtomicLong messageCount = new AtomicLong(0L);
+    private final AtomicLong publishCount = new AtomicLong(0L);
+    private final Subscriptions subscriptions = new Subscriptions();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 20);
