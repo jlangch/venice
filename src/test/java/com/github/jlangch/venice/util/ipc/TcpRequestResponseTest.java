@@ -105,6 +105,48 @@ public class TcpRequestResponseTest {
         }
     }
 
+
+    @Test
+    public void test_echo_server_binary_integrity_check() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        final Function<Message,Message> echoHandler = req -> req.asEchoResponse();
+
+        server.start(echoHandler);
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final byte[] data = new byte[] {0,1,2,3};
+
+            final Message request = Message.binary(Status.REQUEST, "hello", "application/octet", data);
+
+            final Message response = client.sendMessage(request);
+
+            // modify the request binary data to verify that the data buffer
+            // is not looped through to the response
+            data[0] = 15;
+            data[1] = 15;
+            data[2] = 15;
+            data[3] = 15;
+
+            assertNotNull(response);
+            assertEquals(Status.RESPONSE_OK,        response.getStatus());
+            assertEquals(request.getTimestamp(),    response.getTimestamp());
+            assertEquals("hello",                   response.getTopic());
+            assertEquals("application/octet",       response.getMimetype());
+            assertEquals(null,                      response.getCharset());
+            assertArrayEquals(new byte[] {0,1,2,3}, response.getData());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
     @Test
     public void test_client_async() throws Exception {
         final TcpServer server = new TcpServer(33333);

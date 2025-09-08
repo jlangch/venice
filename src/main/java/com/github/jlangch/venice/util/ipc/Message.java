@@ -29,12 +29,12 @@ import com.github.jlangch.venice.VncException;
 
 
 /**
- * Represents a request or reponse message exchanged between the
+ * Represents a message exchanged between the
  * <code>TcpClient</code> and <code>TcpServer</code>.
  */
 public class Message {
 
-	public Message(
+    public Message(
             final Status status,
             final String topic,
             final String mimetype,
