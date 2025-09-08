@@ -325,9 +325,11 @@ public class IPCFunctions {
                         "(ipc/send client message)",
                         "(ipc/send client timeout message)")
                     .doc(
-                        "Sends a message to the TCP/IP port the client is associated with. \n\n" +
-                        "Returns the servers response message or `nil` if the message is a " +
-                        "declared as one-way message.")
+                        "Sends a message to the server the client is associated with. \n\n" +
+                        "The optional timeout is given in milliseconds.\n\n" +
+                        "Returns the servers response message or `nil` if the message is " +
+                        "declared as one-way message. Throws a timeout exception if the " +
+                        "response is not received within the timeout time.")
                     .examples(
                         ";; echo handler                                                    \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"               \n" +
@@ -339,6 +341,7 @@ public class IPCFunctions {
                         "          (ipc/send client)                                        \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ",
+
                         ";; handler processing JSON message data                            \n" +
                         ";; request: {\"x\": 100, \"y\": 200} => add => response: {\"z\": 300}  \n" +
                         "(do                                                                \n" +
@@ -356,6 +359,7 @@ public class IPCFunctions {
                         "          (ipc/send client 2000)                                   \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ",
+
                         ";; handler with remote code execution                              \n" +
                         ";; request: \"(+ 1 2)\" => exec => response: \"3\"                 \n" +
                         "(do                                                                \n" +
@@ -415,9 +419,9 @@ public class IPCFunctions {
                         .arglists(
                             "(ipc/send-async client message)")
                         .doc(
-                            "Sends a message asynchronously to the TCP/IP port the client is " +
-                            "associated with. \n\n" +
-                            "Retruns a future to get the server's response message.")
+                            "Sends a message asynchronously to the server the client is associated " +
+                            "with. \n\n" +
+                            "Returns a future to get the server's response message.")
                         .examples(
                             "(do                                                                \n" +
                             "   (defn handler [m] (. m :asEchoResponse))                        \n" +
@@ -464,8 +468,8 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/subscribe client topic handler)")
                     .doc(
-                        "Puts this client into the subscription mode and listens for messages " +
-                        "of the specified topic.")
+                        "Puts this client into subscription mode and listens for messages of the " +
+                        "specified topic.")
                     .examples(
                         "(do                                                                             \n" +
                         "   (defn server-echo-handler [m] (. m :asEchoResponse))                         \n" +
@@ -536,7 +540,8 @@ public class IPCFunctions {
                         "(ipc/publish client message)")
                     .doc(
                         "Publishes a messages to all clients that have subscribed to the" +
-                        "message's topic.")
+                        "message's topic.\n\n" +
+                        "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
                         "(do                                                                             \n" +
                         "   (defn server-echo-handler [m] (. m :asEchoResponse))                         \n" +
@@ -658,7 +663,7 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/text-message status topic mimetype charset text)")
                     .doc(
-                        "Creates a text message                      \n\n" +
+                        "Creates a text message \n\n" +
                         "Clients use these status to send requests to ther server:\n\n" +
                         "| :REQUEST         | send a request and wait for a server response |\n" +
                         "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +

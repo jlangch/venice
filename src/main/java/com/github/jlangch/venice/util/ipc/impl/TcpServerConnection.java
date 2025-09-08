@@ -47,7 +47,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final Function<Message,Message> handler,
             final Subscriptions subscriptions,
             final AtomicLong serverMessageCount,
-            final AtomicLong serverPublishCount
+            final AtomicLong serverPublishCount,
+            final AtomicLong serverDiscardedPublishCount
     ) {
         this.server = server;
         this.ch = ch;
@@ -56,6 +57,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.publishQueue = new LinkedBlockingQueue<Message>(50);
         this.serverMessageCount = serverMessageCount;
         this.serverPublishCount = serverPublishCount;
+        this.serverDiscardedPublishCount = serverDiscardedPublishCount;
     }
 
     @Override
@@ -93,6 +95,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             publishQueue.offer(msg, 1, TimeUnit.SECONDS);
         }
         catch(Exception ignore) {
+            serverDiscardedPublishCount.incrementAndGet();
             // there is no dead letter queue yet
         }
     }
@@ -259,8 +262,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     "\"mode\": \"" + mode.name()  + "\", " +
                     "\"message_count\": " + serverMessageCount.get()  + ", " +
                     "\"publish_count\": " + serverPublishCount.get()  + ", " +
-                    "\"subscription_client_count\": " + subscriptions.getClientSubsciptionCount()  + ", " +
-                    "\"subscription_topic_count\": " + subscriptions.getTopicSubsciptionCount()  + ", " +
+                    "\"discarded_publish_count\": " + serverDiscardedPublishCount.get()  + ", " +
+                    "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount()  + ", " +
+                    "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount()  + ", " +
                     "\"publish_queue_size\": " + publishQueue.size() +
                    "}");
     }
@@ -294,6 +298,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final Subscriptions subscriptions;
     private final AtomicLong serverMessageCount;
     private final AtomicLong serverPublishCount;
+    private final AtomicLong serverDiscardedPublishCount;
 
     private final LinkedBlockingQueue<Message> publishQueue;
 }

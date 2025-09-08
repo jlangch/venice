@@ -123,7 +123,8 @@ public class TcpServer implements Closeable {
                             channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
                                                                    this, channel, handler, subscriptions,
-                                                                   messageCount, publishCount);
+                                                                   messageCount, publishCount,
+                                                                   discardedPublishCount);
                             executor.execute(conn);
                         }
                         catch (IOException ignored) {
@@ -215,6 +216,7 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong messageCount = new AtomicLong(0L);
     private final AtomicLong publishCount = new AtomicLong(0L);
+    private final AtomicLong discardedPublishCount = new AtomicLong(0L);
     private final Subscriptions subscriptions = new Subscriptions();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =

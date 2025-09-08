@@ -76,11 +76,11 @@ public class Subscriptions {
         publishers.forEach(p -> p.publish(msg));
     }
 
-    public int getClientSubsciptionCount() {
+    public int getClientSubscriptionCount() {
         return subscriptions.size();
     }
 
-    public int getTopicSubsciptionCount() {
+    public int getTopicSubscriptionCount() {
         return subscriptions.values().stream().mapToInt(t -> t.size()).sum();
     }
 
