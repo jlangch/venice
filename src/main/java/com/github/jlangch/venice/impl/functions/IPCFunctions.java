@@ -137,61 +137,63 @@ public class IPCFunctions {
 
 
     public static VncFunction ipc_client =
-            new VncFunction(
-                    "ipc/client",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(ipc/client port)",
-                            "(ipc/client host port)")
-                        .doc(
-                            "Create a new TcpClient on the specified host and port")
-                        .examples(
-                            "(do                                                                \n" +
-                            "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                            "   (try-with [server (ipc/server 33333 handler)                    \n" +
-                            "              client (ipc/client \"localhost\" 33333)]             \n" +
-                            "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
-                            "          ((fn [m] (println (ipc/message->map m)) m))              \n" +
-                            "          (ipc/send client)                                        \n" +
-                            "          (ipc/message->map)                                       \n" +
-                            "          (println))))                                             ")
-                        .seeAlso(
-                            "ipc/server",
-                            "ipc/client",
-                            "ipc/close",
-                            "ipc/running?",
-                            "ipc/send",
-                            "ipc/send-async",
-                            "ipc/text-message",
-                            "ipc/plain-text-message",
-                            "ipc/binary-message",
-                            "ipc/message->map")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 1, 2);
+        new VncFunction(
+                "ipc/client",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/client port)",
+                        "(ipc/client host port)")
+                    .doc(
+                        "Create a new TcpClient connecting to a TcpServer on the  specified " +
+                        "host and port.\n\n" +
+                        "The client must be closed after use!")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          ((fn [m] (println (ipc/message->map m)) m))              \n" +
+                        "          (ipc/send client)                                        \n" +
+                        "          (ipc/message->map)                                       \n" +
+                        "          (println))))                                             ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                    if ( args.size() == 1) {
-                        final int port = Coerce.toVncLong(args.first()).getIntValue();
+                if ( args.size() == 1) {
+                    final int port = Coerce.toVncLong(args.first()).getIntValue();
 
-                        final TcpClient client = new TcpClient(port);
-                        client.open();
-                        return new VncJavaObject(client);
-                    }
-                    else {
-                        final String host = Coerce.toVncString(args.first()).getValue();
-                        final int port = Coerce.toVncLong(args.second()).getIntValue();
-
-                        final TcpClient client = new TcpClient(host, port);
-                        client.open();
-                        return new VncJavaObject(client);
-                    }
+                    final TcpClient client = new TcpClient(port);
+                    client.open();
+                    return new VncJavaObject(client);
                 }
+                else {
+                    final String host = Coerce.toVncString(args.first()).getValue();
+                    final int port = Coerce.toVncLong(args.second()).getIntValue();
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+                    final TcpClient client = new TcpClient(host, port);
+                    client.open();
+                    return new VncJavaObject(client);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     public static VncFunction ipc_runnningQ =
@@ -411,53 +413,53 @@ public class IPCFunctions {
         };
 
 
-        public static VncFunction ipc_send_async =
-            new VncFunction(
-                    "ipc/send-async",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(ipc/send-async client message)")
-                        .doc(
-                            "Sends a message asynchronously to the server the client is associated " +
-                            "with. \n\n" +
-                            "Returns a future to get the server's response message.")
-                        .examples(
-                            "(do                                                                \n" +
-                            "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                            "   (try-with [server (ipc/server 33333 handler)                    \n" +
-                            "              client (ipc/client \"localhost\" 33333)]             \n" +
-                            "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
-                            "          (ipc/send-async client)                                  \n" +
-                            "          (deref)                                                  \n" +
-                            "          (ipc/message->map)                                       \n" +
-                            "          (println))))                                             ")
-                        .seeAlso(
-                            "ipc/server",
-                            "ipc/client",
-                            "ipc/close",
-                            "ipc/running?",
-                            "ipc/send",
-                            "ipc/text-message",
-                            "ipc/plain-text-message",
-                            "ipc/binary-message",
-                            "ipc/message->map")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 2);
+    public static VncFunction ipc_send_async =
+        new VncFunction(
+                "ipc/send-async",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/send-async client message)")
+                    .doc(
+                        "Sends a message asynchronously to the server the client is associated " +
+                        "with. \n\n" +
+                        "Returns a future to get the server's response message.")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          (ipc/send-async client)                                  \n" +
+                        "          (deref)                                                  \n" +
+                        "          (ipc/message->map)                                       \n" +
+                        "          (println))))                                             ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
 
-                    final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-                    final Message request = Coerce.toVncJavaObject(args.second(), Message.class);
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Message request = Coerce.toVncJavaObject(args.second(), Message.class);
 
-                    final Future<Message> response = client.sendMessageAsync(request);
+                final Future<Message> response = client.sendMessageAsync(request);
 
-                    return response == null ? Nil : new VncJavaObject(new FutureWrapper(response));
-                }
+                return response == null ? Nil : new VncJavaObject(new FutureWrapper(response));
+            }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     public static VncFunction ipc_subscribe =
@@ -587,72 +589,72 @@ public class IPCFunctions {
         };
 
 
-        public static VncFunction ipc_server_status =
-            new VncFunction(
-                    "ipc/server-status",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(ipc/server-status client)")
-                        .doc(
-                            "Returns the status and statistics of the server the client is " +
-                            "connected to.")
-                        .examples(
-                            "(do                                                                \n" +
-                            "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                            "   (try-with [server (ipc/server 33333 handler)                    \n" +
-                            "              client (ipc/client \"localhost\" 33333)]             \n" +
-                            "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
-                            "          (ipc/send client))                                       \n" +
-                            "     (println (ipc/server-status client))))                        ")
-                     .seeAlso(
-                         "ipc/server",
-                         "ipc/client",
-                         "ipc/close",
-                         "ipc/running?",
-                         "ipc/send-async",
-                         "ipc/text-message",
-                         "ipc/plain-text-message",
-                         "ipc/binary-message",
-                         "ipc/message->map")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 1);
+    public static VncFunction ipc_server_status =
+        new VncFunction(
+                "ipc/server-status",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/server-status client)")
+                    .doc(
+                        "Returns the status and statistics of the server the client is " +
+                        "connected to.")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          (ipc/send client))                                       \n" +
+                        "     (println (ipc/server-status client))))                        ")
+                 .seeAlso(
+                     "ipc/server",
+                     "ipc/client",
+                     "ipc/close",
+                     "ipc/running?",
+                     "ipc/send-async",
+                     "ipc/text-message",
+                     "ipc/plain-text-message",
+                     "ipc/binary-message",
+                     "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
-                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
 
-                    final Message response = client.sendMessage(
-                                                Message.text(
-                                                    Status.REQUEST,
-                                                    "server/status",
-                                                    "appliaction/json",
-                                                    "UTF-8",
-                                                    ""),
-                                                5,
-                                                TimeUnit.SECONDS);
+                final Message response = client.sendMessage(
+                                            Message.text(
+                                                Status.REQUEST,
+                                                "server/status",
+                                                "appliaction/json",
+                                                "UTF-8",
+                                                ""),
+                                            5,
+                                            TimeUnit.SECONDS);
 
-                    if (response.getStatus() == Status.RESPONSE_OK) {
-                        final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
-                        try {
-                            return new VncJsonReader(
-                                        JsonReader.from(response.getText()),
-                                        keyFn,
-                                        null,
-                                        false).read();
-                        }
-                        catch(Exception ex) {
-                            throw new VncException ("Failed to get server status", ex);
-                        }
+                if (response.getStatus() == Status.RESPONSE_OK) {
+                    final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
+                    try {
+                        return new VncJsonReader(
+                                    JsonReader.from(response.getText()),
+                                    keyFn,
+                                    null,
+                                    false).read();
                     }
-                    else {
-                        throw new VncException ("Failed to get server status");
+                    catch(Exception ex) {
+                        throw new VncException ("Failed to get server status", ex);
                     }
                 }
+                else {
+                    throw new VncException ("Failed to get server status");
+                }
+            }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     public static VncFunction ipc_text_message =
@@ -775,60 +777,60 @@ public class IPCFunctions {
 
 
     public static VncFunction ipc_binary_message =
-            new VncFunction(
-                    "ipc/binary-message",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(ipc/binary-message status topic mimetype data)")
-                        .doc(
-                            "Creates a binary message.\n\n" +
-                            "Clients use these status to send requests to ther server:\n\n" +
-                            "| :REQUEST         | send a request and wait for a server response |\n" +
-                            "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
-                            "Servers use these status to send reponses back to the client: \n\n" +
-                            "| :RESPONSE_OK            | processing successful |\n" +
-                            "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
-                            "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
-                            "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
-                .examples(
-                            "(->> (ipc/binary-message :REQUEST \"test\"               \n" +
-                            "                       \"application/octet-stream\"      \n" +
-                            "                       (bytebuf [0 1 2 3 4 5 6 7]))      \n" +
-                            "     (ipc/message->map)                                  \n" +
-                            "     (println))                                          ")
-                        .seeAlso(
-                            "ipc/server",
-                            "ipc/client",
-                            "ipc/close",
-                            "ipc/running?",
-                            "ipc/send",
-                            "ipc/send-async",
-                            "ipc/text-message",
-                            "ipc/plain-text-message",
-                            "ipc/message->map")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 4);
+        new VncFunction(
+                "ipc/binary-message",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/binary-message status topic mimetype data)")
+                    .doc(
+                        "Creates a binary message.\n\n" +
+                        "Clients use these status to send requests to ther server:\n\n" +
+                        "| :REQUEST         | send a request and wait for a server response |\n" +
+                        "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
+                        "Servers use these status to send reponses back to the client: \n\n" +
+                        "| :RESPONSE_OK            | processing successful |\n" +
+                        "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
+                        "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
+                        "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
+            .examples(
+                        "(->> (ipc/binary-message :REQUEST \"test\"               \n" +
+                        "                       \"application/octet-stream\"      \n" +
+                        "                       (bytebuf [0 1 2 3 4 5 6 7]))      \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 4);
 
-                    final VncKeyword status = Coerce.toVncKeyword(args.nth(0));
-                    final VncString topic = Coerce.toVncString(args.nth(1));
-                    final VncString mimetype = Coerce.toVncString(args.nth(2));
-                    final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(3));
+                final VncKeyword status = Coerce.toVncKeyword(args.nth(0));
+                final VncString topic = Coerce.toVncString(args.nth(1));
+                final VncString mimetype = Coerce.toVncString(args.nth(2));
+                final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(3));
 
-                    final Message msg = Message.binary(
-                                            convertToStatus(status),
-                                            topic.getValue(),
-                                            mimetype.getValue(),
-                                            data.getBytes());
+                final Message msg = Message.binary(
+                                        convertToStatus(status),
+                                        topic.getValue(),
+                                        mimetype.getValue(),
+                                        data.getBytes());
 
-                    return new VncJavaObject(msg);
-                }
+                return new VncJavaObject(msg);
+            }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     public static VncFunction ipc_message_to_map =
@@ -951,8 +953,8 @@ public class IPCFunctions {
                     .add(ipc_send)
                     .add(ipc_send_async)
 
-                    .add(ipc_subscribe)
                     .add(ipc_publish)
+                    .add(ipc_subscribe)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)

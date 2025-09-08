@@ -53,7 +53,8 @@ import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 public class TcpClient implements Closeable {
 
     /**
-     * Create a new TcpClient on the specified port on the local host
+     * Create a new TcpClient connecting to a TcpServer on the local host
+     * and port
      *
      * <p>The client must be closed after use!
      *
@@ -64,7 +65,8 @@ public class TcpClient implements Closeable {
     }
 
     /**
-     * Create a new TcpClient on the specified host and port
+     * Create a new TcpClient connecting to a TcpServer on the specified host
+     * and port
      *
      * @param host a host
      * @param port a port
