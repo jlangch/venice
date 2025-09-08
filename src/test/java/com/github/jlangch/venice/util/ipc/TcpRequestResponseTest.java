@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -39,11 +40,11 @@ import com.github.jlangch.venice.Venice;
 public class TcpRequestResponseTest {
 
     @Test
-    public void test_echo_server_1() throws Exception {
+    public void test_echo_server_text() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
+        final Function<Message,Message> echoHandler = req -> req.asEchoResponse();
 
         server.start(echoHandler);
 
@@ -52,16 +53,17 @@ public class TcpRequestResponseTest {
         client.open();
 
         try {
-            final Message request = Message.hello();
+            final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");;
 
             final Message response = client.sendMessage(request);
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK,    response.getStatus());
-            assertEquals(request.getTopic(),    response.getTopic());
-            assertEquals(request.getMimetype(), response.getMimetype());
-            assertEquals(request.getCharset(),  response.getCharset());
-            assertEquals(request.getText(),     response.getText());
+            assertEquals(Status.RESPONSE_OK,     response.getStatus());
+            assertEquals(request.getTimestamp(), response.getTimestamp());
+            assertEquals(request.getTopic(),     response.getTopic());
+            assertEquals(request.getMimetype(),  response.getMimetype());
+            assertEquals(request.getCharset(),   response.getCharset());
+            assertEquals(request.getText(),      response.getText());
         }
         finally {
             client.close();
@@ -70,11 +72,11 @@ public class TcpRequestResponseTest {
     }
 
     @Test
-    public void test_echo_server_2() throws Exception {
+    public void test_echo_server_binary() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
+        final Function<Message,Message> echoHandler = req -> req.asEchoResponse();
 
         server.start(echoHandler);
 
@@ -83,16 +85,19 @@ public class TcpRequestResponseTest {
         client.open();
 
         try {
-            final Message request = Message.hello();
+            final byte[] data = new byte[] {0,1,2,3};
+
+            final Message request = Message.binary(Status.REQUEST, "hello", "application/octet", data);
 
             final Message response = client.sendMessage(request);
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK, response.getStatus());
-            assertEquals("hello",            response.getTopic());
-            assertEquals("text/plain",       response.getMimetype());
-            assertEquals("UTF-8",            response.getCharset());
-            assertEquals("Hello!",           response.getText());
+            assertEquals(Status.RESPONSE_OK,     response.getStatus());
+            assertEquals(request.getTimestamp(), response.getTimestamp());
+            assertEquals("hello",                response.getTopic());
+            assertEquals("application/octet",    response.getMimetype());
+            assertEquals(null,                   response.getCharset());
+            assertArrayEquals(data,              response.getData());
         }
         finally {
             client.close();
@@ -121,11 +126,12 @@ public class TcpRequestResponseTest {
             final Message response = future.get();
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK,    response.getStatus());
-            assertEquals(request.getTopic(),    response.getTopic());
-            assertEquals(request.getMimetype(), response.getMimetype());
-            assertEquals(request.getCharset(),  response.getCharset());
-            assertEquals(request.getText(),     response.getText());
+            assertEquals(Status.RESPONSE_OK,     response.getStatus());
+            assertEquals(request.getTimestamp(), response.getTimestamp());
+            assertEquals(request.getTopic(),     response.getTopic());
+            assertEquals(request.getMimetype(),  response.getMimetype());
+            assertEquals(request.getCharset(),   response.getCharset());
+            assertEquals(request.getText(),      response.getText());
         }
         finally {
             client.close();
@@ -158,11 +164,12 @@ public class TcpRequestResponseTest {
                 final Message response = client.sendMessage(request);
 
                 assertNotNull(response);
-                assertEquals(Status.RESPONSE_OK, response.getStatus());
-                assertEquals(topic,              response.getTopic());
-                assertEquals(mimetype,           response.getMimetype());
-                assertEquals(charset,            response.getCharset());
-                assertEquals(msg,                response.getText());
+                assertEquals(Status.RESPONSE_OK,     response.getStatus());
+                assertEquals(request.getTimestamp(), response.getTimestamp());
+                assertEquals(topic,                  response.getTopic());
+                assertEquals(mimetype,               response.getMimetype());
+                assertEquals(charset,                response.getCharset());
+                assertEquals(msg,                    response.getText());
             }
         }
         finally {

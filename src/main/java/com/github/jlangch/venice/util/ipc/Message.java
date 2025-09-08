@@ -34,15 +34,41 @@ import com.github.jlangch.venice.VncException;
  */
 public class Message {
 
-    private Message(
+	public Message(
             final Status status,
             final String topic,
             final String mimetype,
             final String charset,
             final byte[] data
     ) {
+        Objects.requireNonNull(status);
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(mimetype);
+        Objects.requireNonNull(data);
+
         this.status = status;
-        this.timestamp = ZonedDateTime.now();
+        this.timestamp = ZonedDateTime.now().toInstant().toEpochMilli();
+        this.topic = topic;
+        this.mimetype = mimetype;
+        this.charset = charset;
+        this.data = data;
+    }
+
+    public Message(
+            final Status status,
+            final long timestamp,
+            final String topic,
+            final String mimetype,
+            final String charset,
+            final byte[] data
+    ) {
+        Objects.requireNonNull(status);
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(mimetype);
+        Objects.requireNonNull(data);
+
+        this.status = status;
+        this.timestamp = timestamp;
         this.topic = topic;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -79,37 +105,6 @@ public class Message {
                 mimetype,
                 charset,
                 data.getBytes(Charset.forName(charset)));
-    }
-
-    /**
-     * Create a text message
-     *
-     * @param status the message's status
-     * @param topic a topic
-     * @param mimetype the mimetype of the message's payload data
-     * @param charset the charset of the message's payload data
-     * @param data the textual payload data (given as binary). At your risk!
-     * @return the message
-     */
-    public static Message text(
-            final Status status,
-            final String topic,
-            final String mimetype,
-            final String charset,
-            final byte[] data
-    ) {
-        Objects.requireNonNull(status);
-        Objects.requireNonNull(topic);
-        Objects.requireNonNull(mimetype);
-        Objects.requireNonNull(charset);
-        Objects.requireNonNull(data);
-
-        return new Message(
-                status,
-                topic,
-                mimetype,
-                charset,
-                data);
     }
 
     /**
@@ -163,7 +158,7 @@ public class Message {
      */
     public Message withStatus(final Status status) {
         Objects.requireNonNull(status);
-        return new Message(status, topic, mimetype, charset, data);
+        return new Message(status, timestamp, topic, mimetype, charset, data);
     }
 
     /**
@@ -174,9 +169,9 @@ public class Message {
     }
 
     /**
-     * @return the message timestamp
+     * @return the message timestamp (milliseconds since epoch)
      */
-    public ZonedDateTime getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
@@ -223,7 +218,7 @@ public class Message {
 
 
     private final Status status;
-    private final ZonedDateTime timestamp;
+    private final long timestamp;
     private final String topic;
     private final String mimetype;
     private final String charset;

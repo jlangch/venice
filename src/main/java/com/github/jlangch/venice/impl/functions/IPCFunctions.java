@@ -143,11 +143,16 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/client port)",
-                        "(ipc/client host port)")
+                        "(ipc/client host port & options)")
                     .doc(
                         "Create a new TcpClient connecting to a TcpServer on the  specified " +
                         "host and port.\n\n" +
-                        "The client must be closed after use!")
+                        "The client must be closed after use!" +
+                        "*Arguments:* \n\n" +
+                        "| port p | The server's TCP/IP port |\n" +
+                        "| host h | The server's TCP/IP host |\n\n" +
+                        "*Options:* \n\n" +
+                        "| :max-parallel-tasks n | The max number of parallel tasks (e.g. sending async messages) the client can handle. Defaults to 10 |\n")
                     .examples(
                         "(do                                                                \n" +
                         "   (defn handler [m] (. m :asEchoResponse))                        \n" +
@@ -186,8 +191,20 @@ public class IPCFunctions {
                     final String host = Coerce.toVncString(args.first()).getValue();
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
+                    final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+                    final VncVal maxConnections = options.get(new VncKeyword("max-parallel-tasks"));
+
+                    final int maxParallelTasks = maxConnections == Nil ? 0
+                                                              : Coerce.toVncLong(args.first()).getIntValue();
+
                     final TcpClient client = new TcpClient(host, port);
+
+                    if (maxParallelTasks > 0) {
+                        client.setMaximumParallelTasks(maxParallelTasks);
+                    }
+
                     client.open();
+
                     return new VncJavaObject(client);
                 }
             }

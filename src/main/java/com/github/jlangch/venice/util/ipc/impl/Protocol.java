@@ -48,7 +48,7 @@ public class Protocol {
         Objects.requireNonNull(message);
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(10);
+        final ByteBuffer header = ByteBuffer.allocate(18);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -56,16 +56,15 @@ public class Protocol {
         header.putInt(PROTOCOL_VERSION);
         // 4 bytes (integer) request/response status
         header.putInt(message.getStatus().getValue());
+        // 8 bytes (long) timestamp
+        header.putLong(message.getTimestamp());
         header.flip();
 
         IO.writeFully(ch, header);
 
         // [2] charset frame
         if (StringUtil.isBlank(message.getCharset())) {
-            final ByteBuffer charset = ByteBuffer.allocate(4);
-            header.putInt(0);
-            charset.flip();
-            IO.writeFrame(ch, charset);
+            IO.writeFrame(ch, null);  // frame with 0 length
         }
         else {
             final byte[] charsetData = message.getCharset().getBytes(Charset.forName("UTF8"));
@@ -104,7 +103,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(10);
+            final ByteBuffer header = ByteBuffer.allocate(18);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -116,6 +115,8 @@ public class Protocol {
             final byte magic2 = header.get();
             final int version = header.getInt();
             final int statusCode = header.getInt();
+            final long timestamp = header.getLong();
+
             final Status status = Status.fromCode(statusCode);
 
             if (magic1 != 'v' || magic2 != 'n') {
@@ -128,7 +129,7 @@ public class Protocol {
                         "Received message with unsupported protocol version " + version + "!");
             }
 
-            // [2] charset frame
+            // [2] charset frame (has frame length 0 for binary messages)
             final ByteBuffer charsetFrame = IO.readFrame(ch);
             final String charset = charsetFrame.hasRemaining()
                                     ? new String(charsetFrame.array(), Charset.forName("UTF8"))
@@ -136,13 +137,13 @@ public class Protocol {
 
             // [3] topic frame
             final ByteBuffer topicFrame = IO.readFrame(ch);
-            final String topic = charsetFrame.hasRemaining()
+            final String topic = topicFrame.hasRemaining()
                                         ? new String(topicFrame.array(), Charset.forName("UTF8"))
                                         : "*";
 
             // [4] mimetype frame
             final ByteBuffer mimetypeFrame = IO.readFrame(ch);
-            final String mimetype = charsetFrame.hasRemaining()
+            final String mimetype = mimetypeFrame.hasRemaining()
                                         ? new String(mimetypeFrame.array(), Charset.forName("UTF8"))
                                         : "application/octet-stream";
 
@@ -155,9 +156,7 @@ public class Protocol {
                         "Received illegal status code " + statusCode + "!");
             }
 
-            return charset == null
-                    ? Message.binary(status, topic, mimetype, data)
-                    : Message.text(status, topic, mimetype, charset, data);
+            return new Message(status, timestamp, topic, mimetype, charset, data);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {

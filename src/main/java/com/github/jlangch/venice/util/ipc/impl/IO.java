@@ -44,11 +44,15 @@ public class IO {
                 throw new IOException("Bad length: " + n);
             }
 
-            final ByteBuffer data = ByteBuffer.allocate(n);
-            readFully(ch, data);
-            data.flip();
-
-            return data;
+            if (n == 0) {
+                return ByteBuffer.allocate(0);
+            }
+            else {
+                final ByteBuffer data = ByteBuffer.allocate(n);
+                readFully(ch, data);
+                data.flip();
+                return data;
+            }
         }
         catch(VncException ex) {
             throw ex;
@@ -68,10 +72,17 @@ public class IO {
             final ByteBuffer data
     ) {
         try {
-            final ByteBuffer len = ByteBuffer.allocate(4).putInt(data.remaining());
-            len.flip();
-            writeFully(ch, len);
-            writeFully(ch, data);
+            if (data == null) {
+                final ByteBuffer len = ByteBuffer.allocate(4).putInt(0);
+                len.flip();
+                writeFully(ch, len);
+            }
+            else {
+                final ByteBuffer len = ByteBuffer.allocate(4).putInt(data.remaining());
+                len.flip();
+                writeFully(ch, len);
+                writeFully(ch, data);
+            }
         }
         catch(VncException ex) {
             throw ex;

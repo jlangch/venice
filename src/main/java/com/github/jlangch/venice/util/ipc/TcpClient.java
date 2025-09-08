@@ -83,7 +83,7 @@ public class TcpClient implements Closeable {
      *
      * <p>Defaults to 10
      *
-     * @param count the max parallel task count
+     * @param count the max parallel task count when sending async messages
      */
     public void setMaximumParallelTasks(final int count) {
         mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
