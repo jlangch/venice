@@ -101,6 +101,13 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * @return the server's publish discard count
+     */
+    public long getPublishDiscardCount() {
+        return discardedPublishCount.get();
+    }
+
+    /**
      * Start the TcpServer
      *
      * @param handler to handle the incoming messages. The handler may return a

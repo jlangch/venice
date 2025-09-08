@@ -25,8 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,8 +37,7 @@ public class TcpPubSubTest {
         final TcpClient clientSub = new TcpClient(33333);
         final TcpClient clientPub = new TcpClient(33333);
 
-        final Function<Message,Message> serverHandler = req -> { return req.asEchoResponse(); };
-        server.start(serverHandler);
+        server.start(req -> req.asEchoResponse());
 
         sleep(300);
 
@@ -50,14 +47,15 @@ public class TcpPubSubTest {
         final List<Message> subMessages = new ArrayList<>();
 
         try {
-            final Consumer<Message> subHandler = m -> subMessages.add(m);
-            clientSub.subscribe("test", subHandler);
+            clientSub.subscribe("test", m -> subMessages.add(m));
 
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
                 final Message request = Message.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
+
+            sleep(200);
         }
         finally {
             clientPub.close();
@@ -83,8 +81,7 @@ public class TcpPubSubTest {
         final TcpClient clientSub2 = new TcpClient(33333);
         final TcpClient clientSub3 = new TcpClient(33333);
 
-        final Function<Message,Message> serverHandler = req -> { return req.asEchoResponse(); };
-        server.start(serverHandler);
+        server.start(req -> req.asEchoResponse());
 
         sleep(300);
 
@@ -107,6 +104,12 @@ public class TcpPubSubTest {
                 final Message request = Message.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
+
+            sleep(200);
+
+            assertEquals(13, server.getMessageCount());
+            assertEquals(30, server.getPublishCount());
+            assertEquals( 0, server.getPublishDiscardCount());
         }
         finally {
             clientPub.close();
