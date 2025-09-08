@@ -65,8 +65,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         try {
             while(mode != State.Terminated && server.isRunning() && ch.isOpen()) {
                 if (mode == State.Request_Response) {
-                   // process a request/response message
-                   mode = processRequestResponse();
+                    // process a request/response message
+                    mode = processRequestResponse();
                 }
                 else if (mode == State.Publish) {
                     // process a publish message
@@ -78,8 +78,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
         }
         catch(Exception ex) {
-            // when client closed the connection -> java.io.IOException: Broken pipe
-            // -> quit
+            // when the client closed the connection
+            //   - server gets a java.io.IOException: Broken pipe
+            //   - quit this connection and close the channel
         }
         finally {
             subscriptions.removePublisher(this);
@@ -90,13 +91,16 @@ public class TcpServerConnection implements IPublisher, Runnable {
     @Override
     public void publish(final Message msg) {
         try {
-            // enqueue the message to publish it as soon as possible
-            // to this channels's client
+            // Enqueue the message to publish it as soon as possible
+            // to this channels's client.
+            // The publish queue is blocking to not get overrun. to prevent
+            // a backlash if the queue is full, the message will be discarded!
             publishQueue.offer(msg, 1, TimeUnit.SECONDS);
         }
         catch(Exception ignore) {
+            // there is no dead letter queue yet, just count the
+            // discarded messages
             serverDiscardedPublishCount.incrementAndGet();
-            // there is no dead letter queue yet
         }
     }
 
@@ -133,16 +137,17 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         // [2] Handle the request
         if ("server/status".equals(request.getTopic())) {
+            // process a server status request
             Protocol.sendMessage(ch, getServerStatus());
             return State.Request_Response;
         }
         else if (isRequestPublish(request)) {
-            // the client sent a message to be published to all subscribors
+            // the client sent a message to be published to all subscribers
             // of the message's topic
             return handlePublish(request);
         }
         else if (isRequestStartSubscription(request)) {
-            // the client wants to listen for subribed messages
+            // the client wants to listen for subscribed messages
             return handleSubscribe(request);
         }
         else {
@@ -262,7 +267,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     "\"mode\": \"" + mode.name()  + "\", " +
                     "\"message_count\": " + serverMessageCount.get()  + ", " +
                     "\"publish_count\": " + serverPublishCount.get()  + ", " +
-                    "\"discarded_publish_count\": " + serverDiscardedPublishCount.get()  + ", " +
+                    "\"publish_discarded_count\": " + serverDiscardedPublishCount.get()  + ", " +
                     "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount()  + ", " +
                     "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount()  + ", " +
                     "\"publish_queue_size\": " + publishQueue.size() +
