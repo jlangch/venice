@@ -130,7 +130,7 @@ public abstract class MessageFactory {
     /**
      * Create an echo response for a request message.
      *
-     * @param msg the request message
+     * @param request the request message
      * @return the response message
      */
     public static IMessage asEchoMessage(final IMessage request) {
