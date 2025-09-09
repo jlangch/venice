@@ -654,13 +654,8 @@ public class IPCFunctions {
                                             TimeUnit.SECONDS);
 
                 if (response.getStatus() == Status.RESPONSE_OK) {
-                    final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
                     try {
-                        return new VncJsonReader(
-                                    JsonReader.from(response.getText()),
-                                    keyFn,
-                                    null,
-                                    false).read();
+                        return readJson(response.getText());
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get server status", ex);
@@ -668,6 +663,69 @@ public class IPCFunctions {
                 }
                 else {
                     throw new VncException ("Failed to get server status");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction ipc_server_thread_pool_statistics =
+        new VncFunction(
+                "ipc/server-thread-pool-statistics",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/server-thread-pool-statistics client)")
+                    .doc(
+                        "Returns the server's thread pool statistics the client is " +
+                        "connected to.")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          (ipc/send client))                                       \n" +
+                        "     (println (ipc/server-thread-pool-statistics client))))        ")
+                 .seeAlso(
+                     "ipc/server",
+                     "ipc/client",
+                     "ipc/close",
+                     "ipc/running?",
+                     "ipc/send-async",
+                     "ipc/text-message",
+                     "ipc/plain-text-message",
+                     "ipc/binary-message",
+                     "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+
+                final IMessage response = client.sendMessage(
+                                            MessageFactory.text(
+                                                Status.REQUEST,
+                                                "server/thread-pool-statistics",
+                                                "appliaction/json",
+                                                "UTF-8",
+                                                ""),
+                                            5,
+                                            TimeUnit.SECONDS);
+
+                if (response.getStatus() == Status.RESPONSE_OK) {
+                    try {
+                        return readJson(response.getText());
+                    }
+                    catch(Exception ex) {
+                        throw new VncException ("Failed to get server thread pool statistics", ex);
+                    }
+                }
+                else {
+                    throw new VncException ("Failed to get server thread pool statistics");
                 }
             }
 
@@ -909,7 +967,16 @@ public class IPCFunctions {
     // Utils
     ///////////////////////////////////////////////////////////////////////////
 
-    private static final Status convertToStatus(final VncKeyword status) {
+    private static VncVal readJson(final String json) throws Exception {
+        final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
+        return new VncJsonReader(
+                    JsonReader.from(json),
+                    keyFn,
+                    null,
+                    false).read();
+    }
+
+    private static Status convertToStatus(final VncKeyword status) {
         try {
             return Status.valueOf(status.getSimpleName());
         }
@@ -980,6 +1047,7 @@ public class IPCFunctions {
                     .add(ipc_message_to_map)
 
                     .add(ipc_server_status)
+                    .add(ipc_server_thread_pool_statistics)
 
                     .toMap();
 }

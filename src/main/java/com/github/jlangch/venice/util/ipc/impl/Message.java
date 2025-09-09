@@ -21,7 +21,12 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.padRight;
+
 import java.nio.charset.Charset;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,7 +39,7 @@ import com.github.jlangch.venice.util.ipc.Status;
 
 /**
  * Represents a message exchanged between the
- * <code>TcpClient</code> and <code>TcpServer</code>.
+ * <code>TcpClient</code> and the <code>TcpServer</code>.
  */
 public class Message implements IMessage {
 
@@ -108,6 +113,13 @@ public class Message implements IMessage {
     }
 
     @Override
+    public LocalDateTime getTimestampAsLocalDateTime() {
+        return LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(timestamp),
+                ZoneId.systemDefault());
+    }
+
+    @Override
     public String getTopic() {
         return topic;
     }
@@ -148,6 +160,44 @@ public class Message implements IMessage {
     }
 
 
+    @Override
+    public String toString() {
+       final StringBuilder sb = new StringBuilder();
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Status:", 12),
+                   status.name()));
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Timestamp:", 12),
+                   getTimestampAsLocalDateTime()));
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Topic:", 12),
+                   topic));
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Mimetype:", 12),
+                   mimetype));
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Charset:", 12),
+                   charset == null ? "" : charset));
+
+       sb.append(String.format(
+                   "%s %s",
+                   padRight("Data:", 12),
+                   formatDataLen(data.length)));
+
+       return sb.toString();
+    }
+
+
     public void validateMessageStatus(final Status...status) {
         if (!CollectionUtil.toSet(status).contains(getStatus())) {
             final String goodList = CollectionUtil
@@ -161,6 +211,19 @@ public class Message implements IMessage {
                         "Unacceptable message status '%s'! Use one of {%s}.",
                         status,
                         goodList));
+        }
+    }
+
+
+    private static String formatDataLen(final int len) {
+        if (len < 10 * 1024) {
+            return String.valueOf(len) + "B";
+        }
+        else if (len < 10 * 1024 * 1024) {
+            return String.valueOf(len / 1024) + "KB";
+        }
+        else {
+            return String.valueOf(len / 1024 / 1024) + "MB";
         }
     }
 

@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import java.time.LocalDateTime;
+
 /**
  * Defines the messages that can be exchanged between a TcpClient and a TcpServer.
  */
@@ -35,6 +37,11 @@ public interface IMessage {
      * @return the message timestamp (milliseconds since epoch)
      */
     long getTimestamp();
+
+    /**
+     * @return the message timestamp as LocalDateTime
+     */
+    LocalDateTime getTimestampAsLocalDateTime();
 
     /**
      * @return the message topic

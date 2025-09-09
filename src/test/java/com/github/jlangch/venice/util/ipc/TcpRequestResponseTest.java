@@ -229,7 +229,9 @@ public class TcpRequestResponseTest {
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
 
-                final IMessage request = MessageFactory.text(Status.REQUEST_ONE_WAY, "hello", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text(
+                                                Status.REQUEST_ONE_WAY,
+                                                "hello", "text/plain", "UTF-8", msg);
 
                 // one way message -> no response
                 client.sendMessage(request);
@@ -277,7 +279,8 @@ public class TcpRequestResponseTest {
                             final String charset = "UTF-8";
                             final String msg = "Hello " + clientNr + " / " + msgIdx;
 
-                            final IMessage request = MessageFactory.text(Status.REQUEST, topic, mimetype, charset, msg);
+                            final IMessage request = MessageFactory.text(
+                                                        Status.REQUEST, topic, mimetype, charset, msg);
 
                             final IMessage response = client.sendMessage(request);
 

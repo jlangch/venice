@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -174,6 +175,67 @@ public class TcpServerTest {
         }
     }
 
+    @Test
+    public void test_server_status() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.start(TcpServer.echoHandler());
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final IMessage request1 = MessageFactory.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
+
+            final IMessage response1 = client.sendMessage(request1);
+            assertEquals(Status.RESPONSE_OK, response1.getStatus());
+
+            final IMessage request2 = MessageFactory.text(Status.REQUEST, "server/status", "text/plain", "UTF-8", "");
+
+            final IMessage response2 = client.sendMessage(request2);
+            assertEquals(Status.RESPONSE_OK, response2.getStatus());
+            assertEquals("server/status", response2.getTopic());
+
+            // System.out.println(response2.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_server_threadpool_stats() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.start(TcpServer.echoHandler());
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final IMessage request1 = MessageFactory.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
+
+            final IMessage response1 = client.sendMessage(request1);
+            assertEquals(Status.RESPONSE_OK, response1.getStatus());
+
+            final IMessage request2 = MessageFactory.text(Status.REQUEST, "server/thread-pool-statistics", "text/plain", "UTF-8", "");
+
+            final IMessage response2 = client.sendMessage(request2);
+            assertEquals(Status.RESPONSE_OK, response2.getStatus());
+            assertEquals("server/thread-pool-statistics", response2.getTopic());
+
+            // System.out.println(response2.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
 
     private void sleep(final long millis) {
         try {

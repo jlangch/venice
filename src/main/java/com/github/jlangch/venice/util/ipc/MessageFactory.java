@@ -36,10 +36,10 @@ public abstract class MessageFactory {
      * <p>Acceptable status:
      * <ul>
      *   <li>REQUEST - to create a request text message</li>
-     *   <li>REQUEST_ONE_WAY - to create a request text message</li>
-     *   <li>RESPONSE_OK - to create a response text message from a TcpServer handler</li>
-     *   <li>RESPONSE_BAD_REQUEST - to create a response text message from a TcpServer handler</li>
-     *   <li>RESPONSE_HANDLER_ERROR - to create a response text message from a TcpServer handler</li>
+     *   <li>REQUEST_ONE_WAY - to create a request text message with one-way send</li>
+     *   <li>RESPONSE_OK - to create an ok response text message from a TcpServer handler</li>
+     *   <li>RESPONSE_BAD_REQUEST - to create an error response text message from a TcpServer handler</li>
+     *   <li>RESPONSE_HANDLER_ERROR - to create an error response text message from a TcpServer handler</li>
      * </ul>
      *
      * @param status the message's status
@@ -79,10 +79,10 @@ public abstract class MessageFactory {
      * <p>Acceptable status:
      * <ul>
      *   <li>REQUEST - to create a request binary message</li>
-     *   <li>REQUEST_ONE_WAY - to create a request binary message</li>
-     *   <li>RESPONSE_OK - to create a response binary message from a TcpServer handler</li>
-     *   <li>RESPONSE_BAD_REQUEST - to create a response binary message from a TcpServer handler</li>
-     *   <li>RESPONSE_HANDLER_ERROR - to create a response binary message from a TcpServer handler</li>
+     *   <li>REQUEST_ONE_WAY - to create a request binary message with one-way send</li>
+     *   <li>RESPONSE_OK - to create an ok response binary message from a TcpServer handler</li>
+     *   <li>RESPONSE_BAD_REQUEST - to create an error response binary message from a TcpServer handler</li>
+     *   <li>RESPONSE_HANDLER_ERROR - to create an error response binary message from a TcpServer handler</li>
      * </ul>
      *
      * @param status the message's status

@@ -109,6 +109,15 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * clear the server statistics
+     */
+    public void clearStatistics() {
+        messageCount.set(0L);
+        publishCount.set(0L);
+        discardedPublishCount.set(0L);
+    }
+
+    /**
      * Start the TcpServer
      *
      * @param handler to handle the incoming messages. The handler may return a
@@ -131,8 +140,11 @@ public class TcpServer implements Closeable {
                             channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
                                                                    this, channel, handler, subscriptions,
+                                                                   publishQueueCapacity,
                                                                    messageCount, publishCount,
-                                                                   discardedPublishCount);
+                                                                   discardedPublishCount,
+                                                                   () -> mngdExecutor.info());
+
                             executor.execute(conn);
                         }
                         catch (IOException ignored) {
@@ -230,6 +242,7 @@ public class TcpServer implements Closeable {
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
+    private final int publishQueueCapacity = 50;
     private final AtomicLong messageCount = new AtomicLong(0L);
     private final AtomicLong publishCount = new AtomicLong(0L);
     private final AtomicLong discardedPublishCount = new AtomicLong(0L);

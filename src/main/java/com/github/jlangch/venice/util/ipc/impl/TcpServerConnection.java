@@ -35,7 +35,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
+import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
+import com.github.jlangch.venice.nanojson.JsonWriter;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.Status;
 import com.github.jlangch.venice.util.ipc.TcpServer;
@@ -48,18 +53,22 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final SocketChannel ch,
             final Function<IMessage,IMessage> handler,
             final Subscriptions subscriptions,
+            final int publishQueueCapacity,
             final AtomicLong serverMessageCount,
             final AtomicLong serverPublishCount,
-            final AtomicLong serverDiscardedPublishCount
+            final AtomicLong serverDiscardedPublishCount,
+            final Supplier<VncMap> serverThreadPoolStatistics
     ) {
         this.server = server;
         this.ch = ch;
         this.handler = handler;
         this.subscriptions = subscriptions;
-        this.publishQueue = new LinkedBlockingQueue<Message>(50);
+        this.publishQueueCapacity = publishQueueCapacity;
+        this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
         this.serverMessageCount = serverMessageCount;
         this.serverPublishCount = serverPublishCount;
         this.serverDiscardedPublishCount = serverDiscardedPublishCount;
+        this.serverThreadPoolStatistics = serverThreadPoolStatistics;
     }
 
     @Override
@@ -140,6 +149,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         if ("server/status".equals(request.getTopic())) {
             // process a server status request
             Protocol.sendMessage(ch, getServerStatus());
+            return State.Request_Response;
+        }
+        else if ("server/thread-pool-statistics".equals(request.getTopic())) {
+            // process a server status request
+            Protocol.sendMessage(ch, getServerThreadPoolStatistics());
             return State.Request_Response;
         }
         else if (isRequestPublish(request)) {
@@ -286,16 +300,31 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     "\"publish_discarded_count\": " + serverDiscardedPublishCount.get()  + ", " +
                     "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount()  + ", " +
                     "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount()  + ", " +
+                    "\"publish_queue_capacity\": " + publishQueueCapacity +
                     "\"publish_queue_size\": " + publishQueue.size() +
                    "}");
+    }
+
+    private Message getServerThreadPoolStatistics() {
+        final VncMap statistics = serverThreadPoolStatistics.get();
+
+        final StringBuilder sb = new StringBuilder();
+        final JsonAppendableWriter writer = JsonWriter.indent("  ").on(sb);
+        new VncJsonWriter(writer, false).write(statistics).done();
+
+        return createTextResponseMessage(
+                RESPONSE_OK,
+                "server/thread-pool-statistics",
+                "application/json",
+                sb.toString());
     }
 
 
     private static Message createTextResponseMessage(
             final Status status,
             final String topic,
-            final String text,
-            final String mimetype
+            final String mimetype,
+            final String text
     ) {
         return new Message(
                 status,
@@ -332,9 +361,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final SocketChannel ch;
     private final Function<IMessage,IMessage> handler;
     private final Subscriptions subscriptions;
+    private final int publishQueueCapacity;
     private final AtomicLong serverMessageCount;
     private final AtomicLong serverPublishCount;
     private final AtomicLong serverDiscardedPublishCount;
+    private final Supplier<VncMap> serverThreadPoolStatistics;
 
     private final LinkedBlockingQueue<Message> publishQueue;
 }

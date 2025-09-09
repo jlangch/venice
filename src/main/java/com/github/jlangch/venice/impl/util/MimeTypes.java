@@ -103,6 +103,7 @@ public class MimeTypes {
     public static final String APPLICATION_PPTX    = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
     public static final String APPLICATION_TTF     = "application/x-font-ttf";
     public static final String APPLICATION_BINARY  = "application/octet-stream";
+    public static final String APPLICATION_VENICE  = "application/venice";  // not official, but ;-)
     public static final String TEXT_HTML           = "text/html";
     public static final String TEXT_XML            = "text/xml";
     public static final String TEXT_CSV            = "text/csv";
@@ -126,6 +127,7 @@ public class MimeTypes {
         mimeTypeFileExtMap.put(APPLICATION_ZIP,    Arrays.asList("zip"));
         mimeTypeFileExtMap.put(APPLICATION_TTF,    Arrays.asList("ttf"));
         mimeTypeFileExtMap.put(APPLICATION_BINARY, Arrays.asList("exe"));
+        mimeTypeFileExtMap.put(APPLICATION_VENICE, Arrays.asList("venice"));
         mimeTypeFileExtMap.put(TEXT_HTML,          Arrays.asList("html", "htm"));
         mimeTypeFileExtMap.put(TEXT_XML,           Arrays.asList("xml"));
         mimeTypeFileExtMap.put(TEXT_CSV,           Arrays.asList("csv"));

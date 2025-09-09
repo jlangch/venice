@@ -66,6 +66,7 @@ public class IpcSection implements ISectionBuilder {
         final DocSection util = new DocSection("Util", "ipc.util");
         all.addSection(util);
         util.addItem(diBuilder.getDocItem("ipc/server-status", false));
+        util.addItem(diBuilder.getDocItem("ipc/server-thread-pool-statistics", false));
 
         return section;
     }
