@@ -30,13 +30,14 @@ import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_HANDLER_ERROR;
 import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_OK;
 
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.util.ipc.IMessage;
-import com.github.jlangch.venice.util.ipc.MessageFactory;
+import com.github.jlangch.venice.util.ipc.Status;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 
 
@@ -126,11 +127,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         ) {
             Protocol.sendMessage(
                 ch,
-                (Message)MessageFactory.text(
+                createTextResponseMessage(
                    RESPONSE_BAD_REQUEST,
                    request.getTopic(),
                    "text/plain",
-                   "UTF-8",
                    "Bad request status: " + request.getStatus().name()));
 
             return State.Request_Response;
@@ -187,12 +187,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
             if (isRequestMsg(request)) {
                 if (response == null) {
-                    return (Message)MessageFactory.text(
-                               RESPONSE_OK,
-                               request.getTopic(),
-                               "text/plain",
-                               "UTF-8",
-                               "");
+                    return createTextResponseMessage(
+                              RESPONSE_OK,
+                              request.getTopic(),
+                              "text/plain",
+                              "");
                 }
                 else {
                     switch (response.getStatus()) {
@@ -225,11 +224,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             if (isRequestMsg(request)) {
                 // send error response
-                return (Message)MessageFactory.text(
+                return createTextResponseMessage(
                          RESPONSE_HANDLER_ERROR,
                          request.getTopic(),
                          "text/plain",
-                         "UTF-8",
                          ExceptionUtil.printStackTraceToString(ex));
             }
             else if (isRequestOneWayMsg(request)) {
@@ -249,11 +247,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // acknowledge the subscription
         Protocol.sendMessage(
             ch,
-            (Message)MessageFactory.text(
+            createTextResponseMessage(
                 RESPONSE_OK,
                 request.getTopic(),
                 "text/plain",
-                "UTF-8",
                 ""));
 
         // switch in publish mode for this connections
@@ -267,11 +264,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // acknowledge the publish
         Protocol.sendMessage(
             ch,
-            (Message)MessageFactory.text(
+            createTextResponseMessage(
                 RESPONSE_OK,
                 request.getTopic(),
                 "text/plain",
-                "UTF-8",
                 "message has been enqued to publish"));
 
         // switch in publish mode for this connections
@@ -279,11 +275,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private Message getServerStatus() {
-        return (Message)MessageFactory.text(
+        return createTextResponseMessage(
                    RESPONSE_OK,
                    "server/status",
                    "application/json",
-                   "UTF-8",
                    "{\"running\": " + server.isRunning() + ", " +
                     "\"mode\": \"" + mode.name()  + "\", " +
                     "\"message_count\": " + serverMessageCount.get()  + ", " +
@@ -293,6 +288,21 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount()  + ", " +
                     "\"publish_queue_size\": " + publishQueue.size() +
                    "}");
+    }
+
+
+    private static Message createTextResponseMessage(
+            final Status status,
+            final String topic,
+            final String text,
+            final String mimetype
+    ) {
+        return new Message(
+                status,
+                topic,
+                mimetype,
+                "UTF-8",
+                text.getBytes(Charset.forName("UTF-8")));
     }
 
 

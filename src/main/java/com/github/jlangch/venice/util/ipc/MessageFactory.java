@@ -37,8 +37,9 @@ public abstract class MessageFactory {
      * <ul>
      *   <li>REQUEST - to create a request text message</li>
      *   <li>REQUEST_ONE_WAY - to create a request text message</li>
-     *   <li>RESPONSE_OK - to create response text message from a TcpServer handler</li>
-     *   <li>RESPONSE_HANDLER_ERROR - to create response text message from a TcpServer handler</li>
+     *   <li>RESPONSE_OK - to create a response text message from a TcpServer handler</li>
+     *   <li>RESPONSE_BAD_REQUEST - to create a response text message from a TcpServer handler</li>
+     *   <li>RESPONSE_HANDLER_ERROR - to create a response text message from a TcpServer handler</li>
      * </ul>
      *
      * @param status the message's status
@@ -79,8 +80,9 @@ public abstract class MessageFactory {
      * <ul>
      *   <li>REQUEST - to create a request binary message</li>
      *   <li>REQUEST_ONE_WAY - to create a request binary message</li>
-     *   <li>RESPONSE_OK - to create response binary message from a TcpServer handler</li>
-     *   <li>RESPONSE_HANDLER_ERROR - to create response binary message from a TcpServer handler</li>
+     *   <li>RESPONSE_OK - to create a response binary message from a TcpServer handler</li>
+     *   <li>RESPONSE_BAD_REQUEST - to create a response binary message from a TcpServer handler</li>
+     *   <li>RESPONSE_HANDLER_ERROR - to create a response binary message from a TcpServer handler</li>
      * </ul>
      *
      * @param status the message's status
@@ -112,7 +114,7 @@ public abstract class MessageFactory {
 
 
     /**
-     * Create a simple hello message.
+     * Create a simple hello request message (with status 'REQUEST').
      *
      * <ul>
      *   <li>topic: "hello"</li>
@@ -142,13 +144,15 @@ public abstract class MessageFactory {
         if (!(status == Status.REQUEST
               || status == Status.REQUEST_ONE_WAY
               || status == Status.RESPONSE_OK
+              || status == Status.RESPONSE_BAD_REQUEST
               || status == Status.RESPONSE_HANDLER_ERROR)
         ) {
             throw new VncException(
                     String.format(
                         "Unacceptable message status '%s'! " +
                         "Use 'REQUEST', 'REQUEST_ONE_WAY', " +
-                        "'RESPONSE_OK', or 'RESPONSE_HANDLER_ERROR'.",
+                        "'RESPONSE_OK', 'RESPONSE_BAD_REQUEST', " +
+                        "or 'RESPONSE_HANDLER_ERROR'.",
                         status));
         }
     }

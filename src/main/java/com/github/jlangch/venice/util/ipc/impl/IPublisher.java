@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+
 public interface IPublisher {
 
     void publish(Message msg);
