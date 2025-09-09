@@ -75,25 +75,29 @@ public class IPCFunctions {
                         "*Options:* \n\n" +
                         "| :max-connections n | The number of the max connections the server can handle in parallel. Defaults to 20 |\n")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
-                        "          ((fn [m] (println (ipc/message->map m)) m))              \n" +
-                        "          (ipc/send client)                                        \n" +
-                        "          (ipc/message->map)                                       \n" +
-                        "          (println))))                                             ")
+                        "(do                                                                 \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                         \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                     \n" +
+                        "              client (ipc/client \"localhost\" 33333)]              \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")      \n" +
+                        "          ((fn [m] (println \"request: \" (ipc/message->map m)) m)) \n" +
+                        "          (ipc/send client)                                         \n" +
+                        "          (ipc/message->map)                                        \n" +
+                        "          (println \"response: \"))))                               ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
                         "ipc/running?",
                         "ipc/send",
                         "ipc/send-async",
+                        "ipc/publish",
+                        "ipc/subscribe",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/binary-message",
-                        "ipc/message->map")
+                        "ipc/message->map",
+                        "ipc/server-status",
+                        "ipc/server-thread-pool-statistics")
                     .build()
         ) {
             @Override
@@ -155,26 +159,28 @@ public class IPCFunctions {
                         "*Options:* \n\n" +
                         "| :max-parallel-tasks n | The max number of parallel tasks (e.g. sending async messages) the client can handle. Defaults to 10 |\n")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
-                        "          ((fn [m] (println (ipc/message->map m)) m))              \n" +
-                        "          (ipc/send client)                                        \n" +
-                        "          (ipc/message->map)                                       \n" +
-                        "          (println))))                                             ")
+                        "(do                                                                 \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                         \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                     \n" +
+                        "              client (ipc/client \"localhost\" 33333)]              \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")      \n" +
+                        "          ((fn [m] (println \"request: \" (ipc/message->map m)) m)) \n" +
+                        "          (ipc/send client)                                         \n" +
+                        "          (ipc/message->map)                                        \n" +
+                        "          (println \"response: \"))))                               ")
                     .seeAlso(
                         "ipc/server",
-                        "ipc/client",
                         "ipc/close",
                         "ipc/running?",
                         "ipc/send",
                         "ipc/send-async",
+                        "ipc/publish",
+                        "ipc/subscribe",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/binary-message",
-                        "ipc/message->map")
+                        "ipc/message->map",
+                        "ipc/client-thread-pool-statistics")
                     .build()
         ) {
             @Override
@@ -232,15 +238,9 @@ public class IPCFunctions {
                         "     (println \"Server running:\" (ipc/running? server))           \n" +
                         "     (println \"Client running:\" (ipc/running? client))))         ")
                     .seeAlso(
+                        "ipc/client",
                         "ipc/server",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
-                        "ipc/text-message",
-                        "ipc/plain-text-message",
-                        "ipc/binary-message",
-                        "ipc/message->map")
+                        "ipc/close")
                     .build()
         ) {
             @Override
@@ -292,15 +292,9 @@ public class IPCFunctions {
                         "     (ipc/close client)                                            \n" +
                         "     (ipc/close server)))                                           ")
                     .seeAlso(
-                        "ipc/server",
                         "ipc/client",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
-                        "ipc/text-message",
-                        "ipc/plain-text-message",
-                        "ipc/binary-message",
-                        "ipc/message->map")
+                        "ipc/server",
+                        "ipc/running?")
                     .build()
         ) {
             @Override
@@ -396,8 +390,8 @@ public class IPCFunctions {
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ")
                  .seeAlso(
-                     "ipc/server",
                      "ipc/client",
+                     "ipc/server",
                      "ipc/close",
                      "ipc/running?",
                      "ipc/send-async",
@@ -453,8 +447,8 @@ public class IPCFunctions {
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ")
                     .seeAlso(
-                        "ipc/server",
                         "ipc/client",
+                        "ipc/server",
                         "ipc/close",
                         "ipc/running?",
                         "ipc/send",
@@ -508,11 +502,9 @@ public class IPCFunctions {
                         "     ;; print server status and statistics                                      \n" +
                         "     (println (ipc/server-status client-pub))))                                 ")
                  .seeAlso(
-                     "ipc/server",
+                     "ipc/publish",
                      "ipc/client",
-                     "ipc/close",
-                     "ipc/running?",
-                     "ipc/send-async",
+                     "ipc/server",
                      "ipc/text-message",
                      "ipc/plain-text-message",
                      "ipc/binary-message",
@@ -580,11 +572,9 @@ public class IPCFunctions {
                         "     ;; print server status and statistics                                      \n" +
                         "     (println (ipc/server-status client-pub))))                                 ")
                  .seeAlso(
-                     "ipc/server",
+                     "ipc/subscribe",
                      "ipc/client",
-                     "ipc/close",
-                     "ipc/running?",
-                     "ipc/send-async",
+                     "ipc/server",
                      "ipc/text-message",
                      "ipc/plain-text-message",
                      "ipc/binary-message",
@@ -626,11 +616,12 @@ public class IPCFunctions {
                         "          (ipc/send client))                                       \n" +
                         "     (println (ipc/server-status client))))                        ")
                  .seeAlso(
+                     "ipc/server-thread-pool-statistics",
                      "ipc/server",
                      "ipc/client",
                      "ipc/close",
                      "ipc/running?",
-                     "ipc/send-async",
+                     "ipc/send",
                      "ipc/text-message",
                      "ipc/plain-text-message",
                      "ipc/binary-message",
@@ -689,11 +680,12 @@ public class IPCFunctions {
                         "          (ipc/send client))                                       \n" +
                         "     (println (ipc/server-thread-pool-statistics client))))        ")
                  .seeAlso(
+                     "ipc/server-status",
                      "ipc/server",
                      "ipc/client",
                      "ipc/close",
                      "ipc/running?",
-                     "ipc/send-async",
+                     "ipc/send",
                      "ipc/text-message",
                      "ipc/plain-text-message",
                      "ipc/binary-message",
@@ -751,11 +743,11 @@ public class IPCFunctions {
                         "          (ipc/send client))                                       \n" +
                         "     (println (ipc/client-thread-pool-statistics client))))        ")
                  .seeAlso(
-                     "ipc/server",
                      "ipc/client",
+                     "ipc/server",
                      "ipc/close",
                      "ipc/running?",
-                     "ipc/send-async",
+                     "ipc/send",
                      "ipc/text-message",
                      "ipc/plain-text-message",
                      "ipc/binary-message",
