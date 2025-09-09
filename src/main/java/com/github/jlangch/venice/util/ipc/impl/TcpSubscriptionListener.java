@@ -24,14 +24,14 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.nio.channels.SocketChannel;
 import java.util.function.Consumer;
 
-import com.github.jlangch.venice.util.ipc.Message;
+import com.github.jlangch.venice.util.ipc.IMessage;
 
 
 public class TcpSubscriptionListener implements Runnable {
 
     public TcpSubscriptionListener(
             final SocketChannel ch,
-            final Consumer<Message> handler
+            final Consumer<IMessage> handler
     ) {
         this.ch = ch;
         this.handler = handler;
@@ -57,5 +57,5 @@ public class TcpSubscriptionListener implements Runnable {
 
 
     private final SocketChannel ch;
-    private final Consumer<Message> handler;
+    private final Consumer<IMessage> handler;
 }

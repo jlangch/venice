@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
 public class TcpServerTest {
@@ -43,7 +44,7 @@ public class TcpServerTest {
     public void test_start_stop() throws Exception {
         final TcpServer server = new TcpServer(33333);
 
-        final Function<Message,Message> handler = req -> { return null; };
+        final Function<IMessage,IMessage> handler = req -> { return null; };
 
         server.start(handler);
 
@@ -61,7 +62,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpServer server2 = new TcpServer(33333);
 
-        final Function<Message,Message> handler = req -> { return null; };
+        final Function<IMessage,IMessage> handler = req -> { return null; };
 
         try {
             server.start(handler);
@@ -105,7 +106,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { sleep(1000); return req.asEchoResponse(); };
+        final Function<IMessage,IMessage> echoHandler = req -> { sleep(1000); return ((Message)req).asEchoResponse(); };
 
         server.start(echoHandler);
 
@@ -114,10 +115,10 @@ public class TcpServerTest {
         client.open();
 
         try {
-            final Message request = Message.hello();
+            final IMessage request = MessageFactory.hello();
 
             // the server waits 1000ms with replying on the received request
-            final Future<Message> future = client.sendMessageAsync(request);
+            final Future<IMessage> future = client.sendMessageAsync(request);
 
             sleep(100);
             client.close();
@@ -139,7 +140,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
+        final Function<IMessage,IMessage> echoHandler = req -> ((Message)req).asEchoResponse();
 
         server.start(echoHandler);
 
@@ -148,9 +149,9 @@ public class TcpServerTest {
         client.open();
 
         try {
-            final Message request = Message.hello();
+            final IMessage request = MessageFactory.hello();
 
-            Message response = client.sendMessage(request);
+            IMessage response = client.sendMessage(request);
             assertNotNull(response);
 
             server.close();

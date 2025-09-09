@@ -37,21 +37,21 @@ public class TcpPubSubTest {
         final TcpClient clientSub = new TcpClient(33333);
         final TcpClient clientPub = new TcpClient(33333);
 
-        server.start(req -> req.asEchoResponse());
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
         clientSub.open();
         clientPub.open();
 
-        final List<Message> subMessages = new ArrayList<>();
+        final List<IMessage> subMessages = new ArrayList<>();
 
         try {
             clientSub.subscribe("test", m -> subMessages.add(m));
 
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
-                final Message request = Message.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 
@@ -81,7 +81,7 @@ public class TcpPubSubTest {
         final TcpClient clientSub2 = new TcpClient(33333);
         final TcpClient clientSub3 = new TcpClient(33333);
 
-        server.start(req -> req.asEchoResponse());
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
@@ -90,9 +90,9 @@ public class TcpPubSubTest {
         clientSub3.open();
         clientPub.open();
 
-        final List<Message> subMessages1 = new ArrayList<>();
-        final List<Message> subMessages2 = new ArrayList<>();
-        final List<Message> subMessages3 = new ArrayList<>();
+        final List<IMessage> subMessages1 = new ArrayList<>();
+        final List<IMessage> subMessages2 = new ArrayList<>();
+        final List<IMessage> subMessages3 = new ArrayList<>();
 
         try {
             clientSub1.subscribe("test", m -> subMessages1.add(m));
@@ -101,7 +101,7 @@ public class TcpPubSubTest {
 
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
-                final Message request = Message.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 

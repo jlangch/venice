@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST;
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST_ONE_WAY;
 import static com.github.jlangch.venice.util.ipc.Status.REQUEST_PUBLISH;
 import static com.github.jlangch.venice.util.ipc.Status.REQUEST_START_SUBSCRIPTION;
 import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_OK;
@@ -31,6 +29,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -44,8 +43,8 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
-import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.impl.IO;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 
@@ -153,10 +152,8 @@ public class TcpClient implements Closeable {
      * @param msg a message
      * @return the response
      */
-    public Message sendMessage(final Message msg) {
+    public IMessage sendMessage(final IMessage msg) {
         Objects.requireNonNull(msg);
-
-        validateMessageSendStatus(msg, REQUEST, REQUEST_ONE_WAY, REQUEST_START_SUBSCRIPTION, REQUEST_PUBLISH);
 
         if (subscription.get()) {
             throw new VncException("A client in subscription mode cannot send request messages!");
@@ -170,7 +167,7 @@ public class TcpClient implements Closeable {
 
         final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
 
-        Protocol.sendMessage(ch, msg);
+        Protocol.sendMessage(ch, (Message)msg);
 
         return oneway ? null : Protocol.receiveMessage(ch);
     }
@@ -189,11 +186,9 @@ public class TcpClient implements Closeable {
      * @param unit    the time unit of the timeout argument
      * @return the server's response
      */
-    public Message sendMessage(final Message msg, final long timeout, final TimeUnit unit) {
+    public IMessage sendMessage(final IMessage msg, final long timeout, final TimeUnit unit) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(unit);
-
-        validateMessageSendStatus(msg, REQUEST, REQUEST_ONE_WAY, REQUEST_START_SUBSCRIPTION, REQUEST_PUBLISH);
 
         if (subscription.get()) {
             throw new VncException("A client in subscription mode cannot send request messages!");
@@ -235,10 +230,8 @@ public class TcpClient implements Closeable {
      * @param msg  a message
      * @return the future for the server's response
      */
-    public Future<Message> sendMessageAsync(final Message msg) {
+    public Future<IMessage> sendMessageAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
-
-        validateMessageSendStatus(msg, REQUEST, REQUEST_ONE_WAY, REQUEST_START_SUBSCRIPTION, REQUEST_PUBLISH);
 
         if (subscription.get()) {
             throw new VncException("A client in subscription mode cannot send request messages!");
@@ -252,8 +245,8 @@ public class TcpClient implements Closeable {
 
         final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
 
-        final Callable<Message> task = () -> {
-            Protocol.sendMessage(ch, msg);
+        final Callable<IMessage> task = () -> {
+            Protocol.sendMessage(ch, (Message)msg);
             return oneway ? null : Protocol.receiveMessage(ch);
         };
 
@@ -272,7 +265,7 @@ public class TcpClient implements Closeable {
      * @param handler the subscription message handler
      * @return the response for the subscribe
      */
-    public Message subscribe(final String topic, final Consumer<Message> handler) {
+    public Message subscribe(final String topic, final Consumer<IMessage> handler) {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(handler);
 
@@ -284,12 +277,12 @@ public class TcpClient implements Closeable {
 
         if (subscription.compareAndSet(false, true)) {
             try {
-                final Message subscribeMsg = Message.text(
+                final Message subscribeMsg = new Message(
                                                 REQUEST_START_SUBSCRIPTION,
                                                 topic,
                                                 "text/plain",
                                                 "UTF-8",
-                                                endpointId);
+                                                endpointId.getBytes(Charset.forName("UTF-8")));
 
                 final Callable<Message> task = () -> {
                     Protocol.sendMessage(ch, subscribeMsg);
@@ -351,19 +344,17 @@ public class TcpClient implements Closeable {
      * @param msg the message to publish
      * @return the response for the publish
      */
-    public Message publish(final Message msg) {
+    public IMessage publish(final IMessage msg) {
         Objects.requireNonNull(msg);
-
-        validateMessageSendStatus(msg, REQUEST, REQUEST_ONE_WAY);
 
         if (subscription.get()) {
             // if this client is in subscription mode publish this message
             // through another client!
-            Message response = null;
+            IMessage response = null;
             try (final TcpClient client = new TcpClient(host, port)) {
                 client.open();
                 response = client.sendMessage(
-                                    msg.withStatus(REQUEST_PUBLISH),
+                                    ((Message)msg).withStatus(REQUEST_PUBLISH),
                                     5,
                                     TimeUnit.SECONDS);
             }
@@ -373,17 +364,7 @@ public class TcpClient implements Closeable {
             return response;
         }
         else {
-            return sendMessage(msg.withStatus(REQUEST_PUBLISH), 5, TimeUnit.SECONDS);
-        }
-    }
-
-
-    private void validateMessageSendStatus(final Message msg, final Status... status) {
-        if (!CollectionUtil.toSet(status).contains(msg.getStatus())) {
-            throw new VncException(
-                    String.format(
-                        "Unacceptable message status '%s'",
-                        msg.getStatus()));
+            return sendMessage(((Message)msg).withStatus(REQUEST_PUBLISH), 5, TimeUnit.SECONDS);
         }
     }
 

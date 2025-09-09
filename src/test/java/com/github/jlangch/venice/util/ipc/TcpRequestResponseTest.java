@@ -44,18 +44,16 @@ public class TcpRequestResponseTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> req.asEchoResponse();
-
-        server.start(echoHandler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
         client.open();
 
         try {
-            final Message request = Message.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");;
+            final IMessage request = MessageFactory.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
 
-            final Message response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request);
 
             assertNotNull(response);
             assertEquals(Status.RESPONSE_OK,     response.getStatus());
@@ -76,9 +74,7 @@ public class TcpRequestResponseTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> req.asEchoResponse();
-
-        server.start(echoHandler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
@@ -87,9 +83,9 @@ public class TcpRequestResponseTest {
         try {
             final byte[] data = new byte[] {0,1,2,3};
 
-            final Message request = Message.binary(Status.REQUEST, "hello", "application/octet", data);
+            final IMessage request = MessageFactory.binary(Status.REQUEST, "hello", "application/octet", data);
 
-            final Message response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request);
 
             assertNotNull(response);
             assertEquals(Status.RESPONSE_OK,     response.getStatus());
@@ -111,9 +107,7 @@ public class TcpRequestResponseTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> req.asEchoResponse();
-
-        server.start(echoHandler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
@@ -122,9 +116,9 @@ public class TcpRequestResponseTest {
         try {
             final byte[] data = new byte[] {0,1,2,3};
 
-            final Message request = Message.binary(Status.REQUEST, "hello", "application/octet", data);
+            final IMessage request = MessageFactory.binary(Status.REQUEST, "hello", "application/octet", data);
 
-            final Message response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request);
 
             // modify the request binary data to verify that the data buffer
             // is not looped through to the response
@@ -152,20 +146,18 @@ public class TcpRequestResponseTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
-
-        server.start(echoHandler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
         client.open();
 
         try {
-            final Message request = Message.hello();
+            final IMessage request = MessageFactory.hello();
 
-            final Future<Message> future = client.sendMessageAsync(request);
+            final Future<IMessage> future = client.sendMessageAsync(request);
 
-            final Message response = future.get();
+            final IMessage response = future.get();
 
             assertNotNull(response);
             assertEquals(Status.RESPONSE_OK,     response.getStatus());
@@ -186,9 +178,7 @@ public class TcpRequestResponseTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
-
-        server.start(echoHandler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
@@ -201,9 +191,9 @@ public class TcpRequestResponseTest {
                 final String charset = "UTF-8";
                 final String msg = "Hello " + ii;
 
-                final Message request = Message.text(Status.REQUEST, topic, mimetype, charset, msg);
+                final IMessage request = MessageFactory.text(Status.REQUEST, topic, mimetype, charset, msg);
 
-                final Message response = client.sendMessage(request);
+                final IMessage response = client.sendMessage(request);
 
                 assertNotNull(response);
                 assertEquals(Status.RESPONSE_OK,     response.getStatus());
@@ -229,9 +219,7 @@ public class TcpRequestResponseTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<Message,Message> handler = req -> { return null; };
-
-        server.start(handler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
@@ -241,7 +229,7 @@ public class TcpRequestResponseTest {
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
 
-                final Message request = Message.text(Status.REQUEST_ONE_WAY, "hello", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text(Status.REQUEST_ONE_WAY, "hello", "text/plain", "UTF-8", msg);
 
                 // one way message -> no response
                 client.sendMessage(request);
@@ -267,9 +255,7 @@ public class TcpRequestResponseTest {
         final int clients = 30;
         final int messagesPerClient = 25;
 
-        final Function<Message,Message> echoHandler = req -> { return req.asEchoResponse(); };
-
-        server.start(echoHandler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
@@ -291,9 +277,9 @@ public class TcpRequestResponseTest {
                             final String charset = "UTF-8";
                             final String msg = "Hello " + clientNr + " / " + msgIdx;
 
-                            final Message request = Message.text(Status.REQUEST, topic, mimetype, charset, msg);
+                            final IMessage request = MessageFactory.text(Status.REQUEST, topic, mimetype, charset, msg);
 
-                            final Message response = client.sendMessage(request);
+                            final IMessage response = client.sendMessage(request);
 
                             assertNotNull(response);
                             assertEquals(Status.RESPONSE_OK, response.getStatus());
@@ -326,9 +312,10 @@ public class TcpRequestResponseTest {
 
         final Venice venice = new Venice();
 
-        final Function<Message,Message> echoHandler = req -> {
-            final String result = venice.eval(req.getText()).toString();
-            return Message.text(
+        final Function<IMessage,IMessage> execHandler = req -> {
+            final String code = req.getText();
+            final String result = venice.eval(code).toString();
+            return MessageFactory.text(
                         Status.RESPONSE_OK,
                         "venice.response",
                         "text/plain",
@@ -336,21 +323,21 @@ public class TcpRequestResponseTest {
                         result);
         };
 
-        server.start(echoHandler);
+        server.start(execHandler);
 
         sleep(300);
 
         client.open();
 
         try {
-            final Message request = Message.text(
+            final IMessage request = MessageFactory.text(
                                         Status.REQUEST,
-                                        "venice",
+                                        "venice.request",
                                         "application/venice",
                                         "UTF-8",
                                         "(+ 1 2)");
 
-            final Message response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request);
 
             assertNotNull(response);
             assertEquals(Status.RESPONSE_OK, response.getStatus());

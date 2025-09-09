@@ -50,7 +50,8 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.json.VncJsonReader;
 import com.github.jlangch.venice.nanojson.JsonReader;
-import com.github.jlangch.venice.util.ipc.Message;
+import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.Status;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
@@ -115,10 +116,10 @@ public class IPCFunctions {
                 // Create a wrapper that inherits the Venice thread context!
                 final ThreadBridge threadBridge = ThreadBridge.create("tcp-server-handler", cf);
 
-                final Function<Message,Message> handlerWrapper = threadBridge.bridgeFunction((Message m) -> {
+                final Function<IMessage,IMessage> handlerWrapper = threadBridge.bridgeFunction((IMessage m) -> {
                           final VncVal request = new VncJavaObject(m);
                           final VncVal response = handler.applyOf(request);
-                          return Coerce.toVncJavaObject(response, Message.class);
+                          return Coerce.toVncJavaObject(response, IMessage.class);
                 });
 
                 final TcpServer server = new TcpServer(port);
@@ -414,14 +415,14 @@ public class IPCFunctions {
 
                 final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
                 final long timeout = hasTimeout ? Coerce.toVncLong(args.nth(1)).toJavaLong() : 0;
-                final Message request = Coerce.toVncJavaObject(args.nth(hasTimeout ? 2 : 1), Message.class);
+                final IMessage request = Coerce.toVncJavaObject(args.nth(hasTimeout ? 2 : 1), IMessage.class);
 
                 if (timeout <= 0) {
-                    final Message response = client.sendMessage(request);
+                    final IMessage response = client.sendMessage(request);
                     return response == null ? Nil : new VncJavaObject(response);
                 }
                 else {
-                    final Message response = client.sendMessage(request, timeout, TimeUnit.MILLISECONDS);
+                    final IMessage response = client.sendMessage(request, timeout, TimeUnit.MILLISECONDS);
                     return response == null ? Nil : new VncJavaObject(response);
                 }
             }
@@ -468,9 +469,9 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 2);
 
                 final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-                final Message request = Coerce.toVncJavaObject(args.second(), Message.class);
+                final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
 
-                final Future<Message> response = client.sendMessageAsync(request);
+                final Future<IMessage> response = client.sendMessageAsync(request);
 
                 return response == null ? Nil : new VncJavaObject(new FutureWrapper(response));
             }
@@ -534,14 +535,14 @@ public class IPCFunctions {
                 // Create a wrapper that inherits the Venice thread context!
                 final ThreadBridge threadBridge = ThreadBridge.create("tcp-subscribe-handler", cf);
 
-                final Consumer<Message> handlerWrapper = threadBridge.bridgeConsumer(m -> {
+                final Consumer<IMessage> handlerWrapper = threadBridge.bridgeConsumer(m -> {
                     try {
                         handler.applyOf(new VncJavaObject(m));
                     }
                     catch(Exception ignore) { }
                 });
 
-                final Message response = client.subscribe(topic, handlerWrapper);
+                final IMessage response = client.subscribe(topic, handlerWrapper);
 
                 return new VncJavaObject(response);
             }
@@ -595,9 +596,9 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 2);
 
                 final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
-                final Message request =  Coerce.toVncJavaObject(args.nth(1), Message.class);
+                final IMessage request =  Coerce.toVncJavaObject(args.nth(1), IMessage.class);
 
-                final Message response = client.publish(request);
+                final IMessage response = client.publish(request);
 
                 return new VncJavaObject(response);
             }
@@ -642,8 +643,8 @@ public class IPCFunctions {
 
                 final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
 
-                final Message response = client.sendMessage(
-                                            Message.text(
+                final IMessage response = client.sendMessage(
+                                            MessageFactory.text(
                                                 Status.REQUEST,
                                                 "server/status",
                                                 "appliaction/json",
@@ -721,7 +722,7 @@ public class IPCFunctions {
                                         ? ((VncString)textVal).getValue()
                                         : textVal.toString(true);  // aggressively convert to string
 
-                final Message msg = Message.text(
+                final IMessage msg = MessageFactory.text(
                                         convertToStatus(status),
                                         topic.getValue(),
                                         mimetype.getValue(),
@@ -779,7 +780,7 @@ public class IPCFunctions {
                                         ? ((VncString)textVal).getValue()
                                         : textVal.toString(true);  // aggressively convert to string
 
-                final Message msg = Message.text(
+                final IMessage msg = MessageFactory.text(
                                         convertToStatus(status),
                                         topic.getValue(),
                                         "text/plain",
@@ -837,7 +838,7 @@ public class IPCFunctions {
                 final VncString mimetype = Coerce.toVncString(args.nth(2));
                 final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(3));
 
-                final Message msg = Message.binary(
+                final IMessage msg = MessageFactory.binary(
                                         convertToStatus(status),
                                         topic.getValue(),
                                         mimetype.getValue(),
@@ -879,7 +880,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final Message m = Coerce.toVncJavaObject(args.first(), Message.class);
+                final IMessage m = Coerce.toVncJavaObject(args.first(), IMessage.class);
 
                 if (m.getCharset() != null) {
                     return VncOrderedMap.of(
@@ -918,7 +919,7 @@ public class IPCFunctions {
     }
 
     private static class FutureWrapper implements Future<VncVal> {
-        public FutureWrapper(final Future<Message> future) {
+        public FutureWrapper(final Future<IMessage> future) {
             this.delegate = future;
         }
 
@@ -939,7 +940,7 @@ public class IPCFunctions {
 
         @Override
         public VncVal get() throws InterruptedException, ExecutionException {
-            final Message val = delegate.get();
+            final IMessage val = delegate.get();
             return val == null ? Nil : new VncJavaObject(val);
         }
 
@@ -948,11 +949,11 @@ public class IPCFunctions {
                 final long timeout,
                 final TimeUnit unit
         ) throws InterruptedException, ExecutionException, TimeoutException {
-            final Message val = delegate.get(timeout, unit);
+            final IMessage val = delegate.get(timeout, unit);
             return val == null ? Nil : new VncJavaObject(val);
         }
 
-        private final Future<Message> delegate;
+        private final Future<IMessage> delegate;
     }
 
 

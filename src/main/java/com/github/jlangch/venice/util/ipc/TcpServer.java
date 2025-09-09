@@ -37,6 +37,7 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 
@@ -113,7 +114,7 @@ public class TcpServer implements Closeable {
      * @param handler to handle the incoming messages. The handler may return a
      *        <code>null</code> message
      */
-    public void start(final Function<Message,Message> handler) {
+    public void start(final Function<IMessage,IMessage> handler) {
         Objects.requireNonNull(handler);
 
         if (started.compareAndSet(false, true)) {
@@ -175,6 +176,14 @@ public class TcpServer implements Closeable {
        final ServerSocketChannel ch = server.get();
        return ch != null && ch.isOpen();
     }
+
+    /**
+     * @return an echo handler
+     */
+    public static Function<IMessage,IMessage> echoHandler() {
+        return req -> ((Message)req).asEchoResponse();
+    }
+
 
     private void safeClose(final ServerSocketChannel ch) {
         if (ch != null) {

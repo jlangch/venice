@@ -35,7 +35,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-import com.github.jlangch.venice.util.ipc.Message;
+import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 
 
@@ -44,7 +45,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     public TcpServerConnection(
             final TcpServer server,
             final SocketChannel ch,
-            final Function<Message,Message> handler,
+            final Function<IMessage,IMessage> handler,
             final Subscriptions subscriptions,
             final AtomicLong serverMessageCount,
             final AtomicLong serverPublishCount,
@@ -119,13 +120,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         // send an error back if the request message is not a request
         if (!(isRequestMsg(request)
-                || isRequestOneWayMsg(request)
-                || isRequestPublish(request)
-                || isRequestStartSubscription(request))
+              || isRequestOneWayMsg(request)
+              || isRequestPublish(request)
+              || isRequestStartSubscription(request))
         ) {
             Protocol.sendMessage(
                 ch,
-                Message.text(
+                (Message)MessageFactory.text(
                    RESPONSE_BAD_REQUEST,
                    request.getTopic(),
                    "text/plain",
@@ -182,17 +183,37 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private Message handleRequest(final Message request) {
         try {
-            final Message response = handler.apply(request);
+            final IMessage response = handler.apply(request);
 
             if (isRequestMsg(request)) {
-                return response == null
-                        ?  Message.text(
-                                RESPONSE_OK,
-                                request.getTopic(),
-                                "text/plain",
-                                "UTF-8",
-                                "")
-                        : response;
+                if (response == null) {
+                    return (Message)MessageFactory.text(
+                               RESPONSE_OK,
+                               request.getTopic(),
+                               "text/plain",
+                               "UTF-8",
+                               "");
+                }
+                else {
+                    switch (response.getStatus()) {
+                        case REQUEST:
+                        case REQUEST_ONE_WAY:
+                        case REQUEST_PUBLISH:
+                        case REQUEST_SUBSCRIBE:
+                        case REQUEST_START_SUBSCRIPTION:
+                        case RESPONSE_SERVER_ERROR:
+                            // bad
+                            break;
+
+                        case RESPONSE_OK:
+                        case RESPONSE_HANDLER_ERROR:
+                        case RESPONSE_BAD_REQUEST:
+                            // ok
+                            break;
+                    }
+
+                    return (Message)response;
+                }
             }
             else if (isRequestOneWayMsg(request)) {
                 return null; // do not reply on one-way messages
@@ -204,7 +225,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             if (isRequestMsg(request)) {
                 // send error response
-                return Message.text(
+                return (Message)MessageFactory.text(
                          RESPONSE_HANDLER_ERROR,
                          request.getTopic(),
                          "text/plain",
@@ -228,7 +249,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // acknowledge the subscription
         Protocol.sendMessage(
             ch,
-            Message.text(
+            (Message)MessageFactory.text(
                 RESPONSE_OK,
                 request.getTopic(),
                 "text/plain",
@@ -246,7 +267,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // acknowledge the publish
         Protocol.sendMessage(
             ch,
-            Message.text(
+            (Message)MessageFactory.text(
                 RESPONSE_OK,
                 request.getTopic(),
                 "text/plain",
@@ -258,7 +279,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private Message getServerStatus() {
-        return Message.text(
+        return (Message)MessageFactory.text(
                    RESPONSE_OK,
                    "server/status",
                    "application/json",
@@ -299,7 +320,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private final TcpServer server;
     private final SocketChannel ch;
-    private final Function<Message,Message> handler;
+    private final Function<IMessage,IMessage> handler;
     private final Subscriptions subscriptions;
     private final AtomicLong serverMessageCount;
     private final AtomicLong serverPublishCount;
