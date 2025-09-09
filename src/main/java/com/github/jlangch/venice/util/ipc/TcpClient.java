@@ -43,6 +43,10 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
+import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
+import com.github.jlangch.venice.nanojson.JsonWriter;
 import com.github.jlangch.venice.util.ipc.impl.IO;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
@@ -165,6 +169,11 @@ public class TcpClient implements Closeable {
             throw new VncException("This TcpClient is not open!");
         }
 
+        if ("client/thread-pool-statistics".equals(msg.getTopic())) {
+            // answer locally
+            return getClientThreadPoolStatistics();
+        }
+
         final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
 
         Protocol.sendMessage(ch, (Message)msg);
@@ -192,6 +201,11 @@ public class TcpClient implements Closeable {
 
         if (subscription.get()) {
             throw new VncException("A client in subscription mode cannot send request messages!");
+        }
+
+        if ("client/thread-pool-statistics".equals(msg.getTopic())) {
+            // answer locally
+            return getClientThreadPoolStatistics();
         }
 
         try {
@@ -366,6 +380,21 @@ public class TcpClient implements Closeable {
         else {
             return sendMessage(((Message)msg).withStatus(REQUEST_PUBLISH), 5, TimeUnit.SECONDS);
         }
+    }
+
+    private Message getClientThreadPoolStatistics() {
+        final VncMap statistics = mngdExecutor.info();
+
+        final StringBuilder sb = new StringBuilder();
+        final JsonAppendableWriter writer = JsonWriter.indent("  ").on(sb);
+        new VncJsonWriter(writer, false).write(statistics).done();
+
+        return new Message(
+                RESPONSE_OK,
+                "client/thread-pool-statistics",
+                "application/json",
+                "UTF-8",
+                sb.toString().getBytes(Charset.forName("UTF-8")));
     }
 
 

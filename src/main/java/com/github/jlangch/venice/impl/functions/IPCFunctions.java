@@ -733,6 +733,68 @@ public class IPCFunctions {
         };
 
 
+    public static VncFunction ipc_client_thread_pool_statistics =
+        new VncFunction(
+                "ipc/client-thread-pool-statistics",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/client-thread-pool-statistics client)")
+                    .doc(
+                        "Returns the client's thread pool statistics.")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
+                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "          (ipc/send client))                                       \n" +
+                        "     (println (ipc/client-thread-pool-statistics client))))        ")
+                 .seeAlso(
+                     "ipc/server",
+                     "ipc/client",
+                     "ipc/close",
+                     "ipc/running?",
+                     "ipc/send-async",
+                     "ipc/text-message",
+                     "ipc/plain-text-message",
+                     "ipc/binary-message",
+                     "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+
+                final IMessage response = client.sendMessage(
+                                            MessageFactory.text(
+                                                Status.REQUEST,
+                                                "client/thread-pool-statistics",
+                                                "appliaction/json",
+                                                "UTF-8",
+                                                ""),
+                                            5,
+                                            TimeUnit.SECONDS);
+
+                if (response.getStatus() == Status.RESPONSE_OK) {
+                    try {
+                        return readJson(response.getText());
+                    }
+                    catch(Exception ex) {
+                        throw new VncException ("Failed to get client thread pool statistics", ex);
+                    }
+                }
+                else {
+                    throw new VncException ("Failed to get client thread pool statistics");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     public static VncFunction ipc_text_message =
         new VncFunction(
                 "ipc/text-message",
@@ -1048,6 +1110,7 @@ public class IPCFunctions {
 
                     .add(ipc_server_status)
                     .add(ipc_server_thread_pool_statistics)
+                    .add(ipc_client_thread_pool_statistics)
 
                     .toMap();
 }
