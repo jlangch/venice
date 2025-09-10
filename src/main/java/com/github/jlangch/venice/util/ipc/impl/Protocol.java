@@ -30,6 +30,7 @@ import java.util.Objects;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.UUIDHelper;
 import com.github.jlangch.venice.util.ipc.Status;
 
 
@@ -47,7 +48,7 @@ public class Protocol {
         Objects.requireNonNull(message);
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(18);
+        final ByteBuffer header = ByteBuffer.allocate(34);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -57,6 +58,8 @@ public class Protocol {
         header.putInt(message.getStatus().getValue());
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
+        // 16 bytes UUID
+        header.put(UUIDHelper.convertUUIDToBytes(message.getId()));
         header.flip();
 
         IO.writeFully(ch, header);
@@ -102,7 +105,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(18);
+            final ByteBuffer header = ByteBuffer.allocate(34);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -115,6 +118,8 @@ public class Protocol {
             final int version = header.getInt();
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
+            final byte[] uuid = new byte[16];
+            header.get(uuid);
 
             final Status status = Status.fromCode(statusCode);
 
@@ -155,7 +160,10 @@ public class Protocol {
                         "Received illegal status code " + statusCode + "!");
             }
 
-            return new Message(status, timestamp, topic, mimetype, charset, data);
+            return new Message(
+                    UUIDHelper.convertBytesToUUID(uuid),
+                    status, timestamp, topic,
+                    mimetype, charset, data);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {

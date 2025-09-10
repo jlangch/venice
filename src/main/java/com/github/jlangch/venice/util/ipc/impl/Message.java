@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -55,6 +56,7 @@ public class Message implements IMessage {
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
 
+        this.id = UUID.randomUUID();
         this.status = status;
         this.timestamp = ZonedDateTime.now().toInstant().toEpochMilli();
         this.topic = topic;
@@ -64,6 +66,7 @@ public class Message implements IMessage {
     }
 
     public Message(
+            final UUID id,
             final Status status,
             final long timestamp,
             final String topic,
@@ -71,11 +74,13 @@ public class Message implements IMessage {
             final String charset,
             final byte[] data
     ) {
+        Objects.requireNonNull(id);
         Objects.requireNonNull(status);
         Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
 
+        this.id = id;
         this.status = status;
         this.timestamp = timestamp;
         this.topic = topic;
@@ -93,7 +98,7 @@ public class Message implements IMessage {
      */
     public Message withStatus(final Status status) {
         Objects.requireNonNull(status);
-        return new Message(status, timestamp, topic, mimetype, charset, data);
+        return new Message(id, status, timestamp, topic, mimetype, charset, data);
     }
 
     @Override
@@ -101,6 +106,11 @@ public class Message implements IMessage {
         return withStatus(Status.RESPONSE_OK);
     }
 
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
 
     @Override
     public Status getStatus() {
@@ -166,6 +176,11 @@ public class Message implements IMessage {
 
        sb.append(String.format(
                    "%s %s\n",
+                   padRight("Id:", 12),
+                   id.toString()));
+
+       sb.append(String.format(
+                   "%s %s\n",
                    padRight("Status:", 12),
                    status.name()));
 
@@ -228,6 +243,7 @@ public class Message implements IMessage {
     }
 
 
+    private final UUID id;
     private final Status status;
     private final long timestamp;
     private final String topic;
