@@ -24,8 +24,28 @@ package com.github.jlangch.venice.util.ipc;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
 /**
  * Defines the messages that can be exchanged between a TcpClient and a TcpServer.
+ *
+ * <pre>
+ *           Message
+ * ┌───────────────────────────────┐
+ * │ ID                            │
+ * ├───────────────────────────────┤
+ * │ Status                        │
+ * ├───────────────────────────────┤
+ * │ Timestamp                     │
+ * ├───────────────────────────────┤
+ * │ Topic                         │
+ * ├───────────────────────────────┤
+ * │ Payload Mimetype              │
+ * ├───────────────────────────────┤
+ * │ Payload Charset (if text)     │
+ * ├───────────────────────────────┤
+ * │ Payload data                  │
+ * └───────────────────────────────┘
+ * </pre>
  */
 public interface IMessage {
 
@@ -91,6 +111,5 @@ public interface IMessage {
      * @return the echo response
      */
     IMessage asEchoResponse();
-
 
 }
