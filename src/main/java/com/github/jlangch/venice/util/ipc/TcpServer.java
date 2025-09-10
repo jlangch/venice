@@ -37,7 +37,6 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
-import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 
@@ -193,7 +192,7 @@ public class TcpServer implements Closeable {
      * @return an echo handler
      */
     public static Function<IMessage,IMessage> echoHandler() {
-        return req -> ((Message)req).asEchoResponse();
+        return req -> req;
     }
 
 

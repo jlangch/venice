@@ -50,6 +50,7 @@ public class IpcSection implements ISectionBuilder {
         all.addSection(send);
         send.addItem(diBuilder.getDocItem("ipc/send", false));
         send.addItem(diBuilder.getDocItem("ipc/send-async", false));
+        send.addItem(diBuilder.getDocItem("ipc/send-oneway", false));
 
         final DocSection pub = new DocSection("Publish", "ipc.publish");
         all.addSection(pub);

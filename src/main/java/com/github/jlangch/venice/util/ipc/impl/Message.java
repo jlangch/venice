@@ -101,11 +101,6 @@ public class Message implements IMessage {
         return new Message(id, status, timestamp, topic, mimetype, charset, data);
     }
 
-    @Override
-    public Message asEchoResponse() {
-        return withStatus(Status.RESPONSE_OK);
-    }
-
 
     @Override
     public UUID getId() {

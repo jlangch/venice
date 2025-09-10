@@ -51,7 +51,7 @@ public class TcpRequestResponseTest {
         client.open();
 
         try {
-            final IMessage request = MessageFactory.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
+            final IMessage request = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
 
             final IMessage response = client.sendMessage(request);
 
@@ -83,7 +83,7 @@ public class TcpRequestResponseTest {
         try {
             final byte[] data = new byte[] {0,1,2,3};
 
-            final IMessage request = MessageFactory.binary(Status.REQUEST, "hello", "application/octet", data);
+            final IMessage request = MessageFactory.binary("hello", "application/octet", data);
 
             final IMessage response = client.sendMessage(request);
 
@@ -116,7 +116,7 @@ public class TcpRequestResponseTest {
         try {
             final byte[] data = new byte[] {0,1,2,3};
 
-            final IMessage request = MessageFactory.binary(Status.REQUEST, "hello", "application/octet", data);
+            final IMessage request = MessageFactory.binary("hello", "application/octet", data);
 
             final IMessage response = client.sendMessage(request);
 
@@ -191,7 +191,7 @@ public class TcpRequestResponseTest {
                 final String charset = "UTF-8";
                 final String msg = "Hello " + ii;
 
-                final IMessage request = MessageFactory.text(Status.REQUEST, topic, mimetype, charset, msg);
+                final IMessage request = MessageFactory.text(topic, mimetype, charset, msg);
 
                 final IMessage response = client.sendMessage(request);
 
@@ -229,12 +229,10 @@ public class TcpRequestResponseTest {
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
 
-                final IMessage request = MessageFactory.text(
-                                                Status.REQUEST_ONE_WAY,
-                                                "hello", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text("hello", "text/plain", "UTF-8", msg);
 
                 // one way message -> no response
-                client.sendMessage(request);
+                client.sendMessageOneway(request);
             }
         }
         finally {
@@ -279,8 +277,7 @@ public class TcpRequestResponseTest {
                             final String charset = "UTF-8";
                             final String msg = "Hello " + clientNr + " / " + msgIdx;
 
-                            final IMessage request = MessageFactory.text(
-                                                        Status.REQUEST, topic, mimetype, charset, msg);
+                            final IMessage request = MessageFactory.text(topic, mimetype, charset, msg);
 
                             final IMessage response = client.sendMessage(request);
 
@@ -319,7 +316,6 @@ public class TcpRequestResponseTest {
             final String code = req.getText();
             final String result = venice.eval(code).toString();
             return MessageFactory.text(
-                        Status.RESPONSE_OK,
                         "venice.response",
                         "text/plain",
                         "UTF-8",
@@ -334,7 +330,6 @@ public class TcpRequestResponseTest {
 
         try {
             final IMessage request = MessageFactory.text(
-                                        Status.REQUEST,
                                         "venice.request",
                                         "application/venice",
                                         "UTF-8",

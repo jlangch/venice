@@ -144,8 +144,7 @@ public class TcpClient implements Closeable {
     }
 
     /**
-     * Sends a message to the server and returns the server's
-     * response.
+     * Sends a message to the server and returns the server's response.
      *
      * <p>Blocks while waiting for the server's response.
      *
@@ -159,26 +158,24 @@ public class TcpClient implements Closeable {
     public IMessage sendMessage(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        if (subscription.get()) {
-            throw new VncException("A client in subscription mode cannot send request messages!");
-        }
+        final Message m = ((Message)msg).withStatus(Status.REQUEST);
 
-        final SocketChannel ch = channel.get();
+        return send(m);
+    }
 
-        if (ch == null || !ch.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
-        }
+    /**
+     * Sends a on-way message to the server.
+     *
+     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     *
+     * @param msg a message
+     */
+    public void sendMessageOneway(final IMessage msg) {
+        Objects.requireNonNull(msg);
 
-        if ("client/thread-pool-statistics".equals(msg.getTopic())) {
-            // answer locally
-            return getClientThreadPoolStatistics();
-        }
+        final Message m = ((Message)msg).withStatus(Status.REQUEST_ONE_WAY);
 
-        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
-
-        Protocol.sendMessage(ch, (Message)msg);
-
-        return oneway ? null : Protocol.receiveMessage(ch);
+        send(m);
     }
 
     /**
@@ -199,38 +196,8 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(unit);
 
-        if (subscription.get()) {
-            throw new VncException("A client in subscription mode cannot send request messages!");
-        }
-
-        if ("client/thread-pool-statistics".equals(msg.getTopic())) {
-            // answer locally
-            return getClientThreadPoolStatistics();
-        }
-
-        try {
-            return sendMessageAsync(msg).get(timeout, unit);
-        }
-        catch(VncException ex) {
-            throw ex;
-        }
-        catch(TimeoutException ex) {
-            throw new com.github.jlangch.venice.TimeoutException(
-                    "Timeout while waiting for IPC response.");
-        }
-        catch(ExecutionException ex) {
-            final Throwable cause = ex.getCause();
-            if (cause instanceof VncException) {
-                throw (VncException)cause;
-            }
-            else {
-                throw new VncException("Error in IPC call", cause);
-            }
-        }
-        catch(InterruptedException ex) {
-            throw new com.github.jlangch.venice.InterruptedException(
-                    "Interrupted while waiting for IPC response.");
-        }
+        final Message m = ((Message)msg).withStatus(Status.REQUEST);
+        return send(m, timeout, unit);
     }
 
     /**
@@ -247,27 +214,10 @@ public class TcpClient implements Closeable {
     public Future<IMessage> sendMessageAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        if (subscription.get()) {
-            throw new VncException("A client in subscription mode cannot send request messages!");
-        }
-
-        final SocketChannel ch = channel.get();
-
-        if (ch == null || !ch.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
-        }
-
-        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
-
-        final Callable<IMessage> task = () -> {
-            Protocol.sendMessage(ch, (Message)msg);
-            return oneway ? null : Protocol.receiveMessage(ch);
-        };
-
-        return mngdExecutor
-                .getExecutor()
-                .submit(task);
-    }
+        // Async messages are never one-way
+        final Message m = ((Message)msg).withStatus(Status.REQUEST);
+        return sendAsync(m);
+   }
 
     /**
      * Puts this client in subscription mode and listens for subscriptions
@@ -367,7 +317,7 @@ public class TcpClient implements Closeable {
             IMessage response = null;
             try (final TcpClient client = new TcpClient(host, port)) {
                 client.open();
-                response = client.sendMessage(
+                response = client.send(
                                     ((Message)msg).withStatus(REQUEST_PUBLISH),
                                     5,
                                     TimeUnit.SECONDS);
@@ -378,8 +328,111 @@ public class TcpClient implements Closeable {
             return response;
         }
         else {
-            return sendMessage(((Message)msg).withStatus(REQUEST_PUBLISH), 5, TimeUnit.SECONDS);
+            return send(((Message)msg).withStatus(REQUEST_PUBLISH), 5, TimeUnit.SECONDS);
         }
+    }
+
+    private IMessage send(final IMessage msg) {
+        Objects.requireNonNull(msg);
+
+        if (subscription.get()) {
+            throw new VncException("A client in subscription mode cannot send request messages!");
+        }
+
+        final SocketChannel ch = channel.get();
+        if (ch == null || !ch.isOpen()) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        final Message localResponse = handleClientLocalMessage(msg);
+        if (localResponse != null) {
+            return localResponse;
+        }
+
+        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
+
+        Protocol.sendMessage(ch, (Message)msg);
+
+        return oneway ? null : Protocol.receiveMessage(ch);
+    }
+
+    private IMessage send(final IMessage msg, final long timeout, final TimeUnit unit) {
+        Objects.requireNonNull(msg);
+        Objects.requireNonNull(unit);
+
+        if (subscription.get()) {
+            throw new VncException("A client in subscription mode cannot send request messages!");
+        }
+
+        final Message localResponse = handleClientLocalMessage(msg);
+        if (localResponse != null) {
+            return localResponse;
+        }
+
+        try {
+            return sendAsync(msg).get(timeout, unit);
+        }
+        catch(VncException ex) {
+            throw ex;
+        }
+        catch(TimeoutException ex) {
+            throw new com.github.jlangch.venice.TimeoutException(
+                    "Timeout while waiting for IPC response.");
+        }
+        catch(ExecutionException ex) {
+            final Throwable cause = ex.getCause();
+            if (cause instanceof VncException) {
+                throw (VncException)cause;
+            }
+            else {
+                throw new VncException("Error in IPC call", cause);
+            }
+        }
+        catch(InterruptedException ex) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                    "Interrupted while waiting for IPC response.");
+        }
+    }
+
+    private Future<IMessage> sendAsync(final IMessage msg) {
+        Objects.requireNonNull(msg);
+
+        if (subscription.get()) {
+            throw new VncException("A client in subscription mode cannot send request messages!");
+        }
+
+        final SocketChannel ch = channel.get();
+        if (ch == null || !ch.isOpen()) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        final Message localResponse = handleClientLocalMessage(msg);
+        if (localResponse != null) {
+            return mngdExecutor
+                    .getExecutor()
+                    .submit(() -> localResponse);
+        }
+
+        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
+
+        final Callable<IMessage> task = () -> {
+            Protocol.sendMessage(ch, (Message)msg);
+            return oneway ? null : Protocol.receiveMessage(ch);
+        };
+
+        return mngdExecutor
+                .getExecutor()
+                .submit(task);
+    }
+
+    private Message handleClientLocalMessage(final IMessage request) {
+        if ("client/thread-pool-statistics".equals(request.getTopic())) {
+            // answer locally
+            return getClientThreadPoolStatistics();
+        }
+
+
+        return null;  // no local messsage
     }
 
     private Message getClientThreadPoolStatistics() {

@@ -208,24 +208,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                               "");
                 }
                 else {
-                    switch (response.getStatus()) {
-                        case REQUEST:
-                        case REQUEST_ONE_WAY:
-                        case REQUEST_PUBLISH:
-                        case REQUEST_SUBSCRIBE:
-                        case REQUEST_START_SUBSCRIPTION:
-                        case RESPONSE_SERVER_ERROR:
-                            // bad
-                            break;
-
-                        case RESPONSE_OK:
-                        case RESPONSE_HANDLER_ERROR:
-                        case RESPONSE_BAD_REQUEST:
-                            // ok
-                            break;
-                    }
-
-                    return (Message)response;
+                    return ((Message)response).withStatus(Status.RESPONSE_OK);
                 }
             }
             else if (isRequestOneWayMsg(request)) {

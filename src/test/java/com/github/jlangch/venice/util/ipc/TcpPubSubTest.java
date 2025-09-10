@@ -51,7 +51,7 @@ public class TcpPubSubTest {
 
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
-                final IMessage request = MessageFactory.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text("test", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 
@@ -101,7 +101,7 @@ public class TcpPubSubTest {
 
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
-                final IMessage request = MessageFactory.text(Status.REQUEST, "test", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text("test", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 

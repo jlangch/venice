@@ -40,13 +40,12 @@ public class IpcFunctionsTest {
                 "  (defn handler [m]                                               \n" +
                 "    (let [cmd    (. m :getText)                                   \n" +
                 "          result (str (eval (read-string cmd)))]                  \n" +
-                "      (ipc/plain-text-message :RESPONSE_OK                        \n" +
-                "                              (. m :getTopic)                     \n" +
+                "      (ipc/plain-text-message (. m :getTopic)                     \n" +
                 "                              result)))                           \n" +
                 "                                                                  \n" +
                 "  (try-with [server (ipc/server 33333 handler)                    \n" +
                 "             client (ipc/client \"localhost\" 33333)]             \n" +
-                "    (-<> (ipc/plain-text-message :REQUEST \"exec\" \"(+ 1 2)\")   \n" +
+                "    (-<> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
                 "         (ipc/send client <>)                                     \n" +
                 "         (. <> :getText))))";
 

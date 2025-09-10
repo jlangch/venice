@@ -33,9 +33,9 @@ import java.util.UUID;
  * ┌───────────────────────────────┐
  * │ ID                            │   by send or publish method
  * ├───────────────────────────────┤
- * │ Status                        │   by Client
+ * │ Status                        │   by send, publish method or by server response processor
  * ├───────────────────────────────┤
- * │ Timestamp                     │   by send or publish method
+ * │ Timestamp                     │   by message creator
  * ├───────────────────────────────┤
  * │ Topic                         │   by Client
  * ├───────────────────────────────┤
@@ -104,12 +104,5 @@ public interface IMessage {
      * @return <code>true</code> if this message is a binary message, else <code>false</code>
      */
     boolean isBinaryMessage();
-
-    /**
-     * Creates an echo response message with the status RESPONSE_OK for this message
-     *
-     * @return the echo response message
-     */
-    IMessage asEchoResponse();
 
 }

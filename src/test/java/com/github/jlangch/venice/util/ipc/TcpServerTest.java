@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
 public class TcpServerTest {
@@ -45,7 +44,7 @@ public class TcpServerTest {
     public void test_start_stop() throws Exception {
         final TcpServer server = new TcpServer(33333);
 
-        final Function<IMessage,IMessage> handler = req -> { return null; };
+        final Function<IMessage,IMessage> handler = req -> null;
 
         server.start(handler);
 
@@ -63,7 +62,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpServer server2 = new TcpServer(33333);
 
-        final Function<IMessage,IMessage> handler = req -> { return null; };
+        final Function<IMessage,IMessage> handler = req -> null;
 
         try {
             server.start(handler);
@@ -107,7 +106,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<IMessage,IMessage> echoHandler = req -> { sleep(1000); return ((Message)req).asEchoResponse(); };
+        final Function<IMessage,IMessage> echoHandler = req -> { sleep(1000); return req; };
 
         server.start(echoHandler);
 
@@ -141,9 +140,7 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<IMessage,IMessage> echoHandler = req -> ((Message)req).asEchoResponse();
-
-        server.start(echoHandler);
+        server.start(TcpServer.echoHandler());
 
         sleep(300);
 
@@ -187,12 +184,12 @@ public class TcpServerTest {
         client.open();
 
         try {
-            final IMessage request1 = MessageFactory.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
+            final IMessage request1 = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
 
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(Status.RESPONSE_OK, response1.getStatus());
 
-            final IMessage request2 = MessageFactory.text(Status.REQUEST, "server/status", "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text("server/status", "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(Status.RESPONSE_OK, response2.getStatus());
@@ -218,12 +215,12 @@ public class TcpServerTest {
         client.open();
 
         try {
-            final IMessage request1 = MessageFactory.text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
+            final IMessage request1 = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
 
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(Status.RESPONSE_OK, response1.getStatus());
 
-            final IMessage request2 = MessageFactory.text(Status.REQUEST, "server/thread-pool-statistics", "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text("server/thread-pool-statistics", "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(Status.RESPONSE_OK, response2.getStatus());

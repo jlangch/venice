@@ -71,15 +71,15 @@ public class IPCFunctions {
                         "The server must be closed after use!                \n\n" +
                         "*Arguments:* \n\n" +
                         "| port p    | The TCP/IP port |\n" +
-                        "| handler h | A single argument handler function. E.g.: a simple echo handler: `(fn [m] (. m :asEchoResponse))`. The handler receives the request messsage and returns a response message. In case of a one-way request message the handler returns `nil`.|\n\n" +
+                        "| handler h | A single argument handler function. E.g.: a simple echo handler: `(fn [m] m)`. The handler receives the request messsage and returns a response message. In case of a one-way request message the handler returns `nil`.|\n\n" +
                         "*Options:* \n\n" +
                         "| :max-connections n | The number of the max connections the server can handle in parallel. Defaults to 20 |\n")
                     .examples(
                         "(do                                                                 \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                         \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                     \n" +
+                        "   (defn echo-handler [m] m)                                        \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)                \n" +
                         "              client (ipc/client \"localhost\" 33333)]              \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")      \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")               \n" +
                         "          ((fn [m] (println \"request: \" (ipc/message->map m)) m)) \n" +
                         "          (ipc/send client)                                         \n" +
                         "          (ipc/message->map)                                        \n" +
@@ -160,10 +160,10 @@ public class IPCFunctions {
                         "| :max-parallel-tasks n | The max number of parallel tasks (e.g. sending async messages) the client can handle. Defaults to 10 |\n")
                     .examples(
                         "(do                                                                 \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                         \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                     \n" +
+                        "   (defn echo-handler [m] m)                                        \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)                \n" +
                         "              client (ipc/client \"localhost\" 33333)]              \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")      \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")               \n" +
                         "          ((fn [m] (println \"request: \" (ipc/message->map m)) m)) \n" +
                         "          (ipc/send client)                                         \n" +
                         "          (ipc/message->map)                                        \n" +
@@ -232,8 +232,8 @@ public class IPCFunctions {
                         "Return `true` if the server or client is running else `false`")
                     .examples(
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
                         "     (println \"Server running:\" (ipc/running? server))           \n" +
                         "     (println \"Client running:\" (ipc/running? client))))         ")
@@ -277,15 +277,16 @@ public class IPCFunctions {
                     .examples(
                         ";; prefer try-with-resources to safely close server and client     \n" +
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
                         "     (println \"Server running:\" (ipc/running? server))           \n" +
                         "     (println \"Client running:\" (ipc/running? client))))         ",
+
                         ";; explicitly closing server and client                            \n" +
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (let [server (ipc/server 33333 handler)                         \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (let [server (ipc/server 33333 echo-handler)                    \n" +
                         "         client (ipc/client \"localhost\" 33333)]                  \n" +
                         "     (println \"Server running:\" (ipc/running? server))           \n" +
                         "     (println \"Client running:\" (ipc/running? client))           \n" +
@@ -348,10 +349,10 @@ public class IPCFunctions {
                         ";; echo handler                                                    \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"               \n" +
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "          (ipc/send client)                                        \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ",
@@ -362,12 +363,12 @@ public class IPCFunctions {
                         "   (defn handler [m]                                               \n" +
                         "     (let [data   (json/read-str (. m :getText))                   \n" +
                         "           result (json/write-str { \"z\" (+ (get data \"x\") (get data \"y\"))})]  \n" +
-                        "       (ipc/text-message :RESPONSE_OK (. m :getTopic)              \n" +
+                        "       (ipc/text-message (. m :getTopic)                           \n" +
                         "                         \"application/json\" :UTF-8               \n" +
                         "                         result)))                                 \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/text-message :REQUEST \"test\"                      \n" +
+                        "     (->> (ipc/text-message \"test\"                               \n" +
                         "                            \"application/json\" :UTF-8            \n" +
                         "                            (json/write-str {\"x\" 100 \"y\" 200}))\n" +
                         "          (ipc/send client 2000)                                   \n" +
@@ -380,12 +381,11 @@ public class IPCFunctions {
                         "   (defn handler [m]                                               \n" +
                         "     (let [cmd    (. m :getText)                                   \n" +
                         "           result (str (eval (read-string cmd)))]                  \n" +
-                        "       (ipc/plain-text-message :RESPONSE_OK                        \n" +
-                        "                               (. m :getTopic)                     \n" +
+                        "       (ipc/plain-text-message (. m :getTopic)                     \n" +
                         "                               result)))                           \n" +
                         "   (try-with [server (ipc/server 33333 handler)                    \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"exec\" \"(+ 1 2)\")   \n" +
+                        "     (->> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
                         "          (ipc/send client)                                        \n" +
                         "          (ipc/message->map)                                       \n" +
                         "          (println))))                                             ")
@@ -424,6 +424,57 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction ipc_send_oneway =
+        new VncFunction(
+                "ipc/send-oneway",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/send-oneway client message)")
+                    .doc(
+                        "Sends a one-way message to the server the client is associated with. \n\n" +
+                        "Does not wait for response and returns always `nil`.")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "              client (ipc/client \"localhost\" 33333)]             \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "          (ipc/send-oneway client))))                              ")
+                 .seeAlso(
+                     "ipc/client",
+                     "ipc/server",
+                     "ipc/close",
+                     "ipc/running?",
+                     "ipc/send-async",
+                     "ipc/text-message",
+                     "ipc/plain-text-message",
+                     "ipc/binary-message",
+                     "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                final boolean hasTimeout =  args.size() > 2;
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final long timeout = hasTimeout ? Coerce.toVncLong(args.nth(1)).toJavaLong() : 0;
+                final IMessage request = Coerce.toVncJavaObject(args.nth(hasTimeout ? 2 : 1), IMessage.class);
+
+                if (timeout <= 0) {
+                    final IMessage response = client.sendMessage(request);
+                    return response == null ? Nil : new VncJavaObject(response);
+                }
+                else {
+                    final IMessage response = client.sendMessage(request, timeout, TimeUnit.MILLISECONDS);
+                    return response == null ? Nil : new VncJavaObject(response);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction ipc_send_async =
         new VncFunction(
@@ -438,10 +489,10 @@ public class IPCFunctions {
                         "Returns a future to get the server's response message.")
                     .examples(
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "          (ipc/send-async client)                                  \n" +
                         "          (deref)                                                  \n" +
                         "          (ipc/message->map)                                       \n" +
@@ -486,7 +537,7 @@ public class IPCFunctions {
                         "specified topic.")
                     .examples(
                         "(do                                                                             \n" +
-                        "   (defn server-echo-handler [m] (. m :asEchoResponse))                         \n" +
+                        "   (defn server-echo-handler [m] m)                                             \n" +
                         "   (defn client-subscribe-handler [m] (println \"SUB:\" (ipc/message->map m)))  \n" +
                         "                                                                                \n" +
                         "   (try-with [server     (ipc/server 33333 server-echo-handler)                 \n" +
@@ -496,7 +547,7 @@ public class IPCFunctions {
                         "     (ipc/subscribe client-sub \"test\" client-subscribe-handler)               \n" +
                         "                                                                                \n" +
                         "     ;; client 'client-pub' publishes a 'test' message                          \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")                  \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
                         "          (ipc/publish client-pub))                                             \n" +
                         "                                                                                \n" +
                         "     ;; print server status and statistics                                      \n" +
@@ -556,7 +607,7 @@ public class IPCFunctions {
                         "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
                         "(do                                                                             \n" +
-                        "   (defn server-echo-handler [m] (. m :asEchoResponse))                         \n" +
+                        "   (defn server-echo-handler [m] m)                                             \n" +
                         "   (defn client-subscribe-handler [m] (println \"SUB:\" (ipc/message->map m)))  \n" +
                         "                                                                                \n" +
                         "   (try-with [server     (ipc/server 33333 server-echo-handler)                 \n" +
@@ -566,7 +617,7 @@ public class IPCFunctions {
                         "     (ipc/subscribe client-sub \"test\" client-subscribe-handler)               \n" +
                         "                                                                                \n" +
                         "     ;; client 'client-pub' publishes a 'test' message                          \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")                  \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
                         "          (ipc/publish client-pub))                                             \n" +
                         "                                                                                \n" +
                         "     ;; print server status and statistics                                      \n" +
@@ -609,10 +660,10 @@ public class IPCFunctions {
                         "connected to.")
                     .examples(
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "          (ipc/send client))                                       \n" +
                         "     (println (ipc/server-status client))))                        ")
                  .seeAlso(
@@ -636,7 +687,6 @@ public class IPCFunctions {
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
-                                                Status.REQUEST,
                                                 "server/status",
                                                 "appliaction/json",
                                                 "UTF-8",
@@ -673,10 +723,10 @@ public class IPCFunctions {
                         "connected to.")
                     .examples(
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "          (ipc/send client))                                       \n" +
                         "     (println (ipc/server-thread-pool-statistics client))))        ")
                  .seeAlso(
@@ -700,7 +750,6 @@ public class IPCFunctions {
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
-                                                Status.REQUEST,
                                                 "server/thread-pool-statistics",
                                                 "appliaction/json",
                                                 "UTF-8",
@@ -736,10 +785,10 @@ public class IPCFunctions {
                         "Returns the client's thread pool statistics.")
                     .examples(
                         "(do                                                                \n" +
-                        "   (defn handler [m] (. m :asEchoResponse))                        \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")     \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "          (ipc/send client))                                       \n" +
                         "     (println (ipc/client-thread-pool-statistics client))))        ")
                  .seeAlso(
@@ -762,7 +811,6 @@ public class IPCFunctions {
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
-                                                Status.REQUEST,
                                                 "client/thread-pool-statistics",
                                                 "appliaction/json",
                                                 "UTF-8",
@@ -793,19 +841,11 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/text-message status topic mimetype charset text)")
+                        "(ipc/text-message topic mimetype charset text)")
                     .doc(
-                        "Creates a text message \n\n" +
-                        "Clients use these status to send requests to ther server:\n\n" +
-                        "| :REQUEST         | send a request and wait for a server response |\n" +
-                        "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
-                        "Servers use these status to send reponses back to the client: \n\n" +
-                        "| :RESPONSE_OK            | processing successful |\n" +
-                        "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
-                        "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
-                        "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
+                        "Creates a text message")
                     .examples(
-                        "(->> (ipc/text-message :REQUEST \"test\"                 \n" +
+                        "(->> (ipc/text-message \"test\"                         \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
@@ -823,19 +863,17 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 5);
+                ArityExceptions.assertArity(this, args, 4);
 
-                final VncKeyword status = Coerce.toVncKeyword(args.nth(0));
-                final VncString topic = Coerce.toVncString(args.nth(1));
-                final VncString mimetype = Coerce.toVncString(args.nth(2));
-                final VncKeyword charset = Coerce.toVncKeyword(args.nth(3));
-                final VncVal textVal = args.nth(4);
+                final VncString topic = Coerce.toVncString(args.nth(0));
+                final VncString mimetype = Coerce.toVncString(args.nth(1));
+                final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
+                final VncVal textVal = args.nth(3);
                 final String text = Types.isVncString(textVal)
                                         ? ((VncString)textVal).getValue()
                                         : textVal.toString(true);  // aggressively convert to string
 
                 final IMessage msg = MessageFactory.text(
-                                        convertToStatus(status),
                                         topic.getValue(),
                                         mimetype.getValue(),
                                         charset.getSimpleName(),
@@ -856,19 +894,11 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/plain-text-message status topic text)")
                     .doc(
-                        "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n" +
-                        "Clients use these status to send requests to ther server:\n\n" +
-                        "| :REQUEST         | send a request and wait for a server response |\n" +
-                        "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
-                        "Servers use these status to send reponses back to the client: \n\n" +
-                        "| :RESPONSE_OK            | processing successful |\n" +
-                        "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
-                        "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
-                        "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
+                        "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.")
                     .examples(
-                        "(->> (ipc/plain-text-message :REQUEST \"test\" \"hello\")  \n" +
-                        "     (ipc/message->map)                                    \n" +
-                        "     (println))                                            ")
+                        "(->> (ipc/plain-text-message \"test\" \"hello\")  \n" +
+                        "     (ipc/message->map)                           \n" +
+                        "     (println))                                   ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -883,17 +913,15 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 2);
 
-                final VncKeyword status = Coerce.toVncKeyword(args.nth(0));
-                final VncString topic = Coerce.toVncString(args.nth(1));
-                final VncVal textVal = args.nth(2);
+                final VncString topic = Coerce.toVncString(args.nth(0));
+                final VncVal textVal = args.nth(1);
                 final String text = Types.isVncString(textVal)
                                         ? ((VncString)textVal).getValue()
                                         : textVal.toString(true);  // aggressively convert to string
 
                 final IMessage msg = MessageFactory.text(
-                                        convertToStatus(status),
                                         topic.getValue(),
                                         "text/plain",
                                         "UTF-8",
@@ -914,19 +942,11 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/binary-message status topic mimetype data)")
                     .doc(
-                        "Creates a binary message.\n\n" +
-                        "Clients use these status to send requests to ther server:\n\n" +
-                        "| :REQUEST         | send a request and wait for a server response |\n" +
-                        "| :REQUEST_ONE_WAY | send a one-way request, the server does not send a response |\n\n" +
-                        "Servers use these status to send reponses back to the client: \n\n" +
-                        "| :RESPONSE_OK            | processing successful |\n" +
-                        "| :RESPONSE_SERVER_ERROR  | internal server error, the request can not be processed |\n" +
-                        "| :RESPONSE_HANDLER_ERROR | error while processing the request by the handler |\n" +
-                        "| :RESPONSE_BAD_REQUEST   | bad request data |\n")
+                        "Creates a binary message.")
             .examples(
-                        "(->> (ipc/binary-message :REQUEST \"test\"               \n" +
-                        "                       \"application/octet-stream\"      \n" +
-                        "                       (bytebuf [0 1 2 3 4 5 6 7]))      \n" +
+                        "(->> (ipc/binary-message \"test\"                        \n" +
+                        "                         \"application/octet-stream\"    \n" +
+                        "                         (bytebuf [0 1 2 3 4 5 6 7]))    \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
@@ -943,15 +963,13 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4);
+                ArityExceptions.assertArity(this, args, 3);
 
-                final VncKeyword status = Coerce.toVncKeyword(args.nth(0));
-                final VncString topic = Coerce.toVncString(args.nth(1));
-                final VncString mimetype = Coerce.toVncString(args.nth(2));
-                final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(3));
+                final VncString topic = Coerce.toVncString(args.nth(0));
+                final VncString mimetype = Coerce.toVncString(args.nth(1));
+                final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(2));
 
                 final IMessage msg = MessageFactory.binary(
-                                        convertToStatus(status),
                                         topic.getValue(),
                                         mimetype.getValue(),
                                         data.getBytes());
@@ -973,7 +991,7 @@ public class IPCFunctions {
                     .doc(
                         "Converts a Java IPC `Message` to a Venice map")
                     .examples(
-                        "(->> (ipc/text-message :REQUEST \"test\"                 \n" +
+                        "(->> (ipc/text-message \"test\"                          \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map))                                 ")
                     .seeAlso(
@@ -1030,15 +1048,6 @@ public class IPCFunctions {
                     false).read();
     }
 
-    private static Status convertToStatus(final VncKeyword status) {
-        try {
-            return Status.valueOf(status.getSimpleName());
-        }
-        catch(Exception ex) {
-            throw new VncException("Invalid IPC message status " + status);
-        }
-    }
-
     private static class FutureWrapper implements Future<VncVal> {
         public FutureWrapper(final Future<IMessage> future) {
             this.delegate = future;
@@ -1091,6 +1100,7 @@ public class IPCFunctions {
 
                     .add(ipc_send)
                     .add(ipc_send_async)
+                    .add(ipc_send_oneway)
 
                     .add(ipc_publish)
                     .add(ipc_subscribe)

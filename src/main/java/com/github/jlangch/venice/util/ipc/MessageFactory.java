@@ -24,7 +24,6 @@ package com.github.jlangch.venice.util.ipc;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
@@ -33,16 +32,6 @@ public abstract class MessageFactory {
     /**
      * Create a text message
      *
-     * <p>Acceptable status:
-     * <ul>
-     *   <li>REQUEST - to create a request text message</li>
-     *   <li>REQUEST_ONE_WAY - to create a request text message with one-way send</li>
-     *   <li>RESPONSE_OK - to create an ok response text message from a TcpServer handler</li>
-     *   <li>RESPONSE_BAD_REQUEST - to create an error response text message from a TcpServer handler</li>
-     *   <li>RESPONSE_HANDLER_ERROR - to create an error response text message from a TcpServer handler</li>
-     * </ul>
-     *
-     * @param status the message's status
      * @param topic a topic
      * @param mimetype the mimetype of the message's payload data
      * @param charset the charset of the message's payload data
@@ -50,22 +39,20 @@ public abstract class MessageFactory {
      * @return the message
      */
     public static IMessage text(
-            final Status status,
             final String topic,
             final String mimetype,
             final String charset,
             final String data
     ) {
-        Objects.requireNonNull(status);
         Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(data);
 
-        validateMessageStatus(status);
-
         return new Message(
-                status,
+                Status.REQUEST,  // just a placeholder, will be set accordingly by
+                                 // the TcpClient/TcpServer based on the request/response
+                                 // context
                 topic,
                 mimetype,
                 charset,
@@ -76,36 +63,24 @@ public abstract class MessageFactory {
     /**
      * Create a binary message
      *
-     * <p>Acceptable status:
-     * <ul>
-     *   <li>REQUEST - to create a request binary message</li>
-     *   <li>REQUEST_ONE_WAY - to create a request binary message with one-way send</li>
-     *   <li>RESPONSE_OK - to create an ok response binary message from a TcpServer handler</li>
-     *   <li>RESPONSE_BAD_REQUEST - to create an error response binary message from a TcpServer handler</li>
-     *   <li>RESPONSE_HANDLER_ERROR - to create an error response binary message from a TcpServer handler</li>
-     * </ul>
-     *
-     * @param status the message's status
      * @param topic a topic
      * @param mimetype the mimetype of the message's payload data
      * @param data the binary payload data
      * @return the message
      */
     public static IMessage binary(
-            final Status status,
             final String topic,
             final String mimetype,
             final byte[] data
     ) {
-        Objects.requireNonNull(status);
         Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
 
-        validateMessageStatus(status);
-
         return new Message(
-                status,
+                Status.REQUEST,  // just a placeholder, will be set accordingly by
+                                 // the TcpClient/TcpServer based on the request/response
+                                 // context
                 topic,
                 mimetype,
                 null,
@@ -114,7 +89,7 @@ public abstract class MessageFactory {
 
 
     /**
-     * Create a simple hello request message (with status 'REQUEST').
+     * Create a simple hello message.
      *
      * <ul>
      *   <li>topic: "hello"</li>
@@ -125,24 +100,7 @@ public abstract class MessageFactory {
      * @return the hello message
      */
     public static IMessage hello() {
-        return text(Status.REQUEST, "hello", "text/plain", "UTF-8", "Hello!");
+        return text("hello", "text/plain", "UTF-8", "Hello!");
     }
 
-
-    private static void validateMessageStatus(final Status status) {
-        if (!(status == Status.REQUEST
-              || status == Status.REQUEST_ONE_WAY
-              || status == Status.RESPONSE_OK
-              || status == Status.RESPONSE_BAD_REQUEST
-              || status == Status.RESPONSE_HANDLER_ERROR)
-        ) {
-            throw new VncException(
-                    String.format(
-                        "Unacceptable message status '%s'! " +
-                        "Use 'REQUEST', 'REQUEST_ONE_WAY', " +
-                        "'RESPONSE_OK', 'RESPONSE_BAD_REQUEST', " +
-                        "or 'RESPONSE_HANDLER_ERROR'.",
-                        status));
-        }
-    }
 }
