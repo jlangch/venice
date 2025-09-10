@@ -29,21 +29,21 @@ import java.util.UUID;
  * Defines the messages that can be exchanged between a TcpClient and a TcpServer.
  *
  * <pre>
- *           Message
+ *           Message                         set by
  * ┌───────────────────────────────┐
- * │ ID                            │
+ * │ ID                            │   by send or publish method
  * ├───────────────────────────────┤
- * │ Status                        │
+ * │ Status                        │   by Client
  * ├───────────────────────────────┤
- * │ Timestamp                     │
+ * │ Timestamp                     │   by send or publish method
  * ├───────────────────────────────┤
- * │ Topic                         │
+ * │ Topic                         │   by Client
  * ├───────────────────────────────┤
- * │ Payload Mimetype              │
+ * │ Payload Mimetype              │   by Client
  * ├───────────────────────────────┤
- * │ Payload Charset (if text)     │
+ * │ Payload Charset               │   by Client if payload data is a string else null
  * ├───────────────────────────────┤
- * │ Payload data                  │
+ * │ Payload data                  │   by Client
  * └───────────────────────────────┘
  * </pre>
  */
@@ -106,9 +106,9 @@ public interface IMessage {
     boolean isBinaryMessage();
 
     /**
-     * Returns an echo response for this message with the status RESPONSE_OK
+     * Creates an echo response message with the status RESPONSE_OK for this message
      *
-     * @return the echo response
+     * @return the echo response message
      */
     IMessage asEchoResponse();
 

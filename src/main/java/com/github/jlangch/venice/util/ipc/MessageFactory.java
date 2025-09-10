@@ -129,17 +129,6 @@ public abstract class MessageFactory {
     }
 
 
-    /**
-     * Create an echo response for a request message.
-     *
-     * @param request the request message
-     * @return the response message
-     */
-    public static IMessage asEchoMessage(final IMessage request) {
-        return ((Message)request).asEchoResponse();
-    }
-
-
     private static void validateMessageStatus(final Status status) {
         if (!(status == Status.REQUEST
               || status == Status.REQUEST_ONE_WAY
