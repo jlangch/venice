@@ -31,11 +31,11 @@ import java.util.UUID;
  * <pre>
  *           Message                         set by
  * ┌───────────────────────────────┐
- * │ ID                            │   by send or publish method
+ * │ ID                            │   by send, publish/subscribe method
  * ├───────────────────────────────┤
- * │ Message Type                  │   by send, publish method
+ * │ Message Type                  │   by send, publish/subscribe method
  * ├───────────────────────────────┤
- * │ Oneway                        │   by send or publish method
+ * │ Oneway                        │   by send, publish/subscribe method
  * ├───────────────────────────────┤
  * │ Response Status               │   by server response processor
  * ├───────────────────────────────┤

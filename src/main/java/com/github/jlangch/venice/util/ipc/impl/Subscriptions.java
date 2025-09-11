@@ -21,12 +21,11 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
-import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 public class Subscriptions {
@@ -34,44 +33,39 @@ public class Subscriptions {
     public Subscriptions() {
     }
 
-
-    public void addSubscription(final String topic, final IPublisher publisher) {
-        subscriptions.compute(publisher, (k,v) -> {
-            if (v == null) {
-                return toSet(topic);
-            }
-            else {
-                v.add(topic);
-                return v;
-            }});
+    public void addSubscription(
+            final String topic,
+            final IPublisher publisher
+    ) {
+        final HashSet<String> topics = new HashSet<>();
+        topics.add(topic);
+        subscriptions.put(publisher, topics);
     }
 
-    public void removeSubscription(final String topic, final IPublisher publisher) {
-        subscriptions.compute(publisher, (k,v) -> {
-            if (v == null) {
-                return toSet();
-            }
-            else {
-                v.remove(topic);
-                return v;
-            }});
+    public void addSubscription(
+            final Set<String> topics,
+            final IPublisher publisher
+    ) {
+        subscriptions.put(publisher, topics);
     }
 
-    public void removePublisher(final IPublisher publisher) {
+    public void removeSubscriptions(
+            final IPublisher publisher
+    ) {
         subscriptions.remove(publisher);
     }
 
     public void publish(final Message msg) {
         final String topic = msg.getTopic();
 
-        final List<IPublisher> publishers = subscriptions
-                                                .entrySet()
-                                                .stream()
-                                                .filter(e -> e.getValue().contains(topic))
-                                                .map(e -> e.getKey())
-                                                .collect(Collectors.toList());
+        final List<IPublisher> publishers = new ArrayList<>(subscriptions.keySet());
 
-        publishers.forEach(p -> p.publish(msg));
+        publishers.forEach(p -> {
+            final Set<String> topics = subscriptions.get(p);
+            if (topics != null && topics.contains(topic)) {
+                p.publish(msg);
+            }
+        });
     }
 
     public int getClientSubscriptionCount() {
@@ -83,5 +77,6 @@ public class Subscriptions {
     }
 
 
+    // subscriptions: publisher -> topics
     private final HashMap<IPublisher, Set<String>> subscriptions = new HashMap<>();
 }

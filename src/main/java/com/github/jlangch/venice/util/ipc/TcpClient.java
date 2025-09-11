@@ -200,8 +200,6 @@ public class TcpClient implements Closeable {
      * Sends a message asynchronously to the server and returns a Future
      * for the server's response message.
      *
-     * <p>Returns <code>null</code> if a one way message was sent
-     *
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
      *
      * @param msg  a message
@@ -210,13 +208,12 @@ public class TcpClient implements Closeable {
     public Future<IMessage> sendMessageAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        // Async messages are never one-way
         final Message m = ((Message)msg).withType(MessageType.REQUEST);
         return sendAsync(m);
    }
 
     /**
-     * Subscribes for a topics.
+     * Subscribe for a topic.
      *
      * <p>Puts this client in subscription mode and listens for subscriptions
      * on the specified topic.
@@ -294,39 +291,7 @@ public class TcpClient implements Closeable {
             }
         }
         else {
-            return sendThroughTemporaryClient(subscribeMsg, 5, TimeUnit.SECONDS);
-        }
-    }
-
-    /**
-     * Unsubscribe for topic.
-     *
-     * @param topic  a topic
-     * @return the response for the subscribe
-     */
-    public IMessage unsubscribe(final String topic) {
-        Objects.requireNonNull(topic);
-
-        final SocketChannel ch = channel.get();
-
-        if (ch == null || !ch.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
-        }
-
-        final Message unsubscribeMsg = new Message(
-                MessageType.UNSUBSCRIBE,
-                ResponseStatus.NULL,
-                false,
-                topic,
-                "text/plain",
-                "UTF-8",
-                endpointId.getBytes(Charset.forName("UTF-8")));
-
-        if (subscription.get()) {
-            return sendThroughTemporaryClient(unsubscribeMsg, 5, TimeUnit.SECONDS);
-       }
-        else {
-            return send(unsubscribeMsg, 5, TimeUnit.SECONDS);
+            throw new VncException("The client is already in subscription mode!");
         }
     }
 
@@ -342,13 +307,15 @@ public class TcpClient implements Closeable {
     public IMessage publish(final IMessage msg) {
         Objects.requireNonNull(msg);
 
+        final Message m = ((Message)msg).withType(MessageType.PUBLISH);
+
         if (subscription.get()) {
             // if this client is in subscription mode publish this message
             // through another client!
-            return sendThroughTemporaryClient(msg, 5, TimeUnit.SECONDS);
+            return sendThroughTemporaryClient(m, 5, TimeUnit.SECONDS);
         }
         else {
-            return send(((Message)msg).withType(MessageType.PUBLISH), 5, TimeUnit.SECONDS);
+            return send(m, 5, TimeUnit.SECONDS);
         }
     }
 
@@ -452,7 +419,7 @@ public class TcpClient implements Closeable {
         IMessage response = null;
         try (final TcpClient client = new TcpClient(host, port)) {
             client.open();
-            response = client.send(((Message)msg).withType(MessageType.PUBLISH), timeout, unit);
+            response = client.send(msg, timeout, unit);
         }
         catch(IOException ex) {
             // ignore client close exception

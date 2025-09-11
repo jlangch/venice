@@ -95,20 +95,30 @@ public class TcpPubSubTest {
         final List<IMessage> subMessages3 = new ArrayList<>();
 
         try {
-            clientSub1.subscribe("test", m -> subMessages1.add(m));
-            clientSub2.subscribe("test", m -> subMessages2.add(m));
-            clientSub3.subscribe("test", m -> subMessages3.add(m));
+            clientSub1.subscribe("alpha", m -> subMessages1.add(m));
 
+            clientSub2.subscribe("beta", m -> subMessages2.add(m));
+
+            clientSub3.subscribe("gamma", m -> subMessages3.add(m));
+
+            // 10x 'alpha'
             for(int ii=0; ii<10; ii++) {
-                final String msg = "Hello " + ii;
-                final IMessage request = MessageFactory.text("test", "text/plain", "UTF-8", msg);
+                final String msg = "Hello alpha " + ii;
+                final IMessage request = MessageFactory.text("alpha", "text/plain", "UTF-8", msg);
+                clientPub.publish(request);
+            }
+
+            // 5 'beta'
+            for(int ii=0; ii<5; ii++) {
+                final String msg = "Hello beta " + ii;
+                final IMessage request = MessageFactory.text("beta", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 
             sleep(200);
 
-            assertEquals(13, server.getMessageCount());
-            assertEquals(30, server.getPublishCount());
+            assertEquals(18, server.getMessageCount());
+            assertEquals(15, server.getPublishCount());
             assertEquals( 0, server.getPublishDiscardCount());
         }
         finally {
@@ -123,13 +133,15 @@ public class TcpPubSubTest {
         }
 
         assertEquals(10, subMessages1.size());
-        assertEquals(10, subMessages2.size());
-        assertEquals(10, subMessages3.size());
+        assertEquals( 5, subMessages2.size());
+        assertEquals( 0, subMessages3.size());
 
         for(int ii=0; ii<10; ii++) {
-            assertEquals("Hello " + ii, subMessages1.get(ii).getText());
-            assertEquals("Hello " + ii, subMessages2.get(ii).getText());
-            assertEquals("Hello " + ii, subMessages3.get(ii).getText());
+            assertEquals("Hello alpha " + ii, subMessages1.get(ii).getText());
+        }
+
+        for(int ii=0; ii<5; ii++) {
+            assertEquals("Hello beta " + ii, subMessages2.get(ii).getText());
         }
     }
 

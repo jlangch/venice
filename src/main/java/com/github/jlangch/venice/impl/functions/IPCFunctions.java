@@ -92,7 +92,6 @@ public class IPCFunctions {
                         "ipc/send-async",
                         "ipc/publish",
                         "ipc/subscribe",
-                        "ipc/unsubscribe",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/binary-message",
@@ -177,7 +176,6 @@ public class IPCFunctions {
                         "ipc/send-async",
                         "ipc/publish",
                         "ipc/subscribe",
-                        "ipc/unsubscribe",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/binary-message",
@@ -558,7 +556,6 @@ public class IPCFunctions {
                         "     ;; print server status and statistics                                      \n" +
                         "     (println (ipc/server-status client-2))))                                   ")
                  .seeAlso(
-                     "ipc/unsubscribe",
                      "ipc/publish",
                      "ipc/client",
                      "ipc/server",
@@ -600,61 +597,6 @@ public class IPCFunctions {
         };
 
 
-    public static VncFunction ipc_unsubscribe =
-        new VncFunction(
-                "ipc/unsubscribe",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(ipc/unsubscribe client topic)")
-                    .doc(
-                        "Unsubscribe from a topic.")
-                    .examples(
-                        "(do                                                                             \n" +
-                        "   (defn server-echo-handler [m] m)                                             \n" +
-                        "   (defn client-subscribe-handler [m] (println \"SUB:\" (ipc/message->map m)))  \n" +
-                        "                                                                                \n" +
-                        "   (try-with [server   (ipc/server 33333 server-echo-handler)                   \n" +
-                        "              client-1 (ipc/client \"localhost\" 33333)                         \n" +
-                        "              client-2 (ipc/client \"localhost\" 33333)]                        \n" +
-                        "     ;; client 'client-1' subscribes to 'test' messages                         \n" +
-                        "     (ipc/subscribe client-1 \"test\" client-subscribe-handler)                 \n" +
-                        "                                                                                \n" +
-                        "     ;; client 'client-2' publishes a 'test' message                            \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
-                        "          (ipc/publish client-2))                                               \n" +
-                        "                                                                                \n" +
-                        "     (ipc/unsubscribe client-1 \"test\")                                        \n" +
-                        "                                                                                \n" +
-                        "     ;; print server status and statistics                                      \n" +
-                        "     (println (ipc/server-status client-2))))                                   ")
-                 .seeAlso(
-                     "ipc/subscribe",
-                     "ipc/publish",
-                     "ipc/client",
-                     "ipc/server",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
-
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
-                final String topic = Coerce.toVncString(args.nth(1)).getValue();
-
-                final IMessage response = client.unsubscribe(topic);
-
-                return new VncJavaObject(response);
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-
     public static VncFunction ipc_publish =
         new VncFunction(
                 "ipc/publish",
@@ -685,7 +627,6 @@ public class IPCFunctions {
                         "     (println (ipc/server-status client-2))))                                   ")
                  .seeAlso(
                      "ipc/subscribe",
-                     "ipc/unsubscribe",
                      "ipc/client",
                      "ipc/server",
                      "ipc/text-message",
@@ -1168,7 +1109,6 @@ public class IPCFunctions {
 
                     .add(ipc_publish)
                     .add(ipc_subscribe)
-                    .add(ipc_unsubscribe)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)

@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -262,11 +263,21 @@ public class Message implements IMessage {
        sb.append(String.format(
                    "%s %s",
                    padRight("Data:", 12),
-                   formatDataLen(data.length)));
+                   formatData()));
 
        return sb.toString();
     }
 
+
+    private String formatData() {
+       if (isTextMessage()) {
+           final String text = getText();
+           return StringUtil.truncate(text, 80, "... (" + text.length() + ")");
+       }
+       else {
+           return formatDataLen(data.length);
+       }
+    }
 
     private static String formatDataLen(final int len) {
         if (len < 10 * 1024) {
