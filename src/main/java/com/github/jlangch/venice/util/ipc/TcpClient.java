@@ -27,6 +27,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +41,7 @@ import java.util.function.Consumer;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 import com.github.jlangch.venice.nanojson.JsonWriter;
@@ -228,6 +230,29 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(handler);
 
+        return subscribe(CollectionUtil.toSet(topic), handler);
+    }
+
+    /**
+     * Subscribe for a set of topics.
+     *
+     * <p>Puts this client in subscription mode and listens for subscriptions
+     * on the specified topic.
+     *
+     * <p>throws an exception if the client could not put into subscription mode
+     *
+     * @param topics  a set of topics
+     * @param handler the subscription message handler
+     * @return the response for the subscribe
+     */
+    public IMessage subscribe(final Set<String> topics, final Consumer<IMessage> handler) {
+        Objects.requireNonNull(topics);
+        Objects.requireNonNull(handler);
+
+        if (topics.isEmpty()) {
+            throw new VncException("A subscription topic set must not be empty!");
+        }
+
         final SocketChannel ch = channel.get();
 
         if (ch == null || !ch.isOpen()) {
@@ -238,7 +263,7 @@ public class TcpClient implements Closeable {
                 MessageType.SUBSCRIBE,
                 ResponseStatus.NULL,
                 false,
-                topic,
+                String.join(",", topics),
                 "text/plain",
                 "UTF-8",
                 endpointId.getBytes(Charset.forName("UTF-8")));

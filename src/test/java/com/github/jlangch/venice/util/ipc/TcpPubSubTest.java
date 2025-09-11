@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class TcpPubSubTest {
         try {
             clientSub1.subscribe("alpha", m -> subMessages1.add(m));
 
-            clientSub2.subscribe("beta", m -> subMessages2.add(m));
+            clientSub2.subscribe(toSet("alpha", "beta"), m -> subMessages2.add(m));
 
             clientSub3.subscribe("gamma", m -> subMessages3.add(m));
 
@@ -118,7 +119,7 @@ public class TcpPubSubTest {
             sleep(200);
 
             assertEquals(18, server.getMessageCount());
-            assertEquals(15, server.getPublishCount());
+            assertEquals(25, server.getPublishCount());
             assertEquals( 0, server.getPublishDiscardCount());
         }
         finally {
@@ -133,15 +134,18 @@ public class TcpPubSubTest {
         }
 
         assertEquals(10, subMessages1.size());
-        assertEquals( 5, subMessages2.size());
+        assertEquals(15, subMessages2.size());
         assertEquals( 0, subMessages3.size());
 
         for(int ii=0; ii<10; ii++) {
             assertEquals("Hello alpha " + ii, subMessages1.get(ii).getText());
         }
 
+        for(int ii=0; ii<10; ii++) {
+            assertEquals("Hello alpha " + ii, subMessages2.get(ii).getText());
+        }
         for(int ii=0; ii<5; ii++) {
-            assertEquals("Hello beta " + ii, subMessages2.get(ii).getText());
+            assertEquals("Hello beta " + ii, subMessages2.get(ii + 10).getText());
         }
     }
 
