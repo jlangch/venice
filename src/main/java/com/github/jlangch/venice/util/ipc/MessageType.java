@@ -27,7 +27,8 @@ public enum MessageType {
     REQUEST(0),
     PUBLISH(1),
     SUBSCRIBE(2),
-    RESPONSE(3),
+    UNSUBSCRIBE(3),
+    RESPONSE(4),
 
     NULL(9);
 

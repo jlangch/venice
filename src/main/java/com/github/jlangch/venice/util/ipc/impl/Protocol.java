@@ -57,10 +57,10 @@ public class Protocol {
         header.putInt(PROTOCOL_VERSION);
         // 4 bytes (integer) message type
         header.putInt(message.getType().getValue());
-        // 4 bytes (integer) response status
-        header.putInt(message.getResponseStatus().getValue());
         // 2 bytes (short) oneway
         header.putShort(message.isOneway() ? (short)1 : (short)0);
+        // 4 bytes (integer) response status
+        header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
         // 16 bytes UUID
@@ -122,8 +122,8 @@ public class Protocol {
             final byte magic2 = header.get();
             final int version = header.getInt();
             final int typeCode = header.getInt();
-            final int statusCode = header.getInt();
             final int oneway = header.getShort();
+            final int statusCode = header.getInt();
             final long timestamp = header.getLong();
             final byte[] uuid = new byte[16];
             header.get(uuid);

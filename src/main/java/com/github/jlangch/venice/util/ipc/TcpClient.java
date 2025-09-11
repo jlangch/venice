@@ -216,7 +216,9 @@ public class TcpClient implements Closeable {
    }
 
     /**
-     * Puts this client in subscription mode and listens for subscriptions
+     * Subscribes for a topics.
+     *
+     * <p>Puts this client in subscription mode and listens for subscriptions
      * on the specified topic.
      *
      * <p>throws an exception if the client could not put into subscription mode
@@ -225,7 +227,7 @@ public class TcpClient implements Closeable {
      * @param handler the subscription message handler
      * @return the response for the subscribe
      */
-    public Message subscribe(final String topic, final Consumer<IMessage> handler) {
+    public IMessage subscribe(final String topic, final Consumer<IMessage> handler) {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(handler);
 
@@ -235,17 +237,17 @@ public class TcpClient implements Closeable {
             throw new VncException("This TcpClient is not open!");
         }
 
+        final Message subscribeMsg = new Message(
+                MessageType.SUBSCRIBE,
+                ResponseStatus.NULL,
+                false,
+                topic,
+                "text/plain",
+                "UTF-8",
+                endpointId.getBytes(Charset.forName("UTF-8")));
+
         if (subscription.compareAndSet(false, true)) {
             try {
-                final Message subscribeMsg = new Message(
-                                                MessageType.SUBSCRIBE,
-                                                ResponseStatus.NULL,
-                                                false,
-                                                topic,
-                                                "text/plain",
-                                                "UTF-8",
-                                                endpointId.getBytes(Charset.forName("UTF-8")));
-
                 final Callable<Message> task = () -> {
                     Protocol.sendMessage(ch, subscribeMsg);
                     return Protocol.receiveMessage(ch);
@@ -255,7 +257,6 @@ public class TcpClient implements Closeable {
                                            .getExecutor()
                                            .submit(task)
                                            .get(5, TimeUnit.SECONDS);
-
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     // start the subscription listener in this client
@@ -293,7 +294,39 @@ public class TcpClient implements Closeable {
             }
         }
         else {
-            throw new VncException("The client is already in subscription mode!");
+            return sendThroughTemporaryClient(subscribeMsg, 5, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Unsubscribe for topic.
+     *
+     * @param topic  a topic
+     * @return the response for the subscribe
+     */
+    public IMessage unsubscribe(final String topic) {
+        Objects.requireNonNull(topic);
+
+        final SocketChannel ch = channel.get();
+
+        if (ch == null || !ch.isOpen()) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        final Message unsubscribeMsg = new Message(
+                MessageType.UNSUBSCRIBE,
+                ResponseStatus.NULL,
+                false,
+                topic,
+                "text/plain",
+                "UTF-8",
+                endpointId.getBytes(Charset.forName("UTF-8")));
+
+        if (subscription.get()) {
+            return sendThroughTemporaryClient(unsubscribeMsg, 5, TimeUnit.SECONDS);
+       }
+        else {
+            return send(unsubscribeMsg, 5, TimeUnit.SECONDS);
         }
     }
 
@@ -312,18 +345,7 @@ public class TcpClient implements Closeable {
         if (subscription.get()) {
             // if this client is in subscription mode publish this message
             // through another client!
-            IMessage response = null;
-            try (final TcpClient client = new TcpClient(host, port)) {
-                client.open();
-                response = client.send(
-                                    ((Message)msg).withType(MessageType.PUBLISH),
-                                    5,
-                                    TimeUnit.SECONDS);
-            }
-            catch(IOException ex) {
-                // ignore client close exception
-            }
-            return response;
+            return sendThroughTemporaryClient(msg, 5, TimeUnit.SECONDS);
         }
         else {
             return send(((Message)msg).withType(MessageType.PUBLISH), 5, TimeUnit.SECONDS);
@@ -417,6 +439,25 @@ public class TcpClient implements Closeable {
         return mngdExecutor
                 .getExecutor()
                 .submit(task);
+    }
+
+    private IMessage sendThroughTemporaryClient(
+            final IMessage msg,
+            final long timeout,
+            final TimeUnit unit
+    ) {
+        Objects.requireNonNull(msg);
+        Objects.requireNonNull(unit);
+
+        IMessage response = null;
+        try (final TcpClient client = new TcpClient(host, port)) {
+            client.open();
+            response = client.send(((Message)msg).withType(MessageType.PUBLISH), timeout, unit);
+        }
+        catch(IOException ex) {
+            // ignore client close exception
+        }
+        return response;
     }
 
     private Message handleClientLocalMessage(final IMessage request) {

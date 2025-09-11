@@ -154,8 +154,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return handlePublish(request);
         }
         else if (isRequestSubscribe(request)) {
-            // the client wants to listen for subscribed messages
+            // the client wants to to subscribe a topic
             return handleSubscribe(request);
+        }
+        else if (isRequestUnsubscribe(request)) {
+            // the client wants to unsubscribe a topic
+            return handleUnsubscribe(request);
         }
         else {
             // client sent a normal message request, send the response
@@ -240,7 +244,25 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ResponseStatus.OK,
                 request.getTopic(),
                 "text/plain",
-                ""));
+                "subscribed to the topic"));
+
+        // switch in publish mode for this connections
+        return State.Publish;
+    }
+
+
+    private State handleUnsubscribe(final Message request) {
+        // register subscription
+        subscriptions.removeSubscription(request.getTopic(), this);
+
+        // acknowledge the subscription
+        Protocol.sendMessage(
+            ch,
+            createTextResponseMessage(
+                ResponseStatus.OK,
+                request.getTopic(),
+                "text/plain",
+                "unsubscribed from the topic"));
 
         // switch in publish mode for this connections
         return State.Publish;
@@ -318,6 +340,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private static boolean isRequestSubscribe(final Message msg) {
         return msg.getType() == MessageType.SUBSCRIBE;
+    }
+
+    private static boolean isRequestUnsubscribe(final Message msg) {
+        return msg.getType() == MessageType.UNSUBSCRIBE;
     }
 
     private static boolean isRequestPublish(final Message msg) {

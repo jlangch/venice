@@ -56,6 +56,7 @@ public class IpcSection implements ISectionBuilder {
         all.addSection(pub);
         pub.addItem(diBuilder.getDocItem("ipc/publish", false));
         pub.addItem(diBuilder.getDocItem("ipc/subscribe", false));
+        pub.addItem(diBuilder.getDocItem("ipc/unsubscribe", false));
 
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);
