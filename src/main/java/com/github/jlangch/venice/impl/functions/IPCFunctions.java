@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -537,24 +538,36 @@ public class IPCFunctions {
                     .doc(
                         "Subscribe to a topic.\n\n" +
                         "Puts this client into subscription mode and listens for messages of the " +
-                        "specified topic.")
+                        "specified topic.\n\n" +
+                        "To unsubscribe from the topics just close the client.")
                     .examples(
                         "(do                                                                             \n" +
+                        "   (def mutex 0)                                                                \n" +
+                        "                                                                                \n" +
                         "   (defn server-echo-handler [m] m)                                             \n" +
-                        "   (defn client-subscribe-handler [m] (println \"SUB:\" (ipc/message->map m)))  \n" +
+                        "   (defn client-subscribe-handler [m]                                           \n" +
+                        "      (locking mutex (println \"SUB:\" (ipc/message->map m))))                  \n" +
                         "                                                                                \n" +
                         "   (try-with [server   (ipc/server 33333 server-echo-handler)                   \n" +
                         "              client-1 (ipc/client \"localhost\" 33333)                         \n" +
-                        "              client-2 (ipc/client \"localhost\" 33333)]                        \n" +
-                        "     ;; client 'client-1' subscribes to 'test' messages                         \n" +
-                        "     (ipc/subscribe client-1 \"test\" client-subscribe-handler)                 \n" +
+                        "              client-2 (ipc/client \"localhost\" 33333)                         \n" +
+                        "              client-3 (ipc/client \"localhost\" 33333)]                        \n" +
+                        "     ;; client 'client-1' subscribes to 'alpha' messages                        \n" +
+                        "     (ipc/subscribe client-1 \"alpha\" client-subscribe-handler)                \n" +
                         "                                                                                \n" +
-                        "     ;; client 'client-2' publishes a 'test' message                            \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
-                        "          (ipc/publish client-2))                                               \n" +
+                        "     ;; client 'client-2' subscribes to 'alpha' and 'beta' messages             \n" +
+                        "     (ipc/subscribe client-2 [\"alpha\" \"beta\"] client-subscribe-handler)     \n" +
+                        "                                                                                \n" +
+                        "     ;; client 'client-3' publishes message                                     \n" +
+                        "     (->> (ipc/plain-text-message \"alpha\" \"hello\")                          \n" +
+                        "          (ipc/publish client-3))                                               \n" +
+                        "     (->> (ipc/plain-text-message \"beta\" \"hello\")                           \n" +
+                        "          (ipc/publish client-3))                                               \n" +
+                        "                                                                                \n" +
+                        "     (sleep 300)                                                                \n" +
                         "                                                                                \n" +
                         "     ;; print server status and statistics                                      \n" +
-                        "     (println (ipc/server-status client-2))))                                   ")
+                        "     (println (ipc/server-status client-3))))                                   ")
                  .seeAlso(
                      "ipc/publish",
                      "ipc/client",
@@ -570,9 +583,30 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 3);
 
                 final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
-                final String topic = Coerce.toVncString(args.nth(1)).getValue();
+                final VncVal topicVal = args.nth(1);
                 final VncFunction handler = Coerce.toVncFunction(args.nth(2));
 
+                final HashSet<String> topics = new HashSet<>();
+                if (Types.isVncString(topicVal)) {
+                    topics.add(Coerce.toVncString(topicVal).getValue());
+                }
+                else if (Types.isVncSequence(topicVal)) {
+                    Coerce.toVncSequence(topicVal).forEach(t -> {
+                        if (Types.isVncString(t)) {
+                            topics.add(Coerce.toVncString(t).getValue());
+                        }
+                        else {
+                            throw new VncException(
+                                    "Function 'ipc/subscribe' expects either a single string "
+                                    + "topic or a sequence of topic strings!");
+                            }
+                    });
+                }
+                else {
+                    throw new VncException(
+                            "Function 'ipc/subscribe' expects either a single string "
+                            + "topic or a sequence of topic strings!");
+                }
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -588,7 +622,7 @@ public class IPCFunctions {
                     catch(Exception ignore) { }
                 });
 
-                final IMessage response = client.subscribe(topic, handlerWrapper);
+                final IMessage response = client.subscribe(topics, handlerWrapper);
 
                 return new VncJavaObject(response);
             }

@@ -275,13 +275,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    "server/status",
                    "application/json",
                    "{\"running\": " + server.isRunning() + ", " +
-                    "\"mode\": \"" + mode.name()  + "\", " +
-                    "\"message_count\": " + serverMessageCount.get()  + ", " +
-                    "\"publish_count\": " + serverPublishCount.get()  + ", " +
-                    "\"publish_discarded_count\": " + serverDiscardedPublishCount.get()  + ", " +
-                    "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount()  + ", " +
-                    "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount()  + ", " +
-                    "\"publish_queue_capacity\": " + publishQueueCapacity +
+                    "\"mode\": \"" + mode.name() + "\", " +
+                    "\"message_count\": " + serverMessageCount.get() + ", " +
+                    "\"publish_count\": " + serverPublishCount.get() + ", " +
+                    "\"publish_discarded_count\": " + serverDiscardedPublishCount.get() + ", " +
+                    "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount() + ", " +
+                    "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount() + ", " +
+                    "\"publish_queue_capacity\": " + publishQueueCapacity + ", " +
                     "\"publish_queue_size\": " + publishQueue.size() +
                    "}");
     }

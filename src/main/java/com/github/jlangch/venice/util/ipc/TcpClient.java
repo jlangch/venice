@@ -42,6 +42,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 import com.github.jlangch.venice.nanojson.JsonWriter;
@@ -230,6 +231,8 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(handler);
 
+        validateTopic(topic);
+
         return subscribe(CollectionUtil.toSet(topic), handler);
     }
 
@@ -252,6 +255,7 @@ public class TcpClient implements Closeable {
         if (topics.isEmpty()) {
             throw new VncException("A subscription topic set must not be empty!");
         }
+        topics.forEach(t ->  validateTopic(t));
 
         final SocketChannel ch = channel.get();
 
@@ -477,6 +481,21 @@ public class TcpClient implements Closeable {
                 "application/json",
                 "UTF-8",
                 sb.toString().getBytes(Charset.forName("UTF-8")));
+    }
+
+
+    private void validateTopic(final String topic) {
+        if (StringUtil.isBlank(topic)) {
+            throw new VncException("A topic must not be empty or blank!");
+        }
+        if (topic.contains(",")) {
+            throw new VncException("A topic must not contain commas!");
+        }
+        for(char c : topic.toCharArray()) {
+           if (Character.isWhitespace(c)) {
+               throw new VncException("A topic must not contain white spaces!");
+           }
+        }
     }
 
 
