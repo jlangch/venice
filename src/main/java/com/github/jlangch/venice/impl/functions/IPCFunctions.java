@@ -76,15 +76,16 @@ public class IPCFunctions {
                         "*Options:* \n\n" +
                         "| :max-connections n | The number of the max connections the server can handle in parallel. Defaults to 20 |\n")
                     .examples(
-                        "(do                                                                 \n" +
-                        "   (defn echo-handler [m] m)                                        \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)                \n" +
-                        "              client (ipc/client \"localhost\" 33333)]              \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")               \n" +
-                        "          ((fn [m] (println \"request: \" (ipc/message->map m)) m)) \n" +
-                        "          (ipc/send client)                                         \n" +
-                        "          (ipc/message->map)                                        \n" +
-                        "          (println \"response: \"))))                               ")
+                        "(do                                                      \n" +
+                        "   (defn echo-handler [m]                                \n" +
+                        "     (println \"request:  \" (ipc/message->map m))       \n" +
+                        "     m)                                                  \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)     \n" +
+                        "              client (ipc/client \"localhost\" 33333)]   \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
+                        "          (ipc/send client)                              \n" +
+                        "          (ipc/message->map)                             \n" +
+                        "          (println \"response: \"))))                    ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
@@ -160,15 +161,16 @@ public class IPCFunctions {
                         "*Options:* \n\n" +
                         "| :max-parallel-tasks n | The max number of parallel tasks (e.g. sending async messages) the client can handle. Defaults to 10 |\n")
                     .examples(
-                        "(do                                                                 \n" +
-                        "   (defn echo-handler [m] m)                                        \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)                \n" +
-                        "              client (ipc/client \"localhost\" 33333)]              \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")               \n" +
-                        "          ((fn [m] (println \"request: \" (ipc/message->map m)) m)) \n" +
-                        "          (ipc/send client)                                         \n" +
-                        "          (ipc/message->map)                                        \n" +
-                        "          (println \"response: \"))))                               ")
+                        "(do                                                      \n" +
+                        "   (defn echo-handler [m]                                \n" +
+                        "     (println \"request:  \" (ipc/message->map m))       \n" +
+                        "     m)                                                  \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)     \n" +
+                        "              client (ipc/client \"localhost\" 33333)]   \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
+                        "          (ipc/send client)                              \n" +
+                        "          (ipc/message->map)                             \n" +
+                        "          (println \"response: \"))))                    ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
@@ -544,11 +546,15 @@ public class IPCFunctions {
                         "(do                                                                             \n" +
                         "   (def mutex 0)                                                                \n" +
                         "                                                                                \n" +
-                        "   (defn server-echo-handler [m] m)                                             \n" +
-                        "   (defn client-subscribe-handler [m]                                           \n" +
-                        "      (locking mutex (println \"SUB:\" (ipc/message->map m))))                  \n" +
+                        "   ;; the server handler is not involved with publish/subscribe!                \n" +
+                        "   (defn server-handler [m]                                                     \n" +
+                        "     (locking mutex (println (ipc/message->map m)))                             \n" +
+                        "     m)                                                                         \n" +
                         "                                                                                \n" +
-                        "   (try-with [server   (ipc/server 33333 server-echo-handler)                   \n" +
+                        "   (defn client-subscribe-handler [m]                                           \n" +
+                        "     (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
+                        "                                                                                \n" +
+                        "   (try-with [server   (ipc/server 33333 server-handler)                        \n" +
                         "              client-1 (ipc/client \"localhost\" 33333)                         \n" +
                         "              client-2 (ipc/client \"localhost\" 33333)                         \n" +
                         "              client-3 (ipc/client \"localhost\" 33333)]                        \n" +
@@ -567,7 +573,7 @@ public class IPCFunctions {
                         "     (sleep 300)                                                                \n" +
                         "                                                                                \n" +
                         "     ;; print server status and statistics                                      \n" +
-                        "     (println (ipc/server-status client-3))))                                   ")
+                        "     (locking mutex (println \"STATUS:\" (ipc/server-status client-3)))))       ")
                  .seeAlso(
                      "ipc/publish",
                      "ipc/client",
@@ -644,10 +650,17 @@ public class IPCFunctions {
                         "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
                         "(do                                                                             \n" +
-                        "   (defn server-echo-handler [m] m)                                             \n" +
-                        "   (defn client-subscribe-handler [m] (println \"SUB:\" (ipc/message->map m)))  \n" +
+                        "   (def mutex 0)                                                                \n" +
                         "                                                                                \n" +
-                        "   (try-with [server   (ipc/server 33333 server-echo-handler)                   \n" +
+                        "   ;; the server handler is not involved with publish/subscribe!                \n" +
+                        "   (defn server-handler [m]                                                     \n" +
+                        "     (locking mutex (println (ipc/message->map m)))                             \n" +
+                        "     m)                                                                         \n" +
+                        "                                                                                \n" +
+                       "   (defn client-subscribe-handler [m]                                            \n" +
+                        "     (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
+                        "                                                                                \n" +
+                        "   (try-with [server   (ipc/server 33333 server-handler)                        \n" +
                         "              client-1 (ipc/client \"localhost\" 33333)                         \n" +
                         "              client-2 (ipc/client \"localhost\" 33333)]                        \n" +
                         "     ;; client 'client-1' subscribes to 'test' messages                         \n" +
@@ -657,8 +670,10 @@ public class IPCFunctions {
                         "     (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
                         "          (ipc/publish client-2))                                               \n" +
                         "                                                                                \n" +
+                        "     (sleep 300)                                                                \n" +
+                        "                                                                                \n" +
                         "     ;; print server status and statistics                                      \n" +
-                        "     (println (ipc/server-status client-2))))                                   ")
+                        "     (locking mutex (println \"STATUS:\"(ipc/server-status client-2)))))        ")
                  .seeAlso(
                      "ipc/subscribe",
                      "ipc/client",
@@ -702,7 +717,7 @@ public class IPCFunctions {
                         "              client (ipc/client \"localhost\" 33333)]             \n" +
                         "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "          (ipc/send client))                                       \n" +
-                        "     (println (ipc/server-status client))))                        ")
+                        "     (println \"STATUS:\" (ipc/server-status client))))            ")
                  .seeAlso(
                      "ipc/server-thread-pool-statistics",
                      "ipc/server",
@@ -759,13 +774,13 @@ public class IPCFunctions {
                         "Returns the server's thread pool statistics the client is " +
                         "connected to.")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "          (ipc/send client))                                       \n" +
-                        "     (println (ipc/server-thread-pool-statistics client))))        ")
+                        "(do                                                                    \n" +
+                        "   (defn echo-handler [m] m)                                           \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)                   \n" +
+                        "              client (ipc/client \"localhost\" 33333)]                 \n" +
+                        "     (->> (ipc/plain-text-message \"test\" \"hello\")                  \n" +
+                        "          (ipc/send client))                                           \n" +
+                        "     (println \"STATS:\" (ipc/server-thread-pool-statistics client)))) ")
                  .seeAlso(
                      "ipc/server-status",
                      "ipc/server",

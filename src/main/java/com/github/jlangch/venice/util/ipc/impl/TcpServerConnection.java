@@ -202,7 +202,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                               "");
                 }
                 else {
-                    return ((Message)response).withResponseStatus(ResponseStatus.OK);
+                    return ((Message)response)
+                                .withType(MessageType.RESPONSE)
+                                .withResponseStatus(ResponseStatus.OK);
                 }
             }
             else if (request.isOneway()) {
