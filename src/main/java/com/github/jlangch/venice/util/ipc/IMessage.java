@@ -55,9 +55,14 @@ public interface IMessage {
     public UUID getId();
 
     /**
-     * @return the message status
+     * @return the message type
      */
-    Status getStatus();
+    MessageType getType();
+
+    /**
+     * @return the message response status
+     */
+    ResponseStatus getResponseStatus();
 
     /**
      * @return the message timestamp (milliseconds since epoch)

@@ -50,9 +50,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(data);
 
         return new Message(
-                Status.REQUEST,  // just a placeholder, will be set accordingly by
-                                 // the TcpClient/TcpServer based on the request/response
-                                 // context
+                MessageType.NULL,
+                ResponseStatus.NULL,
                 topic,
                 mimetype,
                 charset,
@@ -78,9 +77,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(data);
 
         return new Message(
-                Status.REQUEST,  // just a placeholder, will be set accordingly by
-                                 // the TcpClient/TcpServer based on the request/response
-                                 // context
+                MessageType.NULL,
+                ResponseStatus.NULL,
                 topic,
                 mimetype,
                 null,

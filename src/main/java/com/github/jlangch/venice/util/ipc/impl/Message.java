@@ -30,12 +30,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
-import com.github.jlangch.venice.util.ipc.Status;
+import com.github.jlangch.venice.util.ipc.MessageType;
+import com.github.jlangch.venice.util.ipc.ResponseStatus;
 
 
 /**
@@ -45,19 +44,22 @@ import com.github.jlangch.venice.util.ipc.Status;
 public class Message implements IMessage {
 
     public Message(
-            final Status status,
+            final MessageType type,
+            final ResponseStatus responseStatus,
             final String topic,
             final String mimetype,
             final String charset,
             final byte[] data
     ) {
-        Objects.requireNonNull(status);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(responseStatus);
         Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
 
         this.id = UUID.randomUUID();
-        this.status = status;
+        this.type = type;
+        this.responseStatus = responseStatus;
         this.timestamp = ZonedDateTime.now().toInstant().toEpochMilli();
         this.topic = topic;
         this.mimetype = mimetype;
@@ -67,7 +69,8 @@ public class Message implements IMessage {
 
     public Message(
             final UUID id,
-            final Status status,
+            final MessageType type,
+            final ResponseStatus responseStatus,
             final long timestamp,
             final String topic,
             final String mimetype,
@@ -75,13 +78,15 @@ public class Message implements IMessage {
             final byte[] data
     ) {
         Objects.requireNonNull(id);
-        Objects.requireNonNull(status);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(responseStatus);
         Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
 
         this.id = id;
-        this.status = status;
+        this.type = type;
+        this.responseStatus = responseStatus;
         this.timestamp = timestamp;
         this.topic = topic;
         this.mimetype = mimetype;
@@ -91,16 +96,32 @@ public class Message implements IMessage {
 
 
     /**
-     * Change the status of a message
+     * Change the type of a message
      *
-     * @param status a status
+     * @param type a type
      * @return a new message with the topic
      */
-    public Message withStatus(final Status status) {
-        Objects.requireNonNull(status);
-        return new Message(id, status, timestamp, topic, mimetype, charset, data);
+    public Message withType(final MessageType type) {
+        Objects.requireNonNull(type);
+        return new Message(
+                id,
+                type, responseStatus,
+                timestamp, topic, mimetype, charset, data);
     }
 
+    /**
+     * Change the response status of a message
+     *
+     * @param type a type
+     * @return a new message with the topic
+     */
+    public Message withResponseStatus(final ResponseStatus responseStatus) {
+        Objects.requireNonNull(responseStatus);
+        return new Message(
+                id,
+                type, responseStatus,
+                timestamp, topic, mimetype, charset, data);
+    }
 
     @Override
     public UUID getId() {
@@ -108,8 +129,13 @@ public class Message implements IMessage {
     }
 
     @Override
-    public Status getStatus() {
-        return status;
+    public MessageType getType() {
+        return type;
+    }
+
+    @Override
+    public ResponseStatus getResponseStatus() {
+        return responseStatus;
     }
 
     @Override
@@ -176,8 +202,13 @@ public class Message implements IMessage {
 
        sb.append(String.format(
                    "%s %s\n",
-                   padRight("Status:", 12),
-                   status.name()));
+                   padRight("Type:", 12),
+                   type.name()));
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Response:", 12),
+                   responseStatus.name()));
 
        sb.append(String.format(
                    "%s %s\n",
@@ -208,23 +239,6 @@ public class Message implements IMessage {
     }
 
 
-    public void validateMessageStatus(final Status...status) {
-        if (!CollectionUtil.toSet(status).contains(getStatus())) {
-            final String goodList = CollectionUtil
-                                        .toList(status)
-                                        .stream()
-                                        .map(s -> "'" + s +"'")
-                                        .collect(Collectors.joining(", "));
-
-            throw new VncException(
-                    String.format(
-                        "Unacceptable message status '%s'! Use one of {%s}.",
-                        status,
-                        goodList));
-        }
-    }
-
-
     private static String formatDataLen(final int len) {
         if (len < 10 * 1024) {
             return String.valueOf(len) + "B";
@@ -239,7 +253,8 @@ public class Message implements IMessage {
 
 
     private final UUID id;
-    private final Status status;
+    private final MessageType type;
+    private final ResponseStatus responseStatus;
     private final long timestamp;
     private final String topic;
     private final String mimetype;

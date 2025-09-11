@@ -31,7 +31,8 @@ import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.UUIDHelper;
-import com.github.jlangch.venice.util.ipc.Status;
+import com.github.jlangch.venice.util.ipc.MessageType;
+import com.github.jlangch.venice.util.ipc.ResponseStatus;
 
 
 public class Protocol {
@@ -48,14 +49,16 @@ public class Protocol {
         Objects.requireNonNull(message);
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(34);
+        final ByteBuffer header = ByteBuffer.allocate(38);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
         // 4 bytes (integer) protocol version
         header.putInt(PROTOCOL_VERSION);
-        // 4 bytes (integer) request/response status
-        header.putInt(message.getStatus().getValue());
+        // 4 bytes (integer) message type
+        header.putInt(message.getType().getValue());
+        // 4 bytes (integer) response status
+        header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
         // 16 bytes UUID
@@ -105,7 +108,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(34);
+            final ByteBuffer header = ByteBuffer.allocate(38);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -116,12 +119,14 @@ public class Protocol {
             final byte magic1 = header.get();
             final byte magic2 = header.get();
             final int version = header.getInt();
+            final int typeCode = header.getInt();
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
             final byte[] uuid = new byte[16];
             header.get(uuid);
 
-            final Status status = Status.fromCode(statusCode);
+            final MessageType type = MessageType.fromCode(typeCode);
+            final ResponseStatus status = ResponseStatus.fromCode(statusCode);
 
             if (magic1 != 'v' || magic2 != 'n') {
                 throw new VncException(
@@ -162,7 +167,7 @@ public class Protocol {
 
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
-                    status, timestamp, topic,
+                    type, status, timestamp, topic,
                     mimetype, charset, data);
         }
         catch(IOException ex) {

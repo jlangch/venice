@@ -22,23 +22,20 @@
 package com.github.jlangch.venice.util.ipc;
 
 
-public enum Status {
+public enum MessageType {
 
     REQUEST(0),
-    REQUEST_ONE_WAY(1),
+    REQUEST_ONE_WAY(0),
+    PUBLISH(1),
+    SUBSCRIBE(2),
+    REQUEST_START_SUBSCRIPTION(3),
+    RESPONSE(4),
 
-    REQUEST_PUBLISH(10),
-    REQUEST_SUBSCRIBE(11),
-    REQUEST_START_SUBSCRIPTION(12),
-
-    RESPONSE_OK(400),
-    RESPONSE_SERVER_ERROR(500),
-    RESPONSE_HANDLER_ERROR(501),
-    RESPONSE_BAD_REQUEST(502);
+    NULL(9);
 
 
-    public static Status fromCode(int code) {
-        for (Status s : Status.values()) {
+    public static MessageType fromCode(int code) {
+        for (MessageType s : MessageType.values()) {
             if (s.value == code) {
                 return s;
             }
@@ -48,7 +45,7 @@ public enum Status {
 
     private final int value;
 
-    private Status(final int val) {
+    private MessageType(final int val) {
         value = val;
     }
 

@@ -187,12 +187,12 @@ public class TcpServerTest {
             final IMessage request1 = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
 
             final IMessage response1 = client.sendMessage(request1);
-            assertEquals(Status.RESPONSE_OK, response1.getStatus());
+            assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
             final IMessage request2 = MessageFactory.text("server/status", "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
-            assertEquals(Status.RESPONSE_OK, response2.getStatus());
+            assertEquals(ResponseStatus.OK, response2.getResponseStatus());
             assertEquals("server/status", response2.getTopic());
 
             // System.out.println(response2.getText());
@@ -218,12 +218,12 @@ public class TcpServerTest {
             final IMessage request1 = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
 
             final IMessage response1 = client.sendMessage(request1);
-            assertEquals(Status.RESPONSE_OK, response1.getStatus());
+            assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
             final IMessage request2 = MessageFactory.text("server/thread-pool-statistics", "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
-            assertEquals(Status.RESPONSE_OK, response2.getStatus());
+            assertEquals(ResponseStatus.OK, response2.getResponseStatus());
             assertEquals("server/thread-pool-statistics", response2.getTopic());
 
             // System.out.println(response2.getText());

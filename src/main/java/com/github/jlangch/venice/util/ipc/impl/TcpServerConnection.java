@@ -21,14 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST;
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST_ONE_WAY;
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST_PUBLISH;
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST_START_SUBSCRIPTION;
-import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_BAD_REQUEST;
-import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_HANDLER_ERROR;
-import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_OK;
-
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -42,7 +34,8 @@ import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 import com.github.jlangch.venice.nanojson.JsonWriter;
 import com.github.jlangch.venice.util.ipc.IMessage;
-import com.github.jlangch.venice.util.ipc.Status;
+import com.github.jlangch.venice.util.ipc.MessageType;
+import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 
 
@@ -137,10 +130,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
             Protocol.sendMessage(
                 ch,
                 createTextResponseMessage(
-                   RESPONSE_BAD_REQUEST,
+                   ResponseStatus.BAD_REQUEST,
                    request.getTopic(),
                    "text/plain",
-                   "Bad request status: " + request.getStatus().name()));
+                   "Bad request type: " + request.getType().name()));
 
             return State.Request_Response;
         }
@@ -189,7 +182,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         if (msg != null) {
             serverPublishCount.incrementAndGet();
 
-            Protocol.sendMessage(ch, msg.withStatus(REQUEST));
+            Protocol.sendMessage(ch, msg.withType(MessageType.REQUEST));
         }
 
         return State.Publish;
@@ -202,13 +195,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
             if (isRequestMsg(request)) {
                 if (response == null) {
                     return createTextResponseMessage(
-                              RESPONSE_OK,
+                              ResponseStatus.OK,
                               request.getTopic(),
                               "text/plain",
                               "");
                 }
                 else {
-                    return ((Message)response).withStatus(Status.RESPONSE_OK);
+                    return ((Message)response).withResponseStatus(ResponseStatus.OK);
                 }
             }
             else if (isRequestOneWayMsg(request)) {
@@ -222,7 +215,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             if (isRequestMsg(request)) {
                 // send error response
                 return createTextResponseMessage(
-                         RESPONSE_HANDLER_ERROR,
+                         ResponseStatus.HANDLER_ERROR,
                          request.getTopic(),
                          "text/plain",
                          ExceptionUtil.printStackTraceToString(ex));
@@ -245,7 +238,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         Protocol.sendMessage(
             ch,
             createTextResponseMessage(
-                RESPONSE_OK,
+                ResponseStatus.OK,
                 request.getTopic(),
                 "text/plain",
                 ""));
@@ -262,7 +255,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         Protocol.sendMessage(
             ch,
             createTextResponseMessage(
-                RESPONSE_OK,
+                ResponseStatus.OK,
                 request.getTopic(),
                 "text/plain",
                 "message has been enqued to publish"));
@@ -273,7 +266,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private Message getServerStatus() {
         return createTextResponseMessage(
-                   RESPONSE_OK,
+                   ResponseStatus.OK,
                    "server/status",
                    "application/json",
                    "{\"running\": " + server.isRunning() + ", " +
@@ -296,7 +289,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         new VncJsonWriter(writer, false).write(statistics).done();
 
         return createTextResponseMessage(
-                RESPONSE_OK,
+                ResponseStatus.OK,
                 "server/thread-pool-statistics",
                 "application/json",
                 sb.toString());
@@ -304,12 +297,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
 
     private static Message createTextResponseMessage(
-            final Status status,
+            final ResponseStatus status,
             final String topic,
             final String mimetype,
             final String text
     ) {
         return new Message(
+                MessageType.RESPONSE,
                 status,
                 topic,
                 mimetype,
@@ -319,19 +313,19 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
 
     private static boolean isRequestMsg(final Message msg) {
-        return msg.getStatus() == REQUEST;
+        return msg.getType() == MessageType.REQUEST;
     }
 
     private static boolean isRequestOneWayMsg(final Message msg) {
-        return msg.getStatus() == REQUEST_ONE_WAY;
+        return msg.getType() == MessageType.REQUEST_ONE_WAY;
     }
 
     private static boolean isRequestStartSubscription(final Message msg) {
-        return msg.getStatus() == REQUEST_START_SUBSCRIPTION;
+        return msg.getType() == MessageType.REQUEST_START_SUBSCRIPTION;
     }
 
     private static boolean isRequestPublish(final Message msg) {
-        return msg.getStatus() == REQUEST_PUBLISH;
+        return msg.getType() == MessageType.PUBLISH;
     }
 
 

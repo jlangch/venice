@@ -56,7 +56,7 @@ public class TcpRequestResponseTest {
             final IMessage response = client.sendMessage(request);
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK,     response.getStatus());
+            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals(request.getTopic(),     response.getTopic());
             assertEquals(request.getMimetype(),  response.getMimetype());
@@ -88,7 +88,7 @@ public class TcpRequestResponseTest {
             final IMessage response = client.sendMessage(request);
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK,     response.getStatus());
+            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals("hello",                response.getTopic());
             assertEquals("application/octet",    response.getMimetype());
@@ -128,7 +128,7 @@ public class TcpRequestResponseTest {
             data[3] = 15;
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK,        response.getStatus());
+            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(),    response.getTimestamp());
             assertEquals("hello",                   response.getTopic());
             assertEquals("application/octet",       response.getMimetype());
@@ -160,7 +160,7 @@ public class TcpRequestResponseTest {
             final IMessage response = future.get();
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK,     response.getStatus());
+            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals(request.getTopic(),     response.getTopic());
             assertEquals(request.getMimetype(),  response.getMimetype());
@@ -196,7 +196,7 @@ public class TcpRequestResponseTest {
                 final IMessage response = client.sendMessage(request);
 
                 assertNotNull(response);
-                assertEquals(Status.RESPONSE_OK,     response.getStatus());
+                assertEquals(ResponseStatus.OK,      response.getResponseStatus());
                 assertEquals(request.getTimestamp(), response.getTimestamp());
                 assertEquals(topic,                  response.getTopic());
                 assertEquals(mimetype,               response.getMimetype());
@@ -282,7 +282,7 @@ public class TcpRequestResponseTest {
                             final IMessage response = client.sendMessage(request);
 
                             assertNotNull(response);
-                            assertEquals(Status.RESPONSE_OK, response.getStatus());
+                            assertEquals(ResponseStatus.OK,  response.getResponseStatus());
                             assertEquals(topic,              response.getTopic());
                             assertEquals(mimetype,           response.getMimetype());
                             assertEquals(charset,            response.getCharset());
@@ -338,7 +338,7 @@ public class TcpRequestResponseTest {
             final IMessage response = client.sendMessage(request);
 
             assertNotNull(response);
-            assertEquals(Status.RESPONSE_OK, response.getStatus());
+            assertEquals(ResponseStatus.OK,  response.getResponseStatus());
             assertEquals("venice.response",  response.getTopic());
             assertEquals("text/plain",       response.getMimetype());
             assertEquals("UTF-8",            response.getCharset());

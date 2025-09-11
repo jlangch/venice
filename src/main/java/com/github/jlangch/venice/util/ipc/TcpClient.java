@@ -21,10 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST_PUBLISH;
-import static com.github.jlangch.venice.util.ipc.Status.REQUEST_START_SUBSCRIPTION;
-import static com.github.jlangch.venice.util.ipc.Status.RESPONSE_OK;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -158,7 +154,7 @@ public class TcpClient implements Closeable {
     public IMessage sendMessage(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        final Message m = ((Message)msg).withStatus(Status.REQUEST);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST);
 
         return send(m);
     }
@@ -173,7 +169,7 @@ public class TcpClient implements Closeable {
     public void sendMessageOneway(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        final Message m = ((Message)msg).withStatus(Status.REQUEST_ONE_WAY);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST_ONE_WAY);
 
         send(m);
     }
@@ -196,7 +192,7 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(unit);
 
-        final Message m = ((Message)msg).withStatus(Status.REQUEST);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST);
         return send(m, timeout, unit);
     }
 
@@ -215,7 +211,7 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(msg);
 
         // Async messages are never one-way
-        final Message m = ((Message)msg).withStatus(Status.REQUEST);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST);
         return sendAsync(m);
    }
 
@@ -242,7 +238,8 @@ public class TcpClient implements Closeable {
         if (subscription.compareAndSet(false, true)) {
             try {
                 final Message subscribeMsg = new Message(
-                                                REQUEST_START_SUBSCRIPTION,
+                                                MessageType.REQUEST_START_SUBSCRIPTION,
+                                                ResponseStatus.NULL,
                                                 topic,
                                                 "text/plain",
                                                 "UTF-8",
@@ -259,7 +256,7 @@ public class TcpClient implements Closeable {
                                            .get(5, TimeUnit.SECONDS);
 
 
-                if (response.getStatus() == RESPONSE_OK) {
+                if (response.getResponseStatus() == ResponseStatus.OK) {
                     // start the subscription listener in this client
                     mngdExecutor
                         .getExecutor()
@@ -318,7 +315,7 @@ public class TcpClient implements Closeable {
             try (final TcpClient client = new TcpClient(host, port)) {
                 client.open();
                 response = client.send(
-                                    ((Message)msg).withStatus(REQUEST_PUBLISH),
+                                    ((Message)msg).withType(MessageType.PUBLISH),
                                     5,
                                     TimeUnit.SECONDS);
             }
@@ -328,7 +325,7 @@ public class TcpClient implements Closeable {
             return response;
         }
         else {
-            return send(((Message)msg).withStatus(REQUEST_PUBLISH), 5, TimeUnit.SECONDS);
+            return send(((Message)msg).withType(MessageType.PUBLISH), 5, TimeUnit.SECONDS);
         }
     }
 
@@ -349,7 +346,7 @@ public class TcpClient implements Closeable {
             return localResponse;
         }
 
-        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
+        final boolean oneway = msg.getType() == MessageType.REQUEST_ONE_WAY;
 
         Protocol.sendMessage(ch, (Message)msg);
 
@@ -413,7 +410,7 @@ public class TcpClient implements Closeable {
                     .submit(() -> localResponse);
         }
 
-        final boolean oneway = msg.getStatus() == Status.REQUEST_ONE_WAY;
+        final boolean oneway = msg.getType() == MessageType.REQUEST_ONE_WAY;
 
         final Callable<IMessage> task = () -> {
             Protocol.sendMessage(ch, (Message)msg);
@@ -443,7 +440,8 @@ public class TcpClient implements Closeable {
         new VncJsonWriter(writer, false).write(statistics).done();
 
         return new Message(
-                RESPONSE_OK,
+                MessageType.RESPONSE,
+                ResponseStatus.OK,
                 "client/thread-pool-statistics",
                 "application/json",
                 "UTF-8",

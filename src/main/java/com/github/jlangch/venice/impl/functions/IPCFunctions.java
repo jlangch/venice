@@ -52,7 +52,7 @@ import com.github.jlangch.venice.impl.util.json.VncJsonReader;
 import com.github.jlangch.venice.nanojson.JsonReader;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
-import com.github.jlangch.venice.util.ipc.Status;
+import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 
@@ -694,7 +694,7 @@ public class IPCFunctions {
                                             5,
                                             TimeUnit.SECONDS);
 
-                if (response.getStatus() == Status.RESPONSE_OK) {
+                if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
                         return readJson(response.getText());
                     }
@@ -757,7 +757,7 @@ public class IPCFunctions {
                                             5,
                                             TimeUnit.SECONDS);
 
-                if (response.getStatus() == Status.RESPONSE_OK) {
+                if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
                         return readJson(response.getText());
                     }
@@ -818,7 +818,7 @@ public class IPCFunctions {
                                             5,
                                             TimeUnit.SECONDS);
 
-                if (response.getStatus() == Status.RESPONSE_OK) {
+                if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
                         return readJson(response.getText());
                     }
@@ -1014,7 +1014,8 @@ public class IPCFunctions {
 
                 if (m.getCharset() != null) {
                     return VncOrderedMap.of(
-                            new VncKeyword("status"),    new VncKeyword(m.getStatus().name()),
+                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
+                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
                             new VncKeyword("timestamp"), new VncJavaObject(m.getTimestamp()),
                             new VncKeyword("topic"),     new VncString(m.getTopic()),
                             new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
@@ -1023,7 +1024,8 @@ public class IPCFunctions {
                 }
                 else {
                     return VncOrderedMap.of(
-                            new VncKeyword("status"),    new VncKeyword(m.getStatus().name()),
+                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
+                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
                             new VncKeyword("timestamp"), new VncJavaObject(m.getTimestamp()),
                             new VncKeyword("topic"),     new VncString(m.getTopic()),
                             new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
