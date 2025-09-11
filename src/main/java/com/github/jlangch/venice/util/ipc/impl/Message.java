@@ -46,6 +46,7 @@ public class Message implements IMessage {
     public Message(
             final MessageType type,
             final ResponseStatus responseStatus,
+            final boolean oneway,
             final String topic,
             final String mimetype,
             final String charset,
@@ -60,6 +61,7 @@ public class Message implements IMessage {
         this.id = UUID.randomUUID();
         this.type = type;
         this.responseStatus = responseStatus;
+        this.oneway = oneway;
         this.timestamp = ZonedDateTime.now().toInstant().toEpochMilli();
         this.topic = topic;
         this.mimetype = mimetype;
@@ -71,6 +73,7 @@ public class Message implements IMessage {
             final UUID id,
             final MessageType type,
             final ResponseStatus responseStatus,
+            final boolean oneway,
             final long timestamp,
             final String topic,
             final String mimetype,
@@ -87,6 +90,7 @@ public class Message implements IMessage {
         this.id = id;
         this.type = type;
         this.responseStatus = responseStatus;
+        this.oneway = oneway;
         this.timestamp = timestamp;
         this.topic = topic;
         this.mimetype = mimetype;
@@ -105,21 +109,36 @@ public class Message implements IMessage {
         Objects.requireNonNull(type);
         return new Message(
                 id,
-                type, responseStatus,
+                type, responseStatus, oneway,
+                timestamp, topic, mimetype, charset, data);
+    }
+
+    /**
+     * Change the type of a message and oneway mode
+     *
+     * @param type a type
+     * @param oneway oneway mode
+     * @return a new message with the topic
+     */
+    public Message withType(final MessageType type, final boolean oneway) {
+        Objects.requireNonNull(type);
+        return new Message(
+                id,
+                type, responseStatus, oneway,
                 timestamp, topic, mimetype, charset, data);
     }
 
     /**
      * Change the response status of a message
      *
-     * @param type a type
+     * @param responseStatus a response status
      * @return a new message with the topic
      */
     public Message withResponseStatus(final ResponseStatus responseStatus) {
         Objects.requireNonNull(responseStatus);
         return new Message(
                 id,
-                type, responseStatus,
+                type, responseStatus, oneway,
                 timestamp, topic, mimetype, charset, data);
     }
 
@@ -136,6 +155,11 @@ public class Message implements IMessage {
     @Override
     public ResponseStatus getResponseStatus() {
         return responseStatus;
+    }
+
+    @Override
+    public boolean isOneway() {
+        return oneway;
     }
 
     @Override
@@ -211,6 +235,11 @@ public class Message implements IMessage {
                    responseStatus.name()));
 
        sb.append(String.format(
+                   "%s %b\n",
+                   padRight("Oneway:", 12),
+                   oneway));
+
+       sb.append(String.format(
                    "%s %s\n",
                    padRight("Timestamp:", 12),
                    getTimestampAsLocalDateTime()));
@@ -255,6 +284,7 @@ public class Message implements IMessage {
     private final UUID id;
     private final MessageType type;
     private final ResponseStatus responseStatus;
+    private final boolean oneway;
     private final long timestamp;
     private final String topic;
     private final String mimetype;

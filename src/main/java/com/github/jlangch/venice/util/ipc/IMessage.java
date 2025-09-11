@@ -33,7 +33,9 @@ import java.util.UUID;
  * ┌───────────────────────────────┐
  * │ ID                            │   by send or publish method
  * ├───────────────────────────────┤
- * │ Status                        │   by send, publish method or by server response processor
+ * │ Message Type                  │   by send, publish method
+ * ├───────────────────────────────┤
+ * │ Response Status               │   by server response processor
  * ├───────────────────────────────┤
  * │ Timestamp                     │   by message creator
  * ├───────────────────────────────┤
@@ -63,6 +65,11 @@ public interface IMessage {
      * @return the message response status
      */
     ResponseStatus getResponseStatus();
+
+    /**
+     * @return <code>true</code> if this message is a one-way message without response, else <code>false</code>
+     */
+    boolean isOneway();
 
     /**
      * @return the message timestamp (milliseconds since epoch)

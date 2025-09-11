@@ -52,6 +52,7 @@ public abstract class MessageFactory {
         return new Message(
                 MessageType.NULL,
                 ResponseStatus.NULL,
+                false,
                 topic,
                 mimetype,
                 charset,
@@ -79,6 +80,7 @@ public abstract class MessageFactory {
         return new Message(
                 MessageType.NULL,
                 ResponseStatus.NULL,
+                false,
                 topic,
                 mimetype,
                 null,

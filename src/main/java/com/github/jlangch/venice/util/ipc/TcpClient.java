@@ -169,7 +169,7 @@ public class TcpClient implements Closeable {
     public void sendMessageOneway(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        final Message m = ((Message)msg).withType(MessageType.REQUEST_ONE_WAY);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST, true);
 
         send(m);
     }
@@ -238,8 +238,9 @@ public class TcpClient implements Closeable {
         if (subscription.compareAndSet(false, true)) {
             try {
                 final Message subscribeMsg = new Message(
-                                                MessageType.REQUEST_START_SUBSCRIPTION,
+                                                MessageType.SUBSCRIBE,
                                                 ResponseStatus.NULL,
+                                                false,
                                                 topic,
                                                 "text/plain",
                                                 "UTF-8",
@@ -346,11 +347,9 @@ public class TcpClient implements Closeable {
             return localResponse;
         }
 
-        final boolean oneway = msg.getType() == MessageType.REQUEST_ONE_WAY;
-
         Protocol.sendMessage(ch, (Message)msg);
 
-        return oneway ? null : Protocol.receiveMessage(ch);
+        return msg.isOneway() ? null : Protocol.receiveMessage(ch);
     }
 
     private IMessage send(final IMessage msg, final long timeout, final TimeUnit unit) {
@@ -410,11 +409,9 @@ public class TcpClient implements Closeable {
                     .submit(() -> localResponse);
         }
 
-        final boolean oneway = msg.getType() == MessageType.REQUEST_ONE_WAY;
-
         final Callable<IMessage> task = () -> {
             Protocol.sendMessage(ch, (Message)msg);
-            return oneway ? null : Protocol.receiveMessage(ch);
+            return msg.isOneway() ? null : Protocol.receiveMessage(ch);
         };
 
         return mngdExecutor
@@ -442,6 +439,7 @@ public class TcpClient implements Closeable {
         return new Message(
                 MessageType.RESPONSE,
                 ResponseStatus.OK,
+                false,
                 "client/thread-pool-statistics",
                 "application/json",
                 "UTF-8",

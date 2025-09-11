@@ -25,11 +25,9 @@ package com.github.jlangch.venice.util.ipc;
 public enum MessageType {
 
     REQUEST(0),
-    REQUEST_ONE_WAY(0),
     PUBLISH(1),
     SUBSCRIBE(2),
-    REQUEST_START_SUBSCRIPTION(3),
-    RESPONSE(4),
+    RESPONSE(3),
 
     NULL(9);
 

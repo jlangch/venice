@@ -123,9 +123,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         // send an error back if the request message is not a request
         if (!(isRequestMsg(request)
-              || isRequestOneWayMsg(request)
               || isRequestPublish(request)
-              || isRequestStartSubscription(request))
+              || isRequestSubscribe(request))
         ) {
             Protocol.sendMessage(
                 ch,
@@ -154,7 +153,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             // of the message's topic
             return handlePublish(request);
         }
-        else if (isRequestStartSubscription(request)) {
+        else if (isRequestSubscribe(request)) {
             // the client wants to listen for subscribed messages
             return handleSubscribe(request);
         }
@@ -204,7 +203,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     return ((Message)response).withResponseStatus(ResponseStatus.OK);
                 }
             }
-            else if (isRequestOneWayMsg(request)) {
+            else if (request.isOneway()) {
                 return null; // do not reply on one-way messages
             }
             else {
@@ -220,7 +219,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                          "text/plain",
                          ExceptionUtil.printStackTraceToString(ex));
             }
-            else if (isRequestOneWayMsg(request)) {
+            else if (request.isOneway()) {
                return null; // do not reply on one-way messages
             }
             else {
@@ -305,6 +304,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return new Message(
                 MessageType.RESPONSE,
                 status,
+                false,
                 topic,
                 mimetype,
                 "UTF-8",
@@ -316,12 +316,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return msg.getType() == MessageType.REQUEST;
     }
 
-    private static boolean isRequestOneWayMsg(final Message msg) {
-        return msg.getType() == MessageType.REQUEST_ONE_WAY;
-    }
-
-    private static boolean isRequestStartSubscription(final Message msg) {
-        return msg.getType() == MessageType.REQUEST_START_SUBSCRIPTION;
+    private static boolean isRequestSubscribe(final Message msg) {
+        return msg.getType() == MessageType.SUBSCRIBE;
     }
 
     private static boolean isRequestPublish(final Message msg) {

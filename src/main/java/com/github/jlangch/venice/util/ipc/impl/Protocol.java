@@ -49,7 +49,7 @@ public class Protocol {
         Objects.requireNonNull(message);
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(38);
+        final ByteBuffer header = ByteBuffer.allocate(40);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -59,6 +59,8 @@ public class Protocol {
         header.putInt(message.getType().getValue());
         // 4 bytes (integer) response status
         header.putInt(message.getResponseStatus().getValue());
+        // 2 bytes (short) oneway
+        header.putShort(message.isOneway() ? (short)1 : (short)0);
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
         // 16 bytes UUID
@@ -108,7 +110,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(38);
+            final ByteBuffer header = ByteBuffer.allocate(40);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -121,6 +123,7 @@ public class Protocol {
             final int version = header.getInt();
             final int typeCode = header.getInt();
             final int statusCode = header.getInt();
+            final int oneway = header.getShort();
             final long timestamp = header.getLong();
             final byte[] uuid = new byte[16];
             header.get(uuid);
@@ -167,8 +170,8 @@ public class Protocol {
 
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
-                    type, status, timestamp, topic,
-                    mimetype, charset, data);
+                    type, status, oneway == 1, timestamp,
+                    topic, mimetype, charset, data);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
