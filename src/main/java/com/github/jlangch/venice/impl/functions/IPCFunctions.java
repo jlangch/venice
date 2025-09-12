@@ -123,8 +123,10 @@ public class IPCFunctions {
                 final VncVal maxConnVal = options.get(new VncKeyword("max-connections"));
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
 
-                final int maxConn = maxConnVal == Nil ? 0 : Coerce.toVncLong(maxConnVal).getIntValue();
-                final long maxMsgSize = maxMsgSizeVal == Nil ? 0 : convertMaxMessageSizeToLong(maxMsgSizeVal);
+                final int maxConn = maxConnVal == Nil
+                                        ? 0 : Coerce.toVncLong(maxConnVal).getIntValue();
+
+                final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -229,9 +231,7 @@ public class IPCFunctions {
                                                       ? 0
                                                       : Coerce.toVncLong(maxParallelTasksVal).getIntValue();
 
-                    final long maxMsgSize = maxMsgSizeVal == Nil
-                                                      ? 0
-                                                      : convertMaxMessageSizeToLong(maxMsgSizeVal);
+                    final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
 
                     final TcpClient client = new TcpClient(host, port);
 
@@ -1124,10 +1124,13 @@ public class IPCFunctions {
     ///////////////////////////////////////////////////////////////////////////
 
     private static long convertMaxMessageSizeToLong(final VncVal val) {
-        if (Types.isVncLong(val)) {
+        if (val == Nil) {
+            return 0L;
+        }
+        else if (Types.isVncLong(val)) {
             return Coerce.toVncLong(val).toJavaLong();
         }
-        if (Types.isVncKeyword(val)) {
+        else if (Types.isVncKeyword(val)) {
             final String sVal = ((VncKeyword)val).getSimpleName();
             if (sVal.matches("^[1-9][0-9]*B$")) {
                return Long.parseLong(StringUtil.removeEnd(sVal, "B"));
