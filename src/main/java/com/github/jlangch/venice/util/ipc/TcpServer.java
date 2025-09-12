@@ -153,6 +153,8 @@ public class TcpServer implements Closeable {
             try {
                 final ExecutorService executor = mngdExecutor.getExecutor();
 
+                ch.configureBlocking(true);
+
                 // run in an executor thread to not block the caller
                 executor.execute(() -> {
                     while (started.get()) {

@@ -77,8 +77,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     mode = processRequestResponse();
                 }
                 else if (mode == State.Publish) {
-                    // process a publish message
-                    mode = processPublications();
+                    // process a publish message if available for this connection
+                    mode = processPublication();
                 }
                 else {
                     break;
@@ -125,7 +125,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return State.Terminated;  // this server was closed
         }
 
-        // send an error back if the request message is not a request
+        // send an error back if the received message is not a request
         if (!(isRequestMsg(request)
               || isRequestPublish(request)
               || isRequestSubscribe(request))
@@ -173,15 +173,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else if (isRequestPublish(request)) {
             // the client sent a message to be published to all subscribers
             // of the message's topic
-            return handlePublish(request);
+            handlePublish(request);
+            return State.Request_Response;
         }
         else if (isRequestSubscribe(request)) {
             // the client wants to to subscribe a topic
-            return handleSubscribe(request);
+            handleSubscribe(request);
+
+            // switch to publish mode for this connections
+            return State.Publish;
         }
-        else {
+        else if (isRequestMsg(request)) {
             // client sent a normal message request, send the response
             // back
+        	// call the server handler always (also for oneway requests)
             final Message response = handleRequest(request);
 
             if (!server.isRunning()) {
@@ -189,20 +194,23 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
 
             // [3] Send response
-            if (response != null) {
+            if (response != null && !request.isOneway()) {
                 Protocol.sendMessage(ch, response);
             }
 
             return State.Request_Response;
         }
+        else {
+        	// should not get here
+        	return State.Request_Response;
+        }
     }
 
-    private State processPublications() throws InterruptedException {
+    private State processPublication() throws InterruptedException {
         final Message msg = publishQueue.poll(5, TimeUnit.SECONDS);
 
         if (msg != null) {
             serverPublishCount.incrementAndGet();
-
             Protocol.sendMessage(ch, msg.withType(MessageType.REQUEST));
         }
 
@@ -213,13 +221,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
         try {
             final IMessage response = handler.apply(request);
 
-            if (response != null && response.getData().length > maxMessageSize.get()) {
-                // return error: message to large
-                return createTooLargeMessageResponse((Message)response);
+            if (request.isOneway()) {
+                return null; // do not reply on one-way messages
             }
-
-            if (isRequestMsg(request)) {
+            else {
                 if (response == null) {
+                	// create a standard response
                     return createTextResponseMessage(
                               ResponseStatus.OK,
                               request.getTopic(),
@@ -232,15 +239,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                 .withResponseStatus(ResponseStatus.OK);
                 }
             }
-            else if (request.isOneway()) {
+        }
+        catch(Exception ex) {
+            if (request.isOneway()) {
                 return null; // do not reply on one-way messages
             }
             else {
-                return null; // already handled by caller, should not reach here
-            }
-        }
-        catch(Exception ex) {
-            if (isRequestMsg(request)) {
                 // send error response
                 return createTextResponseMessage(
                          ResponseStatus.HANDLER_ERROR,
@@ -248,17 +252,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
                          "text/plain",
                          ExceptionUtil.printStackTraceToString(ex));
             }
-            else if (request.isOneway()) {
-               return null; // do not reply on one-way messages
-            }
-            else {
-               return null; // already handled by caller, should not reach here
-            }
         }
     }
 
 
-    private State handleSubscribe(final Message request) {
+    private void handleSubscribe(final Message request) {
         final String[] topicsArr = request.getTopic().split(",");
 
         final HashSet<String> topics = new HashSet<>(Arrays.asList(topicsArr));
@@ -274,12 +272,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 request.getTopic(),
                 "text/plain",
                 "subscribed to the topic"));
-
-        // switch in publish mode for this connections
-        return State.Publish;
     }
 
-    private State handlePublish(final Message request) {
+    private void handlePublish(final Message request) {
         // asynchronously publish to all subscriptions
         subscriptions.publish(request);
 
@@ -291,9 +286,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 request.getTopic(),
                 "text/plain",
                 "Message has been enqued to publish"));
-
-        // switch in publish mode for this connections
-        return State.Request_Response;
     }
 
     private void sendTooLargeMessageResponse(final Message request) {

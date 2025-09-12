@@ -146,8 +146,6 @@ public class TcpRequestResponseLoadTest {
             final IMessage response = client.sendMessage(request);
             assertNotNull(response);
 
-            sleep(1000);  // why???
-
             assertEquals(10_001L, client.getMessageSentCount());
             assertEquals(1L, client.getMessageReceiveCount());
 
