@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.ipc.impl;
 
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.util.ipc.IMessage;
@@ -37,9 +38,15 @@ public class TcpSubscriptionListener implements Runnable {
         this.handler = handler;
     }
 
+    public boolean isRunning() {
+        return running.get();
+    }
+
     @Override
     public void run() {
         try {
+            running.set(true);
+
             while(true) {
                 final Message msg = Protocol.receiveMessage(ch);
                 if (msg != null) {
@@ -53,9 +60,13 @@ public class TcpSubscriptionListener implements Runnable {
         catch(Exception ex) {
             // -> quit
         }
+        finally {
+            running.set(false);
+        }
     }
 
 
     private final SocketChannel ch;
     private final Consumer<IMessage> handler;
+    private final AtomicBoolean running = new AtomicBoolean(false);
 }

@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -63,7 +62,7 @@ public class Message implements IMessage {
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
-        this.timestamp = ZonedDateTime.now().toInstant().toEpochMilli();
+        this.timestamp = Instant.now().toEpochMilli();
         this.topic = topic;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -173,6 +172,12 @@ public class Message implements IMessage {
         return LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(timestamp),
                 ZoneId.systemDefault());
+    }
+
+    @Override
+    public long getMessageAge() {
+        final long now = Instant.now().toEpochMilli();
+        return now - timestamp;
     }
 
     @Override

@@ -52,7 +52,13 @@ public class TcpRequestResponseLoadTest {
                 validateResponse(request, response);
             }
 
+
+            assertEquals(10_000L, client.getMessageSentCount());
+            assertEquals(10_000L, client.getMessageReceiveCount());
+
             assertEquals(10_000L, server.getMessageCount());
+            assertEquals(0L, server.getPublishCount());
+            assertEquals(0L, server.getPublishDiscardCount());
         }
         finally {
             client.close();
@@ -86,7 +92,16 @@ public class TcpRequestResponseLoadTest {
                 validateResponse(request, response2);
             }
 
+
+            assertEquals(5_000L, client1.getMessageSentCount());
+            assertEquals(5_000L, client1.getMessageReceiveCount());
+
+            assertEquals(5_000L, client2.getMessageSentCount());
+            assertEquals(5_000L, client2.getMessageReceiveCount());
+
             assertEquals(10_000L, server.getMessageCount());
+            assertEquals(0L, server.getPublishCount());
+            assertEquals(0L, server.getPublishDiscardCount());
         }
         finally {
             client1.close();
@@ -103,6 +118,47 @@ public class TcpRequestResponseLoadTest {
         assertEquals(request.getMimetype(),  response.getMimetype());
         assertEquals(request.getCharset(),   response.getCharset());
         assertEquals(request.getText(),      response.getText());
+    }
+
+
+    @Test
+    @EnableOnMac
+    public void test_load_oneway() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.start(TcpServer.echoHandler());
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final IMessage request = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
+
+            for(int ii=0; ii<10_000; ii++) {
+                client.sendMessageOneway(request);
+            }
+
+            // send a final message with a response to guarantee
+            // that server has processed all oneway messages before
+            // do the checks
+            final IMessage response = client.sendMessage(request);
+            assertNotNull(response);
+
+            sleep(1000);  // why???
+
+            assertEquals(10_001L, client.getMessageSentCount());
+            assertEquals(1L, client.getMessageReceiveCount());
+
+            assertEquals(10_001L, server.getMessageCount());
+            assertEquals(0L, server.getPublishCount());
+            assertEquals(0L, server.getPublishDiscardCount());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
     }
 
 

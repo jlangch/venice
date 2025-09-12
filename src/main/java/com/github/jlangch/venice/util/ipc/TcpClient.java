@@ -115,6 +115,20 @@ public class TcpClient implements Closeable {
     }
 
     /**
+     * @return return the client's message sent count
+     */
+    public long getMessageSentCount() {
+       return messageSentCount.get();
+    }
+
+    /**
+     * @return return the client's message receive count
+     */
+    public long getMessageReceiveCount() {
+       return messageReceiveCount.get();
+    }
+
+    /**
      * @return the endpoint ID of this client
      */
     public String getEndpointId() {
@@ -179,7 +193,7 @@ public class TcpClient implements Closeable {
     public IMessage sendMessage(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        final Message m = ((Message)msg).withType(MessageType.REQUEST);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
 
         return send(m);
     }
@@ -217,7 +231,7 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(unit);
 
-        final Message m = ((Message)msg).withType(MessageType.REQUEST);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
         return send(m, timeout, unit);
     }
 
@@ -233,7 +247,7 @@ public class TcpClient implements Closeable {
     public Future<IMessage> sendMessageAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        final Message m = ((Message)msg).withType(MessageType.REQUEST);
+        final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
         return sendAsync(m);
    }
 
@@ -296,9 +310,15 @@ public class TcpClient implements Closeable {
 
         if (subscription.compareAndSet(false, true)) {
             try {
+
                 final Callable<Message> task = () -> {
                     Protocol.sendMessage(ch, subscribeMsg);
-                    return Protocol.receiveMessage(ch);
+                    messageSentCount.incrementAndGet();
+
+                    final Message response = Protocol.receiveMessage(ch);
+                    messageReceiveCount.incrementAndGet();
+
+                    return response;
                 };
 
                 final Message response = mngdExecutor
@@ -392,8 +412,16 @@ public class TcpClient implements Closeable {
         }
 
         Protocol.sendMessage(ch, (Message)msg);
+        messageSentCount.incrementAndGet();
 
-        return msg.isOneway() ? null : Protocol.receiveMessage(ch);
+        if (msg.isOneway()) {
+            return null;
+        }
+        else {
+            final Message response = Protocol.receiveMessage(ch);
+            messageReceiveCount.incrementAndGet();
+            return response;
+        }
     }
 
     private IMessage send(final IMessage msg, final long timeout, final TimeUnit unit) {
@@ -459,7 +487,16 @@ public class TcpClient implements Closeable {
 
         final Callable<IMessage> task = () -> {
             Protocol.sendMessage(ch, (Message)msg);
-            return msg.isOneway() ? null : Protocol.receiveMessage(ch);
+            messageSentCount.incrementAndGet();
+
+            if (msg.isOneway()) {
+                return null;
+            }
+            else {
+                final Message response = Protocol.receiveMessage(ch);
+                messageReceiveCount.incrementAndGet();
+                return response;
+            }
         };
 
         return mngdExecutor
@@ -552,6 +589,8 @@ public class TcpClient implements Closeable {
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
     private final AtomicBoolean subscription = new AtomicBoolean(false);
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
+    private final AtomicLong messageSentCount = new AtomicLong(0L);
+    private final AtomicLong messageReceiveCount = new AtomicLong(0L);
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);

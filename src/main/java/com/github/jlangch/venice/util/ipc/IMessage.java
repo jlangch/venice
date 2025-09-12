@@ -85,6 +85,11 @@ public interface IMessage {
     LocalDateTime getTimestampAsLocalDateTime();
 
     /**
+     * @return the message's age in milliseconds
+     */
+    long getMessageAge();
+
+    /**
      * @return the message topic
      */
     String getTopic();
