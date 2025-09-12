@@ -109,6 +109,13 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * @return the server's connection count
+     */
+    public long getConnectionCount() {
+        return connectionCount.get();
+    }
+
+    /**
      * @return the server's message count
      */
     public long getMessageCount() {
@@ -160,11 +167,12 @@ public class TcpServer implements Closeable {
                     while (started.get()) {
                         try {
                             final SocketChannel channel = ch.accept();
-                            channel.configureBlocking(true);
+                           channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
                                                                    this, channel, handler,
                                                                    maxMessageSize, subscriptions,
                                                                    publishQueueCapacity,
+                                                                   connectionCount,
                                                                    messageCount, publishCount,
                                                                    discardedPublishCount,
                                                                    () -> mngdExecutor.info());
@@ -270,6 +278,7 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final int publishQueueCapacity = 50;
+    private final AtomicLong connectionCount = new AtomicLong(0L);
     private final AtomicLong messageCount = new AtomicLong(0L);
     private final AtomicLong publishCount = new AtomicLong(0L);
     private final AtomicLong discardedPublishCount = new AtomicLong(0L);

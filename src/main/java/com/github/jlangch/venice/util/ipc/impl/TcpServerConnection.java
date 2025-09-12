@@ -50,6 +50,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final AtomicLong maxMessageSize,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
+            final AtomicLong connectionCount,
             final AtomicLong serverMessageCount,
             final AtomicLong serverPublishCount,
             final AtomicLong serverDiscardedPublishCount,
@@ -62,6 +63,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
         this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
+        this.connectionCount = connectionCount;
         this.serverMessageCount = serverMessageCount;
         this.serverPublishCount = serverPublishCount;
         this.serverDiscardedPublishCount = serverDiscardedPublishCount;
@@ -71,6 +73,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
     @Override
     public void run() {
         try {
+            connectionCount.incrementAndGet();
+
             while(mode != State.Terminated && server.isRunning() && ch.isOpen()) {
                 if (mode == State.Request_Response) {
                     // process a request/response message
@@ -91,6 +95,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             //   - quit this connection and close the channel
         }
         finally {
+            connectionCount.decrementAndGet();
             subscriptions.removeSubscriptions(this);
             IO.safeClose(ch);
         }
@@ -186,7 +191,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else if (isRequestMsg(request)) {
             // client sent a normal message request, send the response
             // back
-            // call the server handler always (also for oneway requests)
+            // call the server handler to process the request into a
+            // response and send the response only for non one-way
+            // requests back to the caller
             final Message response = handleRequest(request);
 
             if (!server.isRunning()) {
@@ -312,6 +319,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    "application/json",
                    "{\"running\": " + server.isRunning() + ", " +
                     "\"mode\": \"" + mode.name() + "\", " +
+                    "\"connection_count\": " + connectionCount.get() + ", " +
                     "\"message_count\": " + serverMessageCount.get() + ", " +
                     "\"publish_count\": " + serverPublishCount.get() + ", " +
                     "\"publish_discarded_count\": " + serverDiscardedPublishCount.get() + ", " +
@@ -380,6 +388,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final AtomicLong maxMessageSize;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
+    private final AtomicLong connectionCount;
     private final AtomicLong serverMessageCount;
     private final AtomicLong serverPublishCount;
     private final AtomicLong serverDiscardedPublishCount;

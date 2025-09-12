@@ -56,6 +56,8 @@ public class TcpRequestResponseLoadTest {
             assertEquals(10_000L, client.getMessageSentCount());
             assertEquals(10_000L, client.getMessageReceiveCount());
 
+            assertEquals(1L, server.getConnectionCount());
+
             assertEquals(10_000L, server.getMessageCount());
             assertEquals(0L, server.getPublishCount());
             assertEquals(0L, server.getPublishDiscardCount());
@@ -98,6 +100,8 @@ public class TcpRequestResponseLoadTest {
             assertEquals(5_000L, client2.getMessageSentCount());
             assertEquals(5_000L, client2.getMessageReceiveCount());
 
+            assertEquals(2L, server.getConnectionCount());
+
             assertEquals(10_000L, server.getMessageCount());
             assertEquals(0L, server.getPublishCount());
             assertEquals(0L, server.getPublishDiscardCount());
@@ -137,6 +141,8 @@ public class TcpRequestResponseLoadTest {
 
             assertEquals(10_001L, client.getMessageSentCount());
             assertEquals(1L, client.getMessageReceiveCount());
+
+            assertEquals(1L, server.getConnectionCount());
 
             assertEquals(10_001L, server.getMessageCount());
             assertEquals(0L, server.getPublishCount());
