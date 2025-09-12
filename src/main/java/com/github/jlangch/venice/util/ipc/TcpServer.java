@@ -74,9 +74,24 @@ public class TcpServer implements Closeable {
      * <p>Defaults to 20
      *
      * @param count the max parallel connection count
+     * @return this server
      */
-    public void setMaximumParallelConnections(final int count) {
+    public TcpServer setMaximumParallelConnections(final int count) {
         mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
+        return this;
+    }
+
+    /**
+     * Set the maximum message size.
+     *
+     * <p>Defaults to 200 MB
+     *
+     * @param maxSize the max message size in bytes
+     * @return this server
+     */
+    public TcpServer setMaximumMessageSize(final long maxSize) {
+        maxMessageSize.set(Math.max(2_000, maxSize));  // min size 2_000
+        return this;
     }
 
     /**
@@ -138,7 +153,8 @@ public class TcpServer implements Closeable {
                             final SocketChannel channel = ch.accept();
                             channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
-                                                                   this, channel, handler, subscriptions,
+                                                                   this, channel, handler,
+                                                                   maxMessageSize.get(), subscriptions,
                                                                    publishQueueCapacity,
                                                                    messageCount, publishCount,
                                                                    discardedPublishCount,
@@ -241,6 +257,7 @@ public class TcpServer implements Closeable {
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
+    private final AtomicLong maxMessageSize = new AtomicLong(200 * 1024 * 1024);
     private final int publishQueueCapacity = 50;
     private final AtomicLong messageCount = new AtomicLong(0L);
     private final AtomicLong publishCount = new AtomicLong(0L);

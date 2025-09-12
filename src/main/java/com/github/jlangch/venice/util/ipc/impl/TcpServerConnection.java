@@ -47,6 +47,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final TcpServer server,
             final SocketChannel ch,
             final Function<IMessage,IMessage> handler,
+            final long maxMessageSize,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final AtomicLong serverMessageCount,
@@ -57,6 +58,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.server = server;
         this.ch = ch;
         this.handler = handler;
+        this.maxMessageSize = maxMessageSize;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
         this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
@@ -128,15 +130,33 @@ public class TcpServerConnection implements IPublisher, Runnable {
               || isRequestPublish(request)
               || isRequestSubscribe(request))
         ) {
-            Protocol.sendMessage(
-                ch,
-                createTextResponseMessage(
-                   ResponseStatus.BAD_REQUEST,
-                   request.getTopic(),
-                   "text/plain",
-                   "Bad request type: " + request.getType().name()));
+            if (mode == State.Request_Response) {
+                Protocol.sendMessage(
+                    ch,
+                    createTextResponseMessage(
+                       ResponseStatus.BAD_REQUEST,
+                       request.getTopic(),
+                       "text/plain",
+                       "Bad request type: " + request.getType().name()));
 
-            return State.Request_Response;
+                return State.Request_Response;
+            }
+            else {
+                this.serverDiscardedPublishCount.incrementAndGet();
+                return mode;
+            }
+        }
+
+        if (request.getData().length > maxMessageSize) {
+            if (mode == State.Request_Response && !request.isOneway()) {
+                // return error: message to large
+                sendTooLargeMessageResponse(request);
+                return State.Request_Response;
+            }
+            else {
+                this.serverDiscardedPublishCount.incrementAndGet();
+                return mode;
+            }
         }
 
         // [2] Handle the request
@@ -192,6 +212,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private Message handleRequest(final Message request) {
         try {
             final IMessage response = handler.apply(request);
+
+            if (response != null && response.getData().length > maxMessageSize) {
+                // return error: message to large
+                return createTooLargeMessageResponse((Message)response);
+            }
 
             if (isRequestMsg(request)) {
                 if (response == null) {
@@ -265,10 +290,27 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ResponseStatus.OK,
                 request.getTopic(),
                 "text/plain",
-                "message has been enqued to publish"));
+                "Message has been enqued to publish"));
 
         // switch in publish mode for this connections
         return State.Request_Response;
+    }
+
+    private void sendTooLargeMessageResponse(final Message request) {
+        Protocol.sendMessage(
+            ch,
+            createTooLargeMessageResponse(request));
+    }
+
+    private Message createTooLargeMessageResponse(final Message request) {
+        return createTextResponseMessage(
+                ResponseStatus.BAD_REQUEST,
+                request.getTopic(),
+                "text/plain",
+                String.format(
+                        "The message (%dB) is too large! The limit is at %dB",
+                        request.getData().length,
+                        maxMessageSize));
     }
 
     private Message getServerStatus() {
@@ -341,6 +383,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final TcpServer server;
     private final SocketChannel ch;
     private final Function<IMessage,IMessage> handler;
+    private final long maxMessageSize;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final AtomicLong serverMessageCount;

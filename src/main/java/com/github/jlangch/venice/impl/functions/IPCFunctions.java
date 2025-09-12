@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.json.VncJsonReader;
@@ -68,13 +69,22 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/server port handler & options)")
                     .doc(
-                        "Create a new TcpServer on the specified port.       \n\n" +
-                        "The server must be closed after use!                \n\n" +
+                        "Create a new TcpServer on the specified port.  \n\n" +
+                        "The server must be closed after use!           \n\n" +
                         "*Arguments:* \n\n" +
                         "| port p    | The TCP/IP port |\n" +
-                        "| handler h | A single argument handler function. E.g.: a simple echo handler: `(fn [m] m)`. The handler receives the request messsage and returns a response message. In case of a one-way request message the handler returns `nil`.|\n\n" +
+                        "| handler h | A single argument handler function.¶" +
+                                     " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
+                                     " The handler receives the request messsage and returns a response" +
+                                     " message. In case of a one-way request message the handler" +
+                                     " returns `nil`.|\n\n" +
                         "*Options:* \n\n" +
-                        "| :max-connections n | The number of the max connections the server can handle in parallel. Defaults to 20 |\n")
+                        "| :max-connections n  | The number of the max connections the server can handle" +
+                                               " in parallel. Defaults to 20.|\n" +
+                        "| :max-message-size n | The max size of the message payload." +
+                                               " Defaults to `200MB`.¶" +
+                                               " The max size can be specified as a number like `20000`" +
+                                               " or a number with a unit like `:20KB`, or `:20MB`|\n")
                     .examples(
                         "(do                                                      \n" +
                         "   (defn echo-handler [m]                                \n" +
@@ -110,10 +120,11 @@ public class IPCFunctions {
                 final VncFunction handler = Coerce.toVncFunction(args.second());
 
                 final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-                final VncVal maxConnections = options.get(new VncKeyword("max-connections"));
+                final VncVal maxConnVal = options.get(new VncKeyword("max-connections"));
+                final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
 
-                final int maxConn = maxConnections == Nil ? 0
-                                                          : Coerce.toVncLong(args.first()).getIntValue();
+                final int maxConn = maxConnVal == Nil ? 0 : Coerce.toVncLong(maxConnVal).getIntValue();
+                final long maxMsgSize = maxMsgSizeVal == Nil ? 0 : convertMaxMessageSizeToLong(maxMsgSizeVal);
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -132,6 +143,10 @@ public class IPCFunctions {
 
                 if (maxConn > 0) {
                     server.setMaximumParallelConnections(maxConn);
+                }
+
+                if (maxMsgSize > 0) {
+                    server.setMaximumMessageSize(maxMsgSize);
                 }
 
                 server.start(handlerWrapper);
@@ -159,7 +174,12 @@ public class IPCFunctions {
                         "| port p | The server's TCP/IP port |\n" +
                         "| host h | The server's TCP/IP host |\n\n" +
                         "*Options:* \n\n" +
-                        "| :max-parallel-tasks n | The max number of parallel tasks (e.g. sending async messages) the client can handle. Defaults to 10 |\n")
+                        "| :max-parallel-tasks n | The max number of parallel tasks (e.g. sending async messages)" +
+                                                 " the client can handle. Defaults to 10. |\n" +
+                        "| :max-message-size n   | The max size of the message payload." +
+                                                 " Defaults to `200MB`.¶" +
+                                                 " The max size can be specified as a number like `20000`" +
+                                                 " or a number with a unit like `:20KB`, or `:20MB` |\n")
                     .examples(
                         "(do                                                      \n" +
                         "   (defn echo-handler [m]                                \n" +
@@ -202,15 +222,25 @@ public class IPCFunctions {
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-                    final VncVal maxConnections = options.get(new VncKeyword("max-parallel-tasks"));
+                    final VncVal maxParallelTasksVal = options.get(new VncKeyword("max-parallel-tasks"));
+                    final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
 
-                    final int maxParallelTasks = maxConnections == Nil ? 0
-                                                              : Coerce.toVncLong(args.first()).getIntValue();
+                    final int maxParallelTasks = maxParallelTasksVal == Nil
+                                                      ? 0
+                                                      : Coerce.toVncLong(maxParallelTasksVal).getIntValue();
+
+                    final long maxMsgSize = maxMsgSizeVal == Nil
+                                                      ? 0
+                                                      : convertMaxMessageSizeToLong(maxMsgSizeVal);
 
                     final TcpClient client = new TcpClient(host, port);
 
                     if (maxParallelTasks > 0) {
                         client.setMaximumParallelTasks(maxParallelTasks);
+                    }
+
+                    if (maxMsgSize > 0) {
+                        client.setMaximumMessageSize(maxMsgSize);
                     }
 
                     client.open();
@@ -1092,6 +1122,30 @@ public class IPCFunctions {
     ///////////////////////////////////////////////////////////////////////////
     // Utils
     ///////////////////////////////////////////////////////////////////////////
+
+    private static long convertMaxMessageSizeToLong(final VncVal val) {
+        if (Types.isVncLong(val)) {
+            return Coerce.toVncLong(val).toJavaLong();
+        }
+        if (Types.isVncKeyword(val)) {
+            final String sVal = ((VncKeyword)val).getSimpleName();
+            if (sVal.matches("^[1-9][0-9]*B$")) {
+               return Long.parseLong(StringUtil.removeEnd(sVal, "B"));
+            }
+            else if (sVal.matches("^[1-9][0-9]*KB$")) {
+                return Long.parseLong(StringUtil.removeEnd(sVal, "KB"));
+            }
+            else if (sVal.matches("^[1-9][0-9]*MB$")) {
+                return Long.parseLong(StringUtil.removeEnd(sVal, "MB"));
+            }
+            else {
+                throw new VncException("Invalid max-message-size value! Use 20000, 500KB, 10MB, ...");
+            }
+        }
+        else {
+           throw new VncException("Invalid max-message-size value! Use 20000, 500KB, 10MB, ...");
+        }
+    }
 
     private static VncVal readJson(final String json) throws Exception {
         final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);

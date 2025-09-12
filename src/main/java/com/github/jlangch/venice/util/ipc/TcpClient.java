@@ -35,6 +35,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -86,9 +87,24 @@ public class TcpClient implements Closeable {
      * <p>Defaults to 10
      *
      * @param count the max parallel task count when sending async messages
+     * @return this client
      */
-    public void setMaximumParallelTasks(final int count) {
+    public TcpClient setMaximumParallelTasks(final int count) {
         mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
+        return this;
+    }
+
+    /**
+     * Set the maximum message size.
+     *
+     * <p>Defaults to 200 MB
+     *
+     * @param maxSize the max message size in bytes
+     * @return this client
+     */
+    public TcpClient setMaximumMessageSize(final long maxSize) {
+        maxMessageSize.set(Math.max(2_000, maxSize));  // min size 2_000
+        return this;
     }
 
 
@@ -336,6 +352,8 @@ public class TcpClient implements Closeable {
     public IMessage publish(final IMessage msg) {
         Objects.requireNonNull(msg);
 
+        validateMessageSize(msg);
+
         final Message m = ((Message)msg).withType(MessageType.PUBLISH);
 
         if (subscription.get()) {
@@ -350,6 +368,8 @@ public class TcpClient implements Closeable {
 
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
+
+        validateMessageSize(msg);
 
         if (subscription.get()) {
             throw new VncException("A client in subscription mode cannot send request messages!");
@@ -373,6 +393,8 @@ public class TcpClient implements Closeable {
     private IMessage send(final IMessage msg, final long timeout, final TimeUnit unit) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(unit);
+
+        validateMessageSize(msg);
 
         if (subscription.get()) {
             throw new VncException("A client in subscription mode cannot send request messages!");
@@ -410,6 +432,8 @@ public class TcpClient implements Closeable {
 
     private Future<IMessage> sendAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
+
+        validateMessageSize(msg);
 
         if (subscription.get()) {
             throw new VncException("A client in subscription mode cannot send request messages!");
@@ -498,6 +522,19 @@ public class TcpClient implements Closeable {
         }
     }
 
+    private void validateMessageSize(final IMessage msg) {
+        Objects.requireNonNull(msg);
+
+        if (msg.getData().length > maxMessageSize.get()) {
+            throw new VncException(
+                    String.format(
+                            "The message (%dB) is too large! The limit is at %dB",
+                            msg.getData().length,
+                            maxMessageSize.get()));
+        }
+    }
+
+
 
     private final String host;
     private final int port;
@@ -505,6 +542,7 @@ public class TcpClient implements Closeable {
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
     private final AtomicBoolean subscription = new AtomicBoolean(false);
+    private final AtomicLong maxMessageSize = new AtomicLong(200 * 1024 * 1024);
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
