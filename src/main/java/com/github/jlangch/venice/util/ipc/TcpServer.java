@@ -90,8 +90,15 @@ public class TcpServer implements Closeable {
      * @return this server
      */
     public TcpServer setMaximumMessageSize(final long maxSize) {
-        maxMessageSize.set(Math.max(2_000, maxSize));  // min size 2_000
+        maxMessageSize.set(Math.max(MESSAGE_LIMIT_MIN, Math.min(MESSAGE_LIMIT_MAX, maxSize)));
         return this;
+    }
+
+    /**
+     * @return return the server's max message size
+     */
+    public long getMaximumMessageSize() {
+        return maxMessageSize.get();
     }
 
     /**
@@ -154,7 +161,7 @@ public class TcpServer implements Closeable {
                             channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
                                                                    this, channel, handler,
-                                                                   maxMessageSize.get(), subscriptions,
+                                                                   maxMessageSize, subscriptions,
                                                                    publishQueueCapacity,
                                                                    messageCount, publishCount,
                                                                    discardedPublishCount,
@@ -251,13 +258,15 @@ public class TcpServer implements Closeable {
     }
 
 
+    public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
+    public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
 
     private final int port;
     private final int timeout;
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
-    private final AtomicLong maxMessageSize = new AtomicLong(200 * 1024 * 1024);
+    private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final int publishQueueCapacity = 50;
     private final AtomicLong messageCount = new AtomicLong(0L);
     private final AtomicLong publishCount = new AtomicLong(0L);

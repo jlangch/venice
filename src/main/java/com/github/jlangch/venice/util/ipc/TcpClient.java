@@ -103,10 +103,16 @@ public class TcpClient implements Closeable {
      * @return this client
      */
     public TcpClient setMaximumMessageSize(final long maxSize) {
-        maxMessageSize.set(Math.max(2_000, maxSize));  // min size 2_000
+        maxMessageSize.set(Math.max(MESSAGE_LIMIT_MIN, Math.min(MESSAGE_LIMIT_MAX, maxSize)));
         return this;
     }
 
+    /**
+     * @return return the client's max message size
+     */
+    public long getMaximumMessageSize() {
+        return maxMessageSize.get();
+    }
 
     /**
      * @return the endpoint ID of this client
@@ -536,13 +542,16 @@ public class TcpClient implements Closeable {
 
 
 
+    public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
+    public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
+
     private final String host;
     private final int port;
     private final String endpointId;
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
     private final AtomicBoolean subscription = new AtomicBoolean(false);
-    private final AtomicLong maxMessageSize = new AtomicLong(200 * 1024 * 1024);
+    private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);

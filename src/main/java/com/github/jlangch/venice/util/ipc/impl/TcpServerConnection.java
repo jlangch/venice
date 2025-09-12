@@ -47,7 +47,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final TcpServer server,
             final SocketChannel ch,
             final Function<IMessage,IMessage> handler,
-            final long maxMessageSize,
+            final AtomicLong maxMessageSize,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final AtomicLong serverMessageCount,
@@ -147,7 +147,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
         }
 
-        if (request.getData().length > maxMessageSize) {
+        if (request.getData().length > maxMessageSize.get()) {
             if (mode == State.Request_Response && !request.isOneway()) {
                 // return error: message to large
                 sendTooLargeMessageResponse(request);
@@ -213,7 +213,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         try {
             final IMessage response = handler.apply(request);
 
-            if (response != null && response.getData().length > maxMessageSize) {
+            if (response != null && response.getData().length > maxMessageSize.get()) {
                 // return error: message to large
                 return createTooLargeMessageResponse((Message)response);
             }
@@ -383,7 +383,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final TcpServer server;
     private final SocketChannel ch;
     private final Function<IMessage,IMessage> handler;
-    private final long maxMessageSize;
+    private final AtomicLong maxMessageSize;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final AtomicLong serverMessageCount;

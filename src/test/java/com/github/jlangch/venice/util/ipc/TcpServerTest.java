@@ -234,6 +234,25 @@ public class TcpServerTest {
         }
     }
 
+    @Test
+    public void test_server_max_size() throws Exception {
+        try (TcpServer server = new TcpServer(33333)) {
+            assertEquals(TcpServer.MESSAGE_LIMIT_MAX, server.getMaximumMessageSize());
+
+            // below minimum
+            server.setMaximumMessageSize(100L);
+            assertEquals(TcpServer.MESSAGE_LIMIT_MIN, server.getMaximumMessageSize());
+
+            // in range
+            server.setMaximumMessageSize(100L * 1024L);
+            assertEquals(100L * 1024L, server.getMaximumMessageSize());
+
+            // above maximum
+            server.setMaximumMessageSize(800L * 1024L * 1024L);
+            assertEquals(TcpServer.MESSAGE_LIMIT_MAX, server.getMaximumMessageSize());
+        }
+    }
+
     private void sleep(final long millis) {
         try {
             Thread.sleep(millis);
