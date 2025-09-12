@@ -66,7 +66,6 @@ public class TcpRequestResponseLoadTest {
         }
     }
 
-
     @Test
     @EnableOnMac
     public void test_load2() throws Exception {
@@ -110,17 +109,6 @@ public class TcpRequestResponseLoadTest {
         }
     }
 
-    private void validateResponse(final IMessage request, final IMessage response) {
-        assertNotNull(response);
-        assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-        assertEquals(request.getTimestamp(), response.getTimestamp());
-        assertEquals(request.getTopic(),     response.getTopic());
-        assertEquals(request.getMimetype(),  response.getMimetype());
-        assertEquals(request.getCharset(),   response.getCharset());
-        assertEquals(request.getText(),      response.getText());
-    }
-
-
     @Test
     @EnableOnMac
     public void test_load_oneway() throws Exception {
@@ -142,9 +130,10 @@ public class TcpRequestResponseLoadTest {
 
             // send a final message with a response to guarantee
             // that server has processed all oneway messages before
-            // do the checks
+            // and then do the count checks
             final IMessage response = client.sendMessage(request);
             assertNotNull(response);
+
 
             assertEquals(10_001L, client.getMessageSentCount());
             assertEquals(1L, client.getMessageReceiveCount());
@@ -159,6 +148,16 @@ public class TcpRequestResponseLoadTest {
         }
     }
 
+
+    private void validateResponse(final IMessage request, final IMessage response) {
+        assertNotNull(response);
+        assertEquals(ResponseStatus.OK,      response.getResponseStatus());
+        assertEquals(request.getTimestamp(), response.getTimestamp());
+        assertEquals(request.getTopic(),     response.getTopic());
+        assertEquals(request.getMimetype(),  response.getMimetype());
+        assertEquals(request.getCharset(),   response.getCharset());
+        assertEquals(request.getText(),      response.getText());
+    }
 
     private void sleep(final long millis) {
         try {

@@ -186,7 +186,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else if (isRequestMsg(request)) {
             // client sent a normal message request, send the response
             // back
-        	// call the server handler always (also for oneway requests)
+            // call the server handler always (also for oneway requests)
             final Message response = handleRequest(request);
 
             if (!server.isRunning()) {
@@ -201,8 +201,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return State.Request_Response;
         }
         else {
-        	// should not get here
-        	return State.Request_Response;
+            // should not get here
+            return State.Request_Response;
         }
     }
 
@@ -226,7 +226,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
             else {
                 if (response == null) {
-                	// create a standard response
+                    // create a standard response
                     return createTextResponseMessage(
                               ResponseStatus.OK,
                               request.getTopic(),
