@@ -120,7 +120,7 @@ public interface IMessage {
     /**
      * @return the message payload as Venice data. Throws a VncException if the payload cannot be converted.
      */
-    VncVal getVenice();
+    VncVal getVeniceData();
 
     /**
      * @return <code>true</code> if this message is a text message, else <code>false</code>

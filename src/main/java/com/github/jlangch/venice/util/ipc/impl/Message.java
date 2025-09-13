@@ -212,12 +212,20 @@ public class Message implements IMessage {
     }
 
     @Override
-    public VncVal getVenice() {
+    public VncVal getVeniceData() {
         if (isTextMessage()) {
-            return IO.readJson(new String(data, Charset.forName(charset)), true);
+            if ("application/json".equals(getMimetype())) {
+                return IO.readJson(new String(data, Charset.forName(charset)), true);
+            }
+            else {
+                throw new VncException(
+                        "A message with mimetype \"" + getMimetype()
+                        + "\" can not be converted to Venice data!");
+            }
         }
         else {
-            throw new VncException("A binary message can not be converted to Venice data!");
+            throw new VncException(
+                    "A binary message can not be converted to Venice data!");
         }
     }
 

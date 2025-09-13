@@ -97,7 +97,6 @@ public abstract class MessageFactory {
      * a message
      *
      * @param topic a topic
-     * @param mimetype the mimetype of the message's payload data
      * @param data venice data
      * @return the message
      */

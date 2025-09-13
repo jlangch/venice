@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -1068,13 +1069,12 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/venice-message status topic mimetype data)")
+                        "(ipc/venice-message status topic data)")
                     .doc(
                         "Creates a venice message. \n\n" +
                         "The Venice data is serialized as JSON for transport within a message")
             .examples(
                         "(->> (ipc/venice-message \"test\"                        \n" +
-                        "                         \"application/octet-stream\"    \n" +
                         "                         {:a 100, :b 200})               \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
@@ -1092,19 +1092,117 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 2);
 
-                final VncString topic = Coerce.toVncString(args.nth(0));
-                final VncString mimetype = Coerce.toVncString(args.nth(1));
-                final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(2));
+                final VncString topic = Coerce.toVncString(args.first());
+                final VncVal data = args.second();
 
-                final IMessage msg = MessageFactory.binary(
-                                        topic.getValue(),
-                                        mimetype.getValue(),
-                                        data.getBytes());
+                final IMessage msg = MessageFactory.venice(topic.getValue(), data);
 
                 return new VncJavaObject(msg);
             }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction ipc_message_field =
+        new VncFunction(
+                "ipc/message-field",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/message-field message field)")
+                    .doc(
+                        "Returns a specific field from the message. \n\n" +
+                        "Supported field names: \n\n" +
+                        "  * `id`\n" +
+                        "  * `type`\n" +
+                        "  * `oneway?`\n" +
+                        "  * `response-status`\n" +
+                        "  * `timestamp`\n" +
+                        "  * `topic`\n" +
+                        "  * `payload-mimetype`\n" +
+                        "  * `payload-charset`\n" +
+                        "  * `payload-text`\n" +
+                        "  * `payload-binary`\n" +
+                        "  * `payload-venice`\n")
+            .examples(
+                        "(let [m (ipc/text-message \"test\"                         \n" +
+                        "                          \"text/plain\"                   \n" +
+                        "                          :UTF-8                           \n" +
+                        "                          \"Hello!\")]                     \n" +
+                        "  (println (ipc/message-field m :id))                      \n" +
+                        "  (println (ipc/message-field m :type))                    \n" +
+                        "  (println (ipc/message-field m :oneway?))                 \n" +
+                        "  (println (ipc/message-field m :timestamp))               \n" +
+                        "  (println (ipc/message-field m :response-status))         \n" +
+                        "  (println (ipc/message-field m :topic))                   \n" +
+                        "  (println (ipc/message-field m :payload-mimetype))        \n" +
+                        "  (println (ipc/message-field m :payload-charset))          \n" +
+                        "  (println (ipc/message-field m :payload-text)))            ",
+
+                        "(let [m (ipc/binary-message \"test\"                       \n" +
+                        "                            \"application/octet-stream\"   \n" +
+                        "                            (bytebuf [0 1 2 3 4 5 6 7]))]  \n" +
+                        "  (println (ipc/message-field m :id))                      \n" +
+                        "  (println (ipc/message-field m :type))                    \n" +
+                        "  (println (ipc/message-field m :oneway?))                 \n" +
+                        "  (println (ipc/message-field m :timestamp))               \n" +
+                        "  (println (ipc/message-field m :response-status))         \n" +
+                        "  (println (ipc/message-field m :topic))                   \n" +
+                        "  (println (ipc/message-field m :payload-mimetype))        \n" +
+                        "  (println (ipc/message-field m :payload-charset))         \n" +
+                        "  (println (ipc/message-field m :payload-binary)))         ",
+
+                        "(let [m (ipc/venice-message \"test\"                  \n" +
+                        "                            {:a 100, :b 200})]        \n" +
+                        "  (println (ipc/message-field m :id))                 \n" +
+                        "  (println (ipc/message-field m :type))               \n" +
+                        "  (println (ipc/message-field m :oneway?))            \n" +
+                        "  (println (ipc/message-field m :timestamp))          \n" +
+                        "  (println (ipc/message-field m :response-status))    \n" +
+                        "  (println (ipc/message-field m :topic))              \n" +
+                        "  (println (ipc/message-field m :payload-mimetype))   \n" +
+                        "  (println (ipc/message-field m :payload-charset))    \n" +
+                        "  (println (ipc/message-field m :payload-venice)))    ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final IMessage message = Coerce.toVncJavaObject(args.first(), IMessage.class);
+                final VncKeyword field = Coerce.toVncKeyword(args.second());
+
+                switch(field.getSimpleName()) {
+                    case "id":               return new VncString(message.getId().toString());
+                    case "type":             return new VncKeyword(message.getType().name());
+                    case "timestamp":        return new VncLong(message.getTimestamp());
+                    case "oneway?":          return VncBoolean.of(message.isOneway());
+                    case "response-status":  return new VncKeyword(message.getResponseStatus().name());
+                    case "topic":            return new VncString(message.getTopic());
+                    case "payload-mimetype": return new VncString(message.getMimetype());
+                    case "payload-charset":  return message.getCharset() == null
+                                                        ? Nil
+                                                        : new VncKeyword(message.getCharset());
+                    case "payload-text":     return new VncString(message.getText());
+                    case "payload-binary":   return new VncByteBuffer(message.getData());
+                    case "payload-venice":   return message.getVeniceData();
+                    default:
+                        throw new VncException ("Invalid message field name :" + field.getSimpleName());
+                }
+             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
@@ -1259,6 +1357,7 @@ public class IPCFunctions {
                     .add(ipc_plain_text_message)
                     .add(ipc_binary_message)
                     .add(ipc_venice_message)
+                    .add(ipc_message_field)
                     .add(ipc_message_to_map)
 
                     .add(ipc_server_status)
