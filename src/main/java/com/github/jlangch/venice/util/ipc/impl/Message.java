@@ -108,20 +108,6 @@ public class Message implements IMessage {
 
 
     /**
-     * Change the type of a message
-     *
-     * @param type a type
-     * @return a new message with the topic
-     */
-    public Message withType(final MessageType type) {
-        Objects.requireNonNull(type);
-        return new Message(
-                id,
-                type, responseStatus, oneway,
-                timestamp, topics, mimetype, charset, data);
-    }
-
-    /**
      * Change the type of a message and oneway mode
      *
      * @param type a type

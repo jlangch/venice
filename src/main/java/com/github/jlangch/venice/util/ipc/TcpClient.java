@@ -112,9 +112,9 @@ public class TcpClient implements Closeable {
     }
 
     /**
-     * @return return the client's message sent count
+     * @return return the client's message send count
      */
-    public long getMessageSentCount() {
+    public long getMessageSendCount() {
        return messageSentCount.get();
     }
 
@@ -198,6 +198,8 @@ public class TcpClient implements Closeable {
     /**
      * Sends a on-way message to the server.
      *
+     * <p>The server does not send a response message.
+     *
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
      *
      * @param msg a message
@@ -214,7 +216,7 @@ public class TcpClient implements Closeable {
      * Sends a message to the server. Throws a TimeoutException if the response
      * is not received within the given timeout.
      *
-     * <p>Returns <code>null</code> if a one way message was sent.
+     * <p>The server sends always a response message back.
      *
      * <p>throws <code>TimeoutException</code> if the message send timed out
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
@@ -300,7 +302,7 @@ public class TcpClient implements Closeable {
                 Topics.of(topics),
                 "text/plain",
                 "UTF-8",
-                endpointId.getBytes(Charset.forName("UTF-8")));
+                toBytes(endpointId, "UTF-8"));
 
         if (subscription.compareAndSet(false, true)) {
             try {
@@ -361,20 +363,21 @@ public class TcpClient implements Closeable {
     }
 
     /**
-     * Publish a message.
+     * Publish a message to any other client that have subscribed to the
+     * message's topic.
      *
-     * <p>Any other client with a subscription on the message's topic will receive
-     * this message.
+     * <p>The server sends a response message to confirm the receiving
+     * of the message.
      *
      * @param msg the message to publish
-     * @return the response for the publish
+     * @return the response confirmation for the publish message
      */
     public IMessage publish(final IMessage msg) {
         Objects.requireNonNull(msg);
 
         validateMessageSize(msg);
 
-        final Message m = ((Message)msg).withType(MessageType.PUBLISH);
+        final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
 
         if (subscription.get()) {
             // if this client is in subscription mode publish this message
@@ -537,7 +540,7 @@ public class TcpClient implements Closeable {
                 Topics.of("client/thread-pool-statistics"),
                 "application/json",
                 "UTF-8",
-                IO.writeJson(statistics).getBytes(Charset.forName("UTF-8")));
+                toBytes(IO.writeJson(statistics), "UTF-8"));
     }
 
 
@@ -551,6 +554,10 @@ public class TcpClient implements Closeable {
                             msg.getData().length,
                             maxMessageSize.get()));
         }
+    }
+
+    private static byte[] toBytes(final String s, final String charset) {
+        return s.getBytes(Charset.forName(charset));
     }
 
 

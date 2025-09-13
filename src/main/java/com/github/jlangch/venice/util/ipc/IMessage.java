@@ -37,7 +37,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
  * ├───────────────────────────────┤
  * │ Message Type                  │   by send, publish/subscribe method
  * ├───────────────────────────────┤
- * │ Oneway                        │   by send, publish/subscribe method
+ * │ Oneway                        │   by Client or framework method
  * ├───────────────────────────────┤
  * │ Response Status               │   by server response processor
  * ├───────────────────────────────┤
@@ -72,7 +72,8 @@ public interface IMessage {
 
     /**
      * @return <code>true</code> if this message is a one-way message
-     *        request without response, else <code>false</code>
+     *        that the receiver must not answer with a reply message,
+     *        else <code>false</code>
      */
     boolean isOneway();
 

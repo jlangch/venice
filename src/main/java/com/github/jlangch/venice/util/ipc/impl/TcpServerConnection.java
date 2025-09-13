@@ -57,12 +57,14 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.maxMessageSize = maxMessageSize;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
-        this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
         this.connectionCount = connectionCount;
         this.serverMessageCount = serverMessageCount;
         this.serverPublishCount = serverPublishCount;
         this.serverDiscardedPublishCount = serverDiscardedPublishCount;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
+
+        this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
+        this.errorBuffer = new ErrorCircularBuffer(ERROR_QUEUE_CAPACITY);
     }
 
     @Override
@@ -170,6 +172,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
             Protocol.sendMessage(ch, getServerThreadPoolStatistics());
             return State.Request_Response;
         }
+        else if ("server/error".equals(request.getTopic())) {
+            // process a server error request
+            Protocol.sendMessage(ch, getNextServerError());
+            return State.Request_Response;
+        }
         else if (isRequestPublish(request)) {
             // the client sent a message to be published to all subscribers
             // of the message's topic
@@ -213,7 +220,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         if (msg != null) {
             serverPublishCount.incrementAndGet();
-            Protocol.sendMessage(ch, msg.withType(MessageType.REQUEST));
+            Protocol.sendMessage(ch, msg.withType(MessageType.REQUEST, true));
         }
 
         return State.Publish;
@@ -237,7 +244,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 }
                 else {
                     return ((Message)response)
-                                .withType(MessageType.RESPONSE)
+                                .withType(MessageType.RESPONSE, true)
                                 .withResponseStatus(ResponseStatus.OK);
                 }
             }
@@ -322,6 +329,34 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    "}");
     }
 
+    private Message getNextServerError() {
+        try {
+            final Message err = errorBuffer.pop();
+            if (err == null) {
+                return createTextResponseMessage(
+                        ResponseStatus.OK,
+                        "server/error",
+                        "application/json",
+                        "{ \"status\": \"no_errors_available\" }");
+            }
+            else {
+                return createTextResponseMessage(
+                        ResponseStatus.OK,
+                        "server/error",
+                        "application/json",
+                        "{ \"status\": \"error\"" +
+                        "}");
+            }
+        }
+        catch(Exception ex) {
+            return createTextResponseMessage(
+                    ResponseStatus.OK,
+                    "server/error",
+                    "application/json",
+                    "{ \"status\": \"temporarily_unavailable\" }");
+        }
+    }
+
     private Message getServerThreadPoolStatistics() {
         final VncMap statistics = serverThreadPoolStatistics.get();
 
@@ -342,11 +377,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return new Message(
                 MessageType.RESPONSE,
                 status,
-                false,
+                true,
                 Topics.of(topic),
                 mimetype,
                 "UTF-8",
-                text.getBytes(Charset.forName("UTF-8")));
+                toBytes(text, "UTF-8"));
     }
 
 
@@ -362,9 +397,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return msg.getType() == MessageType.PUBLISH;
     }
 
+    private static byte[] toBytes(final String s, final String charset) {
+        return s.getBytes(Charset.forName(charset));
+    }
 
     private static enum State { Request_Response, Publish, Terminated };
 
+    private static int ERROR_QUEUE_CAPACITY = 50;
 
     private State mode = State.Request_Response;
 
@@ -380,5 +419,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final AtomicLong serverDiscardedPublishCount;
     private final Supplier<VncMap> serverThreadPoolStatistics;
 
+    private final ErrorCircularBuffer errorBuffer;
     private final LinkedBlockingQueue<Message> publishQueue;
 }
