@@ -126,7 +126,7 @@ public class TcpRequestResponseLoadTest {
         client.open();
 
         try {
-            final IMessage request = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
+            final IMessage request = MessageFactory.text("hello-onway", "text/plain", "UTF-8", "Hello!");
 
             for(int ii=0; ii<10_000; ii++) {
                 client.sendMessageOneway(request);
@@ -135,8 +135,10 @@ public class TcpRequestResponseLoadTest {
             // send a final message with a response to guarantee
             // that server has processed all oneway messages before
             // and then do the count checks
-            final IMessage response = client.sendMessage(request);
-            assertNotNull(response);
+
+            final IMessage finalRequest = MessageFactory.text("hello-final", "text/plain", "UTF-8", "Hello!");
+            final IMessage response = client.sendMessage(finalRequest);
+            validateResponse(finalRequest, response);
 
 
             assertEquals(10_001L, client.getMessageSentCount());

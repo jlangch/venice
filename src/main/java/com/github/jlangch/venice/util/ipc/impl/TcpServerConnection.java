@@ -326,7 +326,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount() + ", " +
                     "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount() + ", " +
                     "\"publish_queue_capacity\": " + publishQueueCapacity + ", " +
-                    "\"publish_queue_size\": " + publishQueue.size() + ", " +
                     "\"message_size_min\": " + TcpServer.MESSAGE_LIMIT_MIN + ", " +
                     "\"message_size_max\": " + maxMessageSize.get() +
                    "}");
