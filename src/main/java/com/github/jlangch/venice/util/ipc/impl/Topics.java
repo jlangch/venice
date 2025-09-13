@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -90,11 +91,13 @@ public class Topics {
 
 
     public static String encode(final Topics topics) {
+        Objects.requireNonNull(topics);
         return String.join(",", topics.topics);
     }
 
     public static Topics decode(final String topics) {
-        return Topics.of(topics.split(" *, *"));
+        Objects.requireNonNull(topics);
+       return Topics.of(topics.split(" *, *"));
     }
 
 
