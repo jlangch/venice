@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import com.github.jlangch.venice.VncException;
@@ -48,23 +49,26 @@ public class Message implements IMessage {
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
-            final String topic,
+            final Topics topics,
             final String mimetype,
             final String charset,
             final byte[] data
     ) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(responseStatus);
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(topics);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
+
+        validateMimetype(mimetype);
+        validateCharset(charset);
 
         this.id = UUID.randomUUID();
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
         this.timestamp = Instant.now().toEpochMilli();
-        this.topic = topic;
+        this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -76,7 +80,7 @@ public class Message implements IMessage {
             final ResponseStatus responseStatus,
             final boolean oneway,
             final long timestamp,
-            final String topic,
+            final Topics topics,
             final String mimetype,
             final String charset,
             final byte[] data
@@ -84,16 +88,19 @@ public class Message implements IMessage {
         Objects.requireNonNull(id);
         Objects.requireNonNull(type);
         Objects.requireNonNull(responseStatus);
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(topics);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
+
+        validateMimetype(mimetype);
+        validateCharset(charset);
 
         this.id = id;
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
         this.timestamp = timestamp;
-        this.topic = topic;
+        this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -111,7 +118,7 @@ public class Message implements IMessage {
         return new Message(
                 id,
                 type, responseStatus, oneway,
-                timestamp, topic, mimetype, charset, data);
+                timestamp, topics, mimetype, charset, data);
     }
 
     /**
@@ -126,7 +133,7 @@ public class Message implements IMessage {
         return new Message(
                 id,
                 type, responseStatus, oneway,
-                timestamp, topic, mimetype, charset, data);
+                timestamp, topics, mimetype, charset, data);
     }
 
     /**
@@ -140,7 +147,7 @@ public class Message implements IMessage {
         return new Message(
                 id,
                 type, responseStatus, oneway,
-                timestamp, topic, mimetype, charset, data);
+                timestamp, topics, mimetype, charset, data);
     }
 
     @Override
@@ -183,7 +190,15 @@ public class Message implements IMessage {
 
     @Override
     public String getTopic() {
-        return topic;
+        return topics.getTopic();
+    }
+
+    public Topics getTopics() {
+        return topics;
+    }
+
+    public Set<String> getTopicsSet() {
+        return topics.getTopicsSet();
     }
 
     @Override
@@ -271,8 +286,8 @@ public class Message implements IMessage {
 
        sb.append(String.format(
                    "%s %s\n",
-                   padRight("Topic:", 12),
-                   topic));
+                   padRight("Topics:", 12),
+                   Topics.encode(topics)));
 
        sb.append(String.format(
                    "%s %s\n",
@@ -315,13 +330,41 @@ public class Message implements IMessage {
         }
     }
 
+    public static void validateMimetype(final String mimetype) {
+        if (mimetype.length() > MIMETYPE_MAX_LEN) {
+            throw new IllegalArgumentException(
+                    "A mimetype is limit to " + MIMETYPE_MAX_LEN + "characters!");
+        }
+    }
+
+    public static void validateCharset(final String charset) {
+        if (charset == null) {
+            return;
+        }
+
+        if (StringUtil.isBlank(charset)) {
+            throw new IllegalArgumentException(
+                    "A charset can be null for binary messages but must "
+                    + "not be empty or blank!");
+        }
+
+        if (charset.length() > CHARSET_MAX_LEN) {
+            throw new IllegalArgumentException(
+                    "A charset is limit to " + CHARSET_MAX_LEN + "characters!");
+        }
+    }
+
+
+    public static final long MIMETYPE_MAX_LEN = 100;
+    public static final long CHARSET_MAX_LEN = 50;
+
 
     private final UUID id;
     private final MessageType type;
     private final ResponseStatus responseStatus;
     private final boolean oneway;
     private final long timestamp;
-    private final String topic;
+    private final Topics topics;
     private final String mimetype;
     private final String charset;
     private final byte[] data;

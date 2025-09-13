@@ -23,8 +23,6 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -261,12 +259,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
 
     private void handleSubscribe(final Message request) {
-        final String[] topicsArr = request.getTopic().split(",");
-
-        final HashSet<String> topics = new HashSet<>(Arrays.asList(topicsArr));
-
         // register subscription
-        subscriptions.addSubscription(topics, this);
+        subscriptions.addSubscription(request.getTopicsSet(), this);
 
         // acknowledge the subscription
         Protocol.sendMessage(
@@ -349,7 +343,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 MessageType.RESPONSE,
                 status,
                 false,
-                topic,
+                Topics.of(topic),
                 mimetype,
                 "UTF-8",
                 text.getBytes(Charset.forName("UTF-8")));

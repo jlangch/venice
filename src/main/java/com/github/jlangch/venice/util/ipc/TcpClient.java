@@ -43,11 +43,11 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.IO;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
+import com.github.jlangch.venice.util.ipc.impl.Topics;
 
 
 public class TcpClient implements Closeable {
@@ -264,8 +264,6 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(handler);
 
-        validateTopic(topic);
-
         return subscribe(CollectionUtil.toSet(topic), handler);
     }
 
@@ -288,7 +286,6 @@ public class TcpClient implements Closeable {
         if (topics.isEmpty()) {
             throw new VncException("A subscription topic set must not be empty!");
         }
-        topics.forEach(t ->  validateTopic(t));
 
         final SocketChannel ch = channel.get();
 
@@ -300,7 +297,7 @@ public class TcpClient implements Closeable {
                 MessageType.SUBSCRIBE,
                 ResponseStatus.NULL,
                 false,
-                String.join(",", topics),
+                Topics.of(topics),
                 "text/plain",
                 "UTF-8",
                 endpointId.getBytes(Charset.forName("UTF-8")));
@@ -537,26 +534,12 @@ public class TcpClient implements Closeable {
                 MessageType.RESPONSE,
                 ResponseStatus.OK,
                 false,
-                "client/thread-pool-statistics",
+                Topics.of("client/thread-pool-statistics"),
                 "application/json",
                 "UTF-8",
                 IO.writeJson(statistics).getBytes(Charset.forName("UTF-8")));
     }
 
-
-    private void validateTopic(final String topic) {
-        if (StringUtil.isBlank(topic)) {
-            throw new VncException("A topic must not be empty or blank!");
-        }
-        if (topic.contains(",")) {
-            throw new VncException("A topic must not contain commas!");
-        }
-        for(char c : topic.toCharArray()) {
-           if (Character.isWhitespace(c)) {
-               throw new VncException("A topic must not contain white spaces!");
-           }
-        }
-    }
 
     private void validateMessageSize(final IMessage msg) {
         Objects.requireNonNull(msg);

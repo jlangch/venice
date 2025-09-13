@@ -27,6 +27,7 @@ import java.util.Objects;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.util.ipc.impl.IO;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Topics;
 
 
 public abstract class MessageFactory {
@@ -55,7 +56,7 @@ public abstract class MessageFactory {
                 MessageType.NULL,
                 ResponseStatus.NULL,
                 false,
-                topic,
+                Topics.of(topic),
                 mimetype,
                 charset,
                 data.getBytes(Charset.forName(charset)));
@@ -83,7 +84,7 @@ public abstract class MessageFactory {
                 MessageType.NULL,
                 ResponseStatus.NULL,
                 false,
-                topic,
+                Topics.of(topic),
                 mimetype,
                 null,
                 data);
@@ -111,7 +112,7 @@ public abstract class MessageFactory {
                 MessageType.NULL,
                 ResponseStatus.NULL,
                 false,
-                topic,
+                Topics.of(topic),
                 "application/json",
                 "UTF-8",
                 IO.writeJson(data).getBytes(Charset.forName("UTF-8")));

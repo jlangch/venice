@@ -82,7 +82,8 @@ public class Protocol {
         }
 
         // [3] topic frame
-        final byte[] topicData = message.getTopic().getBytes(Charset.forName("UTF8"));
+        final byte[] topicData = Topics.encode(message.getTopics())
+                                       .getBytes(Charset.forName("UTF8"));
         final ByteBuffer topic = ByteBuffer.allocate(topicData.length);
         topic.put(topicData);
         topic.flip();
@@ -149,7 +150,7 @@ public class Protocol {
 
             // [3] topic frame
             final ByteBuffer topicFrame = IO.readFrame(ch);
-            final String topic = topicFrame.hasRemaining()
+            final String topics = topicFrame.hasRemaining()
                                         ? new String(topicFrame.array(), Charset.forName("UTF8"))
                                         : "*";
 
@@ -171,7 +172,8 @@ public class Protocol {
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
                     type, status, oneway == 1, timestamp,
-                    topic, mimetype, charset, data);
+                    Topics.decode(topics),
+                    mimetype, charset, data);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
