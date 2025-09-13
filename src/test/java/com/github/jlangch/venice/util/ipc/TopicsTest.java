@@ -23,14 +23,18 @@ package com.github.jlangch.venice.util.ipc;
 
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 
 
@@ -174,21 +178,39 @@ public class TopicsTest {
     }
 
     @Test
-    public void test_topics_many_1() {
-       final Topics topics1 = Topics.decode("10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29");
-       assertEquals(20, topics1.getTopicsSet().size());
+    public void test_topics_TOPICS_MAX_1() {
+        final List<String> topics = new ArrayList<>();
+        for(int ii=10; ii<10+Topics.TOPICS_MAX; ii++) topics.add(String.valueOf(ii));
 
-       // more than 20
-       assertThrows(IllegalArgumentException.class, () -> Topics.decode("10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30"));
+        assertEquals(20, Topics.decode(String.join(",", topics)).getTopics().size());
+
+        // more than TOPICS_MAX
+        topics.clear();
+        for(int ii=10; ii<10+Topics.TOPICS_MAX+1; ii++) topics.add(String.valueOf(ii));
+        assertThrows(IllegalArgumentException.class, () -> Topics.decode(String.join(",", topics)));
     }
 
     @Test
-    public void test_topics_many_2() {
-       final Topics topics1 = Topics.of(toSet("10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29"));
+    public void test_topics_TOPICS_MAX_2() {
+       final List<String> topics = new ArrayList<>();
+       for(int ii=10; ii<10+Topics.TOPICS_MAX; ii++) topics.add(String.valueOf(ii));
+
+       final Topics topics1 = Topics.of(new HashSet<>(topics));
        assertEquals(20, topics1.getTopicsSet().size());
 
-       // more than 20
-       assertThrows(IllegalArgumentException.class, () -> Topics.of(toSet("10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30")));
+       // more than TOPICS_MAX
+       topics.clear();
+       for(int ii=10; ii<10+Topics.TOPICS_MAX+1; ii++) topics.add(String.valueOf(ii));
+       assertThrows(IllegalArgumentException.class, () -> Topics.of(new HashSet<>(topics)));
+    }
+
+    @Test
+    public void test_topics_TOPIC_MAX_LEN() {
+       final Topics topics1 = Topics.of(StringUtil.repeat('a', (int)Topics.TOPIC_MAX_LEN));
+       assertNotNull(topics1);
+
+       // too many
+       assertThrows(IllegalArgumentException.class, () -> Topics.of(StringUtil.repeat('a', (int)Topics.TOPIC_MAX_LEN+1)));
     }
 
 }
