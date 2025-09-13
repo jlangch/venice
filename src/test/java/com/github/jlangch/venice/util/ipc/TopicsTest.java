@@ -55,7 +55,7 @@ public class TopicsTest {
     }
 
     @Test
-    public void test_topics_many() {
+    public void test_topics_multiple() {
         assertThrows(IllegalArgumentException.class, () -> Topics.of((Set<String>)null));
         assertThrows(IllegalArgumentException.class, () -> Topics.of(new HashSet<>()));
         assertThrows(IllegalArgumentException.class, () -> Topics.of(toSet((String)null)));
@@ -139,6 +139,56 @@ public class TopicsTest {
        assertTrue(topics3.getTopicsSet().contains("alpha"));
        assertTrue(topics3.getTopicsSet().contains("beta"));
        assertTrue(topics3.getTopicsSet().contains("gamma"));
+    }
+
+    @Test
+    public void test_topics_distinct_1() {
+       final Topics topics1 = Topics.of(new String[] { "alpha" });
+       assertEquals(1, topics1.getTopicsSet().size());
+       assertTrue(topics1.getTopicsSet().contains("alpha"));
+
+       final Topics topics2 = Topics.of(new String[] { "alpha", "alpha" });
+       assertEquals(1, topics2.getTopicsSet().size());
+       assertTrue(topics2.getTopicsSet().contains("alpha"));
+
+       final Topics topics3 = Topics.of(new String[] { "alpha", "beta", "alpha" });
+       assertEquals(2, topics3.getTopicsSet().size());
+       assertTrue(topics3.getTopicsSet().contains("alpha"));
+       assertTrue(topics3.getTopicsSet().contains("beta"));
+    }
+
+    @Test
+    public void test_topics_distinct_2() {
+       final Topics topics1 = Topics.decode("alpha");
+       assertEquals(1, topics1.getTopicsSet().size());
+       assertTrue(topics1.getTopicsSet().contains("alpha"));
+
+       final Topics topics2 = Topics.decode("alpha,alpha");
+       assertEquals(1, topics2.getTopicsSet().size());
+       assertTrue(topics2.getTopicsSet().contains("alpha"));
+
+       final Topics topics3 = Topics.decode("alpha,beta,alpha");
+       assertEquals(2, topics3.getTopicsSet().size());
+       assertTrue(topics3.getTopicsSet().contains("alpha"));
+       assertTrue(topics3.getTopicsSet().contains("beta"));
+    }
+
+    @Test
+    public void test_topics_many_1() {
+       final Topics topics1 = Topics.decode("10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29");
+       assertEquals(20, topics1.getTopicsSet().size());
+
+       // more than 20
+       assertThrows(IllegalArgumentException.class, () -> Topics.decode("10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30"));
+    }
+
+    @Test
+    public void test_topics_many_2() {
+       final Topics topics1 = Topics.of(toSet("10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29"));
+       assertEquals(20, topics1.getTopicsSet().size());
+
+       // more than 20
+       assertThrows(IllegalArgumentException.class, () -> Topics.of(toSet("10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30")));
     }
 
 }

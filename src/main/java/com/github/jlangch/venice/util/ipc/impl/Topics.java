@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.ipc.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,11 +40,18 @@ public class Topics {
     }
 
     private Topics(final Collection<String> topics) {
-        this.topics.addAll(topics);
+        if (topics instanceof Set) {
+            this.topics.addAll(topics);
+        }
+        else {
+            // remove duplicates
+            final Set<String> distinct = new HashSet<>(topics);
+            this.topics.addAll(distinct.size() == topics.size() ? topics : distinct);
+        }
     }
 
     private Topics(final String[] topics) {
-        for(int ii=0; ii<topics.length; ii++) this.topics.add(topics[ii]);
+        this(Arrays.asList(topics));
     }
 
 
