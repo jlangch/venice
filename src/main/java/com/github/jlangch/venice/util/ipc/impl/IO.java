@@ -24,9 +24,17 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.function.Function;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.json.VncJsonReader;
+import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
+import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
+import com.github.jlangch.venice.nanojson.JsonReader;
+import com.github.jlangch.venice.nanojson.JsonWriter;
 
 
 public class IO {
@@ -138,6 +146,29 @@ public class IO {
         }
     }
 
+    public static VncVal readJson(
+            final String json,
+            final boolean mapKeysToKeywords
+    ) {
+        try {
+            final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
+            return new VncJsonReader(
+                        JsonReader.from(json),
+                        mapKeysToKeywords ? keyFn : null,
+                        null,
+                        false).read();
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to parse JSON data to Venice data!", ex);
+        }
+    }
+
+    public static String writeJson(final VncVal val) {
+        final StringBuilder sb = new StringBuilder();
+        final JsonAppendableWriter writer = JsonWriter.indent("  ").on(sb);
+        new VncJsonWriter(writer, false).write(val).done();
+        return sb.toString();
+    }
 
     public static void safeClose(final SocketChannel ch) {
         if (ch != null) {

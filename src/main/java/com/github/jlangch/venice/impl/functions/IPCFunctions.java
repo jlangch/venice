@@ -50,13 +50,12 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.json.VncJsonReader;
-import com.github.jlangch.venice.nanojson.JsonReader;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.impl.IO;
 
 
 public class IPCFunctions {
@@ -778,7 +777,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return readJson(response.getText());
+                        return IO.readJson(response.getText(), true);
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get server status", ex);
@@ -841,7 +840,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return readJson(response.getText());
+                        return IO.readJson(response.getText(), true);
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get server thread pool statistics", ex);
@@ -902,7 +901,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return readJson(response.getText());
+                        return IO.readJson(response.getText(), true);
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get client thread pool statistics", ex);
@@ -1063,6 +1062,54 @@ public class IPCFunctions {
         };
 
 
+    public static VncFunction ipc_venice_message =
+        new VncFunction(
+                "ipc/venice-message",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/venice-message status topic mimetype data)")
+                    .doc(
+                        "Creates a venice message. \n\n" +
+                        "The Venice data is serialized as JSON for transport within a message")
+            .examples(
+                        "(->> (ipc/venice-message \"test\"                        \n" +
+                        "                         \"application/octet-stream\"    \n" +
+                        "                         {:a 100, :b 200})               \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final VncString topic = Coerce.toVncString(args.nth(0));
+                final VncString mimetype = Coerce.toVncString(args.nth(1));
+                final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(2));
+
+                final IMessage msg = MessageFactory.binary(
+                                        topic.getValue(),
+                                        mimetype.getValue(),
+                                        data.getBytes());
+
+                return new VncJavaObject(msg);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     public static VncFunction ipc_message_to_map =
         new VncFunction(
                 "ipc/message->map",
@@ -1150,14 +1197,6 @@ public class IPCFunctions {
         }
     }
 
-    private static VncVal readJson(final String json) throws Exception {
-        final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
-        return new VncJsonReader(
-                    JsonReader.from(json),
-                    keyFn,
-                    null,
-                    false).read();
-    }
 
     private static class FutureWrapper implements Future<VncVal> {
         public FutureWrapper(final Future<IMessage> future) {
@@ -1219,6 +1258,7 @@ public class IPCFunctions {
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)
                     .add(ipc_binary_message)
+                    .add(ipc_venice_message)
                     .add(ipc_message_to_map)
 
                     .add(ipc_server_status)

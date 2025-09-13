@@ -44,9 +44,6 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
-import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
-import com.github.jlangch.venice.nanojson.JsonWriter;
 import com.github.jlangch.venice.util.ipc.impl.IO;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
@@ -536,10 +533,6 @@ public class TcpClient implements Closeable {
     private Message getClientThreadPoolStatistics() {
         final VncMap statistics = mngdExecutor.info();
 
-        final StringBuilder sb = new StringBuilder();
-        final JsonAppendableWriter writer = JsonWriter.indent("  ").on(sb);
-        new VncJsonWriter(writer, false).write(statistics).done();
-
         return new Message(
                 MessageType.RESPONSE,
                 ResponseStatus.OK,
@@ -547,7 +540,7 @@ public class TcpClient implements Closeable {
                 "client/thread-pool-statistics",
                 "application/json",
                 "UTF-8",
-                sb.toString().getBytes(Charset.forName("UTF-8")));
+                IO.writeJson(statistics).getBytes(Charset.forName("UTF-8")));
     }
 
 

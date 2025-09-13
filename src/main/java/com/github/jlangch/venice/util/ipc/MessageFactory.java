@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.util.ipc.impl.IO;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
@@ -87,6 +89,34 @@ public abstract class MessageFactory {
                 data);
     }
 
+
+    /**
+     * Create a Venice message.
+     *
+     * <p>The Venice data is serialized as JSON for transport within
+     * a message
+     *
+     * @param topic a topic
+     * @param mimetype the mimetype of the message's payload data
+     * @param data venice data
+     * @return the message
+     */
+    public static IMessage venice(
+            final String topic,
+            final VncVal data
+    ) {
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(data);
+
+        return new Message(
+                MessageType.NULL,
+                ResponseStatus.NULL,
+                false,
+                topic,
+                "application/json",
+                "UTF-8",
+                IO.writeJson(data).getBytes(Charset.forName("UTF-8")));
+    }
 
     /**
      * Create a simple hello message.

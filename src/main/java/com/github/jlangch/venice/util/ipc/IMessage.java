@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.github.jlangch.venice.impl.types.VncVal;
+
 
 /**
  * Defines the messages that can be exchanged between a TcpClient and a TcpServer.
@@ -114,6 +116,11 @@ public interface IMessage {
      * @return the message textual payload data. Throws a VncException if the payload is binary data.
      */
     String getText() ;
+
+    /**
+     * @return the message payload as Venice data. Throws a VncException if the payload cannot be converted.
+     */
+    VncVal getVenice();
 
     /**
      * @return <code>true</code> if this message is a text message, else <code>false</code>

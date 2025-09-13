@@ -62,6 +62,7 @@ public class IpcSection implements ISectionBuilder {
         msg.addItem(diBuilder.getDocItem("ipc/text-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/plain-text-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/binary-message", false));
+        msg.addItem(diBuilder.getDocItem("ipc/venice-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/message->map", false));
 
         final DocSection util = new DocSection("Util", "ipc.util");

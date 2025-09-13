@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -206,7 +207,17 @@ public class Message implements IMessage {
             return new String(data, Charset.forName(charset));
         }
         else {
-            throw new VncException("A binary message can be converted to text data!");
+            throw new VncException("A binary message can not be converted to text data!");
+        }
+    }
+
+    @Override
+    public VncVal getVenice() {
+        if (isTextMessage()) {
+            return IO.readJson(new String(data, Charset.forName(charset)), true);
+        }
+        else {
+            throw new VncException("A binary message can not be converted to Venice data!");
         }
     }
 

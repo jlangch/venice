@@ -32,9 +32,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
-import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
-import com.github.jlangch.venice.nanojson.JsonWriter;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -334,15 +331,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private Message getServerThreadPoolStatistics() {
         final VncMap statistics = serverThreadPoolStatistics.get();
 
-        final StringBuilder sb = new StringBuilder();
-        final JsonAppendableWriter writer = JsonWriter.indent("  ").on(sb);
-        new VncJsonWriter(writer, false).write(statistics).done();
-
         return createTextResponseMessage(
                 ResponseStatus.OK,
                 "server/thread-pool-statistics",
                 "application/json",
-                sb.toString());
+                IO.writeJson(statistics));
     }
 
 
