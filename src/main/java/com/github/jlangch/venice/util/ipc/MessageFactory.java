@@ -25,9 +25,9 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.util.ipc.impl.IO;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
+import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
 public abstract class MessageFactory {
@@ -115,7 +115,7 @@ public abstract class MessageFactory {
                 Topics.of(topic),
                 "application/json",
                 "UTF-8",
-                IO.writeJson(data).getBytes(Charset.forName("UTF-8")));
+                Json.writeJson(data).getBytes(Charset.forName("UTF-8")));
     }
 
     /**

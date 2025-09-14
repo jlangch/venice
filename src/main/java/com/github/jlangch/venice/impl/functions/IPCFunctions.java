@@ -56,7 +56,7 @@ import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
-import com.github.jlangch.venice.util.ipc.impl.IO;
+import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
 public class IPCFunctions {
@@ -778,7 +778,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return IO.readJson(response.getText(), true);
+                        return Json.readJson(response.getText(), true);
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get server status", ex);
@@ -841,7 +841,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return IO.readJson(response.getText(), true);
+                        return Json.readJson(response.getText(), true);
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get server thread pool statistics", ex);
@@ -902,7 +902,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return IO.readJson(response.getText(), true);
+                        return Json.readJson(response.getText(), true);
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get client thread pool statistics", ex);

@@ -43,11 +43,12 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
-import com.github.jlangch.venice.util.ipc.impl.IO;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
 public class TcpClient implements Closeable {
@@ -540,7 +541,7 @@ public class TcpClient implements Closeable {
                 Topics.of("client/thread-pool-statistics"),
                 "application/json",
                 "UTF-8",
-                toBytes(IO.writeJson(statistics), "UTF-8"));
+                toBytes(Json.writeJson(statistics), "UTF-8"));
     }
 
 

@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
+import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
 /**
@@ -216,7 +217,7 @@ public class Message implements IMessage {
     public VncVal getVeniceData() {
         if (isTextMessage()) {
             if ("application/json".equals(getMimetype())) {
-                return IO.readJson(new String(data, Charset.forName(charset)), true);
+                return Json.readJson(new String(data, Charset.forName(charset)), true);
             }
             else {
                 throw new VncException(

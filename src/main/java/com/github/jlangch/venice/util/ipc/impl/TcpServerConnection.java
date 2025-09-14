@@ -29,13 +29,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.impl.util.Error;
+import com.github.jlangch.venice.util.ipc.impl.util.ErrorCircularBuffer;
+import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+import com.github.jlangch.venice.util.ipc.impl.util.Json;
+import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 
 
 public class TcpServerConnection implements IPublisher, Runnable {
@@ -130,7 +134,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         ) {
             if (mode == State.Request_Response) {
                 if (request.isOneway()) {
-                    // oneway request -> Cannot send and error message back
+                    // oneway request -> cannot send and error message back
                     errorBuffer.push(
                             new Error(
                                     "Bad request type '" + request.getType() + "'! "
@@ -163,7 +167,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         if (request.getData().length > maxMessageSize.get()) {
             if (mode == State.Request_Response) {
                 if (request.isOneway()) {
-                    // oneway request -> Cannot send and error message back
+                    // oneway request -> cannot send and error message back
                     errorBuffer.push(
                             new Error(
                                     "Request too large! Cannot send error response for oneway request!",
@@ -337,19 +341,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    ResponseStatus.OK,
                    "server/status",
                    "application/json",
-                   "{\"running\": " + server.isRunning() + ", " +
-                    "\"mode\": \"" + mode.name() + "\", " +
-                    "\"connection_count\": " + statistics.getConnectionCount() + ", " +
-                    "\"message_count\": " + statistics.getMessageCount() + ", " +
-                    "\"publish_count\": " + statistics.getPublishCount() + ", " +
-                    "\"response_discarded_count\": " + statistics.getDiscardedResponseCount() + ", " +
-                    "\"publish_discarded_count\": " + statistics.getDiscardedPublishCount() + ", " +
-                    "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount() + ", " +
-                    "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount() + ", " +
-                    "\"publish_queue_capacity\": " + publishQueueCapacity + ", " +
-                    "\"message_size_min\": " + TcpServer.MESSAGE_LIMIT_MIN + ", " +
-                    "\"message_size_max\": " + maxMessageSize.get() +
-                   "}");
+                   new JsonBuilder()
+                   .add("running", server.isRunning())
+                   .add("mode", mode.name())
+                   .add("connection_count", statistics.getConnectionCount())
+                   .add("message_count", statistics.getMessageCount())
+                   .add("publish_count", statistics.getPublishCount())
+                   .add("response_discarded_count", statistics.getDiscardedResponseCount())
+                   .add("publish_discarded_count", statistics.getDiscardedPublishCount())
+                   .add("subscription_client_count", subscriptions.getClientSubscriptionCount())
+                   .add("subscription_topic_count", subscriptions.getTopicSubscriptionCount())
+                   .add("publish_queue_capacity", publishQueueCapacity)
+                   .add("message_size_min", TcpServer.MESSAGE_LIMIT_MIN)
+                   .add("message_size_max", maxMessageSize.get())
+                   .toJson());
     }
 
     private Message getNextServerError() {
@@ -360,23 +365,25 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         ResponseStatus.OK,
                         "server/error",
                         "application/json",
-                        "{ \"status\": \"no_errors_available\" }");
+                        new JsonBuilder()
+                                .add("status", "no_errors_available")
+                                .toJson());
             }
             else {
                 final String description = err.getDescription();
                 final Message message = err.getMessage();
                 final Exception ex = err.getException();
 
-                final VncMap data = VncHashMap.of(
-                        vstr("status"), vstr("error"),
-                        vstr("description"),vstr(description),
-                        vstr("exception"), vstr(ex.getMessage()));
-
                 return createTextResponseMessage(
                         ResponseStatus.OK,
                         "server/error",
                         "application/json",
-                        IO.writeJson(data));
+                        new JsonBuilder()
+                                .add("status", "error")
+                                .add("description", description)
+                                .add("exception", ex.getMessage())
+                                .add("errors-left", errorBuffer.size())
+                                .toJson());
             }
         }
         catch(Exception ex) {
@@ -384,7 +391,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ResponseStatus.OK,
                     "server/error",
                     "application/json",
-                    "{ \"status\": \"temporarily_unavailable\" }");
+                    new JsonBuilder()
+                            .add("status", "temporarily_unavailable")
+                            .toJson());
         }
     }
 
@@ -395,7 +404,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ResponseStatus.OK,
                 "server/thread-pool-statistics",
                 "application/json",
-                IO.writeJson(statistics));
+                Json.writeJson(statistics));
     }
 
 
@@ -432,14 +441,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return s.getBytes(Charset.forName(charset));
     }
 
-    private static VncString vstr(final String s) {
-        return new VncString(s);
-    }
-
 
     private static enum State { Request_Response, Publish, Terminated };
 
-    private static int ERROR_QUEUE_CAPACITY = 50;
+    private static final int ERROR_QUEUE_CAPACITY = 50;
 
     private State mode = State.Request_Response;
 
