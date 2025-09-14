@@ -45,10 +45,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final AtomicLong maxMessageSize,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
-            final AtomicLong connectionCount,
-            final AtomicLong serverMessageCount,
-            final AtomicLong serverPublishCount,
-            final AtomicLong serverDiscardedPublishCount,
+            final ServerStatistics statistics,
             final Supplier<VncMap> serverThreadPoolStatistics
     ) {
         this.server = server;
@@ -57,10 +54,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.maxMessageSize = maxMessageSize;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
-        this.connectionCount = connectionCount;
-        this.serverMessageCount = serverMessageCount;
-        this.serverPublishCount = serverPublishCount;
-        this.serverDiscardedPublishCount = serverDiscardedPublishCount;
+        this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
 
         this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
@@ -70,15 +64,14 @@ public class TcpServerConnection implements IPublisher, Runnable {
     @Override
     public void run() {
         try {
-            connectionCount.incrementAndGet();
-
+            statistics.incrementConnectionCount();
             while(mode != State.Terminated && server.isRunning() && ch.isOpen()) {
                 if (mode == State.Request_Response) {
                     // process a request/response message
                     mode = processRequestResponse();
                 }
                 else if (mode == State.Publish) {
-                    // process a publish message if available for this connection
+                    // process publish messages if there are any waiting
                     mode = processPublication();
                 }
                 else {
@@ -92,7 +85,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             //   - quit this connection and close the channel
         }
         finally {
-            connectionCount.decrementAndGet();
+            statistics.decrementConnectionCount();
             subscriptions.removeSubscriptions(this);
             IO.safeClose(ch);
         }
@@ -110,7 +103,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ignore) {
             // there is no dead letter queue yet, just count the
             // discarded messages
-            serverDiscardedPublishCount.incrementAndGet();
+            // TODO: publish failure
+            statistics.incrementDiscardedPublishCount();
         }
     }
 
@@ -121,7 +115,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return State.Terminated; // client closed connection
         }
 
-        serverMessageCount.incrementAndGet();
+        statistics.incrementMessageCount();
 
         if (!server.isRunning()) {
             return State.Terminated;  // this server was closed
@@ -133,20 +127,27 @@ public class TcpServerConnection implements IPublisher, Runnable {
               || isRequestSubscribe(request))
         ) {
             if (mode == State.Request_Response) {
-                Protocol.sendMessage(
-                    ch,
-                    createTextResponseMessage(
-                       ResponseStatus.BAD_REQUEST,
-                       request.getTopic(),
-                       "text/plain",
-                       "Bad request type: " + request.getType().name()));
-
-                return State.Request_Response;
+                if (request.isOneway()) {
+                    // Cannot send and error message back
+                    // TODO: invalid message
+                    statistics.incrementDiscardedResponseCount();
+                }
+                else {
+                    Protocol.sendMessage(
+                        ch,
+                        createTextResponseMessage(
+                           ResponseStatus.BAD_REQUEST,
+                           request.getTopic(),
+                           "text/plain",
+                           "Bad request type: " + request.getType().name()));
+                }
             }
             else {
-                this.serverDiscardedPublishCount.incrementAndGet();
-                return mode;
+                // TODO: invalid message
+                statistics.incrementDiscardedPublishCount();
             }
+
+            return mode;
         }
 
         if (request.getData().length > maxMessageSize.get()) {
@@ -156,7 +157,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 return State.Request_Response;
             }
             else {
-                this.serverDiscardedPublishCount.incrementAndGet();
+                statistics.incrementDiscardedPublishCount();
                 return mode;
             }
         }
@@ -216,10 +217,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private State processPublication() throws InterruptedException {
+        // check the publish queue
         final Message msg = publishQueue.poll(5, TimeUnit.SECONDS);
 
         if (msg != null) {
-            serverPublishCount.incrementAndGet();
+            statistics.incrementPublishCount();
             Protocol.sendMessage(ch, msg.withType(MessageType.REQUEST, true));
         }
 
@@ -317,10 +319,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    "application/json",
                    "{\"running\": " + server.isRunning() + ", " +
                     "\"mode\": \"" + mode.name() + "\", " +
-                    "\"connection_count\": " + connectionCount.get() + ", " +
-                    "\"message_count\": " + serverMessageCount.get() + ", " +
-                    "\"publish_count\": " + serverPublishCount.get() + ", " +
-                    "\"publish_discarded_count\": " + serverDiscardedPublishCount.get() + ", " +
+                    "\"connection_count\": " + statistics.getConnectionCount() + ", " +
+                    "\"message_count\": " + statistics.getMessageCount() + ", " +
+                    "\"publish_count\": " + statistics.getPublishCount() + ", " +
+                    "\"response_discarded_count\": " + statistics.getDiscardedResponseCount() + ", " +
+                    "\"publish_discarded_count\": " + statistics.getDiscardedPublishCount() + ", " +
                     "\"subscription_client_count\": " + subscriptions.getClientSubscriptionCount() + ", " +
                     "\"subscription_topic_count\": " + subscriptions.getTopicSubscriptionCount() + ", " +
                     "\"publish_queue_capacity\": " + publishQueueCapacity + ", " +
@@ -413,10 +416,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final AtomicLong maxMessageSize;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
-    private final AtomicLong connectionCount;
-    private final AtomicLong serverMessageCount;
-    private final AtomicLong serverPublishCount;
-    private final AtomicLong serverDiscardedPublishCount;
+    private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
 
     private final ErrorCircularBuffer errorBuffer;

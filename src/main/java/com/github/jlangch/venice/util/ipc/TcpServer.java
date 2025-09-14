@@ -37,6 +37,7 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 
@@ -109,40 +110,17 @@ public class TcpServer implements Closeable {
     }
 
     /**
-     * @return the server's connection count
+     * @return the server's statistics
      */
-    public long getConnectionCount() {
-        return connectionCount.get();
-    }
-
-    /**
-     * @return the server's message count
-     */
-    public long getMessageCount() {
-        return messageCount.get();
-    }
-
-    /**
-     * @return the server's publish count
-     */
-    public long getPublishCount() {
-        return publishCount.get();
-    }
-
-    /**
-     * @return the server's publish discard count
-     */
-    public long getPublishDiscardCount() {
-        return discardedPublishCount.get();
+    public ServerStatistics getStatistics() {
+        return statistics;
     }
 
     /**
      * clear the server statistics
      */
     public void clearStatistics() {
-        messageCount.set(0L);
-        publishCount.set(0L);
-        discardedPublishCount.set(0L);
+        statistics.clear();
     }
 
     /**
@@ -172,9 +150,7 @@ public class TcpServer implements Closeable {
                                                                    this, channel, handler,
                                                                    maxMessageSize, subscriptions,
                                                                    publishQueueCapacity,
-                                                                   connectionCount,
-                                                                   messageCount, publishCount,
-                                                                   discardedPublishCount,
+                                                                   statistics,
                                                                    () -> mngdExecutor.info());
 
                             executor.execute(conn);
@@ -278,10 +254,7 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final int publishQueueCapacity = 50;
-    private final AtomicLong connectionCount = new AtomicLong(0L);
-    private final AtomicLong messageCount = new AtomicLong(0L);
-    private final AtomicLong publishCount = new AtomicLong(0L);
-    private final AtomicLong discardedPublishCount = new AtomicLong(0L);
+    private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =

@@ -56,12 +56,13 @@ public class TcpRequestResponseLoadTest {
             assertEquals(10_000L, client.getMessageSendCount());
             assertEquals(10_000L, client.getMessageReceiveCount());
 
-            assertEquals(1L, server.getConnectionCount());
+            assertEquals(1L, server.getStatistics().getConnectionCount());
 
-            assertEquals(10_000L, server.getMessageCount());
-            assertEquals(0L, server.getPublishCount());
-            assertEquals(0L, server.getPublishDiscardCount());
-        }
+            assertEquals(10_000L, server.getStatistics().getMessageCount());
+            assertEquals(0L, server.getStatistics().getPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedResponseCount());
+       }
         finally {
             client.close();
             server.close();
@@ -100,12 +101,13 @@ public class TcpRequestResponseLoadTest {
             assertEquals(5_000L, client2.getMessageSendCount());
             assertEquals(5_000L, client2.getMessageReceiveCount());
 
-            assertEquals(2L, server.getConnectionCount());
+            assertEquals(2L, server.getStatistics().getConnectionCount());
 
-            assertEquals(10_000L, server.getMessageCount());
-            assertEquals(0L, server.getPublishCount());
-            assertEquals(0L, server.getPublishDiscardCount());
-        }
+            assertEquals(10_000L, server.getStatistics().getMessageCount());
+            assertEquals(0L, server.getStatistics().getPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedResponseCount());
+       }
         finally {
             client1.close();
             client2.close();
@@ -144,11 +146,12 @@ public class TcpRequestResponseLoadTest {
             assertEquals(10_001L, client.getMessageSendCount());
             assertEquals(1L, client.getMessageReceiveCount());
 
-            assertEquals(1L, server.getConnectionCount());
+            assertEquals(1L, server.getStatistics().getConnectionCount());
 
-            assertEquals(10_001L, server.getMessageCount());
-            assertEquals(0L, server.getPublishCount());
-            assertEquals(0L, server.getPublishDiscardCount());
+            assertEquals(10_001L, server.getStatistics().getMessageCount());
+            assertEquals(0L, server.getStatistics().getPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedResponseCount());
         }
         finally {
             client.close();

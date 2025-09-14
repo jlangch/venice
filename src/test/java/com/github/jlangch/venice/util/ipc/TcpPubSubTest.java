@@ -118,9 +118,10 @@ public class TcpPubSubTest {
 
             sleep(200);
 
-            assertEquals(18, server.getMessageCount());
-            assertEquals(25, server.getPublishCount());
-            assertEquals( 0, server.getPublishDiscardCount());
+            assertEquals(18, server.getStatistics().getMessageCount());
+            assertEquals(25, server.getStatistics().getPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
+            assertEquals( 0, server.getStatistics().getDiscardedResponseCount());
         }
         finally {
             clientPub.close();
