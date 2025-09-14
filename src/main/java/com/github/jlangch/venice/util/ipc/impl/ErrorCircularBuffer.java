@@ -30,7 +30,7 @@ import java.util.LinkedList;
  * <p>It's not designed for heavy traffic, but works fine for buffering
  * low traffic errors.
  */
-public class ErrorCircularBuffer {
+public class ErrorCircularBuffer<T> {
 
     public ErrorCircularBuffer(final int capacity) {
         this.capacity = capacity;
@@ -49,25 +49,25 @@ public class ErrorCircularBuffer {
         }
     }
 
-    public Message pop() {
+    public T pop() {
         synchronized(this) {
             return buffer.isEmpty() ? null : buffer.getFirst();
         }
     }
 
-    public void push(final Message message) {
-        if (message == null) return;
+    public void push(final T item) {
+        if (item == null) return;
 
         synchronized(this) {
             while (buffer.size() > capacity) {
                 buffer.removeFirst();
             }
 
-            buffer.addLast(message);
+            buffer.addLast(item);
         }
     }
 
 
     private final int capacity;
-    private final LinkedList<Message> buffer;
+    private final LinkedList<T> buffer;
 }

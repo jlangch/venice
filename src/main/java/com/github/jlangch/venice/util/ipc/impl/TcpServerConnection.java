@@ -58,7 +58,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
 
         this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
-        this.errorBuffer = new ErrorCircularBuffer(ERROR_QUEUE_CAPACITY);
+        this.errorBuffer = new ErrorCircularBuffer<>(ERROR_QUEUE_CAPACITY);
     }
 
     @Override
@@ -128,8 +128,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         ) {
             if (mode == State.Request_Response) {
                 if (request.isOneway()) {
-                    // Cannot send and error message back
-                    // TODO: invalid message
+                    // oneway request -> Cannot send and error message back
                     statistics.incrementDiscardedResponseCount();
                 }
                 else {
@@ -143,7 +142,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 }
             }
             else {
-                // TODO: invalid message
                 statistics.incrementDiscardedPublishCount();
             }
 
@@ -151,10 +149,16 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
 
         if (request.getData().length > maxMessageSize.get()) {
-            if (mode == State.Request_Response && !request.isOneway()) {
-                // return error: message to large
-                sendTooLargeMessageResponse(request);
-                return State.Request_Response;
+            if (mode == State.Request_Response) {
+                if (request.isOneway()) {
+                    // oneway request -> Cannot send and error message back
+                    statistics.incrementDiscardedResponseCount();
+                }
+                else {
+                    // return error: message to large
+                    sendTooLargeMessageResponse(request);
+                    return State.Request_Response;
+                }
             }
             else {
                 statistics.incrementDiscardedPublishCount();
@@ -419,6 +423,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
 
-    private final ErrorCircularBuffer errorBuffer;
+    private final ErrorCircularBuffer<Message> errorBuffer;
     private final LinkedBlockingQueue<Message> publishQueue;
 }
