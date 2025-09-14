@@ -29,6 +29,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -100,10 +102,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
             // a backlash if the queue is full, the message will be discarded!
             publishQueue.offer(msg, 1, TimeUnit.SECONDS);
         }
-        catch(Exception ignore) {
+        catch(Exception ex) {
             // there is no dead letter queue yet, just count the
             // discarded messages
-            // TODO: publish failure
+            errorBuffer.push(new Error("Failed to enque message for publishing!", msg, ex));
             statistics.incrementDiscardedPublishCount();
         }
     }
@@ -129,6 +131,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
             if (mode == State.Request_Response) {
                 if (request.isOneway()) {
                     // oneway request -> Cannot send and error message back
+                    errorBuffer.push(
+                            new Error(
+                                    "Bad request type '" + request.getType() + "'! "
+                                        + "Cannot send error response for oneway request!",
+                                    request));
                     statistics.incrementDiscardedResponseCount();
                 }
                 else {
@@ -142,6 +149,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 }
             }
             else {
+                errorBuffer.push(
+                        new Error(
+                                "Bad request type '" + request.getType() + "'! "
+                                    + "Cannot send error response for channel in publish mode!",
+                                request));
                 statistics.incrementDiscardedPublishCount();
             }
 
@@ -152,6 +164,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
             if (mode == State.Request_Response) {
                 if (request.isOneway()) {
                     // oneway request -> Cannot send and error message back
+                    errorBuffer.push(
+                            new Error(
+                                    "Request too large! Cannot send error response for oneway request!",
+                                    request));
                     statistics.incrementDiscardedResponseCount();
                 }
                 else {
@@ -338,7 +354,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private Message getNextServerError() {
         try {
-            final Message err = errorBuffer.pop();
+            final Error err = errorBuffer.pop();
             if (err == null) {
                 return createTextResponseMessage(
                         ResponseStatus.OK,
@@ -347,12 +363,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         "{ \"status\": \"no_errors_available\" }");
             }
             else {
+                final String description = err.getDescription();
+                final Message message = err.getMessage();
+                final Exception ex = err.getException();
+
+                final VncMap data = VncHashMap.of(
+                        vstr("status"), vstr("error"),
+                        vstr("description"),vstr(description),
+                        vstr("exception"), vstr(ex.getMessage()));
+
                 return createTextResponseMessage(
                         ResponseStatus.OK,
                         "server/error",
                         "application/json",
-                        "{ \"status\": \"error\"" +
-                        "}");
+                        IO.writeJson(data));
             }
         }
         catch(Exception ex) {
@@ -408,6 +432,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return s.getBytes(Charset.forName(charset));
     }
 
+    private static VncString vstr(final String s) {
+        return new VncString(s);
+    }
+
+
     private static enum State { Request_Response, Publish, Terminated };
 
     private static int ERROR_QUEUE_CAPACITY = 50;
@@ -423,6 +452,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
 
-    private final ErrorCircularBuffer<Message> errorBuffer;
+    private final ErrorCircularBuffer<Error> errorBuffer;
     private final LinkedBlockingQueue<Message> publishQueue;
 }
