@@ -390,6 +390,85 @@ public class TcpClient implements Closeable {
         }
     }
 
+    /**
+     * Offer a message to a queue. Throws a TimeoutException if the response
+     * is not received within the given timeout.
+     *
+     * <p>The server sends always a response message back.
+     *
+     * <p>throws <code>TimeoutException</code> if the message send timed out
+     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     *
+     * @param msg       a message
+     * @param queueName a queue name
+     * @param timeout   the maximum time to wait
+     * @param unit      the time unit of the timeout argument
+     * @return the server's response
+     */
+    public IMessage offer(
+            final IMessage msg,
+            final String queueName,
+            final long timeout,
+            final TimeUnit unit
+    ) {
+        Objects.requireNonNull(msg);
+        Objects.requireNonNull(queueName);
+        Objects.requireNonNull(unit);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.OFFER,
+                                ResponseStatus.NULL,
+                                false,
+                                queueName,
+                                -1,
+                                ((Message)msg).getTopics(),
+                                ((Message)msg).getMimetype(),
+                                ((Message)msg).getCharset(),
+                                ((Message)msg).getData());
+
+        return send(m, timeout, unit);
+    }
+
+    /**
+     * Poll a message from a queue. Throws a TimeoutException if the response
+     * is not received within the given timeout.
+     *
+     * <p>The server sends always a response message back.
+     *
+     * <p>throws <code>TimeoutException</code> if the message send timed out
+     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     *
+     * @param msg       a message
+     * @param queueName a queue name
+     * @param timeout   the maximum time to wait
+     * @param unit      the time unit of the timeout argument
+     * @return the server's response
+     */
+    public IMessage poll(
+            final String queueName,
+            final long timeout,
+            final TimeUnit unit
+    ) {
+        Objects.requireNonNull(queueName);
+        Objects.requireNonNull(unit);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.POLL,
+                                ResponseStatus.NULL,
+                                false,
+                                queueName,
+                                -1,
+                                Topics.of("queue/poll"),
+                                "application/octet-stream",
+                                null,
+                                new byte[0]);
+
+        return send(m, timeout, unit);
+    }
+
+
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
 

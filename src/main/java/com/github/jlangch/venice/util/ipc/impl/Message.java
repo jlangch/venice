@@ -88,7 +88,6 @@ public class Message implements IMessage {
             final String charset,
             final byte[] data
     ) {
-        Objects.requireNonNull(id);
         Objects.requireNonNull(type);
         Objects.requireNonNull(responseStatus);
         Objects.requireNonNull(topics);
@@ -98,12 +97,12 @@ public class Message implements IMessage {
         validateMimetype(mimetype);
         validateCharset(charset);
 
-        this.id = id;
+        this.id = id == null ? UUID.randomUUID() : id;
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
         this.queueName = StringUtil.trimToNull(queueName);
-        this.timestamp = timestamp;
+        this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -112,7 +111,9 @@ public class Message implements IMessage {
 
 
     /**
-     * Change the type of a message and oneway mode
+     * Change the type of a message and oneway mode.
+     *
+     * <p>Removes the queue name on the message.
      *
      * @param type a type
      * @param oneway oneway mode
@@ -123,7 +124,7 @@ public class Message implements IMessage {
         return new Message(
                 id,
                 type, responseStatus, oneway,
-                queueName, timestamp,
+                null, timestamp,
                 topics, mimetype, charset, data);
     }
 

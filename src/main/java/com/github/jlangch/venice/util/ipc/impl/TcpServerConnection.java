@@ -23,7 +23,6 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +31,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -54,6 +52,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final AtomicLong maxMessageSize,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
+            final Map<String, LinkedBlockingQueue<Message>> p2pQueues,
             final ServerStatistics statistics,
             final Supplier<VncMap> serverThreadPoolStatistics
     ) {
@@ -68,7 +67,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
         this.errorBuffer = new ErrorCircularBuffer<>(ERROR_QUEUE_CAPACITY);
-        this.p2pQueues = new HashMap<>();
+        this.p2pQueues = p2pQueues;
     }
 
     @Override
@@ -118,7 +117,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private State processRequestResponse() {
+    private State processRequestResponse() throws InterruptedException {
         // [1] receive message
         final Message request = Protocol.receiveMessage(ch);
         if (request == null) {
@@ -134,7 +133,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // send an error back if the received message is not a request
         if (!(isRequestMsg(request)
               || isRequestPublish(request)
-              || isRequestSubscribe(request))
+              || isRequestSubscribe(request)
+              || isRequestOffer(request)
+              || isRequestPoll(request))
         ) {
             handleInvalidRequestType(request);
             return mode;
@@ -157,13 +158,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
             handlePublish(request);
             return State.Request_Response;
         }
-        else if (isRequestSubscribe(request)) {
-            // the client wants to to subscribe a topic
-            handleSubscribe(request);
-
-            // switch to publish mode for this connections
-            return State.Publish;
-        }
         else if (isRequestMsg(request)) {
             // client sent a normal message request, send the response
             // back
@@ -182,6 +176,25 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
 
             return State.Request_Response;
+        }
+        else if (isRequestOffer(request)) {
+            // the client offers a new message to a queue
+            handleOffer(request);
+
+            return State.Request_Response;
+        }
+        else if (isRequestPoll(request)) {
+            // the client polls a new message from a queue
+            handlePoll(request);
+
+            return State.Request_Response;
+        }
+        else if (isRequestSubscribe(request)) {
+            // the client wants to subscribe a topic
+            handleSubscribe(request);
+
+            // switch to publish mode for this connections
+            return State.Publish;
         }
         else {
             // should not get here
@@ -211,10 +224,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             else {
                 if (response == null) {
                     // create a standard response
-                    return createTextResponseMessage(
+                    return createPlainTextResponseMessage(
                               ResponseStatus.OK,
                               request.getTopic(),
-                              "text/plain",
                               "");
                 }
                 else {
@@ -230,10 +242,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
             else {
                 // send error response
-                return createTextResponseMessage(
+                return createPlainTextResponseMessage(
                          ResponseStatus.HANDLER_ERROR,
                          request.getTopic(),
-                         "text/plain",
                          ExceptionUtil.printStackTraceToString(ex));
             }
         }
@@ -246,11 +257,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // acknowledge the subscription
         Protocol.sendMessage(
             ch,
-            createTextResponseMessage(
+            createPlainTextResponseMessage(
                 ResponseStatus.OK,
                 request.getTopic(),
-                "text/plain",
-                "subscribed to the topic"));
+                "Subscribed to the topic."));
     }
 
     private void handlePublish(final Message request) {
@@ -260,11 +270,72 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // acknowledge the publish
         Protocol.sendMessage(
             ch,
-            createTextResponseMessage(
+            createPlainTextResponseMessage(
                 ResponseStatus.OK,
                 request.getTopic(),
-                "text/plain",
-                "Message has been enqued to publish"));
+                "Message has been enqued to publish."));
+    }
+
+    private void handleOffer(final Message request) throws InterruptedException {
+        final String queueName = request.getQueueName();
+        final LinkedBlockingQueue<Message> queue = p2pQueues.get(queueName);
+        if (queue != null) {
+            final Message msg = request.withType(MessageType.REQUEST, false);
+            if (queue.offer(msg, 0, TimeUnit.MILLISECONDS)) {
+                Protocol.sendMessage(
+                    ch,
+                    createPlainTextResponseMessage(
+                        ResponseStatus.OK,
+                        request.getTopic(),
+                        "Offered the message to the queue."));
+            }
+            else {
+                Protocol.sendMessage(
+                    ch,
+                    createPlainTextResponseMessage(
+                        ResponseStatus.QUEUE_FULL,
+                        request.getTopic(),
+                        "Offer rejected! The queue is full."));
+            }
+        }
+        else {
+            Protocol.sendMessage(
+                ch,
+                createPlainTextResponseMessage(
+                    ResponseStatus.QUEUE_NOT_FOUND,
+                    request.getTopic(),
+                    "Offer rejected! The queue does not exist."));
+        }
+    }
+
+    private void handlePoll(final Message request) throws InterruptedException {
+        final String queueName = request.getQueueName();
+        final LinkedBlockingQueue<Message> queue = p2pQueues.get(queueName);
+        if (queue != null) {
+            final Message msg = queue.poll(0, TimeUnit.MILLISECONDS);
+            if (msg != null) {
+               Protocol.sendMessage(
+                   ch,
+                   msg.withType(MessageType.RESPONSE, true)
+                      .withResponseStatus(ResponseStatus.OK));
+            }
+            else {
+                Protocol.sendMessage(
+                    ch,
+                    createPlainTextResponseMessage(
+                        ResponseStatus.QUEUE_EMPTY,
+                        request.getTopic(),
+                        "Poll rejected! The queue is empty."));
+            }
+        }
+        else {
+            Protocol.sendMessage(
+                ch,
+                createPlainTextResponseMessage(
+                    ResponseStatus.QUEUE_NOT_FOUND,
+                    request.getTopic(),
+                    "Poll rejected! The queue does not exist."));
+        }
     }
 
     private void handleTcpServerRequest(final Message request) {
@@ -277,19 +348,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else if ("tcp-server/error".equals(request.getTopic())) {
             Protocol.sendMessage(ch, getTcpServerNextError());
         }
-        else if ("tcp-server/create-queue".equals(request.getTopic())) {
-            Protocol.sendMessage(ch, createQueue(request));
-        }
-        else if ("tcp-server/remove-queue".equals(request.getTopic())) {
-            Protocol.sendMessage(ch, removeQueue(request));
-        }
         else {
             Protocol.sendMessage(
                 ch,
-                createTextResponseMessage(
+                createPlainTextResponseMessage(
                     ResponseStatus.BAD_REQUEST,
                     request.getTopic(),
-                    "text/plain",
                     "Unknown tcp server request topic. \n"
                       + "Valid topics are:\n"
                       + "  • tcp-server/status\n"
@@ -312,10 +376,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             else {
                 Protocol.sendMessage(
                     ch,
-                    createTextResponseMessage(
+                    createPlainTextResponseMessage(
                        ResponseStatus.BAD_REQUEST,
                        request.getTopic(),
-                       "text/plain",
                        "Bad request type: " + request.getType().name()));
             }
         }
@@ -354,10 +417,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private Message createTooLargeMessageResponse(final Message request) {
-        return createTextResponseMessage(
+        return createPlainTextResponseMessage(
                 ResponseStatus.BAD_REQUEST,
                 request.getTopic(),
-                "text/plain",
                 String.format(
                         "The message (%d bytes) is too large! The limit is at %d bytes.",
                         request.getData().length,
@@ -365,10 +427,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private Message getTcpServerStatus() {
-        return createTextResponseMessage(
+        return createJsonResponseMessage(
                    ResponseStatus.OK,
                    "tcp-server/status",
-                   "application/json",
                    new JsonBuilder()
                            .add("running", server.isRunning())
                            .add("mode", mode.name())
@@ -381,66 +442,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("subscription_topic_count", subscriptions.getTopicSubscriptionCount())
                            .add("publish_queue_capacity", publishQueueCapacity)
                            .add("p2p-queue-count", p2pQueues.size())
+                           .add("p2p-queue-capacity", P2P_QUEUE_CAPACITY)
+                           .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
                            .add("message_size_min", TcpServer.MESSAGE_LIMIT_MIN)
                            .add("message_size_max", maxMessageSize.get())
                            .toJson());
-    }
-
-    private Message createQueue(final Message request) {
-        final String queueName = request.getQueueName();
-        if (StringUtil.isBlank(queueName)) {
-            return createTextResponseMessage(
-                    ResponseStatus.BAD_REQUEST,
-                    request.getTopic(),
-                    "text/plain",
-                    "No queue name passed with the message");
-        }
-        else {
-            if (p2pQueues.containsKey(queueName)) {
-                return createTextResponseMessage(
-                        ResponseStatus.OK,
-                        request.getTopic(),
-                        "text/plain",
-                        "The queue does already exist");
-            }
-            else {
-                p2pQueues.put(queueName, new LinkedBlockingQueue<Message>(1000));
-                return createTextResponseMessage(
-                        ResponseStatus.OK,
-                        request.getTopic(),
-                        "text/plain",
-                        "The queue has been created");
-            }
-        }
-    }
-
-    private Message removeQueue(final Message request) {
-        final String queueName = request.getQueueName();
-        if (StringUtil.isBlank(queueName)) {
-            return createTextResponseMessage(
-                    ResponseStatus.BAD_REQUEST,
-                    request.getTopic(),
-                    "text/plain",
-                    "No queue name passed with the message");
-        }
-        else {
-            p2pQueues.remove(queueName);
-            return createTextResponseMessage(
-                    ResponseStatus.OK,
-                    request.getTopic(),
-                    "text/plain",
-                    "Queue removed");
-        }
     }
 
     private Message getTcpServerNextError() {
         try {
             final Error err = errorBuffer.pop();
             if (err == null) {
-                return createTextResponseMessage(
+                return createJsonResponseMessage(
                         ResponseStatus.OK,
                         "tcp-server/error",
-                        "application/json",
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
                                 .toJson());
@@ -450,10 +465,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 final Exception ex = err.getException();
                 final String exMsg = ex == null ? null :  ex.getMessage();
 
-                return createTextResponseMessage(
+                return createJsonResponseMessage(
                         ResponseStatus.OK,
                         "tcp-server/error",
-                        "application/json",
                         new JsonBuilder()
                                 .add("status", "error")
                                 .add("description", description)
@@ -463,10 +477,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
         }
         catch(Exception ex) {
-            return createTextResponseMessage(
+            return createJsonResponseMessage(
                     ResponseStatus.OK,
                     "tcp-server/error",
-                    "application/json",
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
                             .toJson());
@@ -476,18 +489,32 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private Message getTcpServerThreadPoolStatistics() {
         final VncMap statistics = serverThreadPoolStatistics.get();
 
-        return createTextResponseMessage(
+        return createJsonResponseMessage(
                 ResponseStatus.OK,
                 "tcp-server/thread-pool-statistics",
-                "application/json",
                 Json.writeJson(statistics));
     }
 
 
-    private static Message createTextResponseMessage(
+    private static Message createJsonResponseMessage(
             final ResponseStatus status,
             final String topic,
-            final String mimetype,
+            final String json
+    ) {
+        return new Message(
+                MessageType.RESPONSE,
+                status,
+                true,
+                Topics.of(topic),
+                "application/json",
+                "UTF-8",
+                toBytes(json, "UTF-8"));
+    }
+
+
+    private static Message createPlainTextResponseMessage(
+            final ResponseStatus status,
+            final String topic,
             final String text
     ) {
         return new Message(
@@ -495,7 +522,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 status,
                 true,
                 Topics.of(topic),
-                mimetype,
+                "text/plain",
                 "UTF-8",
                 toBytes(text, "UTF-8"));
     }
@@ -528,7 +555,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private static enum State { Request_Response, Publish, Terminated };
 
-    private static final int ERROR_QUEUE_CAPACITY = 50;
+    public static final int ERROR_QUEUE_CAPACITY = 50;
+    public static final int P2P_QUEUE_CAPACITY = 1000;
 
     private State mode = State.Request_Response;
 

@@ -27,9 +27,12 @@ import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,6 +40,8 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
@@ -150,6 +155,7 @@ public class TcpServer implements Closeable {
                                                                    this, channel, handler,
                                                                    maxMessageSize, subscriptions,
                                                                    publishQueueCapacity,
+                                                                   p2pQueues,
                                                                    statistics,
                                                                    () -> mngdExecutor.info());
 
@@ -205,6 +211,46 @@ public class TcpServer implements Closeable {
     }
 
 
+    /**
+     * Create a new queue.
+     *
+     * @param queueName a queue name
+     */
+    public void createQueue(final String queueName) {
+        Objects.requireNonNull(queueName);
+        if (StringUtil.isBlank(queueName)) {
+            throw new IllegalArgumentException("A queue name must not be blank");
+        }
+
+        p2pQueues.put(
+            queueName,
+            new LinkedBlockingQueue<Message>(
+                    TcpServerConnection.P2P_QUEUE_CAPACITY));
+    }
+
+    /**
+     * Remove a queue.
+     *
+     * @param queueName a queue name
+     */
+    public void removeQueue(final String queueName) {
+        Objects.requireNonNull(queueName);
+
+        p2pQueues.remove(queueName);
+    }
+
+    /**
+     * Exists queue.
+     *
+     * @param queueName a queue name
+     */
+    public boolean existsQueue(final String queueName) {
+        Objects.requireNonNull(queueName);
+
+        return p2pQueues.containsKey(queueName);
+    }
+
+
     private void safeClose(final ServerSocketChannel ch) {
         if (ch != null) {
             try {
@@ -256,6 +302,7 @@ public class TcpServer implements Closeable {
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
+    private final Map<String, LinkedBlockingQueue<Message>> p2pQueues = new HashMap<>();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 20);

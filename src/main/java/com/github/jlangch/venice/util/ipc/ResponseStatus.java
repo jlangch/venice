@@ -25,11 +25,16 @@ package com.github.jlangch.venice.util.ipc;
 public enum ResponseStatus {
 
     OK(0),
+
     SERVER_ERROR(1),
     HANDLER_ERROR(2),
     BAD_REQUEST(3),
 
-    NULL(9);
+    QUEUE_NOT_FOUND(10),
+    QUEUE_EMPTY(11),
+    QUEUE_FULL(12),
+
+    NULL(99);
 
 
 
