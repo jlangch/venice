@@ -91,14 +91,22 @@ public class Protocol {
         topic.flip();
         IO.writeFrame(ch, topic);
 
-        // [4] mimetype frame
+        // [4] queue name frame
+        final byte[] queueData = StringUtil.trimToEmpty(message.getQueueName())
+                                           .getBytes(Charset.forName("UTF8"));
+        final ByteBuffer queue = ByteBuffer.allocate(queueData.length);
+        queue.put(queueData);
+        queue.flip();
+        IO.writeFrame(ch, queue);
+
+        // [5] mimetype frame
         final byte[] mimetypeData = message.getMimetype().getBytes(Charset.forName("UTF8"));
         final ByteBuffer mimetype = ByteBuffer.allocate(mimetypeData.length);
         mimetype.put(mimetypeData);
         mimetype.flip();
         IO.writeFrame(ch, mimetype);
 
-        // [5] payload data
+        // [6] payload data
         final byte[] payloadData = message.getData();
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
@@ -156,13 +164,19 @@ public class Protocol {
                                         ? new String(topicFrame.array(), Charset.forName("UTF8"))
                                         : "*";
 
-            // [4] mimetype frame
+            // [4] queue name frame
+            final ByteBuffer queueFrame = IO.readFrame(ch);
+            final String queue = queueFrame.hasRemaining()
+                                        ? new String(queueFrame.array(), Charset.forName("UTF8"))
+                                        : "";
+
+            // [5] mimetype frame
             final ByteBuffer mimetypeFrame = IO.readFrame(ch);
             final String mimetype = mimetypeFrame.hasRemaining()
                                         ? new String(mimetypeFrame.array(), Charset.forName("UTF8"))
                                         : "application/octet-stream";
 
-            // [5] payload data
+            // [6] payload data
             final ByteBuffer payloadFrame = IO.readFrame(ch);
             final byte[] data = payloadFrame.array();
 
@@ -173,7 +187,9 @@ public class Protocol {
 
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
-                    type, status, oneway == 1, timestamp,
+                    type, status, oneway == 1,
+                    StringUtil.trimToNull(queue),
+                    timestamp,
                     Topics.decode(topics),
                     mimetype, charset, data);
         }

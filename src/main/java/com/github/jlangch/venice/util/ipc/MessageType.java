@@ -25,10 +25,15 @@ package com.github.jlangch.venice.util.ipc;
 public enum MessageType {
 
     REQUEST(0),
+
     PUBLISH(1),
     SUBSCRIBE(2),
     UNSUBSCRIBE(3),
-    RESPONSE(4),
+
+    OFFER(4),
+    POLL(5),
+
+    RESPONSE(6),
 
     NULL(9);
 

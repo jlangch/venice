@@ -68,6 +68,7 @@ public class Message implements IMessage {
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
+        this.queueName = null;
         this.timestamp = Instant.now().toEpochMilli();
         this.topics = topics;
         this.mimetype = mimetype;
@@ -80,6 +81,7 @@ public class Message implements IMessage {
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
+            final String queueName,
             final long timestamp,
             final Topics topics,
             final String mimetype,
@@ -100,6 +102,7 @@ public class Message implements IMessage {
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
+        this.queueName = StringUtil.trimToNull(queueName);
         this.timestamp = timestamp;
         this.topics = topics;
         this.mimetype = mimetype;
@@ -120,7 +123,8 @@ public class Message implements IMessage {
         return new Message(
                 id,
                 type, responseStatus, oneway,
-                timestamp, topics, mimetype, charset, data);
+                queueName, timestamp,
+                topics, mimetype, charset, data);
     }
 
     /**
@@ -134,7 +138,8 @@ public class Message implements IMessage {
         return new Message(
                 id,
                 type, responseStatus, oneway,
-                timestamp, topics, mimetype, charset, data);
+                queueName, timestamp,
+                topics, mimetype, charset, data);
     }
 
     @Override
@@ -160,6 +165,10 @@ public class Message implements IMessage {
     @Override
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public String getQueueName() {
+        return queueName;
     }
 
     @Override
@@ -268,6 +277,11 @@ public class Message implements IMessage {
 
        sb.append(String.format(
                    "%s %s\n",
+                   padRight("Queue:", 12),
+                   queueName));
+
+       sb.append(String.format(
+                   "%s %s\n",
                    padRight("Timestamp:", 12),
                    getTimestampAsLocalDateTime()));
 
@@ -320,13 +334,13 @@ public class Message implements IMessage {
     public static void validateMimetype(final String mimetype) {
         if (mimetype.length() > MIMETYPE_MAX_LEN) {
             throw new IllegalArgumentException(
-                    "A mimetype is limit to " + MIMETYPE_MAX_LEN + "characters!");
+                    "A mimetype is limited to " + MIMETYPE_MAX_LEN + "characters!");
         }
     }
 
     public static void validateCharset(final String charset) {
         if (charset == null) {
-            return;
+            return;  // ok
         }
 
         if (StringUtil.isBlank(charset)) {
@@ -337,11 +351,27 @@ public class Message implements IMessage {
 
         if (charset.length() > CHARSET_MAX_LEN) {
             throw new IllegalArgumentException(
-                    "A charset is limit to " + CHARSET_MAX_LEN + "characters!");
+                    "A charset is limited to " + CHARSET_MAX_LEN + "characters!");
+        }
+    }
+
+    public static void validateQueueName(final String name) {
+        if (name == null) {
+            return; // ok
+        }
+
+        if (StringUtil.isBlank(name)) {
+            throw new IllegalArgumentException("A queue name can be empty or blank!");
+        }
+
+        if (name.length() > QUEUENAME_MAX_LEN) {
+            throw new IllegalArgumentException(
+                    "A queue name is limited to " + QUEUENAME_MAX_LEN + "characters!");
         }
     }
 
 
+    public static final long QUEUENAME_MAX_LEN = 100;
     public static final long MIMETYPE_MAX_LEN = 100;
     public static final long CHARSET_MAX_LEN = 50;
 
@@ -350,6 +380,7 @@ public class Message implements IMessage {
     private final MessageType type;
     private final ResponseStatus responseStatus;
     private final boolean oneway;
+    private final String queueName;
     private final long timestamp;
     private final Topics topics;
     private final String mimetype;
