@@ -256,8 +256,8 @@ public class TcpServerTest {
     @Test
     public void test_queues() throws Exception {
         try (TcpServer server = new TcpServer(33333)) {
-            server.createQueue("alpha");
-            server.createQueue("beta");
+            server.createQueue("alpha", 10);
+            server.createQueue("beta", 10);
 
             assertTrue(server.existsQueue("alpha"));
             assertTrue(server.existsQueue("beta"));

@@ -37,7 +37,7 @@ public class TcpOfferPollTest {
         final TcpClient client1 = new TcpClient(33333);
         final TcpClient client2 = new TcpClient(33333);
 
-        server.createQueue("queue-1");
+        server.createQueue("queue-1", 10);
 
         server.start(TcpServer.echoHandler());
 

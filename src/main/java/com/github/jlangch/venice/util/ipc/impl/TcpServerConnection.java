@@ -442,7 +442,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("subscription_topic_count", subscriptions.getTopicSubscriptionCount())
                            .add("publish_queue_capacity", publishQueueCapacity)
                            .add("p2p-queue-count", p2pQueues.size())
-                           .add("p2p-queue-capacity", P2P_QUEUE_CAPACITY)
                            .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
                            .add("message_size_min", TcpServer.MESSAGE_LIMIT_MIN)
                            .add("message_size_max", maxMessageSize.get())
@@ -556,7 +555,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private static enum State { Request_Response, Publish, Terminated };
 
     public static final int ERROR_QUEUE_CAPACITY = 50;
-    public static final int P2P_QUEUE_CAPACITY = 1000;
 
     private State mode = State.Request_Response;
 

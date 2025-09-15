@@ -216,16 +216,18 @@ public class TcpServer implements Closeable {
      *
      * @param queueName a queue name
      */
-    public void createQueue(final String queueName) {
+    public void createQueue(final String queueName, final int capacity) {
         Objects.requireNonNull(queueName);
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
+        if (capacity < 1) {
+            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
+        }
 
         p2pQueues.put(
             queueName,
-            new LinkedBlockingQueue<Message>(
-                    TcpServerConnection.P2P_QUEUE_CAPACITY));
+            new LinkedBlockingQueue<Message>(capacity));
     }
 
     /**
