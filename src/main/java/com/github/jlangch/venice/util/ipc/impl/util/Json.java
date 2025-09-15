@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
-import java.util.function.Function;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -40,10 +38,11 @@ public class Json {
             final boolean mapKeysToKeywords
     ) {
         try {
-            final Function<VncVal,VncVal> keyFn = t -> CoreFunctions.keyword.applyOf(t);
             return new VncJsonReader(
                         JsonReader.from(json),
-                        mapKeysToKeywords ? keyFn : null,
+                        mapKeysToKeywords
+                            ? t -> CoreFunctions.keyword.applyOf(t)
+                            : null,
                         null,
                         false).read();
         }

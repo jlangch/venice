@@ -132,74 +132,19 @@ public class TcpServerConnection implements IPublisher, Runnable {
               || isRequestPublish(request)
               || isRequestSubscribe(request))
         ) {
-            if (mode == State.Request_Response) {
-                if (request.isOneway()) {
-                    // oneway request -> cannot send and error message back
-                    errorBuffer.push(
-                            new Error(
-                                    "Bad request type '" + request.getType() + "'! "
-                                        + "Cannot send error response for oneway request!",
-                                    request));
-                    statistics.incrementDiscardedResponseCount();
-                }
-                else {
-                    Protocol.sendMessage(
-                        ch,
-                        createTextResponseMessage(
-                           ResponseStatus.BAD_REQUEST,
-                           request.getTopic(),
-                           "text/plain",
-                           "Bad request type: " + request.getType().name()));
-                }
-            }
-            else {
-                errorBuffer.push(
-                        new Error(
-                                "Bad request type '" + request.getType() + "'! "
-                                    + "Cannot send error response for channel in publish mode!",
-                                request));
-                statistics.incrementDiscardedPublishCount();
-            }
-
+            handleInvalidRequestType(request);
             return mode;
         }
 
         if (request.getData().length > maxMessageSize.get()) {
-            if (mode == State.Request_Response) {
-                if (request.isOneway()) {
-                    // oneway request -> cannot send and error message back
-                    errorBuffer.push(
-                            new Error(
-                                    "Request too large! Cannot send error response for oneway request!",
-                                    request));
-                    statistics.incrementDiscardedResponseCount();
-                }
-                else {
-                    // return error: message to large
-                    sendTooLargeMessageResponse(request);
-                    return State.Request_Response;
-                }
-            }
-            else {
-                statistics.incrementDiscardedPublishCount();
-                return mode;
-            }
+            handleRequestTooLarge(request);
+            return mode;
         }
 
         // [2] Handle the request
-        if ("server/status".equals(request.getTopic())) {
+        if (request.getTopic().startsWith("tcp-server/")) {
             // process a server status request
-            Protocol.sendMessage(ch, getServerStatus());
-            return State.Request_Response;
-        }
-        else if ("server/thread-pool-statistics".equals(request.getTopic())) {
-            // process a server status request
-            Protocol.sendMessage(ch, getServerThreadPoolStatistics());
-            return State.Request_Response;
-        }
-        else if ("server/error".equals(request.getTopic())) {
-            // process a server error request
-            Protocol.sendMessage(ch, getNextServerError());
+            handleTcpServerRequestType(request);
             return State.Request_Response;
         }
         else if (isRequestPublish(request)) {
@@ -290,7 +235,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
     }
 
-
     private void handleSubscribe(final Message request) {
         // register subscription
         subscriptions.addSubscription(request.getTopicsSet(), this);
@@ -319,6 +263,81 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 "Message has been enqued to publish"));
     }
 
+    private void handleTcpServerRequestType(final Message request) {
+        if ("tcp-server/status".equals(request.getTopic())) {
+            // process a server status request
+            Protocol.sendMessage(ch, getServerStatus());
+        }
+        else if ("tcp-server/thread-pool-statistics".equals(request.getTopic())) {
+            // process a server status request
+            Protocol.sendMessage(ch, getServerThreadPoolStatistics());
+        }
+        else if ("tcp-server/error".equals(request.getTopic())) {
+            // process a server error request
+            Protocol.sendMessage(ch, getNextServerError());
+        }
+        else {
+            Protocol.sendMessage(
+                ch,
+                createTextResponseMessage(
+                    ResponseStatus.BAD_REQUEST,
+                    request.getTopic(),
+                    "text/plain",
+                    "Unknown tcp server request topic"));
+        }
+    }
+
+    private void handleInvalidRequestType(final Message request) {
+        if (mode == State.Request_Response) {
+            if (request.isOneway()) {
+                // oneway request -> cannot send and error message back
+                errorBuffer.push(
+                        new Error(
+                                "Bad request type '" + request.getType() + "'! "
+                                    + "Cannot send error response for oneway request!",
+                                request));
+                statistics.incrementDiscardedResponseCount();
+            }
+            else {
+                Protocol.sendMessage(
+                    ch,
+                    createTextResponseMessage(
+                       ResponseStatus.BAD_REQUEST,
+                       request.getTopic(),
+                       "text/plain",
+                       "Bad request type: " + request.getType().name()));
+            }
+        }
+        else {
+            errorBuffer.push(
+                    new Error(
+                            "Bad request type '" + request.getType() + "'! "
+                                + "Cannot send error response for channel in publish mode!",
+                            request));
+            statistics.incrementDiscardedPublishCount();
+        }
+    }
+
+    private void handleRequestTooLarge(final Message request) {
+        if (mode == State.Request_Response) {
+            if (request.isOneway()) {
+                // oneway request -> cannot send and error message back
+                errorBuffer.push(
+                        new Error(
+                                "Request too large! Cannot send error response for oneway request!",
+                                request));
+                statistics.incrementDiscardedResponseCount();
+            }
+            else {
+                // return error: message to large
+                sendTooLargeMessageResponse(request);
+            }
+        }
+        else {
+            statistics.incrementDiscardedPublishCount();
+        }
+    }
+
     private void sendTooLargeMessageResponse(final Message request) {
         Protocol.sendMessage(
             ch,
@@ -331,7 +350,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 request.getTopic(),
                 "text/plain",
                 String.format(
-                        "The message (%dB) is too large! The limit is at %dB",
+                        "The message (%d bytes) is too large! The limit is at %d bytes.",
                         request.getData().length,
                         maxMessageSize));
     }
@@ -339,22 +358,22 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private Message getServerStatus() {
         return createTextResponseMessage(
                    ResponseStatus.OK,
-                   "server/status",
+                   "tcp-server/status",
                    "application/json",
                    new JsonBuilder()
-                   .add("running", server.isRunning())
-                   .add("mode", mode.name())
-                   .add("connection_count", statistics.getConnectionCount())
-                   .add("message_count", statistics.getMessageCount())
-                   .add("publish_count", statistics.getPublishCount())
-                   .add("response_discarded_count", statistics.getDiscardedResponseCount())
-                   .add("publish_discarded_count", statistics.getDiscardedPublishCount())
-                   .add("subscription_client_count", subscriptions.getClientSubscriptionCount())
-                   .add("subscription_topic_count", subscriptions.getTopicSubscriptionCount())
-                   .add("publish_queue_capacity", publishQueueCapacity)
-                   .add("message_size_min", TcpServer.MESSAGE_LIMIT_MIN)
-                   .add("message_size_max", maxMessageSize.get())
-                   .toJson());
+                           .add("running", server.isRunning())
+                           .add("mode", mode.name())
+                           .add("connection_count", statistics.getConnectionCount())
+                           .add("message_count", statistics.getMessageCount())
+                           .add("publish_count", statistics.getPublishCount())
+                           .add("response_discarded_count", statistics.getDiscardedResponseCount())
+                           .add("publish_discarded_count", statistics.getDiscardedPublishCount())
+                           .add("subscription_client_count", subscriptions.getClientSubscriptionCount())
+                           .add("subscription_topic_count", subscriptions.getTopicSubscriptionCount())
+                           .add("publish_queue_capacity", publishQueueCapacity)
+                           .add("message_size_min", TcpServer.MESSAGE_LIMIT_MIN)
+                           .add("message_size_max", maxMessageSize.get())
+                           .toJson());
     }
 
     private Message getNextServerError() {
@@ -363,7 +382,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             if (err == null) {
                 return createTextResponseMessage(
                         ResponseStatus.OK,
-                        "server/error",
+                        "tcp-server/error",
                         "application/json",
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
@@ -376,7 +395,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
                 return createTextResponseMessage(
                         ResponseStatus.OK,
-                        "server/error",
+                        "tcp-server/error",
                         "application/json",
                         new JsonBuilder()
                                 .add("status", "error")
@@ -389,7 +408,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createTextResponseMessage(
                     ResponseStatus.OK,
-                    "server/error",
+                    "tcp-server/error",
                     "application/json",
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
@@ -402,7 +421,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         return createTextResponseMessage(
                 ResponseStatus.OK,
-                "server/thread-pool-statistics",
+                "tcp-server/thread-pool-statistics",
                 "application/json",
                 Json.writeJson(statistics));
     }

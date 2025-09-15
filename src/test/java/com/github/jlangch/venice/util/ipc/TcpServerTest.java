@@ -189,11 +189,11 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text("server/status", "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text("tcp-server/status", "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals("server/status", response2.getTopic());
+            assertEquals("tcp-server/status", response2.getTopic());
 
             // System.out.println(response2.getText());
         }
@@ -220,11 +220,11 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text("server/thread-pool-statistics", "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text("tcp-server/thread-pool-statistics", "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals("server/thread-pool-statistics", response2.getTopic());
+            assertEquals("tcp-server/thread-pool-statistics", response2.getTopic());
 
             // System.out.println(response2.getText());
         }

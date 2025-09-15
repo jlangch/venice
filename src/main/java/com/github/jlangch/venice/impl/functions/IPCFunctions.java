@@ -769,7 +769,7 @@ public class IPCFunctions {
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
-                                                "server/status",
+                                                "tcp-server/status",
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""),
@@ -832,7 +832,7 @@ public class IPCFunctions {
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
-                                                "server/thread-pool-statistics",
+                                                "tcp-server/thread-pool-statistics",
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""),

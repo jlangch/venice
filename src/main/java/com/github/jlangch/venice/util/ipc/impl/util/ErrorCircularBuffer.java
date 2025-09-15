@@ -25,7 +25,7 @@ import java.util.LinkedList;
 
 
 /**
- * A very simple, thread-safe implementation for an error circular buffer.
+ * A very simple, thread-safe implementation of an error circular buffer.
  *
  * <p>It's not designed for heavy traffic, but works fine for buffering
  * low traffic errors.
