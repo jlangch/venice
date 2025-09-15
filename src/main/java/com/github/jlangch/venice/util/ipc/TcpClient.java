@@ -439,7 +439,6 @@ public class TcpClient implements Closeable {
      * <p>throws <code>TimeoutException</code> if the message send timed out
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
      *
-     * @param msg       a message
      * @param queueName a queue name
      * @param timeout   the maximum time to wait
      * @param unit      the time unit of the timeout argument

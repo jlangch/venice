@@ -215,6 +215,7 @@ public class TcpServer implements Closeable {
      * Create a new queue.
      *
      * @param queueName a queue name
+     * @param capacity the queue capacity
      */
     public void createQueue(final String queueName, final int capacity) {
         Objects.requireNonNull(queueName);
@@ -245,6 +246,7 @@ public class TcpServer implements Closeable {
      * Exists queue.
      *
      * @param queueName a queue name
+     * @return <code>true</code> if the queue exists else <code>false</code>
      */
     public boolean existsQueue(final String queueName) {
         Objects.requireNonNull(queueName);
