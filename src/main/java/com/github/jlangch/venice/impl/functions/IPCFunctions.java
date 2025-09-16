@@ -364,6 +364,10 @@ public class IPCFunctions {
         };
 
 
+    // ------------------------------------------------------------------------
+    // Send / Receive
+    // ------------------------------------------------------------------------
+
     public static VncFunction ipc_send =
         new VncFunction(
                 "ipc/send",
@@ -560,6 +564,10 @@ public class IPCFunctions {
         };
 
 
+    // ------------------------------------------------------------------------
+    // Publish / Subscribe
+    // ------------------------------------------------------------------------
+
     public static VncFunction ipc_subscribe =
         new VncFunction(
                 "ipc/subscribe",
@@ -729,6 +737,114 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+
+
+    // ------------------------------------------------------------------------
+    // Offer / Poll
+    // ------------------------------------------------------------------------
+
+    public static VncFunction ipc_offer =
+        new VncFunction(
+                "ipc/offer",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/offer client queue-name timeout message)")
+                    .doc(
+                        "Offers a message to the queue.\n\n" +
+                        "Returns the acknowledge message from the server.")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "              client1 (ipc/client \"localhost\" 33333)             \n" +
+                        "              client1 (ipc/client \"localhost\" 33333))            \n" +
+                        "     (let [queue (ipc/create-queue server \"alpha\" 100_000)]      \n" +
+                        "        (->> (ipc/plain-text-message \"test\" \"hello\")           \n" +
+                        "             (ipc/offer client1 \"alpha\" 300))                    \n" +
+                        "        (->> (ipc/poll client2 \"alpha\" 300)                      \n" +
+                        "             (ipc/message->map)                                    \n" +
+                        "             (println)))                                           ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 4);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+                final long timeout =Coerce.toVncLong(args.third()).toJavaLong();
+                final IMessage request = Coerce.toVncJavaObject(args.fourth(), IMessage.class);
+
+                return new VncJavaObject(client.offer(request, name, timeout, TimeUnit.MILLISECONDS));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_poll =
+        new VncFunction(
+                "ipc/poll",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/poll client queue-name timeout)")
+                    .doc(
+                        "Polls a message from a queue.\n\n" +
+                        "Returns the message or `nil` if queue is empty.")
+                    .examples(
+                        "(do                                                                \n" +
+                        "   (defn echo-handler [m] m)                                       \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "              client1 (ipc/client \"localhost\" 33333)             \n" +
+                        "              client1 (ipc/client \"localhost\" 33333))            \n" +
+                        "     (let [queue (ipc/create-queue server \"alpha\" 100_000)]      \n" +
+                        "        (->> (ipc/plain-text-message \"test\" \"hello\")           \n" +
+                        "             (ipc/offer client1 \"alpha\" 300))                    \n" +
+                        "        (->> (ipc/poll client2 \"alpha\" 300)                      \n" +
+                        "             (ipc/message->map)                                    \n" +
+                        "             (println)))                                           ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+                final long timeout =Coerce.toVncLong(args.third()).toJavaLong();
+
+                return new VncJavaObject(client.poll(name, timeout, TimeUnit.MILLISECONDS));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    // ------------------------------------------------------------------------
+    // Statistics
+    // ------------------------------------------------------------------------
 
     public static VncFunction ipc_server_status =
         new VncFunction(
@@ -917,55 +1033,59 @@ public class IPCFunctions {
         };
 
 
-    public static VncFunction ipc_text_message =
-        new VncFunction(
-                "ipc/text-message",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(ipc/text-message topic mimetype charset text)")
-                    .doc(
-                        "Creates a text message")
-                    .examples(
-                        "(->> (ipc/text-message \"test\"                         \n" +
-                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
-                        "     (ipc/message->map)                                  \n" +
-                        "     (println))                                          ")
-                    .seeAlso(
-                        "ipc/server",
-                        "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
-                        "ipc/plain-text-message",
-                        "ipc/binary-message",
-                        "ipc/message->map")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4);
+    // ------------------------------------------------------------------------
+    // Messages
+    // ------------------------------------------------------------------------
 
-                final VncString topic = Coerce.toVncString(args.nth(0));
-                final VncString mimetype = Coerce.toVncString(args.nth(1));
-                final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
-                final VncVal textVal = args.nth(3);
-                final String text = Types.isVncString(textVal)
-                                        ? ((VncString)textVal).getValue()
-                                        : textVal.toString(true);  // aggressively convert to string
+public static VncFunction ipc_text_message =
+    new VncFunction(
+            "ipc/text-message",
+            VncFunction
+                .meta()
+                .arglists(
+                    "(ipc/text-message topic mimetype charset text)")
+                .doc(
+                    "Creates a text message")
+                .examples(
+                    "(->> (ipc/text-message \"test\"                         \n" +
+                    "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                    "     (ipc/message->map)                                  \n" +
+                    "     (println))                                          ")
+                .seeAlso(
+                    "ipc/server",
+                    "ipc/client",
+                    "ipc/close",
+                    "ipc/running?",
+                    "ipc/send",
+                    "ipc/send-async",
+                    "ipc/plain-text-message",
+                    "ipc/binary-message",
+                    "ipc/message->map")
+                .build()
+    ) {
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 4);
 
-                final IMessage msg = MessageFactory.text(
-                                        topic.getValue(),
-                                        mimetype.getValue(),
-                                        charset.getSimpleName(),
-                                        text);
+            final VncString topic = Coerce.toVncString(args.nth(0));
+            final VncString mimetype = Coerce.toVncString(args.nth(1));
+            final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
+            final VncVal textVal = args.nth(3);
+            final String text = Types.isVncString(textVal)
+                                    ? ((VncString)textVal).getValue()
+                                    : textVal.toString(true);  // aggressively convert to string
 
-                return new VncJavaObject(msg);
-            }
+            final IMessage msg = MessageFactory.text(
+                                    topic.getValue(),
+                                    mimetype.getValue(),
+                                    charset.getSimpleName(),
+                                    text);
 
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
+            return new VncJavaObject(msg);
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    };
 
 
     public static VncFunction ipc_plain_text_message =
@@ -1264,9 +1384,158 @@ public class IPCFunctions {
         };
 
 
-    ///////////////////////////////////////////////////////////////////////////
+
+    // ------------------------------------------------------------------------
+    // Queues
+    // ------------------------------------------------------------------------
+
+    public static VncFunction ipc_create_queue =
+        new VncFunction(
+                "ipc/create-queue",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/create-queue server name capacity)")
+                    .doc(
+                        "Creates a named queue on server that can be used by the clients with " +
+                        "the `offer` and `poll` commands to exchange messages asynchronously " +
+                        "between two clients.")
+                    .examples(
+                        "(do                                                                       \n" +
+                        "   (defn echo-handler [m] m)                                              \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)                      \n" +
+                        "              client1 (ipc/client \"localhost\" 33333)                    \n" +
+                        "              client2 (ipc/client \"localhost\" 33333)]                   \n" +
+                        "     (let [order-queue \"orders\"                                         \n" +
+                        "           capacity    100_000                                            \n" +
+                        "           queue       (ipc/create-queue server order-queue capacity)     \n" +
+                        "           msg         (ipc/plain-text-message \"order\" \"2 espressi\")] \n" +
+                        "        (->> (ipc/message->map msg)                                       \n" +
+                        "             (println \"ORDER:  \"))                                      \n" +
+                        "        (->> (ipc/offer client1 order-queue 300 msg)                      \n" +
+                        "             (ipc/message->map)                                           \n" +
+                        "             (println \"OFFERED:\"))                                      \n" +
+                        "        (->> (ipc/poll client2 order-queue 300)                           \n" +
+                        "             (ipc/message->map)                                           \n" +
+                        "             (println \"POLLED: \")))))                                   ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+                final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
+
+                server.createQueue(name, capacity);
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_remove_queue =
+        new VncFunction(
+                "ipc/remove-queue",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/remove-queue server name)")
+                    .doc(
+                        "Removes a named queue from the server.")
+                    .examples(
+                        "(do                                                                    \n" +
+                        "   (defn echo-handler [m] m)                                           \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)]                  \n" +
+                        "     (let [order-queue \"orders\"                                      \n" +
+                        "           capacity    100_000                                         \n" +
+                        "           queue       (ipc/create-queue server order-queue capacity)] \n" +
+                        "        ;; ...                                                         \n" +
+                        "        (ipc/remove-queue server order-queue))))                       ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+
+                server.removeQueue(name);
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_exists_queueQ =
+        new VncFunction(
+                "ipc/exists-queue?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/exists-queue? server name)")
+                    .doc(
+                        "Returns `true` if the named queue exists else `false`.")
+                    .examples(
+                        "(do                                                                    \n" +
+                        "   (defn echo-handler [m] m)                                           \n" +
+                        "   (try-with [server (ipc/server 33333 echo-handler)]                  \n" +
+                        "     (let [order-queue \"orders\"                                      \n" +
+                        "           capacity    100_000                                         \n" +
+                        "           queue       (ipc/create-queue server order-queue capacity)] \n" +
+                        "        ;; ...                                                         \n" +
+                        "        (ipc/exists-queue? server order-queue))))                      ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/binary-message")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+
+                return VncBoolean.of(server.existsQueue(name));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    // ------------------------------------------------------------------------
     // Utils
-    ///////////////////////////////////////////////////////////////////////////
+    // ------------------------------------------------------------------------
 
     private static long convertMaxMessageSizeToLong(final VncVal val) {
         if (val == Nil) {
@@ -1353,12 +1622,19 @@ public class IPCFunctions {
                     .add(ipc_publish)
                     .add(ipc_subscribe)
 
+                    .add(ipc_offer)
+                    .add(ipc_poll)
+
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)
                     .add(ipc_binary_message)
                     .add(ipc_venice_message)
                     .add(ipc_message_field)
                     .add(ipc_message_to_map)
+
+                    .add(ipc_create_queue)
+                    .add(ipc_remove_queue)
+                    .add(ipc_exists_queueQ)
 
                     .add(ipc_server_status)
                     .add(ipc_server_thread_pool_statistics)

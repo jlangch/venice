@@ -52,10 +52,15 @@ public class IpcSection implements ISectionBuilder {
         send.addItem(diBuilder.getDocItem("ipc/send-async", false));
         send.addItem(diBuilder.getDocItem("ipc/send-oneway", false));
 
-        final DocSection pub = new DocSection("Publish", "ipc.publish");
+        final DocSection pub = new DocSection("Pub/Sub", "ipc.publish");
         all.addSection(pub);
         pub.addItem(diBuilder.getDocItem("ipc/publish", false));
         pub.addItem(diBuilder.getDocItem("ipc/subscribe", false));
+
+        final DocSection offer = new DocSection("Offer/Poll", "ipc.offer");
+        all.addSection(offer);
+        offer.addItem(diBuilder.getDocItem("ipc/offer", false));
+        offer.addItem(diBuilder.getDocItem("ipc/poll", false));
 
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);
@@ -65,6 +70,12 @@ public class IpcSection implements ISectionBuilder {
         msg.addItem(diBuilder.getDocItem("ipc/venice-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/message->map", false));
         msg.addItem(diBuilder.getDocItem("ipc/message-field", false));
+
+        final DocSection queue = new DocSection("Queues", "ipc.queue");
+        all.addSection(queue);
+        queue.addItem(diBuilder.getDocItem("ipc/create-queue", false));
+        queue.addItem(diBuilder.getDocItem("ipc/remove-queue", false));
+        queue.addItem(diBuilder.getDocItem("ipc/exists-queue?", false));
 
         final DocSection util = new DocSection("Util", "ipc.util");
         all.addSection(util);

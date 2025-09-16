@@ -226,9 +226,13 @@ public class TcpServer implements Closeable {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
 
-        p2pQueues.put(
-            queueName,
-            new LinkedBlockingQueue<Message>(capacity));
+        // do not overwrite the queue if it already exists
+        if (!p2pQueues.containsKey(queueName)) {
+            // create the queue
+            p2pQueues.put(
+                queueName,
+                new LinkedBlockingQueue<Message>(capacity));
+        }
     }
 
     /**
