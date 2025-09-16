@@ -776,7 +776,7 @@ public class IPCFunctions {
                         "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
                         "    (let [order-queue \"orders\"                                          \n" +
                         "          capacity    100_000                                             \n" +
-                        "          order       (ipc/venice-text-message                            \n" +
+                        "          order       (ipc/venice-message                                 \n" +
                         "                            \"order\"                                     \n" +
                         "                            {:item \"espresso\", :count 2})]              \n" +
                         "      (ipc/create-queue server order-queue capacity)                      \n" +
@@ -840,7 +840,7 @@ public class IPCFunctions {
                         "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
                         "    (let [order-queue \"orders\"                                          \n" +
                         "          capacity    100_000                                             \n" +
-                        "          order       (ipc/venice-text-message                            \n" +
+                        "          order       (ipc/venice-message                                 \n" +
                         "                            \"order\"                                     \n" +
                         "                            {:item \"espresso\", :count 2})]              \n" +
                         "      (ipc/create-queue server order-queue capacity)                      \n" +
@@ -1215,7 +1215,7 @@ public static VncFunction ipc_text_message =
                         "(ipc/venice-message status topic data)")
                     .doc(
                         "Creates a venice message. \n\n" +
-                        "The Venice data is serialized as JSON (application/json mimetype) " +
+                        "The Venice data is serialized as JSON (mimetype: 'application/json') " +
                         "for transport within a message")
             .examples(
                         "(->> (ipc/venice-message \"test\"                        \n" +
@@ -1457,7 +1457,7 @@ public static VncFunction ipc_text_message =
                         "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
                         "    (let [order-queue \"orders\"                                          \n" +
                         "          capacity    100_000                                             \n" +
-                        "          order       (ipc/venice-text-message                            \n" +
+                        "          order       (ipc/venice-message                                 \n" +
                         "                            \"order\"                                     \n" +
                         "                            {:item \"espresso\", :count 2})]              \n" +
                         "      (ipc/create-queue server order-queue capacity)                      \n" +
