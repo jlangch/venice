@@ -86,16 +86,16 @@ public class IPCFunctions {
                                                " The max size can be specified as a number like `20000`" +
                                                " or a number with a unit like `:20KB`, or `:20MB`|\n")
                     .examples(
-                        "(do                                                      \n" +
-                        "   (defn echo-handler [m]                                \n" +
-                        "     (println \"request:  \" (ipc/message->map m))       \n" +
-                        "     m)                                                  \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)     \n" +
-                        "              client (ipc/client \"localhost\" 33333)]   \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
-                        "          (ipc/send client)                              \n" +
-                        "          (ipc/message->map)                             \n" +
-                        "          (println \"response: \"))))                    ")
+                        "(do                                                     \n" +
+                        "  (defn echo-handler [m]                                \n" +
+                        "    (println \"request:  \" (ipc/message->map m))       \n" +
+                        "    m)                                                  \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
+                        "             client (ipc/client \"localhost\" 33333)]   \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
+                        "         (ipc/send client)                              \n" +
+                        "         (ipc/message->map)                             \n" +
+                        "         (println \"response: \"))))                    ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
@@ -108,6 +108,8 @@ public class IPCFunctions {
                         "ipc/plain-text-message",
                         "ipc/binary-message",
                         "ipc/message->map",
+                        "ipc/create-queue",
+                        "ipc/remove-queue",
                         "ipc/server-status",
                         "ipc/server-thread-pool-statistics")
                     .build()
@@ -124,7 +126,8 @@ public class IPCFunctions {
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
 
                 final int maxConn = maxConnVal == Nil
-                                        ? 0 : Coerce.toVncLong(maxConnVal).getIntValue();
+                                        ? 0
+                                        : Coerce.toVncLong(maxConnVal).getIntValue();
 
                 final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
 
@@ -183,16 +186,16 @@ public class IPCFunctions {
                                                  " The max size can be specified as a number like `20000`" +
                                                  " or a number with a unit like `:20KB`, or `:20MB` |\n")
                     .examples(
-                        "(do                                                      \n" +
-                        "   (defn echo-handler [m]                                \n" +
-                        "     (println \"request:  \" (ipc/message->map m))       \n" +
-                        "     m)                                                  \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)     \n" +
-                        "              client (ipc/client \"localhost\" 33333)]   \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
-                        "          (ipc/send client)                              \n" +
-                        "          (ipc/message->map)                             \n" +
-                        "          (println \"response: \"))))                    ")
+                        "(do                                                     \n" +
+                        "  (defn echo-handler [m]                                \n" +
+                        "    (println \"request:  \" (ipc/message->map m))       \n" +
+                        "    m)                                                  \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
+                        "             client (ipc/client \"localhost\" 33333)]   \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
+                        "         (ipc/send client)                              \n" +
+                        "         (ipc/message->map)                             \n" +
+                        "         (println \"response: \"))))                    ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
@@ -264,12 +267,12 @@ public class IPCFunctions {
                     .doc(
                         "Return `true` if the server or client is running else `false`")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (println \"Server running:\" (ipc/running? server))           \n" +
-                        "     (println \"Client running:\" (ipc/running? client))))         ")
+                        "(do                                                         \n" +
+                        "  (defn echo-handler [m] m)                                 \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                        "             client (ipc/client \"localhost\" 33333)]       \n" +
+                        "    (println \"Server running:\" (ipc/running? server))     \n" +
+                        "    (println \"Client running:\" (ipc/running? client))))   ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/server",
@@ -308,23 +311,23 @@ public class IPCFunctions {
                     .doc(
                         "Closes the server or client")
                     .examples(
-                        ";; prefer try-with-resources to safely close server and client     \n" +
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (println \"Server running:\" (ipc/running? server))           \n" +
-                        "     (println \"Client running:\" (ipc/running? client))))         ",
+                        ";; prefer try-with-resources to safely close server and client    \n" +
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (println \"Server running:\" (ipc/running? server))           \n" +
+                        "    (println \"Client running:\" (ipc/running? client))))         ",
 
-                        ";; explicitly closing server and client                            \n" +
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (let [server (ipc/server 33333 echo-handler)                    \n" +
-                        "         client (ipc/client \"localhost\" 33333)]                  \n" +
-                        "     (println \"Server running:\" (ipc/running? server))           \n" +
-                        "     (println \"Client running:\" (ipc/running? client))           \n" +
-                        "     (ipc/close client)                                            \n" +
-                        "     (ipc/close server)))                                           ")
+                        ";; explicitly closing server and client                           \n" +
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (let [server (ipc/server 33333 echo-handler)                    \n" +
+                        "        client (ipc/client \"localhost\" 33333)]                  \n" +
+                        "    (println \"Server running:\" (ipc/running? server))           \n" +
+                        "    (println \"Client running:\" (ipc/running? client))           \n" +
+                        "    (ipc/close client)                                            \n" +
+                        "    (ipc/close server)))                                           ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/server",
@@ -383,49 +386,49 @@ public class IPCFunctions {
                         "declared as one-way message. Throws a timeout exception if the " +
                         "response is not received within the timeout time.")
                     .examples(
-                        ";; echo handler                                                    \n" +
-                        ";; request: \"hello\" => echo => response: \"hello\"               \n" +
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "          (ipc/send client)                                        \n" +
-                        "          (ipc/message->map)                                       \n" +
-                        "          (println))))                                             ",
+                        ";; echo handler                                                   \n" +
+                        ";; request: \"hello\" => echo => response: \"hello\"              \n" +
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println))))                                             ",
 
-                        ";; handler processing JSON message data                            \n" +
+                        ";; handler processing JSON message data                           \n" +
                         ";; request: {\"x\": 100, \"y\": 200} => add => response: {\"z\": 300}  \n" +
-                        "(do                                                                \n" +
-                        "   (defn handler [m]                                               \n" +
-                        "     (let [data   (json/read-str (. m :getText))                   \n" +
-                        "           result (json/write-str { \"z\" (+ (get data \"x\") (get data \"y\"))})]  \n" +
-                        "       (ipc/text-message (. m :getTopic)                           \n" +
-                        "                         \"application/json\" :UTF-8               \n" +
-                        "                         result)))                                 \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/text-message \"test\"                               \n" +
-                        "                            \"application/json\" :UTF-8            \n" +
-                        "                            (json/write-str {\"x\" 100 \"y\" 200}))\n" +
-                        "          (ipc/send client 2000)                                   \n" +
-                        "          (ipc/message->map)                                       \n" +
-                        "          (println))))                                             ",
+                        "(do                                                               \n" +
+                        "  (defn handler [m]                                               \n" +
+                        "    (let [data   (json/read-str (. m :getText))                   \n" +
+                        "          result (json/write-str { \"z\" (+ (get data \"x\") (get data \"y\"))})]  \n" +
+                        "      (ipc/text-message (. m :getTopic)                           \n" +
+                        "                        \"application/json\" :UTF-8               \n" +
+                        "                        result)))                                 \n" +
+                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/text-message \"test\"                               \n" +
+                        "                           \"application/json\" :UTF-8            \n" +
+                        "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
+                        "         (ipc/send client 2000)                                   \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println))))                                             ",
 
-                        ";; handler with remote code execution                              \n" +
-                        ";; request: \"(+ 1 2)\" => exec => response: \"3\"                 \n" +
-                        "(do                                                                \n" +
-                        "   (defn handler [m]                                               \n" +
-                        "     (let [cmd    (. m :getText)                                   \n" +
-                        "           result (str (eval (read-string cmd)))]                  \n" +
-                        "       (ipc/plain-text-message (. m :getTopic)                     \n" +
-                        "                               result)))                           \n" +
-                        "   (try-with [server (ipc/server 33333 handler)                    \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
-                        "          (ipc/send client)                                        \n" +
-                        "          (ipc/message->map)                                       \n" +
-                        "          (println))))                                             ")
+                        ";; handler with remote code execution                             \n" +
+                        ";; request: \"(+ 1 2)\" => exec => response: \"3\"                \n" +
+                        "(do                                                               \n" +
+                        "  (defn handler [m]                                               \n" +
+                        "    (let [cmd    (. m :getText)                                   \n" +
+                        "          result (str (eval (read-string cmd)))]                  \n" +
+                        "      (ipc/plain-text-message (. m :getTopic)                     \n" +
+                        "                              result)))                           \n" +
+                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
+                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println))))                                             ")
                  .seeAlso(
                      "ipc/client",
                      "ipc/server",
@@ -434,6 +437,7 @@ public class IPCFunctions {
                      "ipc/send-async",
                      "ipc/text-message",
                      "ipc/plain-text-message",
+                     "ipc/venice-message",
                      "ipc/binary-message",
                      "ipc/message->map")
                     .build()
@@ -473,12 +477,12 @@ public class IPCFunctions {
                         "Sends a one-way message to the server the client is associated with. \n\n" +
                         "Does not wait for response and returns always `nil`.")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "          (ipc/send-oneway client))))                              ")
+                        "(do                                                      \n" +
+                        "  (defn echo-handler [m] m)                              \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)      \n" +
+                        "             client (ipc/client \"localhost\" 33333)]    \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")     \n" +
+                        "         (ipc/send-oneway client))))                     ")
                  .seeAlso(
                      "ipc/client",
                      "ipc/server",
@@ -487,6 +491,7 @@ public class IPCFunctions {
                      "ipc/send-async",
                      "ipc/text-message",
                      "ipc/plain-text-message",
+                     "ipc/venice-message",
                      "ipc/binary-message",
                      "ipc/message->map")
                     .build()
@@ -527,15 +532,15 @@ public class IPCFunctions {
                         "with. \n\n" +
                         "Returns a future to get the server's response message.")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "          (ipc/send-async client)                                  \n" +
-                        "          (deref)                                                  \n" +
-                        "          (ipc/message->map)                                       \n" +
-                        "          (println))))                                             ")
+                        "(do                                                      \n" +
+                        "  (defn echo-handler [m] m)                              \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)      \n" +
+                        "             client (ipc/client \"localhost\" 33333)]    \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")     \n" +
+                        "         (ipc/send-async client)                         \n" +
+                        "         (deref)                                         \n" +
+                        "         (ipc/message->map)                              \n" +
+                        "         (println))))                                    ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/server",
@@ -544,6 +549,7 @@ public class IPCFunctions {
                         "ipc/send",
                         "ipc/text-message",
                         "ipc/plain-text-message",
+                        "ipc/venice-message",
                         "ipc/binary-message",
                         "ipc/message->map")
                     .build()
@@ -581,43 +587,44 @@ public class IPCFunctions {
                         "specified topic.\n\n" +
                         "To unsubscribe from the topics just close the client.")
                     .examples(
-                        "(do                                                                             \n" +
-                        "   (def mutex 0)                                                                \n" +
-                        "                                                                                \n" +
-                        "   ;; the server handler is not involved with publish/subscribe!                \n" +
-                        "   (defn server-handler [m]                                                     \n" +
-                        "     (locking mutex (println (ipc/message->map m)))                             \n" +
-                        "     m)                                                                         \n" +
-                        "                                                                                \n" +
-                        "   (defn client-subscribe-handler [m]                                           \n" +
-                        "     (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
-                        "                                                                                \n" +
-                        "   (try-with [server   (ipc/server 33333 server-handler)                        \n" +
-                        "              client-1 (ipc/client \"localhost\" 33333)                         \n" +
-                        "              client-2 (ipc/client \"localhost\" 33333)                         \n" +
-                        "              client-3 (ipc/client \"localhost\" 33333)]                        \n" +
-                        "     ;; client 'client-1' subscribes to 'alpha' messages                        \n" +
-                        "     (ipc/subscribe client-1 \"alpha\" client-subscribe-handler)                \n" +
-                        "                                                                                \n" +
-                        "     ;; client 'client-2' subscribes to 'alpha' and 'beta' messages             \n" +
-                        "     (ipc/subscribe client-2 [\"alpha\" \"beta\"] client-subscribe-handler)     \n" +
-                        "                                                                                \n" +
-                        "     ;; client 'client-3' publishes message                                     \n" +
-                        "     (->> (ipc/plain-text-message \"alpha\" \"hello\")                          \n" +
-                        "          (ipc/publish client-3))                                               \n" +
-                        "     (->> (ipc/plain-text-message \"beta\" \"hello\")                           \n" +
-                        "          (ipc/publish client-3))                                               \n" +
-                        "                                                                                \n" +
-                        "     (sleep 300)                                                                \n" +
-                        "                                                                                \n" +
-                        "     ;; print server status and statistics                                      \n" +
-                        "     (locking mutex (println \"STATUS:\" (ipc/server-status client-3)))))       ")
+                        "(do                                                                            \n" +
+                        "  (def mutex 0)                                                                \n" +
+                        "                                                                               \n" +
+                        "  ;; the server handler is not involved with publish/subscribe!                \n" +
+                        "  (defn server-handler [m]                                                     \n" +
+                        "    (locking mutex (println (ipc/message->map m)))                             \n" +
+                        "    m)                                                                         \n" +
+                        "                                                                               \n" +
+                        "  (defn client-subscribe-handler [m]                                           \n" +
+                        "    (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
+                        "                                                                               \n" +
+                        "  (try-with [server   (ipc/server 33333 server-handler)                        \n" +
+                        "             client-1 (ipc/client \"localhost\" 33333)                         \n" +
+                        "             client-2 (ipc/client \"localhost\" 33333)                         \n" +
+                        "             client-3 (ipc/client \"localhost\" 33333)]                        \n" +
+                        "    ;; client 'client-1' subscribes to 'alpha' messages                        \n" +
+                        "    (ipc/subscribe client-1 \"alpha\" client-subscribe-handler)                \n" +
+                        "                                                                               \n" +
+                        "    ;; client 'client-2' subscribes to 'alpha' and 'beta' messages             \n" +
+                        "    (ipc/subscribe client-2 [\"alpha\" \"beta\"] client-subscribe-handler)     \n" +
+                        "                                                                               \n" +
+                        "    ;; client 'client-3' publishes message                                     \n" +
+                        "    (->> (ipc/plain-text-message \"alpha\" \"hello\")                          \n" +
+                        "         (ipc/publish client-3))                                               \n" +
+                        "    (->> (ipc/plain-text-message \"beta\" \"hello\")                           \n" +
+                        "         (ipc/publish client-3))                                               \n" +
+                        "                                                                               \n" +
+                        "    (sleep 300)                                                                \n" +
+                        "                                                                               \n" +
+                        "    ;; print server status and statistics                                      \n" +
+                        "    (locking mutex (println \"STATUS:\" (ipc/server-status client-3)))))       ")
                  .seeAlso(
                      "ipc/publish",
                      "ipc/client",
                      "ipc/server",
                      "ipc/text-message",
                      "ipc/plain-text-message",
+                     "ipc/venice-message",
                      "ipc/binary-message",
                      "ipc/message->map")
                     .build()
@@ -687,37 +694,38 @@ public class IPCFunctions {
                         "message's topic.\n\n" +
                         "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
-                        "(do                                                                             \n" +
-                        "   (def mutex 0)                                                                \n" +
-                        "                                                                                \n" +
-                        "   ;; the server handler is not involved with publish/subscribe!                \n" +
-                        "   (defn server-handler [m]                                                     \n" +
-                        "     (locking mutex (println (ipc/message->map m)))                             \n" +
-                        "     m)                                                                         \n" +
-                        "                                                                                \n" +
-                       "   (defn client-subscribe-handler [m]                                            \n" +
-                        "     (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
-                        "                                                                                \n" +
-                        "   (try-with [server   (ipc/server 33333 server-handler)                        \n" +
-                        "              client-1 (ipc/client \"localhost\" 33333)                         \n" +
-                        "              client-2 (ipc/client \"localhost\" 33333)]                        \n" +
-                        "     ;; client 'client-1' subscribes to 'test' messages                         \n" +
-                        "     (ipc/subscribe client-1 \"test\" client-subscribe-handler)                 \n" +
-                        "                                                                                \n" +
-                        "     ;; client 'client-2' publishes a 'test' message                            \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
-                        "          (ipc/publish client-2))                                               \n" +
-                        "                                                                                \n" +
-                        "     (sleep 300)                                                                \n" +
-                        "                                                                                \n" +
-                        "     ;; print server status and statistics                                      \n" +
-                        "     (locking mutex (println \"STATUS:\"(ipc/server-status client-2)))))        ")
+                        "(do                                                                            \n" +
+                        "  (def mutex 0)                                                                \n" +
+                        "                                                                               \n" +
+                        "  ;; the server handler is not involved with publish/subscribe!                \n" +
+                        "  (defn server-handler [m]                                                     \n" +
+                        "    (locking mutex (println (ipc/message->map m)))                             \n" +
+                        "    m)                                                                         \n" +
+                        "                                                                               \n" +
+                        "  (defn client-subscribe-handler [m]                                           \n" +
+                        "    (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
+                        "                                                                               \n" +
+                        "  (try-with [server   (ipc/server 33333 server-handler)                        \n" +
+                        "             client-1 (ipc/client \"localhost\" 33333)                         \n" +
+                        "             client-2 (ipc/client \"localhost\" 33333)]                        \n" +
+                        "    ;; client 'client-1' subscribes to 'test' messages                         \n" +
+                        "    (ipc/subscribe client-1 \"test\" client-subscribe-handler)                 \n" +
+                        "                                                                               \n" +
+                        "    ;; client 'client-2' publishes a 'test' message                            \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
+                        "         (ipc/publish client-2))                                               \n" +
+                        "                                                                               \n" +
+                        "    (sleep 300)                                                                \n" +
+                        "                                                                               \n" +
+                        "    ;; print server status and statistics                                      \n" +
+                        "    (locking mutex (println \"STATUS:\"(ipc/server-status client-2)))))        ")
                  .seeAlso(
                      "ipc/subscribe",
                      "ipc/client",
                      "ipc/server",
                      "ipc/text-message",
                      "ipc/plain-text-message",
+                     "ipc/venice-message",
                      "ipc/binary-message",
                      "ipc/message->map")
                     .build()
@@ -755,27 +763,36 @@ public class IPCFunctions {
                         "Offers a message to the queue.\n\n" +
                         "Returns the acknowledge message from the server.")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client1 (ipc/client \"localhost\" 33333)             \n" +
-                        "              client1 (ipc/client \"localhost\" 33333))            \n" +
-                        "     (let [queue (ipc/create-queue server \"alpha\" 100_000)]      \n" +
-                        "        (->> (ipc/plain-text-message \"test\" \"hello\")           \n" +
-                        "             (ipc/offer client1 \"alpha\" 300))                    \n" +
-                        "        (->> (ipc/poll client2 \"alpha\" 300)                      \n" +
-                        "             (ipc/message->map)                                    \n" +
-                        "             (println)))                                           ")
+                        "(do                                                                       \n" +
+                        "  (defn echo-handler [m] m)                                               \n" +
+                        "                                                                          \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
+                        "    (let [order-queue \"orders\"                                          \n" +
+                        "          capacity    100_000                                             \n" +
+                        "          order       (ipc/venice-text-message                            \n" +
+                        "                            \"order\"                                     \n" +
+                        "                            {:item \"espresso\", :count 2})]              \n" +
+                        "      (ipc/create-queue server order-queue capacity)                      \n" +
+                        "      (->> (ipc/message->map order)                                       \n" +
+                        "           (println \"ORDER:  \"))                                        \n" +
+                        "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
+                        "           (ipc/message->map)                                             \n" +
+                        "           (println \"OFFERED:\"))                                        \n" +
+                        "      (->> (ipc/poll client2 order-queue 300)                             \n" +
+                        "           (ipc/message->map)                                             \n" +
+                        "           (println \"POLLED: \")))))                                     ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
+                        "ipc/poll",
                         "ipc/text-message",
                         "ipc/plain-text-message",
-                        "ipc/binary-message")
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/create-queue",
+                        "ipc/remove-queue")
                     .build()
         ) {
             @Override
@@ -804,27 +821,36 @@ public class IPCFunctions {
                         "Polls a message from a queue.\n\n" +
                         "Returns the message or `nil` if queue is empty.")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client1 (ipc/client \"localhost\" 33333)             \n" +
-                        "              client1 (ipc/client \"localhost\" 33333))            \n" +
-                        "     (let [queue (ipc/create-queue server \"alpha\" 100_000)]      \n" +
-                        "        (->> (ipc/plain-text-message \"test\" \"hello\")           \n" +
-                        "             (ipc/offer client1 \"alpha\" 300))                    \n" +
-                        "        (->> (ipc/poll client2 \"alpha\" 300)                      \n" +
-                        "             (ipc/message->map)                                    \n" +
-                        "             (println)))                                           ")
+                        "(do                                                                       \n" +
+                        "  (defn echo-handler [m] m)                                               \n" +
+                        "                                                                          \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
+                        "    (let [order-queue \"orders\"                                          \n" +
+                        "          capacity    100_000                                             \n" +
+                        "          order       (ipc/venice-text-message                            \n" +
+                        "                            \"order\"                                     \n" +
+                        "                            {:item \"espresso\", :count 2})]              \n" +
+                        "      (ipc/create-queue server order-queue capacity)                      \n" +
+                        "      (->> (ipc/message->map order)                                       \n" +
+                        "           (println \"ORDER:  \"))                                        \n" +
+                        "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
+                        "           (ipc/message->map)                                             \n" +
+                        "           (println \"OFFERED:\"))                                        \n" +
+                        "      (->> (ipc/poll client2 order-queue 300)                             \n" +
+                        "           (ipc/message->map)                                             \n" +
+                        "           (println \"POLLED: \")))))                                     ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
+                        "ipc/offer",
                         "ipc/text-message",
                         "ipc/plain-text-message",
-                        "ipc/binary-message")
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/create-queue",
+                        "ipc/remove-queue")
                     .build()
         ) {
             @Override
@@ -857,24 +883,18 @@ public class IPCFunctions {
                         "Returns the status and statistics of the server the client is " +
                         "connected to.")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "          (ipc/send client))                                       \n" +
-                        "     (println \"STATUS:\" (ipc/server-status client))))            ")
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send client))                                       \n" +
+                        "    (println \"STATUS:\" (ipc/server-status client))))            ")
                  .seeAlso(
                      "ipc/server-thread-pool-statistics",
                      "ipc/server",
-                     "ipc/client",
                      "ipc/close",
-                     "ipc/running?",
-                     "ipc/send",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
+                     "ipc/running?")
                     .build()
         ) {
             @Override
@@ -920,24 +940,19 @@ public class IPCFunctions {
                         "Returns the server's thread pool statistics the client is " +
                         "connected to.")
                     .examples(
-                        "(do                                                                    \n" +
-                        "   (defn echo-handler [m] m)                                           \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)                   \n" +
-                        "              client (ipc/client \"localhost\" 33333)]                 \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")                  \n" +
-                        "          (ipc/send client))                                           \n" +
-                        "     (println \"STATS:\" (ipc/server-thread-pool-statistics client)))) ")
+                        "(do                                                                   \n" +
+                        "  (defn echo-handler [m] m)                                           \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)                   \n" +
+                        "             client (ipc/client \"localhost\" 33333)]                 \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")                  \n" +
+                        "         (ipc/send client))                                           \n" +
+                        "    (println \"STATS:\" (ipc/server-thread-pool-statistics client)))) ")
                  .seeAlso(
                      "ipc/server-status",
                      "ipc/server",
                      "ipc/client",
                      "ipc/close",
-                     "ipc/running?",
-                     "ipc/send",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
+                     "ipc/running?")
                     .build()
         ) {
             @Override
@@ -982,23 +997,17 @@ public class IPCFunctions {
                     .doc(
                         "Returns the client's thread pool statistics.")
                     .examples(
-                        "(do                                                                \n" +
-                        "   (defn echo-handler [m] m)                                       \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "              client (ipc/client \"localhost\" 33333)]             \n" +
-                        "     (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "          (ipc/send client))                                       \n" +
-                        "     (println (ipc/client-thread-pool-statistics client))))        ")
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send client))                                       \n" +
+                        "    (println (ipc/client-thread-pool-statistics client))))        ")
                  .seeAlso(
                      "ipc/client",
-                     "ipc/server",
                      "ipc/close",
-                     "ipc/running?",
-                     "ipc/send",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
+                     "ipc/running?")
                     .build()
         ) {
             @Override
@@ -1059,6 +1068,7 @@ public static VncFunction ipc_text_message =
                     "ipc/send",
                     "ipc/send-async",
                     "ipc/plain-text-message",
+                    "ipc/venice-message",
                     "ipc/binary-message",
                     "ipc/message->map")
                 .build()
@@ -1109,6 +1119,7 @@ public static VncFunction ipc_text_message =
                         "ipc/send",
                         "ipc/send-async",
                         "ipc/text-message",
+                        "ipc/venice-message",
                         "ipc/binary-message",
                         "ipc/message->map")
                     .build()
@@ -1160,6 +1171,7 @@ public static VncFunction ipc_text_message =
                         "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
+                        "ipc/venice-message",
                         "ipc/message->map")
                     .build()
         ) {
@@ -1192,7 +1204,8 @@ public static VncFunction ipc_text_message =
                         "(ipc/venice-message status topic data)")
                     .doc(
                         "Creates a venice message. \n\n" +
-                        "The Venice data is serialized as JSON for transport within a message")
+                        "The Venice data is serialized as JSON (application/json mimetype) " +
+                        "for transport within a message")
             .examples(
                         "(->> (ipc/venice-message \"test\"                        \n" +
                         "                         {:a 100, :b 200})               \n" +
@@ -1259,8 +1272,8 @@ public static VncFunction ipc_text_message =
                         "  (println (ipc/message-field m :response-status))         \n" +
                         "  (println (ipc/message-field m :topic))                   \n" +
                         "  (println (ipc/message-field m :payload-mimetype))        \n" +
-                        "  (println (ipc/message-field m :payload-charset))          \n" +
-                        "  (println (ipc/message-field m :payload-text)))            ",
+                        "  (println (ipc/message-field m :payload-charset))         \n" +
+                        "  (println (ipc/message-field m :payload-text)))           ",
 
                         "(let [m (ipc/binary-message \"test\"                       \n" +
                         "                            \"application/octet-stream\"   \n" +
@@ -1295,6 +1308,7 @@ public static VncFunction ipc_text_message =
                         "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
+                        "ipc/venice-message",
                         "ipc/message->map")
                     .build()
         ) {
@@ -1402,32 +1416,29 @@ public static VncFunction ipc_text_message =
                         "between two clients.")
                     .examples(
                         "(do                                                                       \n" +
-                        "   (defn echo-handler [m] m)                                              \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)                      \n" +
-                        "              client1 (ipc/client \"localhost\" 33333)                    \n" +
-                        "              client2 (ipc/client \"localhost\" 33333)]                   \n" +
-                        "     (let [order-queue \"orders\"                                         \n" +
-                        "           capacity    100_000                                            \n" +
-                        "           queue       (ipc/create-queue server order-queue capacity)     \n" +
-                        "           msg         (ipc/plain-text-message \"order\" \"2 espressi\")] \n" +
-                        "        (->> (ipc/message->map msg)                                       \n" +
-                        "             (println \"ORDER:  \"))                                      \n" +
-                        "        (->> (ipc/offer client1 order-queue 300 msg)                      \n" +
-                        "             (ipc/message->map)                                           \n" +
-                        "             (println \"OFFERED:\"))                                      \n" +
-                        "        (->> (ipc/poll client2 order-queue 300)                           \n" +
-                        "             (ipc/message->map)                                           \n" +
-                        "             (println \"POLLED: \")))))                                   ")
+                        "  (defn echo-handler [m] m)                                               \n" +
+                        "                                                                          \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
+                        "    (let [order-queue \"orders\"                                          \n" +
+                        "          capacity    100_000                                             \n" +
+                        "          order       (ipc/venice-text-message                            \n" +
+                        "                            \"order\"                                     \n" +
+                        "                            {:item \"espresso\", :count 2})]              \n" +
+                        "      (ipc/create-queue server order-queue capacity)                      \n" +
+                        "      (->> (ipc/message->map order)                                       \n" +
+                        "           (println \"ORDER:  \"))                                        \n" +
+                        "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
+                        "           (ipc/message->map)                                             \n" +
+                        "           (println \"OFFERED:\"))                                        \n" +
+                        "      (->> (ipc/poll client2 order-queue 300)                             \n" +
+                        "           (ipc/message->map)                                             \n" +
+                        "           (println \"POLLED: \")))))                                     ")
                     .seeAlso(
                         "ipc/server",
-                        "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
-                        "ipc/text-message",
-                        "ipc/plain-text-message",
-                        "ipc/binary-message")
+                        "ipc/remove-queue",
+                        "ipc/exists-queue?")
                     .build()
         ) {
             @Override
@@ -1455,24 +1466,19 @@ public static VncFunction ipc_text_message =
                     .doc(
                         "Removes a named queue from the server.")
                     .examples(
-                        "(do                                                                    \n" +
-                        "   (defn echo-handler [m] m)                                           \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)]                  \n" +
-                        "     (let [order-queue \"orders\"                                      \n" +
-                        "           capacity    100_000                                         \n" +
-                        "           queue       (ipc/create-queue server order-queue capacity)] \n" +
-                        "        ;; ...                                                         \n" +
-                        "        (ipc/remove-queue server order-queue))))                       ")
+                        "(do                                                    \n" +
+                        "  (defn echo-handler [m] m)                            \n" +
+                        "                                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)]   \n" +
+                        "    (let [order-queue \"orders\"                       \n" +
+                        "          capacity    100_000]                         \n" +
+                        "      (ipc/create-queue server order-queue capacity)   \n" +
+                        "      ;; ...                                           \n" +
+                        "      (ipc/remove-queue server order-queue))))         ")
                     .seeAlso(
                         "ipc/server",
-                        "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
-                        "ipc/text-message",
-                        "ipc/plain-text-message",
-                        "ipc/binary-message")
+                        "ipc/create-queue",
+                        "ipc/exists-queue?")
                     .build()
         ) {
             @Override
@@ -1499,24 +1505,19 @@ public static VncFunction ipc_text_message =
                     .doc(
                         "Returns `true` if the named queue exists else `false`.")
                     .examples(
-                        "(do                                                                    \n" +
-                        "   (defn echo-handler [m] m)                                           \n" +
-                        "   (try-with [server (ipc/server 33333 echo-handler)]                  \n" +
-                        "     (let [order-queue \"orders\"                                      \n" +
-                        "           capacity    100_000                                         \n" +
-                        "           queue       (ipc/create-queue server order-queue capacity)] \n" +
-                        "        ;; ...                                                         \n" +
-                        "        (ipc/exists-queue? server order-queue))))                      ")
+                        "(do                                                    \n" +
+                        "  (defn echo-handler [m] m)                            \n" +
+                        "                                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)]   \n" +
+                        "    (let [order-queue \"orders\"                       \n" +
+                        "          capacity    100_000]                         \n" +
+                        "      (ipc/create-queue server order-queue capacity)   \n" +
+                        "      ;; ...                                           \n" +
+                        "      (ipc/exists-queue? server order-queue))))        ")
                     .seeAlso(
-                        "ipc/server",
-                        "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
-                        "ipc/text-message",
-                        "ipc/plain-text-message",
-                        "ipc/binary-message")
+                            "ipc/server",
+                            "ipc/create-queue",
+                            "ipc/remove-queue")
                     .build()
         ) {
             @Override
