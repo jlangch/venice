@@ -760,8 +760,13 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/offer client queue-name timeout message)")
                     .doc(
-                        "Offers a message to the queue.\n\n" +
-                        "Returns the acknowledge message from the server.")
+                        "Offers a message to the named queue.\n\n" +
+                        "The server returns a response message with one of these status:\n\n" +
+                        "  * `:OK - message added to the queue`\n" +
+                        "  * `:SERVER_ERROR`\n" +
+                        "  * `:BAD_REQUEST`\n" +
+                        "  * `:QUEUE_NOT_FOUND`\n" +
+                        "  * `:QUEUE_FULL`")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -801,7 +806,7 @@ public class IPCFunctions {
 
                 final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
-                final long timeout =Coerce.toVncLong(args.third()).toJavaLong();
+                final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
                 final IMessage request = Coerce.toVncJavaObject(args.fourth(), IMessage.class);
 
                 return new VncJavaObject(client.offer(request, name, timeout, TimeUnit.MILLISECONDS));
@@ -818,8 +823,14 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/poll client queue-name timeout)")
                     .doc(
-                        "Polls a message from a queue.\n\n" +
-                        "Returns the message or `nil` if queue is empty.")
+                        "Polls a message from the named queue.\n\n" +
+                        "Returns:\n\n" +
+                        "  * the pulled message from the queue with status `:OK` \n" +
+                        "  * `nil` if queue was empty \n" +
+                        "  * an error message with one of these status:¶\n" +
+                        "  \u2003• `:SERVER_ERROR`¶\n" +
+                        "  \u2003• `:BAD_REQUEST`¶\n" +
+                        "  \u2003• `:QUEUE_NOT_FOUND`")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -859,7 +870,7 @@ public class IPCFunctions {
 
                 final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
-                final long timeout =Coerce.toVncLong(args.third()).toJavaLong();
+                final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
 
                 return new VncJavaObject(client.poll(name, timeout, TimeUnit.MILLISECONDS));
             }
@@ -1248,6 +1259,28 @@ public static VncFunction ipc_text_message =
                         "(ipc/message-field message field)")
                     .doc(
                         "Returns a specific field from the message. \n\n" +
+                        "```\n" +
+                        "           Message                         set by \n" +
+                        " ┌───────────────────────────────┐   \n" +
+                        " │ ID                            │   by send, publish/subscribe method\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Message Type                  │   by send, publish/subscribe method\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Oneway                        │   by Client or framework method\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Response Status               │   by server response processor\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Timestamp                     │   by message creator\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Topic                         │   by Client\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Payload Mimetype              │   by Client\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Payload Charset               │   by Client if payload data is a string else null\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Payload data                  │   by Client\n" +
+                        " └───────────────────────────────┘   \n" +
+                        "```\n\n" +
                         "Supported field names: \n\n" +
                         "  * `id`\n" +
                         "  * `type`\n" +
@@ -1364,6 +1397,7 @@ public static VncFunction ipc_text_message =
                         "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
+                        "ipc/venice-message",
                         "ipc/binary-message")
                     .build()
         ) {
