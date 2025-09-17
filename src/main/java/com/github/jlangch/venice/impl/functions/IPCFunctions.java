@@ -383,9 +383,14 @@ public class IPCFunctions {
                     .doc(
                         "Sends a message to the server the client is associated with. \n\n" +
                         "The optional timeout is given in milliseconds.\n\n" +
-                        "Returns the servers response message or `nil` if the message is " +
+                        "Returns the server's response message or `nil` if the message is " +
                         "declared as one-way message. Throws a timeout exception if the " +
                         "response is not received within the timeout time.\n\n" +
+                        "The response message has one of these status:\n\n" +
+                        "  * `:OK`            - request handled successfully and response holds the data\n" +
+                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
+                        "  * `:BAD_REQUEST`   - invalid request\n" +
+                        "  * `:HANDLER_ERROR` - an error in the server's request processing handler\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c  | A client to send the message from|\n" +
                         "| timeout t | A timeout in milliseconds for receiving the response|\n" +
@@ -535,7 +540,12 @@ public class IPCFunctions {
                     .doc(
                         "Sends a message asynchronously to the server the client is associated " +
                         "with. \n\n" +
-                        "Returns a future to get the server's response message.")
+                        "Returns a future to get the server's response message.\n\n" +
+                        "The response message has one of these status:\n\n" +
+                        "  * `:OK`            - request handled successfully and response holds the data\n" +
+                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
+                        "  * `:BAD_REQUEST`   - invalid request\n" +
+                        "  * `:HANDLER_ERROR` - an error in the server's request processing handler")
                     .examples(
                         "(do                                                      \n" +
                         "  (defn echo-handler [m] m)                              \n" +
@@ -590,7 +600,11 @@ public class IPCFunctions {
                         "Subscribe to a topic.\n\n" +
                         "Puts this client into subscription mode and listens for messages of the " +
                         "specified topic.\n\n" +
-                        "To unsubscribe from the topics just close the client.")
+                        "To unsubscribe from the topics just close the client.\n\n" +
+                        "The response message has one of these status:\n\n" +
+                        "  * `:OK`            - subscription added. Subscribed messages will be delivered through the handler\n" +
+                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request\n" +
+                        "  * `:BAD_REQUEST`   - invalid request")
                     .examples(
                         "(do                                                                            \n" +
                         "  (def mutex 0)                                                                \n" +
@@ -697,6 +711,10 @@ public class IPCFunctions {
                     .doc(
                         "Publishes a messages to all clients that have subscribed to the" +
                         "message's topic.\n\n" +
+                        "The response message has one of these status:\n\n" +
+                        "  * `:OK`            - message successfully published\n" +
+                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
+                        "  * `:BAD_REQUEST`   - invalid request\n\n" +
                         "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
                         "(do                                                                            \n" +
@@ -766,17 +784,17 @@ public class IPCFunctions {
                         "(ipc/offer client queue-name timeout message)")
                     .doc(
                         "Offers a message to the named queue.\n\n" +
-                        "The server returns a response message with one of these status:\n\n" +
-                        "  * `:OK - message added to the queue`\n" +
-                        "  * `:SERVER_ERROR`\n" +
-                        "  * `:BAD_REQUEST`\n" +
-                        "  * `:QUEUE_NOT_FOUND`\n" +
-                        "  * `:QUEUE_FULL`\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c     | A client to send the offer message from |\n" +
                         "| queue-name q | A queue name to offer the message to|\n" +
                         "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
-                        "| message m    | The offer request message|")
+                        "| message m    | The offer request message|\n\n" +
+                        "The server returns a response message with one of these status:\n\n" +
+                        "  * `:OK`              - message added to the queue\n" +
+                        "  * `:SERVER_ERROR`    - indicates a server while offering the message to the queue\n" +
+                        "  * `:BAD_REQUEST`     - invalid request\n" +
+                        "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
+                        "  * `:QUEUE_FULL`      - the queue is full, offer rejected")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -834,18 +852,17 @@ public class IPCFunctions {
                         "(ipc/poll client queue-name timeout)")
                     .doc(
                         "Polls a message from the named queue.\n\n" +
-                        "Returns:\n\n" +
-                        "  * the pulled message from the queue with status `:OK` \n" +
-                        "  * `nil` if queue was empty \n" +
-                        "  * an error message with one of these status:¶\n" +
-                        "  \u2003• `:SERVER_ERROR`¶\n" +
-                        "  \u2003• `:BAD_REQUEST`¶\n" +
-                        "  \u2003• `:QUEUE_NOT_FOUND`\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c     | A client to send the poll message from |\n" +
                         "| queue-name q | A queue name to poll the message to|\n" +
                         "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
-                        "| message m    | The poll request message|\n\n")
+                        "| message m    | The poll request message|\n\n" +
+                        "The server returns a response message with one of these status:\n\n" +
+                        "  * `:OK`              - message successfully polled from the queue, response holds the data\n" +
+                        "  * `:SERVER_ERROR`    - indicates a server while polling a message from the queue\n" +
+                        "  * `:BAD_REQUEST`     - invalid request\n" +
+                        "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
+                        "  * `:QUEUE_EMPTY`     - the queue is empty")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -1323,7 +1340,7 @@ public static VncFunction ipc_text_message =
                         "  * `:payload-charset`  - the payload data charset (if payload is a text form)\n" +
                         "  * `:payload-text`     - the payload converted to text data if payload is textual data else error\n" +
                         "  * `:payload-binary`   - the payload binary data (thr raw message binary data)\n" +
-                        "  * `:payload-venice`   - the payload converted venice data if mimetype is application/json else error\n\n" +
+                        "  * `:payload-venice`   - the payload converted venice data if mimetype is 'application/json' else error\n\n" +
                         "**Message type:** \n\n" +
                         "  * `:REQUEST`     - a request message\n" +
                         "  * `:PUBLISH`     - a publish message\n" +
@@ -1336,9 +1353,10 @@ public static VncFunction ipc_text_message =
                         "**Response status:** \n\n" +
                         "  * `:OK`              - a response message for a successfully processed request\n" +
                         "  * `:SERVER_ERROR`    - a response indicating a server side error while processing the request \n" +
-                        "  * `:HANDLER_ERROR`   - a server handler error in send/receive communication\n" +
+                        "  * `:BAD_REQUEST`     - invalid request\n" +
+                        "  * `:HANDLER_ERROR`   - a server handler error in the server's request processing\n" +
                         "  * `:QUEUE_NOT_FOUND` - the required queue does not exist\n" +
-                        "  * `:QUEUE_EMPTY`     - the adressed queue is empty\n" +
+                        "  * `:QUEUE_EMPTY`     - the adressed queue in a poll request is empty\n" +
                         "  * `:QUEUE_FULL`      - the adressed queue in offer request is full\n" +
                         "  * `:NULL`            - a message with yet undefined status")
             .examples(
