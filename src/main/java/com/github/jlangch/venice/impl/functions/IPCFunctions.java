@@ -44,6 +44,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -780,14 +781,14 @@ public class IPCFunctions {
                         "                            \"order\"                                     \n" +
                         "                            {:item \"espresso\", :count 2})]              \n" +
                         "      (ipc/create-queue server order-queue capacity)                      \n" +
-                        "      (->> (ipc/message->map order)                                       \n" +
-                        "           (println \"ORDER:  \"))                                        \n" +
+                        "      (->> (ipc/message->json true order)                                 \n" +
+                        "           (println \"ORDER:\"))                                          \n" +
                         "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
-                        "           (ipc/message->map)                                             \n" +
+                        "           (ipc/message->json true)                                       \n" +
                         "           (println \"OFFERED:\"))                                        \n" +
                         "      (->> (ipc/poll client2 order-queue 300)                             \n" +
-                        "           (ipc/message->map)                                             \n" +
-                        "           (println \"POLLED: \")))))                                     ")
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"POLLED:\")))))                                      ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -844,14 +845,14 @@ public class IPCFunctions {
                         "                            \"order\"                                     \n" +
                         "                            {:item \"espresso\", :count 2})]              \n" +
                         "      (ipc/create-queue server order-queue capacity)                      \n" +
-                        "      (->> (ipc/message->map order)                                       \n" +
-                        "           (println \"ORDER:  \"))                                        \n" +
+                        "      (->> (ipc/message->json true order)                                 \n" +
+                        "           (println \"ORDER:\"))                                          \n" +
                         "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
-                        "           (ipc/message->map)                                             \n" +
+                        "           (ipc/message->json true)                                       \n" +
                         "           (println \"OFFERED:\"))                                        \n" +
                         "      (->> (ipc/poll client2 order-queue 300)                             \n" +
-                        "           (ipc/message->map)                                             \n" +
-                        "           (println \"POLLED: \")))))                                     ")
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"POLLED:\")))))                                      ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -1407,30 +1408,84 @@ public static VncFunction ipc_text_message =
 
                 final IMessage m = Coerce.toVncJavaObject(args.first(), IMessage.class);
 
-                if (m.getCharset() != null) {
+                if (m.getCharset() == null) {
+                    // binary
                     return VncOrderedMap.of(
                             new VncKeyword("type"),      new VncKeyword(m.getType().name()),
                             new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
-                            new VncKeyword("timestamp"), new VncJavaObject(m.getTimestamp()),
+                            new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
+                            new VncKeyword("topic"),     new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
+                            new VncKeyword("data"),      new VncByteBuffer(m.getData()));
+                }
+                else if ("application/json".equals(m.getMimetype())) {
+                    // json
+                    return VncOrderedMap.of(
+                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
+                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
+                            new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
+                            new VncKeyword("topic"),     new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
+                            new VncKeyword("data"),      Json.readJson(m.getText(), true));
+                }
+                else {
+                    // text
+                    return VncOrderedMap.of(
+                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
+                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
+                            new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
                             new VncKeyword("topic"),     new VncString(m.getTopic()),
                             new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
                             new VncKeyword("charset"),   new VncKeyword(m.getCharset()),
                             new VncKeyword("text"),      new VncString(m.getText()));
-                }
-                else {
-                    return VncOrderedMap.of(
-                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
-                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
-                            new VncKeyword("timestamp"), new VncJavaObject(m.getTimestamp()),
-                            new VncKeyword("topic"),     new VncString(m.getTopic()),
-                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
-                            new VncKeyword("data"),      new VncByteBuffer(m.getData()));
                 }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+        public static VncFunction ipc_message_to_json =
+            new VncFunction(
+                    "ipc/message->json",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(ipc/message->json message)",
+                            "(ipc/message->json pretty message)")
+                        .doc(
+                            "Converts a Java IPC `Message` to a Venice map")
+                        .examples(
+                            "(->> (ipc/text-message \"test\"                          \n" +
+                            "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                            "     (ipc/message->json true))                           ")
+                        .seeAlso(
+                            "ipc/server",
+                            "ipc/client",
+                            "ipc/close",
+                            "ipc/running?",
+                            "ipc/send",
+                            "ipc/send-async",
+                            "ipc/text-message",
+                            "ipc/plain-text-message",
+                            "ipc/venice-message",
+                            "ipc/binary-message")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1, 2);
+
+                    final boolean pretty = args.size() == 1 ? false : Coerce.toVncBoolean(args.nth(0)).getValue();
+                    final IMessage m = Coerce.toVncJavaObject(args.nth(args.size() == 1 ? 0 : 1), IMessage.class);
+
+                    final VncMap data = (VncMap)ipc_message_to_map.applyOf(new VncJavaObject(m));
+
+                    return new VncString(Json.writeJson(data, pretty));
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
 
     // ------------------------------------------------------------------------
@@ -1461,14 +1516,14 @@ public static VncFunction ipc_text_message =
                         "                            \"order\"                                     \n" +
                         "                            {:item \"espresso\", :count 2})]              \n" +
                         "      (ipc/create-queue server order-queue capacity)                      \n" +
-                        "      (->> (ipc/message->map order)                                       \n" +
-                        "           (println \"ORDER:  \"))                                        \n" +
+                        "      (->> (ipc/message->json true order)                                 \n" +
+                        "           (println \"ORDER:\"))                                          \n" +
                         "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
-                        "           (ipc/message->map)                                             \n" +
+                        "           (ipc/message->json true)                                       \n" +
                         "           (println \"OFFERED:\"))                                        \n" +
                         "      (->> (ipc/poll client2 order-queue 300)                             \n" +
-                        "           (ipc/message->map)                                             \n" +
-                        "           (println \"POLLED: \")))))                                     ")
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"POLLED:\")))))                                      ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/remove-queue",
@@ -1666,6 +1721,7 @@ public static VncFunction ipc_text_message =
                     .add(ipc_venice_message)
                     .add(ipc_message_field)
                     .add(ipc_message_to_map)
+                    .add(ipc_message_to_json)
 
                     .add(ipc_create_queue)
                     .add(ipc_remove_queue)

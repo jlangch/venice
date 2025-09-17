@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +51,40 @@ public class IpcFunctionsTest {
                 "         (. <> :getText))))";
 
         assertEquals("3", venice.eval(script));
+    }
+
+
+    @Test
+    public void test_map2json_a() {
+        final Venice venice = new Venice();
+
+
+        final String script =
+                "(do                                             \n" +
+                "  (->> (ipc/text-message \"test\"               \n" +
+                "                         \"text/plain\"         \n" +
+                "                         :UTF-8                 \n" +
+                "                         \"hello\")             \n" +
+                "       (ipc/message->json false)))              ";
+
+        assertNotNull(venice.eval(script));
+    }
+
+
+    @Test
+    public void test_map2json_b() {
+        final Venice venice = new Venice();
+
+
+        final String script =
+                "(do                                             \n" +
+                "  (->> (ipc/text-message \"test\"               \n" +
+                "                         \"text/plain\"         \n" +
+                "                         :UTF-8                 \n" +
+                "                         \"hello\")             \n" +
+                "       (ipc/message->json true)))               ";
+
+        assertNotNull(venice.eval(script));
     }
 
 }

@@ -59,9 +59,9 @@ public class JsonBuilder {
         return this;
     }
 
-    public String toJson() {
+    public String toJson(final boolean pretty) {
         final VncMap map = VncHashMap.of(elements.toArray(new VncVal[]{}));
-        return Json.writeJson(map);
+        return Json.writeJson(map, pretty);
     }
 
 

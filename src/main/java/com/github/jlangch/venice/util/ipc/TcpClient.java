@@ -619,7 +619,7 @@ public class TcpClient implements Closeable {
                 Topics.of("client/thread-pool-statistics"),
                 "application/json",
                 "UTF-8",
-                toBytes(Json.writeJson(statistics), "UTF-8"));
+                toBytes(Json.writeJson(statistics, false), "UTF-8"));
     }
 
 

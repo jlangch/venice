@@ -47,6 +47,8 @@ import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 
 // https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
+// https://github.com/baswerc/niossl
+// https://github.com/marianobarrios/tls-channel
 
 public class TcpServer implements Closeable {
 
@@ -150,7 +152,7 @@ public class TcpServer implements Closeable {
                     while (started.get()) {
                         try {
                             final SocketChannel channel = ch.accept();
-                           channel.configureBlocking(true);
+                            channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
                                                                    this, channel, handler,
                                                                    maxMessageSize, subscriptions,

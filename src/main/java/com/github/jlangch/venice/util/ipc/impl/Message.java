@@ -381,7 +381,7 @@ public class Message implements IMessage {
     private final MessageType type;
     private final ResponseStatus responseStatus;
     private final boolean oneway;
-    private final String queueName;
+    private final String queueName;  // used for offer/poll messages
     private final long timestamp;
     private final Topics topics;
     private final String mimetype;

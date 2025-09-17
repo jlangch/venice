@@ -64,6 +64,34 @@ public abstract class MessageFactory {
 
 
     /**
+     * Create a json message
+     *
+     * @param topic a topic
+     * @param charset the charset of the message's payload data
+     * @param json the json payload data
+     * @return the message
+     */
+    public static IMessage json(
+            final String topic,
+            final String charset,
+            final String json
+    ) {
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(charset);
+        Objects.requireNonNull(json);
+
+        return new Message(
+                MessageType.NULL,
+                ResponseStatus.NULL,
+                false,
+                Topics.of(topic),
+                "application/json",
+                charset,
+                json.getBytes(Charset.forName(charset)));
+    }
+
+
+    /**
      * Create a binary message
      *
      * @param topic a topic
@@ -108,15 +136,9 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        return new Message(
-                MessageType.NULL,
-                ResponseStatus.NULL,
-                false,
-                Topics.of(topic),
-                "application/json",
-                "UTF-8",
-                Json.writeJson(data).getBytes(Charset.forName("UTF-8")));
+        return json(topic, "UTF-8", Json.writeJson(data, false));
     }
+
 
     /**
      * Create a simple hello message.

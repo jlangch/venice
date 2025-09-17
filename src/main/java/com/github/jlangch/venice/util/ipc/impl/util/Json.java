@@ -51,9 +51,9 @@ public class Json {
         }
     }
 
-    public static String writeJson(final VncVal val) {
+    public static String writeJson(final VncVal val, final boolean pretty) {
         final StringBuilder sb = new StringBuilder();
-        final JsonAppendableWriter writer = JsonWriter.indent("  ").on(sb);
+        final JsonAppendableWriter writer = pretty ? JsonWriter.indent("  ").on(sb) : JsonWriter.on(sb);
         new VncJsonWriter(writer, false).write(val).done();
         return sb.toString();
     }

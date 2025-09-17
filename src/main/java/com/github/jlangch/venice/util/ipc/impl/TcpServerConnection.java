@@ -445,7 +445,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
                            .add("message_size_min", TcpServer.MESSAGE_LIMIT_MIN)
                            .add("message_size_max", maxMessageSize.get())
-                           .toJson());
+                           .toJson(false));
     }
 
     private Message getTcpServerNextError() {
@@ -457,7 +457,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         "tcp-server/error",
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
-                                .toJson());
+                                .toJson(false));
             }
             else {
                 final String description = err.getDescription();
@@ -472,7 +472,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                 .add("description", description)
                                 .add("exception", exMsg)
                                 .add("errors-left", errorBuffer.size())
-                                .toJson());
+                                .toJson(false));
             }
         }
         catch(Exception ex) {
@@ -481,7 +481,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     "tcp-server/error",
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
-                            .toJson());
+                            .toJson(false));
         }
     }
 
@@ -491,7 +491,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return createJsonResponseMessage(
                 ResponseStatus.OK,
                 "tcp-server/thread-pool-statistics",
-                Json.writeJson(statistics));
+                Json.writeJson(statistics, false));
     }
 
 
