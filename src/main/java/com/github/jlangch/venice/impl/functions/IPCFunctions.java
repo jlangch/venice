@@ -1100,8 +1100,8 @@ public static VncFunction ipc_text_message =
                     "Creates a text message\n\n" +
                     "*Arguments:* \n\n" +
                     "| topic t    | A topic (string) |\n" +
-                    "| mimetype m | The mimetype of the payload text|\n" +
-                    "| charset c  | The charset of the payload text. A keyword: `:UTF-8`|\n" +
+                    "| mimetype m | The mimetype of the payload text. A string like 'text/plain' |\n" +
+                    "| charset c  | The charset of the payload text. A keyword like `:UTF-8`|\n" +
                     "| text t     | The message payload text (a string)|")
                 .examples(
                     "(->> (ipc/text-message \"test\"                         \n" +
@@ -1209,8 +1209,8 @@ public static VncFunction ipc_text_message =
                         "Creates a binary message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| topic t    | A topic (string) |\n" +
-                        "| mimetype m | The mimetype of the payload text|\n" +
-                        "| data t     | The message payload binary data (a bytebuf)|")
+                        "| mimetype m | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
+                        "| data d     | The message payload binary data (a bytebuf)|")
             .examples(
                         "(->> (ipc/binary-message \"test\"                        \n" +
                         "                         \"application/octet-stream\"    \n" +
@@ -1263,8 +1263,7 @@ public static VncFunction ipc_text_message =
                         "for transport within a message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| topic t    | A topic (string) |\n" +
-                        "| mimetype m | The mimetype of the payload text|\n" +
-                        "| data t     | The message payload Venice data (e.g.: a map, list, ...)|")
+                        "| data d     | The message payload Venice data (e.g.: a map, list, ...)|")
             .examples(
                         "(->> (ipc/venice-message \"test\"                        \n" +
                         "                         {:a 100, :b 200})               \n" +
