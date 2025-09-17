@@ -70,7 +70,7 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/server port handler & options)")
                     .doc(
-                        "Create a new TcpServer on the specified port.  \n\n" +
+                        "Create a new server on the specified port.  \n\n" +
                         "The server must be closed after use!           \n\n" +
                         "*Arguments:* \n\n" +
                         "| port p    | The TCP/IP port |\n" +
@@ -173,7 +173,7 @@ public class IPCFunctions {
                         "(ipc/client port)",
                         "(ipc/client host port & options)")
                     .doc(
-                        "Create a new TcpClient connecting to a TcpServer on the  specified " +
+                        "Create a new client connecting to a server on the specified " +
                         "host and port.\n\n" +
                         "The client must be closed after use!" +
                         "*Arguments:* \n\n" +
@@ -185,7 +185,7 @@ public class IPCFunctions {
                         "| :max-message-size n   | The max size of the message payload." +
                                                  " Defaults to `200MB`.¶" +
                                                  " The max size can be specified as a number like `20000`" +
-                                                 " or a number with a unit like `:20KB`, or `:20MB` |\n")
+                                                 " or a number with a unit like `:20KB`, or `:20MB`|\n")
                     .examples(
                         "(do                                                     \n" +
                         "  (defn echo-handler [m]                                \n" +
@@ -310,7 +310,7 @@ public class IPCFunctions {
                         "(ipc/close server)",
                         "(ipc/close client)")
                     .doc(
-                        "Closes the server or client")
+                        "Closes a server or client")
                     .examples(
                         ";; prefer try-with-resources to safely close server and client    \n" +
                         "(do                                                               \n" +
@@ -385,7 +385,11 @@ public class IPCFunctions {
                         "The optional timeout is given in milliseconds.\n\n" +
                         "Returns the servers response message or `nil` if the message is " +
                         "declared as one-way message. Throws a timeout exception if the " +
-                        "response is not received within the timeout time.")
+                        "response is not received within the timeout time.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client c  | A client to send the message from|\n" +
+                        "| timeout t | A timeout in milliseconds for receiving the response|\n" +
+                        "| message m | The message to send|")
                     .examples(
                         ";; echo handler                                                   \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"              \n" +
@@ -767,7 +771,12 @@ public class IPCFunctions {
                         "  * `:SERVER_ERROR`\n" +
                         "  * `:BAD_REQUEST`\n" +
                         "  * `:QUEUE_NOT_FOUND`\n" +
-                        "  * `:QUEUE_FULL`")
+                        "  * `:QUEUE_FULL`\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client c     | A client to send the offer message from |\n" +
+                        "| queue-name q | A queue name to offer the message to|\n" +
+                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
+                        "| message m    | The offer request message|")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -831,7 +840,12 @@ public class IPCFunctions {
                         "  * an error message with one of these status:¶\n" +
                         "  \u2003• `:SERVER_ERROR`¶\n" +
                         "  \u2003• `:BAD_REQUEST`¶\n" +
-                        "  \u2003• `:QUEUE_NOT_FOUND`")
+                        "  \u2003• `:QUEUE_NOT_FOUND`\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client c     | A client to send the poll message from |\n" +
+                        "| queue-name q | A queue name to poll the message to|\n" +
+                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
+                        "| message m    | The poll request message|\n\n")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -1066,7 +1080,12 @@ public static VncFunction ipc_text_message =
                 .arglists(
                     "(ipc/text-message topic mimetype charset text)")
                 .doc(
-                    "Creates a text message")
+                    "Creates a text message\n\n" +
+                    "*Arguments:* \n\n" +
+                    "| topic t    | A topic (string) |\n" +
+                    "| mimetype m | The mimetype of the payload text|\n" +
+                    "| charset c  | The charset of the payload text. A keyword: `:UTF-8`|\n" +
+                    "| text t     | The message payload text (a string)|")
                 .examples(
                     "(->> (ipc/text-message \"test\"                         \n" +
                     "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
@@ -1116,9 +1135,12 @@ public static VncFunction ipc_text_message =
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/plain-text-message status topic text)")
+                        "(ipc/plain-text-message topic text)")
                     .doc(
-                        "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.")
+                        "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n"  +
+                        "*Arguments:* \n\n" +
+                        "| topic t | A topic (string) |\n" +
+                        "| text t  | The message payload text (a string)|")
                     .examples(
                         "(->> (ipc/plain-text-message \"test\" \"hello\")  \n" +
                         "     (ipc/message->map)                           \n" +
@@ -1165,9 +1187,13 @@ public static VncFunction ipc_text_message =
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/binary-message status topic mimetype data)")
+                        "(ipc/binary-message topic mimetype data)")
                     .doc(
-                        "Creates a binary message.")
+                        "Creates a binary message.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| topic t    | A topic (string) |\n" +
+                        "| mimetype m | The mimetype of the payload text|\n" +
+                        "| data t     | The message payload binary data (a bytebuf)|")
             .examples(
                         "(->> (ipc/binary-message \"test\"                        \n" +
                         "                         \"application/octet-stream\"    \n" +
@@ -1213,11 +1239,15 @@ public static VncFunction ipc_text_message =
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/venice-message status topic data)")
+                        "(ipc/venice-message topic data)")
                     .doc(
-                        "Creates a venice message. \n\n" +
+                        "Creates a venice message.\n\n" +
                         "The Venice data is serialized as JSON (mimetype: 'application/json') " +
-                        "for transport within a message")
+                        "for transport within a message.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| topic t    | A topic (string) |\n" +
+                        "| mimetype m | The mimetype of the payload text|\n" +
+                        "| data t     | The message payload Venice data (e.g.: a map, list, ...)|")
             .examples(
                         "(->> (ipc/venice-message \"test\"                        \n" +
                         "                         {:a 100, :b 200})               \n" +
@@ -1282,18 +1312,35 @@ public static VncFunction ipc_text_message =
                         " │ Payload data                  │   by Client\n" +
                         " └───────────────────────────────┘   \n" +
                         "```\n\n" +
-                        "Supported field names: \n\n" +
-                        "  * `id`\n" +
-                        "  * `type`\n" +
-                        "  * `oneway?`\n" +
-                        "  * `response-status`\n" +
-                        "  * `timestamp`\n" +
-                        "  * `topic`\n" +
-                        "  * `payload-mimetype`\n" +
-                        "  * `payload-charset`\n" +
-                        "  * `payload-text`\n" +
-                        "  * `payload-binary`\n" +
-                        "  * `payload-venice`\n")
+                        "**Supported field names:** \n\n" +
+                        "  * `:id`               - the message's technical ID\n" +
+                        "  * `:type`             - the message type (request, response, ..) \n" +
+                        "  * `:oneway?`          - `true` if one-way message else `false`\n" +
+                        "  * `:response-status`  - the response status (ok, bad request, ...) \n" +
+                        "  * `:timestamp`        - the message's creation timestamp in milliseconds since epoch\n" +
+                        "  * `:topic`            - the topic\n" +
+                        "  * `:payload-mimetype` - the payload data mimetype\n" +
+                        "  * `:payload-charset`  - the payload data charset (if payload is a text form)\n" +
+                        "  * `:payload-text`     - the payload converted to text data if payload is textual data else error\n" +
+                        "  * `:payload-binary`   - the payload binary data (thr raw message binary data)\n" +
+                        "  * `:payload-venice`   - the payload converted venice data if mimetype is application/json else error\n\n" +
+                        "**Message type:** \n\n" +
+                        "  * `:REQUEST`     - a request message\n" +
+                        "  * `:PUBLISH`     - a publish message\n" +
+                        "  * `:SUBSCRIBE`   - a subscribe message\n" +
+                        "  * `:UNSUBSCRIBE` - an unsubscribe message\n" +
+                        "  * `:OFFER`       - an offer message for a queue\n" +
+                        "  * `:POLL`        - a poll message from a queue\n" +
+                        "  * `:RESPONSE`    - a response to a request message\n" +
+                        "  * `:NULL`        - a message with yet undefined type\n\n" +
+                        "**Response status:** \n\n" +
+                        "  * `:OK`              - a response message for a successfully processed request\n" +
+                        "  * `:SERVER_ERROR`    - a response indicating a server side error while processing the request \n" +
+                        "  * `:HANDLER_ERROR`   - a server handler error in send/receive communication\n" +
+                        "  * `:QUEUE_NOT_FOUND` - the required queue does not exist\n" +
+                        "  * `:QUEUE_EMPTY`     - the adressed queue is empty\n" +
+                        "  * `:QUEUE_FULL`      - the adressed queue in offer request is full\n" +
+                        "  * `:NULL`            - a message with yet undefined status")
             .examples(
                         "(let [m (ipc/text-message \"test\"                         \n" +
                         "                          \"text/plain\"                   \n" +
@@ -1384,7 +1431,16 @@ public static VncFunction ipc_text_message =
                     .arglists(
                         "(ipc/message->map message)")
                     .doc(
-                        "Converts a Java IPC `Message` to a Venice map")
+                        "Converts a Java IPC `Message` to a Venice map.\n\n" +
+                        "Returns a Venice map with the message data.\n\n" +
+                        "Map keys: \n\n" +
+                        "  * `:type`\n" +
+                        "  * `:status`\n" +
+                        "  * `:timestamp`\n" +
+                        "  * `:topic`\n" +
+                        "  * `:mimetype`\n" +
+                        "  * `:charset`\n" +
+                        "  * `:data`\n")
                     .examples(
                         "(->> (ipc/text-message \"test\"                          \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
@@ -1454,7 +1510,9 @@ public static VncFunction ipc_text_message =
                             "(ipc/message->json message)",
                             "(ipc/message->json pretty message)")
                         .doc(
-                            "Converts a Java IPC `Message` to a Venice map")
+                            "Converts a Java IPC `Message` to a Venice map with optional " +
+                            "pretty printing.\n\n" +
+                            "Returns a Json string.")
                         .examples(
                             "(->> (ipc/text-message \"test\"                          \n" +
                             "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
@@ -1502,7 +1560,11 @@ public static VncFunction ipc_text_message =
                     .doc(
                         "Creates a named queue on server that can be used by the clients with " +
                         "the `offer` and `poll` commands to exchange messages asynchronously " +
-                        "between two clients.")
+                        "between two clients.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| server s   | A server |\n" +
+                        "| name n     | A queue name (string)|\n" +
+                        "| capacity t | The queue's capacity (max number of messages)|")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -1553,7 +1615,10 @@ public static VncFunction ipc_text_message =
                     .arglists(
                         "(ipc/remove-queue server name)")
                     .doc(
-                        "Removes a named queue from the server.")
+                        "Removes a named queue from the server.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| server s | A server |\n" +
+                        "| name n   | A queue name (string)|")
                     .examples(
                         "(do                                                    \n" +
                         "  (defn echo-handler [m] m)                            \n" +
@@ -1592,7 +1657,10 @@ public static VncFunction ipc_text_message =
                     .arglists(
                         "(ipc/exists-queue? server name)")
                     .doc(
-                        "Returns `true` if the named queue exists else `false`.")
+                        "Returns `true` if the named queue exists else `false`.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| server s | A server |\n" +
+                        "| name n   | A queue name (string)|")
                     .examples(
                         "(do                                                    \n" +
                         "  (defn echo-handler [m] m)                            \n" +

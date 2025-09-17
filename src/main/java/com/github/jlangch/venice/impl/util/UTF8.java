@@ -61,6 +61,9 @@ public abstract class UTF8 {
     public static char MEDIUM_MATH_SPACE     = '\u205F';  // medium mathematical space
     public static char WORD_JOINER           = '\u2060';  // word joiner
 
+    public static char FIGURE_DASH           = '\u2012';  // figure dash '‒'
+    public static char EN_DASH               = '\u2013';  // en dash '–'
+    public static char EM_DASH               = '\u2014';  // em dash '—'
 
     // Varia
     public static char PILCROW               = '\u00B6';  // check mark '¶'

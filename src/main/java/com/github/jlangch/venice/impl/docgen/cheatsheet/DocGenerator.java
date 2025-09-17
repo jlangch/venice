@@ -379,7 +379,7 @@ public class DocGenerator {
         io.addSection(new DocSection("File", "io.file"));
         io.addSection(new DocSection("File Watcher", "io.file-watcher"));
         io.addSection(new DocSection("Zip/GZip", "io.zip"));
-        io.addSection(new DocSection("IPC", "ipc"));
+        io.addSection(new DocSection("Inter\u00A0Process\u00A0Communication", "ipc"));
         content.add(io);
 
         final DocSection documents = new DocSection("Documents", "miscellaneous");
