@@ -1120,14 +1120,14 @@ public class IPCFunctions {
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
                         "ipc/binary-message",
-                        "ipc/message->map")
+                        "ipc/message->map",
+                        "ipc/message->json",
+                        "ipc/oneway?",
+                        "ipc/response-ok?",
+                        "ipc/response-err?")
                     .build()
         ) {
             @Override
@@ -1174,14 +1174,14 @@ public class IPCFunctions {
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
                         "ipc/text-message",
                         "ipc/venice-message",
                         "ipc/binary-message",
-                        "ipc/message->map")
+                        "ipc/message->map",
+                        "ipc/message->json",
+                        "ipc/oneway?",
+                        "ipc/response-ok?",
+                        "ipc/response-err?")
                     .build()
         ) {
             @Override
@@ -1229,14 +1229,14 @@ public class IPCFunctions {
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
-                        "ipc/message->map")
+                        "ipc/message->map",
+                        "ipc/message->json",
+                        "ipc/oneway?",
+                        "ipc/response-ok?",
+                        "ipc/response-err?")
                     .build()
         ) {
             @Override
@@ -1281,13 +1281,13 @@ public class IPCFunctions {
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
-                        "ipc/message->map")
+                        "ipc/message->map",
+                        "ipc/message->json",
+                        "ipc/oneway?",
+                        "ipc/response-ok?",
+                        "ipc/response-err?")
                     .build()
         ) {
             @Override
@@ -1410,14 +1410,11 @@ public class IPCFunctions {
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
-                        "ipc/message->map")
+                        "ipc/message->map",
+                        "ipc/message->json")
                     .build()
         ) {
             @Override
@@ -1481,14 +1478,11 @@ public class IPCFunctions {
                    .seeAlso(
                         "ipc/server",
                         "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
-                        "ipc/binary-message")
+                        "ipc/binary-message",
+                        "ipc/message->json")
                     .build()
         ) {
             @Override
@@ -1560,14 +1554,11 @@ public class IPCFunctions {
                         .seeAlso(
                             "ipc/server",
                             "ipc/client",
-                            "ipc/close",
-                            "ipc/running?",
-                            "ipc/send",
-                            "ipc/send-async",
                             "ipc/text-message",
                             "ipc/plain-text-message",
                             "ipc/venice-message",
-                            "ipc/binary-message")
+                            "ipc/binary-message",
+                            "ipc/message->map")
                         .build()
             ) {
                 @Override
@@ -1609,16 +1600,14 @@ public class IPCFunctions {
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
                     .seeAlso(
-                        "ipc/server",
-                        "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
+                        "ipc/response-ok?",
+                        "ipc/response-err?",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
-                        "ipc/binary-message")
+                        "ipc/binary-message",
+                        "ipc/message->map",
+                        "ipc/message->json")
                     .build()
         ) {
             @Override
@@ -1652,16 +1641,14 @@ public class IPCFunctions {
                         "         (ipc/send client)                                        \n" +
                         "         (ipc/response-ok?))))                                    ")
                     .seeAlso(
-                        "ipc/server",
-                        "ipc/client",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/send-async",
+                        "ipc/oneway?",
+                         "ipc/response-err?",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
-                        "ipc/binary-message")
+                        "ipc/binary-message",
+                        "ipc/message->map",
+                        "ipc/message->json")
                     .build()
         ) {
             @Override
@@ -1678,47 +1665,45 @@ public class IPCFunctions {
 
 
     public static VncFunction ipc_response_errQ =
-            new VncFunction(
-                    "ipc/response-err?",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(ipc/oneway? message)")
-                        .doc(
-                            "Returns `true` if the message has a response error status else `false`.")
-                        .examples(
-                            "(do                                                               \n" +
-                            "  (defn echo-handler [m] m)                                       \n" +
-                            "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                            "             client (ipc/client \"localhost\" 33333)]             \n" +
-                            "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                            "         (ipc/send client)                                        \n" +
-                            "         (ipc/response-err?))))                                   ")
-                        .seeAlso(
-                            "ipc/server",
-                            "ipc/client",
-                            "ipc/close",
-                            "ipc/running?",
-                            "ipc/send",
-                            "ipc/send-async",
-                            "ipc/text-message",
-                            "ipc/plain-text-message",
-                            "ipc/venice-message",
-                            "ipc/binary-message")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 1);
+        new VncFunction(
+                "ipc/response-err?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/oneway? message)")
+                    .doc(
+                        "Returns `true` if the message has a response error status else `false`.")
+                    .examples(
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/response-err?))))                                   ")
+                    .seeAlso(
+                        "ipc/oneway?",
+                        "ipc/response-ok?",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map",
+                        "ipc/message->json")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
-                    final IMessage m = Coerce.toVncJavaObject(args.first(), IMessage.class);
+                final IMessage m = Coerce.toVncJavaObject(args.first(), IMessage.class);
 
-                    return VncBoolean.of(m.getResponseStatus() != ResponseStatus.OK
-                                         && m.getResponseStatus() != ResponseStatus.NULL);
-                }
+                return VncBoolean.of(m.getResponseStatus() != ResponseStatus.OK
+                                     && m.getResponseStatus() != ResponseStatus.NULL);
+            }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     // ------------------------------------------------------------------------
@@ -1733,9 +1718,10 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/create-queue server name capacity)")
                     .doc(
-                        "Creates a named queue on server that can be used by the clients with " +
-                        "the `offer` and `poll` commands to exchange messages asynchronously " +
-                        "between two clients.\n\n" +
+                        "Creates a named queue on server. Messages can be exchanged asynchronously " +
+                        "between two clients using a queue. Each message is delivered to exactly " +
+                        "one client. 1 to N clients can *offer* / *poll* messages *from* / *to* the " +
+                        "queue. \n\n" +
                         "Returns always `nil` or throws an exception.\n\n" +
                         "*Arguments:* \n\n" +
                         "| server s   | A server |\n" +
