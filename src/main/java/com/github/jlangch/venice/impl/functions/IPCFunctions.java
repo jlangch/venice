@@ -89,14 +89,14 @@ public class IPCFunctions {
                     .examples(
                         "(do                                                     \n" +
                         "  (defn echo-handler [m]                                \n" +
-                        "    (println \"request:  \" (ipc/message->map m))       \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))       \n" +
                         "    m)                                                  \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
                         "             client (ipc/client \"localhost\" 33333)]   \n" +
                         "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
                         "         (ipc/send client)                              \n" +
                         "         (ipc/message->map)                             \n" +
-                        "         (println \"response: \"))))                    ")
+                        "         (println \"RESPONSE: \"))))                    ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
@@ -187,16 +187,23 @@ public class IPCFunctions {
                                                  " The max size can be specified as a number like `20000`" +
                                                  " or a number with a unit like `:20KB`, or `:20MB`|\n")
                     .examples(
-                        "(do                                                     \n" +
-                        "  (defn echo-handler [m]                                \n" +
-                        "    (println \"request:  \" (ipc/message->map m))       \n" +
-                        "    m)                                                  \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
-                        "             client (ipc/client \"localhost\" 33333)]   \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
-                        "         (ipc/send client)                              \n" +
-                        "         (ipc/message->map)                             \n" +
-                        "         (println \"response: \"))))                    ")
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m]                                          \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))                 \n" +
+                        "    m)                                                            \n" +
+                        "                                                                  \n" +
+                        "  (defn send [client msg]                                         \n" +
+                        "    (->> (ipc/send client msg)                                    \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println \"RESPONSE: \")))                               \n" +
+                        "                                                                  \n" +
+                        "  (try-with [server   (ipc/server 33333 echo-handler)             \n" +
+                        "             client-1 (ipc/client 33333)                          \n" +
+                        "             client-2 (ipc/client \"localhost\" 33333)            \n" +
+                        "             client-3 (ipc/client :localhost 33333)]              \n" +
+                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello\"))   \n" +
+                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello\"))   \n" +
+                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello\")))) ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
@@ -224,7 +231,9 @@ public class IPCFunctions {
                     return new VncJavaObject(client);
                 }
                 else {
-                    final String host = Coerce.toVncString(args.first()).getValue();
+                    final String host = Types.isVncKeyword(args.first())
+                                          ? Coerce.toVncKeyword(args.first()).getSimpleName()
+                                          : Coerce.toVncString(args.first()).getValue();
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
@@ -595,14 +604,14 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/subscribe client topic handler)")
+                        "(ipc/subscribe client topic msg-handler)")
                     .doc(
                         "Subscribe to a topic.\n\n" +
                         "Puts this client into subscription mode and listens for messages of the " +
                         "specified topic.\n\n" +
                         "To unsubscribe from the topics just close the client.\n\n" +
                         "The response message has one of these status:\n\n" +
-                        "  * `:OK`            - subscription added. Subscribed messages will be delivered through the handler\n" +
+                        "  * `:OK`            - subscription added. Subscribed messages will be delivered through the 'msg-handler'\n" +
                         "  * `:SERVER_ERROR`  - indicates a server side error while processing the request\n" +
                         "  * `:BAD_REQUEST`   - invalid request")
                     .examples(
@@ -614,7 +623,7 @@ public class IPCFunctions {
                         "    (locking mutex (println (ipc/message->map m)))                             \n" +
                         "    m)                                                                         \n" +
                         "                                                                               \n" +
-                        "  (defn client-subscribe-handler [m]                                           \n" +
+                        "  (defn client-subscription-handler [m]                                        \n" +
                         "    (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
                         "                                                                               \n" +
                         "  (try-with [server   (ipc/server 33333 server-handler)                        \n" +
@@ -622,10 +631,10 @@ public class IPCFunctions {
                         "             client-2 (ipc/client \"localhost\" 33333)                         \n" +
                         "             client-3 (ipc/client \"localhost\" 33333)]                        \n" +
                         "    ;; client 'client-1' subscribes to 'alpha' messages                        \n" +
-                        "    (ipc/subscribe client-1 \"alpha\" client-subscribe-handler)                \n" +
+                        "    (ipc/subscribe client-1 \"alpha\" client-subscription-handler)             \n" +
                         "                                                                               \n" +
                         "    ;; client 'client-2' subscribes to 'alpha' and 'beta' messages             \n" +
-                        "    (ipc/subscribe client-2 [\"alpha\" \"beta\"] client-subscribe-handler)     \n" +
+                        "    (ipc/subscribe client-2 [\"alpha\" \"beta\"] client-subscription-handler)  \n" +
                         "                                                                               \n" +
                         "    ;; client 'client-3' publishes message                                     \n" +
                         "    (->> (ipc/plain-text-message \"alpha\" \"hello\")                          \n" +
@@ -1260,7 +1269,7 @@ public static VncFunction ipc_text_message =
                     .doc(
                         "Creates a venice message.\n\n" +
                         "The Venice data is serialized as JSON (mimetype: 'application/json') " +
-                        "for transport within a message.\n\n" +
+                        "for transport within the message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| topic t    | A topic (string) |\n" +
                         "| data d     | The message payload Venice data (e.g.: a map, list, ...)|")
@@ -1371,7 +1380,8 @@ public static VncFunction ipc_text_message =
                         "  (println (ipc/message-field m :topic))                   \n" +
                         "  (println (ipc/message-field m :payload-mimetype))        \n" +
                         "  (println (ipc/message-field m :payload-charset))         \n" +
-                        "  (println (ipc/message-field m :payload-text)))           ",
+                        "  (println (ipc/message-field m :payload-text))            \n" +
+                        "  (println (ipc/message-field m :payload-binary)))         ",
 
                         "(let [m (ipc/binary-message \"test\"                       \n" +
                         "                            \"application/octet-stream\"   \n" +
@@ -1461,8 +1471,15 @@ public static VncFunction ipc_text_message =
                     .examples(
                         "(->> (ipc/text-message \"test\"                          \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "     (ipc/message->map))                                 ",
+                        "(->> (ipc/venice-message \"test\"                        \n" +
+                        "                         {:a 100, :b 200})               \n" +
+                        "     (ipc/message->map))                                 ",
+                        "(->> (ipc/binary-message \"test\"                        \n" +
+                        "                         \"application/octet-stream\"    \n" +
+                        "                         (bytebuf [0 1 2 3 4]))          \n" +
                         "     (ipc/message->map))                                 ")
-                    .seeAlso(
+                   .seeAlso(
                         "ipc/server",
                         "ipc/client",
                         "ipc/close",
@@ -1527,12 +1544,19 @@ public static VncFunction ipc_text_message =
                             "(ipc/message->json message)",
                             "(ipc/message->json pretty message)")
                         .doc(
-                            "Converts a Java IPC `Message` to a Venice map with optional " +
-                            "pretty printing.\n\n" +
+                            "Converts message to a Json string with optional pretty " +
+                            "printing.\n\n" +
                             "Returns a Json string.")
                         .examples(
                             "(->> (ipc/text-message \"test\"                          \n" +
                             "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                            "     (ipc/message->json true))                           ",
+                            "(->> (ipc/venice-message \"test\"                        \n" +
+                            "                         {:a 100, :b 200})               \n" +
+                            "     (ipc/message->json true))                           ",
+                            "(->> (ipc/binary-message \"test\"                        \n" +
+                            "                         \"application/octet-stream\"    \n" +
+                            "                         (bytebuf [0 1 2 3 4]))          \n" +
                             "     (ipc/message->json true))                           ")
                         .seeAlso(
                             "ipc/server",
@@ -1578,6 +1602,7 @@ public static VncFunction ipc_text_message =
                         "Creates a named queue on server that can be used by the clients with " +
                         "the `offer` and `poll` commands to exchange messages asynchronously " +
                         "between two clients.\n\n" +
+                        "Returns always `nil` or throws an exception.\n\n" +
                         "*Arguments:* \n\n" +
                         "| server s   | A server |\n" +
                         "| name n     | A queue name (string)|\n" +
@@ -1633,6 +1658,7 @@ public static VncFunction ipc_text_message =
                         "(ipc/remove-queue server name)")
                     .doc(
                         "Removes a named queue from the server.\n\n" +
+                        "Returns always `nil` or throws an exception.\n\n" +
                         "*Arguments:* \n\n" +
                         "| server s | A server |\n" +
                         "| name n   | A queue name (string)|")
