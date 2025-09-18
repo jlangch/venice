@@ -70,8 +70,7 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/server port handler & options)")
                     .doc(
-                        "Create a new server on the specified port.  \n\n" +
-                        "The server must be closed after use!           \n\n" +
+                        "Create a new server on the specified port.\n\n" +
                         "*Arguments:* \n\n" +
                         "| port p    | The TCP/IP port |\n" +
                         "| handler h | A single argument handler function.¶" +
@@ -85,7 +84,8 @@ public class IPCFunctions {
                         "| :max-message-size n | The max size of the message payload." +
                                                " Defaults to `200MB`.¶" +
                                                " The max size can be specified as a number like `20000`" +
-                                               " or a number with a unit like `:20KB`, or `:20MB`|\n")
+                                               " or a number with a unit like `:20KB`, or `:20MB`|\n\n" +
+                        "**The server must be closed after use!**")
                     .examples(
                         "(do                                                     \n" +
                         "  (defn echo-handler [m]                                \n" +
@@ -175,7 +175,6 @@ public class IPCFunctions {
                     .doc(
                         "Create a new client connecting to a server on the specified " +
                         "host and port.\n\n" +
-                        "The client must be closed after use!" +
                         "*Arguments:* \n\n" +
                         "| port p | The server's TCP/IP port |\n" +
                         "| host h | The server's TCP/IP host |\n\n" +
@@ -185,7 +184,8 @@ public class IPCFunctions {
                         "| :max-message-size n   | The max size of the message payload." +
                                                  " Defaults to `200MB`.¶" +
                                                  " The max size can be specified as a number like `20000`" +
-                                                 " or a number with a unit like `:20KB`, or `:20MB`|\n")
+                                                 " or a number with a unit like `:20KB`, or `:20MB`|\n\n" +
+                        "**The client must be closed after use!**")
                     .examples(
                         "(do                                                               \n" +
                         "  (defn echo-handler [m]                                          \n" +
@@ -398,7 +398,7 @@ public class IPCFunctions {
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - request handled successfully and response holds the data\n" +
                         "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
-                        "  * `:BAD_REQUEST`   - invalid request\n" +
+                        "  * `:BAD_REQUEST`   - invalid request, details in the payload\n" +
                         "  * `:HANDLER_ERROR` - an error in the server's request processing handler\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c  | A client to send the message from|\n" +
@@ -553,7 +553,7 @@ public class IPCFunctions {
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - request handled successfully and response holds the data\n" +
                         "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
-                        "  * `:BAD_REQUEST`   - invalid request\n" +
+                        "  * `:BAD_REQUEST`   - invalid request, details in the payload\n" +
                         "  * `:HANDLER_ERROR` - an error in the server's request processing handler")
                     .examples(
                         "(do                                                      \n" +
@@ -613,7 +613,7 @@ public class IPCFunctions {
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - subscription added. Subscribed messages will be delivered through the 'msg-handler'\n" +
                         "  * `:SERVER_ERROR`  - indicates a server side error while processing the request\n" +
-                        "  * `:BAD_REQUEST`   - invalid request")
+                        "  * `:BAD_REQUEST`   - invalid request, details in the payload")
                     .examples(
                         "(do                                                                            \n" +
                         "  (def mutex 0)                                                                \n" +
@@ -723,7 +723,7 @@ public class IPCFunctions {
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - message successfully published\n" +
                         "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
-                        "  * `:BAD_REQUEST`   - invalid request\n\n" +
+                        "  * `:BAD_REQUEST`   - invalid request, details in the payload\n\n" +
                         "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
                         "(do                                                                            \n" +
@@ -801,7 +801,7 @@ public class IPCFunctions {
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message added to the queue\n" +
                         "  * `:SERVER_ERROR`    - indicates a server while offering the message to the queue\n" +
-                        "  * `:BAD_REQUEST`     - invalid request\n" +
+                        "  * `:BAD_REQUEST`     - invalid request, details in the payload\n" +
                         "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
                         "  * `:QUEUE_FULL`      - the queue is full, offer rejected")
                     .examples(
@@ -869,7 +869,7 @@ public class IPCFunctions {
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message successfully polled from the queue, response holds the data\n" +
                         "  * `:SERVER_ERROR`    - indicates a server while polling a message from the queue\n" +
-                        "  * `:BAD_REQUEST`     - invalid request\n" +
+                        "  * `:BAD_REQUEST`     - invalid request, details in the payload\n" +
                         "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
                         "  * `:QUEUE_EMPTY`     - the queue is empty")
                     .examples(
@@ -1098,61 +1098,61 @@ public class IPCFunctions {
     // Messages
     // ------------------------------------------------------------------------
 
-public static VncFunction ipc_text_message =
-    new VncFunction(
-            "ipc/text-message",
-            VncFunction
-                .meta()
-                .arglists(
-                    "(ipc/text-message topic mimetype charset text)")
-                .doc(
-                    "Creates a text message\n\n" +
-                    "*Arguments:* \n\n" +
-                    "| topic t    | A topic (string) |\n" +
-                    "| mimetype m | The mimetype of the payload text. A string like 'text/plain' |\n" +
-                    "| charset c  | The charset of the payload text. A keyword like `:UTF-8`|\n" +
-                    "| text t     | The message payload text (a string)|")
-                .examples(
-                    "(->> (ipc/text-message \"test\"                         \n" +
-                    "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
-                    "     (ipc/message->map)                                  \n" +
-                    "     (println))                                          ")
-                .seeAlso(
-                    "ipc/server",
-                    "ipc/client",
-                    "ipc/close",
-                    "ipc/running?",
-                    "ipc/send",
-                    "ipc/send-async",
-                    "ipc/plain-text-message",
-                    "ipc/venice-message",
-                    "ipc/binary-message",
-                    "ipc/message->map")
-                .build()
-    ) {
-        @Override
-        public VncVal apply(final VncList args) {
-            ArityExceptions.assertArity(this, args, 4);
+    public static VncFunction ipc_text_message =
+        new VncFunction(
+                "ipc/text-message",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/text-message topic mimetype charset text)")
+                    .doc(
+                        "Creates a text message\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| topic t    | A topic (string) |\n" +
+                        "| mimetype m | The mimetype of the payload text. A string like 'text/plain' |\n" +
+                        "| charset c  | The charset of the payload text. A keyword like `:UTF-8`|\n" +
+                        "| text t     | The message payload text (a string)|")
+                    .examples(
+                        "(->> (ipc/text-message \"test\"                         \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 4);
 
-            final VncString topic = Coerce.toVncString(args.nth(0));
-            final VncString mimetype = Coerce.toVncString(args.nth(1));
-            final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
-            final VncVal textVal = args.nth(3);
-            final String text = Types.isVncString(textVal)
-                                    ? ((VncString)textVal).getValue()
-                                    : textVal.toString(true);  // aggressively convert to string
+                final VncString topic = Coerce.toVncString(args.nth(0));
+                final VncString mimetype = Coerce.toVncString(args.nth(1));
+                final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
+                final VncVal textVal = args.nth(3);
+                final String text = Types.isVncString(textVal)
+                                        ? ((VncString)textVal).getValue()
+                                        : textVal.toString(true);  // aggressively convert to string
 
-            final IMessage msg = MessageFactory.text(
-                                    topic.getValue(),
-                                    mimetype.getValue(),
-                                    charset.getSimpleName(),
-                                    text);
+                final IMessage msg = MessageFactory.text(
+                                        topic.getValue(),
+                                        mimetype.getValue(),
+                                        charset.getSimpleName(),
+                                        text);
 
-            return new VncJavaObject(msg);
-        }
+                return new VncJavaObject(msg);
+            }
 
-        private static final long serialVersionUID = -1848883965231344442L;
-    };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     public static VncFunction ipc_plain_text_message =
@@ -1458,9 +1458,8 @@ public static VncFunction ipc_text_message =
                     .arglists(
                         "(ipc/message->map message)")
                     .doc(
-                        "Converts a Java IPC `Message` to a Venice map.\n\n" +
-                        "Returns a Venice map with the message data.\n\n" +
-                        "Map keys: \n\n" +
+                        "Converts a message to a Venice map.\n\n" +
+                        "Returns a Venice map with the keys:\n\n" +
                         "  * `:type`\n" +
                         "  * `:status`\n" +
                         "  * `:timestamp`\n" +
@@ -1581,6 +1580,141 @@ public static VncFunction ipc_text_message =
                     final VncMap data = (VncMap)ipc_message_to_map.applyOf(new VncJavaObject(m));
 
                     return new VncString(Json.writeJson(data, pretty));
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
+
+    public static VncFunction ipc_onewayQ =
+        new VncFunction(
+                "ipc/oneway?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/oneway? message)")
+                    .doc(
+                        "Returns `true` if the message is one-way else `false`.\n\n" +
+                        "Note: the oneway flag on the message is delayed until a message is " +
+                        "sent from the client to the server or vice versa." )
+                    .examples(
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m]                                          \n" +
+                        "     (if (ipc/oneway? m) nil m))                                  \n" +
+                        "                                                                  \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println))))                                             ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final IMessage m = Coerce.toVncJavaObject(args.first(), IMessage.class);
+
+                return VncBoolean.of(m.isOneway());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction ipc_response_okQ =
+        new VncFunction(
+                "ipc/response-ok?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/response-ok? message)")
+                    .doc(
+                        "Returns `true` if the message response status is `:OK` else `false`.")
+                    .examples(
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/response-ok?))))                                    ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final IMessage m = Coerce.toVncJavaObject(args.first(), IMessage.class);
+
+                return VncBoolean.of(m.getResponseStatus() == ResponseStatus.OK);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction ipc_response_errQ =
+            new VncFunction(
+                    "ipc/response-err?",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(ipc/oneway? message)")
+                        .doc(
+                            "Returns `true` if the message has a response error status else `false`.")
+                        .examples(
+                            "(do                                                               \n" +
+                            "  (defn echo-handler [m] m)                                       \n" +
+                            "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                            "             client (ipc/client \"localhost\" 33333)]             \n" +
+                            "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                            "         (ipc/send client)                                        \n" +
+                            "         (ipc/response-err?))))                                   ")
+                        .seeAlso(
+                            "ipc/server",
+                            "ipc/client",
+                            "ipc/close",
+                            "ipc/running?",
+                            "ipc/send",
+                            "ipc/send-async",
+                            "ipc/text-message",
+                            "ipc/plain-text-message",
+                            "ipc/venice-message",
+                            "ipc/binary-message")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final IMessage m = Coerce.toVncJavaObject(args.first(), IMessage.class);
+
+                    return VncBoolean.of(m.getResponseStatus() != ResponseStatus.OK
+                                         && m.getResponseStatus() != ResponseStatus.NULL);
                 }
 
                 private static final long serialVersionUID = -1848883965231344442L;
@@ -1833,6 +1967,9 @@ public static VncFunction ipc_text_message =
                     .add(ipc_message_field)
                     .add(ipc_message_to_map)
                     .add(ipc_message_to_json)
+                    .add(ipc_onewayQ)
+                    .add(ipc_response_okQ)
+                    .add(ipc_response_errQ)
 
                     .add(ipc_create_queue)
                     .add(ipc_remove_queue)

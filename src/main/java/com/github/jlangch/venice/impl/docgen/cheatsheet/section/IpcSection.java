@@ -71,6 +71,9 @@ public class IpcSection implements ISectionBuilder {
         msg.addItem(diBuilder.getDocItem("ipc/message->map", false));
         msg.addItem(diBuilder.getDocItem("ipc/message->json", false));
         msg.addItem(diBuilder.getDocItem("ipc/message-field", false));
+        msg.addItem(diBuilder.getDocItem("ipc/oneway?", false));
+        msg.addItem(diBuilder.getDocItem("ipc/response-ok?", false));
+        msg.addItem(diBuilder.getDocItem("ipc/response-err?", false));
 
         final DocSection queue = new DocSection("Queues", "ipc.queue");
         all.addSection(queue);
