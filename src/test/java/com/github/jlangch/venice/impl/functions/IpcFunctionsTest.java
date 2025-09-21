@@ -91,6 +91,8 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(do                                                        \n" +
+                "  (ns junit)                                               \n" +
+                "                                                           \n" +
                 "  (defn handler [m]                                        \n" +
                 "    (let [cmd (. m :getText)]                              \n" +
                 "      (throw :VncException \"TEST\")))                     \n" +
@@ -109,10 +111,10 @@ public class IpcFunctionsTest {
                 "      text)))                                              ";
 
         assertEquals(
-                "throw (unknown: line 4, col 8)\n" +
-                "user/handler (unknown: line 2, col 9)\n" +
+                "throw (test-script: line 6, col 8)\n" +
+                "junit/handler (test-script: line 4, col 9)\n" +
                 "ipc/server (unknown: line -1, col -1)",
-                venice.eval(script));
+                venice.eval("test-script", script));
     }
 
 }
