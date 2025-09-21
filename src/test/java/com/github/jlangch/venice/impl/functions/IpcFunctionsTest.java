@@ -35,19 +35,18 @@ public class IpcFunctionsTest {
     public void test_thread_based_eval() {
         final Venice venice = new Venice();
 
-
         final String script =
-                "(do                                                               \n" +
-                "  (defn handler [m]                                               \n" +
-                "    (let [cmd    (. m :getText)                                   \n" +
-                "          result (str (eval (read-string cmd)))]                  \n" +
-                "      (ipc/plain-text-message (. m :getTopic)                     \n" +
-                "                              result)))                           \n" +
-                "                                                                  \n" +
-                "  (try-with [server (ipc/server 33333 handler)                    \n" +
-                "             client (ipc/client \"localhost\" 33333)]             \n" +
-                "    (-<> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
-                "         (ipc/send client <>)                                     \n" +
+                "(do                                                     \n" +
+                "  (defn handler [m]                                     \n" +
+                "    (let [cmd    (. m :getText)                         \n" +
+                "          result (str (eval (read-string cmd)))]        \n" +
+                "      (ipc/plain-text-message (. m :getTopic)           \n" +
+                "                              result)))                 \n" +
+                "                                                        \n" +
+                "  (try-with [server (ipc/server 33333 handler)          \n" +
+                "             client (ipc/client \"localhost\" 33333)]   \n" +
+                "    (-<> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")  \n" +
+                "         (ipc/send client <>)                           \n" +
                 "         (. <> :getText))))";
 
         assertEquals("3", venice.eval(script));
@@ -57,7 +56,6 @@ public class IpcFunctionsTest {
     @Test
     public void test_map2json_a() {
         final Venice venice = new Venice();
-
 
         final String script =
                 "(do                                             \n" +
@@ -75,7 +73,6 @@ public class IpcFunctionsTest {
     public void test_map2json_b() {
         final Venice venice = new Venice();
 
-
         final String script =
                 "(do                                             \n" +
                 "  (->> (ipc/text-message \"test\"               \n" +
@@ -85,6 +82,37 @@ public class IpcFunctionsTest {
                 "       (ipc/message->json true)))               ";
 
         assertNotNull(venice.eval(script));
+    }
+
+
+    @Test
+    public void test_handler_exception() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                        \n" +
+                "  (defn handler [m]                                        \n" +
+                "    (let [cmd (. m :getText)]                              \n" +
+                "      (throw :VncException \"TEST\")))                     \n" +
+                "                                                           \n" +
+                "  (try-with [server (ipc/server 33333 handler)             \n" +
+                "             client (ipc/client \"localhost\" 33333)]      \n" +
+                "    (let [m (ipc/plain-text-message \"exec\" \"(+ 1 2)\")  \n" +
+                "          r        (ipc/send client m)                     \n" +
+                "          status   (ipc/message-field r :response-status)  \n" +
+                "          topic    (ipc/message-field r :topic)            \n" +
+                "          mimetype (ipc/message-field r :payload-mimetype) \n" +
+                "          text     (ipc/message-field r :payload-text)]    \n" +
+                "      (assert (= :HANDLER_ERROR status))                   \n" +
+                "      (assert (= \"exec\" topic))                          \n" +
+                "      (assert (= \"text/plain\" mimetype))                 \n" +
+                "      text)))                                              ";
+
+        assertEquals(
+                "throw (unknown: line 4, col 8)\n" +
+                "user/handler (unknown: line 2, col 9)\n" +
+                "ipc/server (unknown: line -1, col -1)",
+                venice.eval(script));
     }
 
 }

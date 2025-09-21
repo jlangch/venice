@@ -307,7 +307,6 @@ public class TcpClient implements Closeable {
 
         if (subscription.compareAndSet(false, true)) {
             try {
-
                 final Callable<Message> task = () -> {
                     Protocol.sendMessage(ch, subscribeMsg);
                     messageSentCount.incrementAndGet();

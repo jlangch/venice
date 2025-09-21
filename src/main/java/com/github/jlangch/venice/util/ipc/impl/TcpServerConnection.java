@@ -219,11 +219,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final IMessage response = handler.apply(request);
 
             if (request.isOneway()) {
-                return null; // do not reply on one-way messages
+                // do not reply on one-way messages
+                // just discard the handler's response and return null!
+                return null;
             }
             else {
                 if (response == null) {
-                    // create a standard response
+                    // create an empty text response
                     return createPlainTextResponseMessage(
                               ResponseStatus.OK,
                               request.getTopic(),
@@ -238,10 +240,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
         catch(Exception ex) {
             if (request.isOneway()) {
-                return null; // do not reply on one-way messages
+            	// do not reply on one-way messages
+                // just discard the exception
+                return null;
             }
             else {
-                // send error response
+                // send an error response
                 return createPlainTextResponseMessage(
                          ResponseStatus.HANDLER_ERROR,
                          request.getTopic(),
@@ -413,17 +417,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private void sendTooLargeMessageResponse(final Message request) {
         Protocol.sendMessage(
             ch,
-            createTooLargeMessageResponse(request));
-    }
-
-    private Message createTooLargeMessageResponse(final Message request) {
-        return createPlainTextResponseMessage(
-                ResponseStatus.BAD_REQUEST,
-                request.getTopic(),
-                String.format(
-                        "The message (%d bytes) is too large! The limit is at %d bytes.",
-                        request.getData().length,
-                        maxMessageSize));
+            createTooLargeErrorMessageResponse(request));
     }
 
     private Message getTcpServerStatus() {
@@ -494,7 +488,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 Json.writeJson(statistics, false));
     }
 
-
     private static Message createJsonResponseMessage(
             final ResponseStatus status,
             final String topic,
@@ -510,7 +503,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 toBytes(json, "UTF-8"));
     }
 
-
     private static Message createPlainTextResponseMessage(
             final ResponseStatus status,
             final String topic,
@@ -524,6 +516,16 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 "text/plain",
                 "UTF-8",
                 toBytes(text, "UTF-8"));
+    }
+
+    private Message createTooLargeErrorMessageResponse(final Message request) {
+        return createPlainTextResponseMessage(
+                ResponseStatus.BAD_REQUEST,
+                request.getTopic(),
+                String.format(
+                        "The message (%d bytes) is too large! The limit is at %d bytes.",
+                        request.getData().length,
+                        maxMessageSize));
     }
 
 
