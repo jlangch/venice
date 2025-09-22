@@ -4,19 +4,25 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.55] - 2025-08-xx
+
+## [1.12.56] - 2025-09-xx
 
 ### Added
-
-- IPC (Inter-Process-Communication) module. Supports request/response messages
-  between a client and a server as well as publish / subcribe with many clients
-  and an orchestrating server.
   
 - :openai module support for assistant api
 - :openai module support for assistant threads api
 - :openai module support for assistant message api (in work)
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
+
+
+## [1.12.55] - 2025-09-22
+
+### Added
+
+- IPC (Inter-Process-Communication) module. Supports request/response messages
+  between a client and a server as well as publish / subcribe with many clients
+  and an orchestrating server.
 
 
 
