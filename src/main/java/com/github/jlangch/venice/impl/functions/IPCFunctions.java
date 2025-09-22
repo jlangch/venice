@@ -76,8 +76,8 @@ public class IPCFunctions {
                         "| handler h | A single argument handler function.¶" +
                                      " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
                                      " The handler receives the request messsage and returns a response" +
-                                     " message. In case of a one-way request message the handler" +
-                                     " returns `nil`.|\n\n" +
+                                     " message. In case of a one-way request message the server discards" +
+                                     " the handler's response if it is not `nil`.|\n\n" +
                         "*Options:* \n\n" +
                         "| :max-connections n  | The number of the max connections the server can handle" +
                                                " in parallel. Defaults to 20.|\n" +
@@ -91,6 +91,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m]                                \n" +
                         "    (println \"REQUEST:  \" (ipc/message->map m))       \n" +
                         "    m)                                                  \n" +
+                        "                                                        \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
                         "             client (ipc/client \"localhost\" 33333)]   \n" +
                         "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
@@ -102,6 +103,7 @@ public class IPCFunctions {
                         "ipc/close",
                         "ipc/running?",
                         "ipc/send",
+                        "ipc/send-oneway",
                         "ipc/send-async",
                         "ipc/publish",
                         "ipc/subscribe",
@@ -109,6 +111,7 @@ public class IPCFunctions {
                         "ipc/plain-text-message",
                         "ipc/binary-message",
                         "ipc/message->map",
+                        "ipc/message->json",
                         "ipc/create-queue",
                         "ipc/remove-queue",
                         "ipc/server-status",
@@ -209,13 +212,17 @@ public class IPCFunctions {
                         "ipc/close",
                         "ipc/running?",
                         "ipc/send",
+                        "ipc/send-oneway",
                         "ipc/send-async",
                         "ipc/publish",
                         "ipc/subscribe",
+                        "ipc/offer",
+                        "ipc/poll",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/binary-message",
                         "ipc/message->map",
+                        "ipc/message->json",
                         "ipc/client-thread-pool-statistics")
                     .build()
         ) {
