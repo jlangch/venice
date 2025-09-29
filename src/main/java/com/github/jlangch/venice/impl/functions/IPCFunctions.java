@@ -725,7 +725,7 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/publish client message)")
                     .doc(
-                        "Publishes a messages to all clients that have subscribed to the" +
+                        "Publishes a messages to all clients that have subscribed to the " +
                         "message's topic.\n\n" +
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - message successfully published\n" +
