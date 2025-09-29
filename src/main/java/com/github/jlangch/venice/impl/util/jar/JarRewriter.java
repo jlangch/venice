@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 
 public class JarRewriter {
@@ -193,6 +196,38 @@ public class JarRewriter {
         mf.getMainAttributes().put("Application-Name", appName);
         mf.getMainAttributes().put("Build-Date", now);
         return mf;
+    }
+
+
+    public static byte[] demo() throws IOException {
+        // 1) Create a fresh JAR with a manifest and a single class/resource
+        Manifest mf = new Manifest();
+        mf.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        mf.getMainAttributes().put(Attributes.Name.MAIN_CLASS, "example.App");
+
+        Map<String, byte[]> initial = new HashMap<>();
+        initial.put("example/App.class", new byte[]{(byte)0xCA, (byte)0xFE, (byte)0xBA, (byte)0xBE}); // placeholder bytes
+        initial.put("config/app.properties", "env=dev\n".getBytes(StandardCharsets.UTF_8));
+
+        byte[] jar = createJar(initial, mf);
+
+        // 2) Add (or replace) a file entirely in memory
+        Map<String, byte[]> additions = new HashMap<>();
+        additions.put("README.txt", "Hello JAR!\n".getBytes(StandardCharsets.UTF_8));
+        additions.put("config/app.properties", "env=prod\n".getBytes(StandardCharsets.UTF_8));
+
+        byte[] updatedJar = addToJar(jar, additions);
+
+        // Optional: quick sanity check — list entries
+        try (ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(updatedJar))) {
+            System.out.println("JAR entries:");
+            ZipEntry ze;
+            while ((ze = zin.getNextEntry()) != null) {
+                System.out.println(" - " + ze.getName());
+            }
+        }
+
+        return updatedJar;
     }
 
 
