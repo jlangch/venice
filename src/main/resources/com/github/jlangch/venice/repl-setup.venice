@@ -280,7 +280,7 @@
 (defn download-venice-jar [version dir]
   (let [jar-name (str "venice-" version ".jar")
         url      (venice-maven-url version)]
-    (->> (io/download url :binary true)
+    (->> (io/download url :binary true :user-agent "Mozilla")
          (io/spit (io/file dir jar-name)))))
 
 

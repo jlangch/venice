@@ -15,6 +15,11 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Fixed
+
+- Maven download 403 HTTP error by adding an explicit user agent "Mozilla"
+
+
 
 ## [1.12.55] - 2025-09-22
 

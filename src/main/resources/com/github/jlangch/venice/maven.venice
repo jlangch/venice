@@ -704,7 +704,7 @@
           (println (str "Downloading " uri))
           (println (str "         to " target "...")))
         (ansi/without-cursor
-          (->> (io/download uri :binary true :progress-fn progress-fn)
+          (->> (io/download uri :binary true :progress-fn progress-fn :user-agent "Mozilla")
                (io/spit target))))
       (when progress-fn
         (println (str "Downloading " uri))
@@ -716,7 +716,7 @@
   (when progress-fn
     (println (str "Downloading " uri "...")))
   (ansi/without-cursor
-    (io/download uri :binary true :progress-fn progress-fn)))
+    (io/download uri :binary true :progress-fn progress-fn :user-agent "Mozilla")))
 
 
 (defn- dependencies* [scope verbose print-data print-pom format 
