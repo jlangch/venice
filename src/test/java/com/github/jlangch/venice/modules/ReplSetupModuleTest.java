@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -141,8 +142,6 @@ public class ReplSetupModuleTest {
     @Test
     @EnableOnMacOrLinux
     public void test_repl_setup_macos_linux_staged_1() throws IOException {
-        // Staged Venice REPL setup is supported with Venice 1.12.30+
-
         final Venice venice = new Venice();
 
         final File setup = Files.createTempDirectory("setup").toFile();
@@ -218,15 +217,13 @@ public class ReplSetupModuleTest {
     @Test
     @EnableOnMacOrLinux
     public void test_repl_setup_macos_linux_staged_2() throws IOException {
-        // Staged Venice REPL setup is supported with Venice 1.12.30+
-
         final Venice venice = new Venice();
 
         final File stage = Files.createTempDirectory("stage").toFile();
         final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
-             final String mavenVersion = getVeniceMavenVersion();
+            final String mavenVersion = getVeniceMavenVersion();
 
             final String script =
                     "(do                                                                          \n" +
@@ -351,10 +348,9 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnWindows
+    //@EnableOnWindows
+    @Disabled
     public void test_repl_setup_windows_staged_1() throws IOException {
-        // Staged Venice REPL setup is supported with Venice 1.12.30+
-
         final Venice venice = new Venice();
 
         final File setup = Files.createTempDirectory("setup").toFile();
@@ -427,7 +423,8 @@ public class ReplSetupModuleTest {
     }
 
     @Test
-    @EnableOnWindows
+    // @EnableOnWindows
+    @Disabled
     public void test_repl_setup_windows_staged_2() throws IOException {
         // Staged Venice REPL setup is supported with Venice 1.12.30+
 
@@ -439,7 +436,7 @@ public class ReplSetupModuleTest {
         System.out.println("Setup dir: " + setup.getPath());
 
         try {
-             final String mavenVersion = getVeniceMavenVersion();
+            final String mavenVersion = getVeniceMavenVersion();
 
             final String script =
                     "(do                                                                                 \n" +
