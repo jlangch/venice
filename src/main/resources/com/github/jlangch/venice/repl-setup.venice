@@ -137,11 +137,11 @@
   (when-not (io/exists-file? (io/file install-dir "repl.env.bat"))
     (println "Setting up 'repl.env.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.win.env")
-        (bytebuf-to-string <> :utf-8)
-        (repl-setup/cr-lf <>)
-        (io/spit (io/file install-dir "repl.env.bat") 
-                  <> 
-                  :encoding (charset-default-encoding))))
+         (bytebuf-to-string <> :utf-8)
+         (repl-setup/cr-lf <>)
+         (io/spit (io/file install-dir "repl.env.bat") 
+                   <> 
+                   :encoding (charset-default-encoding))))
   (when-not (io/exists-file? (io/file install-dir "repl.bat"))
     (println "Setting up 'repl.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.bat")

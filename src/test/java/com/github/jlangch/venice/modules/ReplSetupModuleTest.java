@@ -44,7 +44,7 @@ import com.github.jlangch.venice.impl.util.junit.EnableOnWindows;
 public class ReplSetupModuleTest {
 
     // The Venice version to download from Maven, for staged REPL setup tests
-    private static final String VERSION = "1.12.54";
+    private static final String VERSION = "1.12.55";
 
 
     @Test
@@ -461,7 +461,7 @@ public class ReplSetupModuleTest {
             final String result = (String)venice.eval(
                                             script,
                                             Parameters.of("stage-dir", stage,
-                                                            "setup-dir", setup,
+                                                          "setup-dir", setup,
                                                           "v-version", VERSION));
 
             if (result.equals("internet-not-available")) {
