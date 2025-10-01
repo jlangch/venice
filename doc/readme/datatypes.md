@@ -21,7 +21,7 @@ Types supported in Venice:
 * [Keyword](#keyword)
 * [Symbol](#symbol)
 * [Collections](#collections)
-* [Deques and Queues (mutable)](#deques-and-queues)
+* [Stack, Queue, and Deque (mutable)](#queues-and-deques)
 
 
 ## nil
@@ -249,11 +249,22 @@ Immutable persistent sorted map.
 (:b (sorted-map :a 1 :b 2))           ;; => 2
 ```
 
-## Deques and Queues
+## Queues and Deques
 
 ### stack
 
 Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
+
+
+```
+     head                          tail
+       +---------+---------+---------+
+       |    1    |    2    |    3    |
+       +---------+---------+---------+
+       ^
+       \-- push,pop elements 
+           to/from the head 
+```
 
 ```clojure
 (stack )
@@ -269,6 +280,17 @@ Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
 ### queue
 
 Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
+
+```
+     head                          tail
+       +---------+---------+---------+
+       |    1    |    2    |    3    |
+       +---------+---------+---------+
+       ^                             ^
+       \-- poll,take                 \--  offer,put new 
+           elements from                  elements to the
+           the head                       tail
+```
 
 ```clojure
 (queue) ;; unbounded queue
@@ -308,5 +330,89 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
   (put! q 2)
   (put! q 3)
   (take! q))    ;; => 1
+```
+
+
+
+### deque
+
+Threadsafe mutable deque based on the Java type _LinkedBlockingDeque_.
+
+While queues add elements at the tail of the queue and remove elements from
+the head of the queue, deques are double-ended-queues that allow to add and remove
+elements from both the head and tail of the queue as well.
+
+```
+     head                          tail
+       +---------+---------+---------+
+       |    1    |    2    |    3    |
+       +---------+---------+---------+
+       ^                             ^
+       \-- poll,take                 \--  offer,put new 
+           elements from                  elements to the
+           the head                       tail
+
+       \-- offer-head new            \--  poll-tail elements
+           elements to the                from the tail
+           the head 
+```
+
+```clojure
+(deque) ;; unbounded deque
+
+(deque 100) ;; bounded deque
+
+;; asynchronous access
+;;   offer!  returns immediately with false if the deque is full otherwise
+;;           adds the value to the tail of the deque and returns true
+;;   poll!   returns immediately with nil if the deque is empty 
+;;           otherwise returns the head value 
+(let [q (deque 10)]
+  (offer! q 1)
+  (offer! q 2)
+  (offer! q 3)
+  (poll! q))    ;; => 1
+
+;; asynchronous access with timeouts
+;;   offer!  returns false the value cannot be added to the tail of the
+;;           deque within the given timeout time, otherwise adds the 
+;;           value to the tail of the deque and returns true
+;;   poll!   returns the head value of the queue if one is available
+;;           within the given timeout time, otherwise returns nil
+(let [q (deque 10)]
+  (offer! q 500 1)
+  (offer! q 500 2)
+  (offer! q 500 3)
+  (poll! q 500))    ;; => 1
+
+;; asynchronous access at both ends of the queue
+(let [q (deque 10)]
+  (offer! q 500 1)
+  (offer! q 500 2)
+  (offer! q 500 3)
+  (offer-head! q 500 0)
+  (poll! q 500)          ;; => 0
+  (poll-tail! q 500))    ;; => 3
+
+
+;; synchronous access
+;;   put!    adds the value to the tail of the deque, waiting if  
+;;           necessary for space to become available
+;;   take!   returns the head value, waiting if necessary for a head
+;;           value to become available
+(let [q (deque 10)]
+  (put! q 1)
+  (put! q 2)
+  (put! q 3)
+  (take! q))    ;; => 1
+
+;; synchronous access at both ends of the queue
+(let [q (deque 10)]
+  (put! q 1)
+  (put! q 2)
+  (put! q 3)
+  (put-head! q 0)
+  (take! q)          ;; => 0
+  (take-tail! q))    ;; => 3
 ```
 
