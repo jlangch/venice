@@ -393,67 +393,108 @@ public class CollectionsSection implements ISectionBuilder {
         stacks_test.addItem(diBuilder.getDocItem("stack?"));
 
 
-        final DocSection queues = new DocSection("Queue", "collections.queue");
-        section.addSection(queues);
+        final DocSection queue = new DocSection("Queue", "collections.queue");
+        section.addSection(queue);
 
-        final DocSection queues_create = new DocSection("Create", "collections.queue.create");
-        queues.addSection(queues_create);
-        queues_create.addItem(diBuilder.getDocItem("queue"));
+        final DocSection queue_create = new DocSection("Create", "collections.queue.create");
+        queue.addSection(queue_create);
+        queue_create.addItem(diBuilder.getDocItem("queue"));
 
-        final DocSection queues_access = new DocSection("Access", "collections.queue.access");
-        queues.addSection(queues_access);
-        queues_access.addItem(diBuilder.getDocItem("peek"));
-        queues_access.addItem(diBuilder.getDocItem("into!"));
-        queues_access.addItem(diBuilder.getDocItem("conj!"));
-        queues_access.addItem(diBuilder.getDocItem("count"));
+        final DocSection queue_access = new DocSection("Access", "collections.queue.access");
+        queue.addSection(queue_access);
+        queue_access.addItem(diBuilder.getDocItem("peek"));
+        queue_access.addItem(diBuilder.getDocItem("into!"));
+        queue_access.addItem(diBuilder.getDocItem("conj!"));
+        queue_access.addItem(diBuilder.getDocItem("count"));
 
-        final DocSection queues_access_sync = new DocSection("Sync", "collections.queue.access.sync");
-        queues.addSection(queues_access_sync);
-        queues_access_sync.addItem(diBuilder.getDocItem("put!"));
-        queues_access_sync.addItem(diBuilder.getDocItem("take!"));
+        final DocSection queue_access_sync = new DocSection("Sync", "collections.queue.access.sync");
+        queue.addSection(queue_access_sync);
+        queue_access_sync.addItem(diBuilder.getDocItem("put!"));
+        queue_access_sync.addItem(diBuilder.getDocItem("take!"));
 
-        final DocSection queues_access_async = new DocSection("Async", "collections.queue.access.async");
-        queues.addSection(queues_access_async);
-        queues_access_async.addItem(diBuilder.getDocItem("offer!"));
-        queues_access_async.addItem(diBuilder.getDocItem("poll!"));
+        final DocSection queue_access_async = new DocSection("Async", "collections.queue.access.async");
+        queue.addSection(queue_access_async);
+        queue_access_async.addItem(diBuilder.getDocItem("offer!"));
+        queue_access_async.addItem(diBuilder.getDocItem("poll!"));
 
-        final DocSection queues_process = new DocSection("Process", "collections.queue.process");
-        queues.addSection(queues_process);
-        queues_process.addItem(diBuilder.getDocItem("docoll"));
-        queues_process.addItem(diBuilder.getDocItem("transduce"));
-        queues_process.addItem(diBuilder.getDocItem("reduce"));
+        final DocSection queue_process = new DocSection("Process", "collections.queue.process");
+        queue.addSection(queue_process);
+        queue_process.addItem(diBuilder.getDocItem("docoll"));
+        queue_process.addItem(diBuilder.getDocItem("transduce"));
+        queue_process.addItem(diBuilder.getDocItem("reduce"));
 
-        final DocSection queues_test = new DocSection("Test", "collections.queue.test");
-        queues.addSection(queues_test);
-        queues_test.addItem(diBuilder.getDocItem("empty?"));
-        queues_test.addItem(diBuilder.getDocItem("queue?"));
+        final DocSection queue_test = new DocSection("Test", "collections.queue.test");
+        queue.addSection(queue_test);
+        queue_test.addItem(diBuilder.getDocItem("empty?"));
+        queue_test.addItem(diBuilder.getDocItem("queue?"));
 
 
-        final DocSection dqueues = new DocSection("DelayQueue", "collections.delayqueue");
-        section.addSection(dqueues);
+        final DocSection delayqueue = new DocSection("DelayQueue", "collections.delayqueue");
+        section.addSection(delayqueue);
 
-        final DocSection dqueues_create = new DocSection("Create", "collections.delayqueue.create");
-        dqueues.addSection(dqueues_create);
-        dqueues_create.addItem(diBuilder.getDocItem("delay-queue"));
+        final DocSection delayqueue_create = new DocSection("Create", "collections.delayqueue.create");
+        delayqueue.addSection(delayqueue_create);
+        delayqueue_create.addItem(diBuilder.getDocItem("delay-queue"));
 
-        final DocSection dqueues_access = new DocSection("Access", "collections.delayqueue.access");
-        dqueues.addSection(dqueues_access);
-        dqueues_access.addItem(diBuilder.getDocItem("peek"));
-        dqueues_access.addItem(diBuilder.getDocItem("count"));
+        final DocSection delayqueue_access = new DocSection("Access", "collections.delayqueue.access");
+        delayqueue.addSection(delayqueue_access);
+        delayqueue_access.addItem(diBuilder.getDocItem("peek"));
+        delayqueue_access.addItem(diBuilder.getDocItem("count"));
 
-        final DocSection dqueues_access_sync = new DocSection("Sync", "collections.delayqueue.access.sync");
-        dqueues.addSection(dqueues_access_sync);
-        dqueues_access_sync.addItem(diBuilder.getDocItem("put!"));
-        dqueues_access_sync.addItem(diBuilder.getDocItem("take!"));
+        final DocSection delayqueue_access_sync = new DocSection("Sync", "collections.delayqueue.access.sync");
+        delayqueue.addSection(delayqueue_access_sync);
+        delayqueue_access_sync.addItem(diBuilder.getDocItem("put!"));
+        delayqueue_access_sync.addItem(diBuilder.getDocItem("take!"));
 
-        final DocSection dqueues_access_async = new DocSection("Async", "collections.delayqueue.access.async");
-        dqueues.addSection(dqueues_access_async);
-        dqueues_access_async.addItem(diBuilder.getDocItem("poll!"));
+        final DocSection delayqueue_access_async = new DocSection("Async", "collections.delayqueue.access.async");
+        delayqueue.addSection(delayqueue_access_async);
+        delayqueue_access_async.addItem(diBuilder.getDocItem("poll!"));
 
-        final DocSection dqueues_test = new DocSection("Test", "collections.delayqueue.test");
-        dqueues.addSection(dqueues_test);
-        dqueues_test.addItem(diBuilder.getDocItem("empty?"));
-        dqueues_test.addItem(diBuilder.getDocItem("delay-queue?"));
+        final DocSection delayqueue_test = new DocSection("Test", "collections.delayqueue.test");
+        delayqueue.addSection(delayqueue_test);
+        delayqueue_test.addItem(diBuilder.getDocItem("empty?"));
+        delayqueue_test.addItem(diBuilder.getDocItem("delay-queue?"));
+
+
+        final DocSection deque = new DocSection("Deque", "collections.deque");
+        section.addSection(deque);
+
+        final DocSection deque_create = new DocSection("Create", "collections.deque.create");
+        deque.addSection(deque_create);
+        deque_create.addItem(diBuilder.getDocItem("deque"));
+
+        final DocSection deque_access = new DocSection("Access", "collections.deque.access");
+        deque.addSection(deque_access);
+        deque_access.addItem(diBuilder.getDocItem("peek"));
+        deque_access.addItem(diBuilder.getDocItem("into!"));
+        deque_access.addItem(diBuilder.getDocItem("conj!"));
+        deque_access.addItem(diBuilder.getDocItem("count"));
+
+        final DocSection deque_access_sync = new DocSection("Sync", "collections.deque.access.sync");
+        deque.addSection(deque_access_sync);
+        deque_access_sync.addItem(diBuilder.getDocItem("put!"));
+        deque_access_sync.addItem(diBuilder.getDocItem("take!"));
+        deque_access_sync.addItem(diBuilder.getDocItem("put-head!"));
+        deque_access_sync.addItem(diBuilder.getDocItem("take-tail!"));
+
+        final DocSection deque_access_async = new DocSection("Async", "collections.deque.access.async");
+        deque.addSection(deque_access_async);
+        deque_access_async.addItem(diBuilder.getDocItem("offer!"));
+        deque_access_async.addItem(diBuilder.getDocItem("poll!"));
+        deque_access_async.addItem(diBuilder.getDocItem("offer-head!"));
+        deque_access_async.addItem(diBuilder.getDocItem("poll-tail!"));
+
+        final DocSection deque_process = new DocSection("Process", "collections.deque.process");
+        deque.addSection(deque_process);
+        deque_process.addItem(diBuilder.getDocItem("docoll"));
+        deque_process.addItem(diBuilder.getDocItem("transduce"));
+        deque_process.addItem(diBuilder.getDocItem("reduce"));
+
+        final DocSection deque_test = new DocSection("Test", "collections.deque.test");
+        deque.addSection(deque_test);
+        deque_test.addItem(diBuilder.getDocItem("empty?"));
+        deque_test.addItem(diBuilder.getDocItem("deque?"));
+
 
 
         final DocSection dag = new DocSection("DAG", "directed acyclic graph", "collections.dag");

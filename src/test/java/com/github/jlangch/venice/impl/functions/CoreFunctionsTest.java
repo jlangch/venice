@@ -3073,6 +3073,144 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_deque_sync() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(deque? (deque))"));
+        assertFalse((Boolean)venice.eval("(deque? (queue))"));
+
+        assertEquals(null, venice.eval("(poll! (deque))"));
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (deque 10)]  \n" +
+                            "    (offer! s 1)     \n" +
+                            "    (poll! s))       \n"));
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (deque 10)]  \n" +
+                            "    (offer! s 1)     \n" +
+                            "    (offer! s 2)     \n" +
+                            "    (offer! s 3)     \n" +
+                            "    (poll! s))       \n"));
+
+        assertEquals(3L, venice.eval(
+                            "(let [s (deque 10)]  \n" +
+                            "    (offer! s 1)     \n" +
+                            "    (offer! s 2)     \n" +
+                            "    (offer! s 3)     \n" +
+                            "    (poll! s)        \n" +
+                            "    (poll! s)        \n" +
+                            "    (poll! s))       \n"));
+
+        assertEquals(null, venice.eval(
+                            "(let [s (deque 10)]  \n" +
+                            "    (offer! s 1)     \n" +
+                            "    (offer! s 2)     \n" +
+                            "    (offer! s 3)     \n" +
+                            "    (poll! s)        \n" +
+                            "    (poll! s)        \n" +
+                            "    (poll! s)        \n" +
+                            "    (poll! s))       \n"));
+
+        assertEquals(null, venice.eval(
+                            "(let [s (deque 10)]      \n" +
+                            "    (offer! s 1 100)     \n" +
+                            "    (offer! s 2 100)     \n" +
+                            "    (offer! s 3 100)     \n" +
+                            "    (poll! s 100)        \n" +
+                            "    (poll! s 100)        \n" +
+                            "    (poll! s 100)        \n" +
+                            "    (poll! s 100))       \n"));
+    }
+
+    @Test
+    public void test_deque_async() {
+        final Venice venice = new Venice();
+
+        // bounded
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (deque 10)]  \n" +
+                            "    (put! s 1)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (deque 10)]  \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(3L, venice.eval(
+                            "(let [s (deque 10)]  \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s))       \n"));
+
+        // unbounded
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (deque)]     \n" +
+                            "    (put! s 1)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (deque)]     \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(3L, venice.eval(
+                            "(let [s (deque)]     \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s))       \n"));
+    }
+
+    @Test
+    public void test_deque_offer() {
+        final Venice venice = new Venice();
+
+        assertEquals(true, venice.eval(
+                            "(let [s (deque 2)]  \n" +
+                            "    (offer! s 1))   \n"));
+
+        assertEquals(true, venice.eval(
+                            "(let [s (deque 2)]  \n" +
+                            "    (offer! s 1)    \n" +
+                            "    (offer! s 1))   \n"));
+
+        assertEquals(false, venice.eval(
+                            "(let [s (deque 2)]  \n" +
+                            "    (offer! s 1)    \n" +
+                            "    (offer! s 1)    \n" +
+                            "    (offer! s 1))   \n"));
+
+
+        assertEquals(true, venice.eval(
+                            "(let [s (deque 2)]      \n" +
+                            "    (offer! s 1 100))   \n"));
+
+        assertEquals(true, venice.eval(
+                            "(let [s (deque 2)]      \n" +
+                            "    (offer! s 1 100)    \n" +
+                            "    (offer! s 1 100))   \n"));
+
+        assertEquals(false, venice.eval(
+                            "(let [s (deque 2)]      \n" +
+                            "    (offer! s 1 100)    \n" +
+                            "    (offer! s 1 100)    \n" +
+                            "    (offer! s 1 100))   \n"));
+    }
+
+    @Test
     public void test_keyword_Q() {
         final Venice venice = new Venice();
 

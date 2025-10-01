@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 ## [1.12.56] - 2025-09-xx
 
 ### Added
+ 
+- deque datatype (bounded or unbounded)
+ 
   
 - :openai module support for assistant api
 - :openai module support for assistant threads api

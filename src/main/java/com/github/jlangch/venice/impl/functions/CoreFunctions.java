@@ -77,6 +77,7 @@ import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncDelayQueue;
+import com.github.jlangch.venice.impl.types.collections.VncDeque;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -3771,6 +3772,69 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction new_deque =
+        new VncFunction(
+                "deque",
+                VncFunction
+                    .meta()
+                    .arglists("(deque)", "(deque capacity)")
+                    .doc(
+                        "Creates a new mutable threadsafe bounded or unbounded deque.\n\n" +
+                        "The queue can be turned into a synchronous deque when using " +
+                        "the functions `put!` and `take!`. `put!` waits until the value " +
+                        "be added and `take! waits until a value is available from " +
+                        "queue thus synchronizing the producer and consumer.")
+                    .examples(
+                        "; unbounded deque  \n" +
+                        "(let [q (deque)]   \n" +
+                        "  (offer! q 1)     \n" +
+                        "  (offer! q 2)     \n" +
+                        "  (offer! q 3)     \n" +
+                        "  (poll! q)        \n" +
+                        "  q)                ",
+
+                        "; bounded deque       \n" +
+                        "(let [q (deque 10)]   \n" +
+                        "  (offer! q 1000 1)   \n" +
+                        "  (offer! q 1000 2)   \n" +
+                        "  (offer! q 1000 3)   \n" +
+                        "  (poll! q 1000)      \n" +
+                        "  q)                   ",
+
+                        "; synchronous unbounded deque  \n" +
+                        "(let [q (deque)]               \n" +
+                        "  (put! q 1)                   \n" +
+                        "  (put! q 2)                   \n" +
+                        "  (put! q 3)                   \n" +
+                        "  (take! q)                    \n" +
+                        "  q)                            ",
+
+                        "; synchronous bounded deque  \n" +
+                        "(let [q (deque 10)]          \n" +
+                        "  (put! q 1)                 \n" +
+                        "  (put! q 2)                 \n" +
+                        "  (put! q 3)                 \n" +
+                        "  (take! q)                  \n" +
+                        "  q)                          ")
+                    .seeAlso(
+                        "peek", "put!", "take!", "offer!", "poll!",
+                        "empty", "empty?", "count", "queue?",
+                        "reduce", "transduce", "docoll",
+                        "into!", "conj!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0, 1);
+
+                return args.isEmpty()
+                        ? new VncDeque()
+                        : new VncDeque(Coerce.toVncLong(args.first()).getIntValue());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction new_map_entry =
         new VncFunction(
                 "map-entry",
@@ -3974,6 +4038,26 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return VncBoolean.of(Types.isVncDelayQueue(args.first()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction deque_Q =
+        new VncFunction(
+                "deque?",
+                VncFunction
+                    .meta()
+                    .arglists("(deque? coll)")
+                    .doc("Returns true if coll is a deque")
+                    .examples("(deque? (deque))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                return VncBoolean.of(Types.isVncDeque(args.first()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -5370,6 +5454,21 @@ public class CoreFunctions {
                                 Types.getType(from)));
                     }
                 }
+                else if (Types.isVncDeque(to)) {
+                    if (Types.isVncSequence(from)) {
+                        VncDeque deque = (VncDeque)to;
+                        for(VncVal it : ((VncSequence)from)) {
+                            deque.put(it);
+                        }
+
+                        return deque;
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'into!' does not allow %s as from-coll into a deque",
+                                Types.getType(from)));
+                    }
+                }
                 else if (Types.isVncStack(to)) {
                     if (Types.isVncSequence(from)) {
                         VncStack stack = (VncStack)to;
@@ -6284,6 +6383,11 @@ public class CoreFunctions {
                     queue.put(args.first());
                     return queue;
                 }
+                else if (Types.isVncDeque(coll)) {
+                    final VncDeque deque = (VncDeque)coll;
+                    deque.put(args.first());
+                    return deque;
+                }
                 else if (Types.isVncStack(coll)) {
                     final VncStack stack = (VncStack)coll;
                     stack.push(args.first());
@@ -6385,6 +6489,13 @@ public class CoreFunctions {
                             queue.put(it);
                         }
                         return queue;
+                    }
+                    else if (Types.isVncDeque(coll)) {
+                        VncDeque deque = (VncDeque)coll;
+                        for(VncVal it : args.rest()) {
+                            deque.put(it);
+                        }
+                        return deque;
                     }
                     else if (Types.isVncStack(coll)) {
                         VncStack stack = (VncStack)coll;
@@ -7736,7 +7847,7 @@ public class CoreFunctions {
                         "(offer! queue v)",
                         "(offer! queue timeout v)")
                     .doc(
-                        "Offers an item to a queue with an optional timeout in milliseconds. " +
+                        "Offers an item to tail of the a queue with an optional timeout in milliseconds. " +
                         "If a timeout is given waits up to the specified wait time if necessary " +
                         "for space to become available. For an indefinite timeout pass the timeout " +
                         "value :indefinite. " +
@@ -7786,9 +7897,101 @@ public class CoreFunctions {
                         }
                     }
                 }
+                else if (Types.isVncDeque(val)) {
+                    if (args.size() == 2) {
+                        return ((VncDeque)val).offer(args.second());
+                    }
+                    else {
+                        final VncVal option = args.second();
+                        if (Types.isVncKeyword(option)) {
+                            if (((VncKeyword)option).hasValue("indefinite")) {
+                                ((VncDeque)val).put(args.third());
+                                return VncBoolean.True;
+                            }
+                            else {
+                                throw new VncException(String.format(
+                                        "offer!: timeout value '%s' not supported",
+                                        option.toString()));
+                            }
+                        }
+                        else {
+                            final long timeout = Coerce.toVncLong(option).getValue();
+                            return ((VncDeque)val).offer(args.third(), timeout);
+                        }
+                    }
+                }
                 else {
                     throw new VncException(String.format(
                             "offer!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction offer_head_BANG =
+        new VncFunction(
+                "offer-head!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(offer-head! deque v)",
+                        "(offer-head! deque timeout v)")
+                    .doc(
+                        "Offers an item to the head of a deque with an optional timeout in milliseconds. " +
+                        "If a timeout is given waits up to the specified wait time if necessary " +
+                        "for space to become available. For an indefinite timeout pass the timeout " +
+                        "value :indefinite. " +
+                        "If no timeout is given returns immediately false if the queue does not " +
+                        "have any more capacity. " +
+                        "Returns true if the element was added to this queue, else false.")
+                    .examples(
+                        "(let [q (queue)]           \n" +
+                        "  (offer! q 1)             \n" +
+                        "  (offer! q 1000 2)        \n" +
+                        "  (offer! q :indefinite 3) \n" +
+                        "  (offer! q 3)             \n" +
+                        "  (poll! q)                \n" +
+                        "  q)")
+                    .seeAlso("deque", "put!", "take!", "poll!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                final VncVal val = args.first();
+                if (val == Nil) {
+                    return Nil;
+                }
+
+                if (Types.isVncDeque(val)) {
+                    if (args.size() == 2) {
+                        return ((VncDeque)val).offerFirst(args.second());
+                    }
+                    else {
+                        final VncVal option = args.second();
+                        if (Types.isVncKeyword(option)) {
+                            if (((VncKeyword)option).hasValue("indefinite")) {
+                                ((VncDeque)val).putFirst(args.third());
+                                return VncBoolean.True;
+                            }
+                            else {
+                                throw new VncException(String.format(
+                                        "offer-head!: timeout value '%s' not supported",
+                                        option.toString()));
+                            }
+                        }
+                        else {
+                            final long timeout = Coerce.toVncLong(option).getValue();
+                            return ((VncDeque)val).offerFirst(args.third(), timeout);
+                        }
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "offer-head!: type %s not supported",
                             Types.getType(args.first())));
                 }
             }
@@ -7859,9 +8062,64 @@ public class CoreFunctions {
                                 "put! for a delay-queue requires three args (put! queue val delay)");
                     }
                 }
+                else if (Types.isVncDeque(coll)) {
+                    if (args.size() == 2) {
+                        ((VncDeque)coll).put(args.second());
+                        return Nil;
+                    }
+                    else {
+                        throw new VncException("put! for a deque requires two args (put! deque val)");
+                    }
+                }
                 else {
                     throw new VncException(String.format(
                             "put!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction put_head_BANG =
+        new VncFunction(
+                "put-head!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(put-head! deque val)")
+                    .doc(
+                        "Puts an item to the head of a deque. The operation is synchronous, it waits indefinitely " +
+                        "until the value can be placed on the queue. Returns always nil.")
+                    .examples(
+                        "(let [q (queue)]   \n" +
+                        "  (put! q 1)       \n" +
+                        "  (poll! q)        \n" +
+                        "  q)")
+                    .seeAlso("deque", "take!", "offer!", "poll!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                final VncVal coll = args.first();
+                if (coll == Nil) {
+                    return Nil;
+                }
+
+                if (Types.isVncDeque(coll)) {
+                    if (args.size() == 2) {
+                        ((VncDeque)coll).putFirst(args.second());
+                        return Nil;
+                    }
+                    else {
+                        throw new VncException("put-head! for a deque requires two args (put-head! deque val)");
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "put-head!: type %s not supported",
                             Types.getType(args.first())));
                 }
             }
@@ -7944,9 +8202,94 @@ public class CoreFunctions {
                         }
                     }
                 }
+                else if (Types.isVncDeque(val)) {
+                    if (args.size() == 1) {
+                        return ((VncDeque)val).poll();
+                    }
+                    else {
+                        final VncVal option = args.second();
+                        if (Types.isVncKeyword(option)) {
+                            if (((VncKeyword)option).hasValue("indefinite")) {
+                                return ((VncDeque)val).take();
+                            }
+                            else {
+                                throw new VncException(String.format(
+                                        "poll!: timeout value '%s' not supported",
+                                        option.toString()));
+                            }
+                        }
+                        else {
+                            final long timeout = Coerce.toVncLong(option).getValue();
+                            return ((VncDeque)val).poll(timeout);
+                        }
+                    }
+                }
                 else {
                     throw new VncException(String.format(
                             "poll!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction poll_tail_BANG =
+        new VncFunction(
+                "poll-tail!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(poll-tail! queue)",
+                        "(poll-tail! queue timeout)")
+                    .doc(
+                        "Polls an item from the tail of a deque with an optional timeout in milliseconds. " +
+                        "For an indefinite timeout pass the timeout value :indefinite. " +
+                        "If no timeout is given returns the item if one is available else " +
+                        "returns nil. With a timeout returns the item if one is available within " +
+                        "the given timeout else returns nil.")
+                    .examples(
+                        "(let [q (conj! (queue) 1 2 3 4)]   \n" +
+                        "  (poll! q)                        \n" +
+                        "  (poll! q 1000)                   \n" +
+                       "  q)")
+                    .seeAlso("deque", "put!", "take!", "offer!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
+
+                final VncVal val = args.first();
+                if (val == Nil) {
+                    return Nil;
+                }
+
+                if (Types.isVncDeque(val)) {
+                    if (args.size() == 1) {
+                        return ((VncDeque)val).pollLast();
+                    }
+                    else {
+                        final VncVal option = args.second();
+                        if (Types.isVncKeyword(option)) {
+                            if (((VncKeyword)option).hasValue("indefinite")) {
+                                return ((VncDeque)val).takeLast();
+                            }
+                            else {
+                                throw new VncException(String.format(
+                                        "poll-tail!: timeout value '%s' not supported",
+                                        option.toString()));
+                            }
+                        }
+                        else {
+                            final long timeout = Coerce.toVncLong(option).getValue();
+                            return ((VncDeque)val).pollLast(timeout);
+                        }
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "poll-tail!: type %s not supported",
                             Types.getType(args.first())));
                 }
             }
@@ -7962,8 +8305,8 @@ public class CoreFunctions {
                     .arglists(
                         "(take! queue)")
                     .doc(
-                        "Retrieves and removes the head value of the queue, waiting if " +
-                        "necessary until a value becomes available.")
+                        "Retrieves and removes the head value of the queue or the deque, waiting " +
+                        "if necessary until a value becomes available.")
                     .examples(
                         "(let [q (queue)]   \n" +
                         "  (put! q 1)       \n" +
@@ -7984,12 +8327,55 @@ public class CoreFunctions {
                 if (Types.isVncQueue(queue)) {
                    return ((VncQueue)queue).take();
                 }
-                if (Types.isVncDelayQueue(queue)) {
+                else if (Types.isVncDelayQueue(queue)) {
                     return ((VncDelayQueue)queue).take();
-                 }
-               else {
+                }
+                else if (Types.isVncDeque(queue)) {
+                    return ((VncDeque)queue).take();
+                }
+                else {
                     throw new VncException(String.format(
                             "take!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction take_tail_BANG =
+        new VncFunction(
+                "take-tail!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(take-tail! deque)")
+                    .doc(
+                        "Retrieves and removes the tail value of the deque, waiting if " +
+                        "necessary until a value becomes available.")
+                    .examples(
+                        "(let [q (queue)]   \n" +
+                        "  (put! q 1)       \n" +
+                        "  (take! q)        \n" +
+                        "  q)")
+                    .seeAlso("deque", "put!", "offer!", "poll!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal queue = args.first();
+                if (queue == Nil) {
+                    return Nil;
+                }
+
+                if (Types.isVncDeque(queue)) {
+                    return ((VncDeque)queue).takeLast();
+                }
+                else {
+                    throw new VncException(String.format(
+                            "take-tail!: type %s not supported",
                             Types.getType(args.first())));
                 }
             }
@@ -8041,6 +8427,9 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncDelayQueue(val)) {
                     return ((VncDelayQueue)val).peek();
+                }
+                else if (Types.isVncDeque(val)) {
+                    return ((VncDeque)val).peek();
                 }
                 else {
                     throw new VncException(String.format(
@@ -8723,6 +9112,19 @@ public class CoreFunctions {
                                 meterRegistry);
                     }
                 }
+                else if (Types.isVncDeque(coll)) {
+                    final VncDeque deque = (VncDeque)coll;
+
+                    while(true) {
+                        final VncVal v = deque.take();
+                        if (v == Nil) break;  // queue has been closed
+
+                        VncFunction.applyWithMeter(
+                                fn,
+                                VncList.of(v),
+                                meterRegistry);
+                    }
+                }
                 else {
                     throw new VncException(String.format(
                             "docoll: collection type %s not supported",
@@ -9024,6 +9426,9 @@ public class CoreFunctions {
                 else if (Types.isVncQueue(coll)) {
                     return reduce_queue((VncQueue)coll, reduceFn, init);
                 }
+                else if (Types.isVncDeque(coll)) {
+                    return reduce_deque((VncDeque)coll, reduceFn, init);
+                }
                 else if (Types.isIVncFunction(coll)) {
                     return reduce_supplyFn((IVncFunction)coll, reduceFn, init);
                 }
@@ -9075,6 +9480,24 @@ public class CoreFunctions {
         }
         else {
             return Reducer.reduce(reduceFn, init, queue, meterRegistry);
+        }
+    }
+
+    private static VncVal reduce_deque(
+            final VncDeque deque,
+            final IVncFunction reduceFn,
+            final VncVal init
+    ) {
+        final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
+
+        if (init == null) {
+            final VncVal init_ = deque.take();
+            return init_ == Nil  // queue has been closed -> empty
+                    ? reduceFn.apply(VncList.empty())
+                    : Reducer.reduce(reduceFn, init_, deque, meterRegistry);
+        }
+        else {
+            return Reducer.reduce(reduceFn, init, deque, meterRegistry);
         }
     }
 
@@ -10347,6 +10770,7 @@ public class CoreFunctions {
                 .add(mutable_map_Q)
                 .add(stack_Q)
                 .add(queue_Q)
+                .add(deque_Q)
                 .add(delay_queue_Q)
                 .add(new_hash_map)
                 .add(new_ordered_map)
@@ -10356,6 +10780,7 @@ public class CoreFunctions {
                 .add(new_stack)
                 .add(new_queue)
                 .add(new_delay_queue)
+                .add(new_deque)
                 .add(assoc)
                 .add(assoc_BANG)
                 .add(assoc_in)
@@ -10431,11 +10856,15 @@ public class CoreFunctions {
                 .add(emptyToNil)
                 .add(pop)
                 .add(put_BANG)
+                .add(put_head_BANG)
                 .add(take_BANG)
+                .add(take_tail_BANG)
                 .add(pop_BANG)
                 .add(push_BANG)
                 .add(poll_BANG)
+                .add(poll_tail_BANG)
                 .add(offer_BANG)
+                .add(offer_head_BANG)
                 .add(peek)
                 .add(empty_Q)
                 .add(not_empty_Q)

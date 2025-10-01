@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncDAG;
 import com.github.jlangch.venice.impl.types.collections.VncDelayQueue;
+import com.github.jlangch.venice.impl.types.collections.VncDeque;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -693,6 +694,22 @@ public class Coerce {
             try (WithCallStack cs = new WithCallStack(callframe(val))) {
                 throw new VncException(String.format(
                         "Cannot coerce value of type %s to queue.",
+                        Types.getType(val)));
+            }
+        }
+    }
+
+    public static VncDeque toVncDeque(final VncVal val) {
+        if (val == null) {
+            throw new VncException("Cannot coerce a null value to deque.");
+        }
+        else if (val instanceof VncDeque) {
+            return (VncDeque)val;
+        }
+        else {
+            try (WithCallStack cs = new WithCallStack(callframe(val))) {
+                throw new VncException(String.format(
+                        "Cannot coerce value of type %s to deque.",
                         Types.getType(val)));
             }
         }
