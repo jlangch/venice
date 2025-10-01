@@ -340,7 +340,7 @@ Threadsafe mutable deque based on the Java type _LinkedBlockingDeque_.
 
 While queues add elements at the tail of the queue and remove elements from
 the head of the queue, deques are double-ended-queues that allow to add and remove
-elements from both the head and tail of the queue as well.
+elements from both sides of the queue.
 
 ```
      head                          tail
