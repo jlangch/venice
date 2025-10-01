@@ -192,6 +192,6 @@ $ ./repl.sh
 ## Where to head next
 
 - browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md#documentation)
-- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/2f4b6f9/cheatsheet.pdf) and use it as a quick reference
+- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/c4a2bf5/cheatsheet.pdf) and use it as a quick reference
 
 
