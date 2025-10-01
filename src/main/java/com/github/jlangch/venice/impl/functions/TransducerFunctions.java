@@ -107,7 +107,7 @@ public class TransducerFunctions {
 
                         "(transduce (map inc) conj [1 2 3])",
 
-                        ";; transduce all elements of a queue.                    \n" +
+                        ";; transduce all elements of a queue or a deque.         \n" +
                         ";; calls (take! queue) to get the elements of the queue. \n" +
                         ";; note: use nil to mark the end of the queue otherwise  \n" +
                         ";;       transduce will block forever!                   \n" +
