@@ -306,6 +306,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
   (offer! q 1)
   (offer! q 2)
   (offer! q 3)
+  (peek q)      ;; => 1
   (poll! q))    ;; => 1
 
 ;; asynchronous access with timeouts
@@ -318,6 +319,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
   (offer! q 500 1)
   (offer! q 500 2)
   (offer! q 500 3)
+  (peek q)          ;; => 1
   (poll! q 500))    ;; => 1
   
 ;; synchronous access
@@ -329,6 +331,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
   (put! q 1)
   (put! q 2)
   (put! q 3)
+  (peek q)      ;; => 1
   (take! q))    ;; => 1
 ```
 
@@ -352,9 +355,8 @@ elements from both sides of the queue.
            elements from                  elements to the
            the head                       tail
 
-       \-- offer-head new            \--  poll-tail elements
-           elements to the                from the tail
-           the head 
+       \-- offer new elements        \--  poll elements
+           to the head                    from the tail
 ```
 
 ```clojure
@@ -371,6 +373,7 @@ elements from both sides of the queue.
   (offer! q 1)
   (offer! q 2)
   (offer! q 3)
+  (peek q)      ;; => 1
   (poll! q))    ;; => 1
 
 ;; asynchronous access with timeouts
@@ -383,6 +386,7 @@ elements from both sides of the queue.
   (offer! q 500 1)
   (offer! q 500 2)
   (offer! q 500 3)
+  (peek q)          ;; => 1
   (poll! q 500))    ;; => 1
 
 ;; asynchronous access at both ends of the queue
@@ -390,6 +394,7 @@ elements from both sides of the queue.
   (offer! q 500 1)
   (offer! q 500 2)
   (offer! q 500 3)
+  (peek q)               ;; => 1
   (offer-head! q 500 0)
   (poll! q 500)          ;; => 0
   (poll-tail! q 500))    ;; => 3
@@ -411,6 +416,7 @@ elements from both sides of the queue.
   (put! q 1)
   (put! q 2)
   (put! q 3)
+  (peek q)           ;; => 1
   (put-head! q 0)
   (take! q)          ;; => 0
   (take-tail! q))    ;; => 3
