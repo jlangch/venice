@@ -5,12 +5,9 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.56] - 2025-09-xx
+## [1.12.57] - 2025-10-xx
 
 ### Added
- 
-- deque datatype (bounded or unbounded)
- 
   
 - :openai module support for assistant api
 - :openai module support for assistant threads api
@@ -18,9 +15,17 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+
+
+## [1.12.56] - 2025-10-01
+
+### Added
+ 
+- deque datatype (bounded or unbounded)
+
 ### Fixed
 
-- Maven download 403 HTTP error by adding an explicit user agent "Mozilla"
+- Maven download 403 HTTP error by adding an explicit user agent to the HTTP requests
 
 
 
