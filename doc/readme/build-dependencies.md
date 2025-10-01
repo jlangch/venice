@@ -16,7 +16,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>1.12.55</version>
+        <version>1.12.56</version>
     </dependency>
 </dependencies>
 ```
