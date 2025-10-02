@@ -285,7 +285,7 @@ public class DocGenerator {
         primitives.addSection(new DocSection("Boolean", "primitives.booleans"));
         primitives.addSection(new DocSection("Keyword", "primitives.keywords"));
         primitives.addSection(new DocSection("Symbol", "primitives.symbols"));
-        primitives.addSection(new DocSection("Nil", "primitives.mil"));
+        primitives.addSection(new DocSection("Nil", "primitives.nil"));
         primitives.addSection(new DocSection("Just", "primitives.just"));
         content.add(primitives);
 
