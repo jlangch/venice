@@ -352,11 +352,12 @@ elements from both sides of the queue.
        +---------+---------+---------+
        ^                             ^
        \-- poll,take                 \--  offer,put new 
-           elements from                  elements to the
-           the head                       tail
+           elements from                  elements to
+           the head                       the tail
 
-       \-- offer new elements        \--  poll elements
-           to the head                    from the tail
+       \-- offer,put new             \--  poll,take
+           elements to                    elements from 
+           the head                       the tail
 ```
 
 ```clojure
