@@ -3668,6 +3668,12 @@ public class CoreFunctions {
                         "  (poll! q)        \n" +
                         "  q)                ",
 
+                        "; unbounded queue              \n" +
+                        "(let [q (conj! (queue) 1 2 3)] \n" +
+                        "  (offer! q 4)                 \n" +
+                        "  (poll! q)                    \n" +
+                        "  q)                           ",
+
                         "; bounded queue       \n" +
                         "(let [q (queue 10)]   \n" +
                         "  (offer! q 1000 1)   \n" +
@@ -3675,6 +3681,12 @@ public class CoreFunctions {
                         "  (offer! q 1000 3)   \n" +
                         "  (poll! q 1000)      \n" +
                         "  q)                   ",
+
+                        "; bounded queue                    \n" +
+                        "(let [q (conj! (queue 10) 1 2 3)]  \n" +
+                        "  (offer! q 4)                     \n" +
+                        "  (poll! q)                        \n" +
+                        "  q)                               ",
 
                         "; synchronous unbounded queue  \n" +
                         "(let [q (queue)]               \n" +
@@ -3780,7 +3792,7 @@ public class CoreFunctions {
                     .arglists("(deque)", "(deque capacity)")
                     .doc(
                         "Creates a new mutable threadsafe bounded or unbounded deque.\n\n" +
-                        "The queue can be turned into a synchronous deque when using " +
+                        "The deque can be turned into a synchronous deque when using " +
                         "the functions `put!` and `take!`. `put!` waits until the value " +
                         "be added and `take! waits until a value is available from " +
                         "queue thus synchronizing the producer and consumer.")
@@ -3793,6 +3805,12 @@ public class CoreFunctions {
                         "  (poll! q)        \n" +
                         "  q)                ",
 
+                        "; unbounded deque              \n" +
+                        "(let [q (conj! (deque) 1 2 3)] \n" +
+                        "  (offer! q 4)                 \n" +
+                        "  (poll! q)                    \n" +
+                        "  q)                           ",
+
                         "; bounded deque       \n" +
                         "(let [q (deque 10)]   \n" +
                         "  (offer! q 1000 1)   \n" +
@@ -3800,6 +3818,12 @@ public class CoreFunctions {
                         "  (offer! q 1000 3)   \n" +
                         "  (poll! q 1000)      \n" +
                         "  q)                   ",
+
+                        "; bounded deque                   \n" +
+                        "(let [q (conj! (deque 10) 1 2 3)] \n" +
+                        "  (offer! q 4)                    \n" +
+                        "  (poll! q)                       \n" +
+                        "  q)                              ",
 
                         "; synchronous unbounded deque  \n" +
                         "(let [q (deque)]               \n" +
@@ -3817,8 +3841,10 @@ public class CoreFunctions {
                         "  (take! q)                  \n" +
                         "  q)                          ")
                     .seeAlso(
-                        "peek", "put!", "take!", "offer!", "poll!",
-                        "empty", "empty?", "count", "queue?",
+                        "peek",
+                        "put!", "take!", "offer!", "poll!",
+                        "put-head!", "take-tail!", "offer-head!", "poll-tail!",
+                        "empty", "empty?", "count", "deque?",
                         "reduce", "transduce", "docoll",
                         "into!", "conj!")
                     .build()
@@ -7947,14 +7973,18 @@ public class CoreFunctions {
                         "have any more capacity. " +
                         "Returns true if the element was added to this queue, else false.")
                     .examples(
-                        "(let [q (queue)]           \n" +
+                        "(let [q (deque)]           \n" +
                         "  (offer! q 1)             \n" +
                         "  (offer! q 1000 2)        \n" +
                         "  (offer! q :indefinite 3) \n" +
-                        "  (offer! q 3)             \n" +
-                        "  (poll! q)                \n" +
-                        "  q)")
-                    .seeAlso("deque", "put!", "take!", "poll!", "peek", "empty?", "count")
+                        "  (offer-head! q 0)        \n" +
+                        "  (println (poll! q))      \n" +
+                        "  (println q))")
+                    .seeAlso(
+                    	"deque",
+                		"put!", "take!", "poll!",
+                        "put-head!", "take-tail!", "poll-tail!",
+                		"peek", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -8092,11 +8122,18 @@ public class CoreFunctions {
                         "Puts an item to the head of a deque. The operation is synchronous, it waits indefinitely " +
                         "until the value can be placed on the queue. Returns always nil.")
                     .examples(
-                        "(let [q (queue)]   \n" +
-                        "  (put! q 1)       \n" +
-                        "  (poll! q)        \n" +
-                        "  q)")
-                    .seeAlso("deque", "take!", "offer!", "poll!", "peek", "empty?", "count")
+                        "(let [q (deque)]      \n" +
+                        "  (put! q 1)          \n" +
+                        "  (put! q 2)          \n" +
+                        "  (put! q 3)          \n" +
+                        "  (put-head! q 0)     \n" +
+                        "  (println (poll! q)) \n" +
+                        "  (println q))        ")
+                    .seeAlso(
+                    	"deque",
+                    	"take!", "offer!", "poll!",
+                        "take-tail!", "offer-head!", "poll-tail!",
+                    	"peek", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -8249,11 +8286,17 @@ public class CoreFunctions {
                         "returns nil. With a timeout returns the item if one is available within " +
                         "the given timeout else returns nil.")
                     .examples(
-                        "(let [q (conj! (queue) 1 2 3 4)]   \n" +
-                        "  (poll! q)                        \n" +
-                        "  (poll! q 1000)                   \n" +
-                       "  q)")
-                    .seeAlso("deque", "put!", "take!", "offer!", "peek", "empty?", "count")
+                        "(let [q (conj! (deque) 1 2 3 4)]   \n" +
+                        "  (println q)                      \n" +
+                        "  (println (poll! q))              \n" +
+                        "  (println (poll-tail! q 300))     \n" +
+                        "  (println (poll! q))              \n" +
+                        "  (println q))")
+                    .seeAlso(
+                    	"deque",
+                    	"put!", "take!", "offer!",
+                        "put-head!", "take-tail!", "offer-head!",
+                    	"peek", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -8354,11 +8397,20 @@ public class CoreFunctions {
                         "Retrieves and removes the tail value of the deque, waiting if " +
                         "necessary until a value becomes available.")
                     .examples(
-                        "(let [q (queue)]   \n" +
-                        "  (put! q 1)       \n" +
-                        "  (take! q)        \n" +
-                        "  q)")
-                    .seeAlso("deque", "put!", "offer!", "poll!", "peek", "empty?", "count")
+                        "(let [q (deque)]           \n" +
+                        "  (put! q 1)               \n" +
+                        "  (put! q 2)               \n" +
+                        "  (put! q 3)               \n" +
+                        "  (put! q 4)               \n" +
+                        "  (println q)              \n" +
+                        "  (println (take-tail! q)) \n" +
+                        "  (println (take! q))      \n" +
+                        "  (println q))             ")
+                    .seeAlso(
+                    	"deque",
+                    	"put!", "offer!", "poll!",
+                        "put-head!", "offer-head!", "poll-tail!",
+                    	"peek", "empty?", "count")
                     .build()
         ) {
             @Override
