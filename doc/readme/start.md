@@ -140,7 +140,6 @@ venice>
 
 ### VSCode 
 
-
 This VSCode **settings.json** file will establish syntax highlighting for Venice source files
 
 ```json
