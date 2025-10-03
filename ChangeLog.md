@@ -7,27 +7,37 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.57] - 2025-10-xx
 
-- Added :openai module support for assistant api
-- Added :openai module support for assistant threads api
-- Added :openai module support for assistant message api (in work)
-- Added :openai module support for assistant run api (...)
-- Added :openai module support for assistant run steps api (...)
+### Added
 
-- Removed gitpod support
+- :openai module support for assistant api
+- :openai module support for assistant threads api
+- :openai module support for assistant message api (in work)
+- :openai module support for assistant run api (...)
+- :openai module support for assistant run steps api (...)
+
+### Removed
+
+- gitpod support
 
 
 
 ## [1.12.56] - 2025-10-01
 
-- Added deque datatype (bounded or unbounded)
+### Added
 
-- Fixed Maven download 403 HTTP error by adding an explicit user agent to the HTTP requests
+- deque datatype (bounded or unbounded)
+
+### Fixed
+
+- Maven download 403 HTTP error by adding an explicit user agent to the HTTP requests
 
 
 
 ## [1.12.55] - 2025-09-22
 
-- Added IPC (Inter-Process-Communication) module. Supports request/response messages
+### Added
+
+- IPC (Inter-Process-Communication) module. Supports request/response messages
   between a client and a server as well as publish / subcribe with many clients
   and an orchestrating server.
 
