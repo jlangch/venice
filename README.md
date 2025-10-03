@@ -1,7 +1,6 @@
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/logo/logo-readme.png" width="1024">
 
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice)
 [![](https://github.com/jlangch/venice/blob/master/doc/maven-central.svg)](https://central.sonatype.com/artifact/com.github.jlangch/venice)
 [![](https://github.com/jlangch/venice/blob/master/doc/license.svg)](./LICENSE)
 ![Java Version](https://img.shields.io/badge/java-%3E%3D%201.8-success)

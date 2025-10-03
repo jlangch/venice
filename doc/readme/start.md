@@ -5,8 +5,6 @@ Welcome to Venice!
 Venice can run on any operating system for which a Java VM is available, 
 like Linux, MacOSX, or Windows.
 
-Setup Venice on a [local machine](#venice-local-setup) or use a [Venice Gitpod workspace](#venice-gitpod-workspace) without requiring any local installation.
- 
 
 
 ## Venice Local Setup
@@ -138,41 +136,6 @@ venice> (+ 1 1)
 => 2
 venice>
 ```
-
-
-
-## Venice Gitpod workspace 
-
-### Start a REPL from a Venice Gitpod workspace
-
-A Venice REPL can be run without local installation in a [Gitpod](https://gitpod.io/) workspace. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
-
-Just fire up a Venice Gitpod workspace in your browser by opening the URL https://gitpod.io/#https://github.com/jlangch/venice. Gitpod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it.
-
-Wait until the workspace has been built ...
-
-The workspace will start a fresh REPL in a terminal.
-
-If you see the Venice REPL prompt `venice> ` type an expression like `(+ 1 100)` followed by a `<CR>`
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl.png">
-
-
-### Manually start a new REPL terminal in the workspace
-
-Start a new terminal (menu Terminal -> New Terminal) ...
-
-launch the REPL within the terminal:
-
-```text
-$ cd /workspace/repl
-$ ./repl.sh
-```
-
-
-### Useful VSCode extensions
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-VsCodeExtensions.png" width="300">
 
 
 ### VSCode settings.json
