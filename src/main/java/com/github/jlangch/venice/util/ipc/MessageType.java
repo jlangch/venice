@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc;
 
 public enum MessageType {
 
+    // requests
+
     REQUEST(0),
 
     PUBLISH(1),
@@ -33,9 +35,15 @@ public enum MessageType {
     OFFER(4),
     POLL(5),
 
-    RESPONSE(6),
 
-    NULL(9);
+    // responses
+
+    RESPONSE(10),
+
+
+    // null, not yet determined
+
+    NULL(90);
 
 
     public static MessageType fromCode(int code) {

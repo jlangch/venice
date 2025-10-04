@@ -198,6 +198,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
         else {
             // should not get here
+            handleInvalidRequestType(request);
             return State.Request_Response;
         }
     }
@@ -240,7 +241,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
         catch(Exception ex) {
             if (request.isOneway()) {
-            	// do not reply on one-way messages
+                // do not reply on one-way messages
                 // just discard the exception
                 return null;
             }
