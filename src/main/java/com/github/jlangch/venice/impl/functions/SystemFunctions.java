@@ -772,7 +772,14 @@ public class SystemFunctions {
                     .arglists("(java-source-location class)")
                     .doc(
                         "Returns the path of the source location of a class (fully " +
-                        "qualified class name).")
+                        "qualified class name).\n\n" +
+                        "E.g.:\n\n" +
+                        "```\n" +
+                        "(java-source-location :com.github.jlangch.venice.Venice) \n" +
+                        "```\n\n" +
+                        "```\n" +
+                        "=> /Users/foo/venice/libs/venice-1.12.57.jar\n" +
+                        "```")
                     .examples(
                         "(java-source-location :com.github.jlangch.venice.Venice)")
                     .build()
