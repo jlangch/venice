@@ -47,7 +47,7 @@ import java.util.zip.ZipInputStream;
 public class JarRewriter {
 
     /**
-     * Add or replace entries in an existing JAR
+     * Add or replace a manifest and entries in an existing JAR
      *
      * @param existingJar bytes of a .jar file (may be null or empty to behave like create)
      * @param manifest an optional new manifest if <code>null</code> the existing will be copied.
@@ -271,6 +271,5 @@ public class JarRewriter {
                 ? new JarOutputStream(out, manifest)
                 : new JarOutputStream(out);
     }
-
 
 }

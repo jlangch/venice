@@ -54,8 +54,14 @@ public class AutoRunScriptJarRewriter {
         Objects.ensureNotNull(scriptVersion);
         Objects.ensureNotNull(script);
 
+        final String scriptMeta = String.format(
+                                    "script-name=%s\nscript-version=%s\n",
+                                    scriptName,
+                                    scriptVersion);
+
         final Map<String, byte[]> additions = new HashMap<>();
         additions.put("auto/" + scriptName + ".venice", script.getBytes(StandardCharsets.UTF_8));
+        additions.put("auto/" + scriptName + ".meta", scriptMeta.getBytes(StandardCharsets.UTF_8));
 
         final Manifest manifest = JarRewriter.manifest(scriptName, scriptVersion, Launcher.class.getName());
 
