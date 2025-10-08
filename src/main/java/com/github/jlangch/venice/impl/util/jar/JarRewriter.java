@@ -42,6 +42,7 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+// https://stackoverflow.com/questions/62313791/replacing-the-manifest-mf-file-in-a-jar-programmatically
 
 public class JarRewriter {
 
@@ -49,12 +50,14 @@ public class JarRewriter {
      * Add or replace entries in an existing JAR
      *
      * @param existingJar bytes of a .jar file (may be null or empty to behave like create)
+     * @param manifest an optional new manifest if <code>null</code> the existing will be copied.
      * @param additions map of "path/inside.jar" -> bytes; paths use forward slashes.
      * @return the modified jar
      * @throws IOException
      */
     public static byte[] addToJar(
             final byte[] existingJar,
+            final Manifest manifest,
             final Map<String, byte[]> additions
     ) throws IOException {
         if (existingJar == null || existingJar.length == 0) {
@@ -69,7 +72,9 @@ public class JarRewriter {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream(existingJar.length + 16 * 1024);
         try (JarInputStream jis = new JarInputStream(new ByteArrayInputStream(existingJar));
-             JarOutputStream jos = copyManifestFirstIfPresent(jis, out)) {
+             JarOutputStream jos = manifest == null
+                                    ? copyManifestFirstIfPresent(jis, out)
+                                    : replaceManifestFirst(manifest, jis, out)) {
 
             long fixedTime = 0L;
             jos.setLevel(Deflater.DEFAULT_COMPRESSION);
@@ -178,7 +183,6 @@ public class JarRewriter {
         return out.toByteArray();
     }
 
-
     public static Manifest manifest(
             final String appName,
             final String version,
@@ -216,7 +220,7 @@ public class JarRewriter {
         additions.put("README.txt", "Hello JAR!\n".getBytes(StandardCharsets.UTF_8));
         additions.put("config/app.properties", "env=prod\n".getBytes(StandardCharsets.UTF_8));
 
-        byte[] updatedJar = addToJar(jar, additions);
+        byte[] updatedJar = addToJar(jar, null, additions);
 
         // Optional: quick sanity check — list entries
         try (ZipInputStream zin = new ZipInputStream(new ByteArrayInputStream(updatedJar))) {
@@ -257,5 +261,16 @@ public class JarRewriter {
                 ? new JarOutputStream(out, mf)
                 : new JarOutputStream(out);
     }
+
+    private static JarOutputStream replaceManifestFirst(
+            final Manifest manifest,
+            final JarInputStream jis,
+            final ByteArrayOutputStream out
+    ) throws IOException {
+        return manifest != null
+                ? new JarOutputStream(out, manifest)
+                : new JarOutputStream(out);
+    }
+
 
 }

@@ -102,7 +102,7 @@ public class AutoRunScriptLauncher {
     }
 
     private static String loadAutoRunScript() {
-        final String script = new ClassPathResource("scripts/autorun.venice")
+        final String script = new ClassPathResource("auto/autorun.venice")
                                        .getResourceAsString("UTF-8");
         if (script == null) {
             throw new VncException("Failed to load embedded auto run script!");
@@ -113,7 +113,7 @@ public class AutoRunScriptLauncher {
 
     private static String loadAutoRunScriptName() {
         try {
-            final String data = new ClassPathResource("scripts/autorun.meta")
+            final String data = new ClassPathResource("auto/autorun.meta")
                                            .getResourceAsString("UTF-8");
 
             final String line = trimToEmpty(first(splitIntoLines(data)));
