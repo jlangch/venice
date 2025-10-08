@@ -31,6 +31,7 @@ import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.UUIDHelper;
+import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
@@ -51,7 +52,7 @@ public class Protocol {
         Objects.requireNonNull(message);
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(40);
+        final ByteBuffer header = ByteBuffer.allocate(42);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -61,6 +62,8 @@ public class Protocol {
         header.putInt(message.getType().getValue());
         // 2 bytes (short) oneway
         header.putShort(message.isOneway() ? (short)1 : (short)0);
+        // 2 bytes (short) compressed data
+        header.putShort(message.isCompressedData() ? (short)1 : (short)0);
         // 4 bytes (integer) response status
         header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
@@ -107,7 +110,9 @@ public class Protocol {
         IO.writeFrame(ch, mimetype);
 
         // [6] payload data
-        final byte[] payloadData = message.getData();
+        final byte[] payloadData = message.isCompressedData()
+                                    ? GZipper.gzip(message.getData())
+                                    : message.getData();
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
@@ -121,7 +126,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(40);
+            final ByteBuffer header = ByteBuffer.allocate(42);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -134,6 +139,7 @@ public class Protocol {
             final int version = header.getInt();
             final int typeCode = header.getInt();
             final int oneway = header.getShort();
+            final int compressedData = header.getShort();
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
             final byte[] uuid = new byte[16];
@@ -178,7 +184,9 @@ public class Protocol {
 
             // [6] payload data
             final ByteBuffer payloadFrame = IO.readFrame(ch);
-            final byte[] data = payloadFrame.array();
+            final byte[] data = compressedData == 0
+                                    ? payloadFrame.array()
+                                    : GZipper.ungzip(payloadFrame.array());
 
             if (status == null) {
                 throw new VncException(
@@ -187,7 +195,7 @@ public class Protocol {
 
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
-                    type, status, oneway == 1,
+                    type, status, oneway == 1, false,
                     StringUtil.trimToNull(queue),
                     timestamp,
                     Topics.decode(topics),
