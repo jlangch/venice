@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Manifest;
 
-import com.github.jlangch.venice.Launcher;
+import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.AutoRunScriptLauncher;
 
 import joptsimple.internal.Objects;
 
@@ -41,18 +42,27 @@ public class AutoRunScriptJarRewriter {
      * @param existingJar bytes of a .jar file (may be null or empty to behave like create)
      * @param additions map of "path/inside.jar" -> bytes; paths use forward slashes.
      * @return the modified jar
-     * @throws IOException
+     * @throws IOException if the jar can not be created
      */
     public static byte[] makeAutoRunVeniceJar(
             final byte[] existingVeniceJar,
             final String scriptName,
             final String scriptVersion,
             final String script
-    ) throws IOException {
+    ) {
         Objects.ensureNotNull(existingVeniceJar);
         Objects.ensureNotNull(scriptName);
         Objects.ensureNotNull(scriptVersion);
         Objects.ensureNotNull(script);
+
+        if (!scriptName.matches("[a-zA-Z0-9-]+")) {
+            throw new VncException(
+                    "A script name must only contain the characters a-z, A-Z, 0-9, or '-'");
+        }
+        if (!scriptVersion.matches("[a-zA-Z0-9-.]+")) {
+            throw new VncException(
+                    "A script name must only contain the characters a-z, A-Z, 0-9, '-', or '.'");
+        }
 
         final String scriptMeta = String.format(
                                     "script-name=%s\nscript-version=%s\n",
@@ -63,9 +73,16 @@ public class AutoRunScriptJarRewriter {
         additions.put("auto/" + scriptName + ".venice", script.getBytes(StandardCharsets.UTF_8));
         additions.put("auto/" + scriptName + ".meta", scriptMeta.getBytes(StandardCharsets.UTF_8));
 
-        final Manifest manifest = JarRewriter.manifest(scriptName, scriptVersion, Launcher.class.getName());
-
-        return JarRewriter.addToJar(existingVeniceJar, manifest, additions);
+        try {
+            final Manifest manifest = JarRewriter.manifest(
+                                        scriptName,
+                                        scriptVersion,
+                                        AutoRunScriptLauncher.class.getName());
+            return JarRewriter.addToJar(existingVeniceJar, manifest, additions);
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to create the JAR", ex);
+        }
     }
 
 }
