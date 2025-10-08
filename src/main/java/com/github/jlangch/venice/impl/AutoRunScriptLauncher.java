@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.jar.AutoRunScriptJarRewriter;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
 
@@ -102,7 +103,7 @@ public class AutoRunScriptLauncher {
     }
 
     private static String loadAutoRunScript() {
-        final String script = new ClassPathResource("auto/autorun.venice")
+        final String script = new ClassPathResource(AutoRunScriptJarRewriter.AUTORUN_SCRIPT_PATH)
                                        .getResourceAsString("UTF-8");
         if (script == null) {
             throw new VncException("Failed to load embedded auto run script!");
@@ -113,7 +114,7 @@ public class AutoRunScriptLauncher {
 
     private static String loadAutoRunScriptName() {
         try {
-            final String data = new ClassPathResource("auto/autorun.meta")
+            final String data = new ClassPathResource(AutoRunScriptJarRewriter.AUTORUN_META_PATH)
                                            .getResourceAsString("UTF-8");
 
             final String line = trimToEmpty(first(splitIntoLines(data)));

@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.util.jar;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class AutoRunScriptJarRewriter {
      * @param existingJar bytes of a .jar file (may be null or empty to behave like create)
      * @param additions map of "path/inside.jar" -> bytes; paths use forward slashes.
      * @return the modified jar
-     * @throws IOException if the jar can not be created
+     * @throws VncException if the JAR can not be created
      */
     public static byte[] makeAutoRunVeniceJar(
             final byte[] existingVeniceJar,
@@ -70,8 +69,8 @@ public class AutoRunScriptJarRewriter {
                                     scriptVersion);
 
         final Map<String, byte[]> additions = new HashMap<>();
-        additions.put("auto/" + scriptName + ".venice", script.getBytes(StandardCharsets.UTF_8));
-        additions.put("auto/" + scriptName + ".meta", scriptMeta.getBytes(StandardCharsets.UTF_8));
+        additions.put(AUTORUN_SCRIPT_PATH, script.getBytes(StandardCharsets.UTF_8));
+        additions.put(AUTORUN_META_PATH, scriptMeta.getBytes(StandardCharsets.UTF_8));
 
         try {
             final Manifest manifest = JarRewriter.manifest(
@@ -85,4 +84,7 @@ public class AutoRunScriptJarRewriter {
         }
     }
 
+
+    public static final String AUTORUN_SCRIPT_PATH = "com/github/jlangch/venice/auto/autorun.venice";
+    public static final String AUTORUN_META_PATH = "com/github/jlangch/venice/auto/autorun.meta";
 }
