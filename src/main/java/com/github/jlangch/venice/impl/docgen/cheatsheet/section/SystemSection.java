@@ -64,7 +64,7 @@ public class SystemSection implements ISectionBuilder {
 
         final DocSection autorun = new DocSection("Auto-Run", "system.auto-run");
         all.addSection(autorun);
-        autorun.addItem(diBuilder.getDocItem("auto-run-jar"));
+        autorun.addItem(diBuilder.getDocItem("auto-run-jar", false));
 
         final DocSection javaVM = new DocSection("Java VM", "system.java-vm");
         all.addSection(javaVM);
