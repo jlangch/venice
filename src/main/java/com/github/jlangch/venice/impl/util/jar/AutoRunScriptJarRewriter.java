@@ -60,13 +60,13 @@ public class AutoRunScriptJarRewriter {
     ) {
         Objects.requireNonNull(script);
 
-        if (!trimToEmpty(scriptName).matches("[a-zA-Z0-9-]+")) {
+        if (!trimToEmpty(scriptName).matches("[a-zA-Z0-9-_]+")) {
             throw new VncException(
-                    "A script name must only contain the characters a-z, A-Z, 0-9, or '-'");
+                    "A script name must only contain the characters a-z, A-Z, 0-9, '_', or '-'");
         }
-        if (!trimToEmpty(scriptVersion).matches("[a-zA-Z0-9-.]+")) {
+        if (!trimToEmpty(scriptVersion).matches("[a-zA-Z0-9-_.]+")) {
             throw new VncException(
-                    "A script name must only contain the characters a-z, A-Z, 0-9, '-', or '.'");
+                    "A script name must only contain the characters a-z, A-Z, 0-9, '_', '-', or '.'");
         }
 
         final byte[] veniceJar = existingVeniceJar != null
