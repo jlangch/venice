@@ -52,7 +52,8 @@ public class Protocol {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
 
-        final boolean compress = compressCutoffSize < 0 || message.getData().length >= compressCutoffSize;
+        final boolean compress = compressCutoffSize >= 0
+                                 && message.getData().length >= compressCutoffSize;
 
         // [1] header
         final ByteBuffer header = ByteBuffer.allocate(42);

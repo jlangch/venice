@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class IpcFunctionsTest {
@@ -54,19 +55,19 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                         \n" +
-                "  (defn echo-handler [m] m)                                 \n" +
-                "                                                            \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler          \n" +
-                "                                :compress-cutoff-size -1)   \n" +
-                "             client (ipc/client \"localhost\" 33333         \n" +
-                "                                :compress-cutoff-size -1)]  \n" +
-                "    (->> (ipc/plain-text-message \"test\" \"hello\")        \n" +
-                "         (ipc/send client)                                  \n" +
-                "         (ipc/message->map)                                 \n" +
-                "         (:text ))))                                        ";
+                "(do                                                                     \n" +
+                "  (defn echo-handler [m] m)                                             \n" +
+                "                                                                        \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler                      \n" +
+                "                                :compress-cutoff-size -1)               \n" +
+                "             client (ipc/client \"localhost\" 33333                     \n" +
+                "                                :compress-cutoff-size -1)]              \n" +
+                "    (->> (ipc/plain-text-message \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                              \n" +
+                "         (ipc/message->map)                                             \n" +
+                "         (:text ))))                                                    ";
 
-        assertEquals("hello", venice.eval(script));
+        assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
     }
 
     @Test
@@ -74,19 +75,19 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                         \n" +
-                "  (defn echo-handler [m] m)                                 \n" +
-                "                                                            \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler          \n" +
-                "                                :compress-cutoff-size 0)    \n" +
-                "             client (ipc/client \"localhost\" 33333         \n" +
-                "                                :compress-cutoff-size 0)]   \n" +
-                "    (->> (ipc/plain-text-message \"test\" \"hello\")        \n" +
-                "         (ipc/send client)                                  \n" +
-                "         (ipc/message->map)                                 \n" +
-                "         (:text ))))                                        ";
+                "(do                                                                     \n" +
+                "  (defn echo-handler [m] m)                                             \n" +
+                "                                                                        \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler                      \n" +
+                "                                :compress-cutoff-size 0)                \n" +
+                "             client (ipc/client \"localhost\" 33333                     \n" +
+                "                                :compress-cutoff-size 0)]               \n" +
+                "    (->> (ipc/plain-text-message \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                              \n" +
+                "         (ipc/message->map)                                             \n" +
+                "         (:text ))))                                                    ";
 
-        assertEquals("hello", venice.eval(script));
+        assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
     }
 
 
