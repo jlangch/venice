@@ -107,7 +107,7 @@ The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
 
 ## Create an executable Venice JAR
 
-The `auto-run-jar` command turns any Venice script into an executable Venice JAR.
+The `auto-run-jar` command turns any standalone Venice script into an executable Venice JAR.
 
 The auto-run-jar command takes a Venice JAR and copies it to a new JAR with a 
 modified JAR manifest that executes the script when running the JAR with: java -jar xxxx.jar
