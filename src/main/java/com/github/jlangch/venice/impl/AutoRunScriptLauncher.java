@@ -44,12 +44,6 @@ import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
 /**
  * Auto run script laucher
- *
- * <p>This launcher is configured as the Venice JAR's main-class by the
- * JAR rewriter to make a Venice script runnable.
- *
- * <p>Running scripts:
- * <pre>java -jar venice-1.12.56.jar"</pre>
  */
 public class AutoRunScriptLauncher {
 
