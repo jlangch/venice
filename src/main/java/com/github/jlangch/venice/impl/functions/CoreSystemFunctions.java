@@ -417,15 +417,30 @@ public class CoreSystemFunctions {
                     .arglists(
                         "(auto-run-jar script-name script-version script save-to)")
                     .doc(
-                        "Turn any Venice script into an auto-run Venice JAR.\n\n")
+                        "Turns any Venice script into an executable Venice JAR.\n\n" +
+                        "The `auto-run-jar` command takes a Venice JAR and copies it to a new JAR " +
+                        "with a modified JAR manifest that executes the script when running " +
+                        "the JAR with: `java -jar xxxx.jar`\n\n" +
+                        "The created JAR name will be: {script-name}.jar \n\n" +
+                        "Any command line parameters will be available as `*ARGV*` list in " +
+                        "script.")
                     .examples(
-                        ";; java -jar {path-to-jar}/example.jar\n" +
-                        "(let [script \"\"\"(println \"sum:\" (+ 1 2)))\"\"\"] \n" +
-                        "  (auto-run-jar \"example\" \"1.0\" script \".\"))    ",
-                        ";; java -jar {path-to-jar}/example.jar 1 2 \n" +
-                        "(let [script \"\"\"(println \"sum:\" (+ (long (first *ARGV*)) \n" +
-                        "                                   (long (second *ARGV*))))\"\"\"] \n" +
-                        "  (auto-run-jar \"example\" \"1.0\" script \".\"))                      ")
+                        ";; run the created JAR:  java -jar {path-to-jar}/example.jar  \n" +
+                        "(let [script         \"\"\"(println \"sum:\" (+ 1 2)))\"\"\"  \n" +
+                        "      script-name    \"example\"                              \n" +
+                        "      script-version \"1.0\"                                  \n" +
+                        "      dir            \".\" ]                                  \n" +
+                        "  (auto-run-jar script-name script-version script dir))       ",
+
+                        ";; run the created JAR:  java -jar {path-to-jar}/example.jar 1 2 \n" +
+                        "(let [script         \"\"\"\n" +
+                        "                     (println \"sum:\" (+ (long (first *ARGV*)) \n" +
+                        "                                        (long (second *ARGV*)))) \n" +
+                        "                     \"\"\"] \n" +
+                        "      script-name    \"example\"                              \n" +
+                        "      script-version \"1.0\"                                  \n" +
+                        "      dir            \".\" ]                                  \n" +
+                        "  (auto-run-jar script-name script-version script dir))                      ")
                     .build()
         ) {
             @Override
