@@ -90,6 +90,25 @@ public class IpcFunctionsTest {
         assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
     }
 
+    @Test
+    public void test_send_receive_size_compress() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                     \n" +
+                "  (defn echo-handler [m] m)                                             \n" +
+                "                                                                        \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler                      \n" +
+                "                                :compress-cutoff-size :2KB)             \n" +
+                "             client (ipc/client \"localhost\" 33333                     \n" +
+                "                                :compress-cutoff-size :2KB)]            \n" +
+                "    (->> (ipc/plain-text-message \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                              \n" +
+                "         (ipc/message->map)                                             \n" +
+                "         (:text ))))                                                    ";
+
+        assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
+    }
 
     @Test
     public void test_thread_based_eval() {
