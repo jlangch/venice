@@ -93,7 +93,7 @@ public class TcpClient implements Closeable {
     }
 
     /**
-     * Set the compress cutoff size for payload messages.
+     * Set the compression cutoff size for payload messages.
      *
      * <p>With a negative cutoff size payload messages will not be compressed.
      * If the payload message size is greater than the cutoff size it will be

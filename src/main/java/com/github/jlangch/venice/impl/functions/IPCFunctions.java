@@ -85,7 +85,7 @@ public class IPCFunctions {
                                                    " Defaults to `200MB`.¶" +
                                                    " The max size can be specified as a number like `20000`" +
                                                    " or a number with a unit like `:20KB`, or `:20MB`|\n" +
-                        "| :compress-cutoff-size n | The compress cutoff size for payload messages.¶" +
+                        "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the cutoff" +
                                                    " size it will be compressed.¶" +
@@ -199,7 +199,7 @@ public class IPCFunctions {
                                                    " Defaults to `200MB`.¶" +
                                                    " The max size can be specified as a number like `20000`" +
                                                    " or a number with a unit like `:20KB`, or `:20MB`|\n" +
-                        "| :compress-cutoff-size n | The compress cutoff size for payload messages.¶" +
+                        "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the cutoff" +
                                                    " size it will be compressed.¶" +
