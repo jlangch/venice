@@ -4,8 +4,7 @@
 All notable changes to this project will be documented in this file.
 
 
-
-## [1.12.57] - 2025-10-xx
+## [1.12.58] - 2025-10-xx
 
 ### Added
 
@@ -15,7 +14,13 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
-- IPC: implemented optional payload message compression
+
+
+## [1.12.57] - 2025-10-xx
+
+### Added
+
+- IPC: optional payload message compression
 
 ### Removed
 
