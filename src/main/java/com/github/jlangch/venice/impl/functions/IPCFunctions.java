@@ -84,14 +84,14 @@ public class IPCFunctions {
                         "| :max-message-size n     | The max size of the message payload." +
                                                    " Defaults to `200MB`.¶" +
                                                    " The max size can be specified as a number like `20000`" +
-                                                   " or a number with a unit like `:20KB`, or `:20MB`|\n" +
+                                                   " or a number with a unit like `:20KB` or `:20MB`|\n" +
                         "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the cutoff" +
                                                    " size it will be compressed.¶" +
                                                    " Defaults to -1 (no compression)¶" +
                                                    " The cutoff size can be specified as a number like `1000`" +
-                                                   " or a number with a unit like `:1KB`, or `:2MB`|\n\n" +
+                                                   " or a number with a unit like `:1KB` or `:2MB`|\n\n" +
                         "**The server must be closed after use!**")
                     .examples(
                         "(do                                                     \n" +
@@ -200,14 +200,14 @@ public class IPCFunctions {
                         "| :max-message-size n     | The max size of the message payload." +
                                                    " Defaults to `200MB`.¶" +
                                                    " The max size can be specified as a number like `20000`" +
-                                                   " or a number with a unit like `:20KB`, or `:20MB`|\n" +
+                                                   " or a number with a unit like `:20KB` or `:20MB`|\n" +
                         "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the cutoff" +
                                                    " size it will be compressed.¶" +
                                                    " Defaults to -1 (no compression)¶" +
                                                    " The cutoff size can be specified as a number like `1000`" +
-                                                   " or a number with a unit like `:1KB`, or `:2MB`|\n\n" +
+                                                   " or a number with a unit like `:1KB` or `:2MB`|\n\n" +
                         "**The client must be closed after use!**")
                     .examples(
                         "(do                                                               \n" +
