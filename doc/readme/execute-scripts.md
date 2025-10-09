@@ -112,7 +112,7 @@ The `auto-run-jar` command turns any standalone Venice script into an executable
 The `auto-run-jar` command takes a Venice JAR and copies it to a new JAR with a 
 modified JAR manifest that executes the script when running the JAR with: `java -jar xxx.jar`
 
-The JAR name will be created as: `{path-to-ja}/{script-name}.jar`
+The JAR name will be created as: `{path-to-jar}/{script-name}.jar`
 
 Any command line parameters will be available as `*ARGV*` list in script.
 
