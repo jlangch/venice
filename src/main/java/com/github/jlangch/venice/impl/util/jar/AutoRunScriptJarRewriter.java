@@ -31,12 +31,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.jar.Manifest;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.AutoRunScriptLauncher;
 
-import joptsimple.internal.Objects;
 
 
 public class AutoRunScriptJarRewriter {
@@ -58,7 +58,7 @@ public class AutoRunScriptJarRewriter {
             final String scriptVersion,
             final String script
     ) {
-        Objects.ensureNotNull(script);
+        Objects.requireNonNull(script);
 
         if (!trimToEmpty(scriptName).matches("[a-zA-Z0-9-]+")) {
             throw new VncException(
@@ -114,7 +114,7 @@ public class AutoRunScriptJarRewriter {
             final String script,
             final Path saveTo
     ) {
-        Objects.ensureNotNull(saveTo);
+        Objects.requireNonNull(saveTo);
         if (!saveTo.toFile().isDirectory()) {
             throw new VncException(
                     "The destination directory '" + saveTo.toString() + "' does not exist!");
