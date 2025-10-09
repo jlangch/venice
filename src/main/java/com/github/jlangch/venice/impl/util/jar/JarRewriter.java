@@ -197,8 +197,8 @@ public class JarRewriter {
         mf.getMainAttributes().put(Attributes.Name.SPECIFICATION_TITLE, appName);
         mf.getMainAttributes().put(Attributes.Name.SPECIFICATION_VERSION, version);
         mf.getMainAttributes().put(Attributes.Name.MAIN_CLASS, mainClass);
-        mf.getMainAttributes().put("Application-Name", appName);
-        mf.getMainAttributes().put("Build-Date", now);
+        mf.getMainAttributes().put(new Attributes.Name("Application-Name"), appName);
+        mf.getMainAttributes().put(new Attributes.Name("Build-Date"), now);
         return mf;
     }
 

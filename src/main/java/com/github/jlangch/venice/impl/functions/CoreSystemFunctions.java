@@ -23,7 +23,9 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +35,7 @@ import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -43,6 +46,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.jar.AutoRunScriptJarRewriter;
 
 
 public class CoreSystemFunctions {
@@ -405,6 +409,43 @@ public class CoreSystemFunctions {
         };
 
 
+    public static VncFunction auto_run_jar =
+        new VncFunction(
+                "auto-run-jar",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(auto-run-jar script-name script-version script save-to)")
+                    .doc(
+                        "Create an auto-run Venice JAR.")
+                    .examples(
+                         "(auto-run-jar \"example\" \"1.0\" \"(+ 1 2)\" \".\")",
+                         "(auto-run-jar \"example\" \"1.0\" \"(+ (first *ARGV*) (second *ARGV*))\" \".\")")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 4);
+
+                final byte[] existingVeniceJar = null;
+                final String scriptName = Coerce.toVncString(args.first()).getValue();
+                final String scriptVersion = Coerce.toVncString(args.second()).getValue();
+                final String script = Coerce.toVncString(args.third()).getValue();
+                final Path saveTo = convertToPath(args.fourth());
+
+                return new VncJavaObject(
+                    AutoRunScriptJarRewriter.createAndSaveAutoRunVeniceJar(
+                            existingVeniceJar,
+                            scriptName,
+                            scriptVersion,
+                            script,
+                            saveTo));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
 
     private static TimeUnit toTimeUnit(final VncKeyword unit) {
         switch(unit.getValue()) {
@@ -439,6 +480,21 @@ public class CoreSystemFunctions {
         }
     }
 
+    private static Path convertToPath(final VncVal f) {
+        if (Types.isVncString(f)) {
+            return new File(((VncString)f).getValue()).toPath();
+        }
+        else if (Types.isVncJavaObject(f, File.class)) {
+            return Coerce.toVncJavaObject(f, File.class).toPath();
+        }
+        else if (Types.isVncJavaObject(f, Path.class)) {
+            return Coerce.toVncJavaObject(f, Path.class);
+        }
+        else {
+            return null;
+        }
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -456,6 +512,7 @@ public class CoreSystemFunctions {
                     .add(sleep)
                     .add(version)
                     .add(charset_default_encoding)
+                    .add(auto_run_jar)
                     .toMap();
 
 
