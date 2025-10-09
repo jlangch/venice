@@ -419,8 +419,10 @@ public class CoreSystemFunctions {
                     .doc(
                         "Create an auto-run Venice JAR.")
                     .examples(
+                         ";; java -jar {path-to-jar}/example.jar\n" +
                          "(let [script \"\"\"(println \"sum:\" (+ 1 2)))\"\"\"] \n" +
                          "  (auto-run-jar \"example\" \"1.0\" script \".\"))    ",
+                         ";; java -jar {path-to-jar}/example.jar 1 2 \n" +
                          "(let [script \"\"\"(println \"sum:\" (+ (long (first *ARGV*)) \n" +
                          "                                   (long (second *ARGV*))))\"\"\"] \n" +
                          "  (auto-run-jar \"example\" \"1.0\" script \".\"))                      ")
