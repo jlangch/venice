@@ -89,7 +89,9 @@ public class IPCFunctions {
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the cutoff" +
                                                    " size it will be compressed.¶" +
-                                                   " Defaults to -1 (no compression)|\n\n" +
+                                                   " Defaults to -1 (no compression)¶" +
+                                                   " The cutoff size can be specified as a number like `1000`" +
+                                                   " or a number with a unit like `:1KB`, or `:2MB`|\n\n" +
                         "**The server must be closed after use!**")
                     .examples(
                         "(do                                                     \n" +
@@ -203,7 +205,9 @@ public class IPCFunctions {
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the cutoff" +
                                                    " size it will be compressed.¶" +
-                                                   " Defaults to -1 (no compression)|\n\n" +
+                                                   " Defaults to -1 (no compression)¶" +
+                                                   " The cutoff size can be specified as a number like `1000`" +
+                                                   " or a number with a unit like `:1KB`, or `:2MB`|\n\n" +
                         "**The client must be closed after use!**")
                     .examples(
                         "(do                                                               \n" +
