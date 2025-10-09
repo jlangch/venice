@@ -58,7 +58,6 @@ public class AutoRunScriptJarRewriter {
             final String scriptVersion,
             final String script
     ) {
-        Objects.ensureNotNull(existingVeniceJar);
         Objects.ensureNotNull(script);
 
         if (!trimToEmpty(scriptName).matches("[a-zA-Z0-9-]+")) {
@@ -165,6 +164,8 @@ public class AutoRunScriptJarRewriter {
     }
 
 
-    public static final String AUTORUN_SCRIPT_PATH = "com/github/jlangch/venice/auto/autorun.venice";
-    public static final String AUTORUN_META_PATH = "com/github/jlangch/venice/auto/autorun.meta";
+    private static final String BASE_PATH = "com/github/jlangch/venice/auto/";
+
+    public static final String AUTORUN_SCRIPT_PATH = BASE_PATH + "autorun.venice";
+    public static final String AUTORUN_META_PATH = BASE_PATH + "autorun.meta";
 }
