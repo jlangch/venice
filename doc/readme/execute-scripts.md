@@ -4,7 +4,7 @@
 * [Load the script from a file and run it](#load-the-script-from-a-file-and-run-it)
 * [Using command line arguments](#using-command-line-arguments)
 * [Passing a load-path](#passing-a-load-path)
-
+* [Create an executable Venice JAR](#create-an-executable-venice-jar)
 
 
 
@@ -103,5 +103,50 @@ foo> java -jar libs/venice-1.12.57.jar -file script.venice -loadpath "/users/foo
 ```
 
 The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
+
+
+## Create an executable Venice JAR
+
+The `auto-run-jar` command turns any Venice script into an executable Venice JAR.
+
+The auto-run-jar command takes a Venice JAR and copies it to a new JAR with a 
+modified JAR manifest that executes the script when running the JAR with: java -jar xxxx.jar
+
+The JAR name will be created as: {path-to-ja}/{script-name}.jar
+
+Any command line parameters will be available as *ARGV* list in script.
+
+Run these examples from a REPL:
+
+
+**Example 1**
+
+```clojure
+   ;; create the executable JAR
+   (let [script         """(println "sum:" (+ 1 2)))"""
+         script-name    "example"
+         script-version "1.0"
+         path-to-jar    "." ] 
+     (auto-run-jar script-name script-version script path-to-jar))
+```
+
+From a shell run: `java -jar {path-to-jar}/example.jar`
+
+
+**Example 2**
+
+```clojure
+   ;; run the created JAR:  java -jar {path-to-jar}/example.jar 1 2 
+   (let [script         """
+                        (println "sum:" (+ (long (first *ARGV*)) 
+                                           (long (second *ARGV*)))) 
+                        """] 
+         script-name    "example"
+         script-version "1.0" 
+         path-to-jar    "." ]
+     (auto-run-jar script-name script-version script path-to-jar))
+```
+
+From a shell run: `java -jar {path-to-jar}/example.jar 1 2`
 
 
