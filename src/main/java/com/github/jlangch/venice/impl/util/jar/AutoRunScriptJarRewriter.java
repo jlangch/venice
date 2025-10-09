@@ -21,7 +21,14 @@
  */
 package com.github.jlangch.venice.impl.util.jar;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
+
+import java.io.File;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Manifest;
@@ -31,37 +38,41 @@ import com.github.jlangch.venice.impl.AutoRunScriptLauncher;
 
 import joptsimple.internal.Objects;
 
-// https://stackoverflow.com/questions/62313791/replacing-the-manifest-mf-file-in-a-jar-programmatically
 
 public class AutoRunScriptJarRewriter {
 
     /**
-     * Add or replace entries in an existing JAR
+     * Create an auto-run Venice JAR
      *
-     * @param existingJar bytes of a .jar file (may be null or empty to behave like create)
-     * @param additions map of "path/inside.jar" -> bytes; paths use forward slashes.
-     * @return the modified jar
-     * @throws VncException if the JAR can not be created
+     * @param existingJar bytes of a .jar. Maybe <code>null</code> in which case
+     *                    this JAR Venice will be used
+     * @param scriptName the script name. E.g.: "avscan"
+     * @param scriptVersion the script version. E.g.: "1.0"
+     * @param script the script
+     * @return the jar
+     * @throws VncException on errors
      */
-    public static byte[] makeAutoRunVeniceJar(
+    public static byte[] createAutoRunVeniceJar(
             final byte[] existingVeniceJar,
             final String scriptName,
             final String scriptVersion,
             final String script
     ) {
         Objects.ensureNotNull(existingVeniceJar);
-        Objects.ensureNotNull(scriptName);
-        Objects.ensureNotNull(scriptVersion);
         Objects.ensureNotNull(script);
 
-        if (!scriptName.matches("[a-zA-Z0-9-]+")) {
+        if (!trimToEmpty(scriptName).matches("[a-zA-Z0-9-]+")) {
             throw new VncException(
                     "A script name must only contain the characters a-z, A-Z, 0-9, or '-'");
         }
-        if (!scriptVersion.matches("[a-zA-Z0-9-.]+")) {
+        if (!trimToEmpty(scriptVersion).matches("[a-zA-Z0-9-.]+")) {
             throw new VncException(
                     "A script name must only contain the characters a-z, A-Z, 0-9, '-', or '.'");
         }
+
+        final byte[] veniceJar = existingVeniceJar != null
+                                    ? existingVeniceJar
+                                    : loadThisVeniceJar();
 
         final String scriptMeta = String.format(
                                     "script-name=%s\nscript-version=%s\n",
@@ -77,10 +88,79 @@ public class AutoRunScriptJarRewriter {
                                         scriptName,
                                         scriptVersion,
                                         AutoRunScriptLauncher.class.getName());
-            return JarRewriter.addToJar(existingVeniceJar, manifest, additions);
+            return JarRewriter.addToJar(veniceJar, manifest, additions);
         }
         catch(Exception ex) {
             throw new VncException("Failed to create the JAR", ex);
+        }
+    }
+
+
+    /**
+     * Create an auto-run Venice JAR and save it to a directory.
+     *
+     * @param existingJar bytes of a .jar. Maybe <code>null</code> in which case
+     *                    this JAR Venice will be used
+     * @param scriptName the script name. E.g.: "avscan"
+     * @param scriptVersion the script version. E.g.: "1.0"
+     * @param script the script
+     * @param saveTo the destination directory
+     * @return the path of the saved JAR
+     * @throws VncException on errors
+     */
+    public static Path createAndSaveAutoRunVeniceJar(
+            final byte[] existingVeniceJar,
+            final String scriptName,
+            final String scriptVersion,
+            final String script,
+            final Path saveTo
+    ) {
+        Objects.ensureNotNull(saveTo);
+        if (!saveTo.toFile().isDirectory()) {
+            throw new VncException(
+                    "The destination directory '" + saveTo.toString() + "' does not exist!");
+        }
+
+        final byte[] veniceJar = existingVeniceJar != null
+                                    ? existingVeniceJar
+                                    : loadThisVeniceJar();
+
+        return saveTo(
+                createAutoRunVeniceJar(veniceJar, scriptName, scriptVersion, script),
+                scriptName,
+                saveTo);
+    }
+
+
+    public static byte[] loadThisVeniceJar() {
+        try {
+            final URI uri = AutoRunScriptJarRewriter
+                                 .class
+                                 .getProtectionDomain()
+                                 .getCodeSource()
+                                 .getLocation()
+                                 .toURI();
+
+            return Files.readAllBytes(new File(uri).toPath());
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to load Venice JAR!", ex);
+        }
+    }
+
+
+    private static Path saveTo(
+            final byte[] jar,
+            final String scriptName,
+            final Path saveTo
+    ) {
+        try {
+            final Path dest = Paths.get(saveTo.toString(), scriptName + ".jar");
+            Files.write(dest, jar);
+            return dest;
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to save new JAR!", ex);
         }
     }
 
