@@ -46,10 +46,13 @@ public class Protocol {
 
     public static void sendMessage(
             final SocketChannel ch,
-            final Message message
+            final Message message,
+            final long compressCutoffSize
     ) {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
+
+        final boolean compress = compressCutoffSize < 0 || message.getData().length >= compressCutoffSize;
 
         // [1] header
         final ByteBuffer header = ByteBuffer.allocate(42);
@@ -63,7 +66,7 @@ public class Protocol {
         // 2 bytes (short) oneway
         header.putShort(message.isOneway() ? (short)1 : (short)0);
         // 2 bytes (short) compressed data
-        header.putShort(message.isCompressedData() ? (short)1 : (short)0);
+        header.putShort(compress ? (short)1 : (short)0);
         // 4 bytes (integer) response status
         header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
@@ -110,7 +113,7 @@ public class Protocol {
         IO.writeFrame(ch, mimetype);
 
         // [6] payload data
-        final byte[] payloadData = message.isCompressedData()
+        final byte[] payloadData = compress
                                     ? GZipper.gzip(message.getData())
                                     : message.getData();
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
@@ -195,7 +198,7 @@ public class Protocol {
 
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
-                    type, status, oneway == 1, false,
+                    type, status, oneway == 1,
                     StringUtil.trimToNull(queue),
                     timestamp,
                     Topics.decode(topics),

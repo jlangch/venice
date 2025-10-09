@@ -32,6 +32,65 @@ import com.github.jlangch.venice.Venice;
 public class IpcFunctionsTest {
 
     @Test
+    public void test_send_receive() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                     \n" +
+                "  (defn echo-handler [m] m)                             \n" +
+                "                                                        \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
+                "             client (ipc/client \"localhost\" 33333)]   \n" +
+                "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
+                "         (ipc/send client)                              \n" +
+                "         (ipc/message->map)                             \n" +
+                "         (:text ))))                                    ";
+
+        assertEquals("hello", venice.eval(script));
+    }
+
+    @Test
+    public void test_send_receive_no_compress() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                         \n" +
+                "  (defn echo-handler [m] m)                                 \n" +
+                "                                                            \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler          \n" +
+                "                                :compress-cutoff-size -1)   \n" +
+                "             client (ipc/client \"localhost\" 33333         \n" +
+                "                                :compress-cutoff-size -1)]  \n" +
+                "    (->> (ipc/plain-text-message \"test\" \"hello\")        \n" +
+                "         (ipc/send client)                                  \n" +
+                "         (ipc/message->map)                                 \n" +
+                "         (:text ))))                                        ";
+
+        assertEquals("hello", venice.eval(script));
+    }
+
+    @Test
+    public void test_send_receive_always_compress() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                         \n" +
+                "  (defn echo-handler [m] m)                                 \n" +
+                "                                                            \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler          \n" +
+                "                                :compress-cutoff-size 0)    \n" +
+                "             client (ipc/client \"localhost\" 33333         \n" +
+                "                                :compress-cutoff-size 0)]   \n" +
+                "    (->> (ipc/plain-text-message \"test\" \"hello\")        \n" +
+                "         (ipc/send client)                                  \n" +
+                "         (ipc/message->map)                                 \n" +
+                "         (:text ))))                                        ";
+
+        assertEquals("hello", venice.eval(script));
+    }
+
+
+    @Test
     public void test_thread_based_eval() {
         final Venice venice = new Venice();
 

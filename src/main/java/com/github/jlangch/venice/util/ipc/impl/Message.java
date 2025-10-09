@@ -73,7 +73,6 @@ public class Message implements IMessage {
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
-        this.compressedData = false;
         this.data = data;
     }
 
@@ -82,7 +81,6 @@ public class Message implements IMessage {
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
-            final boolean compressData,
             final String queueName,
             final long timestamp,
             final Topics topics,
@@ -108,7 +106,6 @@ public class Message implements IMessage {
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
-        this.compressedData = compressData;
         this.data = data;
     }
 
@@ -126,32 +123,13 @@ public class Message implements IMessage {
             final MessageType type,
             final boolean oneway
     ) {
-        return withType(type, oneway, false);
-    }
-
-
-    /**
-     * Change the type of a message and oneway mode.
-     *
-     * <p>Removes the queue name on the message.
-     *
-     * @param type a type
-     * @param oneway oneway mode
-     * @param compressData compress payload data for wire transfer
-     * @return a new message with the topic
-     */
-    public Message withType(
-            final MessageType type,
-            final boolean oneway,
-            final boolean compressData
-    ) {
         Objects.requireNonNull(type);
         return new Message(
                 id,
-                type, responseStatus, oneway, compressedData,
-                null, timestamp,
+                type, responseStatus, oneway,
+                queueName, timestamp,
                 topics, mimetype, charset, data);
-    }
+  }
 
     /**
      * Change the response status of a message
@@ -163,7 +141,7 @@ public class Message implements IMessage {
         Objects.requireNonNull(responseStatus);
         return new Message(
                 id,
-                type, responseStatus, oneway, compressedData,
+                type, responseStatus, oneway,
                 queueName, timestamp,
                 topics, mimetype, charset, data);
     }
@@ -231,10 +209,6 @@ public class Message implements IMessage {
     @Override
     public String getCharset() {
         return charset;
-    }
-
-    public boolean isCompressedData() {
-        return compressedData;
     }
 
     @Override
@@ -415,6 +389,5 @@ public class Message implements IMessage {
     private final Topics topics;
     private final String mimetype;
     private final String charset;
-    private final boolean compressedData;
     private final byte[] data;
 }

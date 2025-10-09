@@ -79,12 +79,17 @@ public class IPCFunctions {
                                      " message. In case of a one-way request message the server discards" +
                                      " the handler's response if it is not `nil`.|\n\n" +
                         "*Options:* \n\n" +
-                        "| :max-connections n  | The number of the max connections the server can handle" +
-                                               " in parallel. Defaults to 20.|\n" +
-                        "| :max-message-size n | The max size of the message payload." +
-                                               " Defaults to `200MB`.¶" +
-                                               " The max size can be specified as a number like `20000`" +
-                                               " or a number with a unit like `:20KB`, or `:20MB`|\n\n" +
+                        "| :max-connections n      | The number of the max connections the server can handle" +
+                                                   " in parallel. Defaults to 20.|\n" +
+                        "| :max-message-size n     | The max size of the message payload." +
+                                                   " Defaults to `200MB`.¶" +
+                                                   " The max size can be specified as a number like `20000`" +
+                                                   " or a number with a unit like `:20KB`, or `:20MB`|\n" +
+                        "| :compress-cutoff-size n | The compress cutoff size for payload messages.¶" +
+                                                   " With a negative cutoff size payload messages will not be" +
+                                                   " compressed. If the payload message size is greater than the cutoff" +
+                                                   " size it will be compressed.¶" +
+                                                   " Defaults to -1 (no compression)|\n\n" +
                         "**The server must be closed after use!**")
                     .examples(
                         "(do                                                     \n" +
@@ -128,12 +133,14 @@ public class IPCFunctions {
                 final VncHashMap options = VncHashMap.ofAll(args.slice(2));
                 final VncVal maxConnVal = options.get(new VncKeyword("max-connections"));
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
+                final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
 
                 final int maxConn = maxConnVal == Nil
                                         ? 0
                                         : Coerce.toVncLong(maxConnVal).getIntValue();
 
                 final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
+                final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -156,6 +163,10 @@ public class IPCFunctions {
 
                 if (maxMsgSize > 0) {
                     server.setMaximumMessageSize(maxMsgSize);
+                }
+
+                if (compressCutoffSize >= 0) {
+                    server.setCompressCutoffSize(compressCutoffSize);
                 }
 
                 server.start(handlerWrapper);
@@ -182,12 +193,17 @@ public class IPCFunctions {
                         "| port p | The server's TCP/IP port |\n" +
                         "| host h | The server's TCP/IP host |\n\n" +
                         "*Options:* \n\n" +
-                        "| :max-parallel-tasks n | The max number of parallel tasks (e.g. sending async messages)" +
-                                                 " the client can handle. Defaults to 10. |\n" +
-                        "| :max-message-size n   | The max size of the message payload." +
-                                                 " Defaults to `200MB`.¶" +
-                                                 " The max size can be specified as a number like `20000`" +
-                                                 " or a number with a unit like `:20KB`, or `:20MB`|\n\n" +
+                        "| :max-parallel-tasks n   | The max number of parallel tasks (e.g. sending async messages)" +
+                                                   " the client can handle. Defaults to 10. |\n" +
+                        "| :max-message-size n     | The max size of the message payload." +
+                                                   " Defaults to `200MB`.¶" +
+                                                   " The max size can be specified as a number like `20000`" +
+                                                   " or a number with a unit like `:20KB`, or `:20MB`|\n" +
+                        "| :compress-cutoff-size n | The compress cutoff size for payload messages.¶" +
+                                                   " With a negative cutoff size payload messages will not be" +
+                                                   " compressed. If the payload message size is greater than the cutoff" +
+                                                   " size it will be compressed.¶" +
+                                                   " Defaults to -1 (no compression)|\n\n" +
                         "**The client must be closed after use!**")
                     .examples(
                         "(do                                                               \n" +
@@ -228,7 +244,7 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1, 2);
+                ArityExceptions.assertMinArity(this, args, 1);
 
                 if ( args.size() == 1) {
                     final int port = Coerce.toVncLong(args.first()).getIntValue();
@@ -246,12 +262,14 @@ public class IPCFunctions {
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
                     final VncVal maxParallelTasksVal = options.get(new VncKeyword("max-parallel-tasks"));
                     final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
+                    final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
 
                     final int maxParallelTasks = maxParallelTasksVal == Nil
                                                       ? 0
                                                       : Coerce.toVncLong(maxParallelTasksVal).getIntValue();
 
                     final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
+                    final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
 
                     final TcpClient client = new TcpClient(host, port);
 
@@ -261,6 +279,10 @@ public class IPCFunctions {
 
                     if (maxMsgSize > 0) {
                         client.setMaximumMessageSize(maxMsgSize);
+                    }
+
+                    if (compressCutoffSize >= 0) {
+                        client.setCompressCutoffSize(compressCutoffSize);
                     }
 
                     client.open();
@@ -1470,6 +1492,7 @@ public class IPCFunctions {
                         "  * `:topic`\n" +
                         "  * `:mimetype`\n" +
                         "  * `:charset`\n" +
+                        "  * `:text` (only set if there is a messsage charset defined)\n" +
                         "  * `:data`\n")
                     .examples(
                         "(->> (ipc/text-message \"test\"                          \n" +

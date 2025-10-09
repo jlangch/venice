@@ -90,6 +90,30 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * Set the compress cutoff size for payload messages.
+     *
+     * <p>With a negative cutoff size payload messages will not be compressed.
+     * If the payload message size is greater than the cutoff size it will be
+     * compressed.
+     *
+     * <p>Defaults to -1 (no compression)
+     *
+     * @param cutoffSize the compress cutoff size in bytes
+     * @return this server
+     */
+    public TcpServer setCompressCutoffSize(final long cutoffSize) {
+        compressCutoffSize.set(cutoffSize);
+        return this;
+    }
+
+    /**
+     * @return return the server's payload message compression cutoff size
+     */
+    public long getCompressCutoffSize() {
+        return compressCutoffSize.get();
+    }
+
+    /**
      * Set the maximum message size.
      *
      * <p>Defaults to 200 MB
@@ -308,6 +332,7 @@ public class TcpServer implements Closeable {
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
+    private final AtomicLong compressCutoffSize = new AtomicLong(-1);
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();

@@ -93,6 +93,30 @@ public class TcpClient implements Closeable {
     }
 
     /**
+     * Set the compress cutoff size for payload messages.
+     *
+     * <p>With a negative cutoff size payload messages will not be compressed.
+     * If the payload message size is greater than the cutoff size it will be
+     * compressed.
+     *
+     * <p>Defaults to -1 (no compression)
+     *
+     * @param cutoffSize the compress cutoff size in bytes
+     * @return this server
+     */
+    public TcpClient setCompressCutoffSize(final long cutoffSize) {
+        compressCutoffSize.set(cutoffSize);
+        return this;
+    }
+
+    /**
+     * @return return the client's payload message compression cutoff size
+     */
+    public long getCompressCutoffSize() {
+        return compressCutoffSize.get();
+    }
+
+    /**
      * Set the maximum message size.
      *
      * <p>Defaults to 200 MB
@@ -308,7 +332,7 @@ public class TcpClient implements Closeable {
         if (subscription.compareAndSet(false, true)) {
             try {
                 final Callable<Message> task = () -> {
-                    Protocol.sendMessage(ch, subscribeMsg);
+                    Protocol.sendMessage(ch, subscribeMsg, compressCutoffSize.get());
                     messageSentCount.incrementAndGet();
 
                     final Message response = Protocol.receiveMessage(ch);
@@ -419,7 +443,6 @@ public class TcpClient implements Closeable {
                                 MessageType.OFFER,
                                 ResponseStatus.NULL,
                                 false,
-                                false,
                                 queueName,
                                 -1,
                                 ((Message)msg).getTopics(),
@@ -457,7 +480,6 @@ public class TcpClient implements Closeable {
                                 MessageType.POLL,
                                 ResponseStatus.NULL,
                                 false,
-                                false,
                                 queueName,
                                 -1,
                                 Topics.of("queue/poll"),
@@ -488,7 +510,7 @@ public class TcpClient implements Closeable {
             return localResponse;
         }
 
-        Protocol.sendMessage(ch, (Message)msg);
+        Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get());
         messageSentCount.incrementAndGet();
 
         if (msg.isOneway()) {
@@ -563,7 +585,7 @@ public class TcpClient implements Closeable {
         }
 
         final Callable<IMessage> task = () -> {
-            Protocol.sendMessage(ch, (Message)msg);
+            Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get());
             messageSentCount.incrementAndGet();
 
             if (msg.isOneway()) {
@@ -651,6 +673,7 @@ public class TcpClient implements Closeable {
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
     private final AtomicBoolean subscription = new AtomicBoolean(false);
+    private final AtomicLong compressCutoffSize = new AtomicLong(-1);
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong messageSentCount = new AtomicLong(0L);
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);

@@ -172,7 +172,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
             // [3] Send response
             if (response != null && !request.isOneway()) {
-                Protocol.sendMessage(ch, response);
+                Protocol.sendMessage(ch, response, server.getCompressCutoffSize());
             }
 
             return State.Request_Response;
@@ -209,7 +209,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         if (msg != null) {
             statistics.incrementPublishCount();
-            Protocol.sendMessage(ch, msg.withType(MessageType.REQUEST, true));
+            Protocol.sendMessage(ch, msg.withType(MessageType.REQUEST, true), server.getCompressCutoffSize());
         }
 
         return State.Publish;
@@ -265,7 +265,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
             createPlainTextResponseMessage(
                 ResponseStatus.OK,
                 request.getTopic(),
-                "Subscribed to the topic."));
+                "Subscribed to the topic."),
+            server.getCompressCutoffSize());
     }
 
     private void handlePublish(final Message request) {
@@ -278,7 +279,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
             createPlainTextResponseMessage(
                 ResponseStatus.OK,
                 request.getTopic(),
-                "Message has been enqued to publish."));
+                "Message has been enqued to publish."),
+            server.getCompressCutoffSize());
     }
 
     private void handleOffer(final Message request) throws InterruptedException {
@@ -292,7 +294,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                         ResponseStatus.OK,
                         request.getTopic(),
-                        "Offered the message to the queue."));
+                        "Offered the message to the queue."),
+                    server.getCompressCutoffSize());
             }
             else {
                 Protocol.sendMessage(
@@ -300,7 +303,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                         ResponseStatus.QUEUE_FULL,
                         request.getTopic(),
-                        "Offer rejected! The queue is full."));
+                        "Offer rejected! The queue is full."),
+                    server.getCompressCutoffSize());
             }
         }
         else {
@@ -309,7 +313,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 createPlainTextResponseMessage(
                     ResponseStatus.QUEUE_NOT_FOUND,
                     request.getTopic(),
-                    "Offer rejected! The queue does not exist."));
+                    "Offer rejected! The queue does not exist."),
+                server.getCompressCutoffSize());
         }
     }
 
@@ -322,7 +327,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                Protocol.sendMessage(
                    ch,
                    msg.withType(MessageType.RESPONSE, true)
-                      .withResponseStatus(ResponseStatus.OK));
+                      .withResponseStatus(ResponseStatus.OK),
+                   server.getCompressCutoffSize());
             }
             else {
                 Protocol.sendMessage(
@@ -330,7 +336,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                         ResponseStatus.QUEUE_EMPTY,
                         request.getTopic(),
-                        "Poll rejected! The queue is empty."));
+                        "Poll rejected! The queue is empty."),
+                    server.getCompressCutoffSize());
             }
         }
         else {
@@ -339,19 +346,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 createPlainTextResponseMessage(
                     ResponseStatus.QUEUE_NOT_FOUND,
                     request.getTopic(),
-                    "Poll rejected! The queue does not exist."));
+                    "Poll rejected! The queue does not exist."),
+                server.getCompressCutoffSize());
         }
     }
 
     private void handleTcpServerRequest(final Message request) {
         if ("tcp-server/status".equals(request.getTopic())) {
-            Protocol.sendMessage(ch, getTcpServerStatus());
+            Protocol.sendMessage(ch, getTcpServerStatus(), server.getCompressCutoffSize());
         }
         else if ("tcp-server/thread-pool-statistics".equals(request.getTopic())) {
-            Protocol.sendMessage(ch, getTcpServerThreadPoolStatistics());
+            Protocol.sendMessage(ch, getTcpServerThreadPoolStatistics(), server.getCompressCutoffSize());
         }
         else if ("tcp-server/error".equals(request.getTopic())) {
-            Protocol.sendMessage(ch, getTcpServerNextError());
+            Protocol.sendMessage(ch, getTcpServerNextError(), server.getCompressCutoffSize());
         }
         else {
             Protocol.sendMessage(
@@ -363,7 +371,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                       + "Valid topics are:\n"
                       + "  • tcp-server/status\n"
                       + "  • tcp-server/thread-pool-statistics\n"
-                      + "  • tcp-server/error\n"));
+                      + "  • tcp-server/error\n"),
+                server.getCompressCutoffSize());
         }
     }
 
@@ -384,7 +393,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                        ResponseStatus.BAD_REQUEST,
                        request.getTopic(),
-                       "Bad request type: " + request.getType().name()));
+                       "Bad request type: " + request.getType().name()),
+                    server.getCompressCutoffSize());
             }
         }
         else {
@@ -418,7 +428,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private void sendTooLargeMessageResponse(final Message request) {
         Protocol.sendMessage(
             ch,
-            createTooLargeErrorMessageResponse(request));
+            createTooLargeErrorMessageResponse(request),
+            server.getCompressCutoffSize());
     }
 
     private Message getTcpServerStatus() {
