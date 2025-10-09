@@ -417,15 +417,15 @@ public class CoreSystemFunctions {
                     .arglists(
                         "(auto-run-jar script-name script-version script save-to)")
                     .doc(
-                        "Create an auto-run Venice JAR.")
+                        "Turn any Venice script into an auto-run Venice JAR.\n\n")
                     .examples(
-                         ";; java -jar {path-to-jar}/example.jar\n" +
-                         "(let [script \"\"\"(println \"sum:\" (+ 1 2)))\"\"\"] \n" +
-                         "  (auto-run-jar \"example\" \"1.0\" script \".\"))    ",
-                         ";; java -jar {path-to-jar}/example.jar 1 2 \n" +
-                         "(let [script \"\"\"(println \"sum:\" (+ (long (first *ARGV*)) \n" +
-                         "                                   (long (second *ARGV*))))\"\"\"] \n" +
-                         "  (auto-run-jar \"example\" \"1.0\" script \".\"))                      ")
+                        ";; java -jar {path-to-jar}/example.jar\n" +
+                        "(let [script \"\"\"(println \"sum:\" (+ 1 2)))\"\"\"] \n" +
+                        "  (auto-run-jar \"example\" \"1.0\" script \".\"))    ",
+                        ";; java -jar {path-to-jar}/example.jar 1 2 \n" +
+                        "(let [script \"\"\"(println \"sum:\" (+ (long (first *ARGV*)) \n" +
+                        "                                   (long (second *ARGV*))))\"\"\"] \n" +
+                        "  (auto-run-jar \"example\" \"1.0\" script \".\"))                      ")
                     .build()
         ) {
             @Override

@@ -62,6 +62,10 @@ public class SystemSection implements ISectionBuilder {
         java.addItem(diBuilder.getDocItem("java-major-version"));
         java.addItem(diBuilder.getDocItem("java-source-location", false));
 
+        final DocSection autorun = new DocSection("Auto-Run", "system.auto-run");
+        all.addSection(autorun);
+        autorun.addItem(diBuilder.getDocItem("auto-run-jar"));
+
         final DocSection javaVM = new DocSection("Java VM", "system.java-vm");
         all.addSection(javaVM);
         javaVM.addItem(diBuilder.getDocItem("pid"));
