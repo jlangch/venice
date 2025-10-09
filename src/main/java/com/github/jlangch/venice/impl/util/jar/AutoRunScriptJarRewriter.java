@@ -127,7 +127,7 @@ public class AutoRunScriptJarRewriter {
         return saveTo(
                 createAutoRunVeniceJar(veniceJar, scriptName, scriptVersion, script),
                 scriptName,
-                saveTo);
+                saveTo).normalize().toAbsolutePath();
     }
 
 
