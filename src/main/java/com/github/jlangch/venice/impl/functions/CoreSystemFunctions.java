@@ -426,7 +426,7 @@ public class CoreSystemFunctions {
                         "script.")
                     .examples(
                         ";; run the created JAR:  java -jar {path-to-jar}/example.jar  \n" +
-                        "(let [script         \"\"\"(println \"sum:\" (+ 1 2)))\"\"\"  \n" +
+                        "(let [script         \"\"\"(println \"sum:\" (+ 1 2))\"\"\"   \n" +
                         "      script-name    \"example\"                              \n" +
                         "      script-version \"1.0\"                                  \n" +
                         "      dir            \".\" ]                                  \n" +

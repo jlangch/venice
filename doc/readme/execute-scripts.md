@@ -123,7 +123,7 @@ Run these examples from a REPL:
 
 ```clojure
    ;; create the executable JAR
-   (let [script         """(println "sum:" (+ 1 2)))"""
+   (let [script         """(println "sum:" (+ 1 2))"""
          script-name    "example"
          script-version "1.0"
          path-to-jar    "." ] 
