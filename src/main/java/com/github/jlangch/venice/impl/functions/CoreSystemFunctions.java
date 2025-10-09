@@ -417,12 +417,12 @@ public class CoreSystemFunctions {
                     .arglists(
                         "(auto-run-jar script-name script-version script save-to)")
                     .doc(
-                        "Turns any Venice script into an executable Venice JAR.\n\n" +
+                        "Turns any standalone Venice script into an executable Venice JAR.\n\n" +
                         "The `auto-run-jar` command takes a Venice JAR and copies it to a new JAR " +
                         "with a modified JAR manifest that executes the script when running " +
                         "the JAR with: `java -jar xxxx.jar`\n\n" +
                         "The created JAR name will be: {script-name}.jar \n\n" +
-                        "Any command line parameters will be available as `*ARGV*` list in " +
+                        "The command line parameters will be available as `*ARGV*` list in the " +
                         "script.")
                     .examples(
                         ";; run the created JAR:  java -jar {path-to-jar}/example.jar  \n" +

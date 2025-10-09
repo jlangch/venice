@@ -114,7 +114,7 @@ modified JAR manifest that executes the script when running the JAR with: `java 
 
 The JAR name will be created as: `{path-to-jar}/{script-name}.jar`
 
-Any command line parameters will be available as `*ARGV*` list in script.
+The command line parameters will be available as `*ARGV*` list in the script.
 
 Run these examples from a REPL:
 
