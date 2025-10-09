@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- IPC: optional payload message compression
+- IPC: optional payload message gzip compression
 
 ### Removed
 
