@@ -66,11 +66,11 @@ public class Protocol {
         header.putInt(PROTOCOL_VERSION);
         // 4 bytes (integer) message type
         header.putInt(message.getType().getValue());
-        // 2 bytes (short) oneway
+        // 2 bytes (short) oneway flag
         header.putShort(toShort(message.isOneway()));
-        // 2 bytes (short) compressed data
+        // 2 bytes (short) compressed data flag
         header.putShort(toShort(compress));
-        // 2 bytes (short) encrypted data
+        // 2 bytes (short) encrypted data flag
         header.putShort(toShort(encryptor.isActive()));
         // 4 bytes (integer) response status
         header.putInt(message.getResponseStatus().getValue());
@@ -79,7 +79,6 @@ public class Protocol {
         // 16 bytes UUID
         header.put(UUIDHelper.convertUUIDToBytes(message.getId()));
         header.flip();
-
         IO.writeFully(ch, header);
 
         // [2] charset frame
@@ -141,13 +140,14 @@ public class Protocol {
 
             header.flip();
 
+            // parse header
             final byte magic1 = header.get();
             final byte magic2 = header.get();
             final int version = header.getInt();
             final int typeCode = header.getInt();
-            final int oneway = header.getShort();
-            final int compressedData = header.getShort();
-            final int encryptedData = header.getShort();
+            final boolean oneway = toBool(header.getShort());
+            final boolean compressedData = toBool(header.getShort());
+            final boolean encryptedData = toBool(header.getShort());
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
             final byte[] uuid = new byte[16];
@@ -194,8 +194,8 @@ public class Protocol {
             final ByteBuffer payloadFrame = IO.readFrame(ch);
             byte[] data = postProcessPayloadDataFromReceive(
                                 payloadFrame.array(),
-                                toBool(compressedData),
-                                toBool(encryptedData),
+                                compressedData,
+                                encryptedData,
                                 encryptor);
 
             if (status == null) {
@@ -205,7 +205,7 @@ public class Protocol {
 
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
-                    type, status, oneway == 1,
+                    type, status, oneway,
                     StringUtil.trimToNull(queue),
                     timestamp,
                     Topics.decode(topics),
@@ -260,7 +260,7 @@ public class Protocol {
             data = encryptor.decrypt(data);
         }
 
-        // decrompress
+        // decompress
         if (compressed) {
             data =  GZipper.ungzip(data);
         }
