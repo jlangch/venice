@@ -25,9 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
-
 
 public class DiffieHellmanKeysTest {
 

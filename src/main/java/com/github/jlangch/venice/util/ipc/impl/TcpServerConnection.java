@@ -27,10 +27,13 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
+import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -68,6 +71,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
         this.errorBuffer = new ErrorCircularBuffer<>(ERROR_QUEUE_CAPACITY);
         this.p2pQueues = p2pQueues;
+
+        this.dhKeys = DiffieHellmanKeys.create();
     }
 
     @Override
@@ -135,7 +140,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
               || isRequestPublish(request)
               || isRequestSubscribe(request)
               || isRequestOffer(request)
-              || isRequestPoll(request))
+              || isRequestPoll(request)
+              || isRequestDiffieHellman(request))
         ) {
             handleInvalidRequestType(request);
             return mode;
@@ -195,6 +201,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
             // switch to publish mode for this connections
             return State.Publish;
+        }
+        else if (isRequestDiffieHellman(request)) {
+            handleDiffieHellmanKeyExchange(request);
+
+            return State.Request_Response;
         }
         else {
             // should not get here
@@ -373,6 +384,42 @@ public class TcpServerConnection implements IPublisher, Runnable {
                       + "  • tcp-server/thread-pool-statistics\n"
                       + "  • tcp-server/error\n"),
                 server.getCompressCutoffSize());
+        }
+    }
+
+    private void handleDiffieHellmanKeyExchange(final Message request) {
+        if (dhSecret.get() != null) {
+            Protocol.sendMessage(
+                    ch,
+                    createPlainTextResponseMessage(
+                       ResponseStatus.DIFFIE_HELLMAN_NAK,
+                       request.getTopic(),
+                       "Error: Diffie-Hellman keys already exchanged!"),
+                    server.getCompressCutoffSize());
+        }
+        else {
+            try {
+                final String clientPublicKey = request.getText();
+                dhSecret.set(dhKeys.generateSharedSecret(clientPublicKey));
+
+                // send the server's public key back
+                Protocol.sendMessage(
+                        ch,
+                        createPlainTextResponseMessage(
+                           ResponseStatus.DIFFIE_HELLMAN_ACK,
+                           request.getTopic(),
+                           dhKeys.getPublicKeyBase64()),
+                        server.getCompressCutoffSize());
+            }
+            catch(Exception ex) {
+                Protocol.sendMessage(
+                        ch,
+                        createPlainTextResponseMessage(
+                           ResponseStatus.DIFFIE_HELLMAN_NAK,
+                           request.getTopic(),
+                           "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage()),
+                        server.getCompressCutoffSize());
+            }
         }
     }
 
@@ -562,6 +609,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return msg.getType() == MessageType.POLL;
     }
 
+    private static boolean isRequestDiffieHellman(final Message msg) {
+        return msg.getType() == MessageType.DIFFIE_HELLMAN_KEY_REQUEST;
+    }
+
     private static byte[] toBytes(final String s, final String charset) {
         return s.getBytes(Charset.forName(charset));
     }
@@ -575,6 +626,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private final TcpServer server;
     private final SocketChannel ch;
+    private final DiffieHellmanKeys dhKeys;
+    private final AtomicReference<DiffieHellmanSharedSecret> dhSecret = new AtomicReference<>();
     private final Function<IMessage,IMessage> handler;
     private final AtomicLong maxMessageSize;
     private final Subscriptions subscriptions;

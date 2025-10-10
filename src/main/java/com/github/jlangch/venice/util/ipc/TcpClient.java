@@ -44,6 +44,8 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
+import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
@@ -91,10 +93,7 @@ public class TcpClient implements Closeable {
         this.port = port;
         this.encrypt = encrypt;
         this.endpointId = UUID.randomUUID().toString();
-
-        if (encrypt) {
-            initEncryption();
-        }
+        this.dhKeys = DiffieHellmanKeys.create();
     }
 
 
@@ -193,6 +192,21 @@ public class TcpClient implements Closeable {
                 throw new VncException(
                         "Failed to open TcpClient for server " + host + "/" + port + "!",
                         ex);
+            }
+
+            if (encrypt) {
+                try {
+                    diffieHellmanKeyExchange();
+                }
+                catch(Exception ex) {
+                    IO.safeClose(ch);
+                    opened.set(false);
+                    channel.set(null);
+                    throw new VncException(
+                            "Failed to open TcpClient for server " + host + "/" + port +
+                            "! Diffie-Hellman key exchange error!",
+                            ex);
+                }
             }
         }
         else {
@@ -641,6 +655,34 @@ public class TcpClient implements Closeable {
         return response;
     }
 
+    private void diffieHellmanKeyExchange() {
+        final String clientPublicKey = dhKeys.getPublicKeyBase64();
+
+        final IMessage m = ((Message)MessageFactory
+                                .text(
+                                    "diffie-hellman-key-exchange",
+                                    "text/plain",
+                                    "UTF-8",
+                                    clientPublicKey))
+                                .withType(MessageType.DIFFIE_HELLMAN_KEY_REQUEST, false);
+
+        // send the client's public key to the server
+        final Message response = (Message)send(m, 2, TimeUnit.SECONDS);
+
+        if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
+            // successfully exchanged keys
+            final String serverPublicKey = response.getText();
+            dhSecret.set(dhKeys.generateSharedSecret(serverPublicKey));
+        }
+        else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
+            // server rejects key exchange
+            throw new VncException("Error: The server rejected the Diffie-Hellman key exchange!");
+        }
+        else {
+            throw new VncException("Failed to process Diffie-Hellman key exchange!");
+        }
+    }
+
     private Message handleClientLocalMessage(final IMessage request) {
         if ("client/thread-pool-statistics".equals(request.getTopic())) {
             // answer locally
@@ -662,10 +704,6 @@ public class TcpClient implements Closeable {
                 "application/json",
                 "UTF-8",
                 toBytes(Json.writeJson(statistics, false), "UTF-8"));
-    }
-
-    private void initEncryption() {
-        throw new VncException("Transport level encryption is not yet implemented");
     }
 
     private void validateMessageSize(final IMessage msg) {
@@ -691,7 +729,6 @@ public class TcpClient implements Closeable {
 
     private final String host;
     private final int port;
-    private final boolean encrypt;
     private final String endpointId;
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
@@ -700,6 +737,11 @@ public class TcpClient implements Closeable {
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong messageSentCount = new AtomicLong(0L);
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
+
+    // encryption
+    private final boolean encrypt;
+    private final DiffieHellmanKeys dhKeys;
+    private final AtomicReference<DiffieHellmanSharedSecret> dhSecret = new AtomicReference<>();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);

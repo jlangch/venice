@@ -34,8 +34,8 @@ public enum ResponseStatus {
     QUEUE_EMPTY(11),
     QUEUE_FULL(12),
 
-    DIFFIE_HELLMAN_KEY(20),
-    DIFFIE_HELLMAN_ERROR(21),
+    DIFFIE_HELLMAN_ACK(20),
+    DIFFIE_HELLMAN_NAK(21),
 
     NULL(99);
 
