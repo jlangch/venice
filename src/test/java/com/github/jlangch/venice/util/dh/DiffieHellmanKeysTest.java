@@ -19,14 +19,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.imp.util;
+package com.github.jlangch.venice.util.dh;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.util.ipc.impl.util.DiffieHellmanKeys;
-import com.github.jlangch.venice.util.ipc.impl.util.DiffieHellmanSharedSecret;
+import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
+import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
 public class DiffieHellmanKeysTest {

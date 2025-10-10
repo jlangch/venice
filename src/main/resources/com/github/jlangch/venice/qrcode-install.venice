@@ -39,10 +39,24 @@
     "com.google.zxing:javase:3.5.3" ] )
 
 
-                
-
 (defn dependencies []
   (maven/dependencies (libraries) :scope :runtime))
+
+
+(defn installed? 
+  ([] (installed? true))
+  ([throw-ex?]
+    (when-not? (exists-class? :com.google.zxing.Reader)
+      (if throw-ex?
+        (throw :VncException 
+               """Dependency "com.google.zxing:core:3.5.3" is not installed!""")
+        false))
+    (when-not? (exists-class? :com.google.zxing.client.j2se.ImageReader)
+      (if throw-ex?
+        (throw :VncException 
+                """Dependency "com.google.zxing:javase:3.5.3" is not installed!""")
+        false))
+    true))
 
 
 (defn
