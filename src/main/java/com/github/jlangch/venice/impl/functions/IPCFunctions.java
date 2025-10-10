@@ -215,23 +215,23 @@ public class IPCFunctions {
                                                    " algorithm.|\n\n" +
                         "**The client must be closed after use!**")
                     .examples(
-                        "(do                                                               \n" +
-                        "  (defn echo-handler [m]                                          \n" +
-                        "    (println \"REQUEST:  \" (ipc/message->map m))                 \n" +
-                        "    m)                                                            \n" +
-                        "                                                                  \n" +
-                        "  (defn send [client msg]                                         \n" +
-                        "    (->> (ipc/send client msg)                                    \n" +
-                        "         (ipc/message->map)                                       \n" +
-                        "         (println \"RESPONSE: \")))                               \n" +
-                        "                                                                  \n" +
-                        "  (try-with [server   (ipc/server 33333 echo-handler)             \n" +
-                        "             client-1 (ipc/client 33333)                          \n" +
-                        "             client-2 (ipc/client \"localhost\" 33333)            \n" +
-                        "             client-3 (ipc/client :localhost 33333)]              \n" +
-                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello\"))   \n" +
-                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello\"))   \n" +
-                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello\")))) ")
+                        "(do                                                                             \n" +
+                        "  (defn echo-handler [m]                                                        \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))                               \n" +
+                        "    m)                                                                          \n" +
+                        "                                                                                \n" +
+                        "  (defn send [client msg]                                                       \n" +
+                        "    (->> (ipc/send client msg)                                                  \n" +
+                        "         (ipc/message->map)                                                     \n" +
+                        "         (println \"RESPONSE: \")))                                             \n" +
+                        "                                                                                \n" +
+                        "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
+                        "             client-1 (ipc/client 33333)                                        \n" +
+                        "             client-2 (ipc/client \"localhost\" 33333 :compress-cutoff-size 0)  \n" +
+                        "             client-3 (ipc/client :localhost 33333 :encrypt true)]              \n" +
+                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
+                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
+                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello\"))))               ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
@@ -488,17 +488,17 @@ public class IPCFunctions {
                         "         (ipc/send client)                                        \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
-                 .seeAlso(
-                     "ipc/client",
-                     "ipc/server",
-                     "ipc/close",
-                     "ipc/running?",
-                     "ipc/send-async",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/venice-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
+                    .seeAlso(
+                        "ipc/client",
+                        "ipc/server",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -542,17 +542,17 @@ public class IPCFunctions {
                         "             client (ipc/client \"localhost\" 33333)]    \n" +
                         "    (->> (ipc/plain-text-message \"test\" \"hello\")     \n" +
                         "         (ipc/send-oneway client))))                     ")
-                 .seeAlso(
-                     "ipc/client",
-                     "ipc/server",
-                     "ipc/close",
-                     "ipc/running?",
-                     "ipc/send-async",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/venice-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
+                    .seeAlso(
+                        "ipc/client",
+                        "ipc/server",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/send-async",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -686,15 +686,15 @@ public class IPCFunctions {
                         "                                                                               \n" +
                         "    ;; print server status and statistics                                      \n" +
                         "    (locking mutex (println \"STATUS:\" (ipc/server-status client-3)))))       ")
-                 .seeAlso(
-                     "ipc/publish",
-                     "ipc/client",
-                     "ipc/server",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/venice-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
+                    .seeAlso(
+                        "ipc/publish",
+                        "ipc/client",
+                        "ipc/server",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -791,15 +791,15 @@ public class IPCFunctions {
                         "                                                                               \n" +
                         "    ;; print server status and statistics                                      \n" +
                         "    (locking mutex (println \"STATUS:\"(ipc/server-status client-2)))))        ")
-                 .seeAlso(
-                     "ipc/subscribe",
-                     "ipc/client",
-                     "ipc/server",
-                     "ipc/text-message",
-                     "ipc/plain-text-message",
-                     "ipc/venice-message",
-                     "ipc/binary-message",
-                     "ipc/message->map")
+                    .seeAlso(
+                        "ipc/subscribe",
+                        "ipc/client",
+                        "ipc/server",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
                     .build()
         ) {
             @Override
@@ -982,12 +982,12 @@ public class IPCFunctions {
                         "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "         (ipc/send client))                                       \n" +
                         "    (println \"STATUS:\" (ipc/server-status client))))            ")
-                 .seeAlso(
-                     "ipc/server-thread-pool-statistics",
-                     "ipc/server",
-                     "ipc/close",
-                     "ipc/running?")
-                    .build()
+                     .seeAlso(
+                         "ipc/server-thread-pool-statistics",
+                         "ipc/server",
+                         "ipc/close",
+                         "ipc/running?")
+                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -1039,13 +1039,13 @@ public class IPCFunctions {
                         "    (->> (ipc/plain-text-message \"test\" \"hello\")                  \n" +
                         "         (ipc/send client))                                           \n" +
                         "    (println \"STATS:\" (ipc/server-thread-pool-statistics client)))) ")
-                 .seeAlso(
-                     "ipc/server-status",
-                     "ipc/server",
-                     "ipc/client",
-                     "ipc/close",
-                     "ipc/running?")
-                    .build()
+                     .seeAlso(
+                         "ipc/server-status",
+                         "ipc/server",
+                         "ipc/client",
+                         "ipc/close",
+                         "ipc/running?")
+                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -1096,10 +1096,10 @@ public class IPCFunctions {
                         "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
                         "         (ipc/send client))                                       \n" +
                         "    (println (ipc/client-thread-pool-statistics client))))        ")
-                 .seeAlso(
-                     "ipc/client",
-                     "ipc/close",
-                     "ipc/running?")
+                    .seeAlso(
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?")
                     .build()
         ) {
             @Override
@@ -1683,7 +1683,7 @@ public class IPCFunctions {
                         "         (ipc/response-ok?))))                                    ")
                     .seeAlso(
                         "ipc/oneway?",
-                         "ipc/response-err?",
+                        "ipc/response-err?",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
