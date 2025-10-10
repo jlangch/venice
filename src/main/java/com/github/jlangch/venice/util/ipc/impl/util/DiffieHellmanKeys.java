@@ -74,11 +74,8 @@ public class DiffieHellmanKeys {
 
 
     public String getPublicKeyBase64() {
-        return Base64.getEncoder().encodeToString(getPublicKey());
-    }
-
-    public byte[] getPublicKey() {
-        return keyPair.getPublic().getEncoded();
+        final byte[] key = keyPair.getPublic().getEncoded();
+        return Base64.getEncoder().encodeToString(key);
     }
 
 
