@@ -14,13 +14,18 @@ All notable changes to this project will be documented in this file.
 - :openai module support for assistant run api (...)
 - :openai module support for assistant run steps api (...)
 
+### Added
+
+- optional AES-256-GCM encryption for IPC message transport. 
+  The encryption passphrase is generated using the Diffie–Hellman key 
+  exchange algorithm.
 
 
 ## [1.12.57] - 2025-10-09
 
 ### Added
 
-- IPC: optional payload message gzip compression
+- IPC messaging: message payload data can be gzip compressed
 
 ### Removed
 
