@@ -37,6 +37,7 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.Error;
 import com.github.jlangch.venice.util.ipc.impl.util.ErrorCircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;

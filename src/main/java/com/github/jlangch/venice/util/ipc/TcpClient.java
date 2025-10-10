@@ -45,11 +45,11 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
-import com.github.jlangch.venice.util.ipc.impl.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
+import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 

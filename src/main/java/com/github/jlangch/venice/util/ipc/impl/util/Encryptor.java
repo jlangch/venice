@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl;
+package com.github.jlangch.venice.util.ipc.impl.util;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
@@ -34,19 +34,19 @@ public class Encryptor {
 
     public byte[] encrypt(final byte[] data) {
         try {
-            return FileEncryptor_AES256_GCM.encryptFileWithKey(secret.getSecret(), data);
+            return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(secret.getSecretBase64(), data);
         }
         catch(Exception ex) {
-            throw new VncException("Failed to encrypt message payload data");
+            throw new VncException("Failed to encrypt message payload data", ex);
         }
     }
 
     public byte[] decrypt(final byte[] data) {
         try {
-            return FileEncryptor_AES256_GCM.decryptFileWithKey(secret.getSecret(), data);
+            return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(secret.getSecretBase64(), data);
         }
         catch(Exception ex) {
-            throw new VncException("Failed to decrypt message payload data");
+            throw new VncException("Failed to decrypt message payload data", ex);
         }
     }
 

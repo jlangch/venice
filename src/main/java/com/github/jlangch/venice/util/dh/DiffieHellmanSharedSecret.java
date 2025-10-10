@@ -21,17 +21,25 @@
  */
 package com.github.jlangch.venice.util.dh;
 
+import java.util.Base64;
+
 
 public class DiffieHellmanSharedSecret {
 
     public DiffieHellmanSharedSecret(final byte[] secret) {
         this.secret = secret;
+        this.secretBase64 = Base64.getEncoder().encodeToString(secret);
     }
 
     public byte[] getSecret() {
         return secret;
     }
 
+    public String getSecretBase64() {
+        return secretBase64;
+    }
+
 
     private final byte[] secret;
+    private final String secretBase64;
 }
