@@ -1711,7 +1711,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/oneway? message)")
+                        "(ipc/response-err? message)")
                     .doc(
                         "Returns `true` if the message has a response error status else `false`.")
                     .examples(
