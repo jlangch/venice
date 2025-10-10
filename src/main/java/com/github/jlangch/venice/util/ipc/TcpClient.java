@@ -45,7 +45,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
+import com.github.jlangch.venice.util.ipc.impl.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
@@ -672,7 +672,7 @@ public class TcpClient implements Closeable {
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys
             final String serverPublicKey = response.getText();
-            dhSecret.set(dhKeys.generateSharedSecret(serverPublicKey));
+            encryptor.set(new Encryptor(dhKeys.generateSharedSecret(serverPublicKey)));
         }
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
@@ -741,7 +741,7 @@ public class TcpClient implements Closeable {
     // encryption
     private final boolean encrypt;
     private final DiffieHellmanKeys dhKeys;
-    private final AtomicReference<DiffieHellmanSharedSecret> dhSecret = new AtomicReference<>();
+    private final AtomicReference<Encryptor> encryptor = new AtomicReference<>();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);

@@ -33,7 +33,6 @@ import java.util.function.Supplier;
 
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -388,7 +387,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private void handleDiffieHellmanKeyExchange(final Message request) {
-        if (dhSecret.get() != null) {
+        if (encryptor.get() != null) {
             Protocol.sendMessage(
                     ch,
                     createPlainTextResponseMessage(
@@ -400,7 +399,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else {
             try {
                 final String clientPublicKey = request.getText();
-                dhSecret.set(dhKeys.generateSharedSecret(clientPublicKey));
+                encryptor.set(new Encryptor(dhKeys.generateSharedSecret(clientPublicKey)));
 
                 // send the server's public key back
                 Protocol.sendMessage(
@@ -626,8 +625,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private final TcpServer server;
     private final SocketChannel ch;
-    private final DiffieHellmanKeys dhKeys;
-    private final AtomicReference<DiffieHellmanSharedSecret> dhSecret = new AtomicReference<>();
     private final Function<IMessage,IMessage> handler;
     private final AtomicLong maxMessageSize;
     private final Subscriptions subscriptions;
@@ -635,6 +632,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
 
+    // encryption
+    private final DiffieHellmanKeys dhKeys;
+    private final AtomicReference<Encryptor> encryptor = new AtomicReference<>();
+
+    // queues
     private final ErrorCircularBuffer<Error> errorBuffer;
     private final LinkedBlockingQueue<Message> publishQueue;
     private final Map<String, LinkedBlockingQueue<Message>> p2pQueues;
