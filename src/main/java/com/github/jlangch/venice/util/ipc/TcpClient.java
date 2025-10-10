@@ -50,8 +50,10 @@ import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
+import com.github.jlangch.venice.util.ipc.impl.util.NullEncryptor;
 
 
 public class TcpClient implements Closeable {
@@ -365,10 +367,10 @@ public class TcpClient implements Closeable {
         if (subscription.compareAndSet(false, true)) {
             try {
                 final Callable<Message> task = () -> {
-                    Protocol.sendMessage(ch, subscribeMsg, compressCutoffSize.get());
+                    Protocol.sendMessage(ch, subscribeMsg, compressCutoffSize.get(), encryptor.get());
                     messageSentCount.incrementAndGet();
 
-                    final Message response = Protocol.receiveMessage(ch);
+                    final Message response = Protocol.receiveMessage(ch, encryptor.get());
                     messageReceiveCount.incrementAndGet();
 
                     return response;
@@ -383,7 +385,7 @@ public class TcpClient implements Closeable {
                     // start the subscription listener in this client
                     mngdExecutor
                         .getExecutor()
-                        .submit(new TcpSubscriptionListener(ch, handler));
+                        .submit(new TcpSubscriptionListener(ch, handler, encryptor));
 
                     return response;
                 }
@@ -543,14 +545,14 @@ public class TcpClient implements Closeable {
             return localResponse;
         }
 
-        Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get());
+        Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get(), encryptor.get());
         messageSentCount.incrementAndGet();
 
         if (msg.isOneway()) {
             return null;
         }
         else {
-            final Message response = Protocol.receiveMessage(ch);
+            final Message response = Protocol.receiveMessage(ch, encryptor.get());
             messageReceiveCount.incrementAndGet();
             return response;
         }
@@ -618,14 +620,14 @@ public class TcpClient implements Closeable {
         }
 
         final Callable<IMessage> task = () -> {
-            Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get());
+            Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get(), encryptor.get());
             messageSentCount.incrementAndGet();
 
             if (msg.isOneway()) {
                 return null;
             }
             else {
-                final Message response = Protocol.receiveMessage(ch);
+                final Message response = Protocol.receiveMessage(ch, encryptor.get());
                 messageReceiveCount.incrementAndGet();
                 return response;
             }
@@ -741,7 +743,7 @@ public class TcpClient implements Closeable {
     // encryption
     private final boolean encrypt;
     private final DiffieHellmanKeys dhKeys;
-    private final AtomicReference<Encryptor> encryptor = new AtomicReference<>();
+    private final AtomicReference<IEncryptor> encryptor = new AtomicReference<>(new NullEncryptor());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);

@@ -21,43 +21,21 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
-import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
-
-
-public class Encryptor implements IEncryptor {
-
-    public Encryptor(final DiffieHellmanSharedSecret secret) {
-        this.secret = secret;
-    }
-
+public class NullEncryptor implements IEncryptor {
 
     @Override
     public byte[] encrypt(final byte[] data) {
-        try {
-            return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(secret.getSecretBase64(), data);
-        }
-        catch(Exception ex) {
-            throw new VncException("Failed to encrypt message payload data", ex);
-        }
+        return data;
     }
 
     @Override
     public byte[] decrypt(final byte[] data) {
-        try {
-            return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(secret.getSecretBase64(), data);
-        }
-        catch(Exception ex) {
-            throw new VncException("Failed to decrypt message payload data", ex);
-        }
+        return data;
     }
 
     @Override
     public boolean isActive() {
-        return true;
+        return false;
     }
 
-
-    final DiffieHellmanSharedSecret secret;
 }

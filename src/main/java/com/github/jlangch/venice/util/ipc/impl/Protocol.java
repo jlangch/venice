@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
+import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
@@ -47,7 +48,8 @@ public class Protocol {
     public static void sendMessage(
             final SocketChannel ch,
             final Message message,
-            final long compressCutoffSize
+            final long compressCutoffSize,
+            final IEncryptor encryptor
     ) {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
@@ -56,7 +58,7 @@ public class Protocol {
                                  && message.getData().length >= compressCutoffSize;
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(42);
+        final ByteBuffer header = ByteBuffer.allocate(44);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -65,9 +67,11 @@ public class Protocol {
         // 4 bytes (integer) message type
         header.putInt(message.getType().getValue());
         // 2 bytes (short) oneway
-        header.putShort(message.isOneway() ? (short)1 : (short)0);
+        header.putShort(toShort(message.isOneway()));
         // 2 bytes (short) compressed data
-        header.putShort(compress ? (short)1 : (short)0);
+        header.putShort(toShort(compress));
+        // 2 bytes (short) encrypted data
+        header.putShort(toShort(encryptor.isActive()));
         // 4 bytes (integer) response status
         header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
@@ -114,9 +118,7 @@ public class Protocol {
         IO.writeFrame(ch, mimetype);
 
         // [6] payload data
-        final byte[] payloadData = compress
-                                    ? GZipper.gzip(message.getData())
-                                    : message.getData();
+        byte[] payloadData = postProcessPayloadDataForSend(message.getData(), compress, encryptor);
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
@@ -124,13 +126,14 @@ public class Protocol {
     }
 
     public static Message receiveMessage(
-            final SocketChannel ch
+            final SocketChannel ch,
+            final IEncryptor encryptor
     ) {
         Objects.requireNonNull(ch);
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(42);
+            final ByteBuffer header = ByteBuffer.allocate(44);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -144,6 +147,7 @@ public class Protocol {
             final int typeCode = header.getInt();
             final int oneway = header.getShort();
             final int compressedData = header.getShort();
+            final int encryptedData = header.getShort();
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
             final byte[] uuid = new byte[16];
@@ -188,9 +192,11 @@ public class Protocol {
 
             // [6] payload data
             final ByteBuffer payloadFrame = IO.readFrame(ch);
-            final byte[] data = compressedData == 0
-                                    ? payloadFrame.array()
-                                    : GZipper.ungzip(payloadFrame.array());
+            byte[] data = postProcessPayloadDataFromReceive(
+                                payloadFrame.array(),
+                                toBool(compressedData),
+                                toBool(encryptedData),
+                                encryptor);
 
             if (status == null) {
                 throw new VncException(
@@ -213,6 +219,61 @@ public class Protocol {
                 throw new VncException("Failed to read data from channel!", ex);
             }
         }
+    }
+
+
+    private static byte[] postProcessPayloadDataForSend(
+            final byte[] payloadData,
+            final boolean compress,
+            final IEncryptor encryptor
+    ) {
+        byte[] data = payloadData;
+
+        // compress
+        if (compress) {
+            data = GZipper.gzip(data);
+        }
+
+        // encrypt
+        if (encryptor.isActive()) {
+            data = encryptor.encrypt(data);
+        }
+
+        return data;
+    }
+
+    private static byte[] postProcessPayloadDataFromReceive(
+            final byte[] payloadData,
+            final boolean compressed,
+            final boolean encrypted,
+            final IEncryptor encryptor
+    ) {
+        byte[] data = payloadData;
+
+        // decrypt
+        if (encrypted) {
+            if (!encryptor.isActive()) {
+                throw new VncException(
+                        "Message error: the received message data is encrypted "
+                        + "but encryption is disabled!");
+            }
+            data = encryptor.decrypt(data);
+        }
+
+        // decrompress
+        if (compressed) {
+            data =  GZipper.ungzip(data);
+        }
+
+        return data;
+    }
+
+    private static boolean toBool(final int n) {
+        return n != 0;
+    }
+
+    private static short toShort(final boolean b) {
+        return b ? (short)1 : (short)0;
     }
 
 
