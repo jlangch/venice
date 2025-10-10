@@ -33,6 +33,19 @@ import java.util.Base64;
 import javax.crypto.KeyAgreement;
 
 
+/**
+ * Diffie-Hellman keys for a party (client or server)
+ *
+ * <p>Exchange a secret using Diffie-Hellman algorithm:
+ *
+ * <ol>
+ * <li>The client sends a request to the server, asking to establish a shared secret using Diffie-Hellman.
+ * <li>The server generates a private key and sends its public key to the client.
+ * <li>The client generates a private key and sends its public key to the server.
+ * <li>Both parties calculate the shared secret using their private key and the other party’s public key.
+ * <li>Both parties now have a shared secret that can be used to encrypt subsequent communication.
+ * </ol>
+ */
 public class DiffieHellmanKeys {
 
     private DiffieHellmanKeys(final KeyPair keyPair) {
