@@ -535,6 +535,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("message-size-min", TcpServer.MESSAGE_LIMIT_MIN)
                            .add("message-size-max", maxMessageSize.get())
                            .add("compression-cutoff-size", server.getCompressCutoffSize())
+                           .add("encryption", encryptor.get().isActive())
                            .toJson(false));
     }
 

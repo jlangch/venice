@@ -203,11 +203,16 @@ public class IPCFunctions {
                                                    " or a number with a unit like `:20KB` or `:20MB`|\n" +
                         "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
                                                    " With a negative cutoff size payload messages will not be" +
-                                                   " compressed. If the payload message size is greater than the cutoff" +
-                                                   " size it will be compressed.¶" +
+                                                   " compressed. If the payload message size is greater than the" +
+                                                   " cutoff size it will be compressed.¶" +
                                                    " Defaults to -1 (no compression)¶" +
                                                    " The cutoff size can be specified as a number like `1000`" +
-                                                   " or a number with a unit like `:1KB` or `:2MB`|\n\n" +
+                                                   " or a number with a unit like `:1KB` or `:2MB`|\n" +
+                        "| :encrypt b              | If `true` encrypt the payload data of all messages exchanged" +
+                                                   " between this client and its associated server.¶" +
+                                                   " The data is AES-256-GCM encrypted using a secret that is" +
+                                                   " created and exchanged using the Diffie-Hellman key exchange " +
+                                                   " algorithm.|\n\n" +
                         "**The client must be closed after use!**")
                     .examples(
                         "(do                                                               \n" +
@@ -267,6 +272,7 @@ public class IPCFunctions {
                     final VncVal maxParallelTasksVal = options.get(new VncKeyword("max-parallel-tasks"));
                     final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
                     final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
+                    final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
 
                     final int maxParallelTasks = maxParallelTasksVal == Nil
                                                       ? 0
@@ -274,8 +280,9 @@ public class IPCFunctions {
 
                     final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
                     final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
+                    final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
 
-                    final TcpClient client = new TcpClient(host, port);
+                    final TcpClient client = new TcpClient(host, port, encrypt);
 
                     if (maxParallelTasks > 0) {
                         client.setMaximumParallelTasks(maxParallelTasks);

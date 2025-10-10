@@ -122,7 +122,7 @@ public abstract class MessageFactory {
     /**
      * Create a Venice message.
      *
-     * <p>The Venice data is serialized as JSON for transport within
+     * <p>The Venice data is serialized to JSON to transport it within
      * a message
      *
      * @param topic a topic

@@ -483,7 +483,9 @@ public class TcpClient implements Closeable {
                                 ((Message)msg).getTopics(),
                                 ((Message)msg).getMimetype(),
                                 ((Message)msg).getCharset(),
-                                ((Message)msg).getData());
+                                ((Message)msg).getData(),
+                                false,
+                                false);
 
         return send(m, timeout, unit);
     }
@@ -520,7 +522,9 @@ public class TcpClient implements Closeable {
                                 Topics.of("queue/poll"),
                                 "application/octet-stream",
                                 null,
-                                new byte[0]);
+                                new byte[0],
+                                false,
+                                false);
 
         return send(m, timeout, unit);
     }

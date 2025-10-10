@@ -209,7 +209,9 @@ public class Protocol {
                     StringUtil.trimToNull(queue),
                     timestamp,
                     Topics.decode(topics),
-                    mimetype, charset, data);
+                    mimetype, charset, data,
+                    compressedData,
+                    encryptedData);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
