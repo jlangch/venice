@@ -43,6 +43,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
@@ -62,7 +63,7 @@ public class TcpClient implements Closeable {
      * @param port a port
      */
     public TcpClient(final int port) {
-        this("127.0.0.1", port);
+        this("127.0.0.1", port, false);
     }
 
     /**
@@ -73,9 +74,27 @@ public class TcpClient implements Closeable {
      * @param port a port
      */
     public TcpClient(final String host, final int port) {
-        this.host = host;
+        this(host, port, false);
+    }
+
+    /**
+     * Create a new TcpClient connecting to a TcpServer on the specified host
+     * and port
+     *
+     * @param host a host
+     * @param port a port
+     * @param encrypt if <code>true</code> encrypt the payload data at transport
+     *                level communication between this client and the server.
+     */
+    public TcpClient(final String host, final int port, final boolean encrypt) {
+        this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
         this.port = port;
+        this.encrypt = encrypt;
         this.endpointId = UUID.randomUUID().toString();
+
+        if (encrypt) {
+            initEncryption();
+        }
     }
 
 
@@ -645,6 +664,9 @@ public class TcpClient implements Closeable {
                 toBytes(Json.writeJson(statistics, false), "UTF-8"));
     }
 
+    private void initEncryption() {
+        throw new VncException("Transport level encryption is not yet implemented");
+    }
 
     private void validateMessageSize(final IMessage msg) {
         Objects.requireNonNull(msg);
@@ -669,6 +691,7 @@ public class TcpClient implements Closeable {
 
     private final String host;
     private final int port;
+    private final boolean encrypt;
     private final String endpointId;
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();

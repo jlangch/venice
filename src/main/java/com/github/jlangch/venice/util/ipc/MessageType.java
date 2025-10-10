@@ -35,6 +35,8 @@ public enum MessageType {
     OFFER(4),
     POLL(5),
 
+    DIFFIE_HELLMAN_KEY_REQUEST(9),
+
 
     // responses
 
