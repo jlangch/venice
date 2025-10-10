@@ -419,7 +419,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private void handleDiffieHellmanKeyExchange(final Message request) {
-        if (encryptor.get() != null) {
+        if (encryptor.get().isActive()) {
             Protocol.sendMessage(
                     ch,
                     createPlainTextResponseMessage(

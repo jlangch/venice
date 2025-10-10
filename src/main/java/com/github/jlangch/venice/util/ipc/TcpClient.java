@@ -682,7 +682,8 @@ public class TcpClient implements Closeable {
         }
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
-            throw new VncException("Error: The server rejected the Diffie-Hellman key exchange!");
+            final String errText = response.getText();
+            throw new VncException("Error: The server rejected the Diffie-Hellman key exchange! " + errText);
         }
         else {
             throw new VncException("Failed to process Diffie-Hellman key exchange!");
