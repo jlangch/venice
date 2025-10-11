@@ -473,17 +473,9 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(queueName);
         Objects.requireNonNull(unit);
 
-        final Message m = new Message(
-                                null,
-                                MessageType.OFFER,
-                                ResponseStatus.NULL,
-                                false,
-                                queueName,
-                                -1,
-                                ((Message)msg).getTopics(),
-                                ((Message)msg).getMimetype(),
-                                ((Message)msg).getCharset(),
-                                ((Message)msg).getData());
+        validateMessageSize(msg);
+
+        final Message m = createQueueOfferRequestMessage((Message)msg, queueName);
 
         return send(m, timeout, unit);
     }
@@ -510,21 +502,28 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(queueName);
         Objects.requireNonNull(unit);
 
-        final Message m = new Message(
-                                null,
-                                MessageType.POLL,
-                                ResponseStatus.NULL,
-                                false,
-                                queueName,
-                                -1,
-                                Topics.of("queue/poll"),
-                                "application/octet-stream",
-                                null,
-                                new byte[0]);
+        final Message m = createQueuePollRequestMessage(queueName);
 
         return send(m, timeout, unit);
     }
 
+    private IMessage sendThroughTemporaryClient(
+            final IMessage msg,
+            final long timeout,
+            final TimeUnit unit
+    ) {
+        Objects.requireNonNull(msg);
+        Objects.requireNonNull(unit);
+
+        try (final TcpClient client = new TcpClient(host, port)) {
+            client.open();
+            return client.send(msg, timeout, unit);
+        }
+        catch(IOException ex) {
+            // ignore client close exception
+            return null;
+        }
+    }
 
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
@@ -571,29 +570,7 @@ public class TcpClient implements Closeable {
             return handleClientLocalMessage(msg);
         }
 
-        try {
-            return sendAsync(msg).get(timeout, unit);
-        }
-        catch(VncException ex) {
-            throw ex;
-        }
-        catch(TimeoutException ex) {
-            throw new com.github.jlangch.venice.TimeoutException(
-                    "Timeout while waiting for IPC response.");
-        }
-        catch(ExecutionException ex) {
-            final Throwable cause = ex.getCause();
-            if (cause instanceof VncException) {
-                throw (VncException)cause;
-            }
-            else {
-                throw new VncException("Error in IPC call", cause);
-            }
-        }
-        catch(InterruptedException ex) {
-            throw new com.github.jlangch.venice.InterruptedException(
-                    "Interrupted while waiting for IPC response.");
-        }
+        return deref(sendAsync(msg), timeout, unit);
     }
 
     private Future<IMessage> sendAsync(final IMessage msg) {
@@ -616,15 +593,24 @@ public class TcpClient implements Closeable {
                     .submit(() -> handleClientLocalMessage(msg));
         }
 
+        return sendAsyncRaw(msg, ch, compressCutoffSize.get(), encryptor.get());
+    }
+
+    private Future<IMessage> sendAsyncRaw(
+            final IMessage msg,
+            final SocketChannel ch,
+            final long compressCutoffSize,
+            final IEncryptor encryptor
+    ) {
         final Callable<IMessage> task = () -> {
-            Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get(), encryptor.get());
+            Protocol.sendMessage(ch, (Message)msg, compressCutoffSize, encryptor);
             messageSentCount.incrementAndGet();
 
             if (msg.isOneway()) {
                 return null;
             }
             else {
-                final Message response = Protocol.receiveMessage(ch, encryptor.get());
+                final Message response = Protocol.receiveMessage(ch, encryptor);
                 messageReceiveCount.incrementAndGet();
                 return response;
             }
@@ -635,34 +621,19 @@ public class TcpClient implements Closeable {
                 .submit(task);
     }
 
-    private IMessage sendThroughTemporaryClient(
-            final IMessage msg,
-            final long timeout,
-            final TimeUnit unit
-    ) {
-        Objects.requireNonNull(msg);
-        Objects.requireNonNull(unit);
-
-        IMessage response = null;
-        try (final TcpClient client = new TcpClient(host, port)) {
-            client.open();
-            response = client.send(msg, timeout, unit);
-        }
-        catch(IOException ex) {
-            // ignore client close exception
-        }
-        return response;
-    }
-
     private void diffieHellmanKeyExchange() {
-        final String clientPublicKey = dhKeys.getPublicKeyBase64();
+        final SocketChannel ch = channel.get();
+        if (ch == null || !ch.isOpen()) {
+            throw new VncException("This TcpClient is not open!");
+        }
 
-        final IMessage m = ((Message)MessageFactory
-                                .text("dh", "text/plain", "UTF-8", clientPublicKey))
-                                .withType(MessageType.DIFFIE_HELLMAN_KEY_REQUEST, false);
+        final IMessage m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
 
-        // send the client's public key to the server
-        final Message response = (Message)send(m, 2, TimeUnit.SECONDS);
+        // exchange the client's and the server's public key
+        final Message response = (Message)deref(
+                                    sendAsyncRaw(m, ch, 1, new NullEncryptor()),
+                                    2,
+                                    TimeUnit.SECONDS);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys
@@ -717,10 +688,78 @@ public class TcpClient implements Closeable {
         }
     }
 
+    private IMessage deref(Future<IMessage> future, final long timeout, final TimeUnit unit) {
+        try {
+            return future.get(timeout, unit);
+        }
+        catch(VncException ex) {
+            throw ex;
+        }
+        catch(TimeoutException ex) {
+            throw new com.github.jlangch.venice.TimeoutException(
+                    "Timeout while waiting for IPC response.");
+        }
+        catch(ExecutionException ex) {
+            final Throwable cause = ex.getCause();
+            if (cause instanceof VncException) {
+                throw (VncException)cause;
+            }
+            else {
+                throw new VncException("Error in IPC call", cause);
+            }
+        }
+        catch(InterruptedException ex) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                    "Interrupted while waiting for IPC response.");
+        }
+    }
+
+    private static Message createDiffieHellmanRequestMessage(final String clientPublicKey) {
+        return new Message(
+                MessageType.DIFFIE_HELLMAN_KEY_REQUEST,
+                ResponseStatus.NULL,
+                true,
+                Topics.of("dh"),
+                "text/plain",
+                "UTF-8",
+                toBytes(clientPublicKey, "UTF-8"));
+    }
+
+    private static Message createQueueOfferRequestMessage(
+            final Message msg,
+            final String queueName
+    ) {
+        return new Message(
+                null,
+                MessageType.OFFER,
+                ResponseStatus.NULL,
+                false,
+                queueName,
+                -1,
+                msg.getTopics(),
+                msg.getMimetype(),
+                msg.getCharset(),
+                msg.getData());
+    }
+
+    private static Message createQueuePollRequestMessage(final String queueName) {
+        return new Message(
+                null,
+                MessageType.POLL,
+                ResponseStatus.NULL,
+                false,
+                queueName,
+                -1,
+                Topics.of("queue/poll"),
+                "application/octet-stream",
+                null,
+                new byte[0]);
+    }
+
+
     private static byte[] toBytes(final String s, final String charset) {
         return s.getBytes(Charset.forName(charset));
     }
-
 
 
     public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
