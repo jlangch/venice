@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
+import java.util.Objects;
+
 import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 
 
@@ -38,14 +40,17 @@ public class Compressor {
 
 
     public byte[] compress(final byte[] data) {
+        Objects.requireNonNull(data);
         return compress(data, needsCompression(data));
     }
 
     public byte[] compress(final byte[] data, final boolean compress) {
+        Objects.requireNonNull(data);
         return compress ? GZipper.gzip(data) : data;
     }
 
     public byte[] decompress(final byte[] data, final boolean decompress) {
+        Objects.requireNonNull(data);
         return decompress ? GZipper.ungzip(data) : data;
     }
 

@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
+import java.util.Objects;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
@@ -34,6 +36,7 @@ public class Encryptor {
 
 
     public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
+        Objects.requireNonNull(secret);
         return new Encryptor(secret);
     }
 
@@ -43,6 +46,7 @@ public class Encryptor {
 
 
     public byte[] encrypt(final byte[] data) {
+        Objects.requireNonNull(data);
         if (isActive()) {
             try {
                 return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(secret.getSecretBase64(), data);
@@ -57,6 +61,7 @@ public class Encryptor {
     }
 
     public byte[] decrypt(final byte[] data) {
+        Objects.requireNonNull(data);
         if (isActive()) {
             try {
                 return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(secret.getSecretBase64(), data);

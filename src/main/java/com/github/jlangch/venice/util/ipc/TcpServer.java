@@ -103,6 +103,10 @@ public class TcpServer implements Closeable {
      * @return this server
      */
     public TcpServer setCompressCutoffSize(final long cutoffSize) {
+        if (started.get()) {
+           throw new VncException(
+                  "The compression cutoff size cannot be set anymore once the server has started!");
+        }
         compressor.set(new Compressor(cutoffSize));
         return this;
     }
@@ -341,7 +345,7 @@ public class TcpServer implements Closeable {
     private final Map<String, LinkedBlockingQueue<Message>> p2pQueues = new HashMap<>();
 
     // compression
-    private final AtomicReference<Compressor> compressor = new AtomicReference<>(new Compressor(-1));
+    private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 20);

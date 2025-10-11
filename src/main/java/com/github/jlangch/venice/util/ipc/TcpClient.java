@@ -140,6 +140,10 @@ public class TcpClient implements Cloneable, Closeable {
      * @return this server
      */
     public TcpClient setCompressCutoffSize(final long cutoffSize) {
+        if (opened.get()) {
+            throw new VncException(
+                   "The compression cutoff size cannot be set anymore once the client has opened!");
+         }
         compressor.set(new Compressor(cutoffSize));
         return this;
     }
@@ -783,7 +787,7 @@ public class TcpClient implements Cloneable, Closeable {
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
 
     // compression
-    private final AtomicReference<Compressor> compressor = new AtomicReference<>(new Compressor(-1));
+    private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
 
     // encryption
     private final boolean encrypt;
