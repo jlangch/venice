@@ -1,49 +1,10 @@
 # Development Tools
 
-
-
 ## REPL
 
 The [REPL](doc/readme/repl.md) is all you need to do your first steps with Venice.
 
-For more ambitious work choose [Gitpod](#gitpod) or [VSCodium](#vscodium).
-
-
-
-## Gitpod
-
-### Start a Venice Gitpod workspace in your browser
-
-Fire up a Venice [Gitpod](https://gitpod.io/) workspace in your browser by opening the URL https://gitpod.io/#https://github.com/jlangch/venice. Gitpod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
-
-[Gitpod](https://gitpod.io/) gives you a full development environment and a [REPL](doc/readme/repl.md) within your browser without needing to install anything on your local machine.
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl.png">
-
-
-### Useful VSCode extensions
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-VsCodeExtensions.png" width="300">
-
-
-### VSCode settings.json
-
-```json
-{
-    "files.associations": {
-        "*.venice": "clojure"
-    },
-    
-    "workbench.colorTheme": "Tomorrow Night Blue",
-    "redhat.telemetry.enabled": false    
-    
-    "editor.insertSpaces": true,
-    "editor.tabSize": 2,
-    "editor.detectIndentation": false,
-    "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}]   
-}
-```
-
+For more ambitious work choose [VSCodium](#vscodium).
 
 
 ## VSCodium
