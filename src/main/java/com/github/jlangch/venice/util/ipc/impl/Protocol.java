@@ -24,12 +24,10 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.UUIDHelper;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -37,6 +35,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
+import com.github.jlangch.venice.util.ipc.impl.util.PayloadMetaData;
 
 
 public class Protocol {
@@ -80,42 +79,19 @@ public class Protocol {
         header.flip();
         IO.writeFully(ch, header);
 
-        // [2] charset frame
-        if (StringUtil.isBlank(message.getCharset())) {
-            IO.writeFrame(ch, null);  // frame with 0 length
-        }
-        else {
-            final byte[] charsetData = message.getCharset().getBytes(Charset.forName("UTF8"));
-            final ByteBuffer charset = ByteBuffer.allocate(charsetData.length);
-            charset.put(charsetData);
-            charset.flip();
-            IO.writeFrame(ch, charset);
-        }
+        // [2] payload meta data
+        final byte[] metaData = PayloadMetaData.encode(
+                                    new PayloadMetaData(
+                                        message.getQueueName(),
+                                        message.getTopics(),
+                                        message.getMimetype(),
+                                        message.getCharset()));
+        final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
+        meta.put(metaData);
+        meta.flip();
+        IO.writeFrame(ch, meta);
 
-        // [3] topic frame
-        final byte[] topicData = Topics.encode(message.getTopics())
-                                       .getBytes(Charset.forName("UTF8"));
-        final ByteBuffer topic = ByteBuffer.allocate(topicData.length);
-        topic.put(topicData);
-        topic.flip();
-        IO.writeFrame(ch, topic);
-
-        // [4] queue name frame
-        final byte[] queueData = StringUtil.trimToEmpty(message.getQueueName())
-                                           .getBytes(Charset.forName("UTF8"));
-        final ByteBuffer queue = ByteBuffer.allocate(queueData.length);
-        queue.put(queueData);
-        queue.flip();
-        IO.writeFrame(ch, queue);
-
-        // [5] mimetype frame
-        final byte[] mimetypeData = message.getMimetype().getBytes(Charset.forName("UTF8"));
-        final ByteBuffer mimetype = ByteBuffer.allocate(mimetypeData.length);
-        mimetype.put(mimetypeData);
-        mimetype.flip();
-        IO.writeFrame(ch, mimetype);
-
-        // [6] payload data
+        // [3] payload data
         byte[] payloadData = encryptor.encrypt(
                                 compressor.compress(
                                     message.getData(),
@@ -169,31 +145,12 @@ public class Protocol {
                         "Received message with unsupported protocol version " + version + "!");
             }
 
-            // [2] charset frame (has frame length 0 for binary messages)
-            final ByteBuffer charsetFrame = IO.readFrame(ch);
-            final String charset = charsetFrame.hasRemaining()
-                                    ? new String(charsetFrame.array(), Charset.forName("UTF8"))
-                                    : null;
+            // [2] payload meta data
+            final ByteBuffer payloadMetaFrame = IO.readFrame(ch);
+            byte[] payloadMetaData = payloadMetaFrame.array();
+            final PayloadMetaData payloadMeta = PayloadMetaData.decode(payloadMetaData);
 
-            // [3] topic frame
-            final ByteBuffer topicFrame = IO.readFrame(ch);
-            final String topics = topicFrame.hasRemaining()
-                                        ? new String(topicFrame.array(), Charset.forName("UTF8"))
-                                        : "*";
-
-            // [4] queue name frame
-            final ByteBuffer queueFrame = IO.readFrame(ch);
-            final String queue = queueFrame.hasRemaining()
-                                        ? new String(queueFrame.array(), Charset.forName("UTF8"))
-                                        : "";
-
-            // [5] mimetype frame
-            final ByteBuffer mimetypeFrame = IO.readFrame(ch);
-            final String mimetype = mimetypeFrame.hasRemaining()
-                                        ? new String(mimetypeFrame.array(), Charset.forName("UTF8"))
-                                        : "application/octet-stream";
-
-            // [6] payload data
+            // [3] payload data
             final ByteBuffer payloadFrame = IO.readFrame(ch);
             byte[] data = postProcessPayloadDataFromReceive(
                                 payloadFrame.array(),
@@ -209,11 +166,15 @@ public class Protocol {
 
             return new Message(
                     UUIDHelper.convertBytesToUUID(uuid),
-                    type, status, oneway,
-                    StringUtil.trimToNull(queue),
+                    type,
+                    status,
+                    oneway,
+                    payloadMeta.getQueueName(),
                     timestamp,
-                    Topics.decode(topics),
-                    mimetype, charset, data);
+                    payloadMeta.getTopics(),
+                    payloadMeta.getMimetype(),
+                    payloadMeta.getCharset(),
+                    data);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
