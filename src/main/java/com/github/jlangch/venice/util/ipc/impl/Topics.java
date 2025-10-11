@@ -98,6 +98,32 @@ public class Topics {
      }
 
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((topics == null) ? 0 : topics.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Topics other = (Topics) obj;
+        if (topics == null) {
+            if (other.topics != null)
+                return false;
+        } else if (!topics.equals(other.topics))
+            return false;
+        return true;
+    }
+
+
     public static String encode(final Topics topics) {
         Objects.requireNonNull(topics);
         return String.join(",", topics.topics);
