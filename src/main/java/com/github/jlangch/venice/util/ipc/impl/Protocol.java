@@ -79,19 +79,20 @@ public class Protocol {
         header.flip();
         IO.writeFully(ch, header);
 
-        // [2] payload meta data
-        final byte[] metaData = PayloadMetaData.encode(
-                                    new PayloadMetaData(
-                                        message.getQueueName(),
-                                        message.getTopics(),
-                                        message.getMimetype(),
-                                        message.getCharset()));
+        // [2] payload meta data (optionally encrypt)
+        final byte[] metaData = encryptor.encrypt(
+                                    PayloadMetaData.encode(
+                                        new PayloadMetaData(
+                                            message.getQueueName(),
+                                            message.getTopics(),
+                                            message.getMimetype(),
+                                            message.getCharset())));
         final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
         meta.put(metaData);
         meta.flip();
         IO.writeFrame(ch, meta);
 
-        // [3] payload data
+        // [3] payload data (optionally compress and encrypt)
         byte[] payloadData = encryptor.encrypt(
                                 compressor.compress(
                                     message.getData(),
@@ -145,19 +146,22 @@ public class Protocol {
                         "Received message with unsupported protocol version " + version + "!");
             }
 
-            // [2] payload meta data
+            // [2] payload meta data (maybe encrypted)
             final ByteBuffer payloadMetaFrame = IO.readFrame(ch);
-            byte[] payloadMetaData = payloadMetaFrame.array();
-            final PayloadMetaData payloadMeta = PayloadMetaData.decode(payloadMetaData);
+            final PayloadMetaData payloadMeta = PayloadMetaData.decode(
+                                                    decryptPayloadData(
+                                                        payloadMetaFrame.array(),
+                                                        encryptedData,
+                                                        encryptor));
 
-            // [3] payload data
+            // [3] payload data (maybe compressed and encrypted)
             final ByteBuffer payloadFrame = IO.readFrame(ch);
-            byte[] data = postProcessPayloadDataFromReceive(
-                                payloadFrame.array(),
-                                compressedData,
-                                encryptedData,
-                                compressor,
-                                encryptor);
+            byte[] data = compressor.decompress(
+                                decryptPayloadData(
+                                    payloadFrame.array(),
+                                    encryptedData,
+                                    encryptor),
+                                compressedData);
 
             if (status == null) {
                 throw new VncException(
@@ -187,11 +191,9 @@ public class Protocol {
     }
 
 
-    private static byte[] postProcessPayloadDataFromReceive(
+    private static byte[] decryptPayloadData(
             final byte[] payloadData,
-            final boolean compressed,
             final boolean encrypted,
-            final Compressor compressor,
             final IEncryptor encryptor
     ) {
         byte[] data = payloadData;
@@ -206,8 +208,7 @@ public class Protocol {
             data = encryptor.decrypt(data);
         }
 
-        // decompress
-        return compressor.decompress(data, compressed);
+        return data;
     }
 
     private static boolean toBool(final int n) {

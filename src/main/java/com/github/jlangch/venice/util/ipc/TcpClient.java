@@ -713,7 +713,7 @@ public class TcpClient implements Cloneable, Closeable {
         return new Message(
                 MessageType.DIFFIE_HELLMAN_KEY_REQUEST,
                 ResponseStatus.NULL,
-                true,
+                false,
                 Topics.of("dh"),
                 "text/plain",
                 "UTF-8",
