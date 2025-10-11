@@ -396,7 +396,7 @@ public class TcpClient implements Cloneable, Closeable {
                     // start the subscription listener in this client
                     mngdExecutor
                         .getExecutor()
-                        .submit(new TcpSubscriptionListener(ch, handler, encryptor));
+                        .submit(new TcpSubscriptionListener(ch, handler, encryptor.get()));
 
                     return response;
                 }

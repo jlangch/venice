@@ -22,8 +22,8 @@
 package com.github.jlangch.venice.util.ipc.impl;
 
 import java.nio.channels.SocketChannel;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.util.ipc.IMessage;
@@ -35,8 +35,12 @@ public class TcpSubscriptionListener implements Runnable {
     public TcpSubscriptionListener(
             final SocketChannel ch,
             final Consumer<IMessage> handler,
-            final AtomicReference<IEncryptor> encryptor
+            final IEncryptor encryptor
     ) {
+        Objects.requireNonNull(ch);
+        Objects.requireNonNull(handler);
+        Objects.requireNonNull(encryptor);
+
         this.ch = ch;
         this.handler = handler;
         this.encryptor = encryptor;
@@ -52,17 +56,17 @@ public class TcpSubscriptionListener implements Runnable {
             running.set(true);
 
             while(true) {
-                final Message msg = Protocol.receiveMessage(ch, encryptor.get());
+                final Message msg = Protocol.receiveMessage(ch, encryptor);
                 if (msg != null) {
                    try {
                        handler.accept(msg);
                    }
-                   catch(Exception ignore) {}
+                   catch(Exception ignore) { }
                 }
             }
         }
         catch(Exception ex) {
-            // -> quit
+            // -> quit this subscription listener thread
         }
         finally {
             running.set(false);
@@ -72,6 +76,6 @@ public class TcpSubscriptionListener implements Runnable {
 
     private final SocketChannel ch;
     private final Consumer<IMessage> handler;
+    private final IEncryptor encryptor;
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private final AtomicReference<IEncryptor> encryptor;
 }
