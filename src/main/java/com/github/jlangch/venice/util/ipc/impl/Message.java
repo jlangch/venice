@@ -74,8 +74,6 @@ public class Message implements IMessage {
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
-        this.receivedWithCompressedPayload = false;
-        this.receivedWithEncryptedPayload = false;
     }
 
     public Message(
@@ -88,9 +86,7 @@ public class Message implements IMessage {
             final Topics topics,
             final String mimetype,
             final String charset,
-            final byte[] data,
-            final boolean receivedWithCompressedPayload,
-            final boolean receivedWithEncryptedPayload
+            final byte[] data
     ) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(responseStatus);
@@ -111,8 +107,6 @@ public class Message implements IMessage {
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
-        this.receivedWithCompressedPayload = receivedWithCompressedPayload;
-        this.receivedWithEncryptedPayload = receivedWithEncryptedPayload;
     }
 
 
@@ -134,9 +128,7 @@ public class Message implements IMessage {
                 id,
                 type, responseStatus, oneway,
                 queueName, timestamp,
-                topics, mimetype, charset, data,
-                receivedWithCompressedPayload,
-                receivedWithEncryptedPayload);
+                topics, mimetype, charset, data);
   }
 
     /**
@@ -151,9 +143,7 @@ public class Message implements IMessage {
                 id,
                 type, responseStatus, oneway,
                 queueName, timestamp,
-                topics, mimetype, charset, data,
-                receivedWithCompressedPayload,
-                receivedWithEncryptedPayload);
+                topics, mimetype, charset, data);
     }
 
     @Override
@@ -262,16 +252,6 @@ public class Message implements IMessage {
     @Override
     public boolean isBinaryMessage() {
         return charset == null;
-    }
-
-    @Override
-    public boolean isReceivedWithCompressedPayload() {
-        return receivedWithCompressedPayload;
-    }
-
-    @Override
-    public boolean isReceivedWithEncryptedPayload() {
-        return receivedWithEncryptedPayload;
     }
 
     @Override
@@ -409,7 +389,5 @@ public class Message implements IMessage {
     private final String mimetype;
     private final String charset;
     private final byte[] data;
-    private final boolean receivedWithCompressedPayload;
-    private final boolean receivedWithEncryptedPayload;
 
 }

@@ -483,9 +483,7 @@ public class TcpClient implements Closeable {
                                 ((Message)msg).getTopics(),
                                 ((Message)msg).getMimetype(),
                                 ((Message)msg).getCharset(),
-                                ((Message)msg).getData(),
-                                false,
-                                false);
+                                ((Message)msg).getData());
 
         return send(m, timeout, unit);
     }
@@ -522,9 +520,7 @@ public class TcpClient implements Closeable {
                                 Topics.of("queue/poll"),
                                 "application/octet-stream",
                                 null,
-                                new byte[0],
-                                false,
-                                false);
+                                new byte[0]);
 
         return send(m, timeout, unit);
     }
@@ -544,9 +540,8 @@ public class TcpClient implements Closeable {
             throw new VncException("This TcpClient is not open!");
         }
 
-        final Message localResponse = handleClientLocalMessage(msg);
-        if (localResponse != null) {
-            return localResponse;
+        if (isClientLocalMessage(msg)) {
+            return handleClientLocalMessage(msg);
         }
 
         Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get(), encryptor.get());
@@ -572,9 +567,8 @@ public class TcpClient implements Closeable {
             throw new VncException("A client in subscription mode cannot send request messages!");
         }
 
-        final Message localResponse = handleClientLocalMessage(msg);
-        if (localResponse != null) {
-            return localResponse;
+        if (isClientLocalMessage(msg)) {
+            return handleClientLocalMessage(msg);
         }
 
         try {
@@ -616,11 +610,10 @@ public class TcpClient implements Closeable {
             throw new VncException("This TcpClient is not open!");
         }
 
-        final Message localResponse = handleClientLocalMessage(msg);
-        if (localResponse != null) {
+        if (isClientLocalMessage(msg)) {
             return mngdExecutor
                     .getExecutor()
-                    .submit(() -> localResponse);
+                    .submit(() -> handleClientLocalMessage(msg));
         }
 
         final Callable<IMessage> task = () -> {
@@ -665,11 +658,7 @@ public class TcpClient implements Closeable {
         final String clientPublicKey = dhKeys.getPublicKeyBase64();
 
         final IMessage m = ((Message)MessageFactory
-                                .text(
-                                    "diffie-hellman-key-exchange",
-                                    "text/plain",
-                                    "UTF-8",
-                                    clientPublicKey))
+                                .text("dh", "text/plain", "UTF-8", clientPublicKey))
                                 .withType(MessageType.DIFFIE_HELLMAN_KEY_REQUEST, false);
 
         // send the client's public key to the server
@@ -696,8 +685,11 @@ public class TcpClient implements Closeable {
             return getClientThreadPoolStatistics();
         }
 
-
         return null;  // no local messsage
+    }
+
+    private boolean isClientLocalMessage(final IMessage request) {
+        return "client/thread-pool-statistics".equals(request.getTopic());
     }
 
     private Message getClientThreadPoolStatistics() {

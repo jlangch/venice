@@ -132,14 +132,4 @@ public interface IMessage {
      * @return <code>true</code> if this message is a binary message, else <code>false</code>
      */
     boolean isBinaryMessage();
-
-    /**
-     * @return <code>true</code> if this message was received with compressed payload data, else <code>false</code>
-     */
-    boolean isReceivedWithCompressedPayload();
-
-    /**
-     * @return <code>true</code> if this message was received with encrypted payload data, else <code>false</code>
-     */
-    boolean isReceivedWithEncryptedPayload();
 }

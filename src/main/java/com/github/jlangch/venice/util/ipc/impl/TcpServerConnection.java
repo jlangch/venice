@@ -424,10 +424,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ch,
                     createPlainTextResponseMessage(
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
-                       request.getTopic(),
+                       "dh",
                        "Error: Diffie-Hellman keys already exchanged!"),
-                    server.getCompressCutoffSize(),
-                    new NullEncryptor());
+                    -1,
+                    NULL_ENCRYPTOR);
         }
         else {
             try {
@@ -439,20 +439,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         ch,
                         createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
-                           request.getTopic(),
+                           "dh",
                            dhKeys.getPublicKeyBase64()),
-                        server.getCompressCutoffSize(),
-                        new NullEncryptor());
+                        -1,
+                        NULL_ENCRYPTOR);
             }
             catch(Exception ex) {
                 Protocol.sendMessage(
                         ch,
                         createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
-                           request.getTopic(),
+                           "dh",
                            "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage()),
-                        server.getCompressCutoffSize(),
-                        new NullEncryptor());
+                        -1,
+                        NULL_ENCRYPTOR);
             }
         }
     }
@@ -658,6 +658,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private static enum State { Request_Response, Publish, Terminated };
 
     public static final int ERROR_QUEUE_CAPACITY = 50;
+
+    private static final IEncryptor NULL_ENCRYPTOR = new NullEncryptor();
 
     private State mode = State.Request_Response;
 
