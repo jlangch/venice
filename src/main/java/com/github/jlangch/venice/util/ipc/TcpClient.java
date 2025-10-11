@@ -49,12 +49,10 @@ import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
-import com.github.jlangch.venice.util.ipc.impl.util.AesEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
-import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
-import com.github.jlangch.venice.util.ipc.impl.util.NullEncryptor;
 
 
 public class TcpClient implements Cloneable, Closeable {
@@ -595,7 +593,7 @@ public class TcpClient implements Cloneable, Closeable {
             final IMessage msg,
             final SocketChannel ch,
             final Compressor compressor,
-            final IEncryptor encryptor
+            final Encryptor encryptor
     ) {
         final Callable<IMessage> task = () -> {
             Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
@@ -626,14 +624,14 @@ public class TcpClient implements Cloneable, Closeable {
 
         // exchange the client's and the server's public key
         final Message response = (Message)deref(
-                                    sendAsyncRaw(m, ch, new Compressor(), new NullEncryptor()),
+                                    sendAsyncRaw(m, ch, Compressor.off(), Encryptor.off()),
                                     2,
                                     TimeUnit.SECONDS);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys
             final String serverPublicKey = response.getText();
-            encryptor.set(new AesEncryptor(dhKeys.generateSharedSecret(serverPublicKey)));
+            encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey)));
         }
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
@@ -790,7 +788,7 @@ public class TcpClient implements Cloneable, Closeable {
     // encryption
     private final boolean encrypt;
     private final DiffieHellmanKeys dhKeys;
-    private final AtomicReference<IEncryptor> encryptor = new AtomicReference<>(new NullEncryptor());
+    private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);

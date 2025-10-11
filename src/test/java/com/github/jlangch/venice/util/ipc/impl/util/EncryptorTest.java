@@ -45,8 +45,8 @@ public class EncryptorTest {
         assertArrayEquals(clientSecret.getSecret(), serverSecret.getSecret());
 
 
-        final AesEncryptor clientEncryptor = new AesEncryptor(clientSecret);
-        final AesEncryptor serverEncryptor = new AesEncryptor(serverSecret);
+        final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
+        final Encryptor serverEncryptor = Encryptor.aes(serverSecret);
 
         final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
 

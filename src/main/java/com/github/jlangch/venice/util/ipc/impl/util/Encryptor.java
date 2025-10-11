@@ -26,38 +26,54 @@ import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
-public class AesEncryptor implements IEncryptor {
+public class Encryptor {
 
-    public AesEncryptor(final DiffieHellmanSharedSecret secret) {
+    private Encryptor(final DiffieHellmanSharedSecret secret) {
         this.secret = secret;
     }
 
 
-    @Override
+    public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
+        return new Encryptor(secret);
+    }
+
+    public static Encryptor off() {
+        return new Encryptor(null);
+    }
+
+
     public byte[] encrypt(final byte[] data) {
-        try {
-            return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(secret.getSecretBase64(), data);
+        if (isActive()) {
+            try {
+                return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(secret.getSecretBase64(), data);
+            }
+            catch(Exception ex) {
+                throw new VncException("Failed to encrypt message payload data", ex);
+            }
         }
-        catch(Exception ex) {
-            throw new VncException("Failed to encrypt message payload data", ex);
+        else {
+            return data;
         }
     }
 
-    @Override
     public byte[] decrypt(final byte[] data) {
-        try {
-            return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(secret.getSecretBase64(), data);
+        if (isActive()) {
+            try {
+                return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(secret.getSecretBase64(), data);
+            }
+            catch(Exception ex) {
+                throw new VncException("Failed to decrypt message payload data", ex);
+            }
         }
-        catch(Exception ex) {
-            throw new VncException("Failed to decrypt message payload data", ex);
+        else {
+            return data;
         }
     }
 
-    @Override
     public boolean isActive() {
-        return true;
+        return secret != null;
     }
 
 
-    final DiffieHellmanSharedSecret secret;
+    private final DiffieHellmanSharedSecret secret;
 }

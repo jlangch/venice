@@ -37,16 +37,14 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
-import com.github.jlangch.venice.util.ipc.impl.util.AesEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
+import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.Error;
 import com.github.jlangch.venice.util.ipc.impl.util.ErrorCircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
-import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
-import com.github.jlangch.venice.util.ipc.impl.util.NullEncryptor;
 
 
 public class TcpServerConnection implements IPublisher, Runnable {
@@ -429,13 +427,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        "dh",
                        "Error: Diffie-Hellman keys already exchanged!"),
-                    new Compressor(),
-                    NULL_ENCRYPTOR);
+                    Compressor.off(),
+                    Encryptor.off());
         }
         else {
             try {
                 final String clientPublicKey = request.getText();
-                encryptor.set(new AesEncryptor(dhKeys.generateSharedSecret(clientPublicKey)));
+                encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(clientPublicKey)));
 
                 // send the server's public key back
                 Protocol.sendMessage(
@@ -444,8 +442,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
                            "dh",
                            dhKeys.getPublicKeyBase64()),
-                        new Compressor(),
-                        NULL_ENCRYPTOR);
+                        Compressor.off(),
+                        Encryptor.off());
             }
             catch(Exception ex) {
                 Protocol.sendMessage(
@@ -454,8 +452,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            "dh",
                            "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage()),
-                        new Compressor(),
-                        NULL_ENCRYPTOR);
+                        Compressor.off(),
+                        Encryptor.off());
             }
         }
     }
@@ -662,8 +660,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
-    private static final IEncryptor NULL_ENCRYPTOR = new NullEncryptor();
-
     private State mode = State.Request_Response;
 
     private final TcpServer server;
@@ -680,7 +676,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     // encryption
     private final DiffieHellmanKeys dhKeys;
-    private final AtomicReference<IEncryptor> encryptor = new AtomicReference<>(new NullEncryptor());
+    private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
 
     // queues
     private final ErrorCircularBuffer<Error> errorBuffer;

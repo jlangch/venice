@@ -32,8 +32,8 @@ import com.github.jlangch.venice.impl.util.UUIDHelper;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
+import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
-import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.PayloadMetaData;
 
@@ -48,7 +48,7 @@ public class Protocol {
             final SocketChannel ch,
             final Message message,
             final Compressor compressor,
-            final IEncryptor encryptor
+            final Encryptor encryptor
     ) {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
@@ -106,7 +106,7 @@ public class Protocol {
     public static Message receiveMessage(
             final SocketChannel ch,
             final Compressor compressor,
-            final IEncryptor encryptor
+            final Encryptor encryptor
     ) {
         Objects.requireNonNull(ch);
 
@@ -194,7 +194,7 @@ public class Protocol {
     private static byte[] decryptPayloadData(
             final byte[] payloadData,
             final boolean encrypted,
-            final IEncryptor encryptor
+            final Encryptor encryptor
     ) {
         byte[] data = payloadData;
 

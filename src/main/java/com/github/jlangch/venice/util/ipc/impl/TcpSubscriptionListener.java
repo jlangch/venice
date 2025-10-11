@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
-import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 
 
 public class TcpSubscriptionListener implements Runnable {
@@ -37,7 +37,7 @@ public class TcpSubscriptionListener implements Runnable {
             final SocketChannel ch,
             final Consumer<IMessage> handler,
             final Compressor compressor,
-            final IEncryptor encryptor
+            final Encryptor encryptor
     ) {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(handler);
@@ -81,6 +81,6 @@ public class TcpSubscriptionListener implements Runnable {
     private final SocketChannel ch;
     private final Consumer<IMessage> handler;
     private final Compressor compressor;
-    private final IEncryptor encryptor;
+    private final Encryptor encryptor;
     private final AtomicBoolean running = new AtomicBoolean(false);
 }

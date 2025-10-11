@@ -36,7 +36,7 @@ public class CompressorTest {
     public void test_needsCompression() {
         final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
 
-        assertFalse(new Compressor().needsCompression(data));
+        assertFalse(Compressor.off().needsCompression(data));
         assertFalse(new Compressor(-1).needsCompression(data));
         assertTrue(new Compressor(0).needsCompression(data));
         assertTrue(new Compressor(1).needsCompression(data));
@@ -49,7 +49,7 @@ public class CompressorTest {
 
     @Test
     public void test_cutoffSize() {
-        assertEquals(-1L, new Compressor().cutoffSize());
+        assertEquals(-1L, Compressor.off().cutoffSize());
         assertEquals(-1L, new Compressor(-1).cutoffSize());
         assertEquals(-1L, new Compressor(-5).cutoffSize());
         assertEquals(0L, new Compressor(0).cutoffSize());
@@ -61,11 +61,11 @@ public class CompressorTest {
     public void test_no_compression() {
         final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
 
-        assertArrayEquals(data, new Compressor().compress(data));
+        assertArrayEquals(data, Compressor.off().compress(data));
         assertArrayEquals(data, new Compressor(-1).compress(data));
         assertArrayEquals(data, new Compressor(100).compress(data));
 
-        assertArrayEquals(data, new Compressor().compress(data, false));
+        assertArrayEquals(data, Compressor.off().compress(data, false));
         assertArrayEquals(data, new Compressor(-1).compress(data, false));
         assertArrayEquals(data, new Compressor(0).compress(data, false));
     }
@@ -74,7 +74,7 @@ public class CompressorTest {
     public void test_no_decompression() {
         final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
 
-        assertArrayEquals(data, new Compressor().decompress(data, false));
+        assertArrayEquals(data, Compressor.off().decompress(data, false));
         assertArrayEquals(data, new Compressor(-1).decompress(data, false));
         assertArrayEquals(data, new Compressor(0).decompress(data, false));
         assertArrayEquals(data, new Compressor(100).decompress(data, false));
@@ -86,7 +86,7 @@ public class CompressorTest {
 
         Compressor compressor;
 
-        compressor = new Compressor();
+        compressor = Compressor.off();
         assertArrayEquals(data, compressor.decompress(compressor.compress(data), false));
 
         compressor = new Compressor(-1);
@@ -114,7 +114,7 @@ public class CompressorTest {
 
         Compressor compressor;
 
-        compressor = new Compressor();
+        compressor = Compressor.off();
         assertArrayEquals(data, compressor.decompress(compressor.compress(data, true), true));
 
         compressor = new Compressor(-1);

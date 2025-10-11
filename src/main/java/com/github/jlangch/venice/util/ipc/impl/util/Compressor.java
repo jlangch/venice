@@ -26,12 +26,14 @@ import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 
 public class Compressor {
 
-    public Compressor() {
-        this.cutoffSize = -1;
-    }
 
     public Compressor(final long cutoffSize) {
         this.cutoffSize = cutoffSize < 0 ? -1 : cutoffSize;
+    }
+
+
+    public static Compressor off() {
+        return new Compressor(-1);
     }
 
 
