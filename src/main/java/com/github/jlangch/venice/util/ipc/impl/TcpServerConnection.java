@@ -37,7 +37,8 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
-import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.AesEncryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Error;
 import com.github.jlangch.venice.util.ipc.impl.util.ErrorCircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
@@ -58,6 +59,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final Map<String, LinkedBlockingQueue<Message>> p2pQueues,
+            final Compressor compressor,
             final ServerStatistics statistics,
             final Supplier<VncMap> serverThreadPoolStatistics
     ) {
@@ -67,6 +69,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.maxMessageSize = maxMessageSize;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
+        this.compressor = compressor;
         this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
 
@@ -126,7 +129,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private State processRequestResponse() throws InterruptedException {
         // [1] receive message
-        final Message request = Protocol.receiveMessage(ch, encryptor.get());
+        final Message request = Protocol.receiveMessage(ch, compressor, encryptor.get());
         if (request == null) {
             return State.Terminated; // client closed connection
         }
@@ -183,7 +186,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 Protocol.sendMessage(
                         ch,
                         response,
-                        server.getCompressCutoffSize(),
+                        compressor,
                         encryptor.get());
             }
 
@@ -229,7 +232,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             Protocol.sendMessage(
                     ch,
                     msg.withType(MessageType.REQUEST, true),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
         }
 
@@ -287,7 +290,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ResponseStatus.OK,
                 request.getTopic(),
                 "Subscribed to the topic."),
-            server.getCompressCutoffSize(),
+            compressor,
             encryptor.get());
     }
 
@@ -302,7 +305,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ResponseStatus.OK,
                 request.getTopic(),
                 "Message has been enqued to publish."),
-            server.getCompressCutoffSize(),
+            compressor,
             encryptor.get());
     }
 
@@ -318,7 +321,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         ResponseStatus.OK,
                         request.getTopic(),
                         "Offered the message to the queue."),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
             }
             else {
@@ -328,7 +331,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         ResponseStatus.QUEUE_FULL,
                         request.getTopic(),
                         "Offer rejected! The queue is full."),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
             }
         }
@@ -339,7 +342,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ResponseStatus.QUEUE_NOT_FOUND,
                     request.getTopic(),
                     "Offer rejected! The queue does not exist."),
-                server.getCompressCutoffSize(),
+                compressor,
                 encryptor.get());
         }
     }
@@ -354,7 +357,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    ch,
                    msg.withType(MessageType.RESPONSE, true)
                       .withResponseStatus(ResponseStatus.OK),
-                   server.getCompressCutoffSize(),
+                   compressor,
                    encryptor.get());
             }
             else {
@@ -364,7 +367,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         ResponseStatus.QUEUE_EMPTY,
                         request.getTopic(),
                         "Poll rejected! The queue is empty."),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
             }
         }
@@ -375,7 +378,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ResponseStatus.QUEUE_NOT_FOUND,
                     request.getTopic(),
                     "Poll rejected! The queue does not exist."),
-                server.getCompressCutoffSize(),
+                compressor,
                 encryptor.get());
         }
     }
@@ -385,21 +388,21 @@ public class TcpServerConnection implements IPublisher, Runnable {
             Protocol.sendMessage(
                     ch,
                     getTcpServerStatus(),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
         }
         else if ("tcp-server/thread-pool-statistics".equals(request.getTopic())) {
             Protocol.sendMessage(
                     ch,
                     getTcpServerThreadPoolStatistics(),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
         }
         else if ("tcp-server/error".equals(request.getTopic())) {
             Protocol.sendMessage(
                     ch,
                     getTcpServerNextError(),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
         }
         else {
@@ -413,7 +416,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                       + "  • tcp-server/status\n"
                       + "  • tcp-server/thread-pool-statistics\n"
                       + "  • tcp-server/error\n"),
-                server.getCompressCutoffSize(),
+                compressor,
                 encryptor.get());
         }
     }
@@ -426,13 +429,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        "dh",
                        "Error: Diffie-Hellman keys already exchanged!"),
-                    -1,
+                    new Compressor(),
                     NULL_ENCRYPTOR);
         }
         else {
             try {
                 final String clientPublicKey = request.getText();
-                encryptor.set(new Encryptor(dhKeys.generateSharedSecret(clientPublicKey)));
+                encryptor.set(new AesEncryptor(dhKeys.generateSharedSecret(clientPublicKey)));
 
                 // send the server's public key back
                 Protocol.sendMessage(
@@ -441,7 +444,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
                            "dh",
                            dhKeys.getPublicKeyBase64()),
-                        -1,
+                        new Compressor(),
                         NULL_ENCRYPTOR);
             }
             catch(Exception ex) {
@@ -451,7 +454,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            "dh",
                            "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage()),
-                        -1,
+                        new Compressor(),
                         NULL_ENCRYPTOR);
             }
         }
@@ -475,7 +478,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                        ResponseStatus.BAD_REQUEST,
                        request.getTopic(),
                        "Bad request type: " + request.getType().name()),
-                    server.getCompressCutoffSize(),
+                    compressor,
                     encryptor.get());
             }
         }
@@ -511,7 +514,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         Protocol.sendMessage(
             ch,
             createTooLargeErrorMessageResponse(request),
-            server.getCompressCutoffSize(),
+            compressor,
             encryptor.get());
     }
 
@@ -671,6 +674,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
+
+    // compression
+    private final Compressor compressor;
 
     // encryption
     private final DiffieHellmanKeys dhKeys;

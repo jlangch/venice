@@ -49,7 +49,8 @@ import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
-import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.AesEncryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
@@ -141,7 +142,7 @@ public class TcpClient implements Cloneable, Closeable {
      * @return this server
      */
     public TcpClient setCompressCutoffSize(final long cutoffSize) {
-        compressCutoffSize.set(cutoffSize);
+        compressor.set(new Compressor(cutoffSize));
         return this;
     }
 
@@ -149,7 +150,7 @@ public class TcpClient implements Cloneable, Closeable {
      * @return return the client's payload message compression cutoff size
      */
     public long getCompressCutoffSize() {
-        return compressCutoffSize.get();
+        return compressor.get().cutoffSize();
     }
 
     /**
@@ -376,10 +377,10 @@ public class TcpClient implements Cloneable, Closeable {
         if (subscription.compareAndSet(false, true)) {
             try {
                 final Callable<IMessage> task = () -> {
-                    Protocol.sendMessage(ch, subscribeMsg, compressCutoffSize.get(), encryptor.get());
+                    Protocol.sendMessage(ch, subscribeMsg, compressor.get(), encryptor.get());
                     messageSentCount.incrementAndGet();
 
-                    final Message response = Protocol.receiveMessage(ch, encryptor.get());
+                    final Message response = Protocol.receiveMessage(ch, compressor.get(), encryptor.get());
                     messageReceiveCount.incrementAndGet();
 
                     return response;
@@ -396,7 +397,7 @@ public class TcpClient implements Cloneable, Closeable {
                     // start the subscription listener in this client
                     mngdExecutor
                         .getExecutor()
-                        .submit(new TcpSubscriptionListener(ch, handler, encryptor.get()));
+                        .submit(new TcpSubscriptionListener(ch, handler, compressor.get(), encryptor.get()));
 
                     return response;
                 }
@@ -537,14 +538,14 @@ public class TcpClient implements Cloneable, Closeable {
             return handleClientLocalMessage(msg);
         }
 
-        Protocol.sendMessage(ch, (Message)msg, compressCutoffSize.get(), encryptor.get());
+        Protocol.sendMessage(ch, (Message)msg, compressor.get(), encryptor.get());
         messageSentCount.incrementAndGet();
 
         if (msg.isOneway()) {
             return null;
         }
         else {
-            final Message response = Protocol.receiveMessage(ch, encryptor.get());
+            final Message response = Protocol.receiveMessage(ch, compressor.get(), encryptor.get());
             messageReceiveCount.incrementAndGet();
             return response;
         }
@@ -587,24 +588,24 @@ public class TcpClient implements Cloneable, Closeable {
                     .submit(() -> handleClientLocalMessage(msg));
         }
 
-        return sendAsyncRaw(msg, ch, compressCutoffSize.get(), encryptor.get());
+        return sendAsyncRaw(msg, ch, compressor.get(), encryptor.get());
     }
 
     private Future<IMessage> sendAsyncRaw(
             final IMessage msg,
             final SocketChannel ch,
-            final long compressCutoffSize,
+            final Compressor compressor,
             final IEncryptor encryptor
     ) {
         final Callable<IMessage> task = () -> {
-            Protocol.sendMessage(ch, (Message)msg, compressCutoffSize, encryptor);
+            Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
             messageSentCount.incrementAndGet();
 
             if (msg.isOneway()) {
                 return null;
             }
             else {
-                final Message response = Protocol.receiveMessage(ch, encryptor);
+                final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
                 messageReceiveCount.incrementAndGet();
                 return response;
             }
@@ -625,14 +626,14 @@ public class TcpClient implements Cloneable, Closeable {
 
         // exchange the client's and the server's public key
         final Message response = (Message)deref(
-                                    sendAsyncRaw(m, ch, 1, new NullEncryptor()),
+                                    sendAsyncRaw(m, ch, new Compressor(), new NullEncryptor()),
                                     2,
                                     TimeUnit.SECONDS);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys
             final String serverPublicKey = response.getText();
-            encryptor.set(new Encryptor(dhKeys.generateSharedSecret(serverPublicKey)));
+            encryptor.set(new AesEncryptor(dhKeys.generateSharedSecret(serverPublicKey)));
         }
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
@@ -779,10 +780,12 @@ public class TcpClient implements Cloneable, Closeable {
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
     private final AtomicBoolean subscription = new AtomicBoolean(false);
-    private final AtomicLong compressCutoffSize = new AtomicLong(-1);
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong messageSentCount = new AtomicLong(0L);
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
+
+    // compression
+    private final AtomicReference<Compressor> compressor = new AtomicReference<>(new Compressor(-1));
 
     // encryption
     private final boolean encrypt;

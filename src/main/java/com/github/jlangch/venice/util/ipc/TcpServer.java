@@ -45,6 +45,7 @@ import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
+import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 
 // https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
 // https://github.com/baswerc/niossl
@@ -102,7 +103,7 @@ public class TcpServer implements Closeable {
      * @return this server
      */
     public TcpServer setCompressCutoffSize(final long cutoffSize) {
-        compressCutoffSize.set(cutoffSize);
+        compressor.set(new Compressor(cutoffSize));
         return this;
     }
 
@@ -110,7 +111,7 @@ public class TcpServer implements Closeable {
      * @return return the server's payload message compression cutoff size
      */
     public long getCompressCutoffSize() {
-        return compressCutoffSize.get();
+        return compressor.get().cutoffSize();
     }
 
     /**
@@ -182,6 +183,7 @@ public class TcpServer implements Closeable {
                                                                    maxMessageSize, subscriptions,
                                                                    publishQueueCapacity,
                                                                    p2pQueues,
+                                                                   compressor.get(),
                                                                    statistics,
                                                                    () -> mngdExecutor.info());
 
@@ -332,12 +334,14 @@ public class TcpServer implements Closeable {
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
-    private final AtomicLong compressCutoffSize = new AtomicLong(-1);
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
     private final Map<String, LinkedBlockingQueue<Message>> p2pQueues = new HashMap<>();
+
+    // compression
+    private final AtomicReference<Compressor> compressor = new AtomicReference<>(new Compressor(-1));
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 20);

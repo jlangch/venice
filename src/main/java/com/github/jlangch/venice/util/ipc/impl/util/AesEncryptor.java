@@ -26,9 +26,9 @@ import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
-public class Encryptor implements IEncryptor {
+public class AesEncryptor implements IEncryptor {
 
-    public Encryptor(final DiffieHellmanSharedSecret secret) {
+    public AesEncryptor(final DiffieHellmanSharedSecret secret) {
         this.secret = secret;
     }
 

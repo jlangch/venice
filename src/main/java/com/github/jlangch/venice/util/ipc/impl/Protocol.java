@@ -31,9 +31,9 @@ import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.UUIDHelper;
-import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
+import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IEncryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -48,14 +48,13 @@ public class Protocol {
     public static void sendMessage(
             final SocketChannel ch,
             final Message message,
-            final long compressCutoffSize,
+            final Compressor compressor,
             final IEncryptor encryptor
     ) {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
 
-        final boolean compress = compressCutoffSize >= 0
-                                 && message.getData().length >= compressCutoffSize;
+        final boolean compressData = compressor.needsCompression(message.getData());
 
         // [1] header
         final ByteBuffer header = ByteBuffer.allocate(44);
@@ -69,7 +68,7 @@ public class Protocol {
         // 2 bytes (short) oneway flag
         header.putShort(toShort(message.isOneway()));
         // 2 bytes (short) compressed data flag
-        header.putShort(toShort(compress));
+        header.putShort(toShort(compressData));
         // 2 bytes (short) encrypted data flag
         header.putShort(toShort(encryptor.isActive()));
         // 4 bytes (integer) response status
@@ -117,7 +116,10 @@ public class Protocol {
         IO.writeFrame(ch, mimetype);
 
         // [6] payload data
-        byte[] payloadData = postProcessPayloadDataForSend(message.getData(), compress, encryptor);
+        byte[] payloadData = encryptor.encrypt(
+                                compressor.compress(
+                                    message.getData(),
+                                    compressData));
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
@@ -126,6 +128,7 @@ public class Protocol {
 
     public static Message receiveMessage(
             final SocketChannel ch,
+            final Compressor compressor,
             final IEncryptor encryptor
     ) {
         Objects.requireNonNull(ch);
@@ -196,6 +199,7 @@ public class Protocol {
                                 payloadFrame.array(),
                                 compressedData,
                                 encryptedData,
+                                compressor,
                                 encryptor);
 
             if (status == null) {
@@ -222,30 +226,11 @@ public class Protocol {
     }
 
 
-    private static byte[] postProcessPayloadDataForSend(
-            final byte[] payloadData,
-            final boolean compress,
-            final IEncryptor encryptor
-    ) {
-        byte[] data = payloadData;
-
-        // compress
-        if (compress) {
-            data = GZipper.gzip(data);
-        }
-
-        // encrypt
-        if (encryptor.isActive()) {
-            data = encryptor.encrypt(data);
-        }
-
-        return data;
-    }
-
     private static byte[] postProcessPayloadDataFromReceive(
             final byte[] payloadData,
             final boolean compressed,
             final boolean encrypted,
+            final Compressor compressor,
             final IEncryptor encryptor
     ) {
         byte[] data = payloadData;
@@ -261,11 +246,7 @@ public class Protocol {
         }
 
         // decompress
-        if (compressed) {
-            data =  GZipper.ungzip(data);
-        }
-
-        return data;
+        return compressor.decompress(data, compressed);
     }
 
     private static boolean toBool(final int n) {
