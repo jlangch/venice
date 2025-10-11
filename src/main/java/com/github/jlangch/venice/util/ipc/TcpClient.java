@@ -56,7 +56,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.NullEncryptor;
 
 
-public class TcpClient implements Closeable {
+public class TcpClient implements Cloneable, Closeable {
 
     /**
      * Create a new TcpClient connecting to a TcpServer on the local host
@@ -98,6 +98,22 @@ public class TcpClient implements Closeable {
         this.dhKeys = DiffieHellmanKeys.create();
     }
 
+
+    @Override
+    public Object clone() {
+        final TcpClient client = new TcpClient(host, port, isEncrypted());
+        client.setCompressCutoffSize(getCompressCutoffSize());
+        client.setMaximumMessageSize(getMaximumMessageSize());
+        return client;
+    }
+
+    /**
+     * @return <code>true</code> if this client has transport level encryption
+     *         enabled else <code>false</code>
+     */
+    public boolean isEncrypted() {
+        return encryptor.get().isActive();
+    }
 
     /**
      * Set the executors maximum of parallel tasks.
@@ -355,18 +371,11 @@ public class TcpClient implements Closeable {
             throw new VncException("This TcpClient is not open!");
         }
 
-        final Message subscribeMsg = new Message(
-                MessageType.SUBSCRIBE,
-                ResponseStatus.NULL,
-                false,
-                Topics.of(topics),
-                "text/plain",
-                "UTF-8",
-                toBytes(endpointId, "UTF-8"));
+        final Message subscribeMsg = createSubscribeRequestMessage(topics, endpointId);
 
         if (subscription.compareAndSet(false, true)) {
             try {
-                final Callable<Message> task = () -> {
+                final Callable<IMessage> task = () -> {
                     Protocol.sendMessage(ch, subscribeMsg, compressCutoffSize.get(), encryptor.get());
                     messageSentCount.incrementAndGet();
 
@@ -376,10 +385,12 @@ public class TcpClient implements Closeable {
                     return response;
                 };
 
-                final Message response = mngdExecutor
-                                           .getExecutor()
-                                           .submit(task)
-                                           .get(5, TimeUnit.SECONDS);
+                final IMessage response = deref(
+                                            mngdExecutor
+                                                .getExecutor()
+                                                .submit(task),
+                                            5,
+                                            TimeUnit.SECONDS);
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     // start the subscription listener in this client
@@ -392,24 +403,6 @@ public class TcpClient implements Closeable {
                 else {
                    throw new VncException("Failed to start subscription mode");
                 }
-            }
-            catch(TimeoutException ex) {
-                throw new com.github.jlangch.venice.TimeoutException(
-                        "Timeout while waiting for IPC response.");
-            }
-            catch(ExecutionException ex) {
-                final Throwable cause = ex.getCause();
-                if (cause instanceof VncException) {
-                    throw (VncException)cause;
-                }
-                else {
-                    throw new VncException("Error in IPC call", cause);
-                }
-            }
-            catch(InterruptedException ex) {
-                subscription.set(false);
-                throw new com.github.jlangch.venice.InterruptedException(
-                        "Interrupted while waiting for IPC response.");
             }
             catch(Exception ex) {
                 subscription.set(false);
@@ -515,7 +508,8 @@ public class TcpClient implements Closeable {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(unit);
 
-        try (final TcpClient client = new TcpClient(host, port)) {
+        // use the same configuration as the parent client
+        try (final TcpClient client = (TcpClient)this.clone()) {
             client.open();
             return client.send(msg, timeout, unit);
         }
@@ -723,6 +717,20 @@ public class TcpClient implements Closeable {
                 "text/plain",
                 "UTF-8",
                 toBytes(clientPublicKey, "UTF-8"));
+    }
+
+    private static Message createSubscribeRequestMessage(
+            final Set<String> topics,
+            final String endpointId
+    ) {
+        return new Message(
+                MessageType.SUBSCRIBE,
+                ResponseStatus.NULL,
+                false,
+                Topics.of(topics),
+                "text/plain",
+                "UTF-8",
+                toBytes(endpointId, "UTF-8"));
     }
 
     private static Message createQueueOfferRequestMessage(
