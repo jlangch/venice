@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -140,13 +140,13 @@ public class PayloadMetaData {
                          StringUtil.trimToEmpty(data.charset)   + '\n' +
                          data.id.toString();
 
-        return s.getBytes(CHARSET);
+        return s.getBytes(StandardCharsets.UTF_8);
     }
 
     public static PayloadMetaData decode(final byte[] data) {
         Objects.requireNonNull(data);
 
-        final String s = new String(data, CHARSET);
+        final String s = new String(data, StandardCharsets.UTF_8);
 
         final List<String> lines = StringUtil.splitIntoLines(s);
 
@@ -166,7 +166,6 @@ public class PayloadMetaData {
     }
 
 
-    private static final Charset CHARSET = Charset.forName("UTF-8");
 
     private final String queueName;
     private final Topics topics;

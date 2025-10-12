@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- optional AES-256 encryption for IPC message transport. 
+- optional AES-256 GCM encryption for IPC message transport. 
   The encryption passphrase is generated using the Diffie–Hellman key 
   exchange algorithm.
 

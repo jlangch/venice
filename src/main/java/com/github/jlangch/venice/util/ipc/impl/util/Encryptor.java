@@ -21,65 +21,29 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
-import static javax.crypto.Cipher.DECRYPT_MODE;
-import static javax.crypto.Cipher.ENCRYPT_MODE;
-
-import java.security.GeneralSecurityException;
 import java.util.Objects;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.crypt.Util;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
+import com.github.jlangch.venice.util.ipc.impl.cipher.CipherAesGcm;
+import com.github.jlangch.venice.util.ipc.impl.cipher.ICipher;
 
 
 public class Encryptor {
 
-    private Encryptor(
-            final DiffieHellmanSharedSecret secret,
-            final Cipher cipherEncrypt,
-            final Cipher cipherDecrypt
-    ) {
-        this.secret = secret;
-        this.cipherEncrypt = cipherEncrypt;
-        this.cipherDecrypt = cipherDecrypt;
+    private Encryptor(final ICipher cipher) {
+        this.cipher = cipher;
     }
 
 
     public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
         Objects.requireNonNull(secret);
 
-        try {
-            byte[] salt = new byte[16];
-            System.arraycopy(secret.getSecret(), 0, salt, 0, salt.length);
-
-            byte[] iv = new byte[16];
-            System.arraycopy(secret.getSecret(), 0, iv, 0, iv.length);
-
-            // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 65536, 256);
-
-            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-
-            Cipher cipherEncrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            Cipher cipherDecrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            // Create the ciphers
-            cipherEncrypt.init(ENCRYPT_MODE, keySpec, new IvParameterSpec(iv));
-            cipherDecrypt.init(DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
-
-            return new Encryptor(secret, cipherEncrypt, cipherDecrypt);
-        }
-        catch(GeneralSecurityException ex) {
-            throw new VncException("Failed to initialize AES encryption", ex);
-        }
+        return new Encryptor(CipherAesGcm.create(secret));
     }
 
     public static Encryptor off() {
-        return new Encryptor(null, null, null);
+        return new Encryptor(null);
     }
 
 
@@ -91,7 +55,7 @@ public class Encryptor {
         Objects.requireNonNull(data);
         if (encrypt) {
             try {
-                return cipherEncrypt.doFinal(data);
+                return cipher.encrypt(data);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to encrypt message payload data", ex);
@@ -110,7 +74,7 @@ public class Encryptor {
         Objects.requireNonNull(data);
         if (decrypt) {
             try {
-                return cipherDecrypt.doFinal(data);
+                return cipher.decrypt(data);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to decrypt message payload data", ex);
@@ -122,12 +86,9 @@ public class Encryptor {
     }
 
     public boolean isActive() {
-        return secret != null;
+        return cipher != null;
     }
 
 
-    private final DiffieHellmanSharedSecret secret;
-
-    private final Cipher cipherEncrypt;
-    private final Cipher cipherDecrypt;
+    private final ICipher cipher;
 }
