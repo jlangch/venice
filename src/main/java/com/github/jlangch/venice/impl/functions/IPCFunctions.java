@@ -25,10 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -111,7 +108,6 @@ public class IPCFunctions {
                         "ipc/running?",
                         "ipc/send",
                         "ipc/send-oneway",
-                        "ipc/send-async",
                         "ipc/publish",
                         "ipc/subscribe",
                         "ipc/text-message",
@@ -195,8 +191,6 @@ public class IPCFunctions {
                         "| port p | The server's TCP/IP port |\n" +
                         "| host h | The server's TCP/IP host |\n\n" +
                         "*Options:* \n\n" +
-                        "| :max-parallel-tasks n   | The max number of parallel tasks (e.g. sending async messages)" +
-                                                   " the client can handle. Defaults to 10. |\n" +
                         "| :max-message-size n     | The max size of the message payload." +
                                                    " Defaults to `200MB`.¶" +
                                                    " The max size can be specified as a number like `20000`" +
@@ -213,6 +207,7 @@ public class IPCFunctions {
                                                    " The data is AES-256-GCM encrypted using a secret that is" +
                                                    " created and exchanged using the Diffie-Hellman key exchange " +
                                                    " algorithm.|\n\n" +
+                        "**The client is NOT thread safe!**" +
                         "**The client must be closed after use!**")
                     .examples(
                         "(do                                                                             \n" +
@@ -238,7 +233,6 @@ public class IPCFunctions {
                         "ipc/running?",
                         "ipc/send",
                         "ipc/send-oneway",
-                        "ipc/send-async",
                         "ipc/publish",
                         "ipc/subscribe",
                         "ipc/offer",
@@ -269,24 +263,15 @@ public class IPCFunctions {
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-                    final VncVal maxParallelTasksVal = options.get(new VncKeyword("max-parallel-tasks"));
                     final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
                     final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                     final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
-
-                    final int maxParallelTasks = maxParallelTasksVal == Nil
-                                                      ? 0
-                                                      : Coerce.toVncLong(maxParallelTasksVal).getIntValue();
 
                     final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
                     final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
                     final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
 
                     final TcpClient client = new TcpClient(host, port, encrypt);
-
-                    if (maxParallelTasks > 0) {
-                        client.setMaximumParallelTasks(maxParallelTasks);
-                    }
 
                     if (maxMsgSize > 0) {
                         client.setMaximumMessageSize(maxMsgSize);
@@ -493,7 +478,6 @@ public class IPCFunctions {
                         "ipc/server",
                         "ipc/close",
                         "ipc/running?",
-                        "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
@@ -547,7 +531,6 @@ public class IPCFunctions {
                         "ipc/server",
                         "ipc/close",
                         "ipc/running?",
-                        "ipc/send-async",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
@@ -578,60 +561,6 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
-    public static VncFunction ipc_send_async =
-        new VncFunction(
-                "ipc/send-async",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(ipc/send-async client message)")
-                    .doc(
-                        "Sends a message asynchronously to the server the client is associated " +
-                        "with. \n\n" +
-                        "Returns a future to get the server's response message.\n\n" +
-                        "The response message has one of these status:\n\n" +
-                        "  * `:OK`            - request handled successfully and response holds the data\n" +
-                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
-                        "  * `:BAD_REQUEST`   - invalid request, details in the payload\n" +
-                        "  * `:HANDLER_ERROR` - an error in the server's request processing handler")
-                    .examples(
-                        "(do                                                      \n" +
-                        "  (defn echo-handler [m] m)                              \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)      \n" +
-                        "             client (ipc/client \"localhost\" 33333)]    \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")     \n" +
-                        "         (ipc/send-async client)                         \n" +
-                        "         (deref)                                         \n" +
-                        "         (ipc/message->map)                              \n" +
-                        "         (println))))                                    ")
-                    .seeAlso(
-                        "ipc/client",
-                        "ipc/server",
-                        "ipc/close",
-                        "ipc/running?",
-                        "ipc/send",
-                        "ipc/text-message",
-                        "ipc/plain-text-message",
-                        "ipc/venice-message",
-                        "ipc/binary-message",
-                        "ipc/message->map")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
-
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-                final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
-
-                final Future<IMessage> response = client.sendMessageAsync(request);
-
-                return response == null ? Nil : new VncJavaObject(new FutureWrapper(response));
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
 
 
     // ------------------------------------------------------------------------
@@ -1072,61 +1001,6 @@ public class IPCFunctions {
                 }
                 else {
                     throw new VncException ("Failed to get server thread pool statistics");
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-
-    public static VncFunction ipc_client_thread_pool_statistics =
-        new VncFunction(
-                "ipc/client-thread-pool-statistics",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(ipc/client-thread-pool-statistics client)")
-                    .doc(
-                        "Returns the client's thread pool statistics.")
-                    .examples(
-                        "(do                                                               \n" +
-                        "  (defn echo-handler [m] m)                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
-                        "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "         (ipc/send client))                                       \n" +
-                        "    (println (ipc/client-thread-pool-statistics client))))        ")
-                    .seeAlso(
-                        "ipc/client",
-                        "ipc/close",
-                        "ipc/running?")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
-
-                final IMessage response = client.sendMessage(
-                                            MessageFactory.text(
-                                                "client/thread-pool-statistics",
-                                                "appliaction/json",
-                                                "UTF-8",
-                                                ""),
-                                            5,
-                                            TimeUnit.SECONDS);
-
-                if (response.getResponseStatus() == ResponseStatus.OK) {
-                    try {
-                        return Json.readJson(response.getText(), true);
-                    }
-                    catch(Exception ex) {
-                        throw new VncException ("Failed to get client thread pool statistics", ex);
-                    }
-                }
-                else {
-                    throw new VncException ("Failed to get client thread pool statistics");
                 }
             }
 
@@ -1927,44 +1801,6 @@ public class IPCFunctions {
     }
 
 
-    private static class FutureWrapper implements Future<VncVal> {
-        public FutureWrapper(final Future<IMessage> future) {
-            this.delegate = future;
-        }
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return delegate.cancel(mayInterruptIfRunning);
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return delegate.isCancelled();
-        }
-
-        @Override
-        public boolean isDone() {
-            return delegate.isDone();
-        }
-
-        @Override
-        public VncVal get() throws InterruptedException, ExecutionException {
-            final IMessage val = delegate.get();
-            return val == null ? Nil : new VncJavaObject(val);
-        }
-
-        @Override
-        public VncVal get(
-                final long timeout,
-                final TimeUnit unit
-        ) throws InterruptedException, ExecutionException, TimeoutException {
-            final IMessage val = delegate.get(timeout, unit);
-            return val == null ? Nil : new VncJavaObject(val);
-        }
-
-        private final Future<IMessage> delegate;
-    }
-
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -1978,7 +1814,6 @@ public class IPCFunctions {
                     .add(ipc_runnningQ)
 
                     .add(ipc_send)
-                    .add(ipc_send_async)
                     .add(ipc_send_oneway)
 
                     .add(ipc_publish)
@@ -2004,7 +1839,6 @@ public class IPCFunctions {
 
                     .add(ipc_server_status)
                     .add(ipc_server_thread_pool_statistics)
-                    .add(ipc_client_thread_pool_statistics)
 
                     .toMap();
 }

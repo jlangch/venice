@@ -115,19 +115,6 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     /**
-     * Set the executors maximum of parallel tasks.
-     *
-     * <p>Defaults to 10
-     *
-     * @param count the max parallel task count when sending async messages
-     * @return this client
-     */
-    public TcpClient setMaximumParallelTasks(final int count) {
-        mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
-        return this;
-    }
-
-    /**
      * Set the compression cutoff size for payload messages.
      *
      * <p>With a negative cutoff size payload messages will not be compressed.
@@ -312,22 +299,6 @@ public class TcpClient implements Cloneable, Closeable {
         final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
         return send(m, timeout, unit);
     }
-
-    /**
-     * Sends a message asynchronously to the server and returns a Future
-     * for the server's response message.
-     *
-     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
-     *
-     * @param msg  a message
-     * @return the future for the server's response
-     */
-    public Future<IMessage> sendMessageAsync(final IMessage msg) {
-        Objects.requireNonNull(msg);
-
-        final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
-        return sendAsync(m);
-   }
 
     /**
      * Subscribe for a topic.

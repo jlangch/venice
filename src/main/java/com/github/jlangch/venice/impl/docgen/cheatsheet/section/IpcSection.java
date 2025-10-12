@@ -49,7 +49,6 @@ public class IpcSection implements ISectionBuilder {
         final DocSection send = new DocSection("Send", "ipc.send");
         all.addSection(send);
         send.addItem(diBuilder.getDocItem("ipc/send", false));
-        send.addItem(diBuilder.getDocItem("ipc/send-async", false));
         send.addItem(diBuilder.getDocItem("ipc/send-oneway", false));
 
         final DocSection pub = new DocSection("Pub / Sub", "ipc.publish");
@@ -85,7 +84,6 @@ public class IpcSection implements ISectionBuilder {
         all.addSection(util);
         util.addItem(diBuilder.getDocItem("ipc/server-status", false));
         util.addItem(diBuilder.getDocItem("ipc/server-thread-pool-statistics", false));
-        util.addItem(diBuilder.getDocItem("ipc/client-thread-pool-statistics", false));
 
         return section;
     }
