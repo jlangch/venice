@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.net.BindException;
 import java.util.function.Function;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.EofException;
@@ -101,8 +100,7 @@ public class TcpServerTest {
     }
 
     @Test
-    @Disabled
-    public void test_echo_server_client_abort() throws Exception {
+    public void test_client_abort() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
@@ -117,13 +115,17 @@ public class TcpServerTest {
         try {
             final IMessage request = MessageFactory.hello();
 
-            // the server waits 1000ms with replying on the received request
-            //final Future<IMessage> future = client.sendMessageAsync(request);
+            // this will abort the next message send/receive
+            Thread th = new Thread(() -> { try { sleep(200); client.close();} catch (Exception ex) {} });
+            th.start();
 
-            sleep(100);
-            client.close();
+            // the server waits 1000ms with replying on the received request
+            client.sendMessage(request);
 
             fail("Expected exception");
+        }
+        catch(Exception ex) {
+            // OK
         }
         finally {
             server.close();
