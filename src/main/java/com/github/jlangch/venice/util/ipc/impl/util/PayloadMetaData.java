@@ -24,7 +24,6 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -48,7 +47,7 @@ public class PayloadMetaData {
             final Topics topics,
             final String mimetype,
             final String charset,
-            final UUID id
+            final String id
     ) {
         Objects.requireNonNull(topics);
         Objects.requireNonNull(mimetype);
@@ -78,7 +77,7 @@ public class PayloadMetaData {
         return charset;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -153,15 +152,15 @@ public class PayloadMetaData {
 
         if (lines.size() == 5) {
             return new PayloadMetaData(
-                    StringUtil.trimToNull(lines.get(0)),
-                    Topics.decode(lines.get(1)),
-                    lines.get(2),
-                    StringUtil.trimToNull(lines.get(3)),
-                    UUID.fromString(lines.get(4)));
+                    StringUtil.trimToNull(lines.get(0)),      // queueName
+                    Topics.decode(lines.get(1)),              // topics
+                    lines.get(2),                             // mimetype
+                    StringUtil.trimToNull(lines.get(3)),      // charset
+                    lines.get(4));                            // id
         }
         else {
             throw new VncException(String.format(
-                    "Failed to decode the payload meta data. Got only %d properties!",
+                    "Failed to decode the payload meta data. Got only %d properties instead of 5!",
                     lines.size()));
         }
     }
@@ -171,5 +170,5 @@ public class PayloadMetaData {
     private final Topics topics;
     private final String mimetype;
     private final String charset;
-    private final UUID id;
+    private final String id;
 }

@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.util.ipc;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -58,7 +57,7 @@ public interface IMessage {
     /**
      * @return the message id
      */
-    public UUID getId();
+    public String getId();
 
     /**
      * @return the message type
