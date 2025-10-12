@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.cipher;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 
@@ -46,18 +47,19 @@ public class CipherAesGcm implements ICipher {
         this.keySpec = keySpec;
     }
 
+
     public static CipherAesGcm create(final DiffieHellmanSharedSecret secret) {
         Objects.requireNonNull(secret);
 
         try {
-            byte[] salt = new byte[16];
+            byte[] salt = new byte[SALT_LEN];
             System.arraycopy(secret.getSecret(), 0, salt, 0, salt.length);
 
-            byte[] iv = new byte[12];
+            byte[] iv = new byte[IV_LEN];
             System.arraycopy(secret.getSecret(), 0, iv, 0, iv.length);
 
             // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 65536, 256);
+            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 3000, 256);
 
             return new CipherAesGcm(new GCMParameterSpec(128, iv), new SecretKeySpec(key, "AES"));
         }
@@ -70,6 +72,7 @@ public class CipherAesGcm implements ICipher {
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(ENCRYPT_MODE, keySpec, gcmParameterSpec);
+        cipher.updateAAD(aadData); // add AAD tag data before encrypting
         return cipher.doFinal(data);
     }
 
@@ -77,9 +80,21 @@ public class CipherAesGcm implements ICipher {
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(DECRYPT_MODE, keySpec, gcmParameterSpec);
+        cipher.updateAAD(aadData);  // Add AAD details before decrypting
         return cipher.doFinal(data);
     }
 
+
+    private static int SALT_LEN = 16;
+    private static int IV_LEN = 12;
+
+    // An AAD (Additional Authenticated Data) tag in AES-GCM is a data string
+    // that is authenticated, but not encrypted, alongside the ciphertext. It's
+    // used to ensure the integrity of information that is not secret, like headers,
+    // by including it in the authentication tag calculation. This provides an
+    // extra layer of security, helping to protect against attacks by ensuring
+    // the AAD and ciphertext haven't been tampered with
+    private static byte[] aadData = "ipcmsg".getBytes(StandardCharsets.UTF_8);
 
     private final GCMParameterSpec gcmParameterSpec;
     private final SecretKeySpec keySpec;

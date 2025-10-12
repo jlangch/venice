@@ -28,8 +28,6 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.ipc.MessageType;
-import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
@@ -55,7 +53,7 @@ public class Protocol {
         final boolean isCompressData = compressor.needsCompression(message.getData());
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(28);
+        final ByteBuffer header = ByteBuffer.allocate(20);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -67,10 +65,6 @@ public class Protocol {
         header.putShort(toShort(encryptor.isActive()));
         // 2 bytes (short) oneway flag
         header.putShort(toShort(message.isOneway()));
-        // 4 bytes (integer) message type
-        header.putInt(message.getType().getValue());
-        // 4 bytes (integer) response status
-        header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
         header.flip();
@@ -105,7 +99,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(28);
+            final ByteBuffer header = ByteBuffer.allocate(20);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -120,12 +114,7 @@ public class Protocol {
             final boolean isCompressedData = toBool(header.getShort());
             final boolean isEncryptedData = toBool(header.getShort());
             final boolean isOneway = toBool(header.getShort());
-            final int typeCode = header.getInt();
-            final int statusCode = header.getInt();
             final long timestamp = header.getLong();
-
-            final MessageType type = MessageType.fromCode(typeCode);
-            final ResponseStatus status = ResponseStatus.fromCode(statusCode);
 
             if (magic1 != 'v' || magic2 != 'n') {
                 throw new VncException(
@@ -152,20 +141,10 @@ public class Protocol {
                                         isEncryptedData),
                                     isCompressedData);
 
-            if (type == null) {
-                throw new VncException(
-                        "Received illegal type code " + typeCode + "!");
-            }
-
-            if (status == null) {
-                throw new VncException(
-                        "Received illegal status code " + statusCode + "!");
-            }
-
             return new Message(
                     payloadMeta.getId(),
-                    type,
-                    status,
+                    payloadMeta.getType(),
+                    payloadMeta.getResponseStatus(),
                     isOneway,
                     payloadMeta.getQueueName(),
                     timestamp,
@@ -187,7 +166,9 @@ public class Protocol {
 
 
     private static boolean toBool(final int n) {
-        return n != 0;
+        if (n == 0) return false;
+        else if (n == 1) return true;
+        else throw new VncException("Illegal boolean value");
     }
 
     private static short toShort(final boolean b) {
