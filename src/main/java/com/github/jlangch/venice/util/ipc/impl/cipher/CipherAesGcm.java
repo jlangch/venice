@@ -70,7 +70,7 @@ public class CipherAesGcm implements ICipher {
 
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/GCM/PKCS5Padding");
         cipher.init(ENCRYPT_MODE, keySpec, gcmParameterSpec);
         cipher.updateAAD(aadData); // add AAD tag data before encrypting
         return cipher.doFinal(data);
@@ -78,7 +78,7 @@ public class CipherAesGcm implements ICipher {
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/GCM/PKCS5Padding");
         cipher.init(DECRYPT_MODE, keySpec, gcmParameterSpec);
         cipher.updateAAD(aadData);  // Add AAD details before decrypting
         return cipher.doFinal(data);
