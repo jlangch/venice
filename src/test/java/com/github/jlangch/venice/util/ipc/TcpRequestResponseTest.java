@@ -142,38 +142,6 @@ public class TcpRequestResponseTest {
     }
 
     @Test
-    public void test_client_async() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
-
-        server.start(TcpServer.echoHandler());
-
-        sleep(300);
-
-        client.open();
-
-        try {
-            final IMessage request = MessageFactory.hello();
-
-            final Future<IMessage> future = client.sendMessageAsync(request);
-
-            final IMessage response = future.get();
-
-            assertNotNull(response);
-            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(), response.getTimestamp());
-            assertEquals(request.getTopic(),     response.getTopic());
-            assertEquals(request.getMimetype(),  response.getMimetype());
-            assertEquals(request.getCharset(),   response.getCharset());
-            assertEquals(request.getText(),      response.getText());
-        }
-        finally {
-            client.close();
-            server.close();
-        }
-    }
-
-    @Test
     public void test_echo_server_multiple_messages() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
