@@ -61,14 +61,14 @@ public class Protocol {
         header.put((byte)'n');
         // 4 bytes (integer) protocol version
         header.putInt(PROTOCOL_VERSION);
-        // 4 bytes (integer) message type
-        header.putInt(message.getType().getValue());
-        // 2 bytes (short) oneway flag
-        header.putShort(toShort(message.isOneway()));
         // 2 bytes (short) compressed data flag
         header.putShort(toShort(compressData));
         // 2 bytes (short) encrypted data flag
         header.putShort(toShort(encryptor.isActive()));
+        // 2 bytes (short) oneway flag
+        header.putShort(toShort(message.isOneway()));
+        // 4 bytes (integer) message type
+        header.putInt(message.getType().getValue());
         // 4 bytes (integer) response status
         header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
@@ -117,10 +117,10 @@ public class Protocol {
             final byte magic1 = header.get();
             final byte magic2 = header.get();
             final int version = header.getInt();
-            final int typeCode = header.getInt();
-            final boolean oneway = toBool(header.getShort());
             final boolean compressedData = toBool(header.getShort());
             final boolean encryptedData = toBool(header.getShort());
+            final boolean oneway = toBool(header.getShort());
+            final int typeCode = header.getInt();
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
 
