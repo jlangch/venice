@@ -168,7 +168,7 @@ public class Protocol {
     private static boolean toBool(final int n) {
         if (n == 0) return false;
         else if (n == 1) return true;
-        else throw new VncException("Illegal boolean value");
+        else throw new VncException("Illegal IPC message boolean value");
     }
 
     private static short toShort(final boolean b) {

@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
@@ -179,12 +182,12 @@ public class PayloadMetaData {
     public static byte[] encode(final PayloadMetaData data) {
         Objects.requireNonNull(data);
 
-        final String s = String.valueOf(data.type.getValue())           + '\n' +
-                         String.valueOf(data.responseStatus.getValue()) + '\n' +
-                         StringUtil.trimToEmpty(data.queueName)         + '\n' +
-                         Topics.encode(data.topics)                     + '\n' +
-                         StringUtil.trimToEmpty(data.mimetype)          + '\n' +
-                         StringUtil.trimToEmpty(data.charset)           + '\n' +
+        final String s = toCode(data.type)            + '\n' +
+                         toCode(data.responseStatus)  + '\n' +
+                         trimToEmpty(data.queueName)  + '\n' +
+                         Topics.encode(data.topics)   + '\n' +
+                         trimToEmpty(data.mimetype)   + '\n' +
+                         trimToEmpty(data.charset)    + '\n' +
                          data.id.toString();
 
         return s.getBytes(StandardCharsets.UTF_8);
@@ -199,13 +202,13 @@ public class PayloadMetaData {
 
         if (lines.size() == 7) {
             return new PayloadMetaData(
-                    MessageType.fromCode(Integer.parseInt(lines.get(0))),
-                    ResponseStatus.fromCode(Integer.parseInt(lines.get(1))),
-                    StringUtil.trimToNull(lines.get(2)),      // queueName
-                    Topics.decode(lines.get(3)),              // topics
-                    lines.get(4),                             // mimetype
-                    StringUtil.trimToNull(lines.get(5)),      // charset
-                    lines.get(6));                            // id
+                    toMessageType(lines.get(0)),      // message type
+                    toResponseStatus(lines.get(1)),   // respone status
+                    trimToNull(lines.get(2)),         // queueName
+                    Topics.decode(lines.get(3)),      // topics
+                    lines.get(4),                     // mimetype
+                    trimToNull(lines.get(5)),         // charset
+                    lines.get(6));                    // id
         }
         else {
             throw new VncException(String.format(
@@ -214,6 +217,34 @@ public class PayloadMetaData {
         }
     }
 
+
+    private static String toCode(final MessageType e) {
+        return String.valueOf(e.getValue());
+    }
+
+    private static String toCode(final ResponseStatus e) {
+        return String.valueOf(e.getValue());
+    }
+
+    private static MessageType toMessageType(final String code) {
+        MessageType t = MessageType.fromCode(Integer.parseInt(code));
+        if (t == null) {
+            throw new VncException("Illegal IPC message MessageType value");
+        }
+        else {
+            return t;
+        }
+    }
+
+    private static ResponseStatus toResponseStatus(final String code) {
+        ResponseStatus s = ResponseStatus.fromCode(Integer.parseInt(code));
+        if (s == null) {
+            throw new VncException("Illegal IPC message ResponseStatus value");
+        }
+        else {
+            return s;
+        }
+   }
 
 
     private final MessageType type;
