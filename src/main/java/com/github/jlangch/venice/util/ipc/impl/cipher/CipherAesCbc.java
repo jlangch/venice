@@ -36,6 +36,11 @@ import com.github.jlangch.venice.util.crypt.Util;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
+/**
+ * DO NOT USE this cipher AES CBC in production!!
+ *
+ * AES CBC with PKCS5Padding padding scheme can lead to padding oracle attacks
+ */
 public class CipherAesCbc implements ICipher {
 
     private CipherAesCbc(
