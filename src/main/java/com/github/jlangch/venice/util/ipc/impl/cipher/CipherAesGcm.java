@@ -39,7 +39,7 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 public class CipherAesGcm implements ICipher {
 
     private CipherAesGcm(
-    		final GCMParameterSpec gcmParameterSpec,
+            final GCMParameterSpec gcmParameterSpec,
             final SecretKeySpec keySpec
     ) {
         this.gcmParameterSpec = gcmParameterSpec;
@@ -77,7 +77,7 @@ public class CipherAesGcm implements ICipher {
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(DECRYPT_MODE, keySpec, gcmParameterSpec);
-    	return cipher.doFinal(data);
+        return cipher.doFinal(data);
     }
 
 
