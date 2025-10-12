@@ -39,10 +39,10 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 public class CipherAesGcm implements ICipher {
 
     private CipherAesGcm(
-    		final byte[] iv,
+    		final GCMParameterSpec gcmParameterSpec,
             final SecretKeySpec keySpec
     ) {
-        this.iv = iv;
+        this.gcmParameterSpec = gcmParameterSpec;
         this.keySpec = keySpec;
     }
 
@@ -59,9 +59,7 @@ public class CipherAesGcm implements ICipher {
             // Derive key from passphrase
             byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 65536, 256);
 
-            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-
-            return new CipherAesGcm(iv, keySpec);
+            return new CipherAesGcm(new GCMParameterSpec(128, iv), new SecretKeySpec(key, "AES"));
         }
         catch(GeneralSecurityException ex) {
             throw new VncException("Failed to initialize AES encryption", ex);
@@ -71,18 +69,18 @@ public class CipherAesGcm implements ICipher {
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
+        cipher.init(ENCRYPT_MODE, keySpec, gcmParameterSpec);
         return cipher.doFinal(data);
     }
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        cipher.init(DECRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
+        cipher.init(DECRYPT_MODE, keySpec, gcmParameterSpec);
     	return cipher.doFinal(data);
     }
 
 
-    private final byte[] iv;
+    private final GCMParameterSpec gcmParameterSpec;
     private final SecretKeySpec keySpec;
 }
