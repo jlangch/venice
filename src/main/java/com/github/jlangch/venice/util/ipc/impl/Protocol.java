@@ -28,7 +28,6 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.UUIDHelper;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
@@ -56,7 +55,7 @@ public class Protocol {
         final boolean compressData = compressor.needsCompression(message.getData());
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(44);
+        final ByteBuffer header = ByteBuffer.allocate(28);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -74,8 +73,6 @@ public class Protocol {
         header.putInt(message.getResponseStatus().getValue());
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
-        // 16 bytes UUID
-        header.put(UUIDHelper.convertUUIDToBytes(message.getId()));
         header.flip();
         IO.writeFully(ch, header);
 
@@ -108,7 +105,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(44);
+            final ByteBuffer header = ByteBuffer.allocate(28);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -126,8 +123,6 @@ public class Protocol {
             final boolean encryptedData = toBool(header.getShort());
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
-            final byte[] uuid = new byte[16];
-            header.get(uuid);
 
             final MessageType type = MessageType.fromCode(typeCode);
             final ResponseStatus status = ResponseStatus.fromCode(statusCode);
@@ -152,12 +147,12 @@ public class Protocol {
 
             // [3] payload data (maybe compressed and encrypted)
             final ByteBuffer payloadFrame = IO.readFrame(ch);
-            byte[] data = compressor.decompress(
-                                decryptPayloadData(
-                                    payloadFrame.array(),
-                                    encryptedData,
-                                    encryptor),
-                                compressedData);
+            byte[] payloadData = compressor.decompress(
+                                    decryptPayloadData(
+                                        payloadFrame.array(),
+                                        encryptedData,
+                                        encryptor),
+                                    compressedData);
 
             if (status == null) {
                 throw new VncException(
@@ -165,7 +160,7 @@ public class Protocol {
             }
 
             return new Message(
-                    UUIDHelper.convertBytesToUUID(uuid),
+                    payloadMeta.getId(),
                     type,
                     status,
                     oneway,
@@ -174,7 +169,7 @@ public class Protocol {
                     payloadMeta.getTopics(),
                     payloadMeta.getMimetype(),
                     payloadMeta.getCharset(),
-                    data);
+                    payloadData);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {

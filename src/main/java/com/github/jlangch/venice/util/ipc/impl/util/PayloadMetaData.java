@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -38,22 +39,26 @@ public class PayloadMetaData {
             msg.getQueueName(),
             msg.getTopics(),
             msg.getMimetype(),
-            msg.getCharset());
+            msg.getCharset(),
+            msg.getId());
     }
 
     public PayloadMetaData(
             final String queueName,
             final Topics topics,
             final String mimetype,
-            final String charset
+            final String charset,
+            final UUID id
     ) {
         Objects.requireNonNull(topics);
         Objects.requireNonNull(mimetype);
+        Objects.requireNonNull(id);
 
         this.queueName = queueName;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
+        this.id = id;
     }
 
 
@@ -73,6 +78,9 @@ public class PayloadMetaData {
         return charset;
     }
 
+    public UUID getId() {
+        return id;
+    }
 
 
     @Override
@@ -80,6 +88,7 @@ public class PayloadMetaData {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((charset == null) ? 0 : charset.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
         result = prime * result + ((queueName == null) ? 0 : queueName.hashCode());
         result = prime * result + ((topics == null) ? 0 : topics.hashCode());
@@ -100,6 +109,11 @@ public class PayloadMetaData {
                 return false;
         } else if (!charset.equals(other.charset))
             return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
         if (mimetype == null) {
             if (other.mimetype != null)
                 return false;
@@ -118,14 +132,14 @@ public class PayloadMetaData {
         return true;
     }
 
-
     public static byte[] encode(final PayloadMetaData data) {
         Objects.requireNonNull(data);
 
         final String s = StringUtil.trimToEmpty(data.queueName) + '\n' +
                          Topics.encode(data.topics)             + '\n' +
                          StringUtil.trimToEmpty(data.mimetype)  + '\n' +
-                         StringUtil.trimToEmpty(data.charset);
+                         StringUtil.trimToEmpty(data.charset)   + '\n' +
+                         data.id.toString();
 
         return s.getBytes(Charset.forName("UTF8"));
     }
@@ -137,19 +151,13 @@ public class PayloadMetaData {
 
         final List<String> lines = StringUtil.splitIntoLines(s);
 
-        if (lines.size() == 3) {
+        if (lines.size() == 5) {
             return new PayloadMetaData(
                     StringUtil.trimToNull(lines.get(0)),
                     Topics.decode(lines.get(1)),
                     lines.get(2),
-                    null);
-        }
-        else if (lines.size() == 4) {
-            return new PayloadMetaData(
-                    StringUtil.trimToNull(lines.get(0)),
-                    Topics.decode(lines.get(1)),
-                    lines.get(2),
-                    StringUtil.trimToNull(lines.get(3)));
+                    StringUtil.trimToNull(lines.get(3)),
+                    UUID.fromString(lines.get(4)));
         }
         else {
             throw new VncException(String.format(
@@ -163,4 +171,5 @@ public class PayloadMetaData {
     private final Topics topics;
     private final String mimetype;
     private final String charset;
+    private final UUID id;
 }

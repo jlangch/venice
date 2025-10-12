@@ -27,6 +27,8 @@ import static com.github.jlangch.venice.util.ipc.impl.util.PayloadMetaData.encod
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.impl.Topics;
@@ -36,85 +38,89 @@ public class PayloadMetaDataTest {
 
     @Test
     public void test_equals_1() {
+        final UUID id = UUID.randomUUID();
+
         PayloadMetaData data = null;
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8");
+        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
         assertEquals(data, data);
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8");
-        assertEquals(data, new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8"));
+        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
+        assertEquals(data, new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id));
     }
 
     @Test
     public void test_equals_2() {
-        assertEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8"),
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8"));
+        final UUID id = UUID.randomUUID();
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8"),
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8"));
+                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id));
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null),
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null));
+                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8", id));
 
         assertEquals(
-                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8"),
-                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8"));
+                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null, id),
+                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null, id));
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8"),
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8"));
+                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
+                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null),
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null));
+                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
+
+        assertEquals(
+                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id),
+                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id));
 
         assertNotEquals(
-                new PayloadMetaData("queue1", Topics.of("alpha"), "text/plain", "UTF-8"),
-                new PayloadMetaData("queue2", Topics.of("alpha"), "text/plain", "UTF-8"));
+                new PayloadMetaData("queue1", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData("queue2", Topics.of("alpha"), "text/plain", "UTF-8", id));
 
         assertNotEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8"),
-                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8"));
+                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
 
         assertNotEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8"),
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain1", "UTF-8"));
+                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain1", "UTF-8", id));
 
         assertNotEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8"),
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF"));
+                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF", id));
     }
 
     @Test
     public void test_encode_decode() {
         PayloadMetaData data = null;
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8");
+        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8");
+        data = new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8", UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", null);
+        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", null, UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null);
+        data = new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null, UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
 
 
-        data = new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8");
+        data = new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8");
+        data = new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8");
+        data = new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null);
+        data = new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null, UUID.randomUUID());
         assertEquals(data, decode(encode(data)));
    }
 
