@@ -82,11 +82,7 @@ public class Protocol {
         // [2] payload meta data (optionally encrypt)
         final byte[] metaData = encryptor.encrypt(
                                     PayloadMetaData.encode(
-                                        new PayloadMetaData(
-                                            message.getQueueName(),
-                                            message.getTopics(),
-                                            message.getMimetype(),
-                                            message.getCharset())));
+                                        new PayloadMetaData(message)));
         final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
         meta.put(metaData);
         meta.flip();

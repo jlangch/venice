@@ -27,10 +27,19 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 
 
 public class PayloadMetaData {
+
+    public PayloadMetaData(final Message msg) {
+        this(
+            msg.getQueueName(),
+            msg.getTopics(),
+            msg.getMimetype(),
+            msg.getCharset());
+    }
 
     public PayloadMetaData(
             final String queueName,
