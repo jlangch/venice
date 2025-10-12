@@ -241,8 +241,7 @@ public class IPCFunctions {
                         "ipc/plain-text-message",
                         "ipc/binary-message",
                         "ipc/message->map",
-                        "ipc/message->json",
-                        "ipc/client-thread-pool-statistics")
+                        "ipc/message->json")
                     .build()
         ) {
             @Override
