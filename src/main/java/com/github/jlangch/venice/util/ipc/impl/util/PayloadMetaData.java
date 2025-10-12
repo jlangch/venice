@@ -140,13 +140,13 @@ public class PayloadMetaData {
                          StringUtil.trimToEmpty(data.charset)   + '\n' +
                          data.id.toString();
 
-        return s.getBytes(Charset.forName("UTF8"));
+        return s.getBytes(CHARSET);
     }
 
     public static PayloadMetaData decode(final byte[] data) {
         Objects.requireNonNull(data);
 
-        final String s = new String(data, Charset.forName("UTF8"));
+        final String s = new String(data, CHARSET);
 
         final List<String> lines = StringUtil.splitIntoLines(s);
 
@@ -165,6 +165,8 @@ public class PayloadMetaData {
         }
     }
 
+
+    private static final Charset CHARSET = Charset.forName("UTF-8");
 
     private final String queueName;
     private final Topics topics;

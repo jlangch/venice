@@ -152,6 +152,11 @@ public class Protocol {
                                         isEncryptedData),
                                     isCompressedData);
 
+            if (type == null) {
+                throw new VncException(
+                        "Received illegal type code " + typeCode + "!");
+            }
+
             if (status == null) {
                 throw new VncException(
                         "Received illegal status code " + statusCode + "!");
