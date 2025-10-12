@@ -61,6 +61,8 @@ public class TcpClient implements Cloneable, Closeable {
      * Create a new TcpClient connecting to a TcpServer on the local host
      * and port
      *
+     * <p>The client is NOT thread safe!
+     *
      * <p>The client must be closed after use!
      *
      * @param port a port
@@ -73,6 +75,10 @@ public class TcpClient implements Cloneable, Closeable {
      * Create a new TcpClient connecting to a TcpServer on the specified host
      * and port
      *
+     * <p>The client is NOT thread safe!
+     *
+     * <p>The client must be closed after use!
+     *
      * @param host a host
      * @param port a port
      */
@@ -83,6 +89,10 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Create a new TcpClient connecting to a TcpServer on the specified host
      * and port
+     *
+     * <p>The client is NOT thread safe!
+     *
+     * <p>The client must be closed after use!
      *
      * @param host a host
      * @param port a port
