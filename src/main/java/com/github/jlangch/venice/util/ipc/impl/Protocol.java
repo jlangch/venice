@@ -52,7 +52,7 @@ public class Protocol {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
 
-        final boolean compressData = compressor.needsCompression(message.getData());
+        final boolean isCompressData = compressor.needsCompression(message.getData());
 
         // [1] header
         final ByteBuffer header = ByteBuffer.allocate(28);
@@ -62,7 +62,7 @@ public class Protocol {
         // 4 bytes (integer) protocol version
         header.putInt(PROTOCOL_VERSION);
         // 2 bytes (short) compressed data flag
-        header.putShort(toShort(compressData));
+        header.putShort(toShort(isCompressData));
         // 2 bytes (short) encrypted data flag
         header.putShort(toShort(encryptor.isActive()));
         // 2 bytes (short) oneway flag
@@ -89,7 +89,7 @@ public class Protocol {
         byte[] payloadData = encryptor.encrypt(
                                 compressor.compress(
                                     message.getData(),
-                                    compressData));
+                                    isCompressData));
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
@@ -117,9 +117,9 @@ public class Protocol {
             final byte magic1 = header.get();
             final byte magic2 = header.get();
             final int version = header.getInt();
-            final boolean compressedData = toBool(header.getShort());
-            final boolean encryptedData = toBool(header.getShort());
-            final boolean oneway = toBool(header.getShort());
+            final boolean isCompressedData = toBool(header.getShort());
+            final boolean isEncryptedData = toBool(header.getShort());
+            final boolean isOneway = toBool(header.getShort());
             final int typeCode = header.getInt();
             final int statusCode = header.getInt();
             final long timestamp = header.getLong();
@@ -140,19 +140,17 @@ public class Protocol {
             // [2] payload meta data (maybe encrypted)
             final ByteBuffer payloadMetaFrame = IO.readFrame(ch);
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
-                                                    decryptPayloadData(
+                                                    encryptor.decrypt(
                                                         payloadMetaFrame.array(),
-                                                        encryptedData,
-                                                        encryptor));
+                                                        isEncryptedData));
 
             // [3] payload data (maybe compressed and encrypted)
             final ByteBuffer payloadFrame = IO.readFrame(ch);
             byte[] payloadData = compressor.decompress(
-                                    decryptPayloadData(
+                                    encryptor.decrypt(
                                         payloadFrame.array(),
-                                        encryptedData,
-                                        encryptor),
-                                    compressedData);
+                                        isEncryptedData),
+                                    isCompressedData);
 
             if (status == null) {
                 throw new VncException(
@@ -163,7 +161,7 @@ public class Protocol {
                     payloadMeta.getId(),
                     type,
                     status,
-                    oneway,
+                    isOneway,
                     payloadMeta.getQueueName(),
                     timestamp,
                     payloadMeta.getTopics(),
@@ -182,25 +180,6 @@ public class Protocol {
     }
 
 
-    private static byte[] decryptPayloadData(
-            final byte[] payloadData,
-            final boolean encrypted,
-            final Encryptor encryptor
-    ) {
-        byte[] data = payloadData;
-
-        // decrypt
-        if (encrypted) {
-            if (!encryptor.isActive()) {
-                throw new VncException(
-                        "Message error: the received message data is encrypted "
-                        + "but encryption is disabled!");
-            }
-            data = encryptor.decrypt(data);
-        }
-
-        return data;
-    }
 
     private static boolean toBool(final int n) {
         return n != 0;

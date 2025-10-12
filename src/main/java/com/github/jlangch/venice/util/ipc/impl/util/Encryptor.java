@@ -46,8 +46,12 @@ public class Encryptor {
 
 
     public byte[] encrypt(final byte[] data) {
+        return encrypt(data, isActive());
+    }
+
+    public byte[] encrypt(final byte[] data, final boolean encrypt) {
         Objects.requireNonNull(data);
-        if (isActive()) {
+        if (encrypt) {
             try {
                 return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(secret.getSecretBase64(), data);
             }
@@ -61,8 +65,12 @@ public class Encryptor {
     }
 
     public byte[] decrypt(final byte[] data) {
+        return decrypt(data, isActive());
+    }
+
+    public byte[] decrypt(final byte[] data, final boolean decrypt) {
         Objects.requireNonNull(data);
-        if (isActive()) {
+        if (decrypt) {
             try {
                 return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(secret.getSecretBase64(), data);
             }
