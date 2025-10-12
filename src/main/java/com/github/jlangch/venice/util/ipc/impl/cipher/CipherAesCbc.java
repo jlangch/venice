@@ -57,7 +57,7 @@ public class CipherAesCbc implements ICipher {
             System.arraycopy(secret.getSecret(), 0, iv, 0, iv.length);
 
             // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 65536, 256);
+            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 3000, 256);
 
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 
