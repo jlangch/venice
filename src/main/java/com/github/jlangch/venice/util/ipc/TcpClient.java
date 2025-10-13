@@ -68,7 +68,7 @@ public class TcpClient implements Cloneable, Closeable {
      * @param port a port
      */
     public TcpClient(final int port) {
-        this("127.0.0.1", port, false);
+        this(null, port, false);
     }
 
     /**
@@ -99,7 +99,7 @@ public class TcpClient implements Cloneable, Closeable {
      *                level communication between this client and the server.
      */
     public TcpClient(final int port, final boolean encrypt) {
-        this("127.0.0.1", port, encrypt);
+        this(null, port, encrypt);
     }
 
     /**
