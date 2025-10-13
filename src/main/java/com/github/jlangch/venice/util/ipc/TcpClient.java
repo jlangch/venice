@@ -139,8 +139,9 @@ public class TcpClient implements Cloneable, Closeable {
     public TcpClient setCompressCutoffSize(final long cutoffSize) {
         if (opened.get()) {
             throw new VncException(
-                   "The compression cutoff size cannot be set anymore once the client has opened!");
-         }
+                   "The compression cutoff size cannot be set anymore "
+                   + "once the client has been opened!");
+        }
         compressor.set(new Compressor(cutoffSize));
         return this;
     }

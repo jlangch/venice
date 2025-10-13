@@ -104,8 +104,9 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setCompressCutoffSize(final long cutoffSize) {
         if (started.get()) {
-           throw new VncException(
-                  "The compression cutoff size cannot be set anymore once the server has started!");
+            throw new VncException(
+                   "The compression cutoff size cannot be set anymore "
+                   + "once the server has been started!");
         }
         compressor.set(new Compressor(cutoffSize));
         return this;
