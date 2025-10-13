@@ -39,7 +39,7 @@ public class Encryptor {
     public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
         Objects.requireNonNull(secret);
 
-        return new Encryptor(CipherAesGcm.create(secret));
+        return new Encryptor(CipherAesGcm.create(secret, false));
     }
 
     public static Encryptor off() {

@@ -26,6 +26,7 @@ import static javax.crypto.Cipher.ENCRYPT_MODE;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.util.Objects;
 
 import javax.crypto.Cipher;
@@ -40,15 +41,20 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 public class CipherAesGcm implements ICipher {
 
     private CipherAesGcm(
-            final GCMParameterSpec gcmParameterSpec,
+            final boolean useRandomIV,
+            final byte[] staticIV,
             final SecretKeySpec keySpec
     ) {
-        this.gcmParameterSpec = gcmParameterSpec;
+        this.useRandomIV = useRandomIV;
+        this.staticIV = staticIV;
         this.keySpec = keySpec;
     }
 
 
-    public static CipherAesGcm create(final DiffieHellmanSharedSecret secret) {
+    public static CipherAesGcm create(
+        final DiffieHellmanSharedSecret secret,
+        final boolean useRandomIV
+    ) {
         Objects.requireNonNull(secret);
 
         try {
@@ -61,7 +67,7 @@ public class CipherAesGcm implements ICipher {
             // Derive key from passphrase
             byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 3000, 256);
 
-            return new CipherAesGcm(new GCMParameterSpec(128, iv), new SecretKeySpec(key, "AES"));
+            return new CipherAesGcm(useRandomIV, iv, new SecretKeySpec(key, "AES"));
         }
         catch(GeneralSecurityException ex) {
             throw new VncException("Failed to initialize AES encryption", ex);
@@ -70,18 +76,54 @@ public class CipherAesGcm implements ICipher {
 
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
+        final byte[] iv = useRandomIV ? randomIV() : staticIV;
+
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        cipher.init(ENCRYPT_MODE, keySpec, gcmParameterSpec);
+        cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
         cipher.updateAAD(aadData); // add AAD tag data before encrypting
-        return cipher.doFinal(data);
+
+        final byte[] encrypted = cipher.doFinal(data);
+
+        return useRandomIV ? concat(iv, encrypted) : encrypted;
     }
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
+        final byte[] iv = useRandomIV ? extractIV(data) : staticIV;
+        final byte[] dataRaw = useRandomIV ? extractPayload(data) : data;
+
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        cipher.init(DECRYPT_MODE, keySpec, gcmParameterSpec);
-        cipher.updateAAD(aadData);  // Add AAD details before decrypting
-        return cipher.doFinal(data);
+        cipher.init(DECRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
+        cipher.updateAAD(aadData);  // add AAD details before decrypting
+
+        return cipher.doFinal(dataRaw);
+    }
+
+
+    private static byte[] randomIV() {
+        byte[] iv = new byte[IV_LEN];
+        new SecureRandom().nextBytes(iv);
+        return iv;
+    }
+
+    private static byte[] concat(final byte[] iv, final byte[] data) {
+        final byte[] out = new byte[iv.length + data.length];
+        System.arraycopy(iv, 0, out, 0, IV_LEN);
+        System.arraycopy(data, 0, out, IV_LEN, data.length);
+        return out;
+    }
+
+    private static byte[] extractIV(final byte[] data) {
+        byte[] iv = new byte[IV_LEN];
+        System.arraycopy(data, 0, iv, 0, IV_LEN);
+        return iv;
+    }
+
+    private static byte[] extractPayload(final byte[] data) {
+        int payloadLen = data.length - IV_LEN;
+        byte[] payload = new byte[payloadLen];
+        System.arraycopy(data, IV_LEN, payload, 0, payloadLen);
+        return payload;
     }
 
 
@@ -96,6 +138,7 @@ public class CipherAesGcm implements ICipher {
     // the AAD and ciphertext haven't been tampered with
     private static byte[] aadData = "ipcmsg".getBytes(StandardCharsets.UTF_8);
 
-    private final GCMParameterSpec gcmParameterSpec;
+    private final boolean useRandomIV;
+    private final byte[] staticIV;
     private final SecretKeySpec keySpec;
 }

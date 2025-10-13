@@ -34,7 +34,7 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 public class EncryptorTest {
 
     @Test
-    public void test_encryption() {
+    public void test() {
         final DiffieHellmanKeys client = DiffieHellmanKeys.create();
         final DiffieHellmanKeys server = DiffieHellmanKeys.create();
 
@@ -58,7 +58,7 @@ public class EncryptorTest {
     }
 
     @Test
-    public void test_encryption_reuse() {
+    public void test_many() {
         final DiffieHellmanKeys client = DiffieHellmanKeys.create();
         final DiffieHellmanKeys server = DiffieHellmanKeys.create();
 
@@ -72,9 +72,9 @@ public class EncryptorTest {
         final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
         final Encryptor serverEncryptor = Encryptor.aes(serverSecret);
 
-        final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
-
         for(int ii=0; ii<1_000; ii++) {
+            final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
+
             assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data)));
             assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data)));
 
