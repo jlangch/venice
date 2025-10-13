@@ -40,6 +40,7 @@ public class PayloadMetaData {
 
     public PayloadMetaData(final Message msg) {
         this(
+            msg.isOneway(),
             msg.getType(),
             msg.getResponseStatus(),
             msg.getQueueName(),
@@ -50,6 +51,7 @@ public class PayloadMetaData {
     }
 
     public PayloadMetaData(
+            final boolean oneway,
             final MessageType type,
             final ResponseStatus responseStatus,
             final String queueName,
@@ -64,6 +66,7 @@ public class PayloadMetaData {
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(id);
 
+        this.oneway = oneway;
         this.type = type;
         this.responseStatus = responseStatus;
         this.queueName = queueName;
@@ -84,6 +87,7 @@ public class PayloadMetaData {
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(id);
 
+        this.oneway = false;
         this.type = MessageType.NULL;
         this.responseStatus = ResponseStatus.NULL;
         this.queueName = queueName;
@@ -93,6 +97,10 @@ public class PayloadMetaData {
         this.id = id;
     }
 
+
+    public boolean isOneway() {
+        return oneway;
+    }
 
     public MessageType getType() {
         return type;
@@ -131,6 +139,7 @@ public class PayloadMetaData {
         result = prime * result + ((charset == null) ? 0 : charset.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
+        result = prime * result + (oneway ? 1231 : 1237);
         result = prime * result + ((queueName == null) ? 0 : queueName.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
         result = prime * result + ((topics == null) ? 0 : topics.hashCode());
@@ -162,6 +171,8 @@ public class PayloadMetaData {
                 return false;
         } else if (!mimetype.equals(other.mimetype))
             return false;
+        if (oneway != other.oneway)
+            return false;
         if (queueName == null) {
             if (other.queueName != null)
                 return false;
@@ -179,10 +190,12 @@ public class PayloadMetaData {
         return true;
     }
 
+
     public static byte[] encode(final PayloadMetaData data) {
         Objects.requireNonNull(data);
 
-        final String s = toCode(data.type)            + '\n' +
+        final String s = (data.oneway ? "1" : "0")    + '\n' +
+                         toCode(data.type)            + '\n' +
                          toCode(data.responseStatus)  + '\n' +
                          trimToEmpty(data.queueName)  + '\n' +
                          Topics.encode(data.topics)   + '\n' +
@@ -200,23 +213,28 @@ public class PayloadMetaData {
 
         final List<String> lines = StringUtil.splitIntoLines(s);
 
-        if (lines.size() == 7) {
+        if (lines.size() == 8) {
             return new PayloadMetaData(
-                    toMessageType(lines.get(0)),      // message type
-                    toResponseStatus(lines.get(1)),   // respone status
-                    trimToNull(lines.get(2)),         // queueName
-                    Topics.decode(lines.get(3)),      // topics
-                    lines.get(4),                     // mimetype
-                    trimToNull(lines.get(5)),         // charset
-                    lines.get(6));                    // id
+                    toBool(lines.get(0)),             // oneway
+                    toMessageType(lines.get(1)),      // message type
+                    toResponseStatus(lines.get(2)),   // respone status
+                    trimToNull(lines.get(3)),         // queueName
+                    Topics.decode(lines.get(4)),      // topics
+                    lines.get(5),                     // mimetype
+                    trimToNull(lines.get(6)),         // charset
+                    lines.get(7));                    // id
         }
         else {
             throw new VncException(String.format(
-                    "Failed to decode the payload meta data. Got only %d properties instead of 5!",
+                    "Failed to decode the payload meta data. Got only %d properties instead of 8!",
                     lines.size()));
         }
     }
 
+
+    private static boolean toBool(final String s) {
+        return s.equals("1");
+    }
 
     private static String toCode(final MessageType e) {
         return String.valueOf(e.getValue());
@@ -247,6 +265,7 @@ public class PayloadMetaData {
    }
 
 
+    private final boolean oneway;
     private final MessageType type;
     private final ResponseStatus responseStatus;
     private final String queueName;

@@ -95,7 +95,7 @@ public class CipherAesGcm implements ICipher {
     }
 
     private static byte[] concat(final byte[] iv, final byte[] data) {
-        final byte[] out = new byte[iv.length + data.length];
+        byte[] out = new byte[iv.length + data.length];
         System.arraycopy(iv, 0, out, 0, IV_LEN);
         System.arraycopy(data, 0, out, IV_LEN, data.length);
         return out;

@@ -53,7 +53,7 @@ public class Protocol {
         final boolean isCompressData = compressor.needsCompression(message.getData());
 
         // [1] header
-        final ByteBuffer header = ByteBuffer.allocate(20);
+        final ByteBuffer header = ByteBuffer.allocate(18);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -63,8 +63,6 @@ public class Protocol {
         header.putShort(toShort(isCompressData));
         // 2 bytes (short) encrypted data flag
         header.putShort(toShort(encryptor.isActive()));
-        // 2 bytes (short) oneway flag
-        header.putShort(toShort(message.isOneway()));
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
         header.flip();
@@ -99,7 +97,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(20);
+            final ByteBuffer header = ByteBuffer.allocate(18);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -113,7 +111,6 @@ public class Protocol {
             final int version = header.getInt();
             final boolean isCompressedData = toBool(header.getShort());
             final boolean isEncryptedData = toBool(header.getShort());
-            final boolean isOneway = toBool(header.getShort());
             final long timestamp = header.getLong();
 
             if (magic1 != 'v' || magic2 != 'n') {
@@ -145,7 +142,7 @@ public class Protocol {
                     payloadMeta.getId(),
                     payloadMeta.getType(),
                     payloadMeta.getResponseStatus(),
-                    isOneway,
+                    payloadMeta.isOneway(),
                     payloadMeta.getQueueName(),
                     timestamp,
                     payloadMeta.getTopics(),
