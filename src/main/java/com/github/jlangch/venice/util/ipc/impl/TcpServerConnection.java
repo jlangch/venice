@@ -132,7 +132,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return State.Terminated; // client closed connection
         }
 
-        statistics.incrementMessageCount();
+        if (!isRequestDiffieHellman(request)) {
+            statistics.incrementMessageCount();
+        }
 
         if (!server.isRunning()) {
             return State.Terminated;  // this server was closed

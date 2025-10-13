@@ -37,12 +37,12 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 
 
-public class TcpRequestResponseTest {
+public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_text() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpClient client = new TcpClient(33333, true);
 
         server.start(TcpServer.echoHandler());
 
@@ -72,7 +72,7 @@ public class TcpRequestResponseTest {
     @Test
     public void test_echo_server_binary() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpClient client = new TcpClient(33333, true);
 
         server.start(TcpServer.echoHandler());
 
@@ -105,7 +105,7 @@ public class TcpRequestResponseTest {
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpClient client = new TcpClient(33333, true);
 
         server.start(TcpServer.echoHandler());
 
@@ -144,7 +144,7 @@ public class TcpRequestResponseTest {
     @Test
     public void test_echo_server_multiple_messages() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpClient client = new TcpClient(33333, true);
 
         server.start(TcpServer.echoHandler());
 
@@ -185,7 +185,7 @@ public class TcpRequestResponseTest {
     @Test
     public void test_echo_server_multiple_messages_oneway() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpClient client = new TcpClient(33333, true);
 
         server.start(TcpServer.echoHandler());
 
@@ -216,7 +216,7 @@ public class TcpRequestResponseTest {
     @Test
     public void test_echo_server_multiple_messages_mixed() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpClient client = new TcpClient(33333, true);
 
         server.start(TcpServer.echoHandler());
 
@@ -271,7 +271,7 @@ public class TcpRequestResponseTest {
                 final int clientNr = cc;
 
                 futures.add(es.submit(() -> {
-                    final TcpClient client = new TcpClient(33333);
+                    final TcpClient client = new TcpClient(33333, true);
                     try {
                         client.open();
 
@@ -312,7 +312,7 @@ public class TcpRequestResponseTest {
     @Test
     public void test_remote_code_execution() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpClient client = new TcpClient(33333, true);
 
         final Venice venice = new Venice();
 

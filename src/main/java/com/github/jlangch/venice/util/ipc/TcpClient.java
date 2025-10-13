@@ -87,6 +87,22 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     /**
+     * Create a new TcpClient connecting to a TcpServer on the local host
+     * and port
+     *
+     * <p>The client is NOT thread safe!
+     *
+     * <p>The client must be closed after use!
+     *
+     * @param port a port
+     * @param encrypt if <code>true</code> encrypt the payload data at transport
+     *                level communication between this client and the server.
+     */
+    public TcpClient(final int port, final boolean encrypt) {
+        this("127.0.0.1", port, encrypt);
+    }
+
+    /**
      * Create a new TcpClient connecting to a TcpServer on the specified host
      * and port
      *
