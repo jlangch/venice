@@ -34,48 +34,23 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 public class CipherAesGcmTest {
 
     @Test
-    public void test_static_IV() throws Exception {
+    public void test() throws Exception {
         final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
         final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
 
         final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, false);
+        final CipherAesGcm cipher = CipherAesGcm.create(secret);
 
         assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
     }
 
     @Test
-    public void test_static_IV_many() throws Exception {
+    public void test_many() throws Exception {
         final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
         final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, false);
-
-        for(int ii=0; ii<1_000; ii++) {
-            final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
-            assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
-        }
-    }
-
-    @Test
-    public void test_random_IV() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
-
-        final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
-
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, true);
-
-        assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
-    }
-
-    @Test
-    public void test_random_IV_many() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
-
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, true);
+        final CipherAesGcm cipher = CipherAesGcm.create(secret);
 
         for(int ii=0; ii<1_000; ii++) {
             final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));

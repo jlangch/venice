@@ -40,34 +40,22 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 public class CipherAesGcm implements ICipher {
 
-    private CipherAesGcm(
-            final boolean useRandomIV,
-            final byte[] staticIV,
-            final SecretKeySpec keySpec
-    ) {
-        this.useRandomIV = useRandomIV;
-        this.staticIV = staticIV;
+    private CipherAesGcm(final SecretKeySpec keySpec) {
         this.keySpec = keySpec;
     }
 
 
-    public static CipherAesGcm create(
-        final DiffieHellmanSharedSecret secret,
-        final boolean useRandomIV
-    ) {
+    public static CipherAesGcm create(final DiffieHellmanSharedSecret secret) {
         Objects.requireNonNull(secret);
 
         try {
             byte[] salt = new byte[SALT_LEN];
             System.arraycopy(secret.getSecret(), 0, salt, 0, salt.length);
 
-            byte[] iv = new byte[IV_LEN];
-            System.arraycopy(secret.getSecret(), 0, iv, 0, iv.length);
-
             // Derive key from passphrase
             byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 3000, 256);
 
-            return new CipherAesGcm(useRandomIV, iv, new SecretKeySpec(key, "AES"));
+            return new CipherAesGcm(new SecretKeySpec(key, "AES"));
         }
         catch(GeneralSecurityException ex) {
             throw new VncException("Failed to initialize AES encryption", ex);
@@ -76,7 +64,7 @@ public class CipherAesGcm implements ICipher {
 
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
-        final byte[] iv = useRandomIV ? randomIV() : staticIV;
+        final byte[] iv = randomIV();
 
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
@@ -84,13 +72,13 @@ public class CipherAesGcm implements ICipher {
 
         final byte[] encrypted = cipher.doFinal(data);
 
-        return useRandomIV ? concat(iv, encrypted) : encrypted;
+        return concat(iv, encrypted);
     }
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
-        final byte[] iv = useRandomIV ? extractIV(data) : staticIV;
-        final byte[] dataRaw = useRandomIV ? extractPayload(data) : data;
+        final byte[] iv = extractIV(data);
+        final byte[] dataRaw = extractPayload(data);
 
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(DECRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
@@ -138,7 +126,5 @@ public class CipherAesGcm implements ICipher {
     // the AAD and ciphertext haven't been tampered with
     private static byte[] aadData = "ipcmsg".getBytes(StandardCharsets.UTF_8);
 
-    private final boolean useRandomIV;
-    private final byte[] staticIV;
     private final SecretKeySpec keySpec;
 }
