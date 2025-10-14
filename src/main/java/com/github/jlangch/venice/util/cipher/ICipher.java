@@ -28,7 +28,7 @@ import java.security.GeneralSecurityException;
 public interface ICipher {
 
     /**
-     * Encrypts data
+     * Encrypts binary data
      *
      * @param data the binary data to encrypt
      * @return the encrypted binary data
@@ -37,7 +37,7 @@ public interface ICipher {
     byte[] encrypt(final byte[] data) throws GeneralSecurityException;
 
     /**
-     * Decrypts data
+     * Decrypts binary data
      *
      * @param data the binary data to decrypt
      * @return the decrypted binary data
@@ -57,7 +57,7 @@ public interface ICipher {
     String encrypt(final String data, final Base64Scheme scheme) throws GeneralSecurityException;
 
     /**
-     * Decrypts Base64 encoded encrypted data
+     * Decrypts a Base64 encoded encrypted string
      *
      * @param dataBase64 the Base64 encoded encrypted string
      * @param scheme the Base64 scheme to use
