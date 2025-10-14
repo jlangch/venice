@@ -29,6 +29,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
+
 
 public class CipherAesCbcTest {
 
@@ -56,6 +58,20 @@ public class CipherAesCbcTest {
     }
 
     @Test
+    public void test_randomIV_many_vary_length() throws Exception {
+        final String secret = "1234567890";
+
+        final CipherAesCbc cipher = CipherAesCbc.create(secret);
+
+        for(int ii=0; ii<2_000; ii++) {
+        	final String suffix = StringUtil.repeat("a", ii);
+
+            final byte[] data = ("hello world " + suffix).getBytes(StandardCharsets.UTF_8);
+            assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
+        }
+    }
+
+    @Test
     public void test_staticIV() throws Exception {
         final String secret = "1234567890";
 
@@ -74,6 +90,20 @@ public class CipherAesCbcTest {
 
         for(int ii=0; ii<1_000; ii++) {
             final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
+            assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
+        }
+    }
+
+    @Test
+    public void test_staticIV_many_vary_length() throws Exception {
+        final String secret = "1234567890";
+
+        final CipherAesCbc cipher = CipherAesCbc.create(secret, "PBKDF2WithHmacSHA256", 3000, 256, KEY_SALT, STATIC_IV);
+
+        for(int ii=0; ii<2_000; ii++) {
+        	final String suffix = StringUtil.repeat("a", ii);
+
+            final byte[] data = ("hello world " + suffix).getBytes(StandardCharsets.UTF_8);
             assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
         }
     }

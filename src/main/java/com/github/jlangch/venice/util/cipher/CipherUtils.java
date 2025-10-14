@@ -53,12 +53,6 @@ public class CipherUtils {
         return out;
     }
 
-    public static byte[] extract(final byte[] data, final int startPos, final int length) {
-        byte[] buf = new byte[length];
-        System.arraycopy(data, startPos, buf, 0, length);
-        return buf;
-    }
-
     public static byte[] deriveKeyFromPassphrase(
             final String passphrase,
             final String secretKeyFactoryName,

@@ -114,13 +114,10 @@ public class CipherAesCbc extends AbstractCipher implements ICipher {
     }
 
     private byte[] decryptRandomIV(final byte[] data) throws GeneralSecurityException {
-        final byte[] iv = CipherUtils.extract(data, 0, IV_LEN);
-        final byte[] dataRaw = CipherUtils.extract(data, IV_LEN, data.length - IV_LEN);
-
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
+        cipher.init(DECRYPT_MODE, keySpec, new IvParameterSpec(data, 0, IV_LEN));
 
-        return cipher.doFinal(dataRaw);
+        return cipher.doFinal(data, IV_LEN, data.length - IV_LEN);
     }
 
     private byte[] encryptStaticIV(final byte[] data) throws GeneralSecurityException {
