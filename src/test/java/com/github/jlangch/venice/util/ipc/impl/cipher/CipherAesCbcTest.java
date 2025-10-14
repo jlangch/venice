@@ -31,7 +31,7 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
-public class CipherAesGcmTest {
+public class CipherAesCbcTest {
 
     @Test
     public void test_randomIV() throws Exception {
@@ -40,7 +40,7 @@ public class CipherAesGcmTest {
 
         final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret);
+        final CipherAesCbc cipher = CipherAesCbc.create(secret);
 
         assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
     }
@@ -50,14 +50,13 @@ public class CipherAesGcmTest {
         final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
         final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret);
+        final CipherAesCbc cipher = CipherAesCbc.create(secret);
 
         for(int ii=0; ii<1_000; ii++) {
             final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
             assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
         }
     }
-
 
     @Test
     public void test_staticIV() throws Exception {
@@ -66,7 +65,7 @@ public class CipherAesGcmTest {
 
         final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, 3000, 256, KEY_SALT, null, STATIC_IV);
+        final CipherAesCbc cipher = CipherAesCbc.create(secret, 3000, 256, KEY_SALT, STATIC_IV);
 
         assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
     }
@@ -76,7 +75,7 @@ public class CipherAesGcmTest {
         final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
         final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, 3000, 256, KEY_SALT, null, STATIC_IV);
+        final CipherAesCbc cipher = CipherAesCbc.create(secret, 3000, 256, KEY_SALT, STATIC_IV);
 
         for(int ii=0; ii<1_000; ii++) {
             final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
@@ -89,5 +88,5 @@ public class CipherAesGcmTest {
             0x45, 0x1a, 0x79, 0x67, 0x5e,
             0x03, 0x71, 0x44, 0x2f, 0x4f };
 
-    private static byte[] STATIC_IV = new byte[] {0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0};
+    private static byte[] STATIC_IV = new byte[] {0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0};
 }

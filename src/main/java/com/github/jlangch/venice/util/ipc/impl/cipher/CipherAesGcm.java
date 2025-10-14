@@ -26,7 +26,6 @@ import static javax.crypto.Cipher.ENCRYPT_MODE;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.SecureRandom;
 import java.util.Objects;
 
 import javax.crypto.Cipher;
@@ -40,19 +39,46 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 public class CipherAesGcm implements ICipher {
 
-    private CipherAesGcm(final SecretKeySpec keySpec) {
+    private CipherAesGcm(
+            final SecretKeySpec keySpec,
+            final byte[] aadData,
+            final byte[] staticIV
+    ) {
         this.keySpec = keySpec;
+        this.aadData = aadData;
+        this.staticIV = staticIV;
     }
 
-
     public static CipherAesGcm create(final DiffieHellmanSharedSecret secret) {
+        return create(secret, KEY_ITERATIONS, KEY_LEN, KEY_SALT, AAD_DATA, null);
+    }
+
+    public static CipherAesGcm create(
+            final DiffieHellmanSharedSecret secret,
+            final int keyIterationCount,
+            final int keyLength,
+            final byte[] keySalt,
+            final byte[] aadData,
+            final byte[] staticIV
+    ) {
         Objects.requireNonNull(secret);
+
+        if (staticIV != null && staticIV.length != IV_LEN) {
+            throw new IllegalArgumentException("A static IV must have 12 bytes!");
+        }
 
         try {
             // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), SALT, 3000, 256);
+            byte[] key = Util.deriveKeyFromPassphrase(
+                            secret.getSecretBase64(),
+                            CipherUtils.isArrayEmpty(keySalt) ? KEY_SALT : keySalt,
+                            keyIterationCount,
+                            keyLength);
 
-            return new CipherAesGcm(new SecretKeySpec(key, "AES"));
+            return new CipherAesGcm(
+                        new SecretKeySpec(key, "AES"),
+                        CipherUtils.isArrayEmpty(keySalt) ? AAD_DATA : aadData,
+                        CipherUtils.emptyToNull(staticIV));
         }
         catch(GeneralSecurityException ex) {
             throw new VncException("Failed to initialize AES encryption", ex);
@@ -61,58 +87,74 @@ public class CipherAesGcm implements ICipher {
 
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
-        final byte[] iv = randomIV();
-
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
-        cipher.updateAAD(aadData); // add AAD tag data before encrypting
-
-        final byte[] encrypted = cipher.doFinal(data);
-
-        return concat(iv, encrypted);
+        return staticIV == null
+                ? encryptRandomIV(data)
+                : encryptStaticIV(data);
     }
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
-        final byte[] iv = extractIV(data);
-        final byte[] dataRaw = extractPayload(data);
+        return staticIV == null
+                ? decryptRandomIV(data)
+                : decryptStaticIV(data);
+    }
+
+
+    private byte[] encryptRandomIV(final byte[] data) throws GeneralSecurityException {
+        final byte[] iv = CipherUtils.randomIV(IV_LEN);
+
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
+
+        if (!CipherUtils.isArrayEmpty(aadData)) {
+            cipher.updateAAD(aadData); // add AAD tag data before encrypting
+        }
+
+        final byte[] encrypted = cipher.doFinal(data);
+
+        return CipherUtils.concat(iv, encrypted);
+    }
+
+    private byte[] encryptStaticIV(final byte[] data) throws GeneralSecurityException {
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, staticIV));
+
+        if (!CipherUtils.isArrayEmpty(aadData)) {
+            cipher.updateAAD(aadData); // add AAD tag data before encrypting
+        }
+
+        return cipher.doFinal(data);
+    }
+
+    private byte[] decryptRandomIV(final byte[] data) throws GeneralSecurityException {
+        final byte[] iv = CipherUtils.extract(data, 0, IV_LEN);
+        final byte[] dataRaw = CipherUtils.extract(data, IV_LEN, data.length - IV_LEN);
 
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(DECRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
-        cipher.updateAAD(aadData);  // add AAD details before decrypting
+
+        if (!CipherUtils.isArrayEmpty(aadData)) {
+            cipher.updateAAD(aadData); // add AAD tag data before decrypting
+        }
 
         return cipher.doFinal(dataRaw);
     }
 
+    private byte[] decryptStaticIV(final byte[] data) throws GeneralSecurityException {
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(DECRYPT_MODE, keySpec, new GCMParameterSpec(128, staticIV));
 
-    private static byte[] randomIV() {
-        byte[] iv = new byte[IV_LEN];
-        new SecureRandom().nextBytes(iv);
-        return iv;
-    }
+        if (!CipherUtils.isArrayEmpty(aadData)) {
+            cipher.updateAAD(aadData); // add AAD tag data before decrypting
+        }
 
-    private static byte[] concat(final byte[] iv, final byte[] data) {
-        byte[] out = new byte[iv.length + data.length];
-        System.arraycopy(iv, 0, out, 0, IV_LEN);
-        System.arraycopy(data, 0, out, IV_LEN, data.length);
-        return out;
-    }
-
-    private static byte[] extractIV(final byte[] data) {
-        byte[] iv = new byte[IV_LEN];
-        System.arraycopy(data, 0, iv, 0, IV_LEN);
-        return iv;
-    }
-
-    private static byte[] extractPayload(final byte[] data) {
-        int payloadLen = data.length - IV_LEN;
-        byte[] payload = new byte[payloadLen];
-        System.arraycopy(data, IV_LEN, payload, 0, payloadLen);
-        return payload;
+        return cipher.doFinal(data);
     }
 
 
     private static int IV_LEN = 12;
+    private static int KEY_ITERATIONS = 3000;
+    private static int KEY_LEN = 256;
 
     // An AAD (Additional Authenticated Data) tag in AES-GCM is a data string
     // that is authenticated, but not encrypted, alongside the ciphertext. It's
@@ -120,12 +162,15 @@ public class CipherAesGcm implements ICipher {
     // by including it in the authentication tag calculation. This provides an
     // extra layer of security, helping to protect against attacks by ensuring
     // the AAD and ciphertext haven't been tampered with
-    private static byte[] aadData = "ipcmsg".getBytes(StandardCharsets.UTF_8);
+    private static byte[] AAD_DATA = "ipcmsg".getBytes(StandardCharsets.UTF_8);
 
 
-    private static byte[] SALT = new byte[] {
+    private static byte[] KEY_SALT = new byte[] {
             0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
             0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
 
+
     private final SecretKeySpec keySpec;
+    private final byte[] aadData;
+    private final byte[] staticIV;
 }

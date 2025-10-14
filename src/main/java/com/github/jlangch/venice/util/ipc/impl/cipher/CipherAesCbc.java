@@ -44,54 +44,104 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 public class CipherAesCbc implements ICipher {
 
     private CipherAesCbc(
-            final Cipher cipherEncrypt,
-            final Cipher cipherDecrypt
+            final SecretKeySpec keySpec,
+            final byte[] staticIV
     ) {
-        this.cipherEncrypt = cipherEncrypt;
-        this.cipherDecrypt = cipherDecrypt;
+        this.keySpec = keySpec;
+        this.staticIV = staticIV;
     }
 
+
     public static CipherAesCbc create(final DiffieHellmanSharedSecret secret) {
+        return create(secret, KEY_ITERATIONS, KEY_LEN, KEY_SALT, null);
+    }
+
+    public static CipherAesCbc create(
+            final DiffieHellmanSharedSecret secret,
+            final int keyIterationCount,
+            final int keyLength,
+            final byte[] keySalt,
+            final byte[] staticIV
+    ) {
         Objects.requireNonNull(secret);
 
         try {
-            byte[] salt = new byte[16];
-            System.arraycopy(secret.getSecret(), 0, salt, 0, salt.length);
-
-            byte[] iv = new byte[16];
-            System.arraycopy(secret.getSecret(), 0, iv, 0, iv.length);
-
             // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 3000, 256);
+            byte[] key = Util.deriveKeyFromPassphrase(
+                                secret.getSecretBase64(),
+                                CipherUtils.isArrayEmpty(keySalt) ? KEY_SALT : keySalt,
+                                keyIterationCount,
+                                keyLength);
 
-            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-
-            Cipher cipherEncrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            Cipher cipherDecrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            // Create the ciphers
-            cipherEncrypt.init(ENCRYPT_MODE, keySpec, new IvParameterSpec(iv));
-            cipherDecrypt.init(DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
-
-            return new CipherAesCbc(cipherEncrypt, cipherDecrypt);
+            return new CipherAesCbc(
+                    new SecretKeySpec(key, "AES"),
+                    CipherUtils.emptyToNull(staticIV));
         }
         catch(GeneralSecurityException ex) {
             throw new VncException("Failed to initialize AES encryption", ex);
         }
-
     }
 
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
-        return cipherEncrypt.doFinal(data);
+        return staticIV == null
+                ? encryptRandomIV(data)
+                : encryptStaticIV(data);
     }
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
-        return cipherDecrypt.doFinal(data);
+        return staticIV == null
+                ? decryptRandomIV(data)
+                : decryptStaticIV(data);
     }
 
 
-    private final Cipher cipherEncrypt;
-    private final Cipher cipherDecrypt;
+    private byte[] encryptRandomIV(final byte[] data) throws GeneralSecurityException {
+        final byte[] iv = CipherUtils.randomIV(IV_LEN);
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(ENCRYPT_MODE, keySpec, new IvParameterSpec(iv));
+
+        final byte[] encrypted = cipher.doFinal(data);
+
+        return CipherUtils.concat(iv, encrypted);
+    }
+
+    private byte[] decryptRandomIV(final byte[] data) throws GeneralSecurityException {
+        final byte[] iv = CipherUtils.extract(data, 0, IV_LEN);
+        final byte[] dataRaw = CipherUtils.extract(data, IV_LEN, data.length - IV_LEN);
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
+
+        return cipher.doFinal(dataRaw);
+    }
+
+    private byte[] encryptStaticIV(final byte[] data) throws GeneralSecurityException {
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(ENCRYPT_MODE, keySpec, new IvParameterSpec(staticIV));
+
+        return cipher.doFinal(data);
+    }
+
+    private byte[] decryptStaticIV(final byte[] data) throws GeneralSecurityException {
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(DECRYPT_MODE, keySpec, new IvParameterSpec(staticIV));
+
+        return cipher.doFinal(data);
+    }
+
+
+    private static int IV_LEN = 16;
+    private static int KEY_ITERATIONS = 3000;
+    private static int KEY_LEN = 256;
+
+    private static byte[] KEY_SALT = new byte[] {
+            0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
+            0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
+
+
+    private final SecretKeySpec keySpec;
+    private final byte[] staticIV;
 }
