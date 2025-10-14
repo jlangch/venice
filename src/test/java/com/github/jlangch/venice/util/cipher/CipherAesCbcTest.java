@@ -19,24 +19,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.cipher;
+package com.github.jlangch.venice.util.cipher;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.charset.Charset;
 
 import org.junit.jupiter.api.Test;
-
-import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
 public class CipherAesCbcTest {
 
     @Test
     public void test_randomIV() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
         final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
 
@@ -47,8 +44,7 @@ public class CipherAesCbcTest {
 
     @Test
     public void test_randomIV_many() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
         final CipherAesCbc cipher = CipherAesCbc.create(secret);
 
@@ -60,22 +56,20 @@ public class CipherAesCbcTest {
 
     @Test
     public void test_staticIV() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
         final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
 
-        final CipherAesCbc cipher = CipherAesCbc.create(secret, 3000, 256, KEY_SALT, STATIC_IV);
+        final CipherAesCbc cipher = CipherAesCbc.create(secret, "PBKDF2WithHmacSHA256", 3000, 256, KEY_SALT, STATIC_IV);
 
         assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
     }
 
     @Test
     public void test_staticIV_many() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
-        final CipherAesCbc cipher = CipherAesCbc.create(secret, 3000, 256, KEY_SALT, STATIC_IV);
+        final CipherAesCbc cipher = CipherAesCbc.create(secret, "PBKDF2WithHmacSHA256", 3000, 256, KEY_SALT, STATIC_IV);
 
         for(int ii=0; ii<1_000; ii++) {
             final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
@@ -83,10 +77,32 @@ public class CipherAesCbcTest {
         }
     }
 
+    @Test
+    public void test_omni() throws Exception {
+        final String OMNI_MASTER_PWD = "1234567";
 
-    private static byte[] KEY_SALT = new byte[] {
-            0x45, 0x1a, 0x79, 0x67, 0x5e,
-            0x03, 0x71, 0x44, 0x2f, 0x4f };
+        final String data = "john.doe@foo.org";
 
-    private static byte[] STATIC_IV = new byte[] {0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0};
+        final CipherAesCbc cipher = CipherAesCbc.create(
+                                        OMNI_MASTER_PWD,
+                                        "PBKDF2WithHmacSHA256",
+                                        65536,
+                                        256,
+                                        new byte[] { (byte)0xA9, (byte)0x9B, (byte)0xC8, (byte)0x32,
+                                                     (byte)0x56, (byte)0x35, (byte)0xE3, (byte)0x03 },
+                                        new byte[] {0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0});
+
+        // Use URL safe Base64 encoder/decoder
+        assertEquals(data, cipher.decrypt(
+                                cipher.encrypt(data, Base64Scheme.UrlSafe),
+                                Base64Scheme.UrlSafe));
+    }
+
+
+
+    private static byte[] KEY_SALT = new byte[] { 0x45, 0x1a, 0x79, 0x67, 0x5e,
+                                                  0x03, 0x71, 0x44, 0x2f, 0x4f };
+
+    private static byte[] STATIC_IV = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0,
+                                                   0, 0, 0, 0, 0, 0, 0, 0};
 }

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.cipher;
+package com.github.jlangch.venice.util.cipher;
 
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
@@ -33,11 +33,9 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.crypt.Util;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
-public class CipherAesGcm implements ICipher {
+public class CipherAesGcm extends AbstractCipher implements ICipher {
 
     private CipherAesGcm(
             final SecretKeySpec keySpec,
@@ -49,12 +47,13 @@ public class CipherAesGcm implements ICipher {
         this.staticIV = staticIV;
     }
 
-    public static CipherAesGcm create(final DiffieHellmanSharedSecret secret) {
-        return create(secret, KEY_ITERATIONS, KEY_LEN, KEY_SALT, AAD_DATA, null);
+    public static CipherAesGcm create(final String secret) {
+        return create(secret, SECRET_KEY_FACTORY, KEY_ITERATIONS, KEY_LEN, KEY_SALT, AAD_DATA, null);
     }
 
     public static CipherAesGcm create(
-            final DiffieHellmanSharedSecret secret,
+            final String secret,
+            final String secretKeyFactoryName,
             final int keyIterationCount,
             final int keyLength,
             final byte[] keySalt,
@@ -62,6 +61,7 @@ public class CipherAesGcm implements ICipher {
             final byte[] staticIV
     ) {
         Objects.requireNonNull(secret);
+        Objects.requireNonNull(secretKeyFactoryName);
 
         if (staticIV != null && staticIV.length != IV_LEN) {
             throw new IllegalArgumentException("A static IV must have 12 bytes!");
@@ -69,15 +69,16 @@ public class CipherAesGcm implements ICipher {
 
         try {
             // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(
-                            secret.getSecretBase64(),
-                            CipherUtils.isArrayEmpty(keySalt) ? KEY_SALT : keySalt,
+            byte[] key = CipherUtils.deriveKeyFromPassphrase(
+                            secret,
+                            secretKeyFactoryName,
+                            CipherUtils.isEmpty(keySalt) ? KEY_SALT : keySalt,
                             keyIterationCount,
                             keyLength);
 
             return new CipherAesGcm(
                         new SecretKeySpec(key, "AES"),
-                        CipherUtils.isArrayEmpty(keySalt) ? AAD_DATA : aadData,
+                        CipherUtils.isEmpty(keySalt) ? AAD_DATA : aadData,
                         CipherUtils.emptyToNull(staticIV));
         }
         catch(GeneralSecurityException ex) {
@@ -87,6 +88,8 @@ public class CipherAesGcm implements ICipher {
 
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
+        Objects.requireNonNull(data);
+
         return staticIV == null
                 ? encryptRandomIV(data)
                 : encryptStaticIV(data);
@@ -94,6 +97,8 @@ public class CipherAesGcm implements ICipher {
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
+        Objects.requireNonNull(data);
+
         return staticIV == null
                 ? decryptRandomIV(data)
                 : decryptStaticIV(data);
@@ -106,7 +111,7 @@ public class CipherAesGcm implements ICipher {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
 
-        if (!CipherUtils.isArrayEmpty(aadData)) {
+        if (!CipherUtils.isEmpty(aadData)) {
             cipher.updateAAD(aadData); // add AAD tag data before encrypting
         }
 
@@ -119,7 +124,7 @@ public class CipherAesGcm implements ICipher {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(ENCRYPT_MODE, keySpec, new GCMParameterSpec(128, staticIV));
 
-        if (!CipherUtils.isArrayEmpty(aadData)) {
+        if (!CipherUtils.isEmpty(aadData)) {
             cipher.updateAAD(aadData); // add AAD tag data before encrypting
         }
 
@@ -133,7 +138,7 @@ public class CipherAesGcm implements ICipher {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(DECRYPT_MODE, keySpec, new GCMParameterSpec(128, iv));
 
-        if (!CipherUtils.isArrayEmpty(aadData)) {
+        if (!CipherUtils.isEmpty(aadData)) {
             cipher.updateAAD(aadData); // add AAD tag data before decrypting
         }
 
@@ -144,7 +149,7 @@ public class CipherAesGcm implements ICipher {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(DECRYPT_MODE, keySpec, new GCMParameterSpec(128, staticIV));
 
-        if (!CipherUtils.isArrayEmpty(aadData)) {
+        if (!CipherUtils.isEmpty(aadData)) {
             cipher.updateAAD(aadData); // add AAD tag data before decrypting
         }
 
@@ -152,9 +157,12 @@ public class CipherAesGcm implements ICipher {
     }
 
 
-    private static int IV_LEN = 12;
-    private static int KEY_ITERATIONS = 3000;
-    private static int KEY_LEN = 256;
+    public static String SECRET_KEY_FACTORY = "PBKDF2WithHmacSHA256";
+
+    public static int IV_LEN = 12;
+    public static int KEY_ITERATIONS = 3000;
+    public static int KEY_LEN = 256;
+
 
     // An AAD (Additional Authenticated Data) tag in AES-GCM is a data string
     // that is authenticated, but not encrypted, alongside the ciphertext. It's

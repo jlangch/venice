@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.cipher;
+package com.github.jlangch.venice.util.cipher;
 
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
@@ -32,8 +32,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.crypt.Util;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
 /**
@@ -41,7 +39,7 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
  *
  * AES CBC with PKCS5Padding padding scheme can lead to padding oracle attacks
  */
-public class CipherAesCbc implements ICipher {
+public class CipherAesCbc extends AbstractCipher implements ICipher {
 
     private CipherAesCbc(
             final SecretKeySpec keySpec,
@@ -52,24 +50,27 @@ public class CipherAesCbc implements ICipher {
     }
 
 
-    public static CipherAesCbc create(final DiffieHellmanSharedSecret secret) {
-        return create(secret, KEY_ITERATIONS, KEY_LEN, KEY_SALT, null);
+    public static CipherAesCbc create(final String secret) {
+        return create(secret, SECRET_KEY_FACTORY, KEY_ITERATIONS, KEY_LEN, KEY_SALT, null);
     }
 
     public static CipherAesCbc create(
-            final DiffieHellmanSharedSecret secret,
+            final String secret,
+            final String secretKeyFactoryName,
             final int keyIterationCount,
             final int keyLength,
             final byte[] keySalt,
             final byte[] staticIV
     ) {
         Objects.requireNonNull(secret);
+        Objects.requireNonNull(secretKeyFactoryName);
 
         try {
             // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(
-                                secret.getSecretBase64(),
-                                CipherUtils.isArrayEmpty(keySalt) ? KEY_SALT : keySalt,
+            byte[] key = CipherUtils.deriveKeyFromPassphrase(
+                                secret,
+                                secretKeyFactoryName,
+                                CipherUtils.isEmpty(keySalt) ? KEY_SALT : keySalt,
                                 keyIterationCount,
                                 keyLength);
 
@@ -84,6 +85,8 @@ public class CipherAesCbc implements ICipher {
 
     @Override
     public byte[] encrypt(final byte[] data) throws GeneralSecurityException {
+        Objects.requireNonNull(data);
+
         return staticIV == null
                 ? encryptRandomIV(data)
                 : encryptStaticIV(data);
@@ -91,6 +94,8 @@ public class CipherAesCbc implements ICipher {
 
     @Override
     public byte[] decrypt(final byte[] data) throws GeneralSecurityException {
+        Objects.requireNonNull(data);
+
         return staticIV == null
                 ? decryptRandomIV(data)
                 : decryptStaticIV(data);
@@ -133,9 +138,12 @@ public class CipherAesCbc implements ICipher {
     }
 
 
-    private static int IV_LEN = 16;
-    private static int KEY_ITERATIONS = 3000;
-    private static int KEY_LEN = 256;
+    public static String SECRET_KEY_FACTORY = "PBKDF2WithHmacSHA256";
+
+    public static int IV_LEN = 16;
+    public static int KEY_ITERATIONS = 3000;
+    public static int KEY_LEN = 256;
+
 
     private static byte[] KEY_SALT = new byte[] {
             0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,

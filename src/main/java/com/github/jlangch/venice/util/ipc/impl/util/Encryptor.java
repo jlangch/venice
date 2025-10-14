@@ -24,9 +24,9 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 import java.util.Objects;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.cipher.CipherAesGcm;
+import com.github.jlangch.venice.util.cipher.ICipher;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
-import com.github.jlangch.venice.util.ipc.impl.cipher.CipherAesGcm;
-import com.github.jlangch.venice.util.ipc.impl.cipher.ICipher;
 
 
 public class Encryptor {
@@ -39,7 +39,7 @@ public class Encryptor {
     public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
         Objects.requireNonNull(secret);
 
-        return new Encryptor(CipherAesGcm.create(secret));
+        return new Encryptor(CipherAesGcm.create(secret.getSecretBase64()));
     }
 
     public static Encryptor off() {

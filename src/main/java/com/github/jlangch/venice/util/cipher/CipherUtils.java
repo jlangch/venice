@@ -19,16 +19,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.cipher;
+package com.github.jlangch.venice.util.cipher;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 
 public class CipherUtils {
 
-    public static boolean isArrayEmpty(final byte[] data) {
+    public static boolean isEmpty(final byte[] data) {
         return data == null || data.length == 0;
     }
+
     public static byte[] emptyToNull(final byte[] data) {
         return data != null && data.length == 0 ? null : data;
     }
@@ -50,6 +57,18 @@ public class CipherUtils {
         byte[] buf = new byte[length];
         System.arraycopy(data, startPos, buf, 0, length);
         return buf;
+    }
+
+    public static byte[] deriveKeyFromPassphrase(
+            final String passphrase,
+            final String secretKeyFactoryName,
+            final byte[] salt,
+            final int iterationCount,
+            final int keyLength
+    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt, iterationCount, keyLength);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(secretKeyFactoryName);
+        return factory.generateSecret(spec).getEncoded();
     }
 
 }

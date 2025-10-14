@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.cipher;
+package com.github.jlangch.venice.util.cipher;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
@@ -27,16 +27,12 @@ import java.nio.charset.Charset;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
-import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
-
 
 public class CipherAesGcmTest {
 
     @Test
     public void test_randomIV() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
         final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
 
@@ -47,8 +43,7 @@ public class CipherAesGcmTest {
 
     @Test
     public void test_randomIV_many() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
         final CipherAesGcm cipher = CipherAesGcm.create(secret);
 
@@ -61,22 +56,20 @@ public class CipherAesGcmTest {
 
     @Test
     public void test_staticIV() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
         final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, 3000, 256, KEY_SALT, null, STATIC_IV);
+        final CipherAesGcm cipher = CipherAesGcm.create(secret, "PBKDF2WithHmacSHA256", 3000, 256, KEY_SALT, null, STATIC_IV);
 
         assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
     }
 
     @Test
     public void test_staticIV_many() throws Exception {
-        final DiffieHellmanKeys keys = DiffieHellmanKeys.create();
-        final DiffieHellmanSharedSecret secret = keys.generateSharedSecret(keys.getPublicKeyBase64());
+        final String secret = "1234567890";
 
-        final CipherAesGcm cipher = CipherAesGcm.create(secret, 3000, 256, KEY_SALT, null, STATIC_IV);
+        final CipherAesGcm cipher = CipherAesGcm.create(secret, "PBKDF2WithHmacSHA256", 3000, 256, KEY_SALT, null, STATIC_IV);
 
         for(int ii=0; ii<1_000; ii++) {
             final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));

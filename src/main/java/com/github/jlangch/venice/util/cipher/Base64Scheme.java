@@ -19,15 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.cipher;
-
-import java.security.GeneralSecurityException;
+package com.github.jlangch.venice.util.cipher;
 
 
-public interface ICipher {
+public enum Base64Scheme {
 
-    byte[] encrypt(final byte[] data) throws GeneralSecurityException;
+    Standard,   // RFC4648
 
-    byte[] decrypt(final byte[] data) throws GeneralSecurityException;
+    UrlSafe;    // RFC4648_URLSAFE
 
 }
