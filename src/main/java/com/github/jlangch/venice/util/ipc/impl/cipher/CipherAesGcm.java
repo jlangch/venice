@@ -49,11 +49,8 @@ public class CipherAesGcm implements ICipher {
         Objects.requireNonNull(secret);
 
         try {
-            byte[] salt = new byte[SALT_LEN];
-            System.arraycopy(secret.getSecret(), 0, salt, 0, salt.length);
-
             // Derive key from passphrase
-            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), salt, 3000, 256);
+            byte[] key = Util.deriveKeyFromPassphrase(secret.getSecretBase64(), SALT, 3000, 256);
 
             return new CipherAesGcm(new SecretKeySpec(key, "AES"));
         }
@@ -115,7 +112,6 @@ public class CipherAesGcm implements ICipher {
     }
 
 
-    private static int SALT_LEN = 16;
     private static int IV_LEN = 12;
 
     // An AAD (Additional Authenticated Data) tag in AES-GCM is a data string
@@ -125,6 +121,11 @@ public class CipherAesGcm implements ICipher {
     // extra layer of security, helping to protect against attacks by ensuring
     // the AAD and ciphertext haven't been tampered with
     private static byte[] aadData = "ipcmsg".getBytes(StandardCharsets.UTF_8);
+
+
+    private static byte[] SALT = new byte[] {
+            0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
+            0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
 
     private final SecretKeySpec keySpec;
 }
