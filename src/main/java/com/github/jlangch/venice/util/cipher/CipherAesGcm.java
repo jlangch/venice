@@ -35,6 +35,29 @@ import javax.crypto.spec.SecretKeySpec;
 import com.github.jlangch.venice.VncException;
 
 
+/**
+ * Encrypt and decrypt data using "AES-256 GCM" with "NoPadding".
+ *
+ * Uses a random or static IV for each encryption run
+ *
+ * <pre>
+ *    Encrypted binary data format when random IV is used
+ *
+ *    +-----------------------+
+ *    |          IV           |   12 bytes
+ *    +-----------------------+
+ *    |     encrypted data    |   n bytes
+ *    +-----------------------+
+ * </pre>
+ *
+ * <pre>
+ *    Encrypted binary data format when static IV is used
+ *
+ *    +-----------------------+
+ *    |     encrypted data    |   n bytes
+ *    +-----------------------+
+ * </pre>
+ */
 public class CipherAesGcm extends AbstractCipher implements ICipher {
 
     private CipherAesGcm(
