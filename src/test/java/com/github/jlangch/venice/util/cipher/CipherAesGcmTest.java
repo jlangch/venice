@@ -23,7 +23,7 @@ package com.github.jlangch.venice.util.cipher;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public class CipherAesGcmTest {
     public void test_randomIV() throws Exception {
         final String secret = "1234567890";
 
-        final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
 
         final CipherAesGcm cipher = CipherAesGcm.create(secret);
 
@@ -48,7 +48,7 @@ public class CipherAesGcmTest {
         final CipherAesGcm cipher = CipherAesGcm.create(secret);
 
         for(int ii=0; ii<1_000; ii++) {
-            final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
+            final byte[] data = ("hello world " + ii).getBytes(StandardCharsets.UTF_8);
             assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
         }
     }
@@ -58,7 +58,7 @@ public class CipherAesGcmTest {
     public void test_staticIV() throws Exception {
         final String secret = "1234567890";
 
-        final byte[] data = "hello world".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
 
         final CipherAesGcm cipher = CipherAesGcm.create(secret, "PBKDF2WithHmacSHA256", 3000, 256, KEY_SALT, null, STATIC_IV);
 
@@ -72,7 +72,7 @@ public class CipherAesGcmTest {
         final CipherAesGcm cipher = CipherAesGcm.create(secret, "PBKDF2WithHmacSHA256", 3000, 256, KEY_SALT, null, STATIC_IV);
 
         for(int ii=0; ii<1_000; ii++) {
-            final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
+            final byte[] data = ("hello world " + ii).getBytes(StandardCharsets.UTF_8);
             assertArrayEquals(data, cipher.decrypt(cipher.encrypt(data)));
         }
     }

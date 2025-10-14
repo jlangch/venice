@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.util.crypt.FileEncryptor.encryptFileWith
 import static com.github.jlangch.venice.util.crypt.FileEncryptor.encryptFileWithPassphrase;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ public class FileEncryptor_Test {
 
     @Test
     public void testPassphrase() throws Exception {
-        final byte[] data = "1234567890".getBytes("UTF-8");
+        final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
         final byte[] encrypted = encryptFileWithPassphrase("AES256-GCM", "passphrase", data);
         final byte[] decrypted = decryptFileWithPassphrase("AES256-GCM", "passphrase", encrypted);
 
@@ -58,7 +59,7 @@ public class FileEncryptor_Test {
         byte[] key = new byte[32];
         new SecureRandom().nextBytes(key);
 
-        final byte[] data = "1234567890".getBytes("UTF-8");
+        final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
         final byte[] encrypted = encryptFileWithKey("AES256-GCM", key, data);
         final byte[] decrypted = decryptFileWithKey("AES256-GCM", key, encrypted);
 

@@ -21,7 +21,8 @@
  */
 package com.github.jlangch.venice.util.cipher;
 
-import java.nio.charset.StandardCharsets;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -37,8 +38,8 @@ public abstract class AbstractCipher implements ICipher {
         Objects.requireNonNull(data);
         Objects.requireNonNull(scheme);
 
-        final byte[] encryptedBytes = encrypt(data.getBytes(StandardCharsets.UTF_8));
-        return new String(encoder(scheme).encode(encryptedBytes), StandardCharsets.UTF_8);
+        final byte[] encryptedBytes = encrypt(data.getBytes(UTF_8));
+        return new String(encoder(scheme).encode(encryptedBytes), UTF_8);
      }
 
     @Override
@@ -47,9 +48,9 @@ public abstract class AbstractCipher implements ICipher {
         Objects.requireNonNull(dataBase64);
         Objects.requireNonNull(scheme);
 
-        final byte[] encryptedBytes = decoder(scheme).decode(dataBase64.getBytes(StandardCharsets.UTF_8));
+        final byte[] encryptedBytes = decoder(scheme).decode(dataBase64.getBytes(UTF_8));
         final byte[] decryptedBytes = decrypt(encryptedBytes);
-        return new String(decryptedBytes, StandardCharsets.UTF_8);
+        return new String(decryptedBytes, UTF_8);
     }
 
 

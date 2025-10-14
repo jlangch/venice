@@ -23,7 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +48,7 @@ public class EncryptorTest {
         final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
         final Encryptor serverEncryptor = Encryptor.aes(serverSecret);
 
-        final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data)));
         assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data)));
@@ -73,7 +73,7 @@ public class EncryptorTest {
         final Encryptor serverEncryptor = Encryptor.aes(serverSecret);
 
         for(int ii=0; ii<1_000; ii++) {
-            final byte[] data = ("hello world " + ii).getBytes(Charset.forName("UTF-8"));
+            final byte[] data = ("hello world " + ii).getBytes(StandardCharsets.UTF_8);
 
             assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data)));
             assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data)));

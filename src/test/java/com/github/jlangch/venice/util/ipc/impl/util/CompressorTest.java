@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public class CompressorTest {
 
     @Test
     public void test_needsCompression() {
-        final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         assertFalse(Compressor.off().needsCompression(data));
         assertFalse(new Compressor(-1).needsCompression(data));
@@ -59,7 +59,7 @@ public class CompressorTest {
 
     @Test
     public void test_no_compression() {
-        final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         assertArrayEquals(data, Compressor.off().compress(data));
         assertArrayEquals(data, new Compressor(-1).compress(data));
@@ -72,7 +72,7 @@ public class CompressorTest {
 
     @Test
     public void test_no_decompression() {
-        final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         assertArrayEquals(data, Compressor.off().decompress(data, false));
         assertArrayEquals(data, new Compressor(-1).decompress(data, false));
@@ -82,7 +82,7 @@ public class CompressorTest {
 
     @Test
     public void test_compress_decompress_1() {
-        final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         Compressor compressor;
 
@@ -110,7 +110,7 @@ public class CompressorTest {
 
     @Test
     public void test_compress_decompress_2() {
-        final byte[] data = "hello".getBytes(Charset.forName("UTF-8"));
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
         Compressor compressor;
 
