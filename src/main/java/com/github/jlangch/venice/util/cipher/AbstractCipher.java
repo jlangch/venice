@@ -27,13 +27,16 @@ import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
+
+import com.github.jlangch.venice.util.Base64Schema;
+
 import java.util.Objects;
 
 
 public abstract class AbstractCipher implements ICipher {
 
     @Override
-    public String encrypt(final String data, final Base64Scheme scheme)
+    public String encrypt(final String data, final Base64Schema scheme)
     throws GeneralSecurityException {
         Objects.requireNonNull(data);
         Objects.requireNonNull(scheme);
@@ -43,7 +46,7 @@ public abstract class AbstractCipher implements ICipher {
      }
 
     @Override
-    public  String decrypt(final String dataBase64, final Base64Scheme scheme)
+    public  String decrypt(final String dataBase64, final Base64Schema scheme)
     throws GeneralSecurityException {
         Objects.requireNonNull(dataBase64);
         Objects.requireNonNull(scheme);
@@ -54,7 +57,7 @@ public abstract class AbstractCipher implements ICipher {
     }
 
 
-    private Encoder encoder(final Base64Scheme scheme) {
+    private Encoder encoder(final Base64Schema scheme) {
         switch(scheme) {
             case Standard: return Base64.getEncoder();
             case UrlSafe:  return Base64.getUrlEncoder();
@@ -63,7 +66,7 @@ public abstract class AbstractCipher implements ICipher {
         }
     }
 
-    private Decoder decoder(final Base64Scheme scheme) {
+    private Decoder decoder(final Base64Schema scheme) {
         switch(scheme) {
             case Standard: return Base64.getDecoder();
             case UrlSafe:  return Base64.getUrlDecoder();

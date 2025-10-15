@@ -70,6 +70,7 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.renderer.text.LineWrap;
 import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
+import com.github.jlangch.venice.util.Base64Schema;
 
 
 public class StringFunctions {
@@ -2706,14 +2707,25 @@ public class StringFunctions {
                 "str/encode-base64",
                 VncFunction
                     .meta()
-                    .arglists("(str/encode-base64 data)")
-                    .doc("Base64 encode.")
-                    .examples("(str/encode-base64 (bytebuf [0 1 2 3 4 5 6]))")
+                    .arglists(
+                        "(str/encode-base64 data)",
+                        "(str/encode-base64 data schema)")
+                    .doc(
+                        "Base64 encode. \n\n" +
+                        "Encoding schema: \n" +
+                        " * `:Standard` (RFC4648)\n" +
+                        " * `:UrlSafe` (RFC4648_URLSAFE)\n\n" +
+                        "Standard Base64 uses: [A-Z], [a-z], [0-9], '+', '/'\n" +
+                        "URL safe Base64 uses: [A-Z], [a-z], [0-9], '-', '_'\n")
+                    .examples(
+                        "(str/encode-base64 (bytebuf [0 1 2 3 4 5 6]))",
+                        "(str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :Standard)",
+                        "(str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :UrlSafe)")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
                 final VncVal arg = args.first();
                 if (arg == Nil) {
@@ -2721,7 +2733,23 @@ public class StringFunctions {
                 }
                 else {
                     final byte[] buf = Coerce.toVncByteBuffer(arg).getBytes();
-                    return new VncString(Base64.getEncoder().encodeToString(buf));
+
+                    if (args.size() == 2) {
+                        final String s = Coerce.toVncKeyword(args.second()).getSimpleName();
+                        if (s.equals(Base64Schema.Standard.name())) {
+                            return new VncString(Base64.getEncoder().encodeToString(buf));
+                        }
+                        else if (s.equals(Base64Schema.UrlSafe.name())) {
+                            return new VncString(Base64.getUrlEncoder().encodeToString(buf));
+                        }
+                        else {
+                            throw new VncException(
+                                    "Unsupported Base64 schema ':" + s + "'. Use one of {:Standard, :UrlSafe}");
+                        }
+                    }
+                    else {
+                        return new VncString(Base64.getEncoder().encodeToString(buf));
+                    }
                 }
             }
 
@@ -2733,14 +2761,28 @@ public class StringFunctions {
                 "str/decode-base64",
                 VncFunction
                     .meta()
-                    .arglists("(str/decode-base64 s)")
-                    .doc("Base64 decode.")
-                    .examples("(str/decode-base64 (str/encode-base64 (bytebuf [0 1 2 3 4 5 6])))")
+                    .arglists(
+                        "(str/decode-base64 s)",
+                        "(str/decode-base64 s schema)")
+                    .doc(
+                        "Base64 decode. \n\n" +
+                        "Decoding schema: \n" +
+                        " * `:Standard` (RFC4648)\n" +
+                        " * `:UrlSafe` (RFC4648_URLSAFE)\n\n" +
+                        "Standard Base64 uses: [A-Z], [a-z], [0-9], '+', '/'\n" +
+                        "URL safe Base64 uses: [A-Z], [a-z], [0-9], '-', '_'\n")
+                    .examples(
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6])) \n" +
+                        "    (str/decode-base64))",
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :Standard) \n" +
+                        "    (str/decode-base64 :Standard))",
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :UrlSafe) \n" +
+                        "    (str/decode-base64 :UrlSafe))")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
                 final VncVal arg = args.first();
                 if (arg == Nil) {
@@ -2748,7 +2790,23 @@ public class StringFunctions {
                 }
                 else {
                     final String base64 = Coerce.toVncString(arg).getValue();
-                    return new VncByteBuffer(Base64.getDecoder().decode(base64));
+
+                    if (args.size() == 2) {
+                        final String s = Coerce.toVncKeyword(args.second()).getSimpleName();
+                        if (s.equals(Base64Schema.Standard.name())) {
+                            return new VncByteBuffer(Base64.getDecoder().decode(base64));
+                        }
+                        else if (s.equals(Base64Schema.UrlSafe.name())) {
+                            return new VncByteBuffer(Base64.getUrlDecoder().decode(base64));
+                        }
+                        else {
+                            throw new VncException(
+                                    "Unsupported Base64 schema ':" + s + "'. Use one of {:Standard, :UrlSafe}");
+                        }
+                    }
+                    else {
+                        return new VncByteBuffer(Base64.getDecoder().decode(base64));
+                    }
                 }
             }
 

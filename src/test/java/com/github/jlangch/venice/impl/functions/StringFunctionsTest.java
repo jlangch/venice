@@ -22,11 +22,13 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -1362,7 +1364,6 @@ public class StringFunctionsTest {
         assertTrue((Boolean)venice.eval(script2));
     }
 
-
     @Test
     public void test_str_equals_ignore_caseQ() {
         final Venice venice = new Venice();
@@ -1380,6 +1381,54 @@ public class StringFunctionsTest {
 
         assertFalse((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" \"abcd\")"));
         assertFalse((Boolean)venice.eval("(str/equals-ignore-case? \"abc\" \"aBcd\")"));
+    }
+
+    @Test
+    public void test_str_encode_base64() {
+        final Venice venice = new Venice();
+
+        assertArrayEquals(
+            new byte[] {0, 1, 2, 3, 4, 5, 6},
+            ((ByteBuffer)venice.eval(
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6])) \n" +
+                        "    (str/decode-base64))")).array());
+
+        assertArrayEquals(
+            new byte[] {0, 1, 2, 3, 4, 5, 6},
+            ((ByteBuffer)venice.eval(
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :Standard) \n" +
+                        "    (str/decode-base64 :Standard))")).array());
+
+        assertArrayEquals(
+            new byte[] {0, 1, 2, 3, 4, 5, 6},
+            ((ByteBuffer)venice.eval(
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :UrlSafe) \n" +
+                        "    (str/decode-base64 :UrlSafe))")).array());
+
+    }
+
+    @Test
+    public void test_str_decode_base64() {
+        final Venice venice = new Venice();
+
+        assertArrayEquals(
+            new byte[] {0, 1, 2, 3, 4, 5, 6},
+            ((ByteBuffer)venice.eval(
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6])) \n" +
+                        "    (str/decode-base64))")).array());
+
+        assertArrayEquals(
+            new byte[] {0, 1, 2, 3, 4, 5, 6},
+            ((ByteBuffer)venice.eval(
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :Standard) \n" +
+                        "    (str/decode-base64 :Standard))")).array());
+
+        assertArrayEquals(
+            new byte[] {0, 1, 2, 3, 4, 5, 6},
+            ((ByteBuffer)venice.eval(
+                        "(-> (str/encode-base64 (bytebuf [0 1 2 3 4 5 6]) :UrlSafe) \n" +
+                        "    (str/decode-base64 :UrlSafe))")).array());
+
     }
 
 

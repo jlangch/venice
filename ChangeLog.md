@@ -6,19 +6,20 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.58] - 2025-10-xx
 
-### Added
+- Added :openai module support for assistant api
+- Added :openai module support for assistant threads api
+- Added :openai module support for assistant message api (in work)
+- Added :openai module support for assistant run api (...)
+- Added :openai module support for assistant run steps api (...)
 
-- :openai module support for assistant api
-- :openai module support for assistant threads api
-- :openai module support for assistant message api (in work)
-- :openai module support for assistant run api (...)
-- :openai module support for assistant run steps api (...)
 
-### Added
-
-- optional AES-256 GCM encryption for IPC message transport. 
+- Added optional AES-256 GCM encryption for IPC message transport. 
   The encryption passphrase is generated using the Diffie–Hellman key 
   exchange algorithm.
+
+- Enhanced `str/encode-base64` and `str/decode-base64` to support an optional
+  encoding/decoding schema: `:Standard` (RFC4648) or `:UrlSafe` (RFC4648_URLSAFE)
+
 
 
 ## [1.12.57] - 2025-10-09

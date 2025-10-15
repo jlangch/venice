@@ -23,6 +23,8 @@ package com.github.jlangch.venice.util.cipher;
 
 import java.security.GeneralSecurityException;
 
+import com.github.jlangch.venice.util.Base64Schema;
+
 
 
 public interface ICipher {
@@ -54,7 +56,7 @@ public interface ICipher {
      * @return the Base64 encode encrypted data
      * @throws GeneralSecurityException on encryption errors
      */
-    String encrypt(final String data, final Base64Scheme scheme) throws GeneralSecurityException;
+    String encrypt(final String data, final Base64Schema scheme) throws GeneralSecurityException;
 
     /**
      * Decrypts a Base64 encoded encrypted string
@@ -64,6 +66,6 @@ public interface ICipher {
      * @return the decrypted string
      * @throws GeneralSecurityException on encryption errors
      */
-    String decrypt(final String dataBase64, final Base64Scheme scheme) throws GeneralSecurityException;
+    String decrypt(final String dataBase64, final Base64Schema scheme) throws GeneralSecurityException;
 
  }

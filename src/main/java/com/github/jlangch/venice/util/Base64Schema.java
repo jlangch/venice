@@ -19,10 +19,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.cipher;
+package com.github.jlangch.venice.util;
 
 
-public enum Base64Scheme {
+public enum Base64Schema {
 
     Standard,   // RFC4648
 

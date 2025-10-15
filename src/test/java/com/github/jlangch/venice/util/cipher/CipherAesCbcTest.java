@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.Base64Schema;
 
 
 public class CipherAesCbcTest {
@@ -125,8 +126,8 @@ public class CipherAesCbcTest {
 
         // Use URL safe Base64 encoder/decoder
         assertEquals(data, cipher.decrypt(
-                                cipher.encrypt(data, Base64Scheme.UrlSafe),
-                                Base64Scheme.UrlSafe));
+                                cipher.encrypt(data, Base64Schema.UrlSafe),
+                                Base64Schema.UrlSafe));
     }
 
 
