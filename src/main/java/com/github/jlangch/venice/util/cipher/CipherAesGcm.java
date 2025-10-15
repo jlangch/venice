@@ -24,7 +24,6 @@ package com.github.jlangch.venice.util.cipher;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 
@@ -71,7 +70,18 @@ public class CipherAesGcm extends AbstractCipher implements ICipher {
     }
 
     public static CipherAesGcm create(final String secret) {
-        return create(secret, SECRET_KEY_FACTORY, KEY_ITERATIONS, KEY_LEN, KEY_SALT, AAD_DATA, null);
+        return create(secret, SECRET_KEY_FACTORY, KEY_ITERATIONS, KEY_LEN, KEY_SALT, null, null);
+    }
+
+    public static CipherAesGcm create(final String secret, final byte[] aadData) {
+        // An AAD (Additional Authenticated Data) tag in AES-GCM is a data string
+        // that is authenticated, but not encrypted, alongside the ciphertext. It's
+        // used to ensure the integrity of information that is not secret, like headers,
+        // by including it in the authentication tag calculation. This provides an
+        // extra layer of security, helping to protect against attacks by ensuring
+        // the AAD and ciphertext haven't been tampered with
+
+        return create(secret, SECRET_KEY_FACTORY, KEY_ITERATIONS, KEY_LEN, KEY_SALT, aadData, null);
     }
 
     public static CipherAesGcm create(
@@ -101,7 +111,7 @@ public class CipherAesGcm extends AbstractCipher implements ICipher {
 
             return new CipherAesGcm(
                         new SecretKeySpec(key, "AES"),
-                        CipherUtils.isEmpty(keySalt) ? AAD_DATA : aadData,
+                        aadData,
                         CipherUtils.emptyToNull(staticIV));
         }
         catch(GeneralSecurityException ex) {
@@ -182,16 +192,6 @@ public class CipherAesGcm extends AbstractCipher implements ICipher {
     public static int IV_LEN = 12;
     public static int KEY_ITERATIONS = 3000;
     public static int KEY_LEN = 256;
-
-
-    // An AAD (Additional Authenticated Data) tag in AES-GCM is a data string
-    // that is authenticated, but not encrypted, alongside the ciphertext. It's
-    // used to ensure the integrity of information that is not secret, like headers,
-    // by including it in the authentication tag calculation. This provides an
-    // extra layer of security, helping to protect against attacks by ensuring
-    // the AAD and ciphertext haven't been tampered with
-    private static byte[] AAD_DATA = "ipcmsg".getBytes(StandardCharsets.UTF_8);
-
 
     private static byte[] KEY_SALT = new byte[] {
             0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
