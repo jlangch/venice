@@ -93,6 +93,16 @@ a default for `y`.
    ((fn [x] (* x 10)) 5))               ; => 50
 ```
 
+*multi-arity* anonymous functions
+
+```clojure
+(do
+  (def add (fn ([x] x) ([x y] (+ x y))))
+  
+  (add 1)    ; => 1
+  (add 1 2)) ; => 3
+```
+
 
 ## Applying Functions
 
