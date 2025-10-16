@@ -27,10 +27,13 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
+
 
 public class FileEncryptor_ChaCha20_Test {
 
     @Test
+    @EnableOnMac
     public void test_single_1() throws Exception {
         if (FileEncryptor_ChaCha20.isSupported()) {
             final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
@@ -42,6 +45,7 @@ public class FileEncryptor_ChaCha20_Test {
     }
 
     @Test
+    @EnableOnMac
     public void test_single_2() throws Exception {
         if (FileEncryptor_ChaCha20.isSupported()) {
             byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
@@ -57,6 +61,7 @@ public class FileEncryptor_ChaCha20_Test {
 
 
     @Test
+    @EnableOnMac
     public void test_many_1() throws Exception {
         if (FileEncryptor_ChaCha20.isSupported()) {
             final IFileEncryptor encryptor = FileEncryptor_ChaCha20.create("123");
@@ -69,6 +74,7 @@ public class FileEncryptor_ChaCha20_Test {
     }
 
     @Test
+    @EnableOnMac
     public void test_many_2() throws Exception {
         if (FileEncryptor_ChaCha20.isSupported()) {
             byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};

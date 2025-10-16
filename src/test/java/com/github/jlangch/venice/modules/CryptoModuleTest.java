@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle;
@@ -738,6 +739,7 @@ public class CryptoModuleTest {
     }
 
     @Test
+    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20() {
         if (!FileEncryptor_ChaCha20.isSupported()) {
             return;
@@ -764,6 +766,7 @@ public class CryptoModuleTest {
     }
 
     @Test
+    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle() {
         if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
