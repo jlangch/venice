@@ -122,6 +122,7 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
             final byte[] encryptedData = cipher.doFinal(data);
 
             byte[] outData = new byte[NONCE_LEN + COUNTER_LEN + encryptedData.length];
+
             System.arraycopy(nonce, 0, outData, 0, nonce.length);
             System.arraycopy(counterData, 0, outData, NONCE_LEN, counterData.length);
             System.arraycopy(encryptedData, 0, outData, NONCE_LEN + COUNTER_LEN, encryptedData.length);
@@ -157,7 +158,7 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
             cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
 
             // decryption
-            return cipher.doFinal(data);
+            return cipher.doFinal(encryptedData);
         }
         catch(Exception ex) {
             throw new FileException("Failed to decrypt data", ex);
