@@ -21,13 +21,17 @@
  */
 package com.github.jlangch.venice.util.crypt;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
+import java.security.Security;
+import java.util.Objects;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.github.jlangch.venice.FileException;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
@@ -37,19 +41,7 @@ import javax.crypto.spec.SecretKeySpec;
  * to start of the encrypted file.
  *
  * <pre>
- *    Encrypted binary file format when passphrase is used
- *
- *    +-----------------------+
- *    |         salt          |   16 bytes
- *    +-----------------------+
- *    |          IV           |   12 bytes
- *    +-----------------------+
- *    |  encrypted file data  |   n bytes
- *    +-----------------------+
- * </pre>
- *
- * <pre>
- *    Encrypted binary file format when key is used
+ *    Encrypted binary file format
  *
  *    +-----------------------+
  *    |          IV           |   12 bytes
@@ -58,178 +50,122 @@ import javax.crypto.spec.SecretKeySpec;
  *    +-----------------------+
  * </pre>
  */
-public class FileEncryptor_AES256_GCM {
+public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements IFileEncryptor {
 
+    private FileEncryptor_AES256_GCM(
+            final SecretKeySpec keySpec
+    ) {
+        Objects.requireNonNull(keySpec);
+
+        this.keySpec = keySpec;
+
+    }
+
+    public static FileEncryptor_AES256_GCM create(
+            final String passphrase
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(passphrase);
+
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS);
+    }
+
+    public static FileEncryptor_AES256_GCM create(
+            final String passphrase,
+            final byte[] keySalt,
+            final int keyIterations
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(passphrase);
+        Objects.requireNonNull(keySalt);
+
+        // Derive key from passphrase
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, keySalt, keyIterations, KEY_LEN);
+
+        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+
+        return new FileEncryptor_AES256_GCM(keySpec) ;
+    }
+
+
+    /**
+     * @return <code>true</code> if this encryptor is supported with this Java VM
+     *         else <code>false</code>
+     */
     public static boolean isSupported() {
         return true;
     }
 
-    public static void encryptFileWithPassphrase(
-            final String passphrase,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
+    @Override
+    public byte[] encrypt(final byte[] data) {
+        Objects.requireNonNull(data);
 
-        // Encrypt
-        byte[] encryptedData = encryptFileWithPassphrase(passphrase, fileData);
+        try {
+            // Generate a random IV
+            byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
+            new SecureRandom().nextBytes(iv);
 
-        // Write to output file
-        Files.write(outputFile.toPath(), encryptedData);
+            // Initialize GCM Parameters, 128 bit auth tag length
+            GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
+
+            // Initialize Cipher for AES-GCM
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
+
+            // encrypt
+            byte[] encryptedData = cipher.doFinal(data);
+
+            // IV, and encrypted data
+            byte[] outData = new byte[IV_LEN + encryptedData.length];
+            System.arraycopy(iv, 0, outData, 0, IV_LEN);
+            System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
+
+            return outData;
+        }
+        catch(Exception ex) {
+            throw new FileException("Failed to decrypt data", ex);
+        }
     }
 
-    public static byte[] encryptFileWithPassphrase(
-            final String passphrase,
-            final byte[] fileData
-    ) throws Exception {
-        // Generate a random salt
-        byte[] salt = new byte[SALT_LEN];
-        new SecureRandom().nextBytes(salt);
+    @Override
+    public byte[] decrypt(final byte[] data) {
+        Objects.requireNonNull(data);
 
-        // Generate a random IV
-        byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
-        new SecureRandom().nextBytes(iv);
+        try {
+            byte[] iv = new byte[IV_LEN];
+            System.arraycopy(data, 0, iv, 0, IV_LEN);
 
-        // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+            byte[] encryptedData = new byte[data.length - IV_LEN];
+            System.arraycopy(data, IV_LEN, encryptedData, 0, data.length - IV_LEN);
 
-        // Perform Encryption
-        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
+            // Initialize GCM Parameters, 128 bit auth tag length
+            GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
 
-        // Combine salt, IV, and encrypted data
-        byte[] outData = new byte[SALT_LEN + IV_LEN + encryptedData.length];
-        System.arraycopy(salt, 0, outData, 0, SALT_LEN);
-        System.arraycopy(iv, 0, outData, SALT_LEN, IV_LEN);
-        System.arraycopy(encryptedData, 0, outData, SALT_LEN + IV_LEN, encryptedData.length);
+            // Initialize Cipher for AES-GCM
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmParameterSpec);
 
-        return outData;
-    }
+            // encrypt
+            return cipher.doFinal(encryptedData);
+        }
+        catch(Exception ex) {
+            throw new FileException("Failed to encrypt data", ex);
+        }
+   }
 
-    public static void encryptFileWithKey(
-            final byte[] key,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
-        // Encrypt
-        byte[] encryptedData = encryptFileWithKey(key, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), encryptedData);
-    }
-
-    public static byte[] encryptFileWithKey(
-            final byte[] key,
-            final byte[] fileData
-    ) throws Exception {
-        // Generate a random IV
-        byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
-        new SecureRandom().nextBytes(iv);
-
-        // Perform Encryption
-        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
-
-        // Combine IV and encrypted data
-        byte[] outData = new byte[IV_LEN + encryptedData.length];
-        System.arraycopy(iv, 0, outData, 0, IV_LEN);
-        System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
-
-        return outData;
-    }
-
-    public static void decryptFileWithPassphrase(
-            final String passphrase,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
-
-        // Decrypt
-        byte[] decryptedData = decryptFileWithPassphrase(passphrase, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), decryptedData);
-    }
-
-    public static byte[] decryptFileWithPassphrase(
-            final String passphrase,
-            final byte[] fileData
-    ) throws Exception {
-        // Extract salt, IV, and encrypted data
-        byte[] salt = new byte[SALT_LEN];
-        System.arraycopy(fileData, 0, salt, 0, SALT_LEN);
-
-        byte[] iv = new byte[IV_LEN];
-        System.arraycopy(fileData, SALT_LEN, iv, 0, IV_LEN);
-
-        byte[] encryptedData = new byte[fileData.length - SALT_LEN - IV_LEN];
-        System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
-
-        // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
-
-        // Perform Decryption
-        byte[] decryptedData = processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
-
-        return decryptedData;
-    }
-
-    public static void decryptFileWithKey(
-            final byte[] key,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
-
-        // Decrypt
-        byte[] decryptedData = decryptFileWithKey(key, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), decryptedData);
-    }
-
-    public static byte[] decryptFileWithKey(
-            final byte[] key,
-            final byte[] fileData
-    ) throws Exception {
-        // Extract IV and encrypted data
-        byte[] iv = new byte[IV_LEN];
-        System.arraycopy(fileData, 0, iv, 0, IV_LEN);
-
-        byte[] encryptedData = new byte[fileData.length - IV_LEN];
-        System.arraycopy(fileData, IV_LEN, encryptedData, 0, encryptedData.length);
-
-        // Perform Decryption
-        byte[] decryptedData = processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
-
-        return decryptedData;
+    public boolean hasProvider(final String name) {
+        return Security.getProvider(StringUtil.trimToEmpty(name)) != null;
     }
 
 
-    private static byte[] processData(
-            final int mode,
-            final byte[] data,
-            final byte[] key,
-            final byte[] iv
-    ) throws Exception {
-        // Initialize GCM Parameters, 128 bit auth tag length
-        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
+    public static int KEY_ITERATIONS = 3000;
+    public static int KEY_LEN = 256;
+    public static int IV_LEN = 12;
 
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        cipher.init(mode, keySpec, gcmParameterSpec);
-
-        // Compute
-        return cipher.doFinal(data);
-    }
+    private static byte[] KEY_SALT = new byte[] {
+            0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
+            0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
 
 
-    private static int SALT_LEN = 16;
-    private static int IV_LEN = 12;
+    private final SecretKeySpec keySpec;
+
 }

@@ -21,15 +21,18 @@
  */
 package com.github.jlangch.venice.util.crypt;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.security.GeneralSecurityException;
+import java.security.Provider;
 import java.security.SecureRandom;
-
-import javax.crypto.Cipher;
+import java.security.Security;
+import java.util.Objects;
 
 import org.bouncycastle.crypto.engines.ChaChaEngine;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
+
+import com.github.jlangch.venice.FileException;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
@@ -39,19 +42,7 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
  * the encrypted file.
  *
  * <pre>
- *    Encrypted binary file format when passphrase is used
- *
- *    +-----------------------+
- *    |         salt          |   16 bytes
- *    +-----------------------+
- *    |          IV           |   8 bytes
- *    +-----------------------+
- *    |  encrypted file data  |   n bytes
- *    +-----------------------+
- * </pre>
- *
- * <pre>
- *    Encrypted binary file format when key is used
+ *    Encrypted binary file format
  *
  *    +-----------------------+
  *    |          IV           |   8 bytes
@@ -60,169 +51,127 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
  *    +-----------------------+
  * </pre>
  */
-public class FileEncryptor_ChaCha20_BouncyCastle {
+public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor implements IFileEncryptor {
 
+    private FileEncryptor_ChaCha20_BouncyCastle(
+            final byte[] key
+    ) {
+        Objects.requireNonNull(key);
+
+        this.key = key;
+
+    }
+
+
+    public static FileEncryptor_ChaCha20_BouncyCastle create(
+            final String passphrase
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(passphrase);
+
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS);
+    }
+
+    public static FileEncryptor_ChaCha20_BouncyCastle create(
+            final String passphrase,
+            final byte[] keySalt,
+            final int keyIterations
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(passphrase);
+        Objects.requireNonNull(keySalt);
+
+        // Derive key from passphrase
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, keySalt, keyIterations, KEY_LEN);
+
+        return new FileEncryptor_ChaCha20_BouncyCastle(key) ;
+    }
+
+
+    /**
+     * @return <code>true</code> if this encryptor is supported with this Java VM
+     *         else <code>false</code>
+     */
     public static boolean isSupported() {
         return supported;
     }
 
+    @Override
+    public byte[] encrypt(final byte[] data) {
+        Objects.requireNonNull(data);
 
-    public static void encryptFileWithPassphrase(
-            final String passphrase,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
+        try {
+            // generate a random IV
+            byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
+            new SecureRandom().nextBytes(iv);
 
-        // Encrypt
-        byte[] encryptedData = encryptFileWithPassphrase(passphrase, fileData);
+            // encrypt
+            ChaChaEngine chacha = new ChaChaEngine(ROUNDS);
+            chacha.init(true, new ParametersWithIV(new KeyParameter(key), iv));
 
-        // Write to output file
-        Files.write(outputFile.toPath(), encryptedData);
+            byte[] outData = new byte[IV_LEN + data.length];
+            System.arraycopy(iv, 0, outData, 0, iv.length);
+
+            chacha.processBytes(data, 0, data.length, outData, IV_LEN);
+
+            return outData;
+        }
+        catch(Exception ex) {
+            throw new FileException("Failed to decrypt data", ex);
+        }
     }
 
-    public static byte[] encryptFileWithPassphrase(
-            final String passphrase,
-            final byte[] fileData
-    ) throws Exception {
-        // Generate a random salt
-        byte[] salt = new byte[SALT_LEN];
-        new SecureRandom().nextBytes(salt);
+    @Override
+    public byte[] decrypt(final byte[] data) {
+        Objects.requireNonNull(data);
 
-        // Generate a random iv
-        byte[] iv = new byte[IV_LEN];
-        new SecureRandom().nextBytes(iv);
+        try {
+            byte[] iv = new byte[IV_LEN];
+            System.arraycopy(data, 0, iv, 0, IV_LEN);
 
-        // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+            ChaChaEngine chacha = new ChaChaEngine(ROUNDS);
+            chacha.init(true, new ParametersWithIV(new KeyParameter(key), iv));
 
-        // Perform Encryption
-        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
+            byte[] outData = new byte[data.length - IV_LEN];
 
-        // Combine salt, iv, and encrypted data
-        byte[] outData = new byte[SALT_LEN + IV_LEN + encryptedData.length];
-        System.arraycopy(salt, 0, outData, 0, salt.length);
-        System.arraycopy(iv, 0, outData, SALT_LEN, iv.length);
-        System.arraycopy(encryptedData, 0, outData, SALT_LEN + IV_LEN, encryptedData.length);
+            chacha.processBytes(data, IV_LEN, data.length - IV_LEN, outData, 0);
 
-        return outData;
+            return outData;
+        }
+        catch(Exception ex) {
+            throw new FileException("Failed to decrypt data", ex);
+        }
     }
 
-    public static void encryptFileWithKey(
-            final byte[] key,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
-
-        // Encrypt
-        byte[] encryptedData = encryptFileWithKey(key, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), encryptedData);
+    public static boolean hasProvider(final String name) {
+        return Security.getProvider(StringUtil.trimToEmpty(name)) != null;
     }
 
-    public static byte[] encryptFileWithKey(
-            final byte[] key,
-            final byte[] fileData
-    ) throws Exception {
-        // Generate a random iv
-        byte[] iv = new byte[IV_LEN];
-        new SecureRandom().nextBytes(iv);
+    public static boolean addBouncyCastleProvider() {
+        synchronized(FileEncryptor_ChaCha20_BouncyCastle.class) {
+            if (Security.getProvider("BC") != null) {
+                return false;
+            }
+            else {
+                try {
+                    // Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
-        // Perform Encryption
-        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
+                    // need to be fully dynamic to work under
+                    //  - Java 8 (without/with optional BouncyCastle libs)
+                    //  - Java 11+ (without/with optional BouncyCastle libs)
 
-        // Combine iv and encrypted data
-        byte[] outData = new byte[IV_LEN + encryptedData.length];
-        System.arraycopy(iv, 0, outData, 0, iv.length);
-        System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
+                    Security.addProvider(
+                        (Provider)Util.classForName("org.bouncycastle.jce.provider.BouncyCastleProvider")
+                                      .getConstructor()
+                                      .newInstance());
 
-        return outData;
+                    return true;
+                }
+                catch(Exception ex) {
+                    return false;
+                }
+            }
+        }
     }
 
-    public static void decryptFileWithPassphrase(
-            final String passphrase,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
-
-        // Decrypt
-        byte[] decryptedData = decryptFileWithPassphrase(passphrase, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), decryptedData);
-    }
-
-    public static byte[] decryptFileWithPassphrase(
-            final String passphrase,
-            final byte[] fileData
-    ) throws Exception {
-        // Extract salt, iv, and encrypted data
-        byte[] salt = new byte[SALT_LEN];
-        System.arraycopy(fileData, 0, salt, 0, SALT_LEN);
-
-        byte[] iv = new byte[IV_LEN];
-        System.arraycopy(fileData, SALT_LEN, iv, 0, IV_LEN);
-
-        byte[] encryptedData = new byte[fileData.length - SALT_LEN - IV_LEN];
-        System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
-
-        // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
-
-        // Perform Decryption
-        return processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
-    }
-
-    public static void decryptFileWithKey(
-            final byte[] key,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
-
-        // Decrypt
-        byte[] decryptedData = decryptFileWithKey(key, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), decryptedData);
-    }
-
-    public static byte[] decryptFileWithKey(
-            final byte[] key,
-            final byte[] fileData
-    ) throws Exception {
-        // Extract iv and encrypted data
-        byte[] iv = new byte[IV_LEN];
-        System.arraycopy(fileData, 0, iv, 0, IV_LEN);
-
-        byte[] encryptedData = new byte[fileData.length - IV_LEN];
-        System.arraycopy(fileData, IV_LEN, encryptedData, 0, encryptedData.length);
-
-        // Perform Decryption
-        return processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
-    }
-
-    private static byte[] processData(
-            final int mode,
-            final byte[] data,
-            final byte[] key,
-            final byte[] iv
-    ) throws Exception {
-        ChaChaEngine chacha = new ChaChaEngine(ROUNDS);
-        chacha.init(true, new ParametersWithIV(new KeyParameter(key), iv));
-
-        byte[] cryptData = new byte[data.length];
-        chacha.processBytes(data, 0, data.length, cryptData, 0);
-
-        return cryptData;
-    }
 
     private static boolean checkSupported() {
         try {
@@ -235,10 +184,17 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
     }
 
 
-
     private static final boolean supported = checkSupported();
 
-    private static int ROUNDS = 20;
-    private static int SALT_LEN = 16;
-    private static int IV_LEN = 8;
+
+    public static int KEY_ITERATIONS = 3000;
+    public static int KEY_LEN = 256;
+    public static int IV_LEN = 8;
+    public static int ROUNDS = 20;
+
+    private static byte[] KEY_SALT = new byte[] {
+            0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
+            0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
+
+    private final byte[] key;
 }

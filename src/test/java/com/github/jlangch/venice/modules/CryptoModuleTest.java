@@ -27,6 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
+import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20;
+import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle;
 
 
 public class CryptoModuleTest {
@@ -186,130 +189,6 @@ public class CryptoModuleTest {
         assertEquals(
             "7F83326444205E182B3E80D1C65C902D",
             venice.eval(script));
-    }
-
-    @Test
-    public void test_DES_encrypt_1() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true))               \n" +
-                "  (assert (== \"QdxpapAEjgI=\" (encrypt \"hello\")))                             \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_DES_encrypt_2() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true))               \n" +
-                "  (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true))               \n" +
-                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                         \n" +
-                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_DES_encrypt_custom_salt_string() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                                 \n" +
-                "  (load-module :crypt)                                                              \n" +
-                "  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
-                "  (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
-                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
-                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))     \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_DES_encrypt_custom_salt_bytes() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                                   \n" +
-                "  (load-module :crypt)                                                                \n" +
-                "  (let [salt (bytebuf [0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27])]                     \n" +
-                "    (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true :salt salt))        \n" +
-                "    (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true :salt salt))        \n" +
-                "    (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
-                "    (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))))" ;
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_3DES_encrypt_1() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true))              \n" +
-                "  (assert (== \"ndmW1NLsDHA=\" (encrypt \"hello\")))                             \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_3DES_encrypt_2() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true))              \n" +
-                "  (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true))              \n" +
-                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                         \n" +
-                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_3DES_encrypt_custom_salt_string() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                                 \n" +
-                "  (load-module :crypt)                                                              \n" +
-                "  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true :salt \"-salt-\")) \n" +
-                "  (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true :salt \"-salt-\")) \n" +
-                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
-                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))     \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_3DES_encrypt_custom_salt_bytes() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                                   \n" +
-                "  (load-module :crypt)                                                                \n" +
-                "  (let [salt (bytebuf [0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27])]                     \n" +
-                "    (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true :salt salt))       \n" +
-                "    (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true :salt salt))       \n" +
-                "    (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
-                "    (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))))" ;
-
-        venice.eval(script);
     }
 
     @Test
@@ -834,254 +713,82 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_AES256_GCM_1() {
-        final Venice venice = new Venice();
+        if (!FileEncryptor_AES256_GCM.isSupported()) {
+            return;
+        }
 
-        // file
-        final String script =
-                "(do                                                                  \n" +
-                "  (load-module :crypt)                                               \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")               \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")           \n" +
-                "        passphrase \"42\"]                                           \n" +
-                "    (io/delete-file-on-exit file-in)                                 \n" +
-                "    (io/delete-file-on-exit file-out)                                \n" +
-                "    (io/spit file-in \"1234567890\")                                 \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" passphrase file-in file-out)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase file-out)      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_GCM_2() {
         final Venice venice = new Venice();
 
         // string
         final String script =
-                "(do                                                                                                \n" +
-                "  (load-module :crypt)                                                                             \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                             \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                         \n" +
-                "        passphrase \"42\"]                                                                         \n" +
-                "    (io/delete-file-on-exit file-in)                                                               \n" +
-                "    (io/delete-file-on-exit file-out)                                                              \n" +
-                "    (io/spit file-in \"1234567890\")                                                               \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" passphrase (io/file-path file-in) (io/file-path file-out))  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/file-path file-out))                     \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                              ";
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                 \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")             \n" +
+                "        file-dec   (io/temp-file \"test-\", \".data.dec\")             \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-aes-256-gcm \"secret\")]           \n" +
+                "    (io/delete-file-on-exit file-in file-out file-dec)                 \n" +
+                "    (io/spit file-in \"1234567890\")                                   \n" +
+                "    (encryptor :encrypt file-in file-out true)                         \n" +
+                "    (encryptor :decrypt file-out file-dec true)                        \n" +
+                "    (io/slurp file-dec :binary false)))                                ";
 
         assertEquals("1234567890", venice.eval(script));
     }
 
     @Test
-    public void test_file_encrypt_decrypt_AES256_GCM_3() {
-        final Venice venice = new Venice();
+    public void test_file_encrypt_decrypt_ChaCha20() {
+        if (!FileEncryptor_ChaCha20.isSupported()) {
+            return;
+        }
 
-        // file-in-stream, file-out-stream
-        final String script =
-                "(do                                                                                                           \n" +
-                "  (load-module :crypt)                                                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                                    \n" +
-                "        passphrase \"42\"]                                                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                                                          \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" passphrase (io/file-in-stream file-in) (io/file-out-stream file-out))  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/file-in-stream file-out))                                          \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                                         ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_GCM_4a() {
-        final Venice venice = new Venice();
-
-        // bytebuf
-        final String script =
-                "(do                                                                                          \n" +
-                "  (load-module :crypt)                                                                       \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                       \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                   \n" +
-                "        passphrase \"42\"]                                                                   \n" +
-                "    (io/delete-file-on-exit file-in)                                                         \n" +
-                "    (io/delete-file-on-exit file-out)                                                        \n" +
-                "    (io/spit file-in \"1234567890\")                                                         \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" passphrase (io/slurp file-in :binary true) file-out)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/slurp file-out :binary true))      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                        ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_GCM_4b() {
-        final Venice venice = new Venice();
-
-        // bytebuf
-        final String script =
-                "(do                                                                                          \n" +
-                "  (load-module :crypt)                                                                       \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                       \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                   \n" +
-                "        passphrase \"42\"]                                                                   \n" +
-                "    (io/delete-file-on-exit file-in)                                                         \n" +
-                "    (io/delete-file-on-exit file-out)                                                        \n" +
-                "    (io/spit file-in \"1234567890\")                                                         \n" +
-                "    (->> (crypt/encrypt-file \"AES256-GCM\" passphrase (io/slurp file-in :binary true))      \n" +
-                "         (io/spit file-out))                                                                 \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/slurp file-out :binary true))      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                        ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_GCM_4c() {
-        final Venice venice = new Venice();
-
-        // bytebuf
-        final String script =
-                "(do                                                                                     \n" +
-                "  (load-module :crypt)                                                                  \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                  \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                              \n" +
-                "        passphrase \"42\"]                                                              \n" +
-                "    (io/delete-file-on-exit file-in)                                                    \n" +
-                "    (io/delete-file-on-exit file-out)                                                   \n" +
-                "    (io/spit file-in \"1234567890\")                                                    \n" +
-                "    (-<> (crypt/encrypt-file \"AES256-GCM\" passphrase (io/slurp file-in :binary true)) \n" +
-                "         (crypt/decrypt-file \"AES256-GCM\" passphrase <>)                              \n" +
-                "         (bytebuf-to-string <> :UTF-8))))                                               ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_CBC_1() {
-        final Venice venice = new Venice();
-
-        // file
-        final String script =
-                "(do                                                                 \n" +
-                "  (load-module :crypt)                                              \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")              \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")          \n" +
-                "        passphrase \"42\"]                                          \n" +
-                "    (io/delete-file-on-exit file-in)                                \n" +
-                "    (io/delete-file-on-exit file-out)                               \n" +
-                "    (io/spit file-in \"1234567890\")                                \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" passphrase file-in file-out) \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase file-out)     \n" +
-                "        (bytebuf-to-string :UTF-8))))                               ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_CBC_2() {
         final Venice venice = new Venice();
 
         // string
         final String script =
-                "(do                                                                                                \n" +
-                "  (load-module :crypt)                                                                             \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                             \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                         \n" +
-                "        passphrase \"42\"]                                                                         \n" +
-                "    (io/delete-file-on-exit file-in)                                                               \n" +
-                "    (io/delete-file-on-exit file-out)                                                              \n" +
-                "    (io/spit file-in \"1234567890\")                                                               \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" passphrase (io/file-path file-in) (io/file-path file-out))  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/file-path file-out))                     \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                              ";
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                 \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")             \n" +
+                "        file-dec   (io/temp-file \"test-\", \".data.dec\")             \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-chacha20 \"secret\")]              \n" +
+                "    (io/delete-file-on-exit file-in file-out file-dec)                 \n" +
+                "    (io/spit file-in \"1234567890\")                                   \n" +
+                "    (encryptor :encrypt file-in file-out true)                         \n" +
+                "    (encryptor :decrypt file-out file-dec true)                        \n" +
+                "    (io/slurp file-dec :binary false)))                                ";
 
         assertEquals("1234567890", venice.eval(script));
     }
 
     @Test
-    public void test_file_encrypt_decrypt_AES256_CBC_3() {
+    public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle() {
+        if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+            return;
+        }
+        if (!FileEncryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
+            return;
+        }
+
         final Venice venice = new Venice();
 
-        // file-in-stream, file-out-stream
+        // string
         final String script =
-                "(do                                                                                                           \n" +
-                "  (load-module :crypt)                                                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                                    \n" +
-                "        passphrase \"42\"]                                                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                                                          \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" passphrase (io/file-in-stream file-in) (io/file-out-stream file-out))  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/file-in-stream file-out))                           \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                                         ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_CBC_4a() {
-        final Venice venice = new Venice();
-
-        // bytebuf
-        final String script =
-                "(do                                                                                          \n" +
-                "  (load-module :crypt)                                                                       \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                       \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                   \n" +
-                "        passphrase \"42\"]                                                                   \n" +
-                "    (io/delete-file-on-exit file-in)                                                         \n" +
-                "    (io/delete-file-on-exit file-out)                                                        \n" +
-                "    (io/spit file-in \"1234567890\")                                                         \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" passphrase (io/slurp file-in :binary true) file-out)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/slurp file-out :binary true))      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                        ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_CBC_4b() {
-        final Venice venice = new Venice();
-
-        // bytebuf
-        final String script =
-                "(do                                                                                       \n" +
-                "  (load-module :crypt)                                                                    \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                    \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                \n" +
-                "        passphrase \"42\"]                                                                \n" +
-                "    (io/delete-file-on-exit file-in)                                                      \n" +
-                "    (io/delete-file-on-exit file-out)                                                     \n" +
-                "    (io/spit file-in \"1234567890\")                                                      \n" +
-                "    (->> (crypt/encrypt-file \"AES256-CBC\" passphrase (io/slurp file-in :binary true))   \n" +
-                "         (io/spit file-out))                                                              \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/slurp file-out :binary true))  \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                     ";
-
-        assertEquals("1234567890", venice.eval(script));
-    }
-
-    @Test
-    public void test_file_encrypt_decrypt_AES256_CBC_4c() {
-        final Venice venice = new Venice();
-
-        // bytebuf
-        final String script =
-                "(do                                                                                     \n" +
-                "  (load-module :crypt)                                                                  \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                  \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                              \n" +
-                "        passphrase \"42\"]                                                              \n" +
-                "    (io/delete-file-on-exit file-in)                                                    \n" +
-                "    (io/delete-file-on-exit file-out)                                                   \n" +
-                "    (io/spit file-in \"1234567890\")                                                    \n" +
-                "    (-<> (crypt/encrypt-file \"AES256-CBC\" passphrase (io/slurp file-in :binary true)) \n" +
-                "         (crypt/decrypt-file \"AES256-CBC\" passphrase <>)                              \n" +
-                "         (bytebuf-to-string <> :UTF-8))))                                               ";
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "                                                                       \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                 \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")             \n" +
+                "        file-dec   (io/temp-file \"test-\", \".data.dec\")             \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-chacha20-bouncycastle \"secret\")] \n" +
+                "    (io/delete-file-on-exit file-in file-out file-dec)                 \n" +
+                "    (io/spit file-in \"1234567890\")                                   \n" +
+                "    (encryptor :encrypt file-in file-out true)                         \n" +
+                "    (encryptor :decrypt file-out file-dec true)                        \n" +
+                "    (io/slurp file-dec :binary false)))                                ";
 
         assertEquals("1234567890", venice.eval(script));
     }

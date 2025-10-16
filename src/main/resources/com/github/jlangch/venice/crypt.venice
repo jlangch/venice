@@ -38,7 +38,9 @@
 (import :javax.crypto.spec.SecretKeySpec)
 (import :javax.net.ssl.SSLServerSocketFactory)
 
-(import :com.github.jlangch.venice.util.crypt.FileEncryptor)
+(import :com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM)
+(import :com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle)
+(import :com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20)
 (import :com.github.jlangch.venice.util.crypt.FileHasher)
 
 
@@ -300,74 +302,24 @@
 
 (defn 
   ^{ :arglists '(
-          "(crypt/encrypt-file algorithm passphrase in)"
-          "(crypt/encrypt-file algorithm passphrase in out)")
+          "(crypt/encryptor-aes-256-gcm passphrase)")
      :doc """
-          Encrypts a file.
+          Returns an encryptor function for AES 256 GCM encrypting/decrypting
+          binary buffers or files.
 
-          Returns a byte buffer with the encrypted data if the 'out' argument 
-          is missing. Otherwise returns nil and writes the encrypted file data 
-          to the destination given by 'out'.
- 
-          Supported algorithms:
-
-          * AES256-GCM ¹⁾
-          * AES256-CBC ²⁾
-          * ChaCha20 ³⁾
-          * ChaCha20-BC ⁴⁾
-          
-          | ¹⁾ | Recommended by NIST |
-          | ²⁾ | AES256-CBC is regarded as a broken or risky \
-                 cryptographic algorithm (CWE-327, CWE-328). Use AES256-GCM \
-                 in production! |
-          | ³⁾ | 256 bit key, only available with Java 11+ |
-          | ⁴⁾ | 256 bit key, only available with BouncyCastle libraries but \
-                 works with Java 8+ ¶\
-                 Warning: files encrypted with ChaCha20 cannot be decrypted \
-                 by ChaCha20-BC (and vice versa) due to different initial \
-                 counter  handling and the IV size (96bit vs 64bit) |
-
-          The ChaCha family of ciphers are an oder of magnitude more efficient 
-          on servers that do not provide hardware acceleration. Apple Silicon
-          does not seem to have AES hardware acceleration probably due to its 
-          RISC nature. 
-
-          The arg 'in' may be a: 
-
-          * string file path, e.g: "/temp/foo.json"
-          * bytebuf
-          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-          * `java.io.InputStream`
- 
-          The arg 'out' may be a: 
-
-          * string file path, e.g: "/temp/foo.json"
-          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-          * `java.io.OutputStream`
-
-          The 256 bit encryption key is derived from the passphrase using a
-          *PBKDF2WithHmacSHA256* secret key factory with a 16 byte random salt 
-          and 65536 iterations. Carefully choose a long enough passphrase.
-
-          *Salt*, *IV*, *Nonce* and/or *Counter* are random and unique for every 
-          call of `crypt/encrypt-file`.
-          
-          While encrypting a file the random *Salt* (when a passphrase is used), 
-          *IV*, *Nonce* and/or *Counter* are written to the start of the 
-          encrypted file and read before decrypting the file:
+          *IV* is random and unique for every call of encryptor function.
+                   
+          While encrypting data the random *IV* is written to the start of the 
+          encrypted data and read before decrypting the data
  
           ```
-                AES256-GCM              AES256-CBC               ChaCha20
-             AES/GCM/NoPadding     AES/CBC/PKCS5Padding
-          +--------------------+  +--------------------+  +--------------------+
-          |      salt (16)     |  |      salt (16)     |  |      salt (16)     |
-          +--------------------+  +--------------------+  +--------------------+
-          |       iv  (12)     |  |       iv  (12)     |  |      nonce (12)    |
-          +--------------------+  +--------------------+  +--------------------+
-          |       data (n)     |  |      data (n)      |  |     counter (4)    | 
-          +--------------------+  +--------------------+  +--------------------+
-                                                          |      data (n)      | 
-                                                          +--------------------+
+                AES256-GCM       
+             AES/GCM/NoPadding   
+          +--------------------+ 
+          |       iv  (12)     |
+          +--------------------+ 
+          |       data (n)     |
+          +--------------------+ 
           ```
           """
      :examples (list
@@ -375,89 +327,271 @@
           (do
             (load-module :crypt) 
             (load-module :hexdump)
-            (let [file-in    (io/temp-file "test-", ".data")
-                  file-out   (io/temp-file "test-", ".data.enc")]
-              (io/delete-file-on-exit file-in file-out)
+            (let [file-in       (io/temp-file "test-", ".data")
+                  file-encoded  (io/temp-file "test-", ".data.enc")
+                  file-decoded  (io/temp-file "test-", ".data.dec")
+                  encryptor     (crypt/encryptor-aes-256-gcm "secret")]
+              (io/delete-file-on-exit file-in file-encoded file-decoded)
               (io/spit file-in "1234567890")
-              (crypt/encrypt-file "AES256-GCM" "42" file-in file-out)
-              (-> (io/slurp file-out :binary false)
-                  (bytebuf)
-                  (hexdump/dump))))
+              (encryptor :encrypt file-in file-encoded true)
+              (encryptor :decrypt file-encoded file-decoded true)
+              (println (hexdump/dump (io/slurp file-encoded :binary true)))))
+          """
+          """
+          (do
+            (load-module :crypt) 
+            (let [buf-in    (bytebuf-from-string "1234567890")
+                  encryptor (crypt/encryptor-aes-256-gcm "secret")
+                  buf-encoded (encryptor :encrypt buf-in)
+                  buf-decoded (encryptor :decrypt buf-encoded)]
+              (println (bytebuf-to-string buf-decoded))))
           """) 
      :see-also '(
-          "crypt/decrypt-file" ) }
+          "crypt/encryptor-chacha20-bouncycastle"
+          "crypt/encryptor-chacha20" ) }
 
-  encrypt-file 
+  encryptor-aes-256-gcm
 
-  ([algorithm passphrase in]
-    (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :encryptFileWithPassphrase algorithm passphrase data)))
-  
-  ([algorithm passphrase in out]
-    (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :encryptFileWithPassphrase algorithm passphrase data)
-          (io/spit out data)
-          nil)))
+  ([passphrase]
+    (let [e (. :FileEncryptor_AES256_GCM :create passphrase)]
+      (fn encryptor
+        ([mode in] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (bytebuf? in) "in arg must be a bytebuf")
+           (. e mode in))
+        ([mode in out overwrite?] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (io/file? in) "in arg must be a io/file")
+           (assert (io/file? out) "out arg must be a io/file")
+           (assert (boolean? overwrite?) "overwrite? arg must be a boolean")
+           (. e mode in out overwrite?)))))
+
+  ([passphrase key-salt key-iterations]
+    (let [e (. :FileEncryptor_AES256_GCM :create passphrase key-salt key-iterations)]
+      (fn encryptor
+        ([mode in] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (bytebuf? in) "in arg must be a bytebuf")
+           (. e mode in))
+        ([mode in out overwrite?] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (io/file? in) "in arg must be a io/file")
+           (assert (io/file? out) "out arg must be a io/file")
+           (assert (boolean? overwrite?) "overwrite? arg must be a boolean")
+           (. e mode in out overwrite?))))))
+
+(defn encryptor-aes-256-gcm-supported? []
+   (. :FileEncryptor_AES256_GCM :supported))
 
 
 (defn 
   ^{ :arglists '(
-          "(crypt/decrypt-file algorithm passphrase in)"
-          "(crypt/decrypt-file algorithm passphrase in out)")
+          "(crypt/encryptor-chacha20-bouncycastle passphrase)")
      :doc """
-          Decrypts an encrypted file that has been created by 
-          `crypt/encrypt-file`.
+          Returns an encryptor function for ChaCha20 BouncyCastle 
+          encrypting/decryptingbinary buffers or files.
+          
+          Requires the BouncyCastle libraries on the classpath.
 
-          Returns a byte buffer with the decrypted data if the 'out' argument 
-          is missing. Otherwise returns nil and writes the decrypted file data 
-          to the destination given by 'out'.
+          Warning: files encrypted with ChaCha20 BouncyCastle cannot be
+          by ChaCha20 from the Java VM (and vice versa) due to different initial
+          counter handling and IV sizes
+
+          The ChaCha family of ciphers are an oder of magnitude more efficient 
+          on servers that do not provide hardware acceleration. Apple Silicon
+          does not seem to have AES hardware acceleration probably due to its 
+          RISC nature. 
+
+          *IV*, *Nonce* and *Counter* are random and unique for every 
+          call of encryptor function.
+          
+          While encrypting a file the *Nonce* and *Counter* are written to the
+          start of the encrypted data and read before decrypting the data:
  
-          The arg 'algorithm' is one of: "AES256-GCM", "AES256-CBC", "ChaCha20"
-
-          The arg 'in' may be a: 
-
-          * string file path, e.g: "/temp/foo.json"
-          * bytebuf
-          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-          * `java.io.InputStream`
- 
-          The arg 'out' may be a: 
-
-          * string file path, e.g: "/temp/foo.json"
-          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-          * `java.io.OutputStream`
+          ```
+                ChaCha20
+         
+          +--------------------+
+          |        iv (8)      |
+          +--------------------+
+          |      nonce (12)    |
+          +--------------------+
+          |     counter (4)    | 
+          +--------------------+
+          |      data (n)      | 
+          +--------------------+
+          ```
           """
      :examples (list
           """
           (do
             (load-module :crypt) 
-            (let [file-in    (io/temp-file "test-", ".data")
-                  file-out   (io/temp-file "test-", ".data.enc")
-                  passphrase "42"]
-              (io/delete-file-on-exit file-in file-out)
+            (load-module :hexdump)
+            (let [file-in       (io/temp-file "test-", ".data")
+                  file-encoded  (io/temp-file "test-", ".data.enc")
+                  file-decoded  (io/temp-file "test-", ".data.dec")
+                  encryptor     (crypt/eencryptor-chacha20-bouncycastle "secret")]
+              (io/delete-file-on-exit file-in file-encoded file-decoded)
               (io/spit file-in "1234567890")
-              (crypt/encrypt-file "AES256-GCM" passphrase file-in file-out)
-              (-> (crypt/decrypt-file "AES256-GCM" passphrase file-out)
-                  (bytebuf-to-string :UTF-8))))
+              (encryptor :encrypt file-in file-encoded true)
+              (encryptor :decrypt file-encoded file-decoded true)
+              (println (hexdump/dump (io/slurp file-encoded :binary true)))))
+          """
+          """
+          (do
+            (load-module :crypt) 
+            (let [buf-in    (bytebuf-from-string "1234567890")
+                  encryptor (crypt/encryptor-chacha20-bouncycastle "secret")
+                  buf-encoded (encryptor :encrypt buf-in)
+                  buf-decoded (encryptor :decrypt buf-encoded)]
+              (println (bytebuf-to-string buf-decoded))))
           """) 
      :see-also '(
-          "crypt/encrypt-file" ) }
+          "crypt/encryptor-aes-256-gcm"
+          "crypt/encryptor-chacha20"
+          "crypt/add-bouncy-castle-provider"
+          "crypt/provider?" ) }
 
-  decrypt-file 
+  encryptor-chacha20-bouncycastle
 
-  ([algorithm passphrase in]
-    (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :decryptFileWithPassphrase algorithm passphrase data)))
-  
-  ([algorithm passphrase in out]
-    (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :decryptFileWithPassphrase algorithm passphrase data)
-          (io/spit out data)
-          nil)))
+  ([passphrase]
+    (let [e (. :FileEncryptor_ChaCha20_BouncyCastle :create passphrase)]
+      (when-not (. :FileEncryptor_ChaCha20 :isSupported)
+        (throw (ex :VncException "BouncyCastle Crypto algorithm ChaCha20 is not available!")))
+      (fn encryptor
+        ([mode in] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (bytebuf? in) "in arg must be a bytebuf")
+           (. e mode in))
+        ([mode in out overwrite?] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (io/file? in) "in arg must be a io/file")
+           (assert (io/file? out) "out arg must be a io/file")
+           (assert (boolean? overwrite?) "overwrite? arg must be a boolean")
+           (. e mode in out overwrite?)))))
+
+  ([passphrase key-salt key-iterations]
+    (let [e (. :FileEncryptor_ChaCha20_BouncyCastle :create passphrase key-salt key-iterations)]
+      (when-not (. :FileEncryptor_ChaCha20 :isSupported)
+        (throw (ex :VncException "BouncyCastle Crypto algorithm ChaCha20 is not available!")))
+      (fn encryptor
+        ([mode in] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (bytebuf? in) "in arg must be a bytebuf")
+           (. e mode in))
+        ([mode in out overwrite?] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (io/file? in) "in arg must be a io/file")
+           (assert (io/file? out) "out arg must be a io/file")
+           (assert (boolean? overwrite?) "overwrite? arg must be a boolean")
+           (. e mode in out overwrite?))))))
+
+(defn encryptor-chacha20-bouncycastle-supported? []
+   (. :FileEncryptor_ChaCha20_BouncyCastle :supported))
 
 
-(defn encrypt-file-supported? [algorithm]
-   (. :FileEncryptor :supports algorithm))
+(defn 
+  ^{ :arglists '(
+          "(crypt/encryptor-chacha20 passphrase)")
+     :doc """
+          Returns an encryptor function for ChaCha20 encrypting/decrypting
+          binary buffers or files.
+          
+          Requires Java11+.
+
+          Warning: files encrypted with ChaCha20 BouncyCastle cannot be
+          by ChaCha20 from the Java VM (and vice versa) due to different initial
+          counter handling and IV sizes
+
+          The ChaCha family of ciphers are an oder of magnitude more efficient 
+          on servers that do not provide hardware acceleration. Apple Silicon
+          does not seem to have AES hardware acceleration probably due to its 
+          RISC nature. 
+
+          *IV*, *Nonce* and/or *Counter* are random and unique for every 
+          call of the encryptor function.
+          
+          While encrypting a file the *Nonce* and *Counter* are written to the
+          start of the encrypted data and read before decrypting the data:
+ 
+          ```
+                ChaCha20
+         
+          +--------------------+
+          |       iv (12)      |
+          +--------------------+
+          |      nonce (12)    |
+          +--------------------+
+          |     counter (4)    | 
+          +--------------------+
+          |      data (n)      | 
+          +--------------------+
+          ```
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt) 
+            (load-module :hexdump)
+            (let [file-in       (io/temp-file "test-", ".data")
+                  file-encoded  (io/temp-file "test-", ".data.enc")
+                  file-decoded  (io/temp-file "test-", ".data.dec")
+                  encryptor     (crypt/encryptor-chacha20 "secret")]
+              (io/delete-file-on-exit file-in file-encoded file-decoded)
+              (io/spit file-in "1234567890")
+              (encryptor :encrypt file-in file-encoded true)
+              (encryptor :decrypt file-encoded file-decoded true)
+              (println (hexdump/dump (io/slurp file-encoded :binary true)))))
+          """
+          """
+          (do
+            (load-module :crypt) 
+            (let [buf-in    (bytebuf-from-string "1234567890")
+                  encryptor (crypt/encryptor-chacha20 "secret")
+                  buf-encoded (encryptor :encrypt buf-in)
+                  buf-decoded (encryptor :decrypt buf-encoded)]
+              (println (bytebuf-to-string buf-decoded))))
+          """) 
+     :see-also '(
+          "crypt/encryptor-aes-256-gcm"
+          "crypt/encryptor-chacha20-bouncycastle" ) }
+
+  encryptor-chacha20
+
+  ([passphrase]
+    (let [e (. :FileEncryptor_ChaCha20 :create passphrase)]
+      (when-not (. :FileEncryptor_ChaCha20 :isSupported)
+        (throw (ex :VncException "Java Crypto algorithm ChaCha20 is not available!")))
+      (fn encryptor
+        ([mode in] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (bytebuf? in) "in arg must be a bytebuf")
+           (. e mode in))
+        ([mode in out overwrite?] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (io/file? in) "in arg must be a io/file")
+           (assert (io/file? out) "out arg must be a io/file")
+           (assert (boolean? overwrite?) "overwrite? arg must be a boolean")
+           (. e mode in out overwrite?)))))
+
+  ([passphrase key-salt key-iterations]
+    (let [e (. :FileEncryptor_ChaCha20 :create passphrase key-salt key-iterations)]
+      (when-not (. :FileEncryptor_ChaCha20 :isSupported)
+        (throw (ex :VncException "Java Crypto algorithm ChaCha20 is not available!")))
+      (fn encryptor
+        ([mode in] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (bytebuf? in) "in arg must be a bytebuf")
+           (. e mode in))
+        ([mode in out overwrite?] 
+           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
+           (assert (io/file? in) "in arg must be a io/file")
+           (assert (io/file? out) "out arg must be a io/file")
+           (assert (boolean? overwrite?) "overwrite? arg must be a boolean")
+           (. e mode in out overwrite?))))))
+
+(defn encryptor-chacha20-supported? []
+   (. :FileEncryptor_ChaCha20 :supported))
 
 
 
@@ -637,19 +771,22 @@
           """
           (do
             (load-module :crypt)
-            (crypt/provider? "BC"))
+
+            ;; BouncyCastle provider available?
+            (crypt/provider? "BC"))  
           """ )
      :see-also '( 
           "crypt/add-bouncy-castle-provider" ) }
 
   crypt/provider? [name]
 
-  (. :FileEncryptor :hasProvider name))
+  (some? (. :java.security.Security :getProvider name)))
+  
 
 
 (defn
   ^{ :arglists '(
-          "(crypt/add-bouncy-castle-provider")
+          "(crypt/add-bouncy-castle-provider)")
      :doc """
           Adds the BouncyCastle provider to the Java security.
           """
@@ -664,7 +801,7 @@
 
   crypt/add-bouncy-castle-provider []
 
-  (. :FileEncryptor :addBouncyCastleProvider))
+  (. :FileEncryptor_ChaCha20_BouncyCastle :addBouncyCastleProvider))
 
 
 

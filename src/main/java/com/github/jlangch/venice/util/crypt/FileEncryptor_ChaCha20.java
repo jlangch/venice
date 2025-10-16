@@ -21,16 +21,20 @@
  */
 package com.github.jlangch.venice.util.crypt;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.file.Files;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.Objects;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.github.jlangch.venice.FileException;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
@@ -40,21 +44,7 @@ import javax.crypto.spec.SecretKeySpec;
  * and the nonce to start of the encrypted file.
  *
  * <pre>
- *    Encrypted binary file format when passphrase is used
- *
- *    +-----------------------+
- *    |         salt          |   16 bytes
- *    +-----------------------+
- *    |         nonce         |   12 bytes
- *    +-----------------------+
- *    |        counter        |   4 bytes
- *    +-----------------------+
- *    |  encrypted file data  |   n bytes
- *    +-----------------------+
- * </pre>
- *
- * <pre>
- *    Encrypted binary file format when key is used
+ *    Encrypted binary file format
  *
  *    +-----------------------+
  *    |         nonce         |   12 bytes
@@ -65,173 +55,135 @@ import javax.crypto.spec.SecretKeySpec;
  *    +-----------------------+
  * </pre>
  */
-public class FileEncryptor_ChaCha20 {
+public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFileEncryptor {
 
+    private FileEncryptor_ChaCha20(
+            final SecretKeySpec keySpec
+    ) {
+        Objects.requireNonNull(keySpec);
+
+        this.keySpec = keySpec;
+
+    }
+
+
+    public static FileEncryptor_ChaCha20 create(
+            final String passphrase
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(passphrase);
+
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS);
+    }
+
+    public static FileEncryptor_ChaCha20 create(
+            final String passphrase,
+            final byte[] keySalt,
+            final int keyIterations
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(passphrase);
+        Objects.requireNonNull(keySalt);
+
+        // Derive key from passphrase
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, keySalt, keyIterations, KEY_LEN);
+
+        return new FileEncryptor_ChaCha20(new SecretKeySpec(key, "ChaCha20"));
+    }
+
+
+    /**
+     * @return <code>true</code> if this encryptor is supported with this Java VM
+     *         else <code>false</code>
+     */
     public static boolean isSupported() {
         return supported;
     }
 
+    @Override
+    public byte[] encrypt(final byte[] data) {
+        Objects.requireNonNull(data);
 
-    public static void encryptFileWithPassphrase(
-            final String passphrase,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
+        try {
+            // Generate a random nonce
+            byte[] nonce = new byte[NONCE_LEN];
+            new SecureRandom().nextBytes(nonce);
 
-        // Encrypt
-        byte[] encryptedData = encryptFileWithPassphrase(passphrase, fileData);
+            // Generate a counter
+            int counter = new SecureRandom().nextInt();
+            byte[] counterData = counterToBytes(counter);
 
-        // Write to output file
-        Files.write(outputFile.toPath(), encryptedData);
+            // Initialize ChaCha20 Parameters
+            AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
+
+            // Initialize Cipher for ChaCha20
+            Cipher cipher = Cipher.getInstance("ChaCha20");
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, param);
+
+            // encryption
+            final byte[] encryptedData = cipher.doFinal(data);
+
+            byte[] outData = new byte[NONCE_LEN + COUNTER_LEN + encryptedData.length];
+            System.arraycopy(nonce, 0, outData, 0, nonce.length);
+            System.arraycopy(counterData, 0, outData, NONCE_LEN, counterData.length);
+            System.arraycopy(encryptedData, 0, outData, NONCE_LEN + COUNTER_LEN, encryptedData.length);
+
+            return outData;
+        }
+        catch(Exception ex) {
+            throw new FileException("Failed to decrypt data", ex);
+        }
     }
 
-    public static byte[] encryptFileWithPassphrase(
-            final String passphrase,
-            final byte[] fileData
-    ) throws Exception {
-        // Generate a random salt
-        byte[] salt = new byte[SALT_LEN];
-        new SecureRandom().nextBytes(salt);
+    @Override
+    public byte[] decrypt(final byte[] data) {
+        Objects.requireNonNull(data);
 
-        // Generate a random nonce
-        byte[] nonce = new byte[NONCE_LEN];
-        new SecureRandom().nextBytes(nonce);
+        try {
+            byte[] nonce = new byte[NONCE_LEN];
+            System.arraycopy(data, 0, nonce, 0, NONCE_LEN);
 
-        // Generate an counter
-        int counter = new SecureRandom().nextInt();
-        byte[] counterData = counterToBytes(counter);
+            byte[] counterBytes = new byte[COUNTER_LEN];
+            System.arraycopy(data, NONCE_LEN, counterBytes, 0, COUNTER_LEN);
 
-        // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+            byte[] encryptedData = new byte[data.length - NONCE_LEN - COUNTER_LEN];
+            System.arraycopy(data, NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
 
-        // Perform Encryption
-        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, nonce, counter);
+            int counter = counterToInt(counterBytes);
 
-        // Combine salt, nonce, counter, and encrypted data
-        byte[] outData = new byte[SALT_LEN + NONCE_LEN + COUNTER_LEN + encryptedData.length];
-        System.arraycopy(salt, 0, outData, 0, salt.length);
-        System.arraycopy(nonce, 0, outData, SALT_LEN, nonce.length);
-        System.arraycopy(counterData, 0, outData, SALT_LEN + NONCE_LEN, counterData.length);
-        System.arraycopy(encryptedData, 0, outData, SALT_LEN + NONCE_LEN + COUNTER_LEN, encryptedData.length);
+            // Initialize ChaCha20 Parameters
+            AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
 
-        return outData;
+            // Initialize Cipher for ChaCha20
+            Cipher cipher = Cipher.getInstance("ChaCha20");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
+
+            // decryption
+            return cipher.doFinal(data);
+        }
+        catch(Exception ex) {
+            throw new FileException("Failed to decrypt data", ex);
+        }
+   }
+
+
+    public boolean hasProvider(final String name) {
+        return Security.getProvider(StringUtil.trimToEmpty(name)) != null;
     }
 
-    public static void encryptFileWithKey(
-            final byte[] key,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
-        // Encrypt
-        byte[] encryptedData = encryptFileWithKey(key, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), encryptedData);
+    private static byte[] counterToBytes(final int counter) {
+        // convert int to byte[]
+        return ByteBuffer.allocate(COUNTER_LEN)
+                         .order(ENDIAN)
+                         .putInt(counter)
+                         .array();
     }
 
-    public static byte[] encryptFileWithKey(
-            final byte[] key,
-            final byte[] fileData
-    ) throws Exception {
-        // Generate a random nonce
-        byte[] nonce = new byte[NONCE_LEN];
-        new SecureRandom().nextBytes(nonce);
-
-        // Generate an counter
-        int counter = new SecureRandom().nextInt();
-        byte[] counterData = counterToBytes(counter);
-
-        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, nonce, counter);
-
-        // Combine salt, nonce, counter, and encrypted data
-        byte[] outData = new byte[NONCE_LEN + COUNTER_LEN + encryptedData.length];
-        System.arraycopy(nonce, 0, outData, 0, nonce.length);
-        System.arraycopy(counterData, 0, outData, NONCE_LEN, counterData.length);
-        System.arraycopy(encryptedData, 0, outData, NONCE_LEN + COUNTER_LEN, encryptedData.length);
-
-        return outData;
+    private static int counterToInt(final byte[] counter) {
+        // convert byte[] to int
+        return ByteBuffer.wrap(counter)
+                         .order(ENDIAN)
+                         .getInt(0);
     }
-
-    public static void decryptFileWithPassphrase(
-            final String passphrase,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
-
-        // Decrypt
-        byte[] decryptedData = decryptFileWithPassphrase(passphrase, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), decryptedData);
-    }
-
-    public static byte[] decryptFileWithPassphrase(
-            final String passphrase,
-            final byte[] fileData
-    ) throws Exception {
-        // Extract salt, nonce, counter, and encrypted data
-        byte[] salt = new byte[SALT_LEN];
-        System.arraycopy(fileData, 0, salt, 0, SALT_LEN);
-
-        byte[] nonce = new byte[NONCE_LEN];
-        System.arraycopy(fileData, SALT_LEN, nonce, 0, NONCE_LEN);
-
-        byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, counterBytes, 0, COUNTER_LEN);
-
-        byte[] encryptedData = new byte[fileData.length - SALT_LEN - NONCE_LEN - COUNTER_LEN];
-        System.arraycopy(fileData, SALT_LEN + NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
-
-        int counter = counterToInt(counterBytes);
-
-        // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
-
-        // Perform Decryption
-        return processData(Cipher.DECRYPT_MODE, encryptedData, key, nonce, counter);
-    }
-
-    public static void decryptFileWithKey(
-            final byte[] key,
-            final File inputFile,
-            final File outputFile
-    ) throws Exception {
-        // Read file data
-        byte[] fileData = Files.readAllBytes(inputFile.toPath());
-
-        // Decrypt
-        byte[] decryptedData = decryptFileWithKey(key, fileData);
-
-        // Write to output file
-        Files.write(outputFile.toPath(), decryptedData);
-    }
-
-    public static byte[] decryptFileWithKey(
-            final byte[] key,
-            final byte[] fileData
-    ) throws Exception {
-        // Extract nonce, counter, and encrypted data
-        byte[] nonce = new byte[NONCE_LEN];
-        System.arraycopy(fileData, 0, nonce, 0, NONCE_LEN);
-
-        byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, NONCE_LEN, counterBytes, 0, COUNTER_LEN);
-
-        byte[] encryptedData = new byte[fileData.length - NONCE_LEN - COUNTER_LEN];
-        System.arraycopy(fileData, NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
-
-        int counter = counterToInt(counterBytes);
-
-        return processData(Cipher.DECRYPT_MODE, encryptedData, key, nonce, counter);
-    }
-
 
     private static AlgorithmParameterSpec createChaCha20ParameterSpec(
             final byte[] nonce,
@@ -250,42 +202,6 @@ public class FileEncryptor_ChaCha20 {
         }
     }
 
-    private static byte[] processData(
-            final int mode,
-            final byte[] data,
-            final byte[] key,
-            final byte[] nonce,
-            final int counter
-    ) throws Exception {
-        // Secret key
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(mode, keySpec, param);
-
-        // encryption
-        return cipher.doFinal(data);
-    }
-
-    private static byte[] counterToBytes(final int counter) {
-        // convert int to byte[]
-        return ByteBuffer.allocate(COUNTER_LEN)
-                         .order(ENDIAN)
-                         .putInt(counter)
-                         .array();
-    }
-
-    private static int counterToInt(final byte[] counter) {
-        // convert byte[] to int
-        return ByteBuffer.wrap(counter)
-                         .order(ENDIAN)
-                         .getInt(0);
-    }
-
     private static boolean checkSupported() {
         try {
             final Class<?> clazz = Util.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
@@ -297,11 +213,20 @@ public class FileEncryptor_ChaCha20 {
     }
 
 
-    private static final boolean supported = checkSupported();
+   private static final boolean supported = checkSupported();
 
-    private static ByteOrder ENDIAN = ByteOrder.BIG_ENDIAN; // ensure same byte order on all machines
 
-    private static int SALT_LEN = 16;
-    private static int NONCE_LEN = 12;
-    private static int COUNTER_LEN = 4;
+   private static ByteOrder ENDIAN = ByteOrder.BIG_ENDIAN; // ensure same byte order on all machines
+
+
+   public static int KEY_ITERATIONS = 3000;
+   public static int KEY_LEN = 256;
+   private static int NONCE_LEN = 12;
+   private static int COUNTER_LEN = 4;
+
+    private static byte[] KEY_SALT = new byte[] {
+            0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
+            0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
+
+    private final SecretKeySpec keySpec;
 }

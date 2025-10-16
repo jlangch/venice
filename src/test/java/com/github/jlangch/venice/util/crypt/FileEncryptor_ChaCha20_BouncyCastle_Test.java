@@ -21,15 +21,9 @@
  */
 package com.github.jlangch.venice.util.crypt;
 
-import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey;
-import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase;
-import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey;
-import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase;
-import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.isSupported;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,47 +31,53 @@ import org.junit.jupiter.api.Test;
 public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 
     @Test
-    public void testPassphrase() throws Exception {
-        if (isSupported()) {
+    public void test_single_1() throws Exception {
+        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
             final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
-            final byte[] encrypted = encryptFileWithPassphrase("passphrase", data);
-            final byte[] decrypted = decryptFileWithPassphrase("passphrase", encrypted);
 
-            if (data.length != decrypted.length) {
-                fail("FAIL (length)");
-                return;
-            }
+            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123");
 
-            for(int ii=0; ii<data.length; ii++) {
-                if (data[ii] != decrypted[ii]) {
-                    fail("FAIL (@index " + ii + ")");
-                    return;
-                }
-            }
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
+        }
+    }
+
+    @Test
+    public void test_single_2() throws Exception {
+        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+            byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
+
+
+            final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
+
+            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123", SALT, 3000);
+
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
         }
     }
 
 
     @Test
-    public void testKey() throws Exception {
-        if (isSupported()) {
-            byte[] key = new byte[32];
-            new SecureRandom().nextBytes(key);
+    public void test_many_1() throws Exception {
+        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123");
 
-            final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
-            final byte[] encrypted = encryptFileWithKey(key, data);
-            final byte[] decrypted = decryptFileWithKey(key, encrypted);
-
-            if (data.length != decrypted.length) {
-                fail("FAIL (length)");
-                return;
+            for(int ii=0; ii<1000; ii++) {
+                final byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+                assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
             }
+        }
+    }
 
-            for(int ii=0; ii<data.length; ii++) {
-                if (data[ii] != decrypted[ii]) {
-                    fail("FAIL (@index " + ii + ")");
-                    return;
-                }
+    @Test
+    public void test_many_2() throws Exception {
+        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+            byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
+
+            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123", SALT, 3000);
+
+            for(int ii=0; ii<1000; ii++) {
+                final byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+                assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
             }
         }
     }
