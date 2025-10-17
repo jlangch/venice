@@ -855,7 +855,6 @@ public class CryptoModuleTest {
     }
 
     @Test
-    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20_1() {
         if (!FileEncryptor_ChaCha20.isSupported()) {
             return;
@@ -877,7 +876,6 @@ public class CryptoModuleTest {
     }
 
     @Test
-    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20_2() {
         if (!FileEncryptor_ChaCha20.isSupported()) {
             return;
@@ -899,7 +897,6 @@ public class CryptoModuleTest {
     }
 
     @Test
-    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20_3() {
         if (!FileEncryptor_ChaCha20.isSupported()) {
             return;
