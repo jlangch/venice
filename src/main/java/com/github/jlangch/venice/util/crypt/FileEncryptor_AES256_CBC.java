@@ -40,9 +40,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * Uses a random salt and IV for each file and writes the salt and the IV
  * to start of the encrypted file.
  *
- * <b>DO NOT USE this cipher AES CBC in production!!<b>
+ * <b>DO NOT USE this cipher AES CBC in production!!</b>
  *
- * <b>AES CBC with PKCS5Padding padding scheme can lead to padding oracle attacks.<b>
+ * <b>AES CBC with PKCS5Padding padding scheme can lead to padding oracle attacks.</b>
  *
  * <pre>
  *    Encrypted binary file format
