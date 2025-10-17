@@ -57,9 +57,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * +------------------+    +------------------+
  * </pre>
  */
-public class FileEncryptor_AES256_CBC extends AbstractFileEncryptor implements IFileEncryptor {
+public class Encryptor_AES256_CBC extends AbstractEncryptor implements IEncryptor {
 
-    private FileEncryptor_AES256_CBC(
+    private Encryptor_AES256_CBC(
             final SecretKeySpec keySpec,
             final byte[] customIV,
             final boolean addCustomIvToEncryptedData
@@ -71,7 +71,7 @@ public class FileEncryptor_AES256_CBC extends AbstractFileEncryptor implements I
         this.addIvToEncryptedData = customIV == null || addCustomIvToEncryptedData;
     }
 
-    public static FileEncryptor_AES256_CBC create(
+    public static Encryptor_AES256_CBC create(
             final String passphrase
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
@@ -79,7 +79,7 @@ public class FileEncryptor_AES256_CBC extends AbstractFileEncryptor implements I
         return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false);
     }
 
-    public static FileEncryptor_AES256_CBC create(
+    public static Encryptor_AES256_CBC create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations
@@ -87,7 +87,7 @@ public class FileEncryptor_AES256_CBC extends AbstractFileEncryptor implements I
         return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false);
     }
 
-    public static FileEncryptor_AES256_CBC create(
+    public static Encryptor_AES256_CBC create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations,
@@ -110,7 +110,7 @@ public class FileEncryptor_AES256_CBC extends AbstractFileEncryptor implements I
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 
-        return new FileEncryptor_AES256_CBC(
+        return new Encryptor_AES256_CBC(
                         keySpec,
                         emptyToNull(customIV),
                         addCustomIvToEncryptedData) ;

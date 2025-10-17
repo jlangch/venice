@@ -26,7 +26,7 @@ import java.io.File;
 import com.github.jlangch.venice.util.Base64Schema;
 
 
-public interface IFileEncryptor {
+public interface IEncryptor {
 
     /**
      * Encrypts binary file data

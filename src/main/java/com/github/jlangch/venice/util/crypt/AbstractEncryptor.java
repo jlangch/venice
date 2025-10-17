@@ -35,7 +35,7 @@ import com.github.jlangch.venice.FileException;
 import com.github.jlangch.venice.util.Base64Schema;
 
 
-public abstract class AbstractFileEncryptor implements IFileEncryptor{
+public abstract class AbstractEncryptor implements IEncryptor{
 
     @Override
     abstract public byte[] encrypt(final byte[] data);

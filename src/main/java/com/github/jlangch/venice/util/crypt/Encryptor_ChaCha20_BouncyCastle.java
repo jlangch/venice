@@ -51,9 +51,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  *    +-----------------------+
  * </pre>
  */
-public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor implements IFileEncryptor {
+public class Encryptor_ChaCha20_BouncyCastle extends AbstractEncryptor implements IEncryptor {
 
-    private FileEncryptor_ChaCha20_BouncyCastle(
+    private Encryptor_ChaCha20_BouncyCastle(
             final byte[] key
     ) {
         Objects.requireNonNull(key);
@@ -63,7 +63,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor i
     }
 
 
-    public static FileEncryptor_ChaCha20_BouncyCastle create(
+    public static Encryptor_ChaCha20_BouncyCastle create(
             final String passphrase
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
@@ -71,7 +71,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor i
         return create(passphrase, KEY_SALT, KEY_ITERATIONS);
     }
 
-    public static FileEncryptor_ChaCha20_BouncyCastle create(
+    public static Encryptor_ChaCha20_BouncyCastle create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations
@@ -86,7 +86,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor i
                         keyIterations == null ? KEY_ITERATIONS : keyIterations,
                         KEY_LEN);
 
-        return new FileEncryptor_ChaCha20_BouncyCastle(key) ;
+        return new Encryptor_ChaCha20_BouncyCastle(key) ;
     }
 
 
@@ -150,7 +150,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor i
     }
 
     public static boolean addBouncyCastleProvider() {
-        synchronized(FileEncryptor_ChaCha20_BouncyCastle.class) {
+        synchronized(Encryptor_ChaCha20_BouncyCastle.class) {
             if (Security.getProvider("BC") != null) {
                 return false;
             }

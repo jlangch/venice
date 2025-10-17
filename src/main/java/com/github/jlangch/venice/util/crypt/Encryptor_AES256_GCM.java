@@ -53,9 +53,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * +------------------+    +------------------+
  * </pre>
  */
-public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements IFileEncryptor {
+public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncryptor {
 
-    private FileEncryptor_AES256_GCM(
+    private Encryptor_AES256_GCM(
             final SecretKeySpec keySpec,
             final byte[] customIV,
             final boolean addCustomIvToEncryptedData,
@@ -70,7 +70,7 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
 
     }
 
-    public static FileEncryptor_AES256_GCM create(
+    public static Encryptor_AES256_GCM create(
             final String passphrase
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
@@ -78,7 +78,7 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
         return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, null);
     }
 
-    public static FileEncryptor_AES256_GCM create(
+    public static Encryptor_AES256_GCM create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations
@@ -86,7 +86,7 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
         return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, null);
     }
 
-    public static FileEncryptor_AES256_GCM create(
+    public static Encryptor_AES256_GCM create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations,
@@ -95,7 +95,7 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
         return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, aadData);
     }
 
-    public static FileEncryptor_AES256_GCM create(
+    public static Encryptor_AES256_GCM create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations,
@@ -119,7 +119,7 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 
-        return new FileEncryptor_AES256_GCM(
+        return new Encryptor_AES256_GCM(
                         keySpec,
                         emptyToNull(customIV),
                         addCustomIvToEncryptedData,

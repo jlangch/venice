@@ -38,10 +38,10 @@
 (import :javax.crypto.spec.SecretKeySpec)
 (import :javax.net.ssl.SSLServerSocketFactory)
 
-(import :com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM)
-(import :com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_CBC)
-(import :com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle)
-(import :com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20)
+(import :com.github.jlangch.venice.util.crypt.Encryptor_AES256_GCM)
+(import :com.github.jlangch.venice.util.crypt.Encryptor_AES256_CBC)
+(import :com.github.jlangch.venice.util.crypt.Encryptor_ChaCha20_BouncyCastle)
+(import :com.github.jlangch.venice.util.crypt.Encryptor_ChaCha20)
 (import :com.github.jlangch.venice.util.crypt.FileHasher)
 
 
@@ -375,12 +375,12 @@
         custom-iv-add-to-data (coalesce (:custom-iv-add-to-data opts) false)
         aad-tag-data          (:aad-tag-data opts)
         e                     (if (or key-salt key-iterations custom-iv aad-tag-data)
-                                 (. :FileEncryptor_AES256_GCM  
+                                 (. :Encryptor_AES256_GCM  
                                     :create passphrase 
                                             key-salt key-iterations
                                             custom-iv custom-iv-add-to-data 
                                             aad-tag-data)
-                                 (. :FileEncryptor_AES256_GCM 
+                                 (. :Encryptor_AES256_GCM 
                                     :create passphrase))]
     (fn encryptor
       ([mode in] 
@@ -400,7 +400,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-aes-256-gcm-supported? []
-   (. :FileEncryptor_AES256_GCM :supported))
+   (. :Encryptor_AES256_GCM :supported))
 
 
 
@@ -479,11 +479,11 @@
         custom-iv             (:custom-iv opts)
         custom-iv-add-to-data (coalesce (:custom-iv-add-to-data opts) false)
         e                     (if (or key-salt key-iterations custom-iv)
-                                 (. :FileEncryptor_AES256_CBC  
+                                 (. :Encryptor_AES256_CBC  
                                     :create passphrase 
                                             key-salt key-iterations
                                             custom-iv custom-iv-add-to-data )
-                                 (. :FileEncryptor_AES256_CBC 
+                                 (. :Encryptor_AES256_CBC 
                                     :create passphrase))]
     (fn encryptor
       ([mode in] 
@@ -503,7 +503,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-aes-256-cbc-supported? []
-   (. :FileEncryptor_AES256_CBC :supported))
+   (. :Encryptor_AES256_CBC :supported))
 
 
 (defn 
@@ -587,9 +587,9 @@
   (let [key-salt        (:key-salt opts)
         key-iterations  (:key-iterations opts)
         e               (if (or key-salt key-iterations)
-                          (. :FileEncryptor_ChaCha20_BouncyCastle :create passphrase key-salt key-iterations)
-                          (. :FileEncryptor_ChaCha20_BouncyCastle :create passphrase))]
-    (when-not (. :FileEncryptor_ChaCha20 :isSupported)
+                          (. :Encryptor_ChaCha20_BouncyCastle :create passphrase key-salt key-iterations)
+                          (. :Encryptor_ChaCha20_BouncyCastle :create passphrase))]
+    (when-not (. :Encryptor_ChaCha20 :isSupported)
       (throw (ex :VncException "BouncyCastle Crypto algorithm ChaCha20 is not available!")))
     (fn encryptor
       ([mode in] 
@@ -609,7 +609,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-chacha20-bouncycastle-supported? []
-   (. :FileEncryptor_ChaCha20_BouncyCastle :supported))
+   (. :Encryptor_ChaCha20_BouncyCastle :supported))
 
 
 (defn 
@@ -691,9 +691,9 @@
   (let [key-salt        (:key-salt opts)
         key-iterations  (:key-iterations opts)
         e               (if (or key-salt key-iterations)
-                          (. :FileEncryptor_ChaCha20 :create passphrase key-salt key-iterations)
-                          (. :FileEncryptor_ChaCha20 :create passphrase))]
-    (when-not (. :FileEncryptor_ChaCha20 :isSupported)
+                          (. :Encryptor_ChaCha20 :create passphrase key-salt key-iterations)
+                          (. :Encryptor_ChaCha20 :create passphrase))]
+    (when-not (. :Encryptor_ChaCha20 :isSupported)
       (throw (ex :VncException "Java Crypto algorithm ChaCha20 is not available!")))
     (fn encryptor
       ([mode in] 
@@ -713,7 +713,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-chacha20-supported? []
-   (. :FileEncryptor_ChaCha20 :supported))
+   (. :Encryptor_ChaCha20 :supported))
 
 
 
@@ -923,7 +923,7 @@
 
   crypt/add-bouncy-castle-provider []
 
-  (. :FileEncryptor_ChaCha20_BouncyCastle :addBouncyCastleProvider))
+  (. :Encryptor_ChaCha20_BouncyCastle :addBouncyCastleProvider))
 
 
 

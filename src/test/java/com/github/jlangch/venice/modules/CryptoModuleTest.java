@@ -30,10 +30,10 @@ import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_CBC;
-import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
-import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20;
-import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle;
+import com.github.jlangch.venice.util.crypt.Encryptor_AES256_CBC;
+import com.github.jlangch.venice.util.crypt.Encryptor_AES256_GCM;
+import com.github.jlangch.venice.util.crypt.Encryptor_ChaCha20;
+import com.github.jlangch.venice.util.crypt.Encryptor_ChaCha20_BouncyCastle;
 
 
 public class CryptoModuleTest {
@@ -718,7 +718,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_AES256_GCM_1() {
-        if (!FileEncryptor_AES256_GCM.isSupported()) {
+        if (!Encryptor_AES256_GCM.isSupported()) {
             return;
         }
 
@@ -739,7 +739,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_AES256_GCM_2() {
-        if (!FileEncryptor_AES256_GCM.isSupported()) {
+        if (!Encryptor_AES256_GCM.isSupported()) {
             return;
         }
 
@@ -760,7 +760,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_AES256_GCM_3() {
-        if (!FileEncryptor_AES256_GCM.isSupported()) {
+        if (!Encryptor_AES256_GCM.isSupported()) {
             return;
         }
 
@@ -787,7 +787,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_AES256_CBC_1() {
-        if (!FileEncryptor_AES256_CBC.isSupported()) {
+        if (!Encryptor_AES256_CBC.isSupported()) {
             return;
         }
 
@@ -808,7 +808,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_AES256_CBC_2() {
-        if (!FileEncryptor_AES256_CBC.isSupported()) {
+        if (!Encryptor_AES256_CBC.isSupported()) {
             return;
         }
 
@@ -829,7 +829,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_AES256_CBC_3() {
-        if (!FileEncryptor_AES256_CBC.isSupported()) {
+        if (!Encryptor_AES256_CBC.isSupported()) {
             return;
         }
 
@@ -855,7 +855,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_ChaCha20_1() {
-        if (!FileEncryptor_ChaCha20.isSupported()) {
+        if (!Encryptor_ChaCha20.isSupported()) {
             return;
         }
 
@@ -876,7 +876,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_ChaCha20_2() {
-        if (!FileEncryptor_ChaCha20.isSupported()) {
+        if (!Encryptor_ChaCha20.isSupported()) {
             return;
         }
 
@@ -897,7 +897,7 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_ChaCha20_3() {
-        if (!FileEncryptor_ChaCha20.isSupported()) {
+        if (!Encryptor_ChaCha20.isSupported()) {
             return;
         }
 
@@ -923,10 +923,10 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_1() {
-        if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+        if (!Encryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
         }
-        if (!FileEncryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
+        if (!Encryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
             return;
         }
 
@@ -947,10 +947,10 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_2() {
-        if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+        if (!Encryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
         }
-        if (!FileEncryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
+        if (!Encryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
             return;
         }
 
@@ -971,10 +971,10 @@ public class CryptoModuleTest {
 
     @Test
     public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_3() {
-        if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+        if (!Encryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
         }
-        if (!FileEncryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
+        if (!Encryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
             return;
         }
 

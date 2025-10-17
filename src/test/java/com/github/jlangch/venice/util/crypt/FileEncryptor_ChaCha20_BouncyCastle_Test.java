@@ -32,10 +32,10 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 
     @Test
     public void test_single_1() throws Exception {
-        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+        if (Encryptor_ChaCha20_BouncyCastle.isSupported()) {
             final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
 
-            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123");
+            final IEncryptor encryptor = Encryptor_ChaCha20_BouncyCastle.create("123");
 
             assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
         }
@@ -43,13 +43,13 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 
     @Test
     public void test_single_2() throws Exception {
-        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+        if (Encryptor_ChaCha20_BouncyCastle.isSupported()) {
             byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
 
 
             final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
 
-            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123", SALT, 3000);
+            final IEncryptor encryptor = Encryptor_ChaCha20_BouncyCastle.create("123", SALT, 3000);
 
             assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
         }
@@ -58,8 +58,8 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 
     @Test
     public void test_many_1() throws Exception {
-        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
-            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123");
+        if (Encryptor_ChaCha20_BouncyCastle.isSupported()) {
+            final IEncryptor encryptor = Encryptor_ChaCha20_BouncyCastle.create("123");
 
             for(int ii=0; ii<1000; ii++) {
                 final byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
@@ -70,10 +70,10 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 
     @Test
     public void test_many_2() throws Exception {
-        if (FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+        if (Encryptor_ChaCha20_BouncyCastle.isSupported()) {
             byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
 
-            final IFileEncryptor encryptor = FileEncryptor_ChaCha20_BouncyCastle.create("123", SALT, 3000);
+            final IEncryptor encryptor = Encryptor_ChaCha20_BouncyCastle.create("123", SALT, 3000);
 
             for(int ii=0; ii<1000; ii++) {
                 final byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);

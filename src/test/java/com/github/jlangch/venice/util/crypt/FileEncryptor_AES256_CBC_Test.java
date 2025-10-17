@@ -34,7 +34,7 @@ public class FileEncryptor_AES256_CBC_Test {
     public void test_single_1() throws Exception {
         byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
 
-        IFileEncryptor encryptor = FileEncryptor_AES256_CBC.create("123");
+        IEncryptor encryptor = Encryptor_AES256_CBC.create("123");
 
         assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
     }
@@ -46,7 +46,7 @@ public class FileEncryptor_AES256_CBC_Test {
 
         byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
 
-        IFileEncryptor encryptor = FileEncryptor_AES256_CBC.create("123", SALT, 3000);
+        IEncryptor encryptor = Encryptor_AES256_CBC.create("123", SALT, 3000);
 
         assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
     }
@@ -54,7 +54,7 @@ public class FileEncryptor_AES256_CBC_Test {
 
     @Test
     public void test_many_1() throws Exception {
-        IFileEncryptor encryptor = FileEncryptor_AES256_CBC.create("123");
+        IEncryptor encryptor = Encryptor_AES256_CBC.create("123");
 
         for(int ii=0; ii<1000; ii++) {
             byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
@@ -66,7 +66,7 @@ public class FileEncryptor_AES256_CBC_Test {
     public void test_many_2() throws Exception {
         byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
 
-        IFileEncryptor encryptor = FileEncryptor_AES256_CBC.create("123", SALT, 3000);
+        IEncryptor encryptor = Encryptor_AES256_CBC.create("123", SALT, 3000);
 
         for(int ii=0; ii<1000; ii++) {
             byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);

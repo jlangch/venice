@@ -55,9 +55,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  *    +-----------------------+
  * </pre>
  */
-public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFileEncryptor {
+public class Encryptor_ChaCha20 extends AbstractEncryptor implements IEncryptor {
 
-    private FileEncryptor_ChaCha20(
+    private Encryptor_ChaCha20(
             final SecretKeySpec keySpec
     ) {
         Objects.requireNonNull(keySpec);
@@ -67,7 +67,7 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
     }
 
 
-    public static FileEncryptor_ChaCha20 create(
+    public static Encryptor_ChaCha20 create(
             final String passphrase
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
@@ -75,7 +75,7 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
         return create(passphrase, KEY_SALT, KEY_ITERATIONS);
     }
 
-    public static FileEncryptor_ChaCha20 create(
+    public static Encryptor_ChaCha20 create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations
@@ -90,7 +90,7 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
                         keyIterations == null ? KEY_ITERATIONS : keyIterations,
                         KEY_LEN);
 
-        return new FileEncryptor_ChaCha20(new SecretKeySpec(key, "ChaCha20"));
+        return new Encryptor_ChaCha20(new SecretKeySpec(key, "ChaCha20"));
     }
 
 
