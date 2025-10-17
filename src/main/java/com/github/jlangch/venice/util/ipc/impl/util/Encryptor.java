@@ -24,22 +24,27 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 import java.util.Objects;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.cipher.CipherAesGcm;
-import com.github.jlangch.venice.util.cipher.ICipher;
+import com.github.jlangch.venice.util.crypt.Encryptor_AES256_GCM;
+import com.github.jlangch.venice.util.crypt.IEncryptor;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 
 
 public class Encryptor {
 
-    private Encryptor(final ICipher cipher) {
-        this.cipher = cipher;
+    private Encryptor(final IEncryptor ecryptor) {
+        this.ecryptor = ecryptor;
     }
 
 
     public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
         Objects.requireNonNull(secret);
 
-        return new Encryptor(CipherAesGcm.create(secret.getSecretBase64()));
+        try {
+            return new Encryptor(Encryptor_AES256_GCM.create(secret.getSecretBase64()));
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to createencryptor", ex);
+        }
     }
 
     public static Encryptor off() {
@@ -55,7 +60,7 @@ public class Encryptor {
         Objects.requireNonNull(data);
         if (encrypt) {
             try {
-                return cipher.encrypt(data);
+                return ecryptor.encrypt(data);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to encrypt message payload data", ex);
@@ -74,7 +79,7 @@ public class Encryptor {
         Objects.requireNonNull(data);
         if (decrypt) {
             try {
-                return cipher.decrypt(data);
+                return ecryptor.decrypt(data);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to decrypt message payload data", ex);
@@ -86,9 +91,9 @@ public class Encryptor {
     }
 
     public boolean isActive() {
-        return cipher != null;
+        return ecryptor != null;
     }
 
 
-    private final ICipher cipher;
+    private final IEncryptor ecryptor;
 }
