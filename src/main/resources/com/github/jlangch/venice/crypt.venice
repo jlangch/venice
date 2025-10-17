@@ -67,6 +67,10 @@
           """
           (-> (crypt/md5-hash "hello world" "-salt-")
               (str/bytebuf-to-hex :upper))
+          """,
+          """
+          (-> (crypt/md5-hash "hello world")
+              (str/encode-base64))
           """ )
      :see-also '(
           "crypt/sha1-hash"
@@ -92,6 +96,10 @@
           """
           (-> (crypt/sha1-hash "hello world" "-salt-")
               (str/bytebuf-to-hex :upper))
+          """,
+          """
+          (-> (crypt/sha1-hash "hello world")
+              (str/encode-base64))
           """ )
      :see-also '(
           "crypt/md5-hash"
@@ -118,6 +126,11 @@
           """
           (let [s (-> (crypt/sha512-hash "hello world" "-salt-")
                       (str/bytebuf-to-hex :upper))]
+            (str (str/nfirst s 32) "..." (str/nlast s 32)))
+          """,
+          """
+          (let [s (-> (crypt/sha512-hash "hello world")
+                      (str/encode-base64))]
             (str (str/nfirst s 32) "..." (str/nlast s 32)))
           """ )
      :see-also '(
@@ -147,6 +160,10 @@
           """
           (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
               (str/bytebuf-to-hex :upper))
+          """,
+          """
+          (-> (crypt/pbkdf2-hash "hello world" "-salt-")
+              (str/encode-base64))
           """ )
      :see-also '(
           "crypt/md5-hash"
@@ -182,123 +199,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Encryption / Decryption
-;; -----------------------------------------------------------------------------
-
-(defn
-  ^{ :arglists '(
-          "(crypt/encrypt algorithm passphrase & options)")
-     :doc """
-          Returns a new thread safe function to encrypt a string or a bytebuf
-          given the algorithm and passphrase. If a string is passed it is
-          encrypted and returned as a base64 encoded string. If a bytebuf
-          is passed the encryped bytebuf is returned.
-
-          Supported algorithms: "DES", "3DES", "AES256"
-
-          Options:
-
-          | [![width: 15%]] | [![width: 85%]] |
-          | :url-safe   | The boolean option directs the base64 encoder to \
-                          emit standard or URL safe base64 encoded strings. \
-                          If `true` the base64 encoder will emit '-' and '_' \
-                          instead of the usual '+' and '/' characters.¶ \
-                          Defaults to false.¶ \
-                          Note: no padding is added when encoding using the \
-                          URL-safe alphabet. |
-          | :salt       | An optional salt. A bytebuf or a string. ¶ \
-                          DES and 3DES require exactly 8 bytes, AES256 1 or \
-                          more bytes |
-          """
-     :examples (list
-          """
-          (do
-            (load-module :crypt)
-            (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-            (encrypt "hello") ; => "ndmW1NLsDHA="
-            (encrypt "world") ; => "KPYjndkZ8vM="
-            (encrypt (bytebuf [1 2 3 4]))) ; => [128 216 205 163 62 43 52 82]
-          """,
-          """
-          (do
-            (load-module :crypt)
-            (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true :salt "salty"))
-            (encrypt "hello") ; => "3MrQGcgbv00="
-            (encrypt "world") ; => "a6UyBZUnK4I="
-            (encrypt (bytebuf [1 2 3 4]))) ; => [86 66 56 135 239 120 10 150]
-          """ ) 
-     :see-also '(
-          "crypt/decrypt" ) }
-
-  crypt/encrypt
-
-  [algorithm passphrase & options]
-
-  (let [opts     (apply hash-map options)
-        salt     (:salt opts default-salt)
-        url-safe (:url-safe opts false)]
-    (create-encrypt-fn algorithm passphrase salt url-safe)))
-
-
-(defn
-  ^{ :arglists '(
-       "(crypt/decrypt algorithm passphrase & options)")
-  :doc """
-       Returns a new thread safe function to decrypt a string or a bytebuf \
-       given the algorithm and passphrase. If a string is passed it is base64 \
-       decoded, decrypted, and returned as string. If a bytebuf is passed the \
-       decrypted bytebuf is returned.
-
-       Supported algorithms: DES, 3DES, AES256
-
-       Options:
-
-       | [![width: 15%]] | [![width: 85%]] |
-       | :url-safe   | The boolean option directs the base64 decoder to decode \
-                       standard or  URL safe base64 encoded strings. \
-                       If enabled (true) the base64 decoder will convert '-' \
-                       and '_' characters back to '+' and '/' before \
-                       decoding.¶ \
-                       Defaults to false. |
-       | :salt       | An optional salt. A bytebuf or a string. ¶ \
-                       DES and 3DES require exactly 8 bytes, AES256 1 or more \
-                       bytes |
-       """
-     :examples (list
-          """
-          (do
-            (load-module :crypt)
-            (def encrypt (crypt/encrypt "AES256" "secret" :url-safe true))
-            (def decrypt (crypt/decrypt "AES256" "secret" :url-safe true))
-            (encrypt "hello")                    ; => "e4m1qe6Fyx3Rr7NTIZe97g=="
-            (decrypt "e4m1qe6Fyx3Rr7NTIZe97g==") ; => "hello"
-            (encrypt (bytebuf [128 216 205])))   ; => [43 195 99 118 231 225 142 76 132 194 129 237 158 12 12 203]
-          """,
-          """
-          (do
-            (load-module :crypt)
-            (def encrypt (crypt/encrypt "AES256" "secret" :salt "salty"))
-            (def decrypt (crypt/decrypt "AES256" "secret" :salt "salty"))
-            (-> "hello"
-                (encrypt)
-                (decrypt)))
-          """ ) 
-     :see-also '(
-          "crypt/encrypt" ) }
-
-  crypt/decrypt
-
-  [algorithm passphrase & options]
-
-  (let [opts     (apply hash-map options)
-        salt     (:salt opts default-salt)
-        url-safe (:url-safe opts false)]
-    (create-decrypt-fn algorithm passphrase salt url-safe)))
-
-
-
-;; -----------------------------------------------------------------------------
-;; File encryption / decryption
+;; Encryption / decryption
 ;; -----------------------------------------------------------------------------
 
 (defn 
@@ -335,6 +236,7 @@
           """
      :examples (list
           """
+          ;; File
           (do
             (load-module :crypt) 
             (load-module :hexdump)
@@ -347,15 +249,26 @@
               (encryptor :encrypt file-in file-encoded true)
               (encryptor :decrypt file-encoded file-decoded true)
               (println (hexdump/dump (io/slurp file-encoded :binary true)))))
+          """,
           """
-          """
+          ;; Byte buffer
           (do
             (load-module :crypt) 
-            (let [buf-in    (bytebuf-from-string "1234567890")
-                  encryptor (crypt/encryptor-aes-256-gcm "secret")
+            (let [buf-in      (bytebuf-from-string "1234567890")
+                  encryptor   (crypt/encryptor-aes-256-gcm "secret")
                   buf-encoded (encryptor :encrypt buf-in)
                   buf-decoded (encryptor :decrypt buf-encoded)]
               (println (bytebuf-to-string buf-decoded))))
+          """,
+          """
+          ;; Text (Base64 ecoded as either :Standard or :UrlSafe)
+          (do
+            (load-module :crypt) 
+            (let [text        "1234567890"
+                  encryptor   (crypt/encryptor-aes-256-gcm "secret")
+                  encoded     (encryptor :encrypt text :Standard)
+                  decoded     (encryptor :decrypt encoded :Standard)]
+              (println decoded)))
           """) 
      :see-also '(
           "crypt/encryptor-chacha20-bouncycastle"
@@ -437,6 +350,7 @@
           """
      :examples (list
           """
+          ;; File
           (do
             (load-module :crypt) 
             (load-module :hexdump)
@@ -449,8 +363,9 @@
               (encryptor :encrypt file-in file-encoded true)
               (encryptor :decrypt file-encoded file-decoded true)
               (println (hexdump/dump (io/slurp file-encoded :binary true)))))
+          """,
           """
-          """
+          ;; Byte buffer
           (do
             (load-module :crypt) 
             (let [buf-in    (bytebuf-from-string "1234567890")
@@ -458,6 +373,16 @@
                   buf-encoded (encryptor :encrypt buf-in)
                   buf-decoded (encryptor :decrypt buf-encoded)]
               (println (bytebuf-to-string buf-decoded))))
+          """,
+          """
+          ;; Text (Base64 ecoded as either :Standard or :UrlSafe)
+          (do
+            (load-module :crypt) 
+            (let [text        "1234567890"
+                  encryptor   (crypt/encryptor-aes-256-cbc "secret")
+                  encoded     (encryptor :encrypt text :Standard)
+                  decoded     (encryptor :decrypt encoded :Standard)]
+              (println decoded)))
           """) 
      :see-also '(
           "crypt/encryptor-chacha20-bouncycastle"
@@ -545,6 +470,7 @@
           """
      :examples (list
           """
+          ;; File
           (do
             (load-module :crypt) 
             (load-module :hexdump)
@@ -557,8 +483,9 @@
               (encryptor :encrypt file-in file-encoded true)
               (encryptor :decrypt file-encoded file-decoded true)
               (println (hexdump/dump (io/slurp file-encoded :binary true)))))
+          """,
           """
-          """
+          ;; Byte buffer
           (do
             (load-module :crypt) 
             (let [buf-in    (bytebuf-from-string "1234567890")
@@ -566,6 +493,16 @@
                   buf-encoded (encryptor :encrypt buf-in)
                   buf-decoded (encryptor :decrypt buf-encoded)]
               (println (bytebuf-to-string buf-decoded))))
+          """,
+          """
+          ;; Text (Base64 ecoded as either :Standard or :UrlSafe)
+          (do
+            (load-module :crypt) 
+            (let [text        "1234567890"
+                  encryptor   (crypt/encryptor-chacha20-bouncycastle "secret")
+                  encoded     (encryptor :encrypt text :Standard)
+                  decoded     (encryptor :decrypt encoded :Standard)]
+              (println decoded)))
           """) 
      :see-also '(
           "crypt/encryptor-aes-256-gcm"
@@ -651,6 +588,7 @@
           """
      :examples (list
           """
+          ;; File
           (do
             (load-module :crypt) 
             (load-module :hexdump)
@@ -663,8 +601,9 @@
               (encryptor :encrypt file-in file-encoded true)
               (encryptor :decrypt file-encoded file-decoded true)
               (println (hexdump/dump (io/slurp file-encoded :binary true)))))
+          """,
           """
-          """
+          ;; Byte buffer
           (do
             (load-module :crypt) 
             (let [buf-in    (bytebuf-from-string "1234567890")
@@ -672,6 +611,16 @@
                   buf-encoded (encryptor :encrypt buf-in)
                   buf-decoded (encryptor :decrypt buf-encoded)]
               (println (bytebuf-to-string buf-decoded))))
+          """,
+          """
+          ;; Text (Base64 ecoded as either :Standard or :UrlSafe)
+          (do
+            (load-module :crypt) 
+            (let [text        "1234567890"
+                  encryptor   (crypt/encryptor-chacha20 "secret")
+                  encoded     (encryptor :encrypt text :Standard)
+                  decoded     (encryptor :decrypt encoded :Standard)]
+              (println decoded)))
           """) 
      :see-also '(
           "crypt/encryptor-aes-256-gcm"
@@ -922,41 +871,9 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(def- default-salt  (bytebuf [0xA9 0x9B 0xC8 0x32  0x56 0x35 0xE3 0x03]))
-
-
-(defn- to-8-byte-salt [salt]
-  (if (string? salt) (bytebuf-from-string salt :UTF-8 8 0x00) salt))
-
-
 (defn- to-bytes [data]
   (if (string? data) (bytebuf-from-string data :UTF-8) data))
 
-
-(defn- url-encode [s]
-  (-> s
-      (str/replace-all  "+" "-")
-      (str/replace-all  "/" "_")))
-
-
-(defn- url-decode [s]
-  (-> s
-      (str/replace-all  "-" "+")
-      (str/replace-all  "_" "/")))
-
-
-(defn- base64-encode [bytes url-safe padding]
-  (let [encoder (. :Base64 :getEncoder)] 
-    (when-not padding
-      (. encoder :withoutPadding))
-    (if url-safe
-      (url-encode (. encoder :encodeToString bytes))
-      (. encoder :encodeToString bytes))))
-
-
-(defn- base64-decode [s url-safe]
-  (-> (. :Base64 :getDecoder)
-      (. :decode (to-bytes (if url-safe (url-decode s) s)))))
 
 
 (defn- crypt/hash
@@ -980,184 +897,3 @@
              (throw (ex :VncException
                         (str "Failed to compute " algorithm " hash.")
                         ex))))))
-
-
-;; -----------------------------------------------------------------------------
-;; Cipher
-;; -----------------------------------------------------------------------------
-
-(def ENCRYPT_MODE 1)
-(def DECRYPT_MODE 2)
-
-
-(defmulti create-encrypt-fn (fn [algorithm passphrase salt url-safe] 
-  (name algorithm)))
-
-(defmethod create-encrypt-fn :default [algorithm passphrase salt url-safe]
-  (throw (ex :VncException
-             (str "Invalid cipher alogrithm '" algorithm "'"))))
-
-
-(defmulti create-decrypt-fn (fn [algorithm passphrase salt url-safe] 
-  (name algorithm)))
-
-(defmethod create-decrypt-fn :default [algorithm passphrase salt url-safe]
-  (throw (ex :VncException
-             (str "Invalid cipher alogrithm '" algorithm "'"))))
-
-
-(defn- cipher-encrypt [cipher data url-safe]
-  (try
-    (locking cipher
-      (cond
-        (empty? data)   data
-        (string? data)  (-<> (to-bytes data)
-                             (. cipher :doFinal <>)
-                             (base64-encode <> url-safe true))
-        (bytebuf? data) (. cipher :doFinal data)
-        :else           (throw (ex :VncException
-                                   "Invalid datatype for data."))))
-  (catch :Exception ex
-    (throw (ex :VncException "Failed to encrypt data." ex)))))
-
-
-(defn- cipher-decrypt [cipher data url-safe]
-  (try
-    (locking cipher
-      (cond
-        (empty? data)   data
-        (string? data)  (-<> (base64-decode data url-safe)
-                             (. cipher :doFinal <>)
-                             (bytebuf-to-string <> :UTF-8))
-        (bytebuf? data) (. cipher :doFinal data)
-        :else           (throw (ex :VncException
-                                   "Invalid datatype for data."))))
-  (catch :Exception ex
-    (throw (ex :VncException "Failed to decrypt data." ex)))))
-
-
-
-;; -----------------------------------------------------------------------------
-;; DES
-;; -----------------------------------------------------------------------------
-
-(defn- iterations-DES [] 19)
-
-
-(defn- create-secret-key-DES [passphrase salt]
-  (let [factory    (. :SecretKeyFactory :getInstance "PBEWithMD5AndDES")
-        key-spec   (. :PBEKeySpec :new passphrase salt (iterations-DES))
-        secret     (. factory :generateSecret key-spec)]
-    secret))
-
-
-(defn- create-cipher-DES [mode secret-key param-spec]
-  (doto (. :Cipher :getInstance (. secret-key :getAlgorithm))
-        (. :init mode secret-key param-spec)))
-
-
-(defmethod create-encrypt-fn "DES" [algorithm passphrase salt url-safe]
-  (let [salt       (to-8-byte-salt salt)
-        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
-                           "A DES salt must be a bytebuf with 8 bytes!")
-        secret-key (create-secret-key-DES passphrase salt)
-        param-spec (. :PBEParameterSpec :new salt (iterations-DES))
-        cipher     (create-cipher-DES ENCRYPT_MODE secret-key param-spec)]
-    (fn [data] (cipher-encrypt cipher data url-safe))))
-
-
-(defmethod create-decrypt-fn "DES" [algorithm passphrase salt url-safe]
-  (let [salt       (to-8-byte-salt salt)
-        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
-                           "A DES salt must be a bytebuf with 8 bytes!")
-        secret-key (create-secret-key-DES passphrase salt)
-        param-spec (. :PBEParameterSpec :new salt (iterations-DES))
-        cipher     (create-cipher-DES DECRYPT_MODE secret-key param-spec)]
-    (fn [data] (cipher-decrypt cipher data url-safe))))
-
-
-
-;; -----------------------------------------------------------------------------
-;; 3DES
-;; -----------------------------------------------------------------------------
-
-(defn- iterations-3DES [] 19)
-
-
-(defn- create-secret-key-3DES [passphrase salt ]
-  (let [factory    (. :SecretKeyFactory :getInstance "PBEWithMD5AndTripleDES")
-        key-spec   (. :PBEKeySpec :new passphrase salt (iterations-3DES))
-        secret     (. factory :generateSecret key-spec)]
-    secret))
-
-
-(defn- create-cipher-3DES [mode secret-key param-spec]
-  (doto (. :Cipher :getInstance (. secret-key :getAlgorithm))
-        (. :init mode secret-key param-spec)))
-
-
-(defmethod create-encrypt-fn "3DES" [algorithm passphrase salt url-safe]
-  (let [salt       (to-8-byte-salt salt)
-        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
-                           "A 3DES salt must be a bytebuf with 8 bytes!")
-        secret-key (create-secret-key-3DES passphrase salt)
-        param-spec (. :PBEParameterSpec :new salt (iterations-3DES))
-        cipher     (create-cipher-3DES ENCRYPT_MODE secret-key param-spec)]
-    (fn [data] (cipher-encrypt cipher data url-safe))))
-
-
-(defmethod create-decrypt-fn "3DES" [algorithm passphrase salt url-safe]
-  (let [salt       (to-8-byte-salt salt)
-        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
-                           "A 3DES salt must be a bytebuf with 8 bytes!")
-        secret-key (create-secret-key-3DES passphrase salt)
-        param-spec (. :PBEParameterSpec :new salt (iterations-3DES))
-        cipher     (create-cipher-3DES DECRYPT_MODE secret-key param-spec)]
-    (fn [data] (cipher-decrypt cipher data url-safe))))
-
-
-
-;; -----------------------------------------------------------------------------
-;; AES256  (CBC)
-;; -----------------------------------------------------------------------------
-
-(defn- create-iv-AES256 []
-  (bytebuf [0 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0]))
-
-
-(defn- create-iv-spec-AES256 []
-  (. :IvParameterSpec :new (create-iv-AES256 )))
-
-
-(defn- create-secret-key-AES256 [passphrase salt]
-  (let [factory    (. :SecretKeyFactory :getInstance "PBKDF2WithHmacSHA256")
-        key-spec   (. :PBEKeySpec :new passphrase salt 65536 256)
-        secret     (. factory :generateSecret key-spec)
-        secret-key (. :SecretKeySpec :new (. secret :getEncoded) "AES")]
-    secret-key))
-
-
-(defn- create-cipher-AES256 [mode secret-key iv-spec]
-  (doto (. :Cipher :getInstance "AES/CBC/PKCS5Padding")
-        (. :init mode secret-key iv-spec)))
-
-
-(defmethod create-encrypt-fn "AES256" [algorithm passphrase salt url-safe]
-  (let [salt       (to-bytes salt)
-        _          (assert (and (bytebuf? salt) (< 0 (count salt)))
-                           "An AES256 salt must be a bytebuf with at least 1 byte!")
-        secret-key (create-secret-key-AES256 passphrase salt)
-        iv-spec    (create-iv-spec-AES256)
-        cipher     (create-cipher-AES256 ENCRYPT_MODE secret-key iv-spec)]
-    (fn [data] (cipher-encrypt cipher data url-safe))))
-
-
-(defmethod create-decrypt-fn "AES256" [algorithm passphrase salt url-safe]
-  (let [salt       (to-bytes salt)
-        _          (assert (and (bytebuf? salt) (< 0 (count salt)))
-                           "An AES256 salt must be a bytebuf with at least 1 byte!")
-        secret-key (create-secret-key-AES256 passphrase salt)
-        iv-spec    (create-iv-spec-AES256)
-        cipher     (create-cipher-AES256 DECRYPT_MODE secret-key iv-spec)]
-    (fn [data] (cipher-decrypt cipher data url-safe))))
-
