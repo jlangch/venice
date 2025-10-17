@@ -54,37 +54,24 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  */
 public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncryptor {
 
-    private Encryptor_AES256_GCM(
-            final SecretKeySpec keySpec,
-            final byte[] aadTagData
-    ) {
+    private Encryptor_AES256_GCM(final SecretKeySpec keySpec) {
         Objects.requireNonNull(keySpec);
 
         this.keySpec = keySpec;
-        this.aadTagData = aadTagData;
-    }
+     }
 
     public static Encryptor_AES256_GCM create(
             final String passphrase
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
 
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null);
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS);
     }
 
     public static Encryptor_AES256_GCM create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations
-    ) throws GeneralSecurityException {
-        return create(passphrase, keySalt, keyIterations, null);
-    }
-
-    public static Encryptor_AES256_GCM create(
-            final String passphrase,
-            final byte[] keySalt,
-            final Integer keyIterations,
-            final byte[] aadData
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
 
@@ -98,9 +85,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 
-        return new Encryptor_AES256_GCM(
-                        keySpec,
-                        aadData) ;
+        return new Encryptor_AES256_GCM(keySpec) ;
     }
 
 
@@ -127,9 +112,9 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
 
-            if (aadTagData != null && aadTagData.length > 0) {
-                cipher.updateAAD(aadTagData); // add AAD tag data before encrypting
-            }
+            //if (aadData != null && aadData.length > 0) {
+            //    cipher.updateAAD(aadData); // add AAD tag data before encrypting
+            //}
 
             // encrypt
             byte[] encryptedData = cipher.doFinal(data);
@@ -164,9 +149,9 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmParameterSpec);
 
-            if (aadTagData != null && aadTagData.length > 0) {
-                cipher.updateAAD(aadTagData); // add AAD tag data before decrypting
-            }
+            //if (aadData != null && aadData.length > 0) {
+            //    cipher.updateAAD(aadData); // add AAD tag data before decrypting
+            //}
 
             // decrypt
             return cipher.doFinal(encryptedData);
@@ -204,5 +189,4 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
 
     private final SecretKeySpec keySpec;
-    private final byte[] aadTagData;
 }

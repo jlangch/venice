@@ -216,8 +216,6 @@
                                                        132 194 129 237 158  12  12 203]|
           | :key-iterations n        | An optional iteration count to generate the key.¶\
                                        Defaults to 3000. |
-          | :aad-tag-data arr          An optional AAD tag data bytebuf.¶\
-                                       E.g.: (bytebuf-from-string "parcival")|
 
           *IV* is random and unique for every call of the encryptor function.
                    
@@ -278,12 +276,9 @@
 
   (let [key-salt              (:key-salt opts)
         key-iterations        (:key-iterations opts)
-        aad-tag-data          (:aad-tag-data opts)
-        e                     (if (or key-salt key-iterations aad-tag-data)
+        e                     (if (or key-salt key-iterations)
                                  (. :Encryptor_AES256_GCM  
-                                    :create passphrase 
-                                            key-salt key-iterations
-                                            aad-tag-data)
+                                    :create passphrase key-salt key-iterations)
                                  (. :Encryptor_AES256_GCM 
                                     :create passphrase))]
     (fn encryptor

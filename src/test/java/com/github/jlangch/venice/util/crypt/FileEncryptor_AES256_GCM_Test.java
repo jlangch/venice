@@ -73,32 +73,4 @@ public class FileEncryptor_AES256_GCM_Test {
         }
     }
 
-
-    @Test
-    public void test_many_aad_1() throws Exception {
-        byte[] aadData = new byte[] { 0x45, 0x1a, 0x79} ;
-
-        IEncryptor encryptor = Encryptor_AES256_GCM.create("123", null, null, aadData);
-
-        for(int ii=0; ii<1000; ii++) {
-            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
-            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
-        }
-    }
-
-    @Test
-    public void test_many_aad_2() throws Exception {
-        byte[] aadData = new byte[] { 0x45, 0x1a, 0x79} ;
-
-        byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
-
-        IEncryptor encryptor = Encryptor_AES256_GCM.create("123", SALT, 3000, aadData);
-
-        for(int ii=0; ii<1000; ii++) {
-            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
-            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
-        }
-    }
-
-
 }
