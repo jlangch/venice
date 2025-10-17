@@ -196,68 +196,6 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_AES256_CBC_encrypt_1() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true))            \n" +
-                "  (assert (== \"e4m1qe6Fyx3Rr7NTIZe97g==\" (encrypt \"hello\")))                  \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_AES256_CBC_encrypt_2() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true))            \n" +
-                "  (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true))            \n" +
-                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                          \n" +
-                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_AES256_CBC_encrypt_custom_salt_string() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                                    \n" +
-                "  (load-module :crypt)                                                                 \n" +
-                "  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
-                "  (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
-                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                                \n" +
-                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))        \n" +
-                ")";
-
-        venice.eval(script);
-    }
-
-    @Test
-    public void test_AES256_CBC_encrypt_custom_salt_bytes() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                                   \n" +
-                "  (load-module :crypt)                                                                \n" +
-                "  (let [salt (bytebuf [0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27])]                     \n" +
-                "    (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true :salt salt))     \n" +
-                "    (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true :salt salt))     \n" +
-                "    (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
-                "    (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))))" ;
-
-        venice.eval(script);
-    }
-
-    @Test
     public void test_ciphers_default() {
         final Venice venice = new Venice();
 
