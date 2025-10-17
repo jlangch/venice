@@ -179,18 +179,17 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
         Objects.requireNonNull(data);
 
         try {
-            final byte[] iv;
+            final byte[] iv = new byte[IV_LEN];
             final byte[] encryptedData;
 
             if (addIvToEncryptedData) {
-                iv = new byte[IV_LEN];
                 System.arraycopy(data, 0, iv, 0, IV_LEN);
 
                 encryptedData = new byte[data.length - IV_LEN];
                 System.arraycopy(data, IV_LEN, encryptedData, 0, data.length - IV_LEN);
-           }
+            }
             else {
-                iv = customIV;
+                System.arraycopy(customIV, 0, iv, 0, IV_LEN);
                 encryptedData = data;
             }
 

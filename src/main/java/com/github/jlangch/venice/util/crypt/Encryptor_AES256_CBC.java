@@ -171,7 +171,7 @@ public class Encryptor_AES256_CBC extends AbstractEncryptor implements IEncrypto
 
                 encryptedData = new byte[data.length - IV_LEN];
                 System.arraycopy(data, IV_LEN, encryptedData, 0, data.length - IV_LEN);
-           }
+            }
             else {
                 iv = customIV;
                 encryptedData = data;
