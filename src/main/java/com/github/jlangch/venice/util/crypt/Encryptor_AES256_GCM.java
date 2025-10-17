@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.util.crypt;
 
 import java.security.GeneralSecurityException;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Objects;
 
@@ -67,7 +66,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
         this.customIV = customIV;
         this.addIvToEncryptedData = customIV == null || addCustomIvToEncryptedData;
         this.aadTagData = aadTagData;
-
+        this.ivGen = new IvGen(IV_LEN, customIV);
     }
 
     public static Encryptor_AES256_GCM create(
@@ -141,7 +140,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
         try {
             // IV
-            final byte[] iv = customIV == null ? randomIV() : customIV;
+            final byte[] iv = ivGen.iv();
 
             // Initialize GCM Parameters, 128 bit auth tag length
             final GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
@@ -217,12 +216,6 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
         return Security.getProvider(StringUtil.trimToEmpty(name)) != null;
     }
 
-    private byte[] randomIV() {
-        final byte[] iv = new byte[IV_LEN];
-        new SecureRandom().nextBytes(iv);
-        return iv;
-    }
-
     public static byte[] emptyToNull(final byte[] data) {
         return data != null && data.length == 0 ? null : data;
     }
@@ -239,6 +232,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
 
 
+    private final IIvGen ivGen;
     private final SecretKeySpec keySpec;
     private final byte[] customIV;
     private final boolean addIvToEncryptedData;
