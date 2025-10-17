@@ -74,13 +74,17 @@ public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor i
     public static FileEncryptor_ChaCha20_BouncyCastle create(
             final String passphrase,
             final byte[] keySalt,
-            final int keyIterations
+            final Integer keyIterations
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
-        Objects.requireNonNull(keySalt);
 
         // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, keySalt, keyIterations, KEY_LEN);
+        byte[] key = Util.deriveKeyFromPassphrase(
+                        passphrase,
+                        SECRET_KEY_FACTORY,
+                        keySalt == null ? KEY_SALT : keySalt,
+                        keyIterations == null ? KEY_ITERATIONS : keyIterations,
+                        KEY_LEN);
 
         return new FileEncryptor_ChaCha20_BouncyCastle(key) ;
     }
@@ -172,25 +176,15 @@ public class FileEncryptor_ChaCha20_BouncyCastle extends AbstractFileEncryptor i
         }
     }
 
-
-    private static boolean checkSupported() {
-        try {
-            final Class<?> clazz = Util.classForName("org.bouncycastle.crypto.engines.ChaChaEngine");
-            return clazz != null;
-        }
-        catch(Exception ex) {
-            return false;
-        }
-    }
-
-
-    private static final boolean supported = checkSupported();
+    private static final boolean supported = Util.hasClass("org.bouncycastle.crypto.engines.ChaChaEngine");
 
 
     public static int KEY_ITERATIONS = 3000;
     public static int KEY_LEN = 256;
     public static int IV_LEN = 8;
     public static int ROUNDS = 20;
+
+    public static String SECRET_KEY_FACTORY = "PBKDF2WithHmacSHA256";
 
     private static byte[] KEY_SALT = new byte[] {
             0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,

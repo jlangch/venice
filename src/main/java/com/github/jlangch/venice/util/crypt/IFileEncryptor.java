@@ -23,6 +23,8 @@ package com.github.jlangch.venice.util.crypt;
 
 import java.io.File;
 
+import com.github.jlangch.venice.util.Base64Schema;
+
 
 public interface IFileEncryptor {
 
@@ -41,6 +43,25 @@ public interface IFileEncryptor {
      * @return the decrypted binary data
      */
     byte[] decrypt(final byte[] data);
+
+
+    /**
+     * Encrypts a string to a Base64 encoded encrypted data
+     *
+     * @param text the string to encrypt
+     * @param schema the Base64 schema to use
+     * @return the Base64 encoded encrypted data
+     */
+    String encrypt(final String text, final Base64Schema schema);
+
+    /**
+     * Decrypts a Base64 encoded encrypted data to a string
+     *
+     * @param base64 the Base64 encoded encrypted data
+     * @param schema the Base64 schema to use
+     * @return the decrypted string
+     */
+    String decrypt(final String base64, final Base64Schema schema);
 
     /**
      * Encrypts a file

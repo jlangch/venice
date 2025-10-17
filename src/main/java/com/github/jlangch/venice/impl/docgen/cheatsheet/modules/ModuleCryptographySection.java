@@ -43,10 +43,10 @@ public class ModuleCryptographySection implements ISectionBuilder {
 
         final DocSection ciphers = new DocSection("Ciphers", id());
         all.addSection(ciphers);
-        ciphers.addItem(diBuilder.getDocItem("crypt/ciphers", false, false));
-        ciphers.addItem(diBuilder.getDocItem("crypt/max-key-size"));
-        ciphers.addItem(diBuilder.getDocItem("crypt/provider?"));
-        ciphers.addItem(diBuilder.getDocItem("crypt/add-bouncy-castle-provider", false, false));
+        ciphers.addItem(diBuilder.getDocItem("crypt/ciphers", false));
+        ciphers.addItem(diBuilder.getDocItem("crypt/max-key-size", false));
+        ciphers.addItem(diBuilder.getDocItem("crypt/provider?", false));
+        ciphers.addItem(diBuilder.getDocItem("crypt/add-bouncy-castle-provider", false));
 
         final DocSection hashes = new DocSection("Hashes", id());
         all.addSection(hashes);
@@ -57,18 +57,19 @@ public class ModuleCryptographySection implements ISectionBuilder {
 
         final DocSection crypt = new DocSection("Encrypt", id());
         all.addSection(crypt);
-        crypt.addItem(diBuilder.getDocItem("crypt/encrypt"));
-        crypt.addItem(diBuilder.getDocItem("crypt/decrypt"));
+        crypt.addItem(diBuilder.getDocItem("crypt/encrypt", false));
+        crypt.addItem(diBuilder.getDocItem("crypt/decrypt", false));
 
         final DocSection filecrypt = new DocSection("File encrypt", id());
         all.addSection(filecrypt);
-        filecrypt.addItem(diBuilder.getDocItem("crypt/encrypt-file"));
-        filecrypt.addItem(diBuilder.getDocItem("crypt/decrypt-file"));
+        filecrypt.addItem(diBuilder.getDocItem("crypt/encryptor-aes-256-gcm", false));
+        filecrypt.addItem(diBuilder.getDocItem("crypt/encryptor-chacha20", false));
+        filecrypt.addItem(diBuilder.getDocItem("crypt/encryptor-chacha20-bouncycastle", false));
 
         final DocSection filehash = new DocSection("File hash", id());
         all.addSection(filehash);
-        filehash.addItem(diBuilder.getDocItem("crypt/hash-file"));
-        filehash.addItem(diBuilder.getDocItem("crypt/verify-file-hash"));
+        filehash.addItem(diBuilder.getDocItem("crypt/hash-file", false));
+        filehash.addItem(diBuilder.getDocItem("crypt/verify-file-hash", false));
 
         return section;
     }

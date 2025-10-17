@@ -21,13 +21,17 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
+import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_CBC;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle;
@@ -712,8 +716,51 @@ public class CryptoModuleTest {
         assertTrue((Boolean)venice.eval(script));
     }
 
+
     @Test
     public void test_file_encrypt_decrypt_AES256_GCM_1() {
+        if (!FileEncryptor_AES256_GCM.isSupported()) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    (bytebuf [1 2 3 4 5])                               \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-aes-256-gcm \"secret\")]           \n" +
+                "    (->> (encryptor :encrypt data-in)                                  \n" +
+                "          (encryptor :decrypt ))))                                     ";
+
+        assertArrayEquals(new byte[] {1,2,3,4,5}, ((ByteBuffer)venice.eval(script)).array());
+    }
+
+    @Test
+    public void test_file_encrypt_decrypt_AES256_GCM_2() {
+        if (!FileEncryptor_AES256_GCM.isSupported()) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    \"12345\"                                           \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-aes-256-gcm \"secret\")]           \n" +
+                "    (-<> (encryptor :encrypt data-in :Standard)                        \n" +
+                "         (encryptor :decrypt <> :Standard))))                          ";
+
+        assertEquals("12345", venice.eval(script));
+    }
+
+    @Test
+    public void test_file_encrypt_decrypt_AES256_GCM_3() {
         if (!FileEncryptor_AES256_GCM.isSupported()) {
             return;
         }
@@ -738,9 +785,122 @@ public class CryptoModuleTest {
         assertEquals("1234567890", venice.eval(script));
     }
 
+
+    @Test
+    public void test_file_encrypt_decrypt_AES256_CBC_1() {
+        if (!FileEncryptor_AES256_CBC.isSupported()) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    (bytebuf [1 2 3 4 5])                               \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-aes-256-cbc \"secret\")]           \n" +
+                "    (->> (encryptor :encrypt data-in)                                  \n" +
+                "          (encryptor :decrypt ))))                                     ";
+
+        assertArrayEquals(new byte[] {1,2,3,4,5}, ((ByteBuffer)venice.eval(script)).array());
+    }
+
+    @Test
+    public void test_file_encrypt_decrypt_AES256_CBC_2() {
+        if (!FileEncryptor_AES256_CBC.isSupported()) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    \"12345\"                                           \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-aes-256-cbc \"secret\")]           \n" +
+                "    (-<> (encryptor :encrypt data-in :Standard)                        \n" +
+                "         (encryptor :decrypt <> :Standard))))                          ";
+
+        assertEquals("12345", venice.eval(script));
+    }
+
+    @Test
+    public void test_file_encrypt_decrypt_AES256_CBC_3() {
+        if (!FileEncryptor_AES256_CBC.isSupported()) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                 \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")             \n" +
+                "        file-dec   (io/temp-file \"test-\", \".data.dec\")             \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-aes-256-cbc \"secret\")]           \n" +
+                "    (io/delete-file-on-exit file-in file-out file-dec)                 \n" +
+                "    (io/spit file-in \"1234567890\")                                   \n" +
+                "    (encryptor :encrypt file-in file-out true)                         \n" +
+                "    (encryptor :decrypt file-out file-dec true)                        \n" +
+                "    (io/slurp file-dec :binary false)))                                ";
+
+        assertEquals("1234567890", venice.eval(script));
+    }
+
     @Test
     @EnableOnMac
-    public void test_file_encrypt_decrypt_ChaCha20() {
+    public void test_file_encrypt_decrypt_ChaCha20_1() {
+        if (!FileEncryptor_ChaCha20.isSupported()) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    (bytebuf [1 2 3 4 5])                               \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-chacha20 \"secret\")]              \n" +
+                "    (->> (encryptor :encrypt data-in)                                  \n" +
+                "         (encryptor :decrypt ))))                                      ";
+
+        assertArrayEquals(new byte[] {1,2,3,4,5}, ((ByteBuffer)venice.eval(script)).array());
+    }
+
+    @Test
+    @EnableOnMac
+    public void test_file_encrypt_decrypt_ChaCha20_2() {
+        if (!FileEncryptor_ChaCha20.isSupported()) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    \"12345\"                                           \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-chacha20 \"secret\")]              \n" +
+                "    (-<> (encryptor :encrypt data-in :Standard)                        \n" +
+                "         (encryptor :decrypt <> :Standard))))                          ";
+
+        assertEquals("12345", venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMac
+    public void test_file_encrypt_decrypt_ChaCha20_3() {
         if (!FileEncryptor_ChaCha20.isSupported()) {
             return;
         }
@@ -767,7 +927,57 @@ public class CryptoModuleTest {
 
     @Test
     @EnableOnMac
-    public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle() {
+    public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_1() {
+        if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+            return;
+        }
+        if (!FileEncryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    (bytebuf [1 2 3 4 5])                               \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-chacha20-bouncycastle \"secret\")] \n" +
+                "    (->> (encryptor :encrypt data-in)                                  \n" +
+                "         (encryptor :decrypt ))))                                      ";
+
+        assertArrayEquals(new byte[] {1,2,3,4,5}, ((ByteBuffer)venice.eval(script)).array());
+    }
+
+    @Test
+    @EnableOnMac
+    public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_2() {
+        if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
+            return;
+        }
+        if (!FileEncryptor_ChaCha20_BouncyCastle.hasProvider("BC")) {
+            return;
+        }
+
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [data-in    \"12345\"                                           \n" +
+                "        passphrase \"42\"                                              \n" +
+                "        encryptor  (crypt/encryptor-chacha20-bouncycastle \"secret\")] \n" +
+                "    (-<> (encryptor :encrypt data-in :Standard)                        \n" +
+                "         (encryptor :decrypt <> :Standard))))                          ";
+
+        assertEquals("12345", venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMac
+    public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_3() {
         if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
         }

@@ -33,12 +33,13 @@ public class Util {
 
     public static byte[] deriveKeyFromPassphrase(
             final String passphrase,
+            final String secretKeyFactoryName,
             final byte[] salt,
             final int iterationCount,
             final int keyLength
     ) throws NoSuchAlgorithmException, InvalidKeySpecException {
         KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt, iterationCount, keyLength);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(secretKeyFactoryName);
         return factory.generateSecret(spec).getEncoded();
     }
 

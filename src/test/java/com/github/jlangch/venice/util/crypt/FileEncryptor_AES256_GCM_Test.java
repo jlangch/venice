@@ -32,9 +32,9 @@ public class FileEncryptor_AES256_GCM_Test {
 
     @Test
     public void test_single_1() throws Exception {
-        final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
+        byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
 
-        final IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123");
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123");
 
         assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
     }
@@ -44,9 +44,9 @@ public class FileEncryptor_AES256_GCM_Test {
         byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
 
 
-        final byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
+        byte[] data = "1234567890".getBytes(StandardCharsets.UTF_8);
 
-        final IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", SALT, 3000);
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", SALT, 3000);
 
         assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
     }
@@ -54,10 +54,10 @@ public class FileEncryptor_AES256_GCM_Test {
 
     @Test
     public void test_many_1() throws Exception {
-        final IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123");
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123");
 
         for(int ii=0; ii<1000; ii++) {
-            final byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
             assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
         }
     }
@@ -66,10 +66,93 @@ public class FileEncryptor_AES256_GCM_Test {
     public void test_many_2() throws Exception {
         byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
 
-        final IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", SALT, 3000);
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", SALT, 3000);
 
         for(int ii=0; ii<1000; ii++) {
-            final byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
+        }
+    }
+
+
+    @Test
+    public void test_many_aad_1() throws Exception {
+        byte[] aadData = new byte[] { 0x45, 0x1a, 0x79} ;
+
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", null, null, aadData);
+
+        for(int ii=0; ii<1000; ii++) {
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
+        }
+    }
+
+    @Test
+    public void test_many_aad_2() throws Exception {
+        byte[] aadData = new byte[] { 0x45, 0x1a, 0x79} ;
+
+        byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
+
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", SALT, 3000, aadData);
+
+        for(int ii=0; ii<1000; ii++) {
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
+        }
+    }
+
+
+    @Test
+    public void test_many_customiv_aad_1() throws Exception {
+        byte[] IV = new byte[] {0x11, 0x56, 0x23, 0x67, 0x0d, 0x5e,  0x79, 0x3F, 0x10, 0x4A, 0x4B, 0x5F};
+        byte[] AAD_DATA = new byte[] { 0x45, 0x1a, 0x79} ;
+
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", null, null, IV, false, AAD_DATA);
+
+        for(int ii=0; ii<1000; ii++) {
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
+        }
+    }
+
+    @Test
+    public void test_many_customiv_aad_2() throws Exception {
+        byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
+        byte[] IV = new byte[] {0x11, 0x56, 0x23, 0x67, 0x0d, 0x5e,  0x79, 0x3F, 0x10, 0x4A, 0x4B, 0x5F};
+        byte[] AAD_DATA = new byte[] { 0x45, 0x1a, 0x79} ;
+
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", SALT, 3000, IV, false, AAD_DATA);
+
+        for(int ii=0; ii<1000; ii++) {
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
+        }
+    }
+
+
+    @Test
+    public void test_many_customiv_aad_3() throws Exception {
+        byte[] IV = new byte[] {0x11, 0x56, 0x23, 0x67, 0x0d, 0x5e,  0x79, 0x3F, 0x10, 0x4A, 0x4B, 0x5F};
+        byte[] AAD_DATA = new byte[] { 0x45, 0x1a, 0x79} ;
+
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", null, null, IV, true, AAD_DATA);
+
+        for(int ii=0; ii<1000; ii++) {
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
+            assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
+        }
+    }
+
+    @Test
+    public void test_many_customiv_aad_4() throws Exception {
+        byte[] SALT = new byte[] {0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e};
+        byte[] IV = new byte[] {0x11, 0x56, 0x23, 0x67, 0x0d, 0x5e,  0x79, 0x3F, 0x10, 0x4A, 0x4B, 0x5F};
+        byte[] AAD_DATA = new byte[] { 0x45, 0x1a, 0x79} ;
+
+        IFileEncryptor encryptor = FileEncryptor_AES256_GCM.create("123", SALT, 3000, IV, true, AAD_DATA);
+
+        for(int ii=0; ii<1000; ii++) {
+            byte[] data = ("test " + ii).getBytes(StandardCharsets.UTF_8);
             assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
         }
     }

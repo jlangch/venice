@@ -21,12 +21,18 @@
  */
 package com.github.jlangch.venice.util.crypt;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.Objects;
 
 import com.github.jlangch.venice.FileException;
+import com.github.jlangch.venice.util.Base64Schema;
 
 
 public abstract class AbstractFileEncryptor implements IFileEncryptor{
@@ -36,6 +42,33 @@ public abstract class AbstractFileEncryptor implements IFileEncryptor{
 
     @Override
     abstract public byte[] decrypt(final byte[] data);
+
+
+    @Override
+    public String encrypt(
+            final String text,
+            final Base64Schema schema
+    ) {
+        Objects.requireNonNull(text);
+        Objects.requireNonNull(schema);
+
+        final byte[] encryptedBytes = encrypt(text.getBytes(UTF_8));
+        return new String(encoder(schema).encode(encryptedBytes), UTF_8);
+    }
+
+    @Override
+    public String decrypt(
+            final String base64,
+            final Base64Schema schema
+    ) {
+        Objects.requireNonNull(base64);
+        Objects.requireNonNull(schema);
+
+        final byte[] encryptedBytes = decoder(schema).decode(base64.getBytes(UTF_8));
+        final byte[] decryptedBytes = decrypt(encryptedBytes);
+        return new String(decryptedBytes, UTF_8);
+    }
+
 
     @Override
     public void encrypt(
@@ -83,4 +116,22 @@ public abstract class AbstractFileEncryptor implements IFileEncryptor{
         }
     }
 
- }
+
+    private Encoder encoder(final Base64Schema scheme) {
+        switch(scheme) {
+            case Standard: return Base64.getEncoder();
+            case UrlSafe:  return Base64.getUrlEncoder();
+            default:
+                throw new IllegalArgumentException("Invalid Base64 scheme '" + scheme.name() + "'");
+        }
+    }
+
+    private Decoder decoder(final Base64Schema scheme) {
+        switch(scheme) {
+            case Standard: return Base64.getDecoder();
+            case UrlSafe:  return Base64.getUrlDecoder();
+            default:
+                throw new IllegalArgumentException("Invalid Base64 scheme '" + scheme.name() + "'");
+        }
+    }
+}

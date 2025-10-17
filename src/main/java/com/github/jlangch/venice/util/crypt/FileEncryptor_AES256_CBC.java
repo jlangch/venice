@@ -27,7 +27,7 @@ import java.security.Security;
 import java.util.Objects;
 
 import javax.crypto.Cipher;
-import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.github.jlangch.venice.FileException;
@@ -35,73 +35,64 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
- * Encrypt and decrypt files using "AES-256" with "GCM" and "NoPadding".
+ * Encrypt and decrypt files using "AES-256" with "CBC" and "PKCS5Padding".
  *
  * Uses a random salt and IV for each file and writes the salt and the IV
  * to start of the encrypted file.
  *
+ * <b>DO NOT USE this cipher AES CBC in production!!<b>
+ *
+ * <b>AES CBC with PKCS5Padding padding scheme can lead to padding oracle attacks.<b>
+ *
  * <pre>
  *    Encrypted binary file format
  *
- *     AES256-GCM               AES256-GCM            AES256-GCM
- *  AES/GCM/NoPadding       AES/GCM/NoPadding       AES/GCM/NoPadding
+ *     AES256-CBC               AES256-CBC            AES256-CBC
+ * AES/CBC/PKCS5Padding    AES/CBC/PKCS5Padding    AES/CBC/PKCS5Padding
  *     random IV            custom ID, added       custom ID, not added
  * +------------------+    +------------------+    +------------------+
- * |      iv  (12)    |    |      iv  (12)    |    |      data (n)    |
+ * |      iv  (16)    |    |      iv  (16)    |    |      data (n)    |
  * +------------------+    +------------------+    +------------------+
  * |      data (n)    |    |      data (n)    |
  * +------------------+    +------------------+
  * </pre>
  */
-public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements IFileEncryptor {
+public class FileEncryptor_AES256_CBC extends AbstractFileEncryptor implements IFileEncryptor {
 
-    private FileEncryptor_AES256_GCM(
+    private FileEncryptor_AES256_CBC(
             final SecretKeySpec keySpec,
             final byte[] customIV,
-            final boolean addCustomIvToEncryptedData,
-            final byte[] aadTagData
+            final boolean addCustomIvToEncryptedData
     ) {
         Objects.requireNonNull(keySpec);
 
         this.keySpec = keySpec;
         this.customIV = customIV;
         this.addIvToEncryptedData = customIV == null || addCustomIvToEncryptedData;
-        this.aadTagData = aadTagData;
-
     }
 
-    public static FileEncryptor_AES256_GCM create(
+    public static FileEncryptor_AES256_CBC create(
             final String passphrase
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
 
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, null);
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false);
     }
 
-    public static FileEncryptor_AES256_GCM create(
+    public static FileEncryptor_AES256_CBC create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations
     ) throws GeneralSecurityException {
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, null);
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false);
     }
 
-    public static FileEncryptor_AES256_GCM create(
-            final String passphrase,
-            final byte[] keySalt,
-            final Integer keyIterations,
-            final byte[] aadData
-    ) throws GeneralSecurityException {
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, aadData);
-    }
-
-    public static FileEncryptor_AES256_GCM create(
+    public static FileEncryptor_AES256_CBC create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations,
             final byte[] customIV,
-            final boolean addCustomIvToEncryptedData,
-            final byte[] aadData
+            final boolean addCustomIvToEncryptedData
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
 
@@ -119,11 +110,10 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 
-        return new FileEncryptor_AES256_GCM(
+        return new FileEncryptor_AES256_CBC(
                         keySpec,
                         emptyToNull(customIV),
-                        addCustomIvToEncryptedData,
-                        aadData) ;
+                        addCustomIvToEncryptedData) ;
     }
 
 
@@ -143,16 +133,9 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
             // IV
             final byte[] iv = customIV == null ? randomIV() : customIV;
 
-            // Initialize GCM Parameters, 128 bit auth tag length
-            final GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
-
             // Initialize Cipher for AES-GCM
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
-
-            if (aadTagData != null && aadTagData.length > 0) {
-                cipher.updateAAD(aadTagData); // add AAD tag data before encrypting
-            }
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv));
 
             // encrypt
             byte[] encryptedData = cipher.doFinal(data);
@@ -194,16 +177,9 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
                 encryptedData = data;
             }
 
-            // Initialize GCM Parameters, 128 bit auth tag length
-            GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
-
             // Initialize Cipher for AES-GCM
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmParameterSpec);
-
-            if (aadTagData != null && aadTagData.length > 0) {
-                cipher.updateAAD(aadTagData); // add AAD tag data before decrypting
-            }
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
 
             // decrypt
             return cipher.doFinal(encryptedData);
@@ -231,7 +207,7 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
 
     public static int KEY_ITERATIONS = 3000;
     public static int KEY_LEN = 256;
-    public static int IV_LEN = 12;
+    public static int IV_LEN = 16;
 
     public static String SECRET_KEY_FACTORY = "PBKDF2WithHmacSHA256";
 
@@ -243,5 +219,4 @@ public class FileEncryptor_AES256_GCM extends AbstractFileEncryptor implements I
     private final SecretKeySpec keySpec;
     private final byte[] customIV;
     private final boolean addIvToEncryptedData;
-    private final byte[] aadTagData;
 }

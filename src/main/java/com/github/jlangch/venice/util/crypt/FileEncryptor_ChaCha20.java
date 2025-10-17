@@ -78,13 +78,17 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
     public static FileEncryptor_ChaCha20 create(
             final String passphrase,
             final byte[] keySalt,
-            final int keyIterations
+            final Integer keyIterations
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
-        Objects.requireNonNull(keySalt);
 
         // Derive key from passphrase
-        byte[] key = Util.deriveKeyFromPassphrase(passphrase, keySalt, keyIterations, KEY_LEN);
+        byte[] key = Util.deriveKeyFromPassphrase(
+                        passphrase,
+                        SECRET_KEY_FACTORY,
+                        keySalt == null ? KEY_SALT : keySalt,
+                        keyIterations == null ? KEY_ITERATIONS : keyIterations,
+                        KEY_LEN);
 
         return new FileEncryptor_ChaCha20(new SecretKeySpec(key, "ChaCha20"));
     }
@@ -203,18 +207,8 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
         }
     }
 
-    private static boolean checkSupported() {
-        try {
-            final Class<?> clazz = Util.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
-            return clazz != null;
-        }
-        catch(Exception ex) {
-            return false;
-        }
-    }
 
-
-   private static final boolean supported = checkSupported();
+   private static final boolean supported = Util.hasClass("javax.crypto.spec.ChaCha20ParameterSpec");
 
 
    private static ByteOrder ENDIAN = ByteOrder.BIG_ENDIAN; // ensure same byte order on all machines
@@ -224,6 +218,8 @@ public class FileEncryptor_ChaCha20 extends AbstractFileEncryptor implements IFi
    public static int KEY_LEN = 256;
    private static int NONCE_LEN = 12;
    private static int COUNTER_LEN = 4;
+
+   public static String SECRET_KEY_FACTORY = "PBKDF2WithHmacSHA256";
 
     private static byte[] KEY_SALT = new byte[] {
             0x45, 0x1a, 0x79, 0x67, (byte)0xba, (byte)0xfa, 0x0d, 0x5e,
