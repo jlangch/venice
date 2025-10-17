@@ -63,7 +63,6 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
         Objects.requireNonNull(keySpec);
 
         this.keySpec = keySpec;
-        this.customIV = customIV;
         this.addIvToEncryptedData = customIV == null || addCustomIvToEncryptedData;
         this.aadTagData = aadTagData;
         this.ivGen = new IvGen(IV_LEN, customIV);
@@ -188,7 +187,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
                 System.arraycopy(data, IV_LEN, encryptedData, 0, data.length - IV_LEN);
             }
             else {
-                System.arraycopy(customIV, 0, iv, 0, IV_LEN);
+                System.arraycopy(ivGen.iv(), 0, iv, 0, IV_LEN);
                 encryptedData = data;
             }
 
@@ -234,7 +233,6 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
     private final IIvGen ivGen;
     private final SecretKeySpec keySpec;
-    private final byte[] customIV;
     private final boolean addIvToEncryptedData;
     private final byte[] aadTagData;
 }

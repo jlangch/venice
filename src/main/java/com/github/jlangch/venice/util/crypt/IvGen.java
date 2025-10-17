@@ -39,14 +39,15 @@ public class IvGen implements IIvGen {
     @Override
     public byte[] iv() {
         if (this.iv == null) {
-            final byte[] iv = new byte[len];
-            new SecureRandom().nextBytes(iv);
-            return iv;
+            final byte[] iv_ = new byte[len];
+            new SecureRandom().nextBytes(iv_);
+            return iv_;
         }
         else {
             return this.iv;
         }
     }
+
 
     private final int len;
     private final byte[] iv;
