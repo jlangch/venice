@@ -30,7 +30,6 @@ import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_CBC;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_AES256_GCM;
 import com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20;
@@ -923,7 +922,6 @@ public class CryptoModuleTest {
     }
 
     @Test
-    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_1() {
         if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
@@ -948,7 +946,6 @@ public class CryptoModuleTest {
     }
 
     @Test
-    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_2() {
         if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
@@ -973,7 +970,6 @@ public class CryptoModuleTest {
     }
 
     @Test
-    @EnableOnMac
     public void test_file_encrypt_decrypt_ChaCha20_BouncyCastle_3() {
         if (!FileEncryptor_ChaCha20_BouncyCastle.isSupported()) {
             return;
