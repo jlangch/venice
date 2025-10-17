@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.crypt;
 
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Objects;
 
@@ -36,36 +37,31 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 /**
  * Encrypt and decrypt files using "AES-256" with "GCM" and "NoPadding".
  *
- * Uses a random salt and IV for each file and writes the salt and the IV
- * to start of the encrypted file.
+ * Uses a random IV for each encryption call and writes the IV
+ * to start of the encrypted data.
  *
  * <pre>
  *    Encrypted binary file format
  *
- *     AES256-GCM               AES256-GCM            AES256-GCM
- *  AES/GCM/NoPadding       AES/GCM/NoPadding       AES/GCM/NoPadding
- *     random IV            custom ID, added       custom ID, not added
- * +------------------+    +------------------+    +------------------+
- * |      iv  (12)    |    |      iv  (12)    |    |      data (n)    |
- * +------------------+    +------------------+    +------------------+
- * |      data (n)    |    |      data (n)    |
- * +------------------+    +------------------+
+ *     AES256-GCM
+ *  AES/GCM/NoPadding
+ * +------------------+
+ * |      iv  (12)    |
+ * +------------------+
+ * |      data (n)    |
+ * +------------------+
  * </pre>
  */
 public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncryptor {
 
     private Encryptor_AES256_GCM(
             final SecretKeySpec keySpec,
-            final byte[] customIV,
-            final boolean addCustomIvToEncryptedData,
             final byte[] aadTagData
     ) {
         Objects.requireNonNull(keySpec);
 
         this.keySpec = keySpec;
-        this.addIvToEncryptedData = customIV == null || addCustomIvToEncryptedData;
         this.aadTagData = aadTagData;
-        this.ivGen = new IvGen(IV_LEN, customIV);
     }
 
     public static Encryptor_AES256_GCM create(
@@ -73,7 +69,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
 
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, null);
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null);
     }
 
     public static Encryptor_AES256_GCM create(
@@ -81,31 +77,16 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             final byte[] keySalt,
             final Integer keyIterations
     ) throws GeneralSecurityException {
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, null);
+        return create(passphrase, keySalt, keyIterations, null);
     }
 
     public static Encryptor_AES256_GCM create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations,
-            final byte[] aadData
-    ) throws GeneralSecurityException {
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false, aadData);
-    }
-
-    public static Encryptor_AES256_GCM create(
-            final String passphrase,
-            final byte[] keySalt,
-            final Integer keyIterations,
-            final byte[] customIV,
-            final boolean addCustomIvToEncryptedData,
             final byte[] aadData
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
-
-        if (customIV != null && customIV.length != IV_LEN) {
-            throw new IllegalArgumentException("A custom IV must have " + IV_LEN + " bytes!");
-        }
 
         // Derive key from passphrase
         byte[] key = Util.deriveKeyFromPassphrase(
@@ -119,8 +100,6 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
         return new Encryptor_AES256_GCM(
                         keySpec,
-                        emptyToNull(customIV),
-                        addCustomIvToEncryptedData,
                         aadData) ;
     }
 
@@ -139,7 +118,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
         try {
             // IV
-            final byte[] iv = ivGen.iv();
+        	final byte[] iv = randomIV();
 
             // Initialize GCM Parameters, 128 bit auth tag length
             final GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
@@ -155,17 +134,12 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             // encrypt
             byte[] encryptedData = cipher.doFinal(data);
 
-            if (addIvToEncryptedData) {
-                // IV, and encrypted data
-                byte[] outData = new byte[IV_LEN + encryptedData.length];
-                System.arraycopy(iv, 0, outData, 0, IV_LEN);
-                System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
+            // IV, and encrypted data
+            byte[] outData = new byte[IV_LEN + encryptedData.length];
+            System.arraycopy(iv, 0, outData, 0, IV_LEN);
+            System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
 
-                return outData;
-            }
-            else {
-                return encryptedData;
-            }
+            return outData;
         }
         catch(Exception ex) {
             throw new FileException("Failed to decrypt data", ex);
@@ -177,19 +151,14 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
         Objects.requireNonNull(data);
 
         try {
-            final byte[] iv = new byte[IV_LEN];
+            final byte[] iv;
             final byte[] encryptedData;
 
-            if (addIvToEncryptedData) {
-                System.arraycopy(data, 0, iv, 0, IV_LEN);
+            iv = new byte[IV_LEN];
+            System.arraycopy(data, 0, iv, 0, IV_LEN);
 
-                encryptedData = new byte[data.length - IV_LEN];
-                System.arraycopy(data, IV_LEN, encryptedData, 0, data.length - IV_LEN);
-            }
-            else {
-                System.arraycopy(ivGen.iv(), 0, iv, 0, IV_LEN);
-                encryptedData = data;
-            }
+            encryptedData = new byte[data.length - IV_LEN];
+            System.arraycopy(data, IV_LEN, encryptedData, 0, data.length - IV_LEN);
 
             // Initialize GCM Parameters, 128 bit auth tag length
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
@@ -208,7 +177,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
         catch(Exception ex) {
             throw new FileException("Failed to encrypt data", ex);
         }
-   }
+    }
 
 
     public boolean hasProvider(final String name) {
@@ -217,6 +186,12 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
     public static byte[] emptyToNull(final byte[] data) {
         return data != null && data.length == 0 ? null : data;
+    }
+
+    private byte[] randomIV() {
+        final byte[] iv = new byte[IV_LEN];
+        new SecureRandom().nextBytes(iv);
+        return iv;
     }
 
 
@@ -231,8 +206,6 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             0x03, 0x71, 0x44, 0x2f, (byte)0xc3, (byte)0xa5, 0x6e, 0x4f };
 
 
-    private final IIvGen ivGen;
     private final SecretKeySpec keySpec;
-    private final boolean addIvToEncryptedData;
     private final byte[] aadTagData;
 }

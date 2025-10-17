@@ -314,29 +314,23 @@
                                        E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 ¶\
                                                        132 194 129 237 158  12  12 203]|
           | :key-iterations n        | An optional iteration count to generate the key.¶\
-                                       Defaults to 3000.   |
-          | :custom-iv arr           | An optional custom IV bytebuf (12 bytes).¶\
-                                       E.g.: (bytebuf [ 01 195  33 118 44 225 142  76 158  12  12 203]¶\
-                                       Without custom-iv a new random IV is generated for \
-                                       every encryption call|
-          | :custom-iv-add-to-data b | If `true` add the custom IV to the encrypted data|                                
+                                       Defaults to 3000. |
           | :aad-tag-data arr          An optional AAD tag data bytebuf.¶\
-                                       E.g.: (bytebuf-from-string "parcival")]|   |
+                                       E.g.: (bytebuf-from-string "parcival")|
 
-          *IV* is random and unique for every call of encryptor function.
+          *IV* is random and unique for every call of the encryptor function.
                    
           While encrypting data the random *IV* is written to the start of the 
           encrypted data and read before decrypting the data
  
           ```
-              AES256-GCM              AES256-GCM            AES256-GCM 
-           AES/GCM/NoPadding      AES/GCM/NoPadding      AES/GCM/NoPadding 
-               random IV           custom ID, added     custom ID, not added
-          +-----------------+    +-----------------+    +-----------------+
-          |     iv  (12)    |    |     iv  (12)    |    |     data (n)    |
-          +-----------------+    +-----------------+    +-----------------+
-          |     data (n)    |    |     data (n)    |
-          +-----------------+    +-----------------+
+              AES256-GCM      
+           AES/GCM/NoPadding  
+          +-----------------+ 
+          |     iv  (12)    | 
+          +-----------------+ 
+          |     data (n)    | 
+          +-----------------+ 
           ```
           """
      :examples (list
@@ -371,14 +365,11 @@
 
   (let [key-salt              (:key-salt opts)
         key-iterations        (:key-iterations opts)
-        custom-iv             (:custom-iv opts)
-        custom-iv-add-to-data (coalesce (:custom-iv-add-to-data opts) false)
         aad-tag-data          (:aad-tag-data opts)
-        e                     (if (or key-salt key-iterations custom-iv aad-tag-data)
+        e                     (if (or key-salt key-iterations aad-tag-data)
                                  (. :Encryptor_AES256_GCM  
                                     :create passphrase 
                                             key-salt key-iterations
-                                            custom-iv custom-iv-add-to-data 
                                             aad-tag-data)
                                  (. :Encryptor_AES256_GCM 
                                     :create passphrase))]

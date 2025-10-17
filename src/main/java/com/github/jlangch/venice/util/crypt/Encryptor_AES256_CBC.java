@@ -84,7 +84,7 @@ public class Encryptor_AES256_CBC extends AbstractEncryptor implements IEncrypto
             final byte[] keySalt,
             final Integer keyIterations
     ) throws GeneralSecurityException {
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS, null, false);
+        return create(passphrase, keySalt, keyIterations, null, false);
     }
 
     public static Encryptor_AES256_CBC create(
