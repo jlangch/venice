@@ -72,5 +72,4 @@ public class FileEncryptor_AES256_GCM_Test {
             assertArrayEquals(data, encryptor.decrypt(encryptor.encrypt(data)));
         }
     }
-
 }

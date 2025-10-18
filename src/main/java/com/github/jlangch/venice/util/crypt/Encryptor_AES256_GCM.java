@@ -149,9 +149,6 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             final byte[] iv = new byte[IV_LEN];
             System.arraycopy(data, 0, iv, 0, IV_LEN);
 
-            final byte[] encryptedData = new byte[data.length - IV_LEN];
-            System.arraycopy(data, IV_LEN, encryptedData, 0, data.length - IV_LEN);
-
             // Initialize GCM Parameters, 128 bit auth tag length
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
 
@@ -164,7 +161,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             }
 
             // decrypt
-            return cipher.doFinal(encryptedData);
+            return cipher.doFinal(data, IV_LEN, data.length - IV_LEN);
         }
         catch(Exception ex) {
             throw new FileException("Failed to encrypt data", ex);

@@ -149,9 +149,6 @@ public class Encryptor_ChaCha20 extends AbstractEncryptor implements IEncryptor 
             byte[] counterBytes = new byte[COUNTER_LEN];
             System.arraycopy(data, NONCE_LEN, counterBytes, 0, COUNTER_LEN);
 
-            byte[] encryptedData = new byte[data.length - NONCE_LEN - COUNTER_LEN];
-            System.arraycopy(data, NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
-
             int counter = counterToInt(counterBytes);
 
             // Initialize ChaCha20 Parameters
@@ -162,7 +159,7 @@ public class Encryptor_ChaCha20 extends AbstractEncryptor implements IEncryptor 
             cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
 
             // decryption
-            return cipher.doFinal(encryptedData);
+            return cipher.doFinal(data, NONCE_LEN + COUNTER_LEN, data.length - NONCE_LEN - COUNTER_LEN);
         }
         catch(Exception ex) {
             throw new FileException("Failed to decrypt data", ex);
