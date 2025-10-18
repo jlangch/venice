@@ -45,20 +45,17 @@ The 256 bit encryption key is derived from the passphrase using a
 and 65536 iterations. Carefully choose a long enough passphrase.
 
 
-**Salt, IV, Nonce, Counter**
+**IV, Nonce, Counter**
 
-*Salt*, *IV*, *Nonce* and/or *Counter* are random and unique for every call
-of `crypt/encrypt-file`.
+*IV*, *Nonce* and/or *Counter* are random and unique for every call
+of the encryption functions.
           
-While encrypting a file the random *Salt* (when a passphrase is used), *IV*, 
-*Nonce* and/or *Counter* are written to the start of the encrypted file and 
-read before decrypting the file:
+While encrypting a file the *IV*, *Nonce* and/or *Counter* are written to the 
+start of the encrypted file and extracted before decrypting the file:
 
 ```
       AES256-GCM              AES256-CBC               ChaCha20              ChaCha20-BC
    AES/GCM/NoPadding     AES/CBC/PKCS5Padding                               (BouncyCastle)
-+--------------------+  +--------------------+  +--------------------+  +--------------------+
-|      salt (16) ¹⁾  |  |      salt (16) ¹⁾  |  |      salt (16) ¹⁾  |  |      salt (16) ¹⁾  |
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
 |       iv  (12)     |  |       iv  (12)     |  |      nonce (12)    |  |       iv (8)       |
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
@@ -73,13 +70,39 @@ read before decrypting the file:
 
 ### Examples
 
-**AES and ChaCha encrypted files:**
+
+**Encrypted binary buffers:**
 
 ```clojure
 (do
   (load-module :crypt)
  
-  (let [algo       "AES256-GCM"  ;; "AES256-CBC", "AES256-GCM, "ChaCha20", "ChaCha20-BC"
+  ;; available encryptors
+  ;;   - AES256-GCM:   crypt/encryptor-aes-256-gcm
+  ;;   - AES256-CBC:   crypt/encryptor-aes-256-cbc
+  ;;   - ChaCha20:     crypt/encryptor-chacha20
+  ;;   - ChaCha20-BC:  crypt/encryptor-chacha20-bouncycastle
+  
+  (let [encryptor  (crypt/encryptor-aes-256-gcm "secret")
+        data       (bytebuf-allocate-random 100)]
+    
+    (->> (encryptor :encrypt data)   ;; encrypt data
+         (encryptor :decrypt))))     ;; decrypt data
+```
+
+**Encrypted files:**
+
+```clojure
+(do
+  (load-module :crypt)
+ 
+  ;; available encryptors
+  ;;   - AES256-GCM:   crypt/encryptor-aes-256-gcm
+  ;;   - AES256-CBC:   crypt/encryptor-aes-256-cbc
+  ;;   - ChaCha20:     crypt/encryptor-chacha20
+  ;;   - ChaCha20-BC:  crypt/encryptor-chacha20-bouncycastle
+  
+  (let [encryptor  (crypt/encryptor-aes-256-gcm "secret")
         data       (bytebuf-allocate-random 100)
         file-in    (io/temp-file "test-", ".data")
         file-enc   (io/temp-file "test-", ".data.enc")
@@ -87,12 +110,37 @@ read before decrypting the file:
     (io/delete-file-on-exit file-in file-enc file-dec)
     (io/spit file-in data :binary true)
     
-    (crypt/encrypt-file algo "-passphrase-" file-in file-enc)
-    (crypt/decrypt-file algo "-passphrase-" file-enc file-dec)))
+    ;; encrypt file-in -> file-enc (overwrite dest file)
+    (encryptor :encrypt file-in file-enc true)
+    
+    ;; decrypt file-enc -> file-dec (overwrite dest file)
+    (encryptor :decrypt file-enc file-dec true)))
 ```
 
-`crypt/encrypt-file` and `crypt/decrypt-file` work both on files, streams 
-and memory buffers.
+**Encrypted string:**
+
+```clojure
+(do
+  (load-module :crypt)
+ 
+  ;; available encryptors
+  ;;   - AES256-GCM:   crypt/encryptor-aes-256-gcm
+  ;;   - AES256-CBC:   crypt/encryptor-aes-256-cbc
+  ;;   - ChaCha20:     crypt/encryptor-chacha20
+  ;;   - ChaCha20-BC:  crypt/encryptor-chacha20-bouncycastle
+  
+  (let [encryptor  (crypt/encryptor-aes-256-gcm "secret")
+        data       "hello-world"]
+    
+    ;; Text 
+    ;; - encrypt text to Base64 encoded data
+    ;; - decrypt Base64 encoded data to text
+    ;; Supports Base64 :Standard (RFC4648) or :UrlSafe (RFC4648_URLSAFE) format
+    
+    ;; use Base64 :Standard () encoding
+    (-<> (encryptor :encrypt data :Standard)   ;; encrypt text and encode to Base64 :Standard
+         (encryptor :decrypt <> :Standard))))  ;; decrypt Base64 :Standard encoded data to text
+```
 
 
 **AES encrypted ZIP files:**
@@ -136,59 +184,60 @@ Encrypt all "*.doc" and "*.docx" in a file tree:
         (throw (ex :VncException "Not an encrypted file '~{path}'")))))
   
   (defn encrypt [dir passphrase]
-    (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".doc" ".docx"))
-         (docoll (crypt/encrypt-file "AES256-GCM" passphrase %
-                                     (encrypted-file-name %)))))
+    (let [encryptor (crypt/encryptor-aes-256-gcm passphrase)]
+      (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".doc" ".docx"))
+           (docoll #(encryptor :encrypt % (encrypted-file-name %) true)))))
 
   (defn decrypt [dir passphrase]
-    (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".enc"))
-         (docoll (crypt/decrypt-file "AES256-GCM" passphrase %
-                                     (decrypted-file-name %)))))
+    (let [encryptor (crypt/encryptor-aes-256-gcm passphrase)]
+      (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".enc"))
+           (docoll #(encryptor :decrypt % (decrypted-file-name %) true)))))
 
-  ;; (encrypt "/data/docs" "-passphrase-")                                
-  ;; (decrypt "/data/docs" "-passphrase-")                                
+  ;; (encrypt "/data/docs" "-passphrase-")
+  ;; (decrypt "/data/docs" "-passphrase-")
   )
 ```
 
 
 ### Performance
 
-Test: read file -> encrypt/decrypt -> write file
+Test encrypt: read file -> encrypt -> write file
+Test decrypt: read file -> decrypt -> write file
 
 ```
-                     MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
---------------------------------------------------------------------
-                         2KB    20KB   200KB     2MB    20MB   200MB
---------------------------------------------------------------------
-Encrypt AES-256 CBC:    85ms    65ms    66ms    74ms   172ms  1165ms
-Decrypt AES-256 CBC:    67ms    67ms    65ms    76ms   162ms  1053ms
-Encrypt AES-256 GCM:    64ms    65ms    70ms    96ms   364ms  3170ms
-Decrypt AES-256 GCM:    66ms    65ms    67ms    94ms   363ms  3215ms
-Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
-Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
-Encrypt ChaCha20:          -       -       -       -       -       -
-Decrypt ChaCha20:          -       -       -       -       -       -
-Encrypt ChaCha20-BC:    75ms    63ms    66ms    71ms   127ms   701ms
-Decrypt ChaCha20-BC:    66ms    65ms    65ms    71ms   127ms   704ms
---------------------------------------------------------------------
+                              MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
+┏━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┓
+┃                      │    2KB │   20KB │  200KB │    2MB │   20MB │  204MB ┃
+┣━━━━━━━━━━━━━━━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┫
+┃ AES-256 CBC  encrypt │      1 │      1 │      1 │     10 │    104 │   1042 ┃
+┃ AES-256 CBC  decrypt │      3 │      0 │      1 │     10 │     99 │   1018 ┃
+┃ AES-256 GCM  encrypt │      1 │      1 │      4 │     31 │    305 │   3034 ┃
+┃ AES-256 GCM  decrypt │      5 │      1 │      3 │     30 │    304 │   3026 ┃
+┃ ChaCha20     encrypt │      - │      - │      - │      - │      - │      - ┃
+┃ ChaCha20     decrypt │      - │      - │      - │      - │      - │      - ┃
+┃ ChaCha20-BC  encrypt │      5 │      0 │      1 │      6 │     63 │    631 ┃
+┃ ChaCha20-BC  decrypt │      5 │      0 │      1 │      7 │     63 │    636 ┃
+┃ AES-256 ZIP  encrypt │     19 │      6 │      9 │     60 │    569 │   5617 ┃
+┃ AES-256 ZIP  decrypt │      9 │      4 │      6 │     26 │    232 │   2165 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
 ```
 
 ```
-                    MacBookAir M2, Java 17 (Zulu), BouncyCastle 1.77
---------------------------------------------------------------------
-                         2KB    20KB   200KB     2MB    20MB   200MB
---------------------------------------------------------------------
-Encrypt AES-256 CBC:    96ms    73ms    73ms    84ms   193ms  1337ms
-Decrypt AES-256 CBC:    75ms    72ms    74ms    85ms   195ms  1562ms
-Encrypt AES-256 GCM:    73ms    72ms    75ms   103ms   388ms  3593ms
-Decrypt AES-256 GCM:    75ms    73ms    76ms   103ms   392ms  3283ms
-Encrypt AES-256 ZIP:     7ms     5ms     9ms    60ms   600ms  5900ms
-Decrypt AES-256 ZIP:     7ms     4ms     7ms    26ms   240ms  2311ms
-Encrypt ChaCha20:       83ms    72ms    73ms    77ms   119ms   566ms
-Decrypt ChaCha20:       73ms    72ms    73ms    76ms   118ms   527ms
-Encrypt ChaCha20-BC:    74ms    73ms    73ms    87ms   160ms   949ms
-Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
---------------------------------------------------------------------
+                             MacBookAir M2, Java 17 (Zulu), BouncyCastle 1.77
+┏━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┯━━━━━━━━┓
+┃                      │    2KB │   20KB │  200KB │    2MB │   20MB │  204MB ┃
+┣━━━━━━━━━━━━━━━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┿━━━━━━━━┫
+┃ AES-256 CBC  encrypt │      1 │      1 │      2 │     13 │    127 │   1275 ┃
+┃ AES-256 CBC  decrypt │      6 │      1 │      1 │     13 │    126 │   1265 ┃
+┃ AES-256 GCM  encrypt │      1 │      1 │      4 │     33 │    337 │   3318 ┃
+┃ AES-256 GCM  decrypt │      2 │      0 │      3 │     33 │    329 │   3284 ┃
+┃ ChaCha20     encrypt │      1 │      1 │      1 │      4 │     42 │    426 ┃
+┃ ChaCha20     decrypt │      5 │      0 │      1 │      5 │     41 │    427 ┃
+┃ ChaCha20-BC  encrypt │      5 │      1 │      1 │      9 │     87 │    887 ┃
+┃ ChaCha20-BC  decrypt │      5 │      0 │      1 │      9 │     88 │    868 ┃
+┃ AES-256 ZIP  encrypt │     20 │      4 │     10 │     61 │    587 │   5924 ┃
+┃ AES-256 ZIP  decrypt │      9 │      4 │      6 │     28 │    243 │   2376 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
 ```
 
 

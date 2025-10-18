@@ -139,7 +139,7 @@
                                                             data-file 
                                                             cha-bc-file-enc
                                                             true))
-                          (t/elapsed #(encryptor-chacha-bc  :encrypt
+                          (t/elapsed #(encryptor-chacha-bc  :decrypt
                                                             cha-bc-file-enc 
                                                             cha-bc-file-dec
                                                             true))]
@@ -159,10 +159,10 @@
         (println "Decrypt verify AES GCM:       " 
                  (if (identical data-file aes-gcm-file-dec) "OK" "FAIL"))
         (when encryptor-chacha
-          (println "Decrypt verify ChaCha20:    " 
+          (println "Decrypt verify ChaCha20:      " 
                    (if (identical data-file cha-file-dec) "OK" "FAIL")))
         (when encryptor-chacha-bc
-          (println "Decrypt verify ChaCha20-BC: " 
+          (println "Decrypt verify ChaCha20-BC:   " 
                    (if (identical data-file cha-bc-file-dec) "OK" "FAIL")))
         (println "Decrypt verify ZIP:           " 
                  (if (identical data-file aes-file-unzip) "OK" "FAIL"))
@@ -170,16 +170,16 @@
         (flatten timings))))
 
   (defn sections []
-    [ "Encrypt AES-256 CBC"
-      "Decrypt AES-256 CBC"
-      "Encrypt AES-256 GCM"
-      "Decrypt AES-256 GCM"
-      "Encrypt ChaCha20" 
-      "Decrypt ChaCha20" 
-      "Encrypt ChaCha20-BC" 
-      "Decrypt ChaCha20-BC"
-      "Encrypt AES-256 ZIP"
-      "Decrypt AES-256 ZIP"] )
+    [ "AES-256 CBC  encrypt"
+      "AES-256 CBC  decrypt"
+      "AES-256 GCM  encrypt "
+      "AES-256 GCM  decrypt"
+      "ChaCha20     encrypt " 
+      "ChaCha20     decrypt" 
+      "ChaCha20-BC  encrypt " 
+      "ChaCha20-BC  decrypt"
+      "AES-256 ZIP  encrypt "
+      "AES-256 ZIP  decrypt"] )
 
   (defn run []
     (when-not (io/exists-dir? test-dir)
@@ -190,7 +190,7 @@
 
     (let [samples  [2 20 200 (* 2 1024) (* 20 1024) (* 200 1024)]
           sections (sections)
-          columns  (cons {:header {:text "" } :width 19}
+          columns  (cons {:header {:text "" } :width 20}
                          (map #(hash-map :header {:text (format-size %)
                                                   :align :right}
                                          :body   {:align :right}
