@@ -151,10 +151,12 @@ public abstract class AbstractEncryptor implements IEncryptor{
 
     private OpenOption[] getOpenOptions(final boolean overwrite) {
         return overwrite
-                ? new OpenOption[] { StandardOpenOption.WRITE,
-                                     StandardOpenOption.CREATE,
-                                     StandardOpenOption.TRUNCATE_EXISTING }
-                : new OpenOption[] { StandardOpenOption.WRITE,
-                                     StandardOpenOption.CREATE_NEW};
+                ? new OpenOption[] {
+                        StandardOpenOption.WRITE,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING }
+                : new OpenOption[] {
+                        StandardOpenOption.WRITE,
+                        StandardOpenOption.CREATE_NEW};
     }
 }

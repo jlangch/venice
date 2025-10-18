@@ -104,7 +104,7 @@ public class Encryptor_ChaCha20_BouncyCastle extends AbstractEncryptor implement
 
         try {
             // generate a random IV
-            byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
+            byte[] iv = new byte[IV_LEN];
             new SecureRandom().nextBytes(iv);
 
             // encrypt
