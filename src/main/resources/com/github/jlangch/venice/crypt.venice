@@ -211,11 +211,14 @@
 
           Options:
 
-          | :key-salt arr            | An optional salt to generate the key.¶\
-                                       E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 ¶\
-                                                       132 194 129 237 158  12  12 203]|
-          | :key-iterations n        | An optional iteration count to generate the key.¶\
-                                       Defaults to 3000. |
+          | :key-salt arr        | An optional salt to generate the key.¶\
+                                  E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
+                                                  132 194 129 237 158  12  12 203]|
+          | :key-iterations n    | An optional iteration count to generate the key.¶\
+                                   Defaults to 3000. |
+          | :efficient-mem-use b | If `true` efficently use memory in encryption \
+                                   (less memory allocation).¶\
+                                   Defaults to `false`. |
 
           *IV* is random and unique for every call of the encryptor function.
                    
@@ -276,11 +279,12 @@
 
   (let [key-salt              (:key-salt opts)
         key-iterations        (:key-iterations opts)
+        efficient-mem-use     (:efficient-mem-use opts false)
         e                     (if (or key-salt key-iterations)
                                  (. :Encryptor_AES256_GCM  
-                                    :create passphrase key-salt key-iterations)
+                                    :create passphrase key-salt key-iterations efficient-mem-use)
                                  (. :Encryptor_AES256_GCM 
-                                    :create passphrase))]
+                                    :create passphrase efficient-mem-use))]
     (fn encryptor
       ([mode in] 
           (assert (get #{:encrypt :decrypt} mode) "mode arg must be :encrypt or :decrypt")
@@ -317,7 +321,7 @@
           Options:
 
           | :key-salt arr            | An optional salt to generate the key.¶\
-                                       E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 ¶\
+                                       E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
                                                        132 194 129 237 158  12  12 203]|
           | :key-iterations n        | An optional iteration count to generate the key.¶\
                                        Defaults to 3000.   |
@@ -429,7 +433,7 @@
           Options:
 
           | :key-salt arr     | An optional salt to generate the key.¶\
-                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 ¶\
+                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
                                                 132 194 129 237 158  12  12 203]|
           | :key-iterations n | An optional iteration count to generate the key.¶\
                                 Defaults to 3000.   |
@@ -547,7 +551,7 @@
           Options:
 
           | :key-salt arr     | An optional salt to generate the key.¶\
-                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 ¶\
+                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
                                                 132 194 129 237 158  12  12 203]|
           | :key-iterations n | An optional iteration count to generate the key.¶\
                                 Defaults to 3000.   |

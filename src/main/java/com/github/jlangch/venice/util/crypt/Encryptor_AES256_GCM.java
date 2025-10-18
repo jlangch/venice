@@ -43,21 +43,25 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * <pre>
  *    Encrypted binary file format
  *
- *     AES256-GCM
- *  AES/GCM/NoPadding
- * +------------------+
- * |      iv  (12)    |
- * +------------------+
- * |      data (n)    |
- * +------------------+
+ *        AES256-GCM
+ *     AES/GCM/NoPadding
+ *    +------------------+
+ *    |      iv  (12)    |
+ *    +------------------+
+ *    |      data (n)    |
+ *    +------------------+
  * </pre>
  */
 public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncryptor {
 
-    private Encryptor_AES256_GCM(final SecretKeySpec keySpec) {
+    private Encryptor_AES256_GCM(
+    		final SecretKeySpec keySpec,
+    		 final boolean efficientMemUse
+    ) {
         Objects.requireNonNull(keySpec);
 
         this.keySpec = keySpec;
+        this.efficientMemUse = efficientMemUse;
      }
 
     public static Encryptor_AES256_GCM create(
@@ -65,13 +69,31 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
 
-        return create(passphrase, KEY_SALT, KEY_ITERATIONS);
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS, false);
+    }
+
+    public static Encryptor_AES256_GCM create(
+            final String passphrase,
+            final boolean efficientMemUse
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(passphrase);
+
+        return create(passphrase, KEY_SALT, KEY_ITERATIONS, efficientMemUse);
     }
 
     public static Encryptor_AES256_GCM create(
             final String passphrase,
             final byte[] keySalt,
             final Integer keyIterations
+    ) throws GeneralSecurityException {
+        return create(passphrase, keySalt, keyIterations, false);
+    }
+
+    public static Encryptor_AES256_GCM create(
+            final String passphrase,
+            final byte[] keySalt,
+            final Integer keyIterations,
+            final boolean efficientMemUse
     ) throws GeneralSecurityException {
         Objects.requireNonNull(passphrase);
 
@@ -85,7 +107,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
 
-        return new Encryptor_AES256_GCM(keySpec) ;
+        return new Encryptor_AES256_GCM(keySpec, efficientMemUse) ;
     }
 
 
@@ -126,15 +148,31 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
                 cipher.updateAAD(aad); // add AAD tag data before encrypting
             }
 
-            // encrypt
-            byte[] encryptedData = cipher.doFinal(data);
+            if (efficientMemUse) {
+            	// AES GCM: output length = input length + 16 bytes
 
-            // IV, and encrypted data
-            byte[] outData = new byte[IV_LEN + encryptedData.length];
-            System.arraycopy(iv, 0, outData, 0, IV_LEN);
-            System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
+	            final byte[] outData = new byte[IV_LEN + data.length + 16];
 
-            return outData;
+	            System.arraycopy(iv, 0, outData, 0, IV_LEN);
+
+	            final int bytesWritten = cipher.doFinal(data, 0, data.length, outData, IV_LEN);
+
+	            if (bytesWritten != data.length + 16) {
+	            	throw new RuntimeException("AES GCM encryption out buffer length misalignment");
+	            }
+	            return outData;
+            }
+            else {
+	            // encrypt
+	            byte[] encryptedData = cipher.doFinal(data);
+
+	            // IV, and encrypted data
+	            byte[] outData = new byte[IV_LEN + encryptedData.length];
+	            System.arraycopy(iv, 0, outData, 0, IV_LEN);
+	            System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
+
+	            return outData;
+            }
         }
         catch(Exception ex) {
             throw new FileException("Failed to decrypt data", ex);
@@ -196,4 +234,5 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
 
     private final SecretKeySpec keySpec;
+    private final boolean efficientMemUse;
 }
