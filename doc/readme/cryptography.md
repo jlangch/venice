@@ -2,7 +2,6 @@
 
 * [File Encryption](#file-encryption)
 * [File Hashing](#file-hashing)
-* [String Encryption](#string-encryption)
 * [String and Password Hashing](#string-and-password-hashing)
 
 
@@ -303,97 +302,6 @@ Hash SHA-256 (memory):   1ms     0ms     1ms     8ms    76ms   749ms
 --------------------------------------------------------------------
 ```
 
-
-
-## String Encryption
-
-Venice supports DES, 3DES and AES256 for encrypting strings and byte buffers.
-
-**Note:** For encrypting files use `crypt/encrypt-file` and `crypt/decrypt-file`
-
-
-### Encryption
-
-**Encrypting strings:**
-
-```clojure
-(do
-  (load-module :crypt) 
-
-  ;; define the encryption function
-  (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-  
-  (encrypt "hello") ; => "ndmW1NLsDHA"
-  (encrypt "world") ; => "KPYjndkZ8vM"
-) 
-```
-
-String data is returned as a Base64 encoded string.
-
-
-The :url-safe option controls the Base64 encoding regarding URL safety.
-If _true_ the base64 encoder will emit '-' and '_' instead of the usual 
-'+' and '/' characters. Defaults to _false_.
-
-Note: no padding is added when encoding using the URL-safe alphabet.
-
-
-
-**Encrypting bytebufs:**
-
-```clojure
-(do
-  (load-module :crypt) 
-  (load-module :hexdump)
-
-  ;; define the encryption function
-  (def encrypt (crypt/encrypt "AES256" "secret" :url-safe true))
-  
-  (-> (encrypt (bytebuf [ 0  1  2  3  4  5  6  7  8  9 
-                         10 11 12 13 14 15 16 17 18 19]))
-      (hexdump/dump)))
-```
-
-
-### Decryption
-
-The crypt/decrypt function expects a Base64 encoded string or a bytebuf.
-
-**Decrypting strings:**
-
-```clojure
-(do
-  (load-module :crypt) 
-
-  ;; define the encryption/decryption function
-  (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-  (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
-  
-  (-> (encrypt "hello")
-      (decrypt)))
-```
-
-String data is passed as a Base64 encoded string.
-
-The :url-safe option controls the Base64 encoding/decoding regarding URL safety. 
-If true the base64 encoder will emit '-' and '_' instead of the usual '+' and '/' 
-characters and the decoder will reverse it. Defaults to false.
-
-
-**Decrypting bytebufs:**
-
-```clojure
-(do
-  (load-module :crypt) 
-
-  ;; define the decryption function
-  (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
-
-  
-  (-> (encrypt (bytebuf [ 0  1  2  3  4  5  6  7  8  9 
-                         10 11 12 13 14 15 16 17 18 19]))
-      (decrypt)))
-```
 
 
 ## String and Password Hashing
