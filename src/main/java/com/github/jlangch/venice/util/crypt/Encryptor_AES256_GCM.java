@@ -99,16 +99,16 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
     @Override
     public byte[] encrypt(final byte[] data) {
-        return encryptWithAAD(data, null);
+        return encrypt(data, null);
     }
 
     @Override
     public byte[] decrypt(final byte[] data) {
-        return decryptWithAAD(data, null);
+        return decrypt(data, null);
     }
 
     @Override
-    public byte[] encryptWithAAD(final byte[] data, final byte[] aad) {
+    public byte[] encrypt(final byte[] data, final byte[] aad) {
         Objects.requireNonNull(data);
 
         try {
@@ -142,7 +142,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
     }
 
     @Override
-    public byte[] decryptWithAAD(final byte[] data, final byte[] aad) {
+    public byte[] decrypt(final byte[] data, final byte[] aad) {
         Objects.requireNonNull(data);
 
         try {

@@ -52,7 +52,7 @@ public interface IEncryptor {
      * @param aad the binary authenticated additional data
      * @return the encrypted binary data
      */
-    byte[] encryptWithAAD(final byte[] data, final byte[] aad);
+    byte[] encrypt(final byte[] data, final byte[] aad);
 
     /**
      * Decrypts binary data with AAD (authenticated additional data)
@@ -61,7 +61,7 @@ public interface IEncryptor {
      * @param aad the binary authenticated additional data
      * @return the decrypted binary data
      */
-    byte[] decryptWithAAD(final byte[] data, final byte[] aad);
+    byte[] decrypt(final byte[] data, final byte[] aad);
 
 
     /**
