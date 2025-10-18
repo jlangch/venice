@@ -53,6 +53,9 @@ public class Protocol {
         final boolean isCompressData = compressor.needsCompression(message.getData());
 
         // [1] header
+        //     if encryption is active the header is processed as AAD
+        //     (added authenticated data) with the encrypted payload meta
+        //      data, so any tampering if the header data is detected!
         final ByteBuffer header = ByteBuffer.allocate(18);
         // 2 bytes magic chars
         header.put((byte)'v');
@@ -69,10 +72,11 @@ public class Protocol {
         IO.writeFully(ch, header);
 
         // [2] payload meta data (optionally encrypt)
+        final byte[] headerAAD = header.array(); ; // GCM AAD: added authenticated data
         final byte[] metaData = encryptor.encrypt(
                                     PayloadMetaData.encode(
                                         new PayloadMetaData(message)),
-                                    header.array());
+                                    headerAAD);
         final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
         meta.put(metaData);
         meta.flip();
@@ -82,8 +86,7 @@ public class Protocol {
         byte[] payloadData = encryptor.encrypt(
                                 compressor.compress(
                                     message.getData(),
-                                    isCompressData),
-                                null);
+                                    isCompressData));
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
@@ -127,10 +130,11 @@ public class Protocol {
 
             // [2] payload meta data (maybe encrypted)
             final ByteBuffer payloadMetaFrame = IO.readFrame(ch);
+            final byte[] headerAAD = header.array(); // GCM AAD: added authenticated data
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
                                                         payloadMetaFrame.array(),
-                                                        header.array(),
+                                                        headerAAD,
                                                         isEncryptedData));
 
             // [3] payload data (maybe compressed and encrypted)
@@ -138,7 +142,6 @@ public class Protocol {
             byte[] payloadData = compressor.decompress(
                                     encryptor.decrypt(
                                         payloadFrame.array(),
-                                        null,
                                         isEncryptedData),
                                     isCompressedData);
 
