@@ -518,8 +518,11 @@
               (println (bytebuf-to-string buf-decoded))))
           """,
           """
-          ;; Text (Base64 ecoded as either :Standard or :UrlSafe)
-          (do
+          ;; Text 
+          ;; - encrypt text to Base64 encoded data
+          ;; - decrypt Base64 encoded data to text
+          ;; Supports Base64 :Standard (RFC4648) or :UrlSafe (RFC4648_URLSAFE) format
+          (do 
             (load-module :crypt) 
             (let [text        "1234567890"
                   encryptor   (crypt/encryptor-chacha20-bouncycastle "secret")
