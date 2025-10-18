@@ -70,12 +70,6 @@
   (defn identical [file1 file2]
     (= (io/slurp file1 :binary true) (io/slurp file2 :binary true)))
 
-  (defn encrypt [algo passphrase file-in file-out]
-   (crypt/encrypt-file algo passphrase file-in file-out))
-
-  (defn decrypt [algo passphrase file-in file-out]
-    (crypt/decrypt-file algo passphrase file-in file-out))
-
   (defn encrypt-zip [zip passphrase filename file ]
     (zipvault/zip zip passphrase filename (io/slurp file :binary true)))
 
@@ -83,7 +77,7 @@
     (zipvault/extract-file zip passphrase filename destpath))
 
 
-  (defn run [size-kb]
+  (defn sample [size-kb]
     (let [size               (* size-kb 1024)
           data               (bytebuf-allocate-random size)
           data-file          (io/file test-dir "test.data")
@@ -96,7 +90,17 @@
           cha-bc-file-enc    (io/file test-dir "test.data.cha-bc.enc")
           cha-bc-file-dec    (io/file test-dir "test.data.cha-bc.dec")
           aes-file-zip       (io/file test-dir "test.data.zip")
-          aes-file-unzip     (io/file test-dir "test.data.unzip")]
+          aes-file-unzip     (io/file test-dir "test.data.unzip")
+          
+          secret             "secret"
+          encryptor-aes-cbc   (crypt/encryptor-aes-256-cbc secret)
+          encryptor-aes-gcm   (crypt/encryptor-aes-256-gcm secret)
+          encryptor-chacha    (if (crypt/encryptor-chacha20-supported?) 
+                                (crypt/encryptor-chacha20 secret)
+                                nil)
+          encryptor-chacha-bc (if (crypt/encryptor-chacha20-bouncycastle-supported?) 
+                                (crypt/encryptor-chacha20-bouncycastle secret)
+                                nil)]
 
       (println "Testing file:" data-file (str size-kb "KB"))
 
@@ -104,33 +108,41 @@
       (io/spit data-file data)
       (io/slurp data-file :binary true) ;; warm up os file read
 
-      (let [timings [ (t/elapsed #(encrypt "AES256-CBC" passwd 
-                                                        data-file 
-                                                        aes-cbc-file-enc))
-                      (t/elapsed #(decrypt "AES256-CBC" passwd 
-                                                        aes-cbc-file-enc 
-                                                        aes-cbc-file-dec))
-                      (t/elapsed #(encrypt "AES256-GCM" passwd 
-                                                        data-file 
-                                                        aes-gcm-file-enc))
-                      (t/elapsed #(decrypt "AES256-GCM" passwd 
-                                                        aes-gcm-file-enc 
-                                                        aes-gcm-file-dec))
-                      (if (crypt/encrypt-file-supported? "ChaCha20")
-                        [ (t/elapsed #(encrypt "ChaCha20" passwd 
+      (let [timings [ [ (t/elapsed #(encryptor-aes-cbc    :encrypt 
                                                           data-file 
-                                                          cha-file-enc))
-                          (t/elapsed #(decrypt "ChaCha20" passwd 
-                                                          cha-file-enc 
-                                                          cha-file-dec))]
+                                                          aes-cbc-file-enc
+                                                          true))
+                        (t/elapsed #(encryptor-aes-cbc    :decrypt  
+                                                          aes-cbc-file-enc 
+                                                          aes-cbc-file-dec
+                                                          true))]
+                      [ (t/elapsed #(encryptor-aes-gcm    :encrypt  
+                                                          data-file 
+                                                          aes-gcm-file-enc
+                                                          true))
+                        (t/elapsed #(encryptor-aes-gcm    :decrypt  
+                                                          aes-gcm-file-enc 
+                                                          aes-gcm-file-dec
+                                                          true))]
+                      (if encryptor-chacha
+                        [ (t/elapsed #(encryptor-chacha  :encrypt
+                                                         data-file 
+                                                         cha-file-enc
+                                                         true))
+                          (t/elapsed #(encryptor-chacha  :decrypt
+                                                         cha-file-enc 
+                                                         cha-file-dec
+                                                         true))]
                         ["-" "-"])
-                      (if (crypt/encrypt-file-supported? "ChaCha20-BC")
-                        [ (t/elapsed #(encrypt "ChaCha20-BC" passwd 
-                                                              data-file 
-                                                              cha-bc-file-enc))
-                          (t/elapsed #(decrypt "ChaCha20-BC" passwd 
-                                                              cha-bc-file-enc 
-                                                              cha-bc-file-dec))]
+                      (if encryptor-chacha-bc
+                        [ (t/elapsed #(encryptor-chacha-bc  :encrypt
+                                                            data-file 
+                                                            cha-bc-file-enc
+                                                            true))
+                          (t/elapsed #(encryptor-chacha-bc  :encrypt
+                                                            cha-bc-file-enc 
+                                                            cha-bc-file-dec
+                                                            true))]
                         ["-" "-"])                       
                       (t/elapsed #(encrypt-zip aes-file-zip 
                                                 passwd 
@@ -142,17 +154,17 @@
                                                 (io/file-parent aes-file-unzip)))
                     ]]
 
-        (println "Decrypt verify AES CBC:     " 
+        (println "Decrypt verify AES CBC:       " 
                  (if (identical data-file aes-cbc-file-dec) "OK" "FAIL"))
-        (println "Decrypt verify AES GCM:     " 
+        (println "Decrypt verify AES GCM:       " 
                  (if (identical data-file aes-gcm-file-dec) "OK" "FAIL"))
-        (when (crypt/encrypt-file-supported? "ChaCha20")
+        (when encryptor-chacha
           (println "Decrypt verify ChaCha20:    " 
                    (if (identical data-file cha-file-dec) "OK" "FAIL")))
-        (when (crypt/encrypt-file-supported? "ChaCha20-BC")
+        (when encryptor-chacha-bc
           (println "Decrypt verify ChaCha20-BC: " 
                    (if (identical data-file cha-bc-file-dec) "OK" "FAIL")))
-        (println "Decrypt verify ZIP:         " 
+        (println "Decrypt verify ZIP:           " 
                  (if (identical data-file aes-file-unzip) "OK" "FAIL"))
 
         (flatten timings))))
@@ -169,11 +181,14 @@
       "Encrypt AES-256 ZIP"
       "Decrypt AES-256 ZIP"] )
 
-  (defn run-sample []
+  (defn run []
     (when-not (io/exists-dir? test-dir)
       (throw (ex :VncException (str "The dir " test-dir " does not exist!)"))))
 
-    (let [samples  [2 20 200 2000 20000 200000]
+    (println "Test dir:" test-dir)
+    (println)
+
+    (let [samples  [2 20 200 (* 2 1024) (* 20 1024) (* 200 1024)]
           sections (sections)
           columns  (cons {:header {:text "" } :width 19}
                          (map #(hash-map :header {:text (format-size %)
@@ -181,7 +196,7 @@
                                          :body   {:align :right}
                                          :width  6)
                               samples))]
-      (as-> (map #(run %) samples) data
+      (as-> (map #(sample %) samples) data
             (matrix/vector2d data)
             (matrix/transpose data)
             (matrix/add-column-at-start data sections)

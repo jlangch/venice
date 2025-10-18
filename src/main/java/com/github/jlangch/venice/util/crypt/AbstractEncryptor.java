@@ -25,6 +25,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -46,16 +47,16 @@ public abstract class AbstractEncryptor implements IEncryptor{
 
     @Override
     public byte[] encrypt(final byte[] data, final byte[] aad) {
-    	throw new RuntimeException(
-    			"Encryption with  AAD (authenticated additional data) "
-    			+ "is  not supported by this encryptor!");
+        throw new RuntimeException(
+                "Encryption with  AAD (authenticated additional data) "
+                + "is  not supported by this encryptor!");
     }
 
     @Override
     public byte[] decrypt(final byte[] data, final byte[] aad) {
-    	throw new RuntimeException(
-    			"Encryption with  AAD (authenticated additional data) "
-    			+ "is  not supported by this encryptor!");
+        throw new RuntimeException(
+                "Encryption with  AAD (authenticated additional data) "
+                + "is  not supported by this encryptor!");
     }
 
 
@@ -100,8 +101,7 @@ public abstract class AbstractEncryptor implements IEncryptor{
             Files.write(
                     outputFile.toPath(),
                     encrypt(data),
-                    overwrite ? StandardOpenOption.TRUNCATE_EXISTING
-                              : StandardOpenOption.CREATE_NEW);
+                    getOpenOptions(overwrite));
         }
         catch(Exception ex) {
             throw new FileException("Failed to encrypt file " + inputFile, ex);
@@ -123,8 +123,7 @@ public abstract class AbstractEncryptor implements IEncryptor{
             Files.write(
                     outputFile.toPath(),
                     decrypt(data),
-                    overwrite ? StandardOpenOption.TRUNCATE_EXISTING
-                              : StandardOpenOption.CREATE_NEW);
+                    getOpenOptions(overwrite));
         }
         catch(Exception ex) {
             throw new FileException("Failed to decrypt file " + inputFile, ex);
@@ -148,5 +147,14 @@ public abstract class AbstractEncryptor implements IEncryptor{
             default:
                 throw new IllegalArgumentException("Invalid Base64 scheme '" + scheme.name() + "'");
         }
+    }
+
+    private OpenOption[] getOpenOptions(final boolean overwrite) {
+        return overwrite
+                ? new OpenOption[] { StandardOpenOption.WRITE,
+                                     StandardOpenOption.CREATE,
+                                     StandardOpenOption.TRUNCATE_EXISTING }
+                : new OpenOption[] { StandardOpenOption.WRITE,
+                                     StandardOpenOption.CREATE_NEW};
     }
 }
