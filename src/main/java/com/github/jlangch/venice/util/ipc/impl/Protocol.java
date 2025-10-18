@@ -71,7 +71,8 @@ public class Protocol {
         // [2] payload meta data (optionally encrypt)
         final byte[] metaData = encryptor.encrypt(
                                     PayloadMetaData.encode(
-                                        new PayloadMetaData(message)));
+                                        new PayloadMetaData(message)),
+                                    header.array());
         final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
         meta.put(metaData);
         meta.flip();
@@ -81,7 +82,8 @@ public class Protocol {
         byte[] payloadData = encryptor.encrypt(
                                 compressor.compress(
                                     message.getData(),
-                                    isCompressData));
+                                    isCompressData),
+                                null);
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
@@ -128,6 +130,7 @@ public class Protocol {
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
                                                         payloadMetaFrame.array(),
+                                                        header.array(),
                                                         isEncryptedData));
 
             // [3] payload data (maybe compressed and encrypted)
@@ -135,6 +138,7 @@ public class Protocol {
             byte[] payloadData = compressor.decompress(
                                     encryptor.decrypt(
                                         payloadFrame.array(),
+                                        null,
                                         isEncryptedData),
                                     isCompressedData);
 

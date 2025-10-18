@@ -52,15 +52,15 @@ public class Encryptor {
     }
 
 
-    public byte[] encrypt(final byte[] data) {
-        return encrypt(data, isActive());
+    public byte[] encrypt(final byte[] data, final byte[] aad) {
+        return encrypt(data, aad, isActive());
     }
 
-    public byte[] encrypt(final byte[] data, final boolean encrypt) {
+    public byte[] encrypt(final byte[] data, final byte[] aad, final boolean encrypt) {
         Objects.requireNonNull(data);
         if (encrypt) {
             try {
-                return ecryptor.encrypt(data);
+                return ecryptor.encrypt(data, aad);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to encrypt message payload data", ex);
@@ -71,15 +71,15 @@ public class Encryptor {
         }
     }
 
-    public byte[] decrypt(final byte[] data) {
-        return decrypt(data, isActive());
+    public byte[] decrypt(final byte[] data, final byte[] aad) {
+        return decrypt(data, aad, isActive());
     }
 
-    public byte[] decrypt(final byte[] data, final boolean decrypt) {
+    public byte[] decrypt(final byte[] data, final byte[] aad, final boolean decrypt) {
         Objects.requireNonNull(data);
         if (decrypt) {
             try {
-                return ecryptor.decrypt(data);
+                return ecryptor.decrypt(data, aad);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to decrypt message payload data", ex);

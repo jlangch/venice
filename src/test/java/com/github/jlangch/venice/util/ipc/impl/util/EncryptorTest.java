@@ -50,11 +50,11 @@ public class EncryptorTest {
 
         final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
 
-        assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data)));
-        assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data)));
+        assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data, null), null));
+        assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data, null), null));
 
-        assertArrayEquals(data, serverEncryptor.decrypt(clientEncryptor.encrypt(data)));
-        assertArrayEquals(data, clientEncryptor.decrypt(serverEncryptor.encrypt(data)));
+        assertArrayEquals(data, serverEncryptor.decrypt(clientEncryptor.encrypt(data, null), null));
+        assertArrayEquals(data, clientEncryptor.decrypt(serverEncryptor.encrypt(data, null), null));
     }
 
     @Test
@@ -75,11 +75,11 @@ public class EncryptorTest {
         for(int ii=0; ii<1_000; ii++) {
             final byte[] data = ("hello world " + ii).getBytes(StandardCharsets.UTF_8);
 
-            assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data)));
-            assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data)));
+            assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data, null), null));
+            assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data, null), null));
 
-            assertArrayEquals(data, serverEncryptor.decrypt(clientEncryptor.encrypt(data)));
-            assertArrayEquals(data, clientEncryptor.decrypt(serverEncryptor.encrypt(data)));
+            assertArrayEquals(data, serverEncryptor.decrypt(clientEncryptor.encrypt(data, null), null));
+            assertArrayEquals(data, clientEncryptor.decrypt(serverEncryptor.encrypt(data, null), null));
         }
     }
 
