@@ -99,6 +99,16 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
     @Override
     public byte[] encrypt(final byte[] data) {
+        return encryptWithAAD(data, null);
+    }
+
+    @Override
+    public byte[] decrypt(final byte[] data) {
+        return decryptWithAAD(data, null);
+    }
+
+    @Override
+    public byte[] encryptWithAAD(final byte[] data, final byte[] aad) {
         Objects.requireNonNull(data);
 
         try {
@@ -112,9 +122,9 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
 
-            //if (aadData != null && aadData.length > 0) {
-            //    cipher.updateAAD(aadData); // add AAD tag data before encrypting
-            //}
+            if (aad != null && aad.length > 0) {
+                cipher.updateAAD(aad); // add AAD tag data before encrypting
+            }
 
             // encrypt
             byte[] encryptedData = cipher.doFinal(data);
@@ -132,7 +142,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
     }
 
     @Override
-    public byte[] decrypt(final byte[] data) {
+    public byte[] decryptWithAAD(final byte[] data, final byte[] aad) {
         Objects.requireNonNull(data);
 
         try {
@@ -149,9 +159,9 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmParameterSpec);
 
-            //if (aadData != null && aadData.length > 0) {
-            //    cipher.updateAAD(aadData); // add AAD tag data before decrypting
-            //}
+            if (aad != null && aad.length > 0) {
+                cipher.updateAAD(aad); // add AAD tag data before decrypting
+            }
 
             // decrypt
             return cipher.doFinal(encryptedData);

@@ -29,7 +29,7 @@ import com.github.jlangch.venice.util.Base64Schema;
 public interface IEncryptor {
 
     /**
-     * Encrypts binary file data
+     * Encrypts binary data
      *
      * @param data the binary data to encrypt
      * @return the encrypted binary data
@@ -37,12 +37,31 @@ public interface IEncryptor {
     byte[] encrypt(final byte[] data);
 
     /**
-     * Decrypts binary file data
+     * Decrypts binary data
      *
      * @param data the binary data to decrypt
      * @return the decrypted binary data
      */
     byte[] decrypt(final byte[] data);
+
+
+    /**
+     * Encrypts binary data with AAD (authenticated additional data)
+     *
+     * @param data the binary data to encrypt
+     * @param aad the binary authenticated additional data
+     * @return the encrypted binary data
+     */
+    byte[] encryptWithAAD(final byte[] data, final byte[] aad);
+
+    /**
+     * Decrypts binary data with AAD (authenticated additional data)
+     *
+     * @param data the binary data to decrypt
+     * @param aad the binary authenticated additional data
+     * @return the decrypted binary data
+     */
+    byte[] decryptWithAAD(final byte[] data, final byte[] aad);
 
 
     /**

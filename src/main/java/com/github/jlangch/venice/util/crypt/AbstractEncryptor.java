@@ -45,6 +45,21 @@ public abstract class AbstractEncryptor implements IEncryptor{
 
 
     @Override
+    public byte[] encryptWithAAD(final byte[] data, final byte[] aad) {
+    	throw new RuntimeException(
+    			"Encryption with  AAD (authenticated additional data) "
+    			+ "is  not supported by this encryptor!");
+    }
+
+    @Override
+    public byte[] decryptWithAAD(final byte[] data, final byte[] aad) {
+    	throw new RuntimeException(
+    			"Encryption with  AAD (authenticated additional data) "
+    			+ "is  not supported by this encryptor!");
+    }
+
+
+    @Override
     public String encrypt(
             final String text,
             final Base64Schema schema
