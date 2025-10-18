@@ -268,7 +268,7 @@ and they can be used for malicious purposes.
 ```
 
 
-**SHA-256**
+**SHA-512**
 
 ```clojure
 (do
@@ -279,8 +279,8 @@ and they can be used for malicious purposes.
     (io/delete-file-on-exit file)
     (io/spit file data :binary true)
     
-    (let [hash (crypt/hash-file "SHA-256" "-salt-" file)]
-      (crypt/verify-file-hash "SHA-256" "-salt-" file hash))))
+    (let [hash (crypt/hash-file "SHA-512" "-salt-" file)]
+      (crypt/verify-file-hash "SHA-512" "-salt-" file hash))))
 ```
 
 
