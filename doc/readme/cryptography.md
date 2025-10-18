@@ -243,7 +243,7 @@ Test decrypt: read file -> decrypt -> write file
 ## File Hashing
 
 Venice computes hashes for files, streams, and buffers with the 
-algorithms MD5, SHA-1, and SHA-256.
+algorithms MD5, SHA-1, SHA-256, and SHA-512.
 
 Warning: The MD5 hash function’s security is considered to be 
 severely compromised. Collisions can be found within seconds, 
@@ -265,6 +265,22 @@ and they can be used for malicious purposes.
     
     (let [hash (crypt/hash-file "SHA-1" "-salt-" file)]
       (crypt/verify-file-hash "SHA-1" "-salt-" file hash))))
+```
+
+
+**SHA-256**
+
+```clojure
+(do
+  (load-module :crypt)
+  
+  (let [data   (bytebuf-allocate-random 100)
+        file   (io/temp-file "test-", ".data")]
+    (io/delete-file-on-exit file)
+    (io/spit file data :binary true)
+    
+    (let [hash (crypt/hash-file "SHA-256" "-salt-" file)]
+      (crypt/verify-file-hash "SHA-256" "-salt-" file hash))))
 ```
 
 
