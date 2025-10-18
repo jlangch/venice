@@ -61,16 +61,22 @@
           """
      :examples (list
           """
-          (-> (crypt/md5-hash "hello world")
-              (str/bytebuf-to-hex :upper))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/md5-hash "hello world")
+                (str/bytebuf-to-hex :upper)))
           """,
           """
-          (-> (crypt/md5-hash "hello world" "-salt-")
-              (str/bytebuf-to-hex :upper))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/md5-hash "hello world" "-salt-")
+                (str/bytebuf-to-hex :upper)))
           """,
           """
-          (-> (crypt/md5-hash "hello world")
-              (str/encode-base64))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/md5-hash "hello world")
+                (str/encode-base64)))
           """ )
      :see-also '(
           "crypt/sha1-hash"
@@ -90,16 +96,22 @@
      :doc "Hashes a string or a bytebuf using SHA1 with an optional salt."
      :examples (list
           """
-          (-> (crypt/sha1-hash "hello world")
-              (str/bytebuf-to-hex :upper))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/sha1-hash "hello world")
+                (str/bytebuf-to-hex :upper)))
           """,
           """
-          (-> (crypt/sha1-hash "hello world" "-salt-")
-              (str/bytebuf-to-hex :upper))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/sha1-hash "hello world" "-salt-")
+                (str/bytebuf-to-hex :upper)))
           """,
           """
-          (-> (crypt/sha1-hash "hello world")
-              (str/encode-base64))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/sha1-hash "hello world")
+                (str/encode-base64)))
           """ )
      :see-also '(
           "crypt/md5-hash"
@@ -119,19 +131,25 @@
      :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
      :examples (list
           """
-          (let [s (-> (crypt/sha512-hash "hello world")
-                      (str/bytebuf-to-hex :upper))]
-            (str (str/nfirst s 32) "..." (str/nlast s 32)))
+          (do
+            (load-module :crypt) 
+            (let [s (-> (crypt/sha512-hash "hello world")
+                        (str/bytebuf-to-hex :upper))]
+              (str/truncate s 64 "..." :middle)))
           """,
           """
-          (let [s (-> (crypt/sha512-hash "hello world" "-salt-")
-                      (str/bytebuf-to-hex :upper))]
-            (str (str/nfirst s 32) "..." (str/nlast s 32)))
+          (do
+            (load-module :crypt) 
+            (let [s (-> (crypt/sha512-hash "hello world" "-salt-")
+                        (str/bytebuf-to-hex :upper))]
+              (str/truncate s 64 "..." :middle)))
           """,
           """
-          (let [s (-> (crypt/sha512-hash "hello world")
-                      (str/encode-base64))]
-            (str (str/nfirst s 32) "..." (str/nlast s 32)))
+          (do
+            (load-module :crypt) 
+            (let [s (-> (crypt/sha512-hash "hello world")
+                        (str/encode-base64))]
+              (str/truncate s 64 "..." :middle)))
           """ )
      :see-also '(
           "crypt/md5-hash"
@@ -154,16 +172,22 @@
           """
      :examples (list
           """
-          (-> (crypt/pbkdf2-hash "hello world" "-salt-")
-              (str/bytebuf-to-hex :upper))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/pbkdf2-hash "hello world" "-salt-")
+                (str/bytebuf-to-hex :upper)))
           """,
           """
-          (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
-              (str/bytebuf-to-hex :upper))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+                (str/bytebuf-to-hex :upper)))
           """,
           """
-          (-> (crypt/pbkdf2-hash "hello world" "-salt-")
-              (str/encode-base64))
+          (do
+            (load-module :crypt) 
+            (-> (crypt/pbkdf2-hash "hello world" "-salt-")
+                (str/encode-base64)))
           """ )
      :see-also '(
           "crypt/md5-hash"
@@ -212,8 +236,8 @@
           Options:
 
           | :key-salt arr        | An optional salt to generate the key.¶\
-                                  E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
-                                                  132 194 129 237 158  12  12 203]|
+                                  E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \u2000 \
+                                                  132 194 129 237 158  12  12 203])|
           | :key-iterations n    | An optional iteration count to generate the key.¶\
                                    Defaults to 3000. |
           | :efficient-mem-use b | If `true` efficently use memory in encryption \
@@ -303,7 +327,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-aes-256-gcm-supported? []
-   (. :Encryptor_AES256_GCM :supported))
+   (. :Encryptor_AES256_GCM :isSupported))
 
 
 
@@ -321,8 +345,8 @@
           Options:
 
           | :key-salt arr            | An optional salt to generate the key.¶\
-                                       E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
-                                                       132 194 129 237 158  12  12 203]|
+                                       E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \u2000 \
+                                                       132 194 129 237 158  12  12 203])|
           | :key-iterations n        | An optional iteration count to generate the key.¶\
                                        Defaults to 3000.   |
           | :custom-iv arr           | An optional custom IV bytebuf (12 bytes).¶\
@@ -418,7 +442,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-aes-256-cbc-supported? []
-   (. :Encryptor_AES256_CBC :supported))
+   (. :Encryptor_AES256_CBC :isSupported))
 
 
 (defn 
@@ -433,8 +457,8 @@
           Options:
 
           | :key-salt arr     | An optional salt to generate the key.¶\
-                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
-                                                132 194 129 237 158  12  12 203]|
+                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \u2000 \
+                                                132 194 129 237 158  12  12 203])|
           | :key-iterations n | An optional iteration count to generate the key.¶\
                                 Defaults to 3000.   |
 
@@ -476,7 +500,7 @@
             (let [file-in       (io/temp-file "test-", ".data")
                   file-encoded  (io/temp-file "test-", ".data.enc")
                   file-decoded  (io/temp-file "test-", ".data.dec")
-                  encryptor     (crypt/eencryptor-chacha20-bouncycastle "secret")]
+                  encryptor     (crypt/encryptor-chacha20-bouncycastle "secret")]
               (io/delete-file-on-exit file-in file-encoded file-decoded)
               (io/spit file-in "1234567890")
               (encryptor :encrypt file-in file-encoded true)
@@ -516,7 +540,7 @@
         e               (if (or key-salt key-iterations)
                           (. :Encryptor_ChaCha20_BouncyCastle :create passphrase key-salt key-iterations)
                           (. :Encryptor_ChaCha20_BouncyCastle :create passphrase))]
-    (when-not (. :Encryptor_ChaCha20 :isSupported)
+    (when-not (. :Encryptor_ChaCha20_BouncyCastle :isSupported)
       (throw (ex :VncException "BouncyCastle Crypto algorithm ChaCha20 is not available!")))
     (fn encryptor
       ([mode in] 
@@ -536,7 +560,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-chacha20-bouncycastle-supported? []
-   (. :Encryptor_ChaCha20_BouncyCastle :supported))
+   (. :Encryptor_ChaCha20_BouncyCastle :isSupported))
 
 
 (defn 
@@ -551,8 +575,8 @@
           Options:
 
           | :key-salt arr     | An optional salt to generate the key.¶\
-                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \
-                                                132 194 129 237 158  12  12 203]|
+                                E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \u2000 \
+                                                132 194 129 237 158  12  12 203])|
           | :key-iterations n | An optional iteration count to generate the key.¶\
                                 Defaults to 3000.   |
 
@@ -652,7 +676,7 @@
           (. e mode in out overwrite?)))))
 
 (defn encryptor-chacha20-supported? []
-   (. :Encryptor_ChaCha20 :supported))
+   (. :Encryptor_ChaCha20 :isSupported))
 
 
 
