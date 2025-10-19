@@ -31,14 +31,11 @@
   (defonce salt     "12647458820938745388281")
   (defonce test-dir (io/file (io/user-home-dir) "Desktop/venice/tmp"))
 
-  (defn format-size [size-kb] 
-    (if (< size-kb 1000) (str size-kb "KB") (str (/ size-kb 1000) "MB")))
 
-  (defn run [size-kb algorithms] 
-    (let [size  (* size-kb 1024)
-          data  (bytebuf-allocate-random size)
+  (defn run [buf-size algorithms] 
+    (let [data  (bytebuf-allocate-random buf-size)
           file  (io/file test-dir "test.data")]
-      (println "Testing file:" file (str size-kb "KB"))
+      (println "Testing file:" file (name buf-size))
       
       ;; create the test data file (a buffer with random bytes)
       (io/spit file data)
@@ -54,12 +51,12 @@
     (when-not (io/exists-dir? test-dir)
       (throw (ex :VncException (str "The dir " test-dir " does not exist!)"))))
 
-    (let [samples    [2 20 200 2000 20000 200000]
+    (let [samples    [:2KB :20KB :200KB :2MB :20MB :200MB]
           algorithms ["MD5" "SHA-1" "SHA-256"]
           sections   ["MD5 (file)"   "SHA-1 (file)"   "SHA-256 (file)"
                       "MD5 (memory)" "SHA-1 (memory)" "SHA-256 (memory)"]
           columns    (cons {:header {:text "" } :width 16}
-                           (map #(hash-map :header {:text (format-size %)
+                           (map #(hash-map :header {:text (name %)
                                                     :align :right}
                                            :body   {:align :right}
                                            :width  6)

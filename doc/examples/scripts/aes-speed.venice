@@ -33,8 +33,6 @@
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
   (defonce test-dir (io/file (io/user-home-dir) "Desktop/venice/tmp"))
 
-  (defn format-size [size-kb] 
-    (if (< size-kb 1000) (str size-kb "KB") (str (/ size-kb 1000) "MB")))
 
   (defn identical [file1 file2]
     (= (io/slurp file1 :binary true) (io/slurp file2 :binary true)))
@@ -144,9 +142,8 @@
 
         (flatten timings))))
 
-(defn sample-buffer [size-kb]
-  (let [size               (* size-kb 1024)
-        data               (bytebuf-allocate-random size)
+(defn sample-buffer [buf-size]
+  (let [data               (bytebuf-allocate-random buf-size)
         
         secret             "secret"
         encryptor-aes-cbc   (crypt/encryptor-aes-256-cbc secret)
@@ -202,9 +199,9 @@
       "ChaCha20-BC  decrypt"] )
 
   (defn run-samples [sample-fn sections]
-    (let [samples  [2 20 200 (* 2 1024) (* 20 1024) (* 200 1024)]
+    (let [samples  [:2KB :20KB :200KB :2MB :20MB :200MB]
           columns  (cons {:header {:text "" } :width 20}
-                         (map #(hash-map :header {:text (format-size %)
+                         (map #(hash-map :header {:text (name %)
                                                   :align :right}
                                          :body   {:align :right}
                                          :width  6)
