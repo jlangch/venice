@@ -321,6 +321,7 @@ Test decrypt: read file -> decrypt -> write file
 ┃ AES-256 ZIP  encrypt │     19 │      6 │      9 │     60 │    569 │   5617 ┃
 ┃ AES-256 ZIP  decrypt │      9 │      4 │      6 │     26 │    232 │   2165 ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                               (elapsed time in milliseconds)
 ```
 
 ```
@@ -339,6 +340,7 @@ Test decrypt: read file -> decrypt -> write file
 ┃ AES-256 ZIP  encrypt │     20 │      4 │     10 │     61 │    587 │   5924 ┃
 ┃ AES-256 ZIP  decrypt │      9 │      4 │      6 │     28 │    243 │   2376 ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                               (elapsed time in milliseconds)
 ```
 
 ```
@@ -357,6 +359,7 @@ Test decrypt: read file -> decrypt -> write file
 ┃ AES-256 ZIP  encrypt │     18 │      2 │      6 │     57 │    569 │   5740 ┃
 ┃ AES-256 ZIP  decrypt │      6 │      2 │      4 │     20 │    190 │   1893 ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                               (elapsed time in milliseconds)
 ```
 
 
@@ -436,6 +439,7 @@ Test: read file -> hash
 ┃ SHA-1 (memory)   │      0 │      0 │      2 │      7 │     62 │    651 ┃
 ┃ SHA-256 (memory) │      1 │      1 │      1 │      8 │     76 │    744 ┃
 ┗━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                           (elapsed time in milliseconds)
 ```
 
 ```
@@ -450,6 +454,7 @@ Test: read file -> hash
 ┃ SHA-1 (memory)   │      1 │      1 │      1 │      5 │     54 │    542 ┃
 ┃ SHA-256 (memory) │      0 │      0 │      1 │      9 │     86 │    858 ┃
 ┗━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                           (elapsed time in milliseconds)
 ```
 
 ```
@@ -464,6 +469,7 @@ Test: read file -> hash
 ┃ SHA-1 (memory)   │      0 │      1 │      1 │      1 │     16 │    107 ┃
 ┃ SHA-256 (memory) │      0 │      0 │      0 │      2 │     15 │    105 ┃
 ┗━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                           (elapsed time in milliseconds)
 ```
 
 
