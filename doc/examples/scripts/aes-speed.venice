@@ -21,37 +21,6 @@
 
 ;;;; Compares AES-256 / ChaCha20 encryption/decryption speed
 
-;;                      MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
-;; --------------------------------------------------------------------
-;;                          2KB    20KB   200KB     2MB    20MB   200MB
-;; --------------------------------------------------------------------
-;; Encrypt AES-256 CBC:    85ms    65ms    66ms    74ms   172ms  1165ms
-;; Decrypt AES-256 CBC:    67ms    67ms    65ms    76ms   162ms  1053ms
-;; Encrypt AES-256 GCM:    64ms    65ms    70ms    96ms   364ms  3170ms
-;; Decrypt AES-256 GCM:    66ms    65ms    67ms    94ms   363ms  3215ms
-;; Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
-;; Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
-;; Encrypt ChaCha20:          -       -       -       -       -       -
-;; Decrypt ChaCha20:          -       -       -       -       -       -
-;; Encrypt ChaCha20-BC:    75ms    63ms    66ms    71ms   127ms   701ms
-;; Decrypt ChaCha20-BC:    66ms    65ms    65ms    71ms   127ms   704ms
-;; --------------------------------------------------------------------
-
-;;                     MacBookAir M2, Java 17 (Zulu), BouncyCastle 1.77
-;; --------------------------------------------------------------------
-;;                          2KB    20KB   200KB     2MB    20MB   200MB
-;; --------------------------------------------------------------------
-;; Encrypt AES-256 CBC:    96ms    73ms    73ms    84ms   193ms  1337ms
-;; Decrypt AES-256 CBC:    75ms    72ms    74ms    85ms   195ms  1562ms
-;; Encrypt AES-256 GCM:    73ms    72ms    75ms   103ms   388ms  3593ms
-;; Decrypt AES-256 GCM:    75ms    73ms    76ms   103ms   392ms  3283ms
-;; Encrypt AES-256 ZIP:     7ms     5ms     9ms    60ms   600ms  5900ms
-;; Decrypt AES-256 ZIP:     7ms     4ms     7ms    26ms   240ms  2311ms
-;; Encrypt ChaCha20:       83ms    72ms    73ms    77ms   119ms   566ms
-;; Decrypt ChaCha20:       73ms    72ms    73ms    76ms   118ms   527ms
-;; Encrypt ChaCha20-BC:    74ms    73ms    73ms    87ms   160ms   949ms
-;; Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
-;; --------------------------------------------------------------------
 
 (do
   (load-module :zipvault)
@@ -77,7 +46,13 @@
     (zipvault/extract-file zip passphrase filename destpath))
 
 
-  (defn sample [size-kb]
+  (defn sample-file [size-kb]
+    (when-not (io/exists-dir? test-dir)
+      (throw (ex :VncException (str "The dir " test-dir " does not exist!)"))))
+
+    (println "Test dir:" test-dir)
+    (println)
+
     (let [size               (* size-kb 1024)
           data               (bytebuf-allocate-random size)
           data-file          (io/file test-dir "test.data")
@@ -169,35 +144,79 @@
 
         (flatten timings))))
 
-  (defn sections []
+(defn sample-buffer [size-kb]
+  (let [size               (* size-kb 1024)
+        data               (bytebuf-allocate-random size)
+        
+        secret             "secret"
+        encryptor-aes-cbc   (crypt/encryptor-aes-256-cbc secret)
+        encryptor-aes-gcm   (crypt/encryptor-aes-256-gcm secret)
+        encryptor-chacha    (if (crypt/encryptor-chacha20-supported?) 
+                              (crypt/encryptor-chacha20 secret)
+                              nil)
+        encryptor-chacha-bc (if (crypt/encryptor-chacha20-bouncycastle-supported?) 
+                              (crypt/encryptor-chacha20-bouncycastle secret)
+                              nil)]
+
+    
+    (let [timings [ [ (t/elapsed #(encryptor-aes-cbc :encrypt data))
+                      (let [e (encryptor-aes-cbc :encrypt data)]
+                        (t/elapsed #(encryptor-aes-cbc :decrypt e)))]
+                    [ (t/elapsed #(encryptor-aes-gcm :encrypt data))
+                      (let [e (encryptor-aes-gcm :encrypt data)]
+                        (t/elapsed #(encryptor-aes-gcm :decrypt e)))]
+                    (if encryptor-chacha
+                      [ (t/elapsed #(encryptor-chacha :encrypt data))
+                        (let [e (encryptor-chacha :encrypt data)]
+                          (t/elapsed #(encryptor-chacha :decrypt e)))]
+                      ["-" "-"])
+                    (if encryptor-chacha-bc
+                      [ (t/elapsed #(encryptor-chacha-bc  :encrypt data))
+                        (let [e (encryptor-chacha-bc :encrypt data)]
+                          (t/elapsed #(encryptor-chacha-bc :decrypt e)))]
+                      ["-" "-"])                       
+                  ]]
+
+      (flatten timings))))
+
+  (def sections-file
     [ "AES-256 CBC  encrypt"
       "AES-256 CBC  decrypt"
-      "AES-256 GCM  encrypt "
+      "AES-256 GCM  encrypt"
       "AES-256 GCM  decrypt"
-      "ChaCha20     encrypt " 
+      "ChaCha20     encrypt" 
       "ChaCha20     decrypt" 
-      "ChaCha20-BC  encrypt " 
+      "ChaCha20-BC  encrypt" 
       "ChaCha20-BC  decrypt"
-      "AES-256 ZIP  encrypt "
+      "AES-256 ZIP  encrypt"
       "AES-256 ZIP  decrypt"] )
 
-  (defn run []
-    (when-not (io/exists-dir? test-dir)
-      (throw (ex :VncException (str "The dir " test-dir " does not exist!)"))))
+  (def sections-buffer
+    [ "AES-256 CBC  encrypt"
+      "AES-256 CBC  decrypt"
+      "AES-256 GCM  encrypt"
+      "AES-256 GCM  decrypt"
+      "ChaCha20     encrypt" 
+      "ChaCha20     decrypt" 
+      "ChaCha20-BC  encrypt" 
+      "ChaCha20-BC  decrypt"] )
 
-    (println "Test dir:" test-dir)
-    (println)
-
+  (defn run-samples [sample-fn sections]
     (let [samples  [2 20 200 (* 2 1024) (* 20 1024) (* 200 1024)]
-          sections (sections)
           columns  (cons {:header {:text "" } :width 20}
                          (map #(hash-map :header {:text (format-size %)
                                                   :align :right}
                                          :body   {:align :right}
                                          :width  6)
                               samples))]
-      (as-> (map #(sample %) samples) data
+      (as-> (map #(sample-fn %) samples) data
             (matrix/vector2d data)
             (matrix/transpose data)
             (matrix/add-column-at-start data sections)
-            (ascii-table/print columns data :bold-no-data 1)))))
+            (ascii-table/print columns data :bold-no-data 1))))
+
+  (defn run-file [] (run-samples sample-file sections-file))
+
+  (defn run-buffer [] (run-samples sample-buffer sections-buffer))
+  
+  (println "Run (run-file) or (run-buffer)\n"))
