@@ -265,6 +265,7 @@ Test encrypt/decrypt byte buffer
 ┃ ChaCha20-BC  encrypt │      1 │      0 │      0 │      5 │     52 │    564 ┃
 ┃ ChaCha20-BC  decrypt │      0 │      1 │      1 │      5 │     52 │    542 ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                               (elapsed time in milliseconds)
 ```
 
 ```
@@ -281,6 +282,7 @@ Test encrypt/decrypt byte buffer
 ┃ ChaCha20-BC  encrypt │      1 │      0 │      1 │      7 │     77 │    775 ┃
 ┃ ChaCha20-BC  decrypt │      0 │      0 │      1 │      7 │     77 │    771 ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                               (elapsed time in milliseconds)
 ```
 
 ```
@@ -297,6 +299,7 @@ Test encrypt/decrypt byte buffer
 ┃ ChaCha20-BC  encrypt │      0 │      1 │      1 │      6 │     50 │    503 ┃
 ┃ ChaCha20-BC  decrypt │      0 │      0 │      1 │      6 │     51 │    512 ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┷━━━━━━━━┛
+                                               (elapsed time in milliseconds)
 ```
 
 
