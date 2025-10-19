@@ -52,6 +52,28 @@ public class BytebufFunctionsTest {
         final Venice venice = new Venice();
 
         assertArrayEquals(new byte[] {0,0}, ((ByteBuffer)venice.eval("(bytebuf-allocate 2)")).array());
+        assertArrayEquals(new byte[] {85,85}, ((ByteBuffer)venice.eval("(bytebuf-allocate 2 0x55)")).array());
+
+        assertTrue((Boolean)venice.eval("(= 2       (count (bytebuf-allocate 2)))"));
+        assertTrue((Boolean)venice.eval("(= 2048    (count (bytebuf-allocate 2048)))"));
+        assertTrue((Boolean)venice.eval("(= 2097152 (count (bytebuf-allocate 2097152)))"));
+
+        assertTrue((Boolean)venice.eval("(= 2       (count (bytebuf-allocate :2B)))"));
+        assertTrue((Boolean)venice.eval("(= 2048    (count (bytebuf-allocate :2KB)))"));
+        assertTrue((Boolean)venice.eval("(= 2097152 (count (bytebuf-allocate :2MB)))"));
+    }
+
+    @Test
+    public void test_bytebuf_allocate_random() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(= 2       (count (bytebuf-allocate-random 2)))"));
+        assertTrue((Boolean)venice.eval("(= 2048    (count (bytebuf-allocate-random 2048)))"));
+        assertTrue((Boolean)venice.eval("(= 2097152 (count (bytebuf-allocate-random 2097152)))"));
+
+        assertTrue((Boolean)venice.eval("(= 2       (count (bytebuf-allocate-random :2B)))"));
+        assertTrue((Boolean)venice.eval("(= 2048    (count (bytebuf-allocate-random :2KB)))"));
+        assertTrue((Boolean)venice.eval("(= 2097152 (count (bytebuf-allocate-random :2MB)))"));
     }
 
     @Test

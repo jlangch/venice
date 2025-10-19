@@ -192,7 +192,7 @@ public class BytebufFunctions {
                     return new VncByteBuffer(ByteBuffer.allocate(length));
                 }
                 else {
-                    final byte val = (byte)(Coerce.toVncLong(args.first()).getValue().longValue() & 0x0FF);
+                    final byte val = (byte)(Coerce.toVncLong(args.second()).getValue().longValue() & 0x0FF);
                     final byte[] data = new byte[length];
                     Arrays.fill(data, val);
                     return new VncByteBuffer(ByteBuffer.wrap(data));
