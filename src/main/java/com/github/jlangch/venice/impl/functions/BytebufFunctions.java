@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.util.algo.KnuthMorrisPratt;
@@ -171,17 +172,21 @@ public class BytebufFunctions {
                         "(bytebuf-allocate length init-val)")
                     .doc(
                         "Allocates a new bytebuf. The values will be all zero or preset with " +
-                        "init-val id init-val is supplied.")
+                        "init-val id init-val is supplied.\n\n" +
+                        "The length can be specified as a number like `20000` or a number " +
+                        "with a unit like `:20KB` or `:20MB`")
                     .examples(
                         "(bytebuf-allocate 20)",
-                        "(bytebuf-allocate 20 0x55)")
+                        "(bytebuf-allocate 20 0x55)",
+                        "(bytebuf-allocate :2KB)",
+                        "(bytebuf-allocate :2KB 0x55)")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1, 2);
 
-                final int length = Coerce.toVncLong(args.first()).getValue().intValue();
+                final int length = convertSizeToInt(args.first());
 
                 if (args.size() == 1) {
                     return new VncByteBuffer(ByteBuffer.allocate(length));
@@ -205,17 +210,19 @@ public class BytebufFunctions {
                     .arglists(
                         "(bytebuf-allocate-random length)")
                     .doc(
-                        "Allocates a new bytebuf. The values will be all preset with random" +
-                        "bytes")
+                        "Allocates a new bytebuf. The buffer will be preset with random bytes.\n\n" +
+                        "The length can be specified as a number like `20000` or a number " +
+                        "with a unit like `:20KB` or `:20MB`")
                     .examples(
-                        "(bytebuf-allocate-random 20)")
+                        "(bytebuf-allocate-random 20)",
+                        "(bytebuf-allocate-random :2KB)")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final int length = Coerce.toVncLong(args.first()).getValue().intValue();
+                final int length = convertSizeToInt(args.first());
                 final byte[] data = new byte[length];
                 new SecureRandom().nextBytes(data);
                 return new VncByteBuffer(ByteBuffer.wrap(data));
@@ -1182,13 +1189,36 @@ public class BytebufFunctions {
 
 
 
-    /**
-     * Knuth-Morris-Pratt
-     * @param data
-     * @param pattern
-     * @param indexFrom
-     * @return
-     */
+    // ------------------------------------------------------------------------
+    // Utils
+    // ------------------------------------------------------------------------
+
+    private static int convertSizeToInt(final VncVal val) {
+        if (val == Nil) {
+            return 0;
+        }
+        else if (Types.isVncLong(val)) {
+            return Coerce.toVncLong(val).toJavaInteger();
+        }
+        else if (Types.isVncKeyword(val)) {
+            final String sVal = ((VncKeyword)val).getSimpleName();
+            if (sVal.matches("^[1-9][0-9]*B$")) {
+               return Integer.parseInt(StringUtil.removeEnd(sVal, "B"));
+            }
+            else if (sVal.matches("^[1-9][0-9]*KB$")) {
+                return Integer.parseInt(StringUtil.removeEnd(sVal, "KB")) * 1024;
+            }
+            else if (sVal.matches("^[1-9][0-9]*MB$")) {
+                return Integer.parseInt(StringUtil.removeEnd(sVal, "MB")) * 1024 * 1024;
+            }
+            else {
+                throw new VncException("Invalid size value! Use 20000, 500KB, 10MB, ...");
+            }
+        }
+        else {
+           throw new VncException("Invalid size value! Use 20000, 500KB, 10MB, ...");
+        }
+    }
 
 
 

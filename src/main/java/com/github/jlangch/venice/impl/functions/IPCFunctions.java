@@ -1785,10 +1785,10 @@ public class IPCFunctions {
                return Long.parseLong(StringUtil.removeEnd(sVal, "B"));
             }
             else if (sVal.matches("^[1-9][0-9]*KB$")) {
-                return Long.parseLong(StringUtil.removeEnd(sVal, "KB"));
+                return Long.parseLong(StringUtil.removeEnd(sVal, "KB")) * 1024;
             }
             else if (sVal.matches("^[1-9][0-9]*MB$")) {
-                return Long.parseLong(StringUtil.removeEnd(sVal, "MB"));
+                return Long.parseLong(StringUtil.removeEnd(sVal, "MB")) * 1024 * 1024;
             }
             else {
                 throw new VncException("Invalid max-message-size value! Use 20000, 500KB, 10MB, ...");
