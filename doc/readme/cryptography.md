@@ -41,7 +41,9 @@ RISC nature.
 
 The 256 bit encryption key is derived from the passphrase using a
 *PBKDF2WithHmacSHA256* secret key factory with a 16 byte random salt 
-and 65536 iterations. Carefully choose a long enough passphrase.
+and 3000 iterations. Carefully choose a long enough passphrase.
+
+The salt and the iterations for key creation can be configured.
 
 
 **IV, Nonce, Counter**
@@ -56,7 +58,7 @@ start of the encrypted file and extracted before decrypting the file:
       AES256-GCM              AES256-CBC               ChaCha20              ChaCha20-BC
    AES/GCM/NoPadding     AES/CBC/PKCS5Padding                               (BouncyCastle)
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
-|       iv  (12)     |  |       iv  (12)     |  |      nonce (12)    |  |       iv (8)       |
+|       iv  (12)     |  |      iv  (16)      |  |      nonce (12)    |  |       iv (8)       |
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
 |       data (n)     |  |      data (n)      |  |     counter (4)    |  |      data (n)      | 
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
@@ -163,6 +165,53 @@ start of the encrypted file and extracted before decrypting the file:
 
 `zipvault/zip` and `zipvault/extract-file` work both on files, streams 
 and memory buffers.
+
+
+### Configuring Encryptors
+
+**AES256-GCM**
+
+```clojure
+(crypt/encryptor-aes-256-gcm 
+   "your-passphrase"
+   :key-salt          (bytebuf [0x34 0x7F 0x45 0xAE 0x09 0xF0 0xE4 0x7B  
+                                0x78 0xC4 0xDA 0x66 0x51 0xA0 0xFF 0x21])
+   :key-iterations    10000)
+```
+
+**AES256-CBC**
+
+```clojure
+(crypt/encryptor-aes-256-cbc 
+   "your-passphrase"
+   :key-salt              (bytebuf [0x34 0x7F 0x45 0xAE 0x09 0xF0 0xE4 0x7B  
+                                    0x78 0xC4 0xDA 0x66 0x51 0xA0 0xFF 0x21])
+   :key-iterations        10000
+   :custom-iv             (bytebuf [0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+                                    0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00])
+   :custom-iv-add-to-data false)
+```
+
+**ChaCha20**
+
+```clojure
+(crypt/encryptor-chacha20 
+   "your-passphrase"
+   :key-salt         (bytebuf [0x34 0x7F 0x45 0xAE 0x09 0xF0 0xE4 0x7B  
+                               0x78 0xC4 0xDA 0x66 0x51 0xA0 0xFF 0x21])
+   :key-iterations   10000)
+```
+
+**ChaCha20-BC**
+
+```clojure
+(crypt/encryptor-chacha20-bouncycastle
+   "your-passphrase"
+   :key-salt          (bytebuf [0x34 0x7F 0x45 0xAE 0x09 0xF0 0xE4 0x7B 
+                                0x78 0xC4 0xDA 0x66 0x51 0xA0 0xFF 0x21])
+   :key-iterations    10000)
+```
+
 
 
 ### Encrypt/decrypt a file tree

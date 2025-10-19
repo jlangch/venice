@@ -348,12 +348,13 @@
                                        E.g.: (bytebuf [ 43 195  99 118 231 225 142  76 \u2000 \
                                                        132 194 129 237 158  12  12 203])|
           | :key-iterations n        | An optional iteration count to generate the key.¶\
-                                       Defaults to 3000.   |
+                                       Defaults to 3000. 
           | :custom-iv arr           | An optional custom IV bytebuf (12 bytes).¶\
                                        E.g.: (bytebuf [ 01 195  33 118 44 225 142  76 158  12  12 203]¶\
                                        Without custom-iv a new random IV is generated for \
                                        every encryption call|
-          | :custom-iv-add-to-data b | If `true` add the custom IV to the encrypted data|                                
+          | :custom-iv-add-to-data b | If `true` add the custom IV to the encrypted data.¶\
+                                       Defaults to `false`.   |                               
 
           *IV* is random and unique for every call of encryptor function.
                    
