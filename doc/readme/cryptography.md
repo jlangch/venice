@@ -43,7 +43,7 @@ The 256 bit encryption key is derived from the passphrase using a
 *PBKDF2WithHmacSHA256* secret key factory with a 16 byte random salt 
 and 3000 iterations. Carefully choose a long enough passphrase.
 
-The salt and the iterations for key creation can be configured.
+You can pass your own key salt and iteration count to all encryptors.
 
 
 **IV, Nonce, Counter**
@@ -172,6 +172,11 @@ and memory buffers.
 **AES256-GCM**
 
 ```clojure
+(crypt/encryptor-aes-256-gcm "your-passphrase"
+```
+Passing an explicit salt and iteration count:
+
+```clojure
 (crypt/encryptor-aes-256-gcm 
    "your-passphrase"
    :key-salt          (bytebuf [0x34 0x7F 0x45 0xAE  0x09 0xF0 0xE4 0x7B  
@@ -180,6 +185,11 @@ and memory buffers.
 ```
 
 **AES256-CBC**
+
+```clojure
+(crypt/encryptor-aes-256-cbc "your-passphrase"
+```
+Passing an explicit salt and iteration count:
 
 ```clojure
 (crypt/encryptor-aes-256-cbc 
@@ -195,6 +205,11 @@ and memory buffers.
 **ChaCha20**
 
 ```clojure
+(crypt/encryptor-chacha20 "your-passphrase"
+```
+Passing an explicit salt and iteration count:
+
+```clojure
 (crypt/encryptor-chacha20 
    "your-passphrase"
    :key-salt         (bytebuf [0x34 0x7F 0x45 0xAE  0x09 0xF0 0xE4 0x7B  
@@ -203,6 +218,11 @@ and memory buffers.
 ```
 
 **ChaCha20-BC**
+
+```clojure
+(crypt/encryptor-chacha20-bouncycastle "your-passphrase"
+```
+Passing an explicit salt and iteration count:
 
 ```clojure
 (crypt/encryptor-chacha20-bouncycastle
@@ -226,10 +246,7 @@ Encrypt all "*.doc" and "*.docx" in a file tree:
     (io/file (str (io/file-path f) ".enc")))
   
   (defn decrypted-file-name [f]
-    (let [path (io/file-name f)]
-      (if (str/ends-with? path ".enc")
-        (io/file (str/strip-end path ".enc"))
-        (throw (ex :VncException "Not an encrypted file '~{path}'")))))
+    (io/file (str/strip-end path ".enc")))
   
   (defn encrypt [dir passphrase]
     (let [encryptor (crypt/encryptor-aes-256-gcm passphrase)]
