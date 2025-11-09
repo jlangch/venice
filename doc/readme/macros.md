@@ -416,6 +416,19 @@ Rewriting the macro to (see "core.venice")
 ```
 
 
+### Recursively defined Macros
+
+Macros can be defined with multiple arities and can recursively call itself:
+
+```clojure
+(defmacro and
+  ([] true)
+  ([x] x)
+  ([x & next] `(let [cond# ~x]
+                 (if cond# (and ~@next) cond#))))
+```
+
+
 ### Macro expansion
 
 While developing macros, it is important to be able to test the macro and see what code
