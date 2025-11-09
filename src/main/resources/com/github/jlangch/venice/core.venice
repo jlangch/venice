@@ -1111,7 +1111,12 @@
           "(list-comp [x (range 5)] (* x 2))"
           "(list-comp [x (range 10) :when (odd? x)] x)"
           "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
-          "(list-comp [x (seq \"abc\") y [0 1 2]] [x y])")
+          """
+          (list-comp [x [1 2 3 4] :when (odd? x)
+                      y [1 2 3 4] :when (even? y)]
+                     [x y])
+          """
+         )
      :see-also '("mapcat" "doseq" "dotimes") }
 
   list-comp [[binding_ coll-expr & bindings] body-expr]

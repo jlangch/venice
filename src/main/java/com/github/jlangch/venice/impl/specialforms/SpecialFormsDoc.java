@@ -168,20 +168,30 @@ public class SpecialFormsDoc {
                         "Evaluates the exprs and binds the bindings. " +
                         "Creates a recursion point with the bindings.")
                     .examples(
-                        ";; tail recursion                                   \n" +
-                        "(loop [x 10]                                        \n" +
-                        "   (when (> x 1)                                    \n" +
-                        "      (println x)                                   \n" +
-                        "      (recur (- x 2))))                               ",
+                        ";; tail recursion                              \n" +
+                        "(loop [x 1]                 ; <-+ loop         \n" +
+                        "  (when (< x 4)             ;   |              \n" +
+                        "    (println x)             ;   |              \n" +
+                        "    (recur (inc x))))       ; --+              ",
 
-                        ";; tail recursion                                   \n" +
-                        "(do                                                 \n" +
-                        "   (defn sum [n]                                    \n" +
-                        "      (loop [cnt n acc 0]                           \n" +
-                        "         (if (zero? cnt)                            \n" +
-                        "             acc                                    \n" +
-                        "             (recur (dec cnt) (+ acc cnt)))))       \n" +
-                        "   (sum 10000))                                       ")
+                        ";; tail recursion (nested loops)                \n" +
+                        "(loop [x 1]                 ; <----+ outer loop \n" +
+                        "  (when (< x 4)             ;      |            \n" +
+                        "    (loop [y 1]             ; <-+ inner loop    \n" +
+                        "      (when (< y 3)         ;   |  |            \n" +
+                        "        (println [x y])     ;   |  |            \n" +
+                        "        (recur (inc y))))   ; --+  |            \n" +
+                        "    (recur (inc x))))       ; -----+            ",
+
+
+                        ";; tail recursion                              \n" +
+                        "(do                                            \n" +
+                        "  (defn sum [n]                                \n" +
+                        "    (loop [cnt n acc 0]                        \n" +
+                        "      (if (zero? cnt)                          \n" +
+                        "        acc                                    \n" +
+                        "        (recur (dec cnt) (+ acc cnt)))))       \n" +
+                        "  (sum 10000))                                 ")
                     .seeAlso("recur")
                     .build()
         ) {
