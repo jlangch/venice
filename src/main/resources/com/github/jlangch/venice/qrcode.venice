@@ -34,6 +34,7 @@
 (import :com.google.zxing.MultiFormatReader)
 (import :com.google.zxing.client.j2se.BufferedImageLuminanceSource)
 (import :com.google.zxing.common.HybridBinarizer)
+(import :java.io.InputStream)
 (import :javax.imageio.ImageIO)
 (import :java.awt.image.BufferedImage)
 
@@ -50,7 +51,8 @@
           Decode a QR code image. Returns the text decoded from the QR code 
           image. 
 
-          Loads the image from a `:java.io.File` or a `:java.io.InputStream`.
+          Loads the image from a `:java.io.File`, `:java.io.InputStream` or a
+          :java.awt.image.BufferedImage
           """
      :examples '(
         """
@@ -65,9 +67,12 @@
   decode [source]
   
   (assert (or (io/file? source) 
-              (instance-of? :java.io.InputStream source)))
+              (instance-of? :InputStream source)
+              (instance-of? :BufferedImage source)))
 
-  (let [buffered-img (. :ImageIO :read source)
+  (let [buffered-img (if (instance-of? :BufferedImage source)
+                       source
+                       (. :ImageIO :read source))
         source       (. :BufferedImageLuminanceSource :new buffered-img)
         binarizer    (. :HybridBinarizer :new source)
         bitmap       (. :BinaryBitmap :new binarizer)
