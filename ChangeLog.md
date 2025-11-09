@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Added function `partition-at`
+
 
 
 ## [1.12.58] - 2025-10-20

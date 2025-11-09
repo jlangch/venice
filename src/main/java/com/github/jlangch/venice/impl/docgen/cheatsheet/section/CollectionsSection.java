@@ -144,6 +144,7 @@ public class CollectionsSection implements ISectionBuilder {
         list_modify.addItem(diBuilder.getDocItem("partition"));
         list_modify.addItem(diBuilder.getDocItem("partition-all"));
         list_modify.addItem(diBuilder.getDocItem("partition-by"));
+        list_modify.addItem(diBuilder.getDocItem("partition-at"));
         list_modify.addItem(diBuilder.getDocItem("interpose"));
         list_modify.addItem(diBuilder.getDocItem("interleave"));
         list_modify.addItem(diBuilder.getDocItem("cartesian-product"));
@@ -215,6 +216,7 @@ public class CollectionsSection implements ISectionBuilder {
         vec_modify.addItem(diBuilder.getDocItem("dedupe"));
         vec_modify.addItem(diBuilder.getDocItem("partition"));
         vec_modify.addItem(diBuilder.getDocItem("partition-by"));
+        vec_modify.addItem(diBuilder.getDocItem("partition-at"));
         vec_modify.addItem(diBuilder.getDocItem("interpose"));
         vec_modify.addItem(diBuilder.getDocItem("interleave"));
         vec_modify.addItem(diBuilder.getDocItem("cartesian-product"));

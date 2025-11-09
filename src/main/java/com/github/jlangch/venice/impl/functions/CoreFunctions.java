@@ -7479,7 +7479,7 @@ public class CoreFunctions {
                         "(partition 3 1 [0 1 2 3 4 5 6])",
                         "(partition 3 6 [\"a\"] (range 20))",
                         "(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))")
-                    .seeAlso("partition-all", "partition-by")
+                    .seeAlso("partition-all", "partition-by", "partition-at")
                     .build()
         ) {
             @Override
@@ -7550,7 +7550,7 @@ public class CoreFunctions {
                         "(partition-all 3 1 [0 1 2 3 4 5 6])",
                         "(partition-all 3 6 [\"a\"])",
                         "(partition-all 2 2 [\"a\" \"b\" \"c\" \"d\"])")
-                    .seeAlso("partition", "partition-by")
+                    .seeAlso("partition", "partition-by", "partition-at")
                     .build()
         ) {
             @Override
@@ -7601,10 +7601,11 @@ public class CoreFunctions {
                         "Applies f to each value in coll, splitting it each time f returns " +
                         "a new value.")
                     .examples(
-                        "(partition-by even? [1 2 4 3 5 6])",
+                        "(partition-by even? [1 2 3 4 5 6])",
+                        "(partition-by even? [1 2 4 3 5 7])",
                         "(partition-by identity (seq \"ABBA\"))",
                         "(partition-by identity [1 1 1 1 2 2 3])")
-                    .seeAlso("partition", "partition-all")
+                    .seeAlso("partition-at", "partition", "partition-all")
                     .build()
         ) {
             @Override
@@ -7666,6 +7667,71 @@ public class CoreFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+        public static VncFunction partition_at =
+            new VncFunction(
+                    "partition-at",
+                    VncFunction
+                        .meta()
+                        .arglists("(partition-at f coll)")
+                        .doc(
+                            "Applies the predicate f to each value in coll, splitting it each time f returns " +
+                            "true.")
+                        .examples(
+                            "(partition-at even? [1 2 3 4 5 6])",
+                            "(partition-at even? [1 2 4 3 5 7])",
+                            "(partition-at identity (seq \"ABBA\"))")
+                        .seeAlso("partition-by", "partition-all", "partition")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 2);
+
+                    final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
+
+                    final IVncFunction f = Coerce.toIVncFunction(args.first());
+                    VncSequence seq = Coerce.toVncSequence(args.second());
+
+                    f.sandboxFunctionCallValidation();
+
+                    if (seq.isEmpty()) {
+                        return VncList.empty();
+                    }
+
+                    VncList result = VncList.empty();
+                    VncList part = VncList.empty();
+
+                    // first element
+                    VncVal v = seq.first();
+                    seq = seq.rest();
+                    part = part.addAtEnd(v);
+
+                    while (!seq.isEmpty()) {
+                        v = seq.first();
+                        seq = seq.rest();
+
+                        VncVal match = VncFunction.applyWithMeter(
+                                                f,
+                                                VncList.of(v),
+                                                meterRegistry);
+
+                        if (VncBoolean.isTrue(match)) {
+                            result = result.addAtEnd(part);
+                            part = VncList.empty();
+                        }
+                        part = part.addAtEnd(v);
+                    }
+
+                    if (!part.isEmpty()) {
+                        result = result.addAtEnd(part);
+                    }
+
+                    return result;
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
     public static VncFunction emptyToNil =
         new VncFunction(
@@ -10936,6 +11002,7 @@ public class CoreFunctions {
                 .add(partition)
                 .add(partition_all)
                 .add(partition_by)
+                .add(partition_at)
                 .add(filter_k)
                 .add(filter_kv)
                 .add(reduce)
