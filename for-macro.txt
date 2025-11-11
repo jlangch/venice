@@ -134,7 +134,7 @@
                       (err "Invalid number of 'for' seq-exprs arguments!"))
         groups      (->> (partition-at symbol? seq-exprs)
                          (map #(partition 2 %)))
-        emit-groups (fn [groups body-expr acc]                     
+        emit-groups (fn [groups body-expr acc]
                       (let [group       (first groups)
                             [s c]       (first group)  ;; binding [x [1 2 3]]
                             qualifiers  (rest group)   ;; :when, :while, :let
@@ -171,7 +171,7 @@
                       (err "Invalid number of 'for' seq-exprs arguments!"))
         groups      (->> (partition-at symbol? seq-exprs)
                          (map #(partition 2 %)))
-        emit-groups (fn [groups body-expr acc]                     
+        emit-groups (fn [groups body-expr acc]
                       (let [group       (first groups)
                             [s c]       (first group)  ;; binding [x [1 2 3]]
                             qualifiers  (rest group)   ;; :when, :while, :let
@@ -195,7 +195,7 @@
     (emit-groups groups body-expr [])))
 
 
-; -- Iteration 2:  multiple groups with modifiers -----------------------------
+; -- Iteration 2:  multiple groups with qualifiers -----------------------------
 
 ;; (for [x [1 2 3] y [3 4] ] [x y])
 ;; (for [x [1 2 3] y [3 4] :when (even? y)] [x y])
@@ -206,10 +206,10 @@
                       (err "Invalid number of 'for' seq-exprs arguments!"))
         groups      (->> (partition-at symbol? seq-exprs)
                          (map #(partition 2 %)))
-        emit-groups (fn [groups body-expr acc]                     
+        emit-groups (fn [groups body-expr acc]
                       (let [group       (first groups)
                             [s c]       (first group)  ;; binding [x [1 2 3]]
-                            modifiers   (rest group)   ;; :when, :while, :let                
+                            modifiers   (rest group)   ;; :when, :while, :let
                             next-groups (rest groups)
                             last-group  (empty? next-groups)
                             result      (gensym "result__")]
@@ -228,7 +228,7 @@
                                 ~result
                                 (let [~s (first ~sc)]
                                   ~(do-mod modifiers sc))))) 
-                          ;; not "inner-most loop"                                
+                          ;; not "inner-most loop"
                           (let [sc      (gensym "sc__")
                                 do-mod  (fn [[[k v] & etc] sc]
                                           (cond 
@@ -245,3 +245,34 @@
     (emit-groups groups body-expr [])))
 
 
+; -- Iteration 3:  optimizing macro --------------------------------------------
+
+(defmacro for [seq-exprs body-expr] 
+  (let [err         (fn [& msg] (throw (ex :VncException (apply str msg))))
+        _           (when-not (zero? (mod (count seq-exprs) 2))
+                      (err "Invalid number of 'for' seq-exprs arguments!"))
+        groups      (->> (partition-at symbol? seq-exprs)
+                         (map #(partition 2 %)))
+        emit-groups (fn [groups body-expr acc]
+                      (let [group       (first groups)
+                            [s c]       (first group)  ;; binding [x [1 2 3]]
+                            modifiers   (rest group)   ;; :when, :while, :let
+                            next-groups (rest groups)
+                            last-group  (empty? next-groups)
+                            result      (gensym "result__")]
+                        (let [sc      (gensym "sc__")
+                              do-mod  (fn [[[k v] & etc] sc]
+                                        (cond 
+                                          (= k :when)    `(if ~v ~(do-mod etc sc) (recur (rest ~sc) ~result))
+                                          (= k :while)   `(if ~v ~(do-mod etc sc) ~result)
+                                          (= k :let  )   `(let ~v ~(do-mod etc sc))
+                                          (keyword? k)   (err "Invalid 'for' sequence modifier keyword " k)
+                                          :else          (if last-group
+                                                            `(recur (rest ~sc) (conj ~result ~body-expr))
+                                                            `(recur (rest ~sc) ~(emit-groups next-groups body-expr result)))))]
+                          `(loop [~sc ~c, ~result ~acc]
+                            (if (empty? ~sc)
+                              ~result
+                              (let [~s (first ~sc)]
+                                ~(do-mod modifiers sc))))))) ]
+    (emit-groups groups body-expr [])))
