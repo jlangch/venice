@@ -263,13 +263,13 @@
                         (let [sc      (gensym "sc__")
                               do-mod  (fn [[[k v] & etc] sc]
                                         (cond 
-                                          (= k :when)    `(if ~v ~(do-mod etc sc) (recur (rest ~sc) ~result))
-                                          (= k :while)   `(if ~v ~(do-mod etc sc) ~result)
-                                          (= k :let  )   `(let ~v ~(do-mod etc sc))
-                                          (keyword? k)   (err "Invalid 'for' sequence modifier keyword " k)
-                                          :else          (if last-group
-                                                            `(recur (rest ~sc) (conj ~result ~body-expr))
-                                                            `(recur (rest ~sc) ~(emit-groups next-groups body-expr result)))))]
+                                          (= k :when)   `(if ~v ~(do-mod etc sc) (recur (rest ~sc) ~result))
+                                          (= k :while)  `(if ~v ~(do-mod etc sc) ~result)
+                                          (= k :let  )  `(let ~v ~(do-mod etc sc))
+                                          (keyword? k)  (err "Invalid 'for' sequence modifier keyword " k)
+                                          :else         (if last-group
+                                                          `(recur (rest ~sc) (conj ~result ~body-expr))
+                                                          `(recur (rest ~sc) ~(emit-groups next-groups body-expr result)))))]
                           `(loop [~sc ~c, ~result ~acc]
                             (if (empty? ~sc)
                               ~result
