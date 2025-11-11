@@ -1,0 +1,247 @@
+;; -----------------------------------------------------------------------------
+;; Examples
+;; -----------------------------------------------------------------------------
+
+
+;; 1 collection ----------------------------------------------------------------
+
+(for [1 2] (fn f [x] [x]))
+
+(defn for [xcoll f]
+  (loop [xc xcoll, result []]
+    (if (empty? xc)
+      result
+      (let [x (first xc)]
+        ;; TODO: add qualifiers
+        ;; most inner result
+        (recur (rest xc) (conj result (f x)))))))
+
+
+;; 2 collections ---------------------------------------------------------------
+
+(for [1 2] [3 4] (fn f [x y] [x y]))
+
+(defn for [xcoll ycoll f]
+  (loop [xc xcoll, xresult []]
+    (if (empty? xc)
+      xresult
+      (let [x (first xc)]
+        ;; TODO: add qualifiers
+        ;; nested y loop
+        (let [yr (loop [yc ycoll, yresult xresult]
+                   (if (empty? yc)
+                     yresult
+                     (let [y (first yc)]
+                       ;; TODO: add qualifiers
+                       ;; most inner result
+                       (recur (rest yc) (conj yresult (f x y))))))]
+          (recur (rest xc) yr))))))
+
+
+;; 3 collections ---------------------------------------------------------------
+
+(for [1 2] [3 4] [5 6] (fn f [x y z] [x y z]))
+
+(defn for [xcoll ycoll zcoll f]
+  (loop [xc xcoll, xresult []]
+    (if (empty? xc)
+      xresult
+      (let [x (first xc)]
+        ;; TODO qualifiers: add qualifiers
+        ;; nested y loop
+        (let [yr (loop [yc ycoll, yresult xresult]
+                   (if (empty? yc)
+                     yresult
+                     (let [y (first yc)]
+                       ;; TODO: add qualifiers
+                       ;; nested z loop
+                       (let [zr (loop [zc zcoll, zresult yresult]
+                                  (if (empty? zc)
+                                    zresult
+                                    (let [z (first zc)]
+                                      ;; TODO: add qualifiers
+                                      ;; most inner result
+                                     (recur (rest zc) (conj zresult (f x y z))))))]
+                         (recur (rest yc) zr)))))]
+          (recur (rest xc) yr))))))
+
+;; 3 collections with qualifiers -----------------------------------------------
+
+
+(for [1 2] [3 4] [5 6] (fn f [x y z] [x y z]))
+
+(defn for [xcoll ycoll zcoll f]
+  (loop [xc xcoll, xresult []]
+    (if (empty? xc)
+      xresult
+      (let [x (first xc)]
+        ;; qualifiers
+        (if-not true           ;; :while 
+          xresult
+          (if-not true         ;; :when
+            (recur (rest xc) xresult)
+            ;; nested y loop
+            (let [yr (loop [yc ycoll, yresult xresult]
+                      (if (empty? yc)
+                        yresult
+                        (let [y (first yc)]
+                          ;; qualifiers
+                          (if-not true           ;; :while 
+                            yresult
+                            (if-not true         ;; :when
+                              (recur (rest yc) yresult)
+                              ;; nested z loop
+                              (let [zr (loop [zc zcoll, zresult yresult]
+                                          (if (empty? zc)
+                                            zresult
+                                            (let [z (first zc)]
+                                              ;; qualifiers
+                                              (if-not true           ;; :while 
+                                                zresult
+                                                (if-not true         ;; :when
+                                                  (recur (rest zc) zresult)
+                                                  ;; most inner result
+                                                  (recur (rest zc) (conj zresult (f x y z))))))))]
+                                (recur (rest yc) zr)))))))]
+          (recur (rest xc) yr))))))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Macro
+;; -----------------------------------------------------------------------------
+
+
+; -- Normalizing the sequence expressions --------------------------------------
+
+(defmacro for [seq-exprs body-expr]  ...)
+
+;; [x [1 2 3] :while true :when true y [1 2 3] :while true]
+;;
+;; [ [ [x [1 2 3]]         ;; sequence 1
+;;     [:while true] 
+;;     [:when true] ]
+;;   [ [y [1 2 3]]         ;; sequence 2
+;;     [:while true] ] ]
+
+
+; -- Iteration 1:  one group without qualifiers --------------------------------
+
+;; (for [x [1 2 3]] x)
+(defmacro for [seq-exprs body-expr] 
+  (let [err         (fn [& msg] (throw (ex :VncException (apply str msg))))
+        _           (when-not (zero? (mod (count seq-exprs) 2))
+                      (err "Invalid number of 'for' seq-exprs arguments!"))
+        groups      (->> (partition-at symbol? seq-exprs)
+                         (map #(partition 2 %)))
+        emit-groups (fn [groups body-expr acc]                     
+                      (let [group       (first groups)
+                            [s c]       (first group)  ;; binding [x [1 2 3]]
+                            qualifiers  (rest group)   ;; :when, :while, :let
+                            result      (gensym "result__")
+                            next-groups (rest groups)
+                            last-group  (empty? next-groups)]
+                        ;; handle just the first group
+                        `(loop [s# ~c, ~result ~acc]
+                          (if (empty? s#)
+                            ~result
+                            (let [~s (first s#)]
+                              ;; TODO: add qualifiers
+                              (recur (rest s#) (conj ~result ~body-expr)))))
+                        ))]
+    (emit-groups groups body-expr [])))
+
+
+;; Generates: (for [x [1 2 3]] x)
+(loop [s__95__auto [1 2 3] 
+       result__96  []] 
+  (if (empty? s__95__auto) 
+    result__96 
+    (let [x (first s__95__auto)] 
+      (recur (rest s__95__auto) (conj result__96 x)))))
+
+
+
+; -- Iteration 2:  multiple groups without qualifiers --------------------------
+
+;; (for [x [1 2 3] y [3 4]] [x y])
+(defmacro for [seq-exprs body-expr] 
+  (let [err         (fn [& msg] (throw (ex :VncException (apply str msg))))
+        _           (when-not (zero? (mod (count seq-exprs) 2))
+                      (err "Invalid number of 'for' seq-exprs arguments!"))
+        groups      (->> (partition-at symbol? seq-exprs)
+                         (map #(partition 2 %)))
+        emit-groups (fn [groups body-expr acc]                     
+                      (let [group       (first groups)
+                            [s c]       (first group)  ;; binding [x [1 2 3]]
+                            qualifiers  (rest group)   ;; :when, :while, :let
+                            result      (gensym "result__")
+                            next-groups (rest groups)
+                            last-group  (empty? next-groups)]
+                        (if last-group
+                          `(loop [sc# ~c, ~result ~acc]
+                            (if (empty? sc#)
+                              ~result
+                              (let [~s (first sc#)]
+                                ;; TODO: add qualifiers
+                                (recur (rest sc#) (conj ~result ~body-expr)))))
+                          `(loop [sc# ~c, ~result ~acc]
+                            (if (empty? sc#)
+                              ~result
+                              (let [~s (first sc#)]
+                                ;; TODO: add qualifiers
+                                (let [r# ~(emit-groups next-groups body-expr result)]
+                                  (recur (rest sc#) r#))))))))]
+    (emit-groups groups body-expr [])))
+
+
+; -- Iteration 2:  multiple groups with modifiers -----------------------------
+
+;; (for [x [1 2 3] y [3 4] ] [x y])
+;; (for [x [1 2 3] y [3 4] :when (even? y)] [x y])
+;; (for [x [1 2 3] :when (odd? x) y [3 4]] [x y])
+(defmacro for [seq-exprs body-expr] 
+  (let [err         (fn [& msg] (throw (ex :VncException (apply str msg))))
+        _           (when-not (zero? (mod (count seq-exprs) 2))
+                      (err "Invalid number of 'for' seq-exprs arguments!"))
+        groups      (->> (partition-at symbol? seq-exprs)
+                         (map #(partition 2 %)))
+        emit-groups (fn [groups body-expr acc]                     
+                      (let [group       (first groups)
+                            [s c]       (first group)  ;; binding [x [1 2 3]]
+                            modifiers   (rest group)   ;; :when, :while, :let                
+                            next-groups (rest groups)
+                            last-group  (empty? next-groups)
+                            result      (gensym "result__")]
+                        (if last-group
+                          ;; "inner-most loop"
+                          (let [sc      (gensym "sc__")
+                                do-mod  (fn [[[k v] & etc] sc]
+                                          (cond 
+                                            (= k :when)    `(if ~v ~(do-mod etc sc) (recur (rest ~sc) ~result))
+                                            (= k :while)   `(if ~v ~(do-mod etc sc) ~result)
+                                            (= k :let  )   `(let ~v ~(do-mod etc sc))
+                                            (keyword? k)   (err "Invalid 'for' sequence modifier keyword " k)
+                                            :else          `(recur (rest ~sc) (conj ~result ~body-expr))))]
+                            `(loop [~sc ~c, ~result ~acc]
+                              (if (empty? ~sc)
+                                ~result
+                                (let [~s (first ~sc)]
+                                  ~(do-mod modifiers sc))))) 
+                          ;; not "inner-most loop"                                
+                          (let [sc      (gensym "sc__")
+                                do-mod  (fn [[[k v] & etc] sc]
+                                          (cond 
+                                            (= k :when)    `(if ~v ~(do-mod etc sc) (recur (rest ~sc) ~result))
+                                            (= k :while)   `(if ~v ~(do-mod etc sc) ~result)
+                                            (= k :let  )   `(let ~v ~(do-mod etc sc))
+                                            (keyword? k)   (err "Invalid 'for' sequence modifier keyword " k)
+                                            :else          `(recur (rest ~sc) ~(emit-groups next-groups body-expr result))))]   
+                            `(loop [~sc ~c, ~result ~acc]
+                              (if (empty? ~sc)
+                                ~result
+                                (let [~s (first ~sc)]
+                                  ~(do-mod modifiers sc))))))))]
+    (emit-groups groups body-expr [])))
+
+
