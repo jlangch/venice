@@ -81,8 +81,9 @@ public class MacrosSection implements ISectionBuilder {
         all.addSection(loop);
         loop.addItem(diBuilder.getDocItem("while"));
         loop.addItem(diBuilder.getDocItem("dotimes"));
-        loop.addItem(diBuilder.getDocItem("list-comp"));
         loop.addItem(diBuilder.getDocItem("doseq"));
+        loop.addItem(diBuilder.getDocItem("for"));
+        loop.addItem(diBuilder.getDocItem("list-comp"));
 
         final DocSection call = new DocSection("Call", "macros.call");
         all.addSection(call);

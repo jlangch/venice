@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Added for list comprehension with `:when`, `:while`, and `:let` modifiers
 - Added function `partition-at`
 
 

@@ -1105,6 +1105,8 @@
 
           List comprehensions are used when multiple lists have to be processed
           down to a single list and some filtering has to be applied.
+
+          **Please use the `for` list comprehension instead.**
           """
      :examples '(
           "(list-comp [x (range 10)] x)"
@@ -1117,7 +1119,7 @@
                      [x y])
           """
          )
-     :see-also '("mapcat" "doseq" "dotimes") }
+     :see-also '("for" "mapcat" "doseq" "dotimes") }
 
   list-comp [[binding_ coll-expr & bindings] body-expr]
 
@@ -1131,6 +1133,64 @@
     :else
       `(mapcat (fn [~binding_] (list-comp ~bindings ~body-expr))
                 ~coll-expr)))
+
+(defmacro 
+  ^{ :arglists '("(for seq-exprs body-expr)")
+     :doc """
+          List comprehension. Takes a vector of one or more
+          binding-form/collection-expr pairs, each followed by zero or more
+          modifiers, and yields a sequence of evaluations of expr.
+   
+          Collections are iterated in a nested fashion, rightmost fastest,
+          and nested coll-exprs can refer to bindings created in prior
+          binding-forms.  
+          
+          Supported modifiers are: :let [binding-form expr ...], :while test, 
+          :when test.
+
+          List comprehensions are used when multiple lists have to be processed
+          down to a single list and some filtering has to be applied.
+          """
+     :examples '(
+          "(for [x (range 10)] x)"
+          "(for [x (range 5)] (* x 2))"
+          "(for [x (range 10) :when (odd? x) :let [x (* x 2)]] x)"
+          "(for [x (range 10) :when (odd? x) :let [y (* x 2)]] [x y])"
+          "(for [x [1 2 3] :when (odd? x) y [1 2 3 4] :when (even? y)] [x y])"
+         )
+     :see-also '("mapcat" "doseq" "dotimes") }
+
+  for [seq-exprs body-expr] 
+
+  (assert (vector? seq-exprs) "The bindings must be a vector!")
+  (assert (not-empty? seq-exprs) "The bindings vector must not be empty!")
+  (assert (zero? (mod (count seq-exprs) 2)) "The bindings must have an even number of elements!")
+
+  (let [err         (fn [& msg] (throw (ex :VncException (apply str msg))))
+        groups      (->> (partition-at symbol? seq-exprs)
+                         (map #(partition 2 %)))
+        emit-groups (fn [groups body-expr acc]
+                      (let [[group & next-groups] groups
+                            [[s c] & modifiers]   group
+                            last-group            (empty? next-groups)
+                            result                (gensym "result__")]
+                        (when-not (symbol? s) (err "Invalid sequence binding. Must be like [x [1 2 3]]!"))
+                        (let [sc        (gensym "sc__")
+                              emit-mod  (fn [[[k v] & etc] sc]
+                                          (cond 
+                                            (= k :when)   `(if ~v ~(emit-mod etc sc) (recur (rest ~sc) ~result))
+                                            (= k :while)  `(if ~v ~(emit-mod etc sc) ~result)
+                                            (= k :let  )  `(let ~v ~(emit-mod etc sc))
+                                            (keyword? k)  (err "Invalid 'for' sequence modifier keyword " k)
+                                            :else         (if last-group
+                                                            `(recur (rest ~sc) (conj ~result ~body-expr))
+                                                            `(recur (rest ~sc) ~(emit-groups next-groups body-expr result)))))]
+                          `(loop [~sc ~c, ~result ~acc]
+                            (if (empty? ~sc)
+                              ~result
+                              (let [~s (first ~sc)]
+                                ~(emit-mod modifiers sc))))))) ]
+    (emit-groups groups body-expr [])))
 
 
 (defmacro
@@ -1155,7 +1215,7 @@
           (doseq [[c vals] (group-by count ["a" "as" "asd" "aa" "asdf" "qwer"])]
             (println c vals))
           """)
-     :see-also '("list-comp" "dotimes") }
+     :see-also '("for" "list-comp" "dotimes") }
 
   doseq [[binding_ coll-expr & bindings] & body]
 
