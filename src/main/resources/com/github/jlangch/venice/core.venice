@@ -1176,13 +1176,13 @@
                         (assert (symbol? s) "Invalid 'for' sequence binding. Must be like [x [1 2 3] ...]!")
                         (assert (sequential? c) "Required lists or vectors in seq expressions of 'for'!")
                         (assert (not (lazy-seq? c)) "Lazy sequences are not supported by 'for'!")
-                        (let [sc        (gensym "sc__")
+                        (let [sc  (gensym "sc__")
                               emit-mod  (fn [[[k v] & etc] sc]
                                           (cond 
                                             (= k :when)   `(if ~v ~(emit-mod etc sc) (recur (rest ~sc) ~result))
                                             (= k :while)  `(if ~v ~(emit-mod etc sc) ~result)
                                             (= k :let  )  `(let ~v ~(emit-mod etc sc))
-                                            (keyword? k)  (assert true (str "Invalid 'for' sequence modifier keyword " k))
+                                            (keyword? k)  (throw (ex :AssertionException "Invalid 'for' sequence modifier keyword ~{k}"))
                                             :else         (if (empty? next-groups)  ;; is last group?
                                                             `(recur (rest ~sc) (conj ~result ~body-expr))
                                                             `(recur (rest ~sc) ~(emit-groups next-groups result)))))]
