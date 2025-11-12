@@ -1170,10 +1170,9 @@
 
   (let [groups      (->> (partition-at symbol? seq-exprs)  ;; partition into normalized groups
                          (map #(partition 2 %)))
-        emit-groups (fn [groups body-expr acc]
-                      (let [[group & next-groups] groups   ;; destruct into current and next groups
-                            [[s c] & modifiers]   group    ;; destruct into binding (symbol & collection) and modifiers
-                            result                (gensym "result__")]
+        emit-groups (fn [groups acc]
+                      (let [[[[s c] & modifiers] & next-groups]  groups   ;; destruct groups
+                            result  (gensym "result__")]
                         (assert (symbol? s) "Invalid 'for' sequence binding. Must be like [x [1 2 3] ...]!")
                         (assert (sequential? c) "Required lists or vectors in seq expressions of 'for'!")
                         (assert (not (lazy-seq? c)) "Lazy sequences are not supported by 'for'!")
@@ -1186,13 +1185,13 @@
                                             (keyword? k)  (assert true (str "Invalid 'for' sequence modifier keyword " k))
                                             :else         (if (empty? next-groups)  ;; is last group?
                                                             `(recur (rest ~sc) (conj ~result ~body-expr))
-                                                            `(recur (rest ~sc) ~(emit-groups next-groups body-expr result)))))]
+                                                            `(recur (rest ~sc) ~(emit-groups next-groups result)))))]
                           `(loop [~sc ~c, ~result ~acc]
                             (if (empty? ~sc)
                               ~result
                               (let [~s (first ~sc)]
                                 ~(emit-mod modifiers sc))))))) ]
-    (emit-groups groups body-expr [])))
+    (emit-groups groups [])))
 
 
 (defmacro
