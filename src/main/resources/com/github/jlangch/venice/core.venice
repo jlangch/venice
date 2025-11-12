@@ -1169,14 +1169,13 @@
   (assert (zero? (mod (count seq-exprs) 2)) "The bindings must have an even number of elements!")
 
   (let [err         (fn [& msg] (throw (ex :VncException (apply str msg))))
-        groups      (->> (partition-at symbol? seq-exprs)
+        groups      (->> (partition-at symbol? seq-exprs)  ;; partition into normalized groups
                          (map #(partition 2 %)))
         emit-groups (fn [groups body-expr acc]
-                      (let [[group & next-groups] groups
-                            [[s c] & modifiers]   group
-                            last-group            (empty? next-groups)
+                      (let [[group & next-groups] groups   ;; destruct into current and next groups
+                            [[s c] & modifiers]   group    ;; destruct into binding (symbol & collection) and modifiers
                             result                (gensym "result__")]
-                        (when-not (symbol? s) (err "Invalid sequence binding. Must be like [x [1 2 3]]!"))
+                        (when-not (symbol? s) (err "Invalid sequence binding. Must be like [x [1 2 3] ...]!"))
                         (let [sc        (gensym "sc__")
                               emit-mod  (fn [[[k v] & etc] sc]
                                           (cond 
@@ -1184,7 +1183,7 @@
                                             (= k :while)  `(if ~v ~(emit-mod etc sc) ~result)
                                             (= k :let  )  `(let ~v ~(emit-mod etc sc))
                                             (keyword? k)  (err "Invalid 'for' sequence modifier keyword " k)
-                                            :else         (if last-group
+                                            :else         (if (empty? next-groups)  ;; is last group?
                                                             `(recur (rest ~sc) (conj ~result ~body-expr))
                                                             `(recur (rest ~sc) ~(emit-groups next-groups body-expr result)))))]
                           `(loop [~sc ~c, ~result ~acc]
