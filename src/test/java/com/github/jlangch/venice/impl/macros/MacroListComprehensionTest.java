@@ -219,4 +219,82 @@ public class MacroListComprehensionTest {
                 venice.eval("(str (for [x (range 5) :let [m (* 2 x)] :let [n (* 2 m)]] [x m n]))"));
     }
 
+    @Test
+    public void test_for_all_1D() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "[[0 0] [2 4] [4 8]]",
+                venice.eval("(str (for [x (range 10) :while (< x 5) :when (even? x) :let [k (* 2 x)]] [x k]))"));
+
+        assertEquals(
+                "[[0 0] [2 4] [4 8]]",
+                venice.eval("(str (for [x (range 10) :when (even? x) :while (< x 5) :let [k (* 2 x)]] [x k]))"));
+
+        assertEquals(
+                "[[0 0] [2 4] [4 8]]",
+                venice.eval("(str (for [x (range 10) :let [k (* 2 x)] :when (even? x) :while (< x 5)] [x k]))"));
+    }
+
+    @Test
+    public void test_for_all_2D() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "[[0 0 0] [0 0 1] [2 4 0] [2 4 1] [4 8 0] [4 8 1]]",
+                venice.eval("(str (for [x (range 10) :while (< x 5)    " +
+                            "                        :when (even? x)   " +
+                            "                        :let [k (* 2 x)]  " +
+                            "           y (range 2)]                   " +
+                            "           [x k y]))                      "));
+
+        assertEquals(
+                "[[0 0 0] [0 0 1] [2 4 0] [2 4 1] [4 8 0] [4 8 1]]",
+                venice.eval("(str (for [x (range 10) :when (even? x)   "+
+                            "                        :while (< x 5)    " +
+                            "                        :let [k (* 2 x)]  " +
+                            "           y (range 2)]                   " +
+                            "           [x k y]))                      "));
+
+        assertEquals(
+                "[[0 0 0] [0 0 1] [2 4 0] [2 4 1] [4 8 0] [4 8 1]]",
+                venice.eval("(str (for [x (range 10) :let [k (* 2 x)]   " +
+                            "                        :while (< x 5)     " +
+                            "                        :when (even? x)    " +
+                            "           y (range 2)]                    " +
+                            "           [x k y]))                       "));
+
+
+
+        assertEquals(
+                "[[0 0 0] [0 0 4] [2 4 0] [2 4 4] [4 8 0] [4 8 4]]",
+                venice.eval("(str (for [x (range 10) :while (< x 5)    " +
+                            "                        :when (even? x)   " +
+                            "                        :let [k (* 2 x)]  " +
+                            "           y (range 10) :while (< y 4)    " +
+                            "                        :when (even? y)   " +
+                            "                        :let [y (* 2 y)]] " +
+                            "           [x k y]))                      "));
+
+        assertEquals(
+                "[[0 0 0] [0 0 4] [2 4 0] [2 4 4] [4 8 0] [4 8 4]]",
+                venice.eval("(str (for [x (range 10) :while (< x 5)    " +
+                            "                        :when (even? x)   " +
+                            "                        :let [k (* 2 x)]  " +
+                            "           y (range 10) :when (even? y)   " +
+                            "                        :while (< y 4)   " +
+                            "                        :let [y (* 2 y)]] " +
+                            "           [x k y]))                      "));
+
+        assertEquals(
+                "[[0 0 0] [0 0 2] [2 4 0] [2 4 2] [4 8 0] [4 8 2]]",
+                venice.eval("(str (for [x (range 10) :while (< x 5)    " +
+                            "                        :when (even? x)   " +
+                            "                        :let [k (* 2 x)]  " +
+                            "           y (range 10) :let [y (* 2 y)]  " +
+                            "                        :while (< y 4)    " +
+                            "                        :when (even? y)]  " +
+                            "           [x k y]))                      "));
+    }
+
 }
