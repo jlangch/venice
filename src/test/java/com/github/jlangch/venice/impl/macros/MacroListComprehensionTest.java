@@ -107,7 +107,7 @@ public class MacroListComprehensionTest {
 
 
     @Test
-    public void test_for_1() {
+    public void test_for_empty() {
         final Venice venice = new Venice();
 
         assertEquals(
@@ -121,8 +121,11 @@ public class MacroListComprehensionTest {
         assertEquals(
                 "[]",
                 venice.eval("(str (for [x '() y '()] [x y]))"));
+    }
 
-
+    @Test
+    public void test_for_basic() {
+        final Venice venice = new Venice();
 
         assertEquals(
                 "[0 1 2 3 4]",
@@ -131,8 +134,6 @@ public class MacroListComprehensionTest {
         assertEquals(
                 "[0 2 4 6 8]",
                 venice.eval("(str (for [x (range 5)] (* x 2)))"));
-
-
 
         assertEquals(
                 "[[0 0] [0 1] [1 0] [1 1]]",
@@ -145,8 +146,11 @@ public class MacroListComprehensionTest {
         assertEquals(
                 "[[a 0] [a 1] [b 0] [b 1]]",
                 venice.eval("(str (for [x (seq \"ab\") y [0 1]] [x y]))"));
+    }
 
-
+    @Test
+    public void test_for_when() {
+        final Venice venice = new Venice();
 
         assertEquals(
                 "[1 3 5 7 9]",
@@ -158,11 +162,61 @@ public class MacroListComprehensionTest {
 
         assertEquals(
                 "[[1 0] [1 1]]",
-                venice.eval("(str (for [x '(0 1) y '(0 1) :when (odd? x)] [x y]))"));
+                venice.eval("(str (for [x [0 1] y [0 1] :when (odd? x)] [x y]))"));
 
         assertEquals(
                 "[[1 0] [1 1]]",
-                venice.eval("(str (for [x '(0 1) :when (odd? x) y '(0 1)] [x y]))"));
+                venice.eval("(str (for [x [0 1] :when (odd? x) y [0 1]] [x y]))"));
+    }
+
+    @Test
+    public void test_for_while() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "[0 1 2 3 4]",
+                venice.eval("(str (for [x (range 10) :while (< x 5)] x))"));
+
+        assertEquals(
+                "[]",
+                venice.eval("(str (for [x (range 10) :while (< x 0)] x))"));
+
+        assertEquals(
+                "[[0 0] [0 1] [1 0] [1 1] [2 0] [2 1] [3 0] [3 1] [4 0] [4 1]]",
+                venice.eval("(str (for [x (range 10) :while (< x 5) y (range 2)] [x y]))"));
+
+        assertEquals(
+                "[[0 0] [0 1] [0 2] [0 3] [0 4] [1 0] [1 1] [1 2] [1 3] [1 4]]",
+                venice.eval("(str (for [x (range 2) y (range 10) :while (< y 5)] [x y]))"));
+
+        assertEquals(
+                "[[0 0] [0 1] [0 2] [0 3] [1 0] [1 1] [1 2] [1 3] [2 0] [2 1] [2 2] [2 3] [3 0] [3 1] [3 2] [3 3]]",
+                venice.eval("(str (for [x (range 10) :while (< x 4) y (range 10) :while (< y 4)] [x y]))"));
+    }
+
+    @Test
+    public void test_for_let() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "[0 2 4 6 8]",
+                venice.eval("(str (for [x (range 5) :let [k (* 2 x)]] k))"));
+
+        assertEquals(
+                "[0 2 4 6 8]",
+                venice.eval("(str (for [x (range 5) :let [x (* 2 x)]] x))"));
+
+        assertEquals(
+                "[[0 0] [1 2] [2 4] [3 6] [4 8]]",
+                venice.eval("(str (for [x (range 5) :let [k (* 2 x)]] [x k]))"));
+
+        assertEquals(
+                "[[0 0 0] [1 2 4] [2 4 8] [3 6 12] [4 8 16]]",
+                venice.eval("(str (for [x (range 5) :let [m (* 2 x)] :let [n (* 4 x)]] [x m n]))"));
+
+        assertEquals(
+                "[[0 0 0] [1 2 4] [2 4 8] [3 6 12] [4 8 16]]",
+                venice.eval("(str (for [x (range 5) :let [m (* 2 x)] :let [n (* 2 m)]] [x m n]))"));
     }
 
 }
