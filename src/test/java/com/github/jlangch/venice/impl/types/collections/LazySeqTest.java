@@ -67,7 +67,6 @@ public class LazySeqTest {
         assertEquals(2880067194370816120L, ((VncLong)list.last()).getValue());
     }
 
-    @SuppressWarnings("serial")
     @Test
     public void testFinitStream() {
         VncLazySeq seq = VncLazySeq.iterate(
