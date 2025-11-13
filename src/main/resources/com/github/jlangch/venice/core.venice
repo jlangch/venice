@@ -1185,8 +1185,7 @@
                                                           `(recur (rest ~sc) (conj ~result ~body-expr))
                                                           `(recur (rest ~sc) ~(emit-groups next-groups result)))))]
                           (assert (symbol? s) "Invalid 'for' sequence binding. Must be like [x [1 2 3] ...]!")
-                          (assert (sequential? c) "Required lists or vectors in seq expressions of 'for'!")
-                          (assert (not (lazy-seq? c)) "Lazy sequences are not supported by 'for'!")
+                          (assert (or (vector? c) (list? c)) "Required vectors or lists in seq expressions of 'for'!")
                           `(loop [~sc ~c, ~result ~acc]
                             (if (empty? ~sc)
                               ~result
