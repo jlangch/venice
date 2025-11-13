@@ -51,11 +51,11 @@ namespace which they are defined.
 
 ## When to use macros
 
-As basic rule: **Macros should be avoided whenever possible**
+As a basic rule: **Macros should be avoided whenever possible**
 
-The reason is that macros are not first-class citizens in Venice. They cannot be 
-accessed at runtime. You cannot pass them as an argument to a function, nor do any 
-of the other powerful things functional programming offers. 
+The reason is that macros are not first-class citizens in Venice, they are not values like
+functions are. They cannot be accessed at runtime. You cannot pass them as an argument to a 
+function, nor do any of the other powerful things functional programming offers.
 
 Macros are very powerful. But their power comes at a price: they are only available at 
 read/compile time. The use of macros should be reserved for those special occasions 
