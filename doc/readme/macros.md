@@ -18,8 +18,9 @@ you are limited to the features the language provides like the special forms `if
 `do..while`, `for` loops, or `new`. Venice macros allow the creation of new
 control flow constructs and to bend the language to your needs.
 
-Macros are very powerful but come at the price to be not always simple. With
-great power comes great responsibility to the creator to not misuse it.
+> [!CAUTION]
+> Macros are very powerful but come at the price to be not always simple. With
+> great power comes great responsibility to the creator to not misuse it.
 
 
 ## Macros vs Functions
