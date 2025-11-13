@@ -54,7 +54,7 @@ namespace which they are defined.
 ## When to use macros
 
 > [!CAUTION]
-> **Macros should be avoided whenever possible**
+> Macros should be avoided whenever possible
 
 The reason is that macros are not first-class citizens in Venice, they are not values like
 functions are. They cannot be accessed at runtime. You cannot pass them as an argument to a 
