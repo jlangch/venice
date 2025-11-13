@@ -143,9 +143,10 @@ venice> (test)
 => "2022-08-27T20:26:09.114"
 ```
 
-Note: Without the `!macroexpand` command one will see for every `(test)` run a
-different time because the macro is always expanded and evaluated! 
-
+[!NOTE]
+Without the `!macroexpand` REPL command one will see for every `(test)` run a
+different time because the macro is always expanded anew at every macro 
+evaluation! 
 
 
 
