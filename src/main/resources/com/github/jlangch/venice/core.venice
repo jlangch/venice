@@ -1173,25 +1173,25 @@
                          (map #(partition 2 %)))
         emit-groups (fn [groups acc]
                       (let [[[[s c] & modifiers] & next-groups]  groups   ;; destruct groups
-                            result  (gensym "result__")]
-                        (assert (symbol? s) "Invalid 'for' sequence binding. Must be like [x [1 2 3] ...]!")
-                        (assert (sequential? c) "Required lists or vectors in seq expressions of 'for'!")
-                        (assert (not (lazy-seq? c)) "Lazy sequences are not supported by 'for'!")
-                        (let [sc  (gensym "sc__")
-                              emit-mod  (fn [[[k v] & etc] sc]
-                                          (cond 
-                                            (= k :when)   `(if ~v ~(emit-mod etc sc) (recur (rest ~sc) ~result))
-                                            (= k :while)  `(if ~v ~(emit-mod etc sc) ~result)
-                                            (= k :let  )  `(let ~v ~(emit-mod etc sc))
-                                            (keyword? k)  (throw (ex :AssertionException "Invalid 'for' sequence modifier keyword ~{k}"))
-                                            :else         (if (empty? next-groups)  ;; is last group?
-                                                            `(recur (rest ~sc) (conj ~result ~body-expr))
-                                                            `(recur (rest ~sc) ~(emit-groups next-groups result)))))]
+                            result    (gensym "result__")
+                            sc        (gensym "sc__")
+                            emit-mod  (fn [[[k v] & etc] sc]
+                                        (cond 
+                                          (= k :when)   `(if ~v ~(emit-mod etc sc) (recur (rest ~sc) ~result))
+                                          (= k :while)  `(if ~v ~(emit-mod etc sc) ~result)
+                                          (= k :let  )  `(let ~v ~(emit-mod etc sc))
+                                          (keyword? k)  (throw (ex :AssertionException "Invalid 'for' sequence modifier keyword ~{k}"))
+                                          :else         (if (empty? next-groups)  ;; is last group?
+                                                          `(recur (rest ~sc) (conj ~result ~body-expr))
+                                                          `(recur (rest ~sc) ~(emit-groups next-groups result)))))]
+                          (assert (symbol? s) "Invalid 'for' sequence binding. Must be like [x [1 2 3] ...]!")
+                          (assert (sequential? c) "Required lists or vectors in seq expressions of 'for'!")
+                          (assert (not (lazy-seq? c)) "Lazy sequences are not supported by 'for'!")
                           `(loop [~sc ~c, ~result ~acc]
                             (if (empty? ~sc)
                               ~result
                               (let [~s (first ~sc)]
-                                ~(emit-mod modifiers sc))))))) ]
+                                ~(emit-mod modifiers sc)))))) ]
     (emit-groups groups [])))
 
 
