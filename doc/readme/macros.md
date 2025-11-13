@@ -19,8 +19,9 @@ you are limited to the features the language provides like the special forms `if
 control flow constructs and to bend the language to your needs.
 
 > [!CAUTION]
-> Macros are very powerful but come at the price to be not always simple. With
-> great power comes great responsibility to the creator to not misuse it.
+> Macros are very powerful but come at the price to be not always simple. 
+>
+> With great power comes great responsibility to the creator to not misuse it.
 
 
 ## Macros vs Functions
