@@ -1165,8 +1165,7 @@
 
   for [seq-exprs body-expr] 
 
-  (assert (vector? seq-exprs) "The 'for' bindings must be a vector!")
-  (assert (not-empty? seq-exprs) "The 'for' bindings vector must not be empty!")
+  (assert (and (vector? seq-exprs) (not-empty? seq-exprs)) "The 'for' bindings must be a non empty vector!")
   (assert (zero? (mod (count seq-exprs) 2)) "The 'for' bindings must have an even number of elements!")
 
   (let [groups      (->> (partition-at symbol? seq-exprs)  ;; partition into normalized groups
