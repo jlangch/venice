@@ -1168,12 +1168,11 @@
   (assert (and (vector? seq-exprs) (not-empty? seq-exprs)) "The 'for' bindings must be a non empty vector!")
   (assert (zero? (mod (count seq-exprs) 2)) "The 'for' bindings must have an even number of elements!")
 
-  (let [
-        groups      (reduce (fn [groups pair]  ;; normalize groups: [ [[x [1 2]] [:while (even? x)]] [[y [3 4]]] ]
+  (let [groups      (reduce (fn [groups pair]  ;; normalize groups: [ [[x [1 2]] [:while (even? x)]] [[y [3 4]]] ]
                               (if (keyword? (first pair))
                                 (conj (butlast groups) (conj (last groups) pair))
                                 (conj groups [pair])))
-                            [] (partition 2 seq-exprs))
+                              [] (partition 2 seq-exprs))
         emit-groups (fn [groups acc]
                       (let [[[[s c] & modifiers] & next-groups]  groups   ;; destruct groups
                             result    (gensym "result__")
@@ -1187,8 +1186,8 @@
                                           :else         (if (empty? next-groups)  ;; is last group?
                                                           `(recur (rest ~sc) (conj ~result ~body-expr))
                                                           `(recur (rest ~sc) ~(emit-groups next-groups result)))))]
-                          (assert (symbol? s) "Invalid 'for' sequence binding. Must be like [x [1 2 3] ...]!")
-                          (assert (or (symbol? c) (vector? c) (list? c)) "Required symbol, vector, or list in seq expressions of 'for'!")
+                          (assert (symbol? s) "Symbol required in 'for' sequence binding name. Must be like [x [1 2 3] ...]!")
+                          (assert (or (symbol? c) (vector? c) (list? c)) "Symbol, vector, or list required in 'for' sequence binding expr!")
                           `(loop [~sc ~c, ~result ~acc]
                             (if (empty? ~sc)
                               ~result
