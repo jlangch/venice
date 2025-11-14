@@ -146,6 +146,10 @@ public class MacroListComprehensionTest {
         assertEquals(
                 "[[a 0] [a 1] [b 0] [b 1]]",
                 venice.eval("(str (for [x (seq \"ab\") y [0 1]] [x y]))"));
+
+        assertEquals(
+                "[0 1 2 3 4]",
+                venice.eval("(str (let [X (range 5)] (for [x X] x)))"));
     }
 
     @Test
@@ -167,6 +171,10 @@ public class MacroListComprehensionTest {
         assertEquals(
                 "[[1 0] [1 1]]",
                 venice.eval("(str (for [x [0 1] :when (odd? x) y [0 1]] [x y]))"));
+
+        assertEquals(
+                "[[1 0] [1 1]]",
+                venice.eval("(str (let [X [0 1] Y [0 1]] (for [x X :when (odd? x) y Y] [x y])))"));
     }
 
     @Test
@@ -192,6 +200,10 @@ public class MacroListComprehensionTest {
         assertEquals(
                 "[[0 0] [0 1] [0 2] [0 3] [1 0] [1 1] [1 2] [1 3] [2 0] [2 1] [2 2] [2 3] [3 0] [3 1] [3 2] [3 3]]",
                 venice.eval("(str (for [x (range 10) :while (< x 4) y (range 10) :while (< y 4)] [x y]))"));
+
+        assertEquals(
+                "[[0 0] [0 1] [0 2] [0 3] [0 4] [1 0] [1 1] [1 2] [1 3] [1 4]]",
+                venice.eval("(str (let [X (range 2) Y (range 10)] (for [x X y Y :while (< y 5)] [x y])))"));
     }
 
     @Test

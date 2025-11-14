@@ -4,13 +4,18 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.60] - 2025-11-xx
+## [1.12.61] - 2025-11-xx
 
 - Added :openai module support for assistant api
 - Added :openai module support for assistant threads api
 - Added :openai module support for assistant message api (in work)
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
+
+
+## [1.12.60] - 2025-11-14
+
+- Fixed a 'for' macro edge case when normalizing the sequence expressions into groups
 
 
 
