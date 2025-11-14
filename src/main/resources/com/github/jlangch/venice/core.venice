@@ -1165,8 +1165,8 @@
 
   for [seq-exprs body-expr] 
 
-  (assert (and (vector? seq-exprs) (not-empty? seq-exprs)) "The 'for' bindings must be a non empty vector!")
-  (assert (zero? (mod (count seq-exprs) 2)) "The 'for' bindings must have an even number of elements!")
+  (assert (and (vector? seq-exprs) (not-empty? seq-exprs)) "The 'for' seq-exprs must be a non empty vector!")
+  (assert (zero? (mod (count seq-exprs) 2)) "The 'for' seq-exprs must have an even number of elements!")
 
   (let [groups      (reduce (fn [groups pair]  ;; normalize groups: [ [[x [1 2]] [:while (even? x)]] [[y [3 4]]] ]
                               (if (keyword? (first pair))
