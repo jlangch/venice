@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run steps api (...)
 
 
+
 ## [1.12.60] - 2025-11-14
 
 - Fixed a 'for' macro edge case when normalizing the sequence expressions into groups
