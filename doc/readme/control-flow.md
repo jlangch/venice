@@ -136,22 +136,6 @@ with a default:
 ```
 
 
-## dotimes
-
-`(dotimes binding & body)`
-
-`dotimes` repeatedly executes a body with a name bound to integers from 0 through n-1. 
-Returns nil.
-
-```clojure
-(dotimes [n 3] (println "n is" n))
-
-; "n is 0"
-; "n is 1"
-; "n is 2"
-; => nil
-```
-
 
 ## for
 
@@ -192,6 +176,24 @@ each followed by zero or more modifiers (`:when`, `:while`, `:let`), and yields 
 
 
 
+## dotimes
+
+`(dotimes binding & body)`
+
+`dotimes` repeatedly executes a body with a name bound to integers from 0 through n-1. 
+Returns nil.
+
+```clojure
+(dotimes [n 3] (println "n is" n))
+
+; "n is 0"
+; "n is 1"
+; "n is 2"
+; => nil
+```
+
+
+
 ## doseq
 
 `(doseq seq-exprs & body)`
@@ -219,6 +221,7 @@ as provided by "list-comp". Does not retain the head of the sequence. Returns ni
 ;; 2  6  10  14  18
 ;; => nil
 ```
+
 
 
 ## docoll
