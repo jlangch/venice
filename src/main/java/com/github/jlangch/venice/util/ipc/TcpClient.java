@@ -619,7 +619,7 @@ public class TcpClient implements Cloneable, Closeable {
         }
         catch(IOException ex) {
             // ignore client close exception
-            return null;
+            return new FutureNull();
         }
     }
 
@@ -867,6 +867,42 @@ public class TcpClient implements Cloneable, Closeable {
                 "application/octet-stream",
                 null,
                 new byte[0]);
+    }
+
+
+    private static class FutureNull implements Future<IMessage> {
+
+        public FutureNull() {
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return cancelled = true;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancelled;
+        }
+
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+
+        @Override
+        public IMessage get() throws InterruptedException, ExecutionException {
+            return null;
+        }
+
+        @Override
+        public IMessage get(final long timeout, final TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException {
+            return null;
+        }
+
+
+        private boolean cancelled = false;
     }
 
 
