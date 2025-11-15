@@ -328,6 +328,23 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     /**
+     * Sends a message asynchronously to the server.
+     *
+     * <p>The server sends always a response message back.
+     *
+     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     *
+     * @param msg a message
+     * @return a future with the server's message response
+     */
+    public Future<IMessage> sendMessageAsync(final IMessage msg) {
+        Objects.requireNonNull(msg);
+
+        final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
+        return sendAsync(m);
+    }
+
+    /**
      * Subscribe for a topic.
      *
      * <p>Puts this client in subscription mode and listens for subscriptions
@@ -474,6 +491,32 @@ public class TcpClient implements Cloneable, Closeable {
         return send(m, timeout, unit);
     }
 
+
+    /**
+     * Offer a message asynchronously to a queue.
+     *
+     * <p>The server sends always a response message back.
+     *
+     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     *
+     * @param msg       a message
+     * @param queueName a queue name
+     * @return a future with the server's response message
+     */
+    public Future<IMessage> offerAsync(
+            final IMessage msg,
+            final String queueName
+    ) {
+        Objects.requireNonNull(msg);
+        Objects.requireNonNull(queueName);
+
+        validateMessageSize(msg);
+
+        final Message m = createQueueOfferRequestMessage((Message)msg, queueName);
+
+        return sendAsync(m);
+    }
+
     /**
      * Poll a message from a queue. Throws a TimeoutException if the response
      * is not received within the given timeout.
@@ -499,6 +542,24 @@ public class TcpClient implements Cloneable, Closeable {
         final Message m = createQueuePollRequestMessage(queueName);
 
         return send(m, timeout, unit);
+    }
+
+    /**
+     * Poll a message asynchronously from a queue.
+     *
+     * <p>The server sends always a response message back.
+     *
+     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     *
+     * @param queueName a queue name
+     * @return a future with the server's response message
+     */
+    public Future<IMessage> pollAsync(final String queueName) {
+        Objects.requireNonNull(queueName);
+
+        final Message m = createQueuePollRequestMessage(queueName);
+
+        return sendAsync(m);
     }
 
     private IMessage sendThroughTemporaryClient(
