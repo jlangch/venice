@@ -459,6 +459,34 @@ public class TcpClient implements Cloneable, Closeable {
         }
     }
 
+
+    /**
+     * Publish a message to any other client that have subscribed to the
+     * message's topic.
+     *
+     * <p>The server sends a response message to confirm the receiving
+     * of the message.
+     *
+     * @param msg the message to publish
+     * @return the response confirmation for the publish message
+     */
+    public Future<IMessage> publishAsync(final IMessage msg) {
+        Objects.requireNonNull(msg);
+
+        validateMessageSize(msg);
+
+        final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
+
+        if (subscription.get()) {
+            // if this client is in subscription mode publish this message
+            // through another client!
+            return sendThroughTemporaryClientAsync(m);
+        }
+        else {
+            return sendAsync(m);
+        }
+    }
+
     /**
      * Offer a message to a queue. Throws a TimeoutException if the response
      * is not received within the given timeout.
@@ -580,6 +608,21 @@ public class TcpClient implements Cloneable, Closeable {
             return null;
         }
     }
+
+    private Future<IMessage> sendThroughTemporaryClientAsync(final IMessage msg) {
+        Objects.requireNonNull(msg);
+
+        // use the same configuration as the parent client
+        try (final TcpClient client = (TcpClient)this.clone()) {
+            client.open();
+            return client.sendAsync(msg);
+        }
+        catch(IOException ex) {
+            // ignore client close exception
+            return null;
+        }
+    }
+
 
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);

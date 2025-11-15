@@ -49,17 +49,21 @@ public class IpcSection implements ISectionBuilder {
         final DocSection send = new DocSection("Send", "ipc.send");
         all.addSection(send);
         send.addItem(diBuilder.getDocItem("ipc/send", false));
+        send.addItem(diBuilder.getDocItem("ipc/send-async", false));
         send.addItem(diBuilder.getDocItem("ipc/send-oneway", false));
 
         final DocSection pub = new DocSection("Pub / Sub", "ipc.publish");
         all.addSection(pub);
         pub.addItem(diBuilder.getDocItem("ipc/publish", false));
+        pub.addItem(diBuilder.getDocItem("ipc/publish-async", false));
         pub.addItem(diBuilder.getDocItem("ipc/subscribe", false));
 
         final DocSection offer = new DocSection("Offer / Poll", "ipc.offer");
         all.addSection(offer);
         offer.addItem(diBuilder.getDocItem("ipc/offer", false));
+        offer.addItem(diBuilder.getDocItem("ipc/offer-async", false));
         offer.addItem(diBuilder.getDocItem("ipc/poll", false));
+        offer.addItem(diBuilder.getDocItem("ipc/poll-async", false));
 
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);

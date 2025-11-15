@@ -25,7 +25,10 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -507,6 +510,99 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction ipc_send_async =
+        new VncFunction(
+                "ipc/send-async",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/send-async client message)")
+                    .doc(
+                        "Sends a message to the server the client is associated with. \n\n" +
+                        "Returns a future with the server's response message. The response " +
+                        "message is `nil` if the message is declared as one-way message.\n\n" +
+                        "The response message has one of these status:\n\n" +
+                        "  * `:OK`            - request handled successfully and response holds the data\n" +
+                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
+                        "  * `:BAD_REQUEST`   - invalid request, details in the payload\n" +
+                        "  * `:HANDLER_ERROR` - an error in the server's request processing handler\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client c  | A client to send the message from|\n" +
+                        "| message m | The message to send|")
+                    .examples(
+                        ";; echo handler                                                   \n" +
+                        ";; request: \"hello\" => echo => response: \"hello\"              \n" +
+                        "(do                                                               \n" +
+                        "  (defn echo-handler [m] m)                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send-async client)                                  \n" +
+                        "         (deref)                                                  \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println))))                                             ",
+
+                        ";; handler processing JSON message data                           \n" +
+                        ";; request: {\"x\": 100, \"y\": 200} => add => response: {\"z\": 300}  \n" +
+                        "(do                                                               \n" +
+                        "  (defn handler [m]                                               \n" +
+                        "    (let [data   (json/read-str (. m :getText))                   \n" +
+                        "          result (json/write-str { \"z\" (+ (get data \"x\") (get data \"y\"))})]  \n" +
+                        "      (ipc/text-message (. m :getTopic)                           \n" +
+                        "                        \"application/json\" :UTF-8               \n" +
+                        "                        result)))                                 \n" +
+                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/text-message \"test\"                               \n" +
+                        "                           \"application/json\" :UTF-8            \n" +
+                        "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
+                        "         (ipc/send-async client)                                  \n" +
+                        "         (deref)                                                  \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println))))                                             ",
+
+                        ";; handler with remote code execution                             \n" +
+                        ";; request: \"(+ 1 2)\" => exec => response: \"3\"                \n" +
+                        "(do                                                               \n" +
+                        "  (defn handler [m]                                               \n" +
+                        "    (let [cmd    (. m :getText)                                   \n" +
+                        "          result (str (eval (read-string cmd)))]                  \n" +
+                        "      (ipc/plain-text-message (. m :getTopic)                     \n" +
+                        "                              result)))                           \n" +
+                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (->> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
+                        "         (ipc/send-async client)                                  \n" +
+                        "         (deref)                                                  \n" +
+                        "         (ipc/message->map)                                       \n" +
+                        "         (println))))                                             ")
+                    .seeAlso(
+                        "ipc/client",
+                        "ipc/server",
+                        "ipc/close",
+                        "ipc/running?",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
+
+                return new VncJavaObject(
+                        new FutureWrapper(
+                            client.sendMessageAsync(request)));
+             }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
     public static VncFunction ipc_send_oneway =
         new VncFunction(
@@ -578,6 +674,7 @@ public class IPCFunctions {
                         "Puts this client into subscription mode and listens for messages of the " +
                         "specified topic.\n\n" +
                         "To unsubscribe from the topics just close the client.\n\n" +
+                        "Returns the server's response message.\n\n" +
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - subscription added. Subscribed messages will be delivered through the 'msg-handler'\n" +
                         "  * `:SERVER_ERROR`  - indicates a server side error while processing the request\n" +
@@ -677,7 +774,6 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
     public static VncFunction ipc_publish =
         new VncFunction(
                 "ipc/publish",
@@ -688,6 +784,7 @@ public class IPCFunctions {
                     .doc(
                         "Publishes a messages to all clients that have subscribed to the " +
                         "message's topic.\n\n" +
+                        "Returns the server's response message.\n\n" +
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - message successfully published\n" +
                         "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
@@ -745,6 +842,74 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction ipc_publish_async =
+        new VncFunction(
+                "ipc/publish-async",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/publish-async client message)")
+                    .doc(
+                        "Publishes a messages to all clients that have subscribed to the " +
+                        "message's topic.\n\n" +
+                        "Returns a future with the server's response message.\n\n" +
+                        "The response message has one of these status:\n\n" +
+                        "  * `:OK`            - message successfully published\n" +
+                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request \n" +
+                        "  * `:BAD_REQUEST`   - invalid request, details in the payload\n\n" +
+                        "Note: a client in subscription mode can not send or publish messages!")
+                    .examples(
+                        "(do                                                                            \n" +
+                        "  (def mutex 0)                                                                \n" +
+                        "                                                                               \n" +
+                        "  ;; the server handler is not involved with publish/subscribe!                \n" +
+                        "  (defn server-handler [m]                                                     \n" +
+                        "    (locking mutex (println (ipc/message->map m)))                             \n" +
+                        "    m)                                                                         \n" +
+                        "                                                                               \n" +
+                        "  (defn client-subscribe-handler [m]                                           \n" +
+                        "    (locking mutex (println \"SUB:\" (ipc/message->map m))))                   \n" +
+                        "                                                                               \n" +
+                        "  (try-with [server   (ipc/server 33333 server-handler)                        \n" +
+                        "             client-1 (ipc/client \"localhost\" 33333)                         \n" +
+                        "             client-2 (ipc/client \"localhost\" 33333)]                        \n" +
+                        "    ;; client 'client-1' subscribes to 'test' messages                         \n" +
+                        "    (ipc/subscribe client-1 \"test\" client-subscribe-handler)                 \n" +
+                        "                                                                               \n" +
+                        "    ;; client 'client-2' publishes a 'test' message                            \n" +
+                        "    (->> (ipc/plain-text-message \"test\" \"hello\")                           \n" +
+                        "         (ipc/publish-async client-2)                                          \n" +
+                        "         (deref))                                                              \n" +
+                        "                                                                               \n" +
+                        "    (sleep 300)                                                                \n" +
+                        "                                                                               \n" +
+                        "    ;; print server status and statistics                                      \n" +
+                        "    (locking mutex (println \"STATUS:\"(ipc/server-status client-2)))))        ")
+                    .seeAlso(
+                        "ipc/subscribe",
+                        "ipc/client",
+                        "ipc/server",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final IMessage request =  Coerce.toVncJavaObject(args.nth(1), IMessage.class);
+
+                return new VncJavaObject(
+                        new FutureWrapper(
+                           client.publishAsync(request)));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
 
@@ -761,6 +926,7 @@ public class IPCFunctions {
                         "(ipc/offer client queue-name timeout message)")
                     .doc(
                         "Offers a message to the named queue.\n\n" +
+                        "Returns the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c     | A client to send the offer message from |\n" +
                         "| queue-name q | A queue name to offer the message to|\n" +
@@ -820,6 +986,78 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction ipc_offer_async =
+        new VncFunction(
+                "ipc/offer-async",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/offer-async client queue-name message)")
+                    .doc(
+                        "Offers a message to the named queue.\n\n" +
+                        "Returns a future with the server's response message.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client c     | A client to send the offer message from |\n" +
+                        "| queue-name q | A queue name to offer the message to|\n" +
+                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
+                        "| message m    | The offer request message|\n\n" +
+                        "The server returns a response message with one of these status:\n\n" +
+                        "  * `:OK`              - message added to the queue\n" +
+                        "  * `:SERVER_ERROR`    - indicates a server while offering the message to the queue\n" +
+                        "  * `:BAD_REQUEST`     - invalid request, details in the payload\n" +
+                        "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
+                        "  * `:QUEUE_FULL`      - the queue is full, offer rejected")
+                    .examples(
+                        "(do                                                                       \n" +
+                        "  (defn echo-handler [m] m)                                               \n" +
+                        "                                                                          \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
+                        "    (let [order-queue \"orders\"                                          \n" +
+                        "          capacity    100_000                                             \n" +
+                        "          order       (ipc/venice-message                                 \n" +
+                        "                            \"order\"                                     \n" +
+                        "                            {:item \"espresso\", :count 2})]              \n" +
+                        "      (ipc/create-queue server order-queue capacity)                      \n" +
+                        "      (->> (ipc/message->json true order)                                 \n" +
+                        "           (println \"ORDER:\"))                                          \n" +
+                        "      (->> (ipc/offer-async client1 order-queue order)                    \n" +
+                        "           (deref)                                                        \n" +
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"OFFERED:\"))                                        \n" +
+                        "      (->> (ipc/poll-async client2 order-queue)                           \n" +
+                        "           (deref)                                                        \n" +
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"POLLED:\")))))                                      ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/poll",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/create-queue",
+                        "ipc/remove-queue")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+                final IMessage request = Coerce.toVncJavaObject(args.fourth(), IMessage.class);
+
+                return new VncJavaObject(
+                        new FutureWrapper(
+                            client.offerAsync(request, name)));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction ipc_poll =
         new VncFunction(
                 "ipc/poll",
@@ -829,7 +1067,8 @@ public class IPCFunctions {
                         "(ipc/poll client queue-name timeout)")
                     .doc(
                         "Polls a message from the named queue.\n\n" +
-                        "*Arguments:* \n\n" +
+                        "Returns the server's response message.\n\n" +
+                       "*Arguments:* \n\n" +
                         "| client c     | A client to send the poll message from |\n" +
                         "| queue-name q | A queue name to poll the message to|\n" +
                         "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
@@ -882,6 +1121,77 @@ public class IPCFunctions {
                 final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
 
                 return new VncJavaObject(client.poll(name, timeout, TimeUnit.MILLISECONDS));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_poll_async =
+        new VncFunction(
+                "ipc/poll-async",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/poll-async client queue-name timeout)")
+                    .doc(
+                        "Polls a message from the named queue.\n\n" +
+                        "Returns a future with the server's response message.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client c     | A client to send the poll message from |\n" +
+                        "| queue-name q | A queue name to poll the message to|\n" +
+                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
+                        "| message m    | The poll request message|\n\n" +
+                        "The server returns a response message with one of these status:\n\n" +
+                        "  * `:OK`              - message successfully polled from the queue, response holds the data\n" +
+                        "  * `:SERVER_ERROR`    - indicates a server while polling a message from the queue\n" +
+                        "  * `:BAD_REQUEST`     - invalid request, details in the payload\n" +
+                        "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
+                        "  * `:QUEUE_EMPTY`     - the queue is empty")
+                    .examples(
+                        "(do                                                                       \n" +
+                        "  (defn echo-handler [m] m)                                               \n" +
+                        "                                                                          \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
+                        "    (let [order-queue \"orders\"                                          \n" +
+                        "          capacity    100_000                                             \n" +
+                        "          order       (ipc/venice-message                                 \n" +
+                        "                            \"order\"                                     \n" +
+                        "                            {:item \"espresso\", :count 2})]              \n" +
+                        "      (ipc/create-queue server order-queue capacity)                      \n" +
+                        "      (->> (ipc/message->json true order)                                 \n" +
+                        "           (println \"ORDER:\"))                                          \n" +
+                        "      (->> (ipc/offer-async client1 order-queue order)                    \n" +
+                        "           (deref)                                                        \n" +
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"OFFERED:\"))                                        \n" +
+                        "      (->> (ipc/poll-async client2 order-queue)                           \n" +
+                        "           (deref)                                                        \n" +
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"POLLED:\")))))                                      ")
+                    .seeAlso(
+                        "ipc/server",
+                        "ipc/client",
+                        "ipc/offer",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/create-queue",
+                        "ipc/remove-queue")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+
+                return new VncJavaObject(
+                        new FutureWrapper(
+                            client.pollAsync(name)));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1800,6 +2110,42 @@ public class IPCFunctions {
     }
 
 
+    private static class FutureWrapper implements Future<VncVal> {
+
+        public FutureWrapper(final Future<IMessage> d) {
+            this.delegate = d;
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return delegate.cancel(mayInterruptIfRunning);
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return delegate.isCancelled();
+        }
+
+        @Override
+        public boolean isDone() {
+            return delegate.isDone();
+        }
+
+        @Override
+        public VncVal get() throws InterruptedException, ExecutionException {
+            return new VncJavaObject(delegate.get());
+        }
+
+        @Override
+        public VncVal get(final long timeout, final TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException {
+            return new VncJavaObject(delegate.get(timeout, unit));
+        }
+
+
+        private final Future<IMessage> delegate;
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -1813,13 +2159,17 @@ public class IPCFunctions {
                     .add(ipc_runnningQ)
 
                     .add(ipc_send)
+                    .add(ipc_send_async)
                     .add(ipc_send_oneway)
 
                     .add(ipc_publish)
+                    .add(ipc_publish_async)
                     .add(ipc_subscribe)
 
                     .add(ipc_offer)
+                    .add(ipc_offer_async)
                     .add(ipc_poll)
+                    .add(ipc_poll_async)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)
