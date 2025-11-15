@@ -173,9 +173,9 @@ each followed by zero or more modifiers (`:when`, `:while`, `:let`), and yields 
 ```
 
 ```clojure
-(for [x (range 10) :when (odd? x) :let [x (* x 2)]] x)
+(for [x (range 10) :when (odd? x) :let [p (* x 2)]] [x p])
 
-;; => [2 6 10 14 18]
+;; => [[1 2] [3 6] [5 10] [7 14] [9 18]]
 ```
 
 ```clojure
