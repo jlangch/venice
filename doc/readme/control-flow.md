@@ -153,30 +153,43 @@ Returns nil.
 ```
 
 
-## list-comp
+## for
 
-`(list-comp seq-exprs & body-expr)`
+`(for seq-exprs & body-expr)`
 
-List comprehensions take a vector of one or more binding-form or collection-expr pairs, 
-each followed by zero or more modifiers, and yields a collection of evaluations of expr.
+*For* list comprehensions take a vector of one or more binding-form or collection-expr pairs, 
+each followed by zero or more modifiers (`:when`, `:while`, `:let`), and yields a collection of evaluations of the body expr.
 
 ```clojure
-(list-comp [x (range 5)] x) 
+(for [x (range 5)] x) 
 
-;; => (0 1 2 3 4)
+;; => [0 1 2 3 4]
 ```
 
 ```clojure
-(list-comp [x (seq "abc") y [0 1]] [x y])
+(for [x (range 10) :when (odd? x)] (* x 2))
 
-;; => (["a" 0] ["a" 1] ["b" 0] ["b" 1] ["c" 0] ["c" 1])
+;; => [2 6 10 14 18]
 ```
 
 ```clojure
-(list-comp [x (range 10) :when (odd? x)] (* x 2))
+(for [x (range 10) :when (odd? x) :let [x (* x 2)]] x)
 
-;; => (2 6 10 14 18)
+;; => [2 6 10 14 18]
 ```
+
+```clojure
+(for [x [1 2 3] :when (odd? x) y [1 2 3 4] :when (even? y)] [x y])
+
+;; => [[1 2] [1 4] [3 2] [3 4]]
+```
+
+```clojure
+(for [x (range 10) :while (< x 4) y (range 6) :while (< y 6) :when (even? y)] [x y])
+
+;; => [[0 0] [0 2] [0 4] [1 0] [1 2] [1 4] [2 0] [2 2] [2 4] [3 0] [3 2] [3 4]]
+```
+
 
 
 ## doseq
