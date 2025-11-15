@@ -52,7 +52,7 @@ public class TcpPubSubTest {
 
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
-                final IMessage request = MessageFactory.text("test", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text(null, "test", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 
@@ -105,14 +105,14 @@ public class TcpPubSubTest {
             // 10x 'alpha'
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello alpha " + ii;
-                final IMessage request = MessageFactory.text("alpha", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text(null, "alpha", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 
             // 5 'beta'
             for(int ii=0; ii<5; ii++) {
                 final String msg = "Hello beta " + ii;
-                final IMessage request = MessageFactory.text("beta", "text/plain", "UTF-8", msg);
+                final IMessage request = MessageFactory.text(null, "beta", "text/plain", "UTF-8", msg);
                 clientPub.publish(request);
             }
 

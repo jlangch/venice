@@ -48,7 +48,7 @@ public class TcpOfferPollEncryptedTest {
 
         try {
             final IMessage m1 = client1.offer(
-                                    MessageFactory.text("queue-test", "text/plain", "UTF-8", "Hello!"),
+                                    MessageFactory.text(null, "queue-test", "text/plain", "UTF-8", "Hello!"),
                                     "queue-1",
                                     1,
                                     TimeUnit.SECONDS);

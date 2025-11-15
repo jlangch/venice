@@ -44,7 +44,7 @@ public class TcpRequestResponseLoadTest {
         client.open();
 
         try {
-            final IMessage request = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
+            final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
             for(int ii=0; ii<10_000; ii++) {
                 final IMessage response = client.sendMessage(request);
@@ -84,7 +84,7 @@ public class TcpRequestResponseLoadTest {
         client2.open();
 
         try {
-            final IMessage request = MessageFactory.text("hello", "text/plain", "UTF-8", "Hello!");
+            final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
             for(int ii=0; ii<5_000; ii++) {
                 final IMessage response1 = client1.sendMessage(request);
@@ -128,7 +128,7 @@ public class TcpRequestResponseLoadTest {
         client.open();
 
         try {
-            final IMessage request = MessageFactory.text("hello-onway", "text/plain", "UTF-8", "Hello!");
+            final IMessage request = MessageFactory.text(null, "hello-onway", "text/plain", "UTF-8", "Hello!");
 
             for(int ii=0; ii<10_000; ii++) {
                 client.sendMessageOneway(request);
@@ -138,7 +138,7 @@ public class TcpRequestResponseLoadTest {
             // that server has processed all oneway messages before
             // and then do the count checks
 
-            final IMessage finalRequest = MessageFactory.text("hello-final", "text/plain", "UTF-8", "Hello!");
+            final IMessage finalRequest = MessageFactory.text(null, "hello-final", "text/plain", "UTF-8", "Hello!");
             final IMessage response = client.sendMessage(finalRequest);
             validateResponse(finalRequest, response);
 

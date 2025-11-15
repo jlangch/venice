@@ -36,19 +36,21 @@ import com.github.jlangch.venice.impl.types.VncVal;
  * ├───────────────────────────────┤
  * │ Message Type                  │   by send, publish/subscribe method
  * ├───────────────────────────────┤
- * │ Oneway                        │   by Client or framework method
+ * │ Oneway                        │   by client or framework method
  * ├───────────────────────────────┤
  * │ Response Status               │   by server response processor
  * ├───────────────────────────────┤
  * │ Timestamp                     │   by message creator
  * ├───────────────────────────────┤
- * │ Topic                         │   by Client
+ * │ Request ID                    │   by client (may be used for idempotency checks by the receiver)
  * ├───────────────────────────────┤
- * │ Payload Mimetype              │   by Client
+ * │ Topic                         │   by client
  * ├───────────────────────────────┤
- * │ Payload Charset               │   by Client if payload data is a string else null
+ * │ Payload Mimetype              │   by client
  * ├───────────────────────────────┤
- * │ Payload data                  │   by Client
+ * │ Payload Charset               │   by client if payload data is a string else null
+ * ├───────────────────────────────┤
+ * │ Payload data                  │   by client
  * └───────────────────────────────┘
  * </pre>
  */
@@ -58,6 +60,12 @@ public interface IMessage {
      * @return the message id
      */
     public String getId();
+
+
+    /**
+     * @return the request id
+     */
+    public String getRequestId();
 
     /**
      * @return the message type

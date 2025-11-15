@@ -42,11 +42,11 @@ public class PayloadMetaDataTest {
 
         PayloadMetaData data = null;
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
+        data = new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
         assertEquals(data, data);
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
-        assertEquals(data, new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id));
+        data = new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
+        assertEquals(data, new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id));
     }
 
     @Test
@@ -54,44 +54,44 @@ public class PayloadMetaDataTest {
         final String id = UUID.randomUUID().toString();
 
         assertEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id));
+                new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id));
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8", id),
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8", id));
+                new PayloadMetaData(null, null, Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, null, Topics.of("alpha"), "text/plain", "UTF-8", id));
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null, id),
-                new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null, id));
+                new PayloadMetaData(null, null, Topics.of("alpha"), "text/plain", null, id),
+                new PayloadMetaData(null, null, Topics.of("alpha"), "text/plain", null, id));
 
         assertEquals(
-                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
-                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
+                new PayloadMetaData(null, "queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, "queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
+                new PayloadMetaData(null, null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
 
         assertEquals(
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id),
-                new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id));
+                new PayloadMetaData(null, null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id),
+                new PayloadMetaData(null, null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id));
 
         assertNotEquals(
-                new PayloadMetaData("queue1", Topics.of("alpha"), "text/plain", "UTF-8", id),
-                new PayloadMetaData("queue2", Topics.of("alpha"), "text/plain", "UTF-8", id));
+                new PayloadMetaData(null, "queue1", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, "queue2", Topics.of("alpha"), "text/plain", "UTF-8", id));
 
         assertNotEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
-                new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
+                new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, "queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
 
         assertNotEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain1", "UTF-8", id));
+                new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain1", "UTF-8", id));
 
         assertNotEquals(
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
-                new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF", id));
+                new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id),
+                new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF", id));
     }
 
     @Test
@@ -100,29 +100,29 @@ public class PayloadMetaDataTest {
 
         PayloadMetaData data = null;
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
+        data = new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+        data = new PayloadMetaData(null, null, Topics.of("alpha"), "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData("queue", Topics.of("alpha"), "text/plain", null, id);
+        data = new PayloadMetaData(null, "queue", Topics.of("alpha"), "text/plain", null, id);
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of("alpha"), "text/plain", null, id);
+        data = new PayloadMetaData(null, null, Topics.of("alpha"), "text/plain", null, id);
         assertEquals(data, decode(encode(data)));
 
 
-        data = new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
+        data = new PayloadMetaData(null, "queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
+        data = new PayloadMetaData(null, null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData("queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
+        data = new PayloadMetaData(null, "queue", Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
-        data = new PayloadMetaData(null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id);
+        data = new PayloadMetaData(null, null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id);
         assertEquals(data, decode(encode(data)));
    }
 

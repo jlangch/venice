@@ -47,6 +47,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.Json;
 public class Message implements IMessage {
 
     public Message(
+            final String requestId,
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
@@ -65,6 +66,7 @@ public class Message implements IMessage {
         validateCharset(charset);
 
         this.id = UUID.randomUUID().toString();
+        this.requestId = requestId;
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
@@ -78,6 +80,7 @@ public class Message implements IMessage {
 
     public Message(
             final String id,
+            final String requestId,
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
@@ -98,6 +101,7 @@ public class Message implements IMessage {
         validateCharset(charset);
 
         this.id = id == null ? UUID.randomUUID().toString() : id;
+        this.requestId = requestId;
         this.type = type;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
@@ -125,7 +129,7 @@ public class Message implements IMessage {
     ) {
         Objects.requireNonNull(type);
         return new Message(
-                id,
+                id, requestId,
                 type, responseStatus, oneway,
                 queueName, timestamp,
                 topics, mimetype, charset, data);
@@ -140,7 +144,7 @@ public class Message implements IMessage {
     public Message withResponseStatus(final ResponseStatus responseStatus) {
         Objects.requireNonNull(responseStatus);
         return new Message(
-                id,
+                id, requestId,
                 type, responseStatus, oneway,
                 queueName, timestamp,
                 topics, mimetype, charset, data);
@@ -149,6 +153,11 @@ public class Message implements IMessage {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getRequestId() {
+        return requestId;
     }
 
     @Override
@@ -262,6 +271,12 @@ public class Message implements IMessage {
                    "%s %s\n",
                    padRight("Id:", 12),
                    id.toString()));
+
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Request Id:", 12),
+                   requestId));
 
        sb.append(String.format(
                    "%s %s\n",
@@ -380,6 +395,7 @@ public class Message implements IMessage {
 
 
     private final String id;
+    private final String requestId;
     private final MessageType type;
     private final ResponseStatus responseStatus;
     private final boolean oneway;

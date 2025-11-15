@@ -1235,6 +1235,7 @@ public class IPCFunctions {
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
+                                                null,
                                                 "tcp-server/status",
                                                 "appliaction/json",
                                                 "UTF-8",
@@ -1293,6 +1294,7 @@ public class IPCFunctions {
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
+                                                null,
                                                 "tcp-server/thread-pool-statistics",
                                                 "appliaction/json",
                                                 "UTF-8",
@@ -1327,14 +1329,16 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/text-message topic mimetype charset text)")
+                        "(ipc/text-message topic mimetype charset text)",
+                        "(ipc/text-message request-id topic mimetype charset text)")
                     .doc(
                         "Creates a text message\n\n" +
                         "*Arguments:* \n\n" +
-                        "| topic t    | A topic (string) |\n" +
-                        "| mimetype m | The mimetype of the payload text. A string like 'text/plain' |\n" +
-                        "| charset c  | The charset of the payload text. A keyword like `:UTF-8`|\n" +
-                        "| text t     | The message payload text (a string)|")
+                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| topic t      | A topic (string) |\n" +
+                        "| mimetype m   | The mimetype of the payload text. A string like 'text/plain' |\n" +
+                        "| charset c    | The charset of the payload text. A keyword like `:UTF-8`|\n" +
+                        "| text t       | The message payload text (a string)|")
                     .examples(
                         "(->> (ipc/text-message \"test\"                         \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
@@ -1355,23 +1359,45 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4);
+                ArityExceptions.assertArity(this, args, 4, 5);
 
-                final VncString topic = Coerce.toVncString(args.nth(0));
-                final VncString mimetype = Coerce.toVncString(args.nth(1));
-                final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
-                final VncVal textVal = args.nth(3);
-                final String text = Types.isVncString(textVal)
-                                        ? ((VncString)textVal).getValue()
-                                        : textVal.toString(true);  // aggressively convert to string
+                if (args.size() == 4) {
+                    final VncString topic = Coerce.toVncString(args.nth(0));
+                    final VncString mimetype = Coerce.toVncString(args.nth(1));
+                    final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
+                    final VncVal textVal = args.nth(3);
+                    final String text = Types.isVncString(textVal)
+                                            ? ((VncString)textVal).getValue()
+                                            : textVal.toString(true);  // aggressively convert to string
 
-                final IMessage msg = MessageFactory.text(
-                                        topic.getValue(),
-                                        mimetype.getValue(),
-                                        charset.getSimpleName(),
-                                        text);
+                    final IMessage msg = MessageFactory.text(
+                                            null,
+                                            topic.getValue(),
+                                            mimetype.getValue(),
+                                            charset.getSimpleName(),
+                                            text);
 
-                return new VncJavaObject(msg);
+                    return new VncJavaObject(msg);
+                }
+                else {
+                    final VncVal requestId = args.nth(0);
+                    final VncString topic = Coerce.toVncString(args.nth(1));
+                    final VncString mimetype = Coerce.toVncString(args.nth(2));
+                    final VncKeyword charset = Coerce.toVncKeyword(args.nth(3));
+                    final VncVal textVal = args.nth(4);
+                    final String text = Types.isVncString(textVal)
+                                            ? ((VncString)textVal).getValue()
+                                            : textVal.toString(true);  // aggressively convert to string
+
+                    final IMessage msg = MessageFactory.text(
+                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
+                                            topic.getValue(),
+                                            mimetype.getValue(),
+                                            charset.getSimpleName(),
+                                            text);
+
+                    return new VncJavaObject(msg);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1384,12 +1410,14 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/plain-text-message topic text)")
+                        "(ipc/plain-text-message topic text)",
+                        "(ipc/plain-text-message request-id topic text)")
                     .doc(
                         "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n"  +
                         "*Arguments:* \n\n" +
-                        "| topic t | A topic (string) |\n" +
-                        "| text t  | The message payload text (a string)|")
+                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| topic t      | A topic (string) |\n" +
+                        "| text t       | The message payload text (a string)|")
                     .examples(
                         "(->> (ipc/plain-text-message \"test\" \"hello\")  \n" +
                         "     (ipc/message->map)                           \n" +
@@ -1409,21 +1437,41 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
-                final VncString topic = Coerce.toVncString(args.nth(0));
-                final VncVal textVal = args.nth(1);
-                final String text = Types.isVncString(textVal)
-                                        ? ((VncString)textVal).getValue()
-                                        : textVal.toString(true);  // aggressively convert to string
+                if (args.size() == 2) {
+                    final VncString topic = Coerce.toVncString(args.nth(0));
+                    final VncVal textVal = args.nth(1);
+                    final String text = Types.isVncString(textVal)
+                                            ? ((VncString)textVal).getValue()
+                                            : textVal.toString(true);  // aggressively convert to string
 
-                final IMessage msg = MessageFactory.text(
-                                        topic.getValue(),
-                                        "text/plain",
-                                        "UTF-8",
-                                        text);
+                    final IMessage msg = MessageFactory.text(
+                                            null,
+                                            topic.getValue(),
+                                            "text/plain",
+                                            "UTF-8",
+                                            text);
 
-                return new VncJavaObject(msg);
+                    return new VncJavaObject(msg);
+                }
+                else {
+                    final VncVal requestId = args.nth(0);
+                    final VncString topic = Coerce.toVncString(args.nth(1));
+                    final VncVal textVal = args.nth(2);
+                    final String text = Types.isVncString(textVal)
+                                            ? ((VncString)textVal).getValue()
+                                            : textVal.toString(true);  // aggressively convert to string
+
+                    final IMessage msg = MessageFactory.text(
+                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
+                                            topic.getValue(),
+                                            "text/plain",
+                                            "UTF-8",
+                                            text);
+
+                    return new VncJavaObject(msg);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1436,13 +1484,15 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/binary-message topic mimetype data)")
+                        "(ipc/binary-message topic mimetype data)",
+                        "(ipc/binary-message request-id topic mimetype data)")
                     .doc(
                         "Creates a binary message.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| topic t    | A topic (string) |\n" +
-                        "| mimetype m | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
-                        "| data d     | The message payload binary data (a bytebuf)|")
+                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| topic t      | A topic (string) |\n" +
+                        "| mimetype m   | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
+                        "| data d       | The message payload binary data (a bytebuf)|")
             .examples(
                         "(->> (ipc/binary-message \"test\"                        \n" +
                         "                         \"application/octet-stream\"    \n" +
@@ -1464,18 +1514,35 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 3, 4);
 
-                final VncString topic = Coerce.toVncString(args.nth(0));
-                final VncString mimetype = Coerce.toVncString(args.nth(1));
-                final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(2));
+                if (args.size() == 3) {
+                    final VncString topic = Coerce.toVncString(args.nth(0));
+                    final VncString mimetype = Coerce.toVncString(args.nth(1));
+                    final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(2));
 
-                final IMessage msg = MessageFactory.binary(
-                                        topic.getValue(),
-                                        mimetype.getValue(),
-                                        data.getBytes());
+                    final IMessage msg = MessageFactory.binary(
+                                            null,
+                                            topic.getValue(),
+                                            mimetype.getValue(),
+                                            data.getBytes());
 
-                return new VncJavaObject(msg);
+                    return new VncJavaObject(msg);
+                }
+                else {
+                    final VncVal requestId = args.nth(0);
+                    final VncString topic = Coerce.toVncString(args.nth(1));
+                    final VncString mimetype = Coerce.toVncString(args.nth(2));
+                    final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(3));
+
+                    final IMessage msg = MessageFactory.binary(
+                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
+                                            topic.getValue(),
+                                            mimetype.getValue(),
+                                            data.getBytes());
+
+                    return new VncJavaObject(msg);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1488,14 +1555,16 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/venice-message topic data)")
+                        "(ipc/venice-message topic data)",
+                        "(ipc/venice-message request-id topic data)")
                     .doc(
                         "Creates a venice message.\n\n" +
                         "The Venice data is serialized as JSON (mimetype: 'application/json') " +
                         "for transport within the message.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| topic t    | A topic (string) |\n" +
-                        "| data d     | The message payload Venice data (e.g.: a map, list, ...)|")
+                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| topic t      | A topic (string) |\n" +
+                        "| data d       | The message payload Venice data (e.g.: a map, list, ...)|")
             .examples(
                         "(->> (ipc/venice-message \"test\"                        \n" +
                         "                         {:a 100, :b 200})               \n" +
@@ -1515,14 +1584,28 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
-                final VncString topic = Coerce.toVncString(args.first());
-                final VncVal data = args.second();
+                if (args.size() == 2) {
+                    final VncString topic = Coerce.toVncString(args.first());
+                    final VncVal data = args.second();
 
-                final IMessage msg = MessageFactory.venice(topic.getValue(), data);
+                    final IMessage msg = MessageFactory.venice(null, topic.getValue(), data);
 
-                return new VncJavaObject(msg);
+                    return new VncJavaObject(msg);
+                }
+                else {
+                    final VncVal requestId = args.first();
+                    final VncString topic = Coerce.toVncString(args.second());
+                    final VncVal data = args.third();
+
+                    final IMessage msg = MessageFactory.venice(
+                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
+                                            topic.getValue(),
+                                            data);
+
+                    return new VncJavaObject(msg);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1545,19 +1628,21 @@ public class IPCFunctions {
                         " ├───────────────────────────────┤   \n" +
                         " │ Message Type                  │   by send, publish/subscribe method\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Oneway                        │   by Client or framework method\n" +
+                        " │ Oneway                        │   by client or framework method\n" +
                         " ├───────────────────────────────┤   \n" +
                         " │ Response Status               │   by server response processor\n" +
                         " ├───────────────────────────────┤   \n" +
                         " │ Timestamp                     │   by message creator\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Topic                         │   by Client\n" +
+                        " │ Request ID                    │   by client (may be used for idempotency checks by the receiver)\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Payload Mimetype              │   by Client\n" +
+                        " │ Topic                         │   by client\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Payload Charset               │   by Client if payload data is a string else null\n" +
+                        " │ Payload Mimetype              │   by client\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Payload data                  │   by Client\n" +
+                        " │ Payload Charset               │   by client if payload data is a string else null\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Payload data                  │   by client\n" +
                         " └───────────────────────────────┘   \n" +
                         "```\n\n" +
                         "**Supported field names:** \n\n" +

@@ -253,6 +253,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     // create an empty text response
                     return createPlainTextResponseMessage(
                               ResponseStatus.OK,
+                              request.getRequestId(),
                               request.getTopic(),
                               "");
                 }
@@ -273,6 +274,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 // send an error response
                 return createPlainTextResponseMessage(
                          ResponseStatus.HANDLER_ERROR,
+                         request.getRequestId(),
                          request.getTopic(),
                          ExceptionUtil.printStackTraceToString(ex));
             }
@@ -288,6 +290,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             ch,
             createPlainTextResponseMessage(
                 ResponseStatus.OK,
+                request.getRequestId(),
                 request.getTopic(),
                 "Subscribed to the topic."),
             compressor,
@@ -303,6 +306,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             ch,
             createPlainTextResponseMessage(
                 ResponseStatus.OK,
+                request.getRequestId(),
                 request.getTopic(),
                 "Message has been enqued to publish."),
             compressor,
@@ -319,6 +323,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ch,
                     createPlainTextResponseMessage(
                         ResponseStatus.OK,
+                        request.getRequestId(),
                         request.getTopic(),
                         "Offered the message to the queue."),
                     compressor,
@@ -329,6 +334,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ch,
                     createPlainTextResponseMessage(
                         ResponseStatus.QUEUE_FULL,
+                        request.getRequestId(),
                         request.getTopic(),
                         "Offer rejected! The queue is full."),
                     compressor,
@@ -340,6 +346,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ch,
                 createPlainTextResponseMessage(
                     ResponseStatus.QUEUE_NOT_FOUND,
+                    request.getRequestId(),
                     request.getTopic(),
                     "Offer rejected! The queue does not exist."),
                 compressor,
@@ -365,6 +372,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ch,
                     createPlainTextResponseMessage(
                         ResponseStatus.QUEUE_EMPTY,
+                        request.getRequestId(),
                         request.getTopic(),
                         "Poll rejected! The queue is empty."),
                     compressor,
@@ -376,6 +384,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ch,
                 createPlainTextResponseMessage(
                     ResponseStatus.QUEUE_NOT_FOUND,
+                    request.getRequestId(),
                     request.getTopic(),
                     "Poll rejected! The queue does not exist."),
                 compressor,
@@ -410,6 +419,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ch,
                 createPlainTextResponseMessage(
                     ResponseStatus.BAD_REQUEST,
+                    request.getRequestId(),
                     request.getTopic(),
                     "Unknown tcp server request topic. \n"
                       + "Valid topics are:\n"
@@ -427,6 +437,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ch,
                     createPlainTextResponseMessage(
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
+                       null,
                        "dh",
                        "Error: Diffie-Hellman keys already exchanged!"),
                     Compressor.off(),
@@ -442,6 +453,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         ch,
                         createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
+                           null,
                            "dh",
                            dhKeys.getPublicKeyBase64()),
                         Compressor.off(),
@@ -452,6 +464,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         ch,
                         createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
+                           null,
                            "dh",
                            "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage()),
                         Compressor.off(),
@@ -476,6 +489,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     ch,
                     createPlainTextResponseMessage(
                        ResponseStatus.BAD_REQUEST,
+                       null,
                        request.getTopic(),
                        "Bad request type: " + request.getType().name()),
                     compressor,
@@ -521,6 +535,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private Message getTcpServerStatus() {
         return createJsonResponseMessage(
                    ResponseStatus.OK,
+                   null,
                    "tcp-server/status",
                    new JsonBuilder()
                            .add("running", server.isRunning())
@@ -548,6 +563,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             if (err == null) {
                 return createJsonResponseMessage(
                         ResponseStatus.OK,
+                        null,
                         "tcp-server/error",
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
@@ -560,6 +576,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
                 return createJsonResponseMessage(
                         ResponseStatus.OK,
+                        null,
                         "tcp-server/error",
                         new JsonBuilder()
                                 .add("status", "error")
@@ -572,6 +589,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createJsonResponseMessage(
                     ResponseStatus.OK,
+                    null,
                     "tcp-server/error",
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
@@ -584,16 +602,19 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         return createJsonResponseMessage(
                 ResponseStatus.OK,
+                null,
                 "tcp-server/thread-pool-statistics",
                 Json.writeJson(statistics, false));
     }
 
     private static Message createJsonResponseMessage(
             final ResponseStatus status,
+            final String requestID,
             final String topic,
             final String json
     ) {
         return new Message(
+                requestID,
                 MessageType.RESPONSE,
                 status,
                 true,
@@ -605,10 +626,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private static Message createPlainTextResponseMessage(
             final ResponseStatus status,
+            final String requestID,
             final String topic,
             final String text
     ) {
         return new Message(
+                requestID,
                 MessageType.RESPONSE,
                 status,
                 true,
@@ -621,6 +644,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private Message createTooLargeErrorMessageResponse(final Message request) {
         return createPlainTextResponseMessage(
                 ResponseStatus.BAD_REQUEST,
+                request.getRequestId(),
                 request.getTopic(),
                 String.format(
                         "The message (%d bytes) is too large! The limit is at %d bytes.",

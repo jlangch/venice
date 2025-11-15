@@ -766,6 +766,7 @@ public class TcpClient implements Cloneable, Closeable {
         final VncMap statistics = mngdExecutor.info();
 
         return new Message(
+                null,
                 MessageType.RESPONSE,
                 ResponseStatus.OK,
                 false,
@@ -815,6 +816,7 @@ public class TcpClient implements Cloneable, Closeable {
 
     private static Message createDiffieHellmanRequestMessage(final String clientPublicKey) {
         return new Message(
+                null,
                 MessageType.DIFFIE_HELLMAN_KEY_REQUEST,
                 ResponseStatus.NULL,
                 false,
@@ -829,6 +831,7 @@ public class TcpClient implements Cloneable, Closeable {
             final String endpointId
     ) {
         return new Message(
+                null,
                 MessageType.SUBSCRIBE,
                 ResponseStatus.NULL,
                 false,
@@ -844,6 +847,7 @@ public class TcpClient implements Cloneable, Closeable {
     ) {
         return new Message(
                 null,
+                msg.getRequestId(),
                 MessageType.OFFER,
                 ResponseStatus.NULL,
                 false,
@@ -857,6 +861,7 @@ public class TcpClient implements Cloneable, Closeable {
 
     private static Message createQueuePollRequestMessage(final String queueName) {
         return new Message(
+                null,
                 null,
                 MessageType.POLL,
                 ResponseStatus.NULL,

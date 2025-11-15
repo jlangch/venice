@@ -147,6 +147,7 @@ public class Protocol {
 
             return new Message(
                     payloadMeta.getId(),
+                    payloadMeta.getRequestId(),
                     payloadMeta.getType(),
                     payloadMeta.getResponseStatus(),
                     payloadMeta.isOneway(),

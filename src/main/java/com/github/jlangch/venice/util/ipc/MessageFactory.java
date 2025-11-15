@@ -35,6 +35,7 @@ public abstract class MessageFactory {
     /**
      * Create a text message
      *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param topic a topic
      * @param mimetype the mimetype of the message's payload data
      * @param charset the charset of the message's payload data
@@ -42,6 +43,7 @@ public abstract class MessageFactory {
      * @return the message
      */
     public static IMessage text(
+            final String requestId,
             final String topic,
             final String mimetype,
             final String charset,
@@ -53,6 +55,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(data);
 
         return new Message(
+        		requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
                 false,
@@ -66,12 +69,14 @@ public abstract class MessageFactory {
     /**
      * Create a json message
      *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param topic a topic
      * @param charset the charset of the message's payload data
      * @param json the json payload data
      * @return the message
      */
     public static IMessage json(
+            final String requestId,
             final String topic,
             final String charset,
             final String json
@@ -81,6 +86,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(json);
 
         return new Message(
+                requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
                 false,
@@ -94,12 +100,14 @@ public abstract class MessageFactory {
     /**
      * Create a binary message
      *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param topic a topic
      * @param mimetype the mimetype of the message's payload data
      * @param data the binary payload data
      * @return the message
      */
     public static IMessage binary(
+            final String requestId,
             final String topic,
             final String mimetype,
             final byte[] data
@@ -109,6 +117,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(data);
 
         return new Message(
+                requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
                 false,
@@ -125,18 +134,20 @@ public abstract class MessageFactory {
      * <p>The Venice data is serialized to JSON to transport it within
      * a message
      *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param topic a topic
      * @param data venice data
      * @return the message
      */
     public static IMessage venice(
+            final String requestId,
             final String topic,
             final VncVal data
     ) {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        return json(topic, "UTF-8", Json.writeJson(data, false));
+        return json(requestId, topic, "UTF-8", Json.writeJson(data, false));
     }
 
 
@@ -152,7 +163,7 @@ public abstract class MessageFactory {
      * @return the hello message
      */
     public static IMessage hello() {
-        return text("hello", "text/plain", "UTF-8", "Hello!");
+        return text(null, "hello", "text/plain", "UTF-8", "Hello!");
     }
 
 }
