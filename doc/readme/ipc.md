@@ -90,23 +90,22 @@ Send a oneway message (no response)
              client2 (ipc/client "localhost" 33333)]
     (let [order-queue "orders"
           capacity    1_000
-                      ;; send a Venice data messages: 
-                      ;;   requestId="1" and "2", topic="order", payload=data map
-          order       (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
-
+          timeout     300]
       ;; create a queue to allow client1 and client2 to exchange messages
       (ipc/create-queue server order-queue capacity)
-      
-      ;; print the order
-      (locking mutex (println "ORDER:" (ipc/message->json true order)))
-           
-      ;; client1 offers order to the queue
-      (->> (ipc/offer client1 order-queue 300 order)
-           (ipc/message->json true)
-           (println "OFFERED:"))
+
+      ;; client1 offers order Venice data message to the queue
+      ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
+      (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+        (locking mutex (println "ORDER:" (ipc/message->json true order)))
+        
+        ;; publish the order
+        (->> (ipc/offer client1 order-queue timeout order)
+             (ipc/message->json true)
+             (println "OFFERED:")))
 
       ;; client2 pulls next order from the queue
-      (->> (ipc/poll client2 order-queue 300)
+      (->> (ipc/poll client2 order-queue timeout)
            (ipc/message->json true)
            (println "POLLED:")))))
 ```
@@ -141,6 +140,31 @@ Send a oneway message (no response)
 
     (sleep 300)))
 ```
+
+
+### Message Types
+
+*todo*
+
+#### Plain Text Messages
+
+*todo*
+
+#### Text Messages
+
+*todo*
+
+#### Binary Messages
+
+*todo*
+
+#### JSON Messages
+
+*todo*
+
+#### Venice Data Messages
+
+*todo*
 
 
 
