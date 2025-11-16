@@ -635,22 +635,14 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3);
+                ArityExceptions.assertArity(this, args, 2);
 
-                final boolean hasTimeout =  args.size() > 2;
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
-                final long timeout = hasTimeout ? Coerce.toVncLong(args.nth(1)).toJavaLong() : 0;
-                final IMessage request = Coerce.toVncJavaObject(args.nth(hasTimeout ? 2 : 1), IMessage.class);
+                client.sendMessageOneway(request);
 
-                if (timeout <= 0) {
-                    final IMessage response = client.sendMessage(request);
-                    return response == null ? Nil : new VncJavaObject(response);
-                }
-                else {
-                    final IMessage response = client.sendMessage(request, timeout, TimeUnit.MILLISECONDS);
-                    return response == null ? Nil : new VncJavaObject(response);
-                }
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1803,6 +1795,7 @@ public class IPCFunctions {
                 if (m.getCharset() == null) {
                     // binary
                     return VncOrderedMap.of(
+                            new VncKeyword("requestid"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
                             new VncKeyword("type"),      new VncKeyword(m.getType().name()),
                             new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
                             new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
@@ -1813,6 +1806,7 @@ public class IPCFunctions {
                 else if ("application/json".equals(m.getMimetype())) {
                     // json
                     return VncOrderedMap.of(
+                            new VncKeyword("requestid"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
                             new VncKeyword("type"),      new VncKeyword(m.getType().name()),
                             new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
                             new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
@@ -1823,6 +1817,7 @@ public class IPCFunctions {
                 else {
                     // text
                     return VncOrderedMap.of(
+                            new VncKeyword("requestid"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
                             new VncKeyword("type"),      new VncKeyword(m.getType().name()),
                             new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
                             new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),

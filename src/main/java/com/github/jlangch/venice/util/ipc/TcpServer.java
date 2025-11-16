@@ -222,6 +222,9 @@ public class TcpServer implements Closeable {
     @Override
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
+            // do not shutdown the thread-pools too early
+            try { Thread.sleep(300); } catch(Exception ignore ) {}
+
             safeClose(server.get());
             server.set(null);
             mngdExecutor.shutdownNow();

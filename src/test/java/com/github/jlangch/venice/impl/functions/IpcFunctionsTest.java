@@ -70,6 +70,22 @@ public class IpcFunctionsTest {
     }
 
     @Test
+    public void test_send_oneway() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                     \n" +
+                "  (defn echo-handler [m] nil)                           \n" +
+                "                                                        \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
+                "             client (ipc/client \"localhost\" 33333)]   \n" +
+                "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
+                "         (ipc/send-oneway client))))                    ";
+
+        assertEquals(null, venice.eval(script));
+    }
+
+    @Test
     public void test_send_receive_no_compress() {
         final Venice venice = new Venice();
 

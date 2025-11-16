@@ -40,6 +40,31 @@ import com.github.jlangch.venice.Venice;
 public class TcpRequestResponseTest {
 
     @Test
+    public void test_oneway() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.start(TcpServer.echoHandler());
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
+
+            client.sendMessageOneway(request);
+            client.sendMessageOneway(request);
+            client.sendMessageOneway(request);
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
+
+    @Test
     public void test_echo_server_text() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
