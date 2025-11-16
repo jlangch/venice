@@ -1706,7 +1706,7 @@ public class IPCFunctions {
                         "  * `:payload-mimetype` - the payload data mimetype\n" +
                         "  * `:payload-charset`  - the payload data charset (if payload is a text form)\n" +
                         "  * `:payload-text`     - the payload converted to text data if payload is textual data else error\n" +
-                        "  * `:payload-binary`   - the payload binary data (thr raw message binary data)\n" +
+                        "  * `:payload-binary`   - the payload binary data (the raw message binary data)\n" +
                         "  * `:payload-venice`   - the payload converted venice data if mimetype is 'application/json' else error\n\n" +
                         "**Message type:** \n\n" +
                         "  * `:REQUEST`     - a request message\n" +

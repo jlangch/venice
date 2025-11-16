@@ -215,13 +215,68 @@ Send a message from a client to a server and receive a response
 ```
 
 
-### Message Types
+### Messages
+
+
+## Message Layout
+
+```
+  Fields                             Filled by
+  
+ ┌───────────────────────────────┐
+ │ ID                            │   by send, publish/subscribe method
+ ├───────────────────────────────┤
+ │ Message Type                  │   by send, publish/subscribe method
+ ├───────────────────────────────┤
+ │ Oneway                        │   by client or framework method
+ ├───────────────────────────────┤
+ │ Response Status               │   by server response processor
+ ├───────────────────────────────┤
+ │ Timestamp                     │   by message creator
+ ├───────────────────────────────┤
+ │ Request ID                    │   by client (may be used for idempotency checks by the receiver)
+ ├───────────────────────────────┤
+ │ Topic                         │   by client
+ ├───────────────────────────────┤
+ │ Payload Mimetype              │   by client
+ ├───────────────────────────────┤
+ │ Payload Charset               │   by client if payload data is a string else null
+ ├───────────────────────────────┤
+ │ Payload data                  │   by client
+ └───────────────────────────────┘
+```
+
+**Message Types**
+
+* `:REQUEST`     - a request message
+* `:PUBLISH`     - a publish message
+* `:SUBSCRIBE`   - a subscribe message
+* `:UNSUBSCRIBE` - an unsubscribe message
+* `:OFFER`       - an offer message for a queue
+* `:POLL`        - a poll message from a queue
+* `:RESPONSE`    - a response to a request message
+* `:NULL`        - a message with yet undefined type\n
+
+
+**Response Status**
+* `:OK`              - a response message for a successfully processed request
+* `:SERVER_ERROR`    - a response indicating a server side error while processing the request 
+* `:BAD_REQUEST`     - invalid request
+* `:HANDLER_ERROR`   - a server handler error in the server's request processing
+* `:QUEUE_NOT_FOUND` - the required queue does not exist
+* `:QUEUE_EMPTY`     - the adressed queue in a poll request is empty
+* `:QUEUE_FULL`      - the adressed queue in offer request is full
+* `:NULL`            - a message with yet undefined status, filled when processing the message
+
+
+## Message Payload Types
 
 Venice IPC supports messages with various payload types:
   * plain text
   * text (json, xml, ...)
   * binary data
   * Venice data
+
 
 
 #### 1. Plain Text Messages
@@ -391,9 +446,124 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 ## Message Utils
 
 
-#### Access Message Fields
+#### Accessing Message Fields
 
-  * `ipc/message-field`
+**Supported field names:** 
+
+  * `:id`               - the message's technical ID
+  * `:type`             - the message type (request, response, ..) 
+  * `:oneway?`          - `true` if one-way message else `false`
+  * `:response-status`  - the response status (ok, bad request, ...) 
+  * `:timestamp`        - the message's creation timestamp in milliseconds since epoch
+  * `:topic`            - the topic
+  * `:payload-mimetype` - the payload data mimetype
+  * `:payload-charset`  - the payload data charset (if payload is a text form)
+  * `:payload-text`     - the payload converted to text data if payload is textual data else error
+  * `:payload-binary`   - the payload binary data (the raw message binary data)
+  * `:payload-venice`   - the payload converted venice data if mimetype is 'application/json' else error
+
+
+**Text Message**
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333 (fn [m] m))
+             client (ipc/client "localhost" 33333)]
+    (let [m (ipc/send client (ipc/text-message "1" "test" "text/plain" :UTF-8"Hello!"))]
+      (println (ipc/message-field m :id))
+      (println (ipc/message-field m :type))
+      (println (ipc/message-field m :oneway?))
+      (println (ipc/message-field m :timestamp))
+      (println (ipc/message-field m :response-status))
+      (println (ipc/message-field m :topic))
+      (println (ipc/message-field m :payload-mimetype))
+      (println (ipc/message-field m :payload-charset))
+      (println (ipc/message-field m :payload-text))
+      (println (ipc/message-field m :payload-binary)))))
+```
+
+Output:
+
+```
+baac8cf8-48fd-4e16-a1cc-b3867bd4e505
+:RESPONSE
+true
+1763313279378
+:OK
+test
+text/plain
+:UTF-8
+Hello!
+[72 101 108 108 111 33]
+```
+
+
+**Binary Message**
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333 (fn [m] m))
+             client (ipc/client "localhost" 33333)]
+    (let [m (ipc/send client (ipc/binary-message "1" "test" "application/octet-stream" (bytebuf [0 1 2 3 4 5 6 7])))]
+      (println (ipc/message-field m :id))
+      (println (ipc/message-field m :type))
+      (println (ipc/message-field m :oneway?))
+      (println (ipc/message-field m :timestamp))
+      (println (ipc/message-field m :response-status))
+      (println (ipc/message-field m :topic))
+      (println (ipc/message-field m :payload-mimetype))
+      (println (ipc/message-field m :payload-charset))
+      (println (ipc/message-field m :payload-binary)))))
+```
+
+Output:
+
+```
+abfaab17-dea7-4a38-85ee-501b6ead0aed
+:RESPONSE
+true
+1763313327205
+:OK
+test
+application/octet-stream
+nil
+[0 1 2 3 4 5 6 7]
+```
+
+
+**Venice Data Message**
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333 (fn [m] m))
+             client (ipc/client "localhost" 33333)]
+    (let [m (ipc/send client (ipc/venice-message "1" "test" {:a 100, :b 200} ))]
+      (println (ipc/message-field m :id))
+      (println (ipc/message-field m :type))
+      (println (ipc/message-field m :oneway?))
+      (println (ipc/message-field m :timestamp))
+      (println (ipc/message-field m :response-status))
+      (println (ipc/message-field m :topic))
+      (println (ipc/message-field m :payload-mimetype))
+      (println (ipc/message-field m :payload-charset))
+      (println (ipc/message-field m :payload-text))
+      (println (ipc/message-field m :payload-venice)))))
+```
+
+Output:
+
+```
+2815b1c6-55cf-417c-9c19-88efe5c30ba0
+:RESPONSE
+true
+1763313337189
+:OK
+test
+application/json
+:UTF-8
+{"a":100,"b":200}
+{:a 100 :b 200}
+```
 
 
 #### Convert Message to JSON
@@ -405,7 +575,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
     ;; send a plain text message: requestId="1", topic="test", payload="hello"
     (->> (ipc/plain-text-message "1" "test" "hello")
          (ipc/send client)
-         (ipc/message->json true)
+         (ipc/message->json true)    ;; formatted JSON enabled
          (println "RESPONSE:"))))
 ```
 
