@@ -211,24 +211,74 @@ Send a message from a client to a server and receive a response
 
 ### Message Types
 
-*todo*
+Venice IPC supports message with various payload types:
+  * plain text
+  * text (json, xml, ...)
+  * binary data
+  * Venice data
+
 
 #### Plain Text Messages
 
-*todo*
+```clojure
+(->> (ipc/plain-text-message "1" "test" "hello")
+     (ipc/message->json true)
+     (println))
+```
+
 
 #### Text Messages
 
-*todo*
+Text message payloads are defined by
+  * a mimetype. E.g.:  text/plain, application/json, ...
+  * a charset. E.g.:  :UTF-8
+  * the textual data
+
+```clojure
+(->> (ipc/text-message "1" "test" "text/plain" :UTF-8 "hello")
+     (ipc/message->json true)
+     (println))
+```
+
+```clojure
+(->> """{"item": "espresso", "count": 2}"""
+     (ipc/text-message "1" "order" "application/json" :UTF-8)
+     (ipc/message->json true)
+     (println))
+```
+
 
 #### Binary Messages
 
-*todo*
+Text message payloads are defined by
+  * a mimetype. E.g.:  application/octet-stream, application/pdf, ...
+  * the binary data
+
+```clojure
+(->> (bytebuf [0 1 2 3 4 5 6 7])
+     (ipc/binary-message "1" "test" "application/octet-stream")
+     (ipc/message->json true)
+     (println))
+```
+
+
+```clojure
+(->> (io/slurp "test.pdf" :binary true)
+     (ipc/binary-message "1" "test" "application/pdf")
+     (ipc/message->json true)
+     (println))
+```
 
 
 #### Venice Data Messages
 
-*todo*
+```clojure
+(->> (ipc/venice-message "1" "order" {:item "espresso", :count 2})
+     (ipc/message->json true)
+     (println))
+```
+
+
 
 ## Security
 
