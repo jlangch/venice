@@ -151,6 +151,8 @@ Send a message from a client to a server and receive a response
 
 ### Publish / Subscribe
 
+**synchronous publish**
+
 ```clojure
 (do
   ;; thread-safe printing to console
