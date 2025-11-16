@@ -166,6 +166,10 @@ Send a oneway message (no response)
 
 *todo*
 
+## Security
+
+*todo*
+
 
 
 ## Timeouts, Retries, and Idempotency in Distributed Systems
