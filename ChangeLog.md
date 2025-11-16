@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run steps api (...)
 
 
+
 ## [1.12.61] - 2025-11-16
 
 - Simplified 'for' macro sequence expression partitioning into groups
