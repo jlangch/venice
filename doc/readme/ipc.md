@@ -282,7 +282,7 @@ Text message payloads are defined by
 
 
 
-## Compressing Payload Data
+## Compressing Messages
 
 Messages can be transparently GZIP compressed/decompressed while being transferred.
 
