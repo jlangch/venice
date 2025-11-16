@@ -230,9 +230,9 @@ Send a message from a client to a server and receive a response
   Fields                             Filled by
   
  ┌───────────────────────────────┐
- │ ID                            │   by send, publish/subscribe method
+ │ ID                            │   by send, offer/poll, publish/subscribe method
  ├───────────────────────────────┤
- │ Message Type                  │   by send, publish/subscribe method
+ │ Message Type                  │   by send, offer/poll, publish/subscribe method
  ├───────────────────────────────┤
  │ Oneway                        │   by client or framework method
  ├───────────────────────────────┤
