@@ -211,7 +211,7 @@ Send a message from a client to a server and receive a response
 
 ### Message Types
 
-Venice IPC supports message with various payload types:
+Venice IPC supports messages with various payload types:
   * plain text
   * text (json, xml, ...)
   * binary data
@@ -230,8 +230,8 @@ Venice IPC supports message with various payload types:
 #### Text Messages
 
 Text message payloads are defined by
-  * a mimetype. E.g.:  text/plain, application/json, ...
-  * a charset. E.g.:  :UTF-8
+  * a mimetype. E.g.:  `text/plain`, `application/json`, ...
+  * a charset. E.g.:  `:UTF-8`
   * the textual data
 
 ```clojure
@@ -251,7 +251,7 @@ Text message payloads are defined by
 #### Binary Messages
 
 Text message payloads are defined by
-  * a mimetype. E.g.:  application/octet-stream, application/pdf, ...
+  * a mimetype. E.g.:  `application/octet-stream`, `application/pdf`, ...
   * the binary data
 
 ```clojure
