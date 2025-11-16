@@ -22,12 +22,12 @@ The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice i
 
 ### 2. Get the Venice JAR file
 
-Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.60/jar)
+Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.12.61/jar)
 
 or download it with `curl`:
 
 ```
-curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.60/venice-1.12.60.jar" --output ./venice-1.12.60.jar
+curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.61/venice-1.12.61.jar" --output ./venice-1.12.61.jar
 ```
 
 
@@ -41,7 +41,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 the REPL in setup mode:
 
 ```text
-foo> java -jar venice-1.12.60.jar -setup -colors
+foo> java -jar venice-1.12.61.jar -setup -colors
 ```
 
 For a REPL run in a darkmode terminal use the option `-colors-dark` instead of
@@ -92,7 +92,7 @@ venice>
 ```text
 REPL_HOME
 ├── libs
-│   ├── venice-1.12.60.jar
+│   ├── venice-1.12.61.jar
 │   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
@@ -112,7 +112,7 @@ REPL_HOME
 ```text
 REPL_HOME
 ├── libs
-│   ├── venice-1.12.60.jar
+│   ├── venice-1.12.61.jar
 │   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools

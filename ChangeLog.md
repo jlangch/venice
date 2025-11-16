@@ -4,7 +4,9 @@
 All notable changes to this project will be documented in this file.
 
 
-## [1.12.61] - 2025-11-xx
+
+
+## [1.12.62] - 2025-11-xx
 
 - Added :openai module support for assistant api
 - Added :openai module support for assistant threads api
@@ -12,9 +14,14 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+
+## [1.12.61] - 2025-11-16
+
 - Simplified 'for' macro sequence expression partitioning into groups
 
 - Enhanced IPC api with async functions returning futures
+
+- Added IPC requestId to messages to allow for idempotency checks
 
 - Fixed IPC oneway send function
 
