@@ -804,8 +804,10 @@ public class IPCFunctions {
                         "    ;; client2 publishes a plain text message:                       \n" +
                         "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
-                        "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
-                        "      (ipc/publish client2 m))                                       \n" +
+                        "      (println \"PUBLISHING:\" (ipc/message->json true m))           \n" +
+                        "      (->> (ipc/publish client2 m)                                   \n" +
+                        "           (ipc/message->json true)                                  \n" +
+                        "           (println \"PUBLISHED:\")))                                \n" +
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
@@ -871,9 +873,11 @@ public class IPCFunctions {
                         "    ;; client2 publishes a plain text message:                       \n" +
                         "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
-                        "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
+                        "      (println \"PUBLISHING:\" (ipc/message->json true m))           \n" +
                         "      (-<> (ipc/publish-async client2 m)                             \n" +
-                        "           (deref <> 300 :timeout)))                                 \n" +
+                        "           (deref <> 300 :timeout)                                   \n" +
+                        "           (ipc/message->json true <>)                               \n" +
+                        "           (println \"PUBLISHED:\" <>)))                            \n" +
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(

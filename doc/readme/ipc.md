@@ -174,8 +174,10 @@ Send a message from a client to a server and receive a response
     ;; client2 publishes a plain text message: 
     ;;   requestId="1", topic="test", payload="hello"
     (let [m (ipc/plain-text-message "1" "test" "hello")]
-      (println "PUBLISHED:" (ipc/message->json true m))
-      (ipc/publish client2 m))
+      (println "PUBLISHING:" (ipc/message->json true m))
+      (->> (ipc/publish client2 m)
+           (ipc/message->json true)
+           (println "PUBLISHED:")))
 
     (sleep 300)))
 ```
@@ -203,9 +205,11 @@ Send a message from a client to a server and receive a response
     ;; client2 publishes a plain text message: 
     ;;   requestId="1", topic="test", payload="hello"
     (let [m (ipc/plain-text-message "1" "test" "hello")]
-      (println "PUBLISHED:" (ipc/message->json true m))
+      (println "PUBLISHING:" (ipc/message->json true m))
       (-<> (ipc/publish-async client2 m)
-           (deref <> 300 :timeout)))
+           (deref <> 300 :timeout)
+           (ipc/message->json true <>)
+           (println "PUBLISHED:" <>)))
 
     (sleep 300)))
 ```
