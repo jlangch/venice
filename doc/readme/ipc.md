@@ -130,10 +130,10 @@ Send a oneway message (no response)
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
 
-    ;; client 'client1' subscribes to messages with topic 'test'
+    ;; client1 subscribes to messages with topic 'test'
     (ipc/subscribe client1 "test" client-subscribe-handler)
 
-    ;; client 'client2' publishes a plain text message: 
+    ;; client2 publishes a plain text message: 
     ;;   requestId="1", topic="test", payload="hello"
     (let [m (ipc/plain-text-message "1" "test" "hello")]
       (println "PUBLISHED:" (ipc/message->json true m))
