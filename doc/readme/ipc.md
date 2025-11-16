@@ -390,9 +390,17 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ## Message Utils
 
-
 *todo*
 
+  * `ipc/message-field`
+
+  * `ipc/message->json`
+
+  * `ipc/message->map`
+
+  * `ipc/response-ok?`
+
+  * `ipc/response-err?`
 
 
 
