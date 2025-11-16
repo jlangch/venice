@@ -280,9 +280,65 @@ Text message payloads are defined by
 
 
 
-## Security
+## Compressing Payload Data
 
-*todo*
+Messages can be transparently GZIP compressed/decompressed while being transferred.
+
+A compression cutoff size for payload messages defines from which payload data size compression
+is taking effect. 
+
+By default compression is turned off (cutoff size = -1)
+
+The cutoff size can be specified as a number like `1000` or a number with a unit like `:1KB` or `:2MB`
+
+
+```clojure
+(do
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  (defn echo-handler [m]
+    (println "REQUEST:" (ipc/message->json true m)) 
+    m)
+  
+  ;; transparently compress/decompress messages with a size > 1KB bytes
+  (try-with [server (ipc/server 33333 echo-handler :compress-cutoff-size :1KB)
+             client (ipc/client "localhost" 33333 :compress-cutoff-size :1KB)]
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
+    (->> (ipc/plain-text-message "1" "test" "hello")
+         (ipc/send client)
+         (ipc/message->json true)
+         (println "RESPONSE:"))))
+```
+
+
+## Encrypting Messages
+
+If encryption is enabled the payload data of all messages exchanged
+between a client and its associated server is encrypted.
+
+The data is AES-256-GCM encrypted using a secret that is created and 
+exchanged using the Diffie-Hellman key exchange algorithm.
+
+
+```clojure
+(do
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  (defn echo-handler [m]
+    (println "REQUEST:" (ipc/message->json true m)) 
+    m)
+  
+  ;; transparently encrypt messages
+  (try-with [server (ipc/server 33333 echo-handler)
+             client (ipc/client "localhost" 33333 :encrypt true)]
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
+    (->> (ipc/plain-text-message "1" "test" "hello")
+         (ipc/send client)
+         (ipc/message->json true)
+         (println "RESPONSE:"))))
+```
 
 
 
