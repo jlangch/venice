@@ -220,7 +220,7 @@ Venice IPC supports messages with various payload types:
   * Venice data
 
 
-#### Plain Text Messages
+#### 1. Plain Text Messages
 
 ```clojure
 (->> (ipc/plain-text-message "1" "test" "hello")
@@ -229,7 +229,7 @@ Venice IPC supports messages with various payload types:
 ```
 
 
-#### Text Messages
+#### 2. Text Messages
 
 Text message payloads are defined by
   * a mimetype. E.g.:  `text/plain`, `application/json`, ...
@@ -250,7 +250,7 @@ Text message payloads are defined by
 ```
 
 
-#### Binary Messages
+#### 3. Binary Messages
 
 Text message payloads are defined by
   * a mimetype. E.g.:  `application/octet-stream`, `application/pdf`, ...
@@ -272,7 +272,7 @@ Text message payloads are defined by
 ```
 
 
-#### Venice Data Messages
+#### 4. Venice Data Messages
 
 ```clojure
 (->> (ipc/venice-message "1" "order" {:item "espresso", :count 2})
