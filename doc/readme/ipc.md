@@ -395,21 +395,61 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
   * `ipc/message-field`
 
+
 #### Convert Message to JSON
 
-  * `ipc/message->json`
+```clojure
+(do
+  (try-with [server (ipc/server 33333 (fn [m] m))
+             client (ipc/client "localhost" 33333)]
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
+    (->> (ipc/plain-text-message "1" "test" "hello")
+         (ipc/send client)
+         (ipc/message->json true)
+         (println "RESPONSE:"))))
+```
+
 
 #### Convert Message to Venice Map
 
-  * `ipc/message->map`
+```clojure
+(do
+  (try-with [server (ipc/server 33333 (fn [m] m))
+             client (ipc/client "localhost" 33333)]
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
+    (->> (ipc/plain-text-message "1" "test" "hello")
+         (ipc/send client)
+         (ipc/message->map)
+         (println "RESPONSE:"))))
+```
+
 
 #### Check Message Response Status OK
 
-  * `ipc/response-ok?`
+```clojure
+(do
+  (try-with [server (ipc/server 33333 (fn [m] m))
+             client (ipc/client "localhost" 33333)]
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
+    (->> (ipc/plain-text-message "1" "test" "hello")
+         (ipc/send client)
+         (ipc/response-ok?)
+         (println "RESPONSE OK:"))))
+```
+
 
 #### Check Message Response Status Error
 
-  * `ipc/response-err?`
+```clojure
+(do
+  (try-with [server (ipc/server 33333 (fn [m] m))
+             client (ipc/client "localhost" 33333)]
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
+    (->> (ipc/plain-text-message "1" "test" "hello")
+         (ipc/send client)
+         (ipc/response-err?)
+         (println "RESPONSE ERR:"))))
+```
 
 
 
