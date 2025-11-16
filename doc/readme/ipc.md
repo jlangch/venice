@@ -11,7 +11,10 @@ Venice Inter-Process-Communication (IPC), is a Venice API that allows applicatio
 
 ### Send / Receive
 
-Send a message and receive a response
+Send a message from a client to a server and receive a response
+
+
+**synchronous send / receive**
 
 ```clojure
 (do
@@ -32,7 +35,7 @@ Send a message and receive a response
          (println "RESPONSE:"))))
 ```
 
-Send a message asynchronously and receive a response
+**asynchronous send / receive**
 
 ```clojure
 (do
@@ -54,7 +57,7 @@ Send a message asynchronously and receive a response
            (println "RESPONSE:")))))
 ```
 
-Send a oneway message (no response)
+**oneway send (no response)**
 
 ```clojure
 (do
