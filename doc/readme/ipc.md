@@ -349,7 +349,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ## Managing Queues
 
-### Create Queue
+#### Create Queue
 
 ```clojure
 (do
@@ -360,7 +360,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
      (ipc/create-queue server "orders" 1_000)))
 ```
 
-### Remove Queue
+#### Remove Queue
 
 ```clojure
 (do
@@ -373,7 +373,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
      (ipc/remove-queue server "orders")))
 ```
 
-### Check Queue Exists
+#### Check Queue Exists
 
 ```clojure
 (do
@@ -390,15 +390,24 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ## Message Utils
 
-*todo*
+
+#### Access Message Fields
 
   * `ipc/message-field`
 
+#### Convert Message to JSON
+
   * `ipc/message->json`
+
+#### Convert Message to Venice Map
 
   * `ipc/message->map`
 
+#### Check Message Response Status OK
+
   * `ipc/response-ok?`
+
+#### Check Message Response Status Error
 
   * `ipc/response-err?`
 
