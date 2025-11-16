@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file.
 
 - Enhanced IPC api with async functions returning futures
 
+- Fixed IPC oneway send function
+
 
 
 ## [1.12.60] - 2025-11-14
