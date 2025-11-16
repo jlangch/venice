@@ -388,6 +388,10 @@ between a client and its associated server is encrypted.
 The data is AES-256-GCM encrypted using a secret that is created and 
 exchanged using the Diffie-Hellman key exchange algorithm.
 
+> [!NOTE]
+> If multiple clients are involved in message passing turn on 
+> encryption on all clients!
+
 
 ```clojure
 (do
