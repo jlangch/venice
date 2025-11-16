@@ -18,9 +18,8 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; safe multi-threaded printing to console
-  (defn println [& msg]
-    (locking core/println (apply core/println msg)))
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
 
   (defn echo-handler [m]
     (println "REQUEST:" (ipc/message->json true m)) 
@@ -39,9 +38,8 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; safe multi-threaded printing to console
-  (defn println [& msg]
-    (locking core/println (apply core/println msg)))
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
 
   (defn echo-handler [m]
     (println "REQUEST:" (ipc/message->json true m)) 
@@ -61,9 +59,8 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; safe multi-threaded printing to console
-  (defn println [& msg]
-    (locking core/println (apply core/println msg)))
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
 
   (defn handler [m]
     (println "REQUEST:" (ipc/message->json true m)) 
@@ -81,9 +78,44 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; safe multi-threaded printing to console
-  (defn println [& msg]
-    (locking core/println (apply core/println msg)))
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  ;; the server handler is not involved with offer/poll!
+  (defn echo-handler [m] m)
+
+  (try-with [server (ipc/server 33333 echo-handler)
+             client1 (ipc/client "localhost" 33333)
+             client2 (ipc/client "localhost" 33333)]
+    (let [order-queue "orders"
+          capacity    1_000
+          timeout     300]
+      ;; create a queue to allow client1 and client2 to exchange messages
+      
+      (ipc/create-queue server order-queue capacity)
+
+      ;; client1 offers order Venice data message to the queue
+      ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
+      (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+        (println "ORDER:" (ipc/message->json true order))
+        
+        ;; publish the order
+        (->> (ipc/offer client1 order-queue timeout order)
+             (ipc/message->json true)
+             (println "OFFERED:")))
+
+      ;; client2 pulls next order from the queue
+      (->> (ipc/poll client2 order-queue timeout)
+           (ipc/message->json true)
+           (println "POLLED:")))))
+```
+
+**asynchronous offer / poll**
+
+```clojure
+(do
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
 
   ;; the server handler is not involved with offer/poll!
   (defn echo-handler [m] m)
@@ -100,27 +132,29 @@ Send a message from a client to a server and receive a response
       ;; client1 offers order Venice data message to the queue
       ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
       (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
-        (locking mutex (println "ORDER:" (ipc/message->json true order)))
-        
+        (println "ORDER:" (ipc/message->json true order))
+
         ;; publish the order
-        (->> (ipc/offer client1 order-queue timeout order)
-             (ipc/message->json true)
-             (println "OFFERED:")))
+        (-<> (ipc/offer-async client1 order-queue order)
+             (deref <> 300 :timeout)
+             (ipc/message->json true <>)
+             (println "OFFERED:" <>)))
 
       ;; client2 pulls next order from the queue
-      (->> (ipc/poll client2 order-queue timeout)
-           (ipc/message->json true)
-           (println "POLLED:")))))
+      (-<> (ipc/poll-async client2 order-queue)
+           (deref <> 300 :timeout)
+           (ipc/message->json true <>)
+           (println "POLLED:" <>)))))
 ```
+
 
 
 ### Publish / Subscribe
 
 ```clojure
 (do
-  ;; safe multi-threaded printing to console
-  (defn println [& msg]
-    (locking core/println (apply core/println msg)))
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
 
   ;; the server handler is not involved with publish/subscribe!
   (defn echo-handler [m] m)
@@ -144,6 +178,36 @@ Send a message from a client to a server and receive a response
     (sleep 300)))
 ```
 
+**asynchronous publish**
+
+```clojure
+(do
+  ;; thread-safe printing to console
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  ;; the server handler is not involved with publish/subscribe!
+  (defn echo-handler [m] m)
+
+  (defn client-subscribe-handler [m]
+    (println "SUBSCRIBED:" (ipc/message->json true m)))
+
+  (try-with [server (ipc/server 33333 echo-handler)
+             client1 (ipc/client "localhost" 33333)
+             client2 (ipc/client "localhost" 33333)]
+
+    ;; client1 subscribes to messages with topic 'test'
+    (ipc/subscribe client1 "test" client-subscribe-handler)
+
+    ;; client2 publishes a plain text message: 
+    ;;   requestId="1", topic="test", payload="hello"
+    (let [m (ipc/plain-text-message "1" "test" "hello")]
+      (println "PUBLISHED:" (ipc/message->json true m))
+      (-<> (ipc/publish-async client2 m)
+           (deref <> 300 :timeout)))
+
+    (sleep 300)))
+```
+
 
 ### Message Types
 
@@ -161,9 +225,6 @@ Send a message from a client to a server and receive a response
 
 *todo*
 
-#### JSON Messages
-
-*todo*
 
 #### Venice Data Messages
 
