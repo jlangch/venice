@@ -476,6 +476,8 @@ public class IPCFunctions {
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
                     .seeAlso(
+                        "ipc/send-async",
+                        "ipc/send-oneway",
                         "ipc/client",
                         "ipc/server",
                         "ipc/close",
@@ -577,6 +579,8 @@ public class IPCFunctions {
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
                     .seeAlso(
+                        "ipc/send",
+                        "ipc/send-oneway",
                         "ipc/client",
                         "ipc/server",
                         "ipc/close",
@@ -630,6 +634,8 @@ public class IPCFunctions {
                         "    (ipc/send-oneway client (ipc/plain-text-message \"1\" \"test\" \"hello\"))    \n" +
                         "    (ipc/send-oneway client (ipc/plain-text-message \"2\" \"test\" \"hello\"))))  ")
                     .seeAlso(
+                        "ipc/send",
+                        "ipc/send-async",
                         "ipc/client",
                         "ipc/server",
                         "ipc/close",
@@ -706,6 +712,7 @@ public class IPCFunctions {
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
                         "ipc/publish",
+                        "ipc/publish-async",
                         "ipc/client",
                         "ipc/server",
                         "ipc/text-message",
@@ -812,6 +819,7 @@ public class IPCFunctions {
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
                         "ipc/subscribe",
+                        "ipc/publish-async",
                         "ipc/client",
                         "ipc/server",
                         "ipc/text-message",
@@ -881,6 +889,7 @@ public class IPCFunctions {
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
+                        "ipc/publish",
                         "ipc/subscribe",
                         "ipc/client",
                         "ipc/server",
@@ -965,9 +974,11 @@ public class IPCFunctions {
                         "           (ipc/message->json true)                                                           \n" +
                         "           (println \"POLLED:\")))))                                                          ")
                     .seeAlso(
+                        "ipc/offer-async",
+                        "ipc/poll",
+                        "ipc/poll-async",
                         "ipc/server",
                         "ipc/client",
-                        "ipc/poll",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
@@ -1046,9 +1057,11 @@ public class IPCFunctions {
                         "           (ipc/message->json true <>)                                                        \n" +
                         "           (println \"POLLED:\" <>)))))                                                       ")
                     .seeAlso(
+                        "ipc/offer",
+                        "ipc/poll",
+                        "ipc/poll-async",
                         "ipc/server",
                         "ipc/client",
-                        "ipc/poll",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
@@ -1126,9 +1139,11 @@ public class IPCFunctions {
                         "           (ipc/message->json true)                                                           \n" +
                         "           (println \"POLLED:\")))))                                                          ")
                     .seeAlso(
+                        "ipc/poll-async",
+                        "ipc/offer",
+                        "ipc/offer-async",
                         "ipc/server",
                         "ipc/client",
-                        "ipc/offer",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
@@ -1206,9 +1221,10 @@ public class IPCFunctions {
                         "           (ipc/message->json true <>)                                                        \n" +
                         "           (println \"POLLED:\" <>)))))                                                       ")
                     .seeAlso(
+                        "ipc/poll",
+                        "ipc/offer-async",
                         "ipc/server",
                         "ipc/client",
-                        "ipc/offer",
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
@@ -1375,7 +1391,7 @@ public class IPCFunctions {
                         "| charset c    | The charset of the payload text. A keyword like `:UTF-8`|\n" +
                         "| text t       | The message payload text (a string)|")
                     .examples(
-                        "(->> (ipc/text-message \"test\"                         \n" +
+                        "(->> (ipc/text-message \"test\"                          \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
