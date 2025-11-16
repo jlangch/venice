@@ -616,7 +616,7 @@ public class IPCFunctions {
                         "Does not wait for response and returns always `nil`.")
                     .examples(
                         "(do                                                                               \n" +
-                        "  ;; thread-safe printing to console                                              \n" +
+                        "  ;; thread-safe printing                                                         \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))               \n" +
                         "                                                                                  \n" +
                         "  (defn handler [m]                                                               \n" +
@@ -681,7 +681,7 @@ public class IPCFunctions {
                         "  * `:BAD_REQUEST`   - invalid request, details in the payload")
                     .examples(
                         "(do                                                                  \n" +
-                        "  ;; thread-safe printing to console                                 \n" +
+                        "  ;; thread-safe printing                                            \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))  \n" +
                         "                                                                     \n" +
                         "  ;; the server handler is not involved with publish/subscribe!      \n" +
@@ -785,7 +785,7 @@ public class IPCFunctions {
                         "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
                         "(do                                                                  \n" +
-                        "  ;; thread-safe printing to console                                 \n" +
+                        "  ;; thread-safe printing                                            \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))  \n" +
                         "                                                                     \n" +
                         "  ;; the server handler is not involved with publish/subscribe!      \n" +
@@ -854,7 +854,7 @@ public class IPCFunctions {
                         "Note: a client in subscription mode can not send or publish messages!")
                     .examples(
                         "(do                                                                  \n" +
-                        "  ;; thread-safe printing to console                                 \n" +
+                        "  ;; thread-safe printing                                            \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))  \n" +
                         "                                                                     \n" +
                         "  ;; the server handler is not involved with publish/subscribe!      \n" +
@@ -877,7 +877,7 @@ public class IPCFunctions {
                         "      (-<> (ipc/publish-async client2 m)                             \n" +
                         "           (deref <> 300 :timeout)                                   \n" +
                         "           (ipc/message->json true <>)                               \n" +
-                        "           (println \"PUBLISHED:\" <>)))                            \n" +
+                        "           (println \"PUBLISHED:\" <>)))                             \n" +
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
@@ -935,7 +935,7 @@ public class IPCFunctions {
                         "  * `:QUEUE_FULL`      - the queue is full, offer rejected")
                     .examples(
                         "(do                                                                                           \n" +
-                        "  ;; thread-safe printing to console                                                          \n" +
+                        "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
                         "                                                                                              \n" +
                         "  ;; the server handler is not involved with offer/poll!                                      \n" +
@@ -1014,7 +1014,7 @@ public class IPCFunctions {
                         "  * `:QUEUE_FULL`      - the queue is full, offer rejected")
                     .examples(
                         "(do                                                                                           \n" +
-                        "  ;; thread-safe printing to console                                                          \n" +
+                        "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
                         "                                                                                              \n" +
                         "  ;; the server handler is not involved with offer/poll!                                      \n" +
@@ -1043,8 +1043,8 @@ public class IPCFunctions {
                         "      ;; client2 pulls next order from the queue                                              \n" +
                         "      (-<> (ipc/poll-async client2 order-queue)                                               \n" +
                         "           (deref <> 300 :timeout)                                                            \n" +
-                        "           (ipc/message->json true <>)                                                           \n" +
-                        "           (println \"POLLED:\" <>)))))                                                          ")
+                        "           (ipc/message->json true <>)                                                        \n" +
+                        "           (println \"POLLED:\" <>)))))                                                       ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -1096,7 +1096,7 @@ public class IPCFunctions {
                         "  * `:QUEUE_EMPTY`     - the queue is empty")
                     .examples(
                         "(do                                                                                           \n" +
-                        "  ;; thread-safe printing to console                                                          \n" +
+                        "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
                         "                                                                                              \n" +
                         "  ;; the server handler is not involved with offer/poll!                                      \n" +
@@ -1174,7 +1174,7 @@ public class IPCFunctions {
                         "  * `:QUEUE_EMPTY`     - the queue is empty")
                     .examples(
                         "(do                                                                                           \n" +
-                        "  ;; thread-safe printing to console                                                          \n" +
+                        "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
                         "                                                                                              \n" +
                         "  ;; the server handler is not involved with offer/poll!                                      \n" +
@@ -1203,8 +1203,8 @@ public class IPCFunctions {
                         "      ;; client2 pulls next order from the queue                                              \n" +
                         "      (-<> (ipc/poll-async client2 order-queue)                                               \n" +
                         "           (deref <> 300 :timeout)                                                            \n" +
-                        "           (ipc/message->json true <>)                                                           \n" +
-                        "           (println \"POLLED:\" <>)))))                                                          ")
+                        "           (ipc/message->json true <>)                                                        \n" +
+                        "           (println \"POLLED:\" <>)))))                                                       ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",

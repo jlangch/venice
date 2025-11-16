@@ -78,7 +78,7 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; thread-safe printing to console
+  ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
   ;; the server handler is not involved with offer/poll!
@@ -114,7 +114,7 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; thread-safe printing to console
+  ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
   ;; the server handler is not involved with offer/poll!
@@ -155,7 +155,7 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; thread-safe printing to console
+  ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
   ;; the server handler is not involved with publish/subscribe!
@@ -186,7 +186,7 @@ Send a message from a client to a server and receive a response
 
 ```clojure
 (do
-  ;; thread-safe printing to console
+  ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
   ;; the server handler is not involved with publish/subscribe!
@@ -300,7 +300,7 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
 
 ```clojure
 (do
-  ;; thread-safe printing to console
+  ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
   (defn echo-handler [m]
@@ -329,7 +329,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ```clojure
 (do
-  ;; thread-safe printing to console
+  ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
   (defn echo-handler [m]
