@@ -4,7 +4,13 @@
 Venice Inter-Process-Communication (IPC), is a Venice API that allows application components to communicate with each other by sending and receiving messages. It enables asynchronous and loosely coupled communication, making it ideal for distributed applications. Venice IPC works by either exchanging messages between a client and a server or using a messaging provider, such as a server, that routes messages from producers to consumers through queues with either a single consumer (point-to-point) or multiple consumers (publish-subscribe).
 
 
-*in work*
+* [IPC Communication Modes](#ipc-communication-modes)
+* [Messages](#messages)
+* [Compressing Messages](#compressing-messages)
+* [Encrypting Messages](#encrypting-messages)
+* [Managing Queues](#managing-queues)
+* [Message Utils](#message-utils)
+* [Timeouts, Retries, and Idempotency in Distributed Systems](#timeouts-retries-and-idempotency-in-distributed-systems)
 
 
 ## IPC Communication Modes
@@ -215,10 +221,10 @@ Send a message from a client to a server and receive a response
 ```
 
 
-### Messages
+## Messages
 
 
-## Message Layout
+### Message Layout
 
 ```
   Fields                             Filled by
@@ -269,7 +275,8 @@ Send a message from a client to a server and receive a response
 * `:NULL`            - a message with yet undefined status, filled when processing the message
 
 
-## Message Payload Types
+
+### Message Payload Types
 
 Venice IPC supports messages with various payload types:
   * plain text
