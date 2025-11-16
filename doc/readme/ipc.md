@@ -25,6 +25,7 @@ Send a message and receive a response
 
   (try-with [server (ipc/server 33333 echo-handler)
              client (ipc/client "localhost" 33333)]
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
     (->> (ipc/plain-text-message "1" "test" "hello")
          (ipc/send client)
          (ipc/message->json true)
@@ -45,10 +46,10 @@ Send a message asynchronously and receive a response
 
   (try-with [server (ipc/server 33333 echo-handler)
              client (ipc/client "localhost" 33333)]
-    ;; ipc/send-async returns a future
+    ;; send a plain text message: requestId="1", topic="test", payload="hello"
     (let [response (->> (ipc/plain-text-message "1" "test" "hello")
                         (ipc/send-async client))]
-      (->> (deref response 300 :timeout)
+      (->> (deref response 300 :timeout)  ;; deref the result future with 300ms timeout
            (ipc/message->json true)
            (println "RESPONSE:")))))
 ```
@@ -67,6 +68,7 @@ Send a oneway message (no response)
 
   (try-with [server (ipc/server 33333 handler)
              client (ipc/client "localhost" 33333)]
+    ;; send a plain text messages: requestId="1" and "2", topic="test", payload="hello"
     (ipc/send-oneway client (ipc/plain-text-message "1" "test" "hello"))
     (ipc/send-oneway client (ipc/plain-text-message "2" "test" "hello"))))
 ```
@@ -88,6 +90,8 @@ Send a oneway message (no response)
              client2 (ipc/client "localhost" 33333)]
     (let [order-queue "orders"
           capacity    1_000
+                      ;; send a Venice data messages: 
+                      ;;   requestId="1" and "2", topic="order", payload=data map
           order       (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
 
       ;; create a queue to allow client1 and client2 to exchange messages
@@ -126,10 +130,11 @@ Send a oneway message (no response)
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
 
-    ;; client 'client1' subscribes to 'test' messages
+    ;; client 'client1' subscribes to messages with topic 'test'
     (ipc/subscribe client1 "test" client-subscribe-handler)
 
-    ;; client 'client2' publishes a 'test' message
+    ;; client 'client2' publishes a plain text message: 
+    ;;   requestId="1", topic="test", payload="hello"
     (let [m (ipc/plain-text-message "1" "test" "hello")]
       (println "PUBLISHED:" (ipc/message->json true m))
       (ipc/publish client2 m))
