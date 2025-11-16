@@ -347,6 +347,55 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 ```
 
 
+## Managing Queues
+
+### Create Queue
+
+```clojure
+(do
+  (defn echo-handler [m] m)
+  
+  (try-with [server (ipc/server 33333 echo-handler)
+             client (ipc/client "localhost" 33333)]
+     (ipc/create-queue server "orders" 1_000)))
+```
+
+### Remove Queue
+
+```clojure
+(do
+  (defn echo-handler [m] m)
+  
+  (try-with [server (ipc/server 33333 echo-handler)
+             client (ipc/client "localhost" 33333)]
+     (ipc/create-queue server "orders" 1_000)
+     ;; ...
+     (ipc/remove-queue server "orders")))
+```
+
+### Check Queue Exists
+
+```clojure
+(do
+  (defn echo-handler [m] m)
+  
+  (try-with [server (ipc/server 33333 echo-handler)
+             client (ipc/client "localhost" 33333)]
+     (ipc/create-queue server "orders" 1_000)
+     
+     (ipc/exists-queue? server "orders")))
+```
+
+
+
+## Message Utils
+
+
+*todo*
+
+
+
+
 
 ## Timeouts, Retries, and Idempotency in Distributed Systems
 
