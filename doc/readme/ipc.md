@@ -82,7 +82,9 @@ Send a message from a client to a server and receive a response
 
 ### Offer / Poll
 
-Offer messages to a queue and poll messages from a queue. A message is delivered to at most one client.
+Offer messages to a queue and poll messages from a queue. More than one client can offer/poll
+messages to/from queues but a message is delivered to one client only.
+
 
 **synchronous offer / poll**
 
@@ -161,6 +163,10 @@ Offer messages to a queue and poll messages from a queue. A message is delivered
 
 ### Publish / Subscribe
 
+Publish a message to a topic. All clients that have subscribed to a topic will receive
+the messages on the topic. To unsubscribe just close the IPC client.
+
+
 **synchronous publish**
 
 ```clojure
@@ -179,7 +185,7 @@ Offer messages to a queue and poll messages from a queue. A message is delivered
              client2 (ipc/client "localhost" 33333)]
 
     ;; client1 subscribes to messages with topic 'test'
-    (ipc/subscribe client1 "test" client-subscribe-handler)
+    (ipc/subscribe client1 ["test"] client-subscribe-handler)
 
     ;; client2 publishes a plain text message: 
     ;;   requestId="1", topic="test", payload="hello"
@@ -210,7 +216,7 @@ Offer messages to a queue and poll messages from a queue. A message is delivered
              client2 (ipc/client "localhost" 33333)]
 
     ;; client1 subscribes to messages with topic 'test'
-    (ipc/subscribe client1 "test" client-subscribe-handler)
+    (ipc/subscribe client1 ["test"] client-subscribe-handler)
 
     ;; client2 publishes a plain text message: 
     ;;   requestId="1", topic="test", payload="hello"
@@ -258,31 +264,33 @@ Offer messages to a queue and poll messages from a queue. A message is delivered
 
 **Message Types**
 
-* `:REQUEST`     - a request message
-* `:PUBLISH`     - a publish message
-* `:SUBSCRIBE`   - a subscribe message
-* `:UNSUBSCRIBE` - an unsubscribe message
-* `:OFFER`       - an offer message for a queue
-* `:POLL`        - a poll message from a queue
-* `:RESPONSE`    - a response to a request message
-* `:NULL`        - a message with yet undefined type\n
+  * `:REQUEST`     - a request message
+  * `:PUBLISH`     - a publish message
+  * `:SUBSCRIBE`   - a subscribe message
+  * `:UNSUBSCRIBE` - an unsubscribe message
+  * `:OFFER`       - an offer message for a queue
+  * `:POLL`        - a poll message from a queue
+  * `:RESPONSE`    - a response to a request message
+  * `:NULL`        - a message with yet undefined type\n
 
 
 **Response Status**
-* `:OK`              - a response message for a successfully processed request
-* `:SERVER_ERROR`    - a response indicating a server side error while processing the request 
-* `:BAD_REQUEST`     - invalid request
-* `:HANDLER_ERROR`   - a server handler error in the server's request processing
-* `:QUEUE_NOT_FOUND` - the required queue does not exist
-* `:QUEUE_EMPTY`     - the adressed queue in a poll request is empty
-* `:QUEUE_FULL`      - the adressed queue in offer request is full
-* `:NULL`            - a message with yet undefined status, filled when processing the message
+
+  * `:OK`              - a response message for a successfully processed request
+  * `:SERVER_ERROR`    - a response indicating a server side error while processing the request 
+  * `:BAD_REQUEST`     - invalid request
+  * `:HANDLER_ERROR`   - a server handler error in the server's request processing
+  * `:QUEUE_NOT_FOUND` - the required queue does not exist
+  * `:QUEUE_EMPTY`     - the adressed queue in a poll request is empty
+  * `:QUEUE_FULL`      - the adressed queue in offer request is full
+  * `:NULL`            - a message with yet undefined status, filled when processing the message
 
 
 
 ### Message Payload Types
 
 Venice IPC supports messages with various payload types:
+
   * plain text
   * text (json, xml, ...)
   * binary data
@@ -302,6 +310,7 @@ Venice IPC supports messages with various payload types:
 #### 2. Text Messages
 
 Text message payloads are defined by
+
   * a mimetype. E.g.:  `text/plain`, `application/json`, ...
   * a charset. E.g.:  `:UTF-8`
   * the textual data
@@ -323,6 +332,7 @@ Text message payloads are defined by
 #### 3. Binary Messages
 
 Text message payloads are defined by
+
   * a mimetype. E.g.:  `application/octet-stream`, `application/pdf`, ...
   * the binary data
 
