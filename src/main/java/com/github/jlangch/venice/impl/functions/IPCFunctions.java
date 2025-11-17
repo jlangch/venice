@@ -57,6 +57,7 @@ import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
@@ -1434,7 +1435,7 @@ public class IPCFunctions {
                     .doc(
                         "Creates a text message\n\n" +
                         "*Arguments:* \n\n" +
-                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| request-id r | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t      | A topic (string) |\n" +
                         "| mimetype m   | The mimetype of the payload text. A string like 'text/plain' |\n" +
                         "| charset c    | The charset of the payload text. A keyword like `:UTF-8`|\n" +
@@ -1459,45 +1460,57 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4, 5);
+                ArityExceptions.assertArity(this, args, 4, 5, 6);
+
+                final VncVal requestId;
+                final VncString topic;
+                final VncString mimetype ;
+                final VncKeyword charset;
+                final VncVal textVal;
+                final VncVal expiresAt;
 
                 if (args.size() == 4) {
-                    final VncString topic = Coerce.toVncString(args.nth(0));
-                    final VncString mimetype = Coerce.toVncString(args.nth(1));
-                    final VncKeyword charset = Coerce.toVncKeyword(args.nth(2));
-                    final VncVal textVal = args.nth(3);
-                    final String text = Types.isVncString(textVal)
-                                            ? ((VncString)textVal).getValue()
-                                            : textVal.toString(true);  // aggressively convert to string
-
-                    final IMessage msg = MessageFactory.text(
-                                            null,
-                                            topic.getValue(),
-                                            mimetype.getValue(),
-                                            charset.getSimpleName(),
-                                            text);
-
-                    return new VncJavaObject(msg);
+                    requestId = null;
+                    topic = Coerce.toVncString(args.nth(0));
+                    mimetype = Coerce.toVncString(args.nth(1));
+                    charset = Coerce.toVncKeyword(args.nth(2));
+                    textVal = args.nth(3);
+                    expiresAt = null;
+                }
+                else if (args.size() == 5) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    mimetype = Coerce.toVncString(args.nth(2));
+                    charset = Coerce.toVncKeyword(args.nth(3));
+                    textVal = args.nth(4);
+                    expiresAt = null;
                 }
                 else {
-                    final VncVal requestId = args.nth(0);
-                    final VncString topic = Coerce.toVncString(args.nth(1));
-                    final VncString mimetype = Coerce.toVncString(args.nth(2));
-                    final VncKeyword charset = Coerce.toVncKeyword(args.nth(3));
-                    final VncVal textVal = args.nth(4);
-                    final String text = Types.isVncString(textVal)
-                                            ? ((VncString)textVal).getValue()
-                                            : textVal.toString(true);  // aggressively convert to string
-
-                    final IMessage msg = MessageFactory.text(
-                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
-                                            topic.getValue(),
-                                            mimetype.getValue(),
-                                            charset.getSimpleName(),
-                                            text);
-
-                    return new VncJavaObject(msg);
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    mimetype = Coerce.toVncString(args.nth(2));
+                    charset = Coerce.toVncKeyword(args.nth(3));
+                    textVal = args.nth(4);
+                    expiresAt = args.nth(5);
                 }
+
+                final String text = Types.isVncString(textVal)
+                                        ? ((VncString)textVal).getValue()
+                                        : textVal.toString(true);  // aggressively convert to string
+
+                final IMessage msg = MessageFactory.text(
+                                        requestId == null || requestId == Nil
+                                            ? null
+                                            : Coerce.toVncString(requestId).getValue(),
+                                        expiresAt == null || expiresAt == Nil
+                                            ? Message.EXPIRES_NEVER
+                                            : Coerce.toVncLong(expiresAt).getValue(),
+                                        topic.getValue(),
+                                        mimetype.getValue(),
+                                        charset.getSimpleName(),
+                                        text);
+
+                return new VncJavaObject(msg);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1515,7 +1528,7 @@ public class IPCFunctions {
                     .doc(
                         "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n"  +
                         "*Arguments:* \n\n" +
-                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| request-id r | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t      | A topic (string) |\n" +
                         "| text t       | The message payload text (a string)|")
                     .examples(
@@ -1537,41 +1550,49 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3);
+                ArityExceptions.assertArity(this, args, 2, 3, 4);
+
+                final VncVal requestId;
+                final VncString topic;
+                final VncVal textVal;
+                final VncVal expiresAt;
 
                 if (args.size() == 2) {
-                    final VncString topic = Coerce.toVncString(args.nth(0));
-                    final VncVal textVal = args.nth(1);
-                    final String text = Types.isVncString(textVal)
-                                            ? ((VncString)textVal).getValue()
-                                            : textVal.toString(true);  // aggressively convert to string
-
-                    final IMessage msg = MessageFactory.text(
-                                            null,
-                                            topic.getValue(),
-                                            "text/plain",
-                                            "UTF-8",
-                                            text);
-
-                    return new VncJavaObject(msg);
+                    requestId = null;
+                    topic = Coerce.toVncString(args.nth(0));
+                    textVal = args.nth(1);
+                    expiresAt = null;
+                }
+                else if (args.size() == 3) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    textVal = args.nth(2);
+                    expiresAt = null;
                 }
                 else {
-                    final VncVal requestId = args.nth(0);
-                    final VncString topic = Coerce.toVncString(args.nth(1));
-                    final VncVal textVal = args.nth(2);
-                    final String text = Types.isVncString(textVal)
-                                            ? ((VncString)textVal).getValue()
-                                            : textVal.toString(true);  // aggressively convert to string
-
-                    final IMessage msg = MessageFactory.text(
-                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
-                                            topic.getValue(),
-                                            "text/plain",
-                                            "UTF-8",
-                                            text);
-
-                    return new VncJavaObject(msg);
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    textVal = args.nth(2);
+                    expiresAt = args.nth(3);
                 }
+
+                final String text = Types.isVncString(textVal)
+                                        ? ((VncString)textVal).getValue()
+                                        : textVal.toString(true);  // aggressively convert to string
+
+                final IMessage msg = MessageFactory.text(
+                                        requestId == null || requestId == Nil
+                                            ? null
+                                            : Coerce.toVncString(requestId).getValue(),
+                                        expiresAt == null || expiresAt == Nil
+                                            ? Message.EXPIRES_NEVER
+                                            : Coerce.toVncLong(expiresAt).getValue(),
+                                        topic.getValue(),
+                                        "text/plain",
+                                        "UTF-8",
+                                        text);
+
+                return new VncJavaObject(msg);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1589,7 +1610,7 @@ public class IPCFunctions {
                     .doc(
                         "Creates a binary message.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| request-id r | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t      | A topic (string) |\n" +
                         "| mimetype m   | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
                         "| data d       | The message payload binary data (a bytebuf)|")
@@ -1614,35 +1635,48 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3, 4);
+                ArityExceptions.assertArity(this, args, 3, 4, 5);
+
+                final VncVal requestId;
+                final VncString topic;
+                final VncString mimetype;
+                final VncByteBuffer data;
+                final VncVal expiresAt;
 
                 if (args.size() == 3) {
-                    final VncString topic = Coerce.toVncString(args.nth(0));
-                    final VncString mimetype = Coerce.toVncString(args.nth(1));
-                    final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(2));
-
-                    final IMessage msg = MessageFactory.binary(
-                                            null,
-                                            topic.getValue(),
-                                            mimetype.getValue(),
-                                            data.getBytes());
-
-                    return new VncJavaObject(msg);
+                    requestId = null;
+                    topic = Coerce.toVncString(args.nth(0));
+                    mimetype = Coerce.toVncString(args.nth(1));
+                    data = Coerce.toVncByteBuffer(args.nth(2));
+                    expiresAt = null;
+                }
+                else if (args.size() == 4) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    mimetype = Coerce.toVncString(args.nth(2));
+                    data = Coerce.toVncByteBuffer(args.nth(3));
+                    expiresAt = null;
                 }
                 else {
-                    final VncVal requestId = args.nth(0);
-                    final VncString topic = Coerce.toVncString(args.nth(1));
-                    final VncString mimetype = Coerce.toVncString(args.nth(2));
-                    final VncByteBuffer data = Coerce.toVncByteBuffer(args.nth(3));
-
-                    final IMessage msg = MessageFactory.binary(
-                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
-                                            topic.getValue(),
-                                            mimetype.getValue(),
-                                            data.getBytes());
-
-                    return new VncJavaObject(msg);
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    mimetype = Coerce.toVncString(args.nth(2));
+                    data = Coerce.toVncByteBuffer(args.nth(3));
+                    expiresAt = args.nth(4);
                 }
+
+                final IMessage msg = MessageFactory.binary(
+                                        requestId == null || requestId == Nil
+                                            ? null
+                                            : Coerce.toVncString(requestId).getValue(),
+                                        expiresAt == null || expiresAt == Nil
+                                            ? Message.EXPIRES_NEVER
+                                            : Coerce.toVncLong(expiresAt).getValue(),
+                                        topic.getValue(),
+                                        mimetype.getValue(),
+                                        data.getBytes());
+
+                return new VncJavaObject(msg);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1662,7 +1696,7 @@ public class IPCFunctions {
                         "The Venice data is serialized as JSON (mimetype: 'application/json') " +
                         "for transport within the message.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| request-id s | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
+                        "| request-id r | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t      | A topic (string) |\n" +
                         "| data d       | The message payload Venice data (e.g.: a map, list, ...)|")
             .examples(
@@ -1684,28 +1718,43 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3);
+                ArityExceptions.assertArity(this, args, 2, 3, 4);
+
+                final VncVal requestId;
+                final VncString topic;
+                final VncVal data;
+                final VncVal expiresAt;
 
                 if (args.size() == 2) {
-                    final VncString topic = Coerce.toVncString(args.first());
-                    final VncVal data = args.second();
-
-                    final IMessage msg = MessageFactory.venice(null, topic.getValue(), data);
-
-                    return new VncJavaObject(msg);
+                    requestId = null;
+                    topic = Coerce.toVncString(args.nth(0));
+                    data = args.nth(1);
+                    expiresAt = null;
+                }
+                else if (args.size() == 3) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(0));
+                    data = args.nth(2);
+                    expiresAt = null;
                 }
                 else {
-                    final VncVal requestId = args.first();
-                    final VncString topic = Coerce.toVncString(args.second());
-                    final VncVal data = args.third();
-
-                    final IMessage msg = MessageFactory.venice(
-                                            requestId == Nil ? null : Coerce.toVncString(requestId).getValue(),
-                                            topic.getValue(),
-                                            data);
-
-                    return new VncJavaObject(msg);
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(0));
+                    data = args.nth(2);
+                    expiresAt = args.nth(3);
                 }
+
+                final IMessage msg = MessageFactory.venice(
+                                        requestId == null || requestId == Nil
+                                            ? null
+                                            : Coerce.toVncString(requestId).getValue(),
+                                        expiresAt == null || expiresAt == Nil
+                                            ? Message.EXPIRES_NEVER
+                                            : Coerce.toVncLong(expiresAt).getValue(),
+                                        topic.getValue(),
+                                        data);
+
+                return new VncJavaObject(msg);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

@@ -51,6 +51,7 @@ public class Message implements IMessage {
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
+            final long expiresAt,
             final Topics topics,
             final String mimetype,
             final String charset,
@@ -72,7 +73,7 @@ public class Message implements IMessage {
         this.oneway = oneway;
         this.queueName = null;
         this.timestamp = Instant.now().toEpochMilli();
-        this.expiresAt = -1L;
+        this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -109,7 +110,7 @@ public class Message implements IMessage {
         this.oneway = oneway;
         this.queueName = StringUtil.trimToNull(queueName);
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
-        this.expiresAt = expiresAt;
+        this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -415,6 +416,8 @@ public class Message implements IMessage {
         }
     }
 
+
+    public static final long EXPIRES_NEVER = -1L;
 
     public static final long QUEUENAME_MAX_LEN = 100;
     public static final long MIMETYPE_MAX_LEN = 100;
