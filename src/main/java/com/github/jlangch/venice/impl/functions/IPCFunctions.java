@@ -293,6 +293,55 @@ public class IPCFunctions {
         };
 
 
+    public static VncFunction ipc_clone =
+        new VncFunction(
+                "ipc/clone",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/clone client)")
+                    .doc(
+                        "Clone a client with all its configuration")
+                    .examples(
+                        "(do                                                                             \n" +
+                        "  (defn echo-handler [m]                                                        \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))                               \n" +
+                        "    m)                                                                          \n" +
+                        "                                                                                \n" +
+                        "  (defn send [client msg]                                                       \n" +
+                        "    (->> (ipc/send client msg)                                                  \n" +
+                        "         (ipc/message->map)                                                     \n" +
+                        "         (println \"RESPONSE: \")))                                             \n" +
+                        "                                                                                \n" +
+                        "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
+                        "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
+                        "             client-2 (ipc/clone client-1)                                      \n" +
+                        "             client-3 (ipc/clone client-1)]                                     \n" +
+                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
+                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
+                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello\"))))               ")
+                    .seeAlso(
+                        "ipc/client",
+                        "ipc/close",
+                        "ipc/running?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+
+                final TcpClient cloned = (TcpClient)client.clone();
+                cloned.open();
+
+                return new VncJavaObject(cloned);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     public static VncFunction ipc_runnningQ =
         new VncFunction(
                 "ipc/running?",
@@ -2294,6 +2343,7 @@ public class IPCFunctions {
             new SymbolMapBuilder()
                     .add(ipc_server)
                     .add(ipc_client)
+                    .add(ipc_clone)
                     .add(ipc_close)
                     .add(ipc_runnningQ)
 

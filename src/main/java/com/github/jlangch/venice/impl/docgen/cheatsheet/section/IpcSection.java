@@ -43,6 +43,7 @@ public class IpcSection implements ISectionBuilder {
         all.addSection(conn);
         conn.addItem(diBuilder.getDocItem("ipc/server", false));
         conn.addItem(diBuilder.getDocItem("ipc/client", false));
+        conn.addItem(diBuilder.getDocItem("ipc/clone", false));
         conn.addItem(diBuilder.getDocItem("ipc/close", false));
         conn.addItem(diBuilder.getDocItem("ipc/running?", false));
 
