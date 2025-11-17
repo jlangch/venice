@@ -144,6 +144,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         if (!(isRequestMsg(request)
               || isRequestPublish(request)
               || isRequestSubscribe(request)
+              || isRequestUnsubscribe(request)
               || isRequestOffer(request)
               || isRequestPoll(request)
               || isRequestDiffieHellman(request))
@@ -211,6 +212,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
             // switch to publish mode for this connections
             return State.Publish;
         }
+        else if (isRequestUnsubscribe(request)) {
+            // the client wants to subscribe a topic
+            handleUnsubscribe(request);
+
+            // switch to publish mode for this connections
+            return State.Publish;
+        }
         else if (isRequestDiffieHellman(request)) {
             handleDiffieHellmanKeyExchange(request);
 
@@ -254,7 +262,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     return createPlainTextResponseMessage(
                               ResponseStatus.OK,
                               request.getRequestId(),
-                              request.getTopic(),
+                              request.getTopics(),
                               "");
                 }
                 else {
@@ -275,7 +283,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 return createPlainTextResponseMessage(
                          ResponseStatus.HANDLER_ERROR,
                          request.getRequestId(),
-                         request.getTopic(),
+                         request.getTopics(),
                          ExceptionUtil.printStackTraceToString(ex));
             }
         }
@@ -283,7 +291,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private void handleSubscribe(final Message request) {
         // register subscription
-        subscriptions.addSubscription(request.getTopicsSet(), this);
+        subscriptions.addSubscriptions(request.getTopicsSet(), this);
 
         // acknowledge the subscription
         Protocol.sendMessage(
@@ -291,8 +299,24 @@ public class TcpServerConnection implements IPublisher, Runnable {
             createPlainTextResponseMessage(
                 ResponseStatus.OK,
                 request.getRequestId(),
-                request.getTopic(),
-                "Subscribed to the topic."),
+                request.getTopics(),
+                "Subscribed to the topics."),
+            compressor,
+            encryptor.get());
+    }
+
+    private void handleUnsubscribe(final Message request) {
+        // unregister subscription
+        subscriptions.removeSubscriptions(request.getTopicsSet(), this);
+
+        // acknowledge the unsubscription
+        Protocol.sendMessage(
+            ch,
+            createPlainTextResponseMessage(
+                ResponseStatus.OK,
+                request.getRequestId(),
+                request.getTopics(),
+                "Unsubscribed from the topics."),
             compressor,
             encryptor.get());
     }
@@ -307,7 +331,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             createPlainTextResponseMessage(
                 ResponseStatus.OK,
                 request.getRequestId(),
-                request.getTopic(),
+                request.getTopics(),
                 "Message has been enqued to publish."),
             compressor,
             encryptor.get());
@@ -324,7 +348,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                         ResponseStatus.OK,
                         request.getRequestId(),
-                        request.getTopic(),
+                        request.getTopics(),
                         "Offered the message to the queue."),
                     compressor,
                     encryptor.get());
@@ -335,7 +359,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                         ResponseStatus.QUEUE_FULL,
                         request.getRequestId(),
-                        request.getTopic(),
+                        request.getTopics(),
                         "Offer rejected! The queue is full."),
                     compressor,
                     encryptor.get());
@@ -347,7 +371,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 createPlainTextResponseMessage(
                     ResponseStatus.QUEUE_NOT_FOUND,
                     request.getRequestId(),
-                    request.getTopic(),
+                    request.getTopics(),
                     "Offer rejected! The queue does not exist."),
                 compressor,
                 encryptor.get());
@@ -373,7 +397,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                         ResponseStatus.QUEUE_EMPTY,
                         request.getRequestId(),
-                        request.getTopic(),
+                        request.getTopics(),
                         "Poll rejected! The queue is empty."),
                     compressor,
                     encryptor.get());
@@ -385,7 +409,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 createPlainTextResponseMessage(
                     ResponseStatus.QUEUE_NOT_FOUND,
                     request.getRequestId(),
-                    request.getTopic(),
+                    request.getTopics(),
                     "Poll rejected! The queue does not exist."),
                 compressor,
                 encryptor.get());
@@ -420,7 +444,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 createPlainTextResponseMessage(
                     ResponseStatus.BAD_REQUEST,
                     request.getRequestId(),
-                    request.getTopic(),
+                    request.getTopics(),
                     "Unknown tcp server request topic. \n"
                       + "Valid topics are:\n"
                       + "  • tcp-server/status\n"
@@ -438,7 +462,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        null,
-                       "dh",
+                       Topics.of("dh"),
                        "Error: Diffie-Hellman keys already exchanged!"),
                     Compressor.off(),
                     Encryptor.off());
@@ -454,7 +478,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
                            null,
-                           "dh",
+                           Topics.of("dh"),
                            dhKeys.getPublicKeyBase64()),
                         Compressor.off(),
                         Encryptor.off());
@@ -465,7 +489,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                         createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            null,
-                           "dh",
+                           Topics.of("dh"),
                            "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage()),
                         Compressor.off(),
                         Encryptor.off());
@@ -490,7 +514,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     createPlainTextResponseMessage(
                        ResponseStatus.BAD_REQUEST,
                        null,
-                       request.getTopic(),
+                       request.getTopics(),
                        "Bad request type: " + request.getType().name()),
                     compressor,
                     encryptor.get());
@@ -624,10 +648,27 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 toBytes(json, "UTF-8"));
     }
 
+//    private static Message createPlainTextResponseMessage(
+//            final ResponseStatus status,
+//            final String requestID,
+//            final String topic,
+//            final String text
+//    ) {
+//        return new Message(
+//                requestID,
+//                MessageType.RESPONSE,
+//                status,
+//                true,
+//                Topics.of(topic),
+//                "text/plain",
+//                "UTF-8",
+//                toBytes(text, "UTF-8"));
+//    }
+
     private static Message createPlainTextResponseMessage(
             final ResponseStatus status,
             final String requestID,
-            final String topic,
+            final Topics topics,
             final String text
     ) {
         return new Message(
@@ -635,7 +676,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 MessageType.RESPONSE,
                 status,
                 true,
-                Topics.of(topic),
+                topics,
                 "text/plain",
                 "UTF-8",
                 toBytes(text, "UTF-8"));
@@ -645,7 +686,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return createPlainTextResponseMessage(
                 ResponseStatus.BAD_REQUEST,
                 request.getRequestId(),
-                request.getTopic(),
+                request.getTopics(),
                 String.format(
                         "The message (%d bytes) is too large! The limit is at %d bytes.",
                         request.getData().length,
@@ -659,6 +700,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private static boolean isRequestSubscribe(final Message msg) {
         return msg.getType() == MessageType.SUBSCRIBE;
+    }
+
+
+    private static boolean isRequestUnsubscribe(final Message msg) {
+        return msg.getType() == MessageType.UNSUBSCRIBE;
     }
 
     private static boolean isRequestPublish(final Message msg) {

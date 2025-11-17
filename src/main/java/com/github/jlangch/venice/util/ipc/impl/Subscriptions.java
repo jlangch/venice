@@ -37,16 +37,32 @@ public class Subscriptions {
             final String topic,
             final IPublisher publisher
     ) {
-        final HashSet<String> topics = new HashSet<>();
-        topics.add(topic);
-        subscriptions.put(publisher, topics);
+        final Set<String> t = subscriptions.getOrDefault(publisher, new HashSet<>());
+        t.add(topic);
+        subscriptions.put(publisher, t);
     }
 
-    public void addSubscription(
+    public void addSubscriptions(
             final Set<String> topics,
             final IPublisher publisher
     ) {
-        subscriptions.put(publisher, topics);
+        final Set<String> t = subscriptions.getOrDefault(publisher, new HashSet<>());
+        t.addAll(topics);
+        subscriptions.put(publisher, t);
+    }
+
+    public void removeSubscriptions(
+            final Set<String> topics,
+            final IPublisher publisher
+    ) {
+        final Set<String> t = subscriptions.getOrDefault(publisher, new HashSet<>());
+        t.removeAll(topics);
+        if (t.isEmpty()) {
+            subscriptions.remove(publisher);
+        }
+        else {
+            subscriptions.put(publisher, t);
+        }
     }
 
     public void removeSubscriptions(
