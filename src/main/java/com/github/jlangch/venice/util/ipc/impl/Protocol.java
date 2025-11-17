@@ -56,7 +56,7 @@ public class Protocol {
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
-        final ByteBuffer header = ByteBuffer.allocate(18);
+        final ByteBuffer header = ByteBuffer.allocate(26);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
@@ -68,6 +68,8 @@ public class Protocol {
         header.putShort(toShort(encryptor.isActive()));
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
+        // 8 bytes (long) expiresAt
+        header.putLong(message.getExpiresAt());
         header.flip();
         IO.writeFully(ch, header);
 
@@ -102,7 +104,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(18);
+            final ByteBuffer header = ByteBuffer.allocate(26);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -117,6 +119,7 @@ public class Protocol {
             final boolean isCompressedData = toBool(header.getShort());
             final boolean isEncryptedData = toBool(header.getShort());
             final long timestamp = header.getLong();
+            final long expiresAt = header.getLong();
 
             if (magic1 != 'v' || magic2 != 'n') {
                 throw new VncException(
@@ -153,6 +156,7 @@ public class Protocol {
                     payloadMeta.isOneway(),
                     payloadMeta.getQueueName(),
                     timestamp,
+                    expiresAt,
                     payloadMeta.getTopics(),
                     payloadMeta.getMimetype(),
                     payloadMeta.getCharset(),

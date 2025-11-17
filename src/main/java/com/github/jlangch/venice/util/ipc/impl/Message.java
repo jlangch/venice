@@ -72,6 +72,7 @@ public class Message implements IMessage {
         this.oneway = oneway;
         this.queueName = null;
         this.timestamp = Instant.now().toEpochMilli();
+        this.expiresAt = -1L;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -86,6 +87,7 @@ public class Message implements IMessage {
             final boolean oneway,
             final String queueName,
             final long timestamp,
+            final long expiresAt,
             final Topics topics,
             final String mimetype,
             final String charset,
@@ -107,6 +109,7 @@ public class Message implements IMessage {
         this.oneway = oneway;
         this.queueName = StringUtil.trimToNull(queueName);
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
+        this.expiresAt = expiresAt;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -131,7 +134,7 @@ public class Message implements IMessage {
         return new Message(
                 id, requestId,
                 type, responseStatus, oneway,
-                queueName, timestamp,
+                queueName, timestamp, expiresAt,
                 topics, mimetype, charset, data);
   }
 
@@ -146,7 +149,7 @@ public class Message implements IMessage {
         return new Message(
                 id, requestId,
                 type, responseStatus, oneway,
-                queueName, timestamp,
+                queueName, timestamp, expiresAt,
                 topics, mimetype, charset, data);
     }
 
@@ -180,6 +183,17 @@ public class Message implements IMessage {
         return timestamp;
     }
 
+    @Override
+    public long getExpiresAt() {
+        return expiresAt;
+    }
+
+    @Override
+    public boolean hasExpired() {
+        return expiresAt >= 0 && expiresAt < System.currentTimeMillis();
+    }
+
+
     public String getQueueName() {
         return queueName;
     }
@@ -192,9 +206,17 @@ public class Message implements IMessage {
     }
 
     @Override
+    public LocalDateTime getExpiresAtAsLocalDateTime() {
+        return expiresAt < 0
+                ? null
+                : LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(expiresAt),
+                    ZoneId.systemDefault());
+    }
+
+    @Override
     public long getMessageAge() {
-        final long now = Instant.now().toEpochMilli();
-        return now - timestamp;
+        return System.currentTimeMillis() - timestamp;
     }
 
     @Override
@@ -305,6 +327,11 @@ public class Message implements IMessage {
 
        sb.append(String.format(
                    "%s %s\n",
+                   padRight("ExpiresAt:", 12),
+                   getExpiresAtAsLocalDateTime()));
+
+       sb.append(String.format(
+                   "%s %s\n",
                    padRight("Topics:", 12),
                    Topics.encode(topics)));
 
@@ -401,6 +428,7 @@ public class Message implements IMessage {
     private final boolean oneway;
     private final String queueName;  // used for offer/poll messages
     private final long timestamp;
+    private final long expiresAt;
     private final Topics topics;
     private final String mimetype;
     private final String charset;

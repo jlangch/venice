@@ -42,6 +42,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
  * ├───────────────────────────────┤
  * │ Timestamp                     │   by message creator
  * ├───────────────────────────────┤
+ * │ ExpiresAt                     │   by client (may be null)
+ * ├───────────────────────────────┤
  * │ Request ID                    │   by client (may be used for idempotency checks by the receiver)
  * ├───────────────────────────────┤
  * │ Topic                         │   by client
@@ -98,6 +100,22 @@ public interface IMessage {
      * @return the message's age in milliseconds
      */
     long getMessageAge();
+
+    /**
+     * @return the message expiry timestamp (milliseconds since epoch), -1 if it never expires
+     */
+    long getExpiresAt();
+
+    /**
+     * @return <code>true</code> if the message has expired else <code>false</code>
+     */
+    boolean hasExpired();
+
+    /**
+     * @return the message expiresAt as LocalDateTime or <code>null</code> if
+     *         it never expires
+     */
+    LocalDateTime getExpiresAtAsLocalDateTime();
 
     /**
      * @return the message topic

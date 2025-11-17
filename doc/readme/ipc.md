@@ -480,6 +480,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
   * `:oneway?`          - `true` if one-way message else `false`
   * `:response-status`  - the response status (ok, bad request, ...) 
   * `:timestamp`        - the message's creation timestamp in milliseconds since epoch
+  * `:request-id`       - the request ID (may be `nil`)
   * `:topic`            - the topic
   * `:payload-mimetype` - the payload data mimetype
   * `:payload-charset`  - the payload data charset (if payload is a text form)
@@ -500,6 +501,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
       (println (ipc/message-field m :oneway?))
       (println (ipc/message-field m :timestamp))
       (println (ipc/message-field m :response-status))
+      (println (ipc/message-field m :request-id))
       (println (ipc/message-field m :topic))
       (println (ipc/message-field m :payload-mimetype))
       (println (ipc/message-field m :payload-charset))
@@ -515,6 +517,7 @@ baac8cf8-48fd-4e16-a1cc-b3867bd4e505
 true
 1763313279378
 :OK
+1
 test
 text/plain
 :UTF-8
@@ -535,6 +538,7 @@ Hello!
       (println (ipc/message-field m :oneway?))
       (println (ipc/message-field m :timestamp))
       (println (ipc/message-field m :response-status))
+      (println (ipc/message-field m :request-id))
       (println (ipc/message-field m :topic))
       (println (ipc/message-field m :payload-mimetype))
       (println (ipc/message-field m :payload-charset))
@@ -549,6 +553,7 @@ abfaab17-dea7-4a38-85ee-501b6ead0aed
 true
 1763313327205
 :OK
+1
 test
 application/octet-stream
 nil
@@ -568,6 +573,7 @@ nil
       (println (ipc/message-field m :oneway?))
       (println (ipc/message-field m :timestamp))
       (println (ipc/message-field m :response-status))
+      (println (ipc/message-field m :request-id))
       (println (ipc/message-field m :topic))
       (println (ipc/message-field m :payload-mimetype))
       (println (ipc/message-field m :payload-charset))
@@ -583,6 +589,7 @@ Output:
 true
 1763313337189
 :OK
+1
 test
 application/json
 :UTF-8

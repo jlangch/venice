@@ -1734,6 +1734,8 @@ public class IPCFunctions {
                         " ├───────────────────────────────┤   \n" +
                         " │ Timestamp                     │   by message creator\n" +
                         " ├───────────────────────────────┤   \n" +
+                        " │ ExpiresAt                     │   by client (may be null)\n" +
+                        " ├───────────────────────────────┤   \n" +
                         " │ Request ID                    │   by client (may be used for idempotency checks by the receiver)\n" +
                         " ├───────────────────────────────┤   \n" +
                         " │ Topic                         │   by client\n" +
@@ -1751,6 +1753,8 @@ public class IPCFunctions {
                         "  * `:oneway?`          - `true` if one-way message else `false`\n" +
                         "  * `:response-status`  - the response status (ok, bad request, ...) \n" +
                         "  * `:timestamp`        - the message's creation timestamp in milliseconds since epoch\n" +
+                        "  * `:expires-at`       - the message's expiry timestamp in milliseconds since epoch\n" +
+                        "  * `:request-id`       - the request ID (may be nil)\n" +
                         "  * `:topic`            - the topic\n" +
                         "  * `:payload-mimetype` - the payload data mimetype\n" +
                         "  * `:payload-charset`  - the payload data charset (if payload is a text form)\n" +
@@ -1784,7 +1788,9 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :type))                    \n" +
                         "  (println (ipc/message-field m :oneway?))                 \n" +
                         "  (println (ipc/message-field m :timestamp))               \n" +
+                        "  (println (ipc/message-field m :expires-at))              \n" +
                         "  (println (ipc/message-field m :response-status))         \n" +
+                        "  (println (ipc/message-field m :request-id))              \n" +
                         "  (println (ipc/message-field m :topic))                   \n" +
                         "  (println (ipc/message-field m :payload-mimetype))        \n" +
                         "  (println (ipc/message-field m :payload-charset))         \n" +
@@ -1798,7 +1804,9 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :type))                    \n" +
                         "  (println (ipc/message-field m :oneway?))                 \n" +
                         "  (println (ipc/message-field m :timestamp))               \n" +
+                        "  (println (ipc/message-field m :expires-at))              \n" +
                         "  (println (ipc/message-field m :response-status))         \n" +
+                        "  (println (ipc/message-field m :request-id))              \n" +
                         "  (println (ipc/message-field m :topic))                   \n" +
                         "  (println (ipc/message-field m :payload-mimetype))        \n" +
                         "  (println (ipc/message-field m :payload-charset))         \n" +
@@ -1810,7 +1818,9 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :type))               \n" +
                         "  (println (ipc/message-field m :oneway?))            \n" +
                         "  (println (ipc/message-field m :timestamp))          \n" +
+                        "  (println (ipc/message-field m :expires-at))         \n" +
                         "  (println (ipc/message-field m :response-status))    \n" +
+                        "  (println (ipc/message-field m :request-id))         \n" +
                         "  (println (ipc/message-field m :topic))              \n" +
                         "  (println (ipc/message-field m :payload-mimetype))   \n" +
                         "  (println (ipc/message-field m :payload-charset))    \n" +
@@ -1836,9 +1846,13 @@ public class IPCFunctions {
                     case "id":               return new VncString(message.getId().toString());
                     case "type":             return new VncKeyword(message.getType().name());
                     case "timestamp":        return new VncLong(message.getTimestamp());
+                    case "expires-at":       return new VncLong(message.getExpiresAt());
                     case "oneway?":          return VncBoolean.of(message.isOneway());
                     case "response-status":  return new VncKeyword(message.getResponseStatus().name());
                     case "topic":            return new VncString(message.getTopic());
+                    case "request-id":       return message.getRequestId() == null
+                                                        ? Nil
+                                                        : new VncString(message.getRequestId());
                     case "payload-mimetype": return new VncString(message.getMimetype());
                     case "payload-charset":  return message.getCharset() == null
                                                         ? Nil

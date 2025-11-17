@@ -22,11 +22,22 @@
 package com.github.jlangch.venice.util.ipc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
 
 public class TcpClientTest {
+
+    @Test
+    public void test_epoch_millis() throws Exception {
+        long millis1 = Instant.now().toEpochMilli();
+        long millis2 = System.currentTimeMillis();
+
+        assertTrue(Math.abs(millis2 - millis1) < 50);
+    }
 
     @Test
     public void test_client_max_size() throws Exception {
