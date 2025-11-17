@@ -33,6 +33,31 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class IpcFunctionsTest {
 
     @Test
+    public void test_client_clone() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                             \n" +
+                "  (def counter (atom 0))                                                        \n" +
+                "                                                                                \n" +
+                "  (defn echo-handler [m]                                                        \n" +
+                "    (swap! counter inc)                                                         \n" +
+                "    m)                                                                          \n" +
+                "                                                                                \n" +
+                "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
+                "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
+                "             client-2 (ipc/clone client-1)                                      \n" +
+                "             client-3 (ipc/clone client-1)]                                     \n" +
+                "    (ipc/send client-1 (ipc/plain-text-message \"test\" \"hello 1\"))           \n" +
+                "    (ipc/send client-2 (ipc/plain-text-message \"test\" \"hello 2\"))           \n" +
+                "    (ipc/send client-3 (ipc/plain-text-message \"test\" \"hello 3\")))          \n" +
+                "                                                                                \n" +
+                "  (deref counter))";
+
+        assertEquals(3L, venice.eval(script));
+    }
+
+    @Test
     public void test_send_receive() {
         final Venice venice = new Venice();
 

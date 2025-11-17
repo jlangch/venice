@@ -317,9 +317,9 @@ public class IPCFunctions {
                         "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
                         "             client-2 (ipc/clone client-1)                                      \n" +
                         "             client-3 (ipc/clone client-1)]                                     \n" +
-                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
-                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
-                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello\"))))               ")
+                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello 1\"))               \n" +
+                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello 2\"))               \n" +
+                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello 3\"))))             ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
