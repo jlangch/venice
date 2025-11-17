@@ -1880,6 +1880,7 @@ public class IPCFunctions {
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
+                        "ipc/message->expired?",
                         "ipc/message->map",
                         "ipc/message->json")
                     .build()
@@ -1920,6 +1921,46 @@ public class IPCFunctions {
         };
 
 
+        public static VncFunction ipc_message_expiredQ =
+            new VncFunction(
+                    "ipc/message-expired?",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(ipc/message-expired? message)")
+                        .doc(
+                            "Returns `true` the message has expired else `false`.")
+                .examples(
+                            "(let [m (ipc/text-message \"test\"                         \n" +
+                            "                          \"text/plain\"                   \n" +
+                            "                          :UTF-8                           \n" +
+                            "                          \"Hello!\")]                     \n" +
+                            "  (println (ipc/message-expired? m)))                      ")
+                        .seeAlso(
+                            "ipc/server",
+                            "ipc/client",
+                            "ipc/text-message",
+                            "ipc/plain-text-message",
+                            "ipc/venice-message",
+                            "ipc/message-field",
+                            "ipc/message->map",
+                            "ipc/message->json")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 2);
+
+                    final IMessage message = Coerce.toVncJavaObject(args.first(), IMessage.class);
+
+                    return VncBoolean.of(message.hasExpired());
+                 }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
+
+
     public static VncFunction ipc_message_to_map =
         new VncFunction(
                 "ipc/message->map",
@@ -1958,6 +1999,8 @@ public class IPCFunctions {
                         "ipc/plain-text-message",
                         "ipc/venice-message",
                         "ipc/binary-message",
+                        "ipc/message-field",
+                        "ipc/message-expired?",
                         "ipc/message->json")
                     .build()
         ) {
@@ -2040,6 +2083,8 @@ public class IPCFunctions {
                             "ipc/plain-text-message",
                             "ipc/venice-message",
                             "ipc/binary-message",
+                            "ipc/message-field",
+                            "ipc/message-expired?",
                             "ipc/message->map")
                         .build()
             ) {
@@ -2434,6 +2479,7 @@ public class IPCFunctions {
                     .add(ipc_plain_text_message)
                     .add(ipc_binary_message)
                     .add(ipc_venice_message)
+                    .add(ipc_message_expiredQ)
                     .add(ipc_message_field)
                     .add(ipc_message_to_map)
                     .add(ipc_message_to_json)

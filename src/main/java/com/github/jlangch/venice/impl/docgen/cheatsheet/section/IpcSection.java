@@ -72,9 +72,10 @@ public class IpcSection implements ISectionBuilder {
         msg.addItem(diBuilder.getDocItem("ipc/plain-text-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/binary-message", false));
         msg.addItem(diBuilder.getDocItem("ipc/venice-message", false));
+        msg.addItem(diBuilder.getDocItem("ipc/message-expired?", false));
+        msg.addItem(diBuilder.getDocItem("ipc/message-field", false));
         msg.addItem(diBuilder.getDocItem("ipc/message->map", false));
         msg.addItem(diBuilder.getDocItem("ipc/message->json", false));
-        msg.addItem(diBuilder.getDocItem("ipc/message-field", false));
         msg.addItem(diBuilder.getDocItem("ipc/oneway?", false));
         msg.addItem(diBuilder.getDocItem("ipc/response-ok?", false));
         msg.addItem(diBuilder.getDocItem("ipc/response-err?", false));
