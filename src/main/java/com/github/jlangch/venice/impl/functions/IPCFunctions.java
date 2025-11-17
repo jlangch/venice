@@ -1949,7 +1949,7 @@ public class IPCFunctions {
             ) {
                 @Override
                 public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 2);
+                    ArityExceptions.assertArity(this, args, 1);
 
                     final IMessage message = Coerce.toVncJavaObject(args.first(), IMessage.class);
 

@@ -22,7 +22,9 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +33,138 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class IpcFunctionsTest {
+
+    @Test
+    public void test_plain_text_message_expiry_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                       \n" +
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" nil))  ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_plain_text_message_expiry_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                       \n" +
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" (+ (current-time-millis) 3_600_000)))  ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_plain_text_message_expiry_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                       \n" +
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" (- (current-time-millis) 3_600_000)))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_text_message_expiry_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                                      \n" +
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" nil)) ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_text_message_expiry_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                                      \n" +
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" (+ (current-time-millis) 3_600_000))) ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_text_message_expiry_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                                      \n" +
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" (- (current-time-millis) 3_600_000))) ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_binary_message_expiry_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                                                     \n" +
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) nil)) ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_binary_message_expiry_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                                                     \n" +
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) (+ (current-time-millis) 3_600_000))) ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_binary_message_expiry_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                                                     \n" +
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) (- (current-time-millis) 3_600_000))) ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_venice_message_expiry_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                        \n" +
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} nil))  ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_venice_message_expiry_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                        \n" +
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} (+ (current-time-millis) 3_600_000)))  ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_venice_message_expiry_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(ipc/message-expired?                                        \n" +
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} (- (current-time-millis) 3_600_000)))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
 
     @Test
     public void test_client_clone() {
