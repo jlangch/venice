@@ -1431,7 +1431,8 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/text-message topic mimetype charset text)",
-                        "(ipc/text-message request-id topic mimetype charset text)")
+                        "(ipc/text-message request-id topic mimetype charset text)",
+                        "(ipc/text-message request-id topic mimetype charset text expires-at)")
                     .doc(
                         "Creates a text message\n\n" +
                         "*Arguments:* \n\n" +
@@ -1439,10 +1440,22 @@ public class IPCFunctions {
                         "| topic t      | A topic (string) |\n" +
                         "| mimetype m   | The mimetype of the payload text. A string like 'text/plain' |\n" +
                         "| charset c    | The charset of the payload text. A keyword like `:UTF-8`|\n" +
-                        "| text t       | The message payload text (a string)|")
+                        "| text t       | The message payload text (a string)|\n" +
+                        "| expires-at t | Message expiration time in millis since epoch (may be `nil`)|")
                     .examples(
                         "(->> (ipc/text-message \"test\"                          \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ",
+                        "(->> (ipc/text-message \"100\" \"test\"                  \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ",
+                        "(->> (ipc/text-message \"100\" \"test\"                  \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\"   \n" +
+                        "                       (-> (time/local-date-time)        \n" +
+                        "                           (time/plus :hours 2)          \n" +
+                        "                           (time/to-millis)))            \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
@@ -1524,17 +1537,28 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/plain-text-message topic text)",
-                        "(ipc/plain-text-message request-id topic text)")
+                        "(ipc/plain-text-message request-id topic text)",
+                        "(ipc/plain-text-message request-id topic text expires-at)")
                     .doc(
                         "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n"  +
                         "*Arguments:* \n\n" +
                         "| request-id r | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t      | A topic (string) |\n" +
-                        "| text t       | The message payload text (a string)|")
+                        "| text t       | The message payload text (a string)|\n" +
+                        "| expires-at t | Message expiration time in millis since epoch (may be `nil`)|")
                     .examples(
-                        "(->> (ipc/plain-text-message \"test\" \"hello\")  \n" +
-                        "     (ipc/message->map)                           \n" +
-                        "     (println))                                   ")
+                        "(->> (ipc/plain-text-message \"test\" \"hello\")          \n" +
+                        "     (ipc/message->map)                                   \n" +
+                        "     (println))                                           ",
+                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\")  \n" +
+                        "     (ipc/message->map)                                   \n" +
+                        "     (println))                                           ",
+                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\"   \n" +
+                        "                             (-> (time/local-date-time)   \n" +
+                        "                                 (time/plus :hours 2)     \n" +
+                        "                                 (time/to-millis)))       \n" +
+                        "     (ipc/message->map)                                   \n" +
+                        "     (println))                                           ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -1606,18 +1630,33 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/binary-message topic mimetype data)",
-                        "(ipc/binary-message request-id topic mimetype data)")
+                        "(ipc/binary-message request-id topic mimetype data)",
+                        "(ipc/binary-message request-id topic mimetype data expires-at)")
                     .doc(
                         "Creates a binary message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| request-id r | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t      | A topic (string) |\n" +
                         "| mimetype m   | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
-                        "| data d       | The message payload binary data (a bytebuf)|")
+                        "| data d       | The message payload binary data (a bytebuf)|\n" +
+                        "| expires-at t | Message expiration time in millis since epoch (may be `nil`)|")
             .examples(
                         "(->> (ipc/binary-message \"test\"                        \n" +
                         "                         \"application/octet-stream\"    \n" +
                         "                         (bytebuf [0 1 2 3 4 5 6 7]))    \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ",
+                        "(->> (ipc/binary-message \"100\" \"test\"                \n" +
+                        "                         \"application/octet-stream\"    \n" +
+                        "                         (bytebuf [0 1 2 3 4 5 6 7]))    \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ",
+                        "(->> (ipc/binary-message \"100\" \"test\"                \n" +
+                        "                         \"application/octet-stream\"    \n" +
+                        "                         (bytebuf [0 1 2 3 4 5 6 7])     \n" +
+                        "                         (-> (time/local-date-time)      \n" +
+                        "                             (time/plus :hours 2)        \n" +
+                        "                             (time/to-millis)))          \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
@@ -1690,7 +1729,8 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/venice-message topic data)",
-                        "(ipc/venice-message request-id topic data)")
+                        "(ipc/venice-message request-id topic data)",
+                        "(ipc/venice-message request-id topic data expires-at)")
                     .doc(
                         "Creates a venice message.\n\n" +
                         "The Venice data is serialized as JSON (mimetype: 'application/json') " +
@@ -1698,10 +1738,22 @@ public class IPCFunctions {
                         "*Arguments:* \n\n" +
                         "| request-id r | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t      | A topic (string) |\n" +
-                        "| data d       | The message payload Venice data (e.g.: a map, list, ...)|")
+                        "| data d       | The message payload Venice data (e.g.: a map, list, ...)|\n" +
+                        "| expires-at t | Message expiration time in millis since epoch (may be `nil`)|")
             .examples(
                         "(->> (ipc/venice-message \"test\"                        \n" +
                         "                         {:a 100, :b 200})               \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ",
+                        "(->> (ipc/venice-message \"100\" \"test\"                \n" +
+                        "                         {:a 100, :b 200})               \n" +
+                        "     (ipc/message->map)                                  \n" +
+                        "     (println))                                          ",
+                        "(->> (ipc/venice-message \"100\" \"test\"                \n" +
+                        "                         {:a 100, :b 200}                \n" +
+                        "                         (-> (time/local-date-time)      \n" +
+                        "                             (time/plus :hours 2)        \n" +
+                        "                             (time/to-millis)))          \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
@@ -1880,7 +1932,7 @@ public class IPCFunctions {
                         "ipc/text-message",
                         "ipc/plain-text-message",
                         "ipc/venice-message",
-                        "ipc/message->expired?",
+                        "ipc/message-expired?",
                         "ipc/message->map",
                         "ipc/message->json")
                     .build()
