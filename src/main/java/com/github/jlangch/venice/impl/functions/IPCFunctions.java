@@ -1753,7 +1753,7 @@ public class IPCFunctions {
                         "  * `:oneway?`          - `true` if one-way message else `false`\n" +
                         "  * `:response-status`  - the response status (ok, bad request, ...) \n" +
                         "  * `:timestamp`        - the message's creation timestamp in milliseconds since epoch\n" +
-                        "  * `:expires-at`       - the message's expiry timestamp in milliseconds since epoch\n" +
+                        "  * `:expires-at`       - the message's expiry timestamp in milliseconds since epoch (may be nil)\n" +
                         "  * `:request-id`       - the request ID (may be nil)\n" +
                         "  * `:topic`            - the topic\n" +
                         "  * `:payload-mimetype` - the payload data mimetype\n" +
@@ -1846,7 +1846,9 @@ public class IPCFunctions {
                     case "id":               return new VncString(message.getId().toString());
                     case "type":             return new VncKeyword(message.getType().name());
                     case "timestamp":        return new VncLong(message.getTimestamp());
-                    case "expires-at":       return new VncLong(message.getExpiresAt());
+                    case "expires-at":       return message.getExpiresAt() < 0
+                                                        ? Nil
+                                                        : new VncLong(message.getExpiresAt());
                     case "oneway?":          return VncBoolean.of(message.isOneway());
                     case "response-status":  return new VncKeyword(message.getResponseStatus().name());
                     case "topic":            return new VncString(message.getTopic());
@@ -1882,6 +1884,8 @@ public class IPCFunctions {
                         "  * `:type`\n" +
                         "  * `:status`\n" +
                         "  * `:timestamp`\n" +
+                        "  * `:expires-at`\n" +
+                        "  * `:request-id`\n" +
                         "  * `:topic`\n" +
                         "  * `:mimetype`\n" +
                         "  * `:charset`\n" +
@@ -1917,36 +1921,39 @@ public class IPCFunctions {
                 if (m.getCharset() == null) {
                     // binary
                     return VncOrderedMap.of(
-                            new VncKeyword("requestid"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
-                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
-                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
-                            new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
-                            new VncKeyword("topic"),     new VncString(m.getTopic()),
-                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
-                            new VncKeyword("data"),      new VncByteBuffer(m.getData()));
+                            new VncKeyword("type"),       new VncKeyword(m.getType().name()),
+                            new VncKeyword("status"),     new VncKeyword(m.getResponseStatus().name()),
+                            new VncKeyword("timestamp"),  new VncLong(m.getTimestamp()),
+                            new VncKeyword("expires-at"), m.getExpiresAt() < 0 ? Nil : new VncLong(m.getExpiresAt()),
+                            new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
+                            new VncKeyword("topic"),      new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
+                            new VncKeyword("data"),       new VncByteBuffer(m.getData()));
                 }
                 else if ("application/json".equals(m.getMimetype())) {
                     // json
                     return VncOrderedMap.of(
-                            new VncKeyword("requestid"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
-                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
-                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
-                            new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
-                            new VncKeyword("topic"),     new VncString(m.getTopic()),
-                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
-                            new VncKeyword("data"),      Json.readJson(m.getText(), true));
+                            new VncKeyword("type"),       new VncKeyword(m.getType().name()),
+                            new VncKeyword("status"),     new VncKeyword(m.getResponseStatus().name()),
+                            new VncKeyword("timestamp"),  new VncLong(m.getTimestamp()),
+                            new VncKeyword("expires-at"), m.getExpiresAt() < 0 ? Nil : new VncLong(m.getExpiresAt()),
+                            new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
+                            new VncKeyword("topic"),      new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
+                            new VncKeyword("data"),       Json.readJson(m.getText(), true));
                 }
                 else {
                     // text
                     return VncOrderedMap.of(
-                            new VncKeyword("requestid"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
-                            new VncKeyword("type"),      new VncKeyword(m.getType().name()),
-                            new VncKeyword("status"),    new VncKeyword(m.getResponseStatus().name()),
-                            new VncKeyword("timestamp"), new VncLong(m.getTimestamp()),
-                            new VncKeyword("topic"),     new VncString(m.getTopic()),
-                            new VncKeyword("mimetype"),  new VncString(m.getMimetype()),
-                            new VncKeyword("charset"),   new VncKeyword(m.getCharset()),
-                            new VncKeyword("text"),      new VncString(m.getText()));
+                            new VncKeyword("type"),       new VncKeyword(m.getType().name()),
+                            new VncKeyword("status"),     new VncKeyword(m.getResponseStatus().name()),
+                            new VncKeyword("timestamp"),  new VncLong(m.getTimestamp()),
+                            new VncKeyword("expires-at"), m.getExpiresAt() < 0 ? Nil : new VncLong(m.getExpiresAt()),
+                            new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
+                            new VncKeyword("topic"),      new VncString(m.getTopic()),
+                            new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
+                            new VncKeyword("charset"),    new VncKeyword(m.getCharset()),
+                            new VncKeyword("text"),       new VncString(m.getText()));
                 }
             }
 
