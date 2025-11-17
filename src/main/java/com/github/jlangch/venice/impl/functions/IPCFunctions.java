@@ -1785,13 +1785,13 @@ public class IPCFunctions {
                 }
                 else if (args.size() == 3) {
                     requestId = args.nth(0);
-                    topic = Coerce.toVncString(args.nth(0));
+                    topic = Coerce.toVncString(args.nth(1));
                     data = args.nth(2);
                     expiresAt = null;
                 }
                 else {
                     requestId = args.nth(0);
-                    topic = Coerce.toVncString(args.nth(0));
+                    topic = Coerce.toVncString(args.nth(1));
                     data = args.nth(2);
                     expiresAt = args.nth(3);
                 }
