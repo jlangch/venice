@@ -382,25 +382,41 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final String queueName = request.getQueueName();
         final LinkedBlockingQueue<Message> queue = p2pQueues.get(queueName);
         if (queue != null) {
-            final Message msg = queue.poll(0, TimeUnit.MILLISECONDS);
-            if (msg != null) {
-               Protocol.sendMessage(
-                   ch,
-                   msg.withType(MessageType.RESPONSE, true)
-                      .withResponseStatus(ResponseStatus.OK),
-                   compressor,
-                   encryptor.get());
-            }
-            else {
-                Protocol.sendMessage(
-                    ch,
-                    createPlainTextResponseMessage(
-                        ResponseStatus.QUEUE_EMPTY,
-                        request.getRequestId(),
-                        request.getTopics(),
-                        "Poll rejected! The queue is empty."),
-                    compressor,
-                    encryptor.get());
+            while(true) {
+                final Message msg = queue.poll(0, TimeUnit.MILLISECONDS);
+                if (msg == null) {
+                    Protocol.sendMessage(
+                        ch,
+                        createPlainTextResponseMessage(
+                            ResponseStatus.QUEUE_EMPTY,
+                            request.getRequestId(),
+                            request.getTopics(),
+                            "Poll rejected! The queue is empty."),
+                        compressor,
+                        encryptor.get());
+                    return;
+                }
+                else if (msg.hasExpired()) {
+                    // discard expired message -> try next message from the queue
+                    errorBuffer.push(
+                        new Error(
+                            String.format(
+                                "Discarded expired message (request-id: %s)" +
+                                "polling from queue '%s'!",
+                                msg.getRequestId(),
+                                queueName),
+                            request));
+                   continue;
+                }
+                else {
+                    Protocol.sendMessage(
+                        ch,
+                        msg.withType(MessageType.RESPONSE, true)
+                           .withResponseStatus(ResponseStatus.OK),
+                        compressor,
+                        encryptor.get());
+                    return;
+                }
             }
         }
         else {
