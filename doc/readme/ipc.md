@@ -82,6 +82,10 @@ Send a message from a client to a server and receive a response
 
 ### Offer / Poll
 
+Offer messages to a queue and poll messages from a queue. A message is delivered to at most one client.
+
+**synchronous offer / poll**
+
 ```clojure
 (do
   ;; thread-safe printing
@@ -100,7 +104,7 @@ Send a message from a client to a server and receive a response
       
       (ipc/create-queue server order-queue capacity)
 
-      ;; client1 offers order Venice data message to the queue
+      ;; client1 offers an order Venice data message to the queue
       ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
       (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
         (println "ORDER:" (ipc/message->json true order))
