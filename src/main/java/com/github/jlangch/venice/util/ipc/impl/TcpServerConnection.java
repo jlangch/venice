@@ -24,7 +24,6 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,10 +36,12 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
+import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
+import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.Error;
-import com.github.jlangch.venice.util.ipc.impl.util.ErrorCircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
@@ -56,7 +57,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final AtomicLong maxMessageSize,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
-            final Map<String, LinkedBlockingQueue<Message>> p2pQueues,
+            final Map<String, IpcQueue<Message>> p2pQueues,
             final Compressor compressor,
             final ServerStatistics statistics,
             final Supplier<VncMap> serverThreadPoolStatistics
@@ -71,8 +72,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
 
-        this.publishQueue = new LinkedBlockingQueue<Message>(publishQueueCapacity);
-        this.errorBuffer = new ErrorCircularBuffer<>(ERROR_QUEUE_CAPACITY);
+        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity);
+        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY);
         this.p2pQueues = p2pQueues;
 
         this.dhKeys = DiffieHellmanKeys.create();
@@ -120,8 +121,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             // there is no dead letter queue yet, just count the
             // discarded messages
-            errorBuffer.push(new Error("Failed to enque message for publishing!", msg, ex));
-            statistics.incrementDiscardedPublishCount();
+            try {
+                errorBuffer.offer(new Error("Failed to enque message for publishing!", msg, ex));
+                statistics.incrementDiscardedPublishCount();
+            }
+            catch(InterruptedException ignore) {
+            }
         }
     }
 
@@ -339,7 +344,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private void handleOffer(final Message request) throws InterruptedException {
         final String queueName = request.getQueueName();
-        final LinkedBlockingQueue<Message> queue = p2pQueues.get(queueName);
+        final IpcQueue<Message> queue = p2pQueues.get(queueName);
         if (queue != null) {
             final Message msg = request.withType(MessageType.REQUEST, false);
             if (queue.offer(msg, 0, TimeUnit.MILLISECONDS)) {
@@ -380,7 +385,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private void handlePoll(final Message request) throws InterruptedException {
         final String queueName = request.getQueueName();
-        final LinkedBlockingQueue<Message> queue = p2pQueues.get(queueName);
+        final IpcQueue<Message> queue = p2pQueues.get(queueName);
         if (queue != null) {
             while(true) {
                 final Message msg = queue.poll(0, TimeUnit.MILLISECONDS);
@@ -398,7 +403,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 }
                 else if (msg.hasExpired()) {
                     // discard expired message -> try next message from the queue
-                    errorBuffer.push(
+                    errorBuffer.offer(
                         new Error(
                             String.format(
                                 "Discarded expired message (request-id: %s)" +
@@ -513,11 +518,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private void handleInvalidRequestType(final Message request) {
+    private void handleInvalidRequestType(final Message request) throws InterruptedException {
         if (mode == State.Request_Response) {
             if (request.isOneway()) {
                 // oneway request -> cannot send and error message back
-                errorBuffer.push(
+                errorBuffer.offer(
                         new Error(
                                 "Bad request type '" + request.getType() + "'! "
                                     + "Cannot send error response for oneway request!",
@@ -537,7 +542,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
         }
         else {
-            errorBuffer.push(new Error(
+            errorBuffer.offer(new Error(
                 "Bad request type '" + request.getType() + "'! "
                     + "Cannot send error response for channel in publish mode!",
                 request));
@@ -545,11 +550,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private void handleRequestTooLarge(final Message request) {
+    private void handleRequestTooLarge(final Message request) throws InterruptedException {
         if (mode == State.Request_Response) {
             if (request.isOneway()) {
                 // oneway request -> cannot send and error message back
-                errorBuffer.push(new Error(
+                errorBuffer.offer(new Error(
                     "Request too large! Cannot send error response for oneway request!",
                     request));
                 statistics.incrementDiscardedResponseCount();
@@ -599,7 +604,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private Message getTcpServerNextError() {
         try {
-            final Error err = errorBuffer.pop();
+            final Error err = errorBuffer.poll();
             if (err == null) {
                 return createJsonResponseMessage(
                         ResponseStatus.OK,
@@ -769,7 +774,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
 
     // queues
-    private final ErrorCircularBuffer<Error> errorBuffer;
-    private final LinkedBlockingQueue<Message> publishQueue;
-    private final Map<String, LinkedBlockingQueue<Message>> p2pQueues;
+    private final IpcQueue<Error> errorBuffer;
+    private final IpcQueue<Message> publishQueue;
+    private final Map<String, IpcQueue<Message>> p2pQueues;
 }

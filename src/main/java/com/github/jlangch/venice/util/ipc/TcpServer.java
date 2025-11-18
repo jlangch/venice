@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +44,8 @@ import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
+import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
+import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 
 // https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
@@ -267,7 +268,7 @@ public class TcpServer implements Closeable {
             // create the queue
             p2pQueues.put(
                 queueName,
-                new LinkedBlockingQueue<Message>(capacity));
+                new BoundedQueue<Message>(queueName, capacity));
         }
     }
 
@@ -346,7 +347,7 @@ public class TcpServer implements Closeable {
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
-    private final Map<String, LinkedBlockingQueue<Message>> p2pQueues = new HashMap<>();
+    private final Map<String, IpcQueue<Message>> p2pQueues = new HashMap<>();
 
     // compression
     private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());

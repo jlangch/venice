@@ -19,55 +19,85 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.util;
+package com.github.jlangch.venice.util.ipc.impl.queue;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+
+import joptsimple.internal.Objects;
 
 
 /**
- * A very simple, thread-safe implementation of an error circular buffer.
- *
- * <p>It's not designed for heavy traffic, but works fine for buffering
- * low traffic errors.
+ * A simple, thread-safe implementation of a circular buffer.
  */
-public class ErrorCircularBuffer<T> {
+public class CircularBuffer<T> implements IpcQueue<T> {
 
-    public ErrorCircularBuffer(final int capacity) {
+    public CircularBuffer(final String name, final int capacity) {
+        this.name = name;
         this.capacity = capacity;
         this.buffer = new LinkedList<>();
     }
 
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
     public int size() {
         synchronized(this) {
             return buffer.size();
         }
     }
 
+    @Override
+    public int capacity() {
+        return capacity;
+    }
+
+    @Override
     public void clear() {
         synchronized(this) {
             buffer.clear();
         }
     }
 
-    public T pop() {
+    @Override
+    public T poll() {
         synchronized(this) {
-            return buffer.isEmpty() ? null : buffer.getFirst();
+            return buffer.isEmpty() ? null : buffer.pollFirst();
         }
     }
 
-    public void push(final T item) {
-        if (item == null) return;
+    @Override
+    public T poll(long timeout, TimeUnit unit) {
+        return poll();
+    }
+
+    @Override
+    public boolean offer(final T item) {
+        Objects.ensureNotNull(item);
 
         synchronized(this) {
-            while (buffer.size() > capacity) {
+            while (buffer.size() >= capacity) {
                 buffer.removeFirst();
             }
 
-            buffer.addLast(item);
+            buffer.offerLast(item);
+
+            return true;
         }
     }
 
+    @Override
+    public boolean offer(final T item, long timeout, TimeUnit unit) {
+        return offer(item);
+    }
 
+
+
+    private final String name;
     private final int capacity;
     private final LinkedList<T> buffer;
 }

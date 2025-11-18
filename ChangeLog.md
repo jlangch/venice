@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file.
 
 - Added IPC message expiration
 
+- Fixed the IPC error circular buffer. It was growing one item larger than the specified capacity.
+
 
 
 ## [1.12.61] - 2025-11-16
