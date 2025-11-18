@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl.queue;
 
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import joptsimple.internal.Objects;
 
@@ -82,6 +83,7 @@ public class CircularBuffer<T> implements IpcQueue<T> {
         synchronized(this) {
             while (buffer.size() >= capacity) {
                 buffer.removeFirst();
+                discardCount.incrementAndGet();
             }
 
             buffer.offerLast(item);
@@ -95,9 +97,13 @@ public class CircularBuffer<T> implements IpcQueue<T> {
         return offer(item);
     }
 
+    public long discardCount() {
+        return discardCount.get();
+    }
 
 
     private final String name;
     private final int capacity;
     private final LinkedList<T> buffer;
+    private final AtomicLong discardCount = new AtomicLong(0);
 }

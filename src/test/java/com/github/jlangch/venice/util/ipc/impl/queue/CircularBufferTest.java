@@ -53,6 +53,8 @@ public class CircularBufferTest {
         assertEquals(4, (int)buffer.poll());
 
         assertEquals(0, buffer.size());
+
+        assertEquals(0, buffer.discardCount());
     }
 
     @Test
@@ -80,6 +82,8 @@ public class CircularBufferTest {
         assertEquals(4, (int)buffer.poll());
         assertEquals(5, (int)buffer.poll());
         assertEquals(6, (int)buffer.poll());
+
+        assertEquals(2, buffer.discardCount());
     }
 
     @Test
@@ -90,6 +94,8 @@ public class CircularBufferTest {
             buffer.offer(ii);
             assertEquals(ii, (int)buffer.poll());
         }
+
+        assertEquals(0, buffer.discardCount());
     }
 
     @Test
@@ -115,6 +121,8 @@ public class CircularBufferTest {
         assertEquals(99, (int)buffer.poll());
 
         assertEquals(0, buffer.size());
+
+        assertEquals(100, buffer.discardCount());
     }
 
 }
