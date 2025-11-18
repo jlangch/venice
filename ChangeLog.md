@@ -14,11 +14,15 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+
+
+## [1.12.62] - 2025-11-xx
+
 - Added function `ipc/clone` to clone IPC clients
 
 - Added IPC message expiration
 
-- Fixed the IPC error circular buffer. It was growing one item larger than the specified capacity.
+- Fixed the IPC error circular buffer size. It was growing one item larger than the specified capacity.
 
 
 
