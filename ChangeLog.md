@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run steps api (...)
 
 - Added function `ipc/clone` to clone IPC clients
+
 - Added IPC message expiration
 
 
