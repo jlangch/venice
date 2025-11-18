@@ -22,10 +22,10 @@
 package com.github.jlangch.venice.util.ipc.impl.queue;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import joptsimple.internal.Objects;
 
 
 /**
@@ -78,7 +78,7 @@ public class CircularBuffer<T> implements IpcQueue<T> {
 
     @Override
     public boolean offer(final T item) {
-        Objects.ensureNotNull(item);
+        Objects.requireNonNull(item);
 
         synchronized(this) {
             while (buffer.size() >= capacity) {

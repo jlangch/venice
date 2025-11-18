@@ -21,10 +21,10 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.queue;
 
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import joptsimple.internal.Objects;
 
 
 /**
@@ -72,14 +72,14 @@ public class BoundedQueue<T> implements IpcQueue<T> {
 
     @Override
     public boolean offer(final T item) throws InterruptedException {
-        Objects.ensureNotNull(item);
+        Objects.requireNonNull(item);
 
        return queue.offer(item, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public boolean offer(final T item, final long timeout, final TimeUnit unit) throws InterruptedException {
-        Objects.ensureNotNull(item);
+        Objects.requireNonNull(item);
 
        return queue.offer(item, timeout, unit);
     }
