@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 - Added IPC message expiration
 
-- Fixed the IPC error circular buffer size. It was growing one item larger than the specified capacity.
+- Fixed the IPC error circular buffer size. It was one item larger than the specified capacity.
 
 
 
