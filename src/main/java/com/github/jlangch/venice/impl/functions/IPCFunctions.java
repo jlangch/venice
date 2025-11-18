@@ -1447,24 +1447,19 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
-                        "(->> (ipc/text-message \"test\"                          \n" +
-                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "(->> (ipc/text-message \"test\" \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"100\" \"test\"                  \n" +
-                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "(->> (ipc/text-message \"100\" \"test\"  \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"100\" \"test\"                  \n" +
-                        "                       \"text/plain\" :UTF-8 \"hello\"   \n" +
+                        "(->> (ipc/text-message \"100\" \"test\" \"text/plain\" :UTF-8 \"hello\"   \n" +
                         "                       (-> (time/local-date-time)        \n" +
                         "                           (time/plus :hours 2)          \n" +
                         "                           (time/to-millis)))            \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"100\" \"test\"                  \n" +
-                        "                       \"text/plain\" :UTF-8 \"hello\"   \n" +
-                        "                       2 :hours)                         \n" +
+                        "(->> (ipc/text-message \"100\" \"test\" \"text/plain\" :UTF-8 \"hello\" 2 :hours) \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
@@ -1583,8 +1578,7 @@ public class IPCFunctions {
                         "                                 (time/to-millis)))       \n" +
                         "     (ipc/message->map)                                   \n" +
                         "     (println))                                           ",
-                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\"   \n" +
-                        "                             2 :hours)                    \n" +
+                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\" 2 :hours)\n" +
                         "     (ipc/message->map)                                   \n" +
                         "     (println))                                           ")
                     .seeAlso(
@@ -1802,12 +1796,10 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
-                        "(->> (ipc/venice-message \"test\"                        \n" +
-                        "                         {:a 100, :b 200})               \n" +
+                        "(->> (ipc/venice-message \"test\" {:a 100, :b 200})      \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/venice-message \"100\" \"test\"                \n" +
-                        "                         {:a 100, :b 200})               \n" +
+                        "(->> (ipc/venice-message \"100\" \"test\" {:a 100, :b 200}) \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
                         "(->> (ipc/venice-message \"100\" \"test\"                \n" +
@@ -1817,9 +1809,7 @@ public class IPCFunctions {
                         "                             (time/to-millis)))          \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/venice-message \"100\" \"test\"                \n" +
-                        "                         {:a 100, :b 200}                \n" +
-                        "                         2 :hours)                       \n" +
+                        "(->> (ipc/venice-message \"100\" \"test\" {:a 100, :b 200} 2 :hours) \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
