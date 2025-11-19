@@ -45,6 +45,7 @@ import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
+import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 
@@ -269,6 +270,30 @@ public class TcpServer implements Closeable {
             p2pQueues.put(
                 queueName,
                 new BoundedQueue<Message>(queueName, capacity));
+        }
+    }
+
+    /**
+     * Create a new circular buffer queue.
+     *
+     * @param queueName a queue name
+     * @param capacity the queue capacity
+     */
+    public void createCircularBufferQueue(final String queueName, final int capacity) {
+        Objects.requireNonNull(queueName);
+        if (StringUtil.isBlank(queueName)) {
+            throw new IllegalArgumentException("A queue name must not be blank");
+        }
+        if (capacity < 1) {
+            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
+        }
+
+        // do not overwrite the queue if it already exists
+        if (!p2pQueues.containsKey(queueName)) {
+            // create the queue
+            p2pQueues.put(
+                queueName,
+                new CircularBuffer<Message>(queueName, capacity));
         }
     }
 

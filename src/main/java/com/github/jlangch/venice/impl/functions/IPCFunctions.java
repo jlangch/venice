@@ -2361,17 +2361,26 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/create-queue server name capacity)")
+                        "(ipc/create-queue server name capacity)",
+                        "(ipc/create-queue server name capacity type)")
                     .doc(
-                        "Creates a named queue on server. Messages can be exchanged asynchronously " +
+                        "Creates a named queue on the server. Messages can be exchanged asynchronously " +
                         "between two clients using a queue. Each message is delivered to exactly " +
                         "one client. 1 to N clients can *offer* / *poll* messages *from* / *to* the " +
                         "queue. \n\n" +
-                        "Returns always `nil` or throws an exception.\n\n" +
+                        "A queue can be bounded or circular. Bounded queues block when offering new " +
+                        "messages and the queue is full until a timeout occurs or the queue gets space. " +
+                        "Circular queues never block but just keep the last 'capacity' messages. The " +
+                        "oldest messages get discarded if the buffer is full and new messages are " +
+                        "offered to the queue.\n\n" +
+                        "Use `ipc/offer` to offer a new message to a queue.¶" +
+                        "Use `ipc/poll` to poll a message from a queue.\n\n" +
+                        "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
                         "*Arguments:* \n\n" +
                         "| server s   | A server |\n" +
                         "| name n     | A queue name (string)|\n" +
-                        "| capacity t | The queue's capacity (max number of messages)|")
+                        "| capacity t | The queue's capacity (max number of messages)|\n" +
+                        "| type t     | Optional queue type `bounded`or `circular`. Defaults to `bounded`.|")
                     .examples(
                         "(do                                                                       \n" +
                         "  (defn echo-handler [m] m)                                               \n" +
@@ -2394,6 +2403,10 @@ public class IPCFunctions {
                         "           (ipc/message->json true)                                       \n" +
                         "           (println \"POLLED:\")))))                                      ")
                     .seeAlso(
+                        "ipc/offer",
+                        "ipc/poll",
+                        "ipc/offer-async",
+                        "ipc/poll-async",
                         "ipc/server",
                         "ipc/remove-queue",
                         "ipc/exists-queue?")
@@ -2401,13 +2414,32 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 3, 4);
 
                 final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
                 final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
 
-                server.createQueue(name, capacity);
+                final VncVal type = args.fourth() == Nil ? Nil : Coerce.toVncKeyword(args.fourth());
+
+                if (type == Nil) {
+                    server.createQueue(name, capacity);
+                }
+                else {
+                    final String sType = ((VncKeyword)type).getSimpleName();
+                    switch(sType) {
+                        case "bounded":
+                            server.createQueue(name, capacity);
+                            break;
+                        case "circular":
+                            server.createCircularBufferQueue(name, capacity);
+                            break;
+                        default:
+                            throw new VncException (
+                                "Invalid queue type :" + sType + "! Use one of {:bounded, :circular}.");
+                    }
+                }
+
                 return Nil;
             }
 
