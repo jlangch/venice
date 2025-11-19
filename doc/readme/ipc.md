@@ -93,10 +93,7 @@ messages to/from queues but a message is delivered to one client only.
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
-  ;; the server handler is not involved with offer/poll!
-  (defn echo-handler [m] m)
-
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
     (let [order-queue "orders"
@@ -129,10 +126,7 @@ messages to/from queues but a message is delivered to one client only.
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
-  ;; the server handler is not involved with offer/poll!
-  (defn echo-handler [m] m)
-
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
     (let [order-queue "orders"
@@ -174,13 +168,10 @@ the messages on the topic. To unsubscribe just close the IPC client.
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
-  ;; the server handler is not involved with publish/subscribe!
-  (defn echo-handler [m] m)
-
   (defn client-subscribe-handler [m]
     (println "SUBSCRIBED:" (ipc/message->json true m)))
 
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
 
@@ -205,13 +196,10 @@ the messages on the topic. To unsubscribe just close the IPC client.
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
-  ;; the server handler is not involved with publish/subscribe!
-  (defn echo-handler [m] m)
-
   (defn client-subscribe-handler [m]
     (println "SUBSCRIBED:" (ipc/message->json true m)))
 
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
 
@@ -433,9 +421,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ```clojure
 (do
-  (defn echo-handler [m] m)
-  
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
      (ipc/create-queue server "orders" 1_000)))
 ```
@@ -444,9 +430,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ```clojure
 (do
-  (defn echo-handler [m] m)
-  
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
      (ipc/create-queue server "orders" 1_000)
      ;; ...
@@ -457,9 +441,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ```clojure
 (do
-  (defn echo-handler [m] m)
-  
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
      (ipc/create-queue server "orders" 1_000)
      

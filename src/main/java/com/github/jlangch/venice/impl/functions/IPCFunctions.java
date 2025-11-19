@@ -81,7 +81,7 @@ public class IPCFunctions {
                                      " The handler receives the request messsage and returns a response" +
                                      " message. In case of a one-way request message the server discards" +
                                      " the handler's response if it is not `nil`.¶" +
-                                     " A handler is only required for send/receive message passing. It "+
+                                     " A handler is only required for send/receive message passing style. It "+
                                      " is not required for offer/poll and publish/subscribe!|\n\n" +
                         "*Options:* \n\n" +
                         "| :max-connections n      | The number of the max connections the server can handle" +
@@ -188,7 +188,12 @@ public class IPCFunctions {
                     server.setCompressCutoffSize(compressCutoffSize);
                 }
 
-                server.start(handlerWrapper);
+                if (handlerWrapper == null) {
+                    server.start();
+                }
+                else {
+                    server.start(handlerWrapper);
+                }
 
                 return new VncJavaObject(server);
             }

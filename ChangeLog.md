@@ -16,13 +16,13 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.62] - 2025-11-xx
+## [1.12.62] - 2025-11-19
 
 - Added function `ipc/clone` to clone IPC clients
 
 - Added IPC message expiration
 
-- Fixed the IPC error circular buffer size. It was one item larger than the specified capacity.
+- Fixed the IPC error circular buffer size. It was effectively one item larger than the specified capacity.
 
 
 
