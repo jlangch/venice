@@ -6,13 +6,21 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.62] - 2025-11-xx
+## [1.12.64] - 2025-11-xx
 
 - Added :openai module support for assistant api
 - Added :openai module support for assistant threads api
 - Added :openai module support for assistant message api (in work)
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
+
+
+
+
+## [1.12.63] - 2025-11-19
+
+- Corrected the version number. Enhanced the Gradle build to check for valid
+  version numbers before publishing to Sonatype.
 
 
 
