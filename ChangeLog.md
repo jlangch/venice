@@ -212,7 +212,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- explicit URL query parameter and fragment support for the HTTP Client. 
+- Added explicit URL query parameter and fragment support for the HTTP Client. 
   Parameters and fragments are encoded appropriately.
 
 ### Bugs
@@ -247,13 +247,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.45] - 2025-05-29
 
-### Added
+### Enhancements
 
-- support for static and dynamic Java MBeans. See :mbean module
-
-### Updated
-
-- the Maven publishing process by migrating to Sonatype’s new Central Maven
+- Added support for static and dynamic Java MBeans. See :mbean module
+- Updated the Maven publishing process by migrating to Sonatype’s new Central Maven
   repository, as the old OSSRH server was retired on June 30, 2025. Only a
   few viable alternatives were available. The Maven Publish plugin’s bridge
   mode did not work, Vanniktech’s plugin is incompatible with Java 8, and
@@ -265,82 +262,76 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.44] - 2025-05-09
 
-### Added
+### Enhancements
 
-- :aviron module, a ClamAV client
+- Added :aviron module, a ClamAV client
 
-### Fixed
+### Bugs
 
-- a bug in the file watcher regarding the detection of new sub directories
+- Fixed a bug in the file watcher regarding the detection of new sub directories
 
 
 
 ## [1.12.43] - 2025-05-01
 
-### Added
+### Enhancements
 
-- function `io/exists?` to check for files or directories
-- functions `shell/get-process-pids` and `shell/exists-process-with-pid?`
-- module `:ascii-charts` to render bar charts in the terminal
+- Added function `io/exists?` to check for files or directories
+- Added functions `shell/get-process-pids` and `shell/exists-process-with-pid?`
+- Added module `:ascii-charts` to render bar charts in the terminal
 
 
 
 ## [1.12.42] - 2025-04-24
 
-### Improved 
+### Enhancements 
 
-- the file runner (launcher) not to print 'nil' to stdout if the result was 
-  just `nil` (cosmetic change).
-
-### Added
-
-- :stopwatch module for time measuring
+- Improved the file runner (launcher) not to print 'nil' to stdout if the 
+  result was just `nil` (cosmetic change).
+- Added :stopwatch module for time measuring
 
 
 
 ## [1.12.41] - 2025-04-18
 
-### Added
+### Enhancements
 
-- function `time/between`
-
-### Enhanced
-
-- file watcher functions
+- Added function `time/between`
+- Enhanced file watcher functions
 
 
 
 ## [1.12.40] - 2025-04-09
 
-### Added
+### Enhancements
 
-- function `shell/nice`
-- function `index-of` and `last-index-of` for sequences
+- Added function `shell/nice`
+- Added function `index-of` and `last-index-of` for sequences
 
 
 
 ## [1.12.39] - 2025-03-23
 
-### Added
+### Enhancements
 
-- clear screen command to the REPL
-- :openai module support for 'me' endpoint
+- Added clear screen command to the REPL
+- Added :openai module support for 'me' endpoint
 
 ### Updated dependencies:
 
-- bumped jtokkit lib in the :jtokkit module to V1.1.0
-- bumped bumped xchart lib in the :chart module to V3.8.8
+- Bumped jtokkit lib in the :jtokkit module to V1.1.0
+- Bumped bumped xchart lib in the :chart module to V3.8.8
 
 
 
 ## [1.12.38] - 2025-02-20
 
-### Added
+### Enhancements
 
-- support for structured addresses to :qrbill module. Please note that
+- Added support for structured addresses to :qrbill module. Please note that
   starting November 25, 2025, Swiss banks will no longer accept payments using 
   combined address elements
-- support for `fit-to-page` in the excel print setup
+- Added support for `fit-to-page` in the excel print setup
 
 ### Updated dependencies:
 
@@ -350,80 +341,70 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.37] - 2025-02-12
 
-### Added
+### Enhancements
 
-- :zipvault support for the functions `root-folder-name-in-zip` and 
+- Added :zipvault support for the functions `root-folder-name-in-zip` and 
   `file-name-in-zip` for more flexibility adding files to a zip
-- module :qrcode for encoding and decoding QR code images
+- Added module :qrcode for encoding and decoding QR code images
 
 
 
 ## [1.12.36] - 2025-02-07
 
-### Added
+### Enhancements
 
-- :excel module layout functions (print-layout, page-margins, header-margin, 
-  footer-margin, header, and footer)
-- documentation for Venice Shebang scripts in the cheatsheet
-
-### Changed
-
-- :excel module to not support for Apache POI 4.x anymore (please use POI 5.x)
+- Added :excel module layout functions (print-layout, page-margins, 
+  header-margin, footer-margin, header, and footer)
+- Added documentation for Venice Shebang scripts in the cheatsheet
+- Changed :excel module to not support for Apache POI 4.x anymore 
+  (please use POI 5.x)
+- Re-enabled GitHub Code Scanning workflow. GitHub deactivated it after 60
+  days of inactivity
 
 ### Updated dependencies:
 
 - Bumped Apache POI from 5.3.0 to 5.4.0
 
-### Notes
-
-- re-enabled GitHub Code Scanning workflow. GitHub deactivated it after 60
-  days of inactivity
-
 
 
 ## [1.12.35] - 2024-12-04
 
-### Added
+### Enhancements
 
-- module :keystores to deal with certificates (PKCS12, ...)
+- Added module :keystores to deal with certificates (PKCS12, ...)
 
 
 
 ## [1.12.34] - 2024-10-10
 
-### Added
+### Enhancements
 
-- function `add-url-hyperlink` to :excel module
-- function `add-email-hyperlink` to :excel module
-- function `remove-hyperlink` to :excel module
-- function `remove-formula` to :excel module
-- function `cell-lock` to :excel module
-
-### Changed
-
-- the Tomcat download URL in the :tomcat-util module to use HTTPS instead of
-  HTTP. The new official archive URL is: `https://archive.apache.org/dist/tomcat`
-
-### Improved
-
-- the module :qrref that manages QR references according to the Swiss payment 
-  standards.
+- Added function `add-url-hyperlink` to :excel module
+- Added function `add-email-hyperlink` to :excel module
+- Added function `remove-hyperlink` to :excel module
+- Added function `remove-formula` to :excel module
+- Added function `cell-lock` to :excel module
+- Changed the Tomcat download URL in the :tomcat-util module to use HTTPS 
+  instead of HTTP. The new official archive URL is: 
+  `https://archive.apache.org/dist/tomcat`
+- Improved the module :qrref that manages QR references according to the 
+  Swiss payment standards.
 
 
 
 ## [1.12.33] - 2024-09-05
 
-### Added
+### Enhancements
 
-- function `add-conditional-bg-color` to :excel module
-- function `add-conditional-font-color` to :excel module
-- function `add-conditional-border` to :excel module
-- function `add-text-data-validation` to :excel module
+- Added function `add-conditional-bg-color` to :excel module
+- Added function `add-conditional-font-color` to :excel module
+- Added function `add-conditional-border` to :excel module
+- Added function `add-text-data-validation` to :excel module
 
-### Fixed
+### Bugs
 
-- a bug in the Venice PDF cheatsheet generation where the doc section header was 
-  not rendered in the right doc section column.
+- Fixed a bug in the Venice PDF cheatsheet generation where the doc 
+  section header was  not rendered in the right doc section column.
 
 ### Updated dependencies:
 
@@ -433,40 +414,41 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.32] - 2024-08-29
 
-### Fixed
+### Bugs
 
-- a bug in the :excel module when reading values `(excel/read-val sheet row col)`
-  from string cells with formulas and the cell's value was `nil`.
+- Fixed a bug in the :excel module when reading values 
+ `(excel/read-val sheet row col)` from string cells with formulas and the 
+ cell's value was `nil`.
 
 
 
 ## [1.12.31] - 2024-08-27
 
-### Added
+### Enhancements
 
-- function `delete-row` to :excel module to delete a row in a sheet
-- function `copy-row` to :excel module to copy a row to another row in a sheet
-- function `copy-row-to-end` to :excel module to copy a row to the end of a sheet
-- function `insert-empty-row` to :excel module to insert an empty row in a sheet
-- function `clear-row` to :excel module to clear a row's cells in a sheet
+- Added function `delete-row` to :excel module to delete a row in a sheet
+- Added function `copy-row` to :excel module to copy a row to another row in a sheet
+- Added function `copy-row-to-end` to :excel module to copy a row to the end of a sheet
+- Added function `insert-empty-row` to :excel module to insert an empty row in a sheet
+- Added function `clear-row` to :excel module to clear a row's cells in a sheet
 
 
 
 ## [1.12.30] - 2024-08-16
 
-### Fixed
+### Bugs
 
-- a bug in the Venice REPL setup on Windows with canonical path conversion.
+- Fixed a bug in the Venice REPL setup on Windows with canonical path conversion.
 
 
 
 ## [1.12.29] - 2024-08-16
 
-### Added
+### Enhancements
 
-- support for an explicit install directory (other than the current working 
+- Added support for an explicit install directory (other than the current working 
   directory) to the REPL installer 
-- better error messages to the REPL installer 
+- Added better error messages to the REPL installer 
 
 ### Updated dependencies:
 
@@ -476,28 +458,25 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.28] - 2024-08-15
 
-### Added
+### Enhancements
 
-- an unattended setup option for installing the Venice REPL. 
+- Added an unattended setup option for installing the Venice REPL. 
   This allows for automated setups or unit testing the setup.
-
-### Changed
-
-- the Gradle shadow plugin.
+- Changed the Gradle shadow plugin.
   The Gradle plugin "io.github.goooler.shadow" has been retired now as well.
   Migrated to "com.gradleup.shadow" (see https://github.com/GradleUp/shadow).
   This seems to be the final new home for the retired 
   "com.github.johnrengelman.shadow" plugin.
-- the Gradle CI workflow to build and test on Ubuntu and Windows using 
+- Changed the Gradle CI workflow to build and test on Ubuntu and Windows using 
   JDK 8, 17 and 21.
 
 
 
 ## [1.12.27] - 2024-08-05
 
-### Fixed
+### Bugs
 
-- the MeterRegistry. On M2 Macs some events reported with 0ns elapsed time.
+- Fixed the MeterRegistry. On M2 Macs some events reported with 0ns elapsed time.
   These 0ns events have been skipped resulting in a wrong profiler event
   count under heavy load.
 
@@ -505,62 +484,59 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.26] - 2024-07-26
 
-### Added
+### Enhancements
 
-- 32-bit `float` data type that complements the 64-bit `double` data type
-- functions `java-float-list`, `java-double-list`, and `java-long-list` to support LLM
+- Added 32-bit `float` data type that complements the 64-bit `double` data type
+- Added functions `java-float-list`, `java-double-list`, and `java-long-list` to support LLM
   embedding vectors with vector databases like *Pinecone* or *Qdrant*
-- support for shebang lines. Venice allows shebang lines simply by implementing 
+- Added support for shebang lines. Venice allows shebang lines simply by implementing 
   `#!` as a reader macro defining a comment like  `;`
-- support for `#_` reader macro to skip forms
+- Added support for `#_` reader macro to skip forms
 
 
 
 ## [1.12.25] - 2024-06-12
 
-### Added
+### Enhancements
 
-- :openai module support for chat completion streaming usage
-- :openai module support for embedding api
-
-
-### Changed
-
-- the Gradle shadow plugin.
+- Added :openai module support for chat completion streaming usage
+- Added :openai module support for embedding api
+- Changed the Gradle shadow plugin.
   The Gradle plugin "com.github.johnrengelman.shadow" has been
   retired. See [johnrengelman/shadow#908](https://github.com/johnrengelman/shadow/issues/908). 
   Switched to the fork "io.github.goooler.shadow"
-  
-  
+
+
 
 ## [1.12.24] - 2024-05-23
 
-### Changed
+### Enhancements
 
-- the OpenAI client api slightly to allow the integration of the assistants functionality.
+- Changed the OpenAI client api slightly to allow the integration of the 
+  assistants functionality.
   Use the actual OpenAI examples from the README with Venice 1.2.24+!
 
 
 
 ## [1.12.23] - 2024-05-22
 
-### Added
+### Enhancements
 
-- :openai module support for audio speech api
-- :openai module support for files api
-- :openai module support for models api
-- OpenAI vision examples
+- Added :openai module support for audio speech api
+- Added :openai module support for files api
+- Added :openai module support for models api
+- Added OpenAI vision examples
 
 
 
 ## [1.12.22] - 2024-05-20
 
-### Added
+### Enhancements
 
-- the Venice logo to the cheatsheet
-- :openai module support for image creation
-- :openai module support for image variants
-- :openai module support for image edits
+- Added the Venice logo to the cheatsheet
+- Added :openai module support for image creation
+- Added :openai module support for image variants
+- Added :openai module support for image edits
 
 
 
