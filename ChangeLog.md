@@ -19,8 +19,8 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.63] - 2025-11-19
 
-- Corrected the version number. Enhanced the Gradle build to check for valid
-  version numbers before publishing to Sonatype.
+- Corrected the version number. Enhanced the Gradle build to check for a valid
+  version number before publishing to Sonatype.
 
 
 
