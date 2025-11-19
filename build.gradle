@@ -570,6 +570,10 @@ task updateReleaseVersion {
                     "Rejected updating release version. ${project.version} is not a release!")
         }
 
+        if(!version.matches(version_regex)) {
+            throw new GradleException("Rejected update release version with bad version format!")
+        }
+
         println "Updating version ${project.version} -> 'maven-central.svg'"
         ant.replaceregexp(
                 match:   "v${version_regex}",

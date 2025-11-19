@@ -32,7 +32,7 @@ a configurable sandbox that can prevent all sorts of unwanted JVM and Venice
 interactions. Venice has been designed from the ground-up with a sandbox, 
 making it a first class citizen.
 
-Venice includes a comprehensive library of over 900 core functions. Its 
+Venice includes a comprehensive library of over 1000 functions. Its 
 immutable persistent data structures, along with Clojure-style atoms, futures, 
 promises, and agents, greatly simplify the process of writing concurrent code.
 
