@@ -70,6 +70,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
+                        "(ipc/server port & options)",
                         "(ipc/server port handler & options)")
                     .doc(
                         "Create a new server on the specified port.\n\n" +
@@ -79,7 +80,9 @@ public class IPCFunctions {
                                      " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
                                      " The handler receives the request messsage and returns a response" +
                                      " message. In case of a one-way request message the server discards" +
-                                     " the handler's response if it is not `nil`.|\n\n" +
+                                     " the handler's response if it is not `nil`.¶" +
+                                     " A handler is only required for send/receive message passing. It "+
+                                     " is not required for offer/poll and publish/subscribe!|\n\n" +
                         "*Options:* \n\n" +
                         "| :max-connections n      | The number of the max connections the server can handle" +
                                                    " in parallel. Defaults to 20.|\n" +
@@ -94,7 +97,8 @@ public class IPCFunctions {
                                                    " Defaults to -1 (no compression)¶" +
                                                    " The cutoff size can be specified as a number like `1000`" +
                                                    " or a number with a unit like `:1KB` or `:2MB`|\n\n" +
-                        "**The server must be closed after use!**")
+                        "**The server must be closed after use!**\n\n" +
+                        "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
                         "(do                                                     \n" +
                         "  (defn echo-handler [m]                                \n" +
@@ -128,12 +132,14 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertMinArity(this, args, 2);
+                ArityExceptions.assertMinArity(this, args, 1);
 
                 final int port = Coerce.toVncLong(args.first()).getIntValue();
-                final VncFunction handler = Coerce.toVncFunction(args.second());
 
-                final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+                final boolean hasHandler = Types.isIVncFunction(args.second());
+
+                final VncHashMap options = VncHashMap.ofAll(args.slice(hasHandler ? 2 : 1));
+
                 final VncVal maxConnVal = options.get(new VncKeyword("max-connections"));
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
@@ -145,18 +151,28 @@ public class IPCFunctions {
                 final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
                 final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
 
-                final CallFrame[] cf = new CallFrame[] {
-                                            new CallFrame(this, args),
-                                            new CallFrame(handler) };
+                final Function<IMessage,IMessage> handlerWrapper;
 
-                // Create a wrapper that inherits the Venice thread context!
-                final ThreadBridge threadBridge = ThreadBridge.create("tcp-server-handler", cf);
+                if (!hasHandler) {
+                    handlerWrapper = null; // no handler passed
+                }
+                else {
+                    final VncFunction handler = Coerce.toVncFunction(args.second());
 
-                final Function<IMessage,IMessage> handlerWrapper = threadBridge.bridgeFunction((IMessage m) -> {
-                          final VncVal request = new VncJavaObject(m);
-                          final VncVal response = handler.applyOf(request);
-                          return Coerce.toVncJavaObject(response, IMessage.class);
-                });
+                    final CallFrame[] cf = new CallFrame[] {
+                                                new CallFrame(this, args),
+                                                new CallFrame(handler) };
+
+
+                    // Create a wrapper that inherits the Venice thread context!
+                    final ThreadBridge threadBridge = ThreadBridge.create("tcp-server-handler", cf);
+
+                    handlerWrapper = threadBridge.bridgeFunction((IMessage m) -> {
+                                          final VncVal request = new VncJavaObject(m);
+                                          final VncVal response = handler.applyOf(request);
+                                          return Coerce.toVncJavaObject(response, IMessage.class);
+                                     });
+                }
 
                 final TcpServer server = new TcpServer(port);
 
@@ -212,8 +228,9 @@ public class IPCFunctions {
                                                    " The data is AES-256-GCM encrypted using a secret that is" +
                                                    " created and exchanged using the Diffie-Hellman key exchange " +
                                                    " algorithm.|\n\n" +
-                        "**The client is NOT thread safe!**" +
-                        "**The client must be closed after use!**")
+                        "**The client is NOT thread safe!** \n\n" +
+                        "**The client must be closed after use!**\n\n" +
+                        "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
                         "(do                                                                             \n" +
                         "  (defn echo-handler [m]                                                        \n" +
@@ -741,13 +758,10 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                            \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))  \n" +
                         "                                                                     \n" +
-                        "  ;; the server handler is not involved with publish/subscribe!      \n" +
-                        "  (defn echo-handler [m] m)                                          \n" +
-                        "                                                                     \n" +
                         "  (defn client-subscribe-handler [m]                                 \n" +
                         "    (println \"SUBSCRIBED:\" (ipc/message->json true m)))            \n" +
                         "                                                                     \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                  \n" +
+                        "  (try-with [server (ipc/server 33333)                               \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
@@ -846,13 +860,10 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                            \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))  \n" +
                         "                                                                     \n" +
-                        "  ;; the server handler is not involved with publish/subscribe!      \n" +
-                        "  (defn echo-handler [m] m)                                          \n" +
-                        "                                                                     \n" +
                         "  (defn client-subscribe-handler [m]                                 \n" +
                         "    (println \"SUBSCRIBED:\" (ipc/message->json true m)))            \n" +
                         "                                                                     \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                  \n" +
+                        "  (try-with [server (ipc/server 33333)                               \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
@@ -916,13 +927,10 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                            \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))  \n" +
                         "                                                                     \n" +
-                        "  ;; the server handler is not involved with publish/subscribe!      \n" +
-                        "  (defn echo-handler [m] m)                                          \n" +
-                        "                                                                     \n" +
                         "  (defn client-subscribe-handler [m]                                 \n" +
                         "    (println \"SUBSCRIBED:\" (ipc/message->json true m)))            \n" +
                         "                                                                     \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                  \n" +
+                        "  (try-with [server (ipc/server 33333)                               \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
@@ -998,10 +1006,7 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
                         "                                                                                              \n" +
-                        "  ;; the server handler is not involved with offer/poll!                                      \n" +
-                        "  (defn echo-handler [m] m)                                                                   \n" +
-                        "                                                                                              \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                                           \n" +
+                        "  (try-with [server (ipc/server 33333)                                                        \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
@@ -1079,10 +1084,7 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
                         "                                                                                              \n" +
-                        "  ;; the server handler is not involved with offer/poll!                                      \n" +
-                        "  (defn echo-handler [m] m)                                                                   \n" +
-                        "                                                                                              \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                                           \n" +
+                        "  (try-with [server (ipc/server 33333)                                                        \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
@@ -1162,11 +1164,8 @@ public class IPCFunctions {
                         "(do                                                                                           \n" +
                         "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
-                        "                                                                                              \n" +
-                        "  ;; the server handler is not involved with offer/poll!                                      \n" +
-                        "  (defn echo-handler [m] m)                                                                   \n" +
-                        "                                                                                              \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                                           \n" +
+                               "                                                                                       \n" +
+                        "  (try-with [server (ipc/server 33333)                                                        \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
@@ -1243,10 +1242,7 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                                                     \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
                         "                                                                                              \n" +
-                        "  ;; the server handler is not involved with offer/poll!                                      \n" +
-                        "  (defn echo-handler [m] m)                                                                   \n" +
-                        "                                                                                              \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                                           \n" +
+                        "  (try-with [server (ipc/server 33333)                                                        \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
@@ -2369,7 +2365,7 @@ public class IPCFunctions {
                         "one client. 1 to N clients can *offer* / *poll* messages *from* / *to* the " +
                         "queue. \n\n" +
                         "A queue can be bounded or circular. Bounded queues block when offering new " +
-                        "messages and the queue is full until a timeout occurs or the queue gets space. " +
+                        "messages and the queue is full. " +
                         "Circular queues never block but just keep the last 'capacity' messages. The " +
                         "oldest messages get discarded if the buffer is full and new messages are " +
                         "offered to the queue.\n\n" +
@@ -2598,6 +2594,7 @@ public class IPCFunctions {
 
         private final Future<IMessage> delegate;
     }
+
 
 
     ///////////////////////////////////////////////////////////////////////////

@@ -39,7 +39,7 @@ public class TcpOfferPollEncryptedTest {
 
         server.createQueue("queue-1", 10);
 
-        server.start(TcpServer.echoHandler());
+        server.start();
 
         sleep(300);
 

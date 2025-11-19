@@ -39,7 +39,7 @@ public class TcpOfferPollTest {
 
         server.createQueue("queue-1", 10);
 
-        server.start(TcpServer.echoHandler());
+        server.start();
 
         sleep(300);
 
@@ -86,7 +86,7 @@ public class TcpOfferPollTest {
 
         server.createQueue("queue", 3);
 
-        server.start(TcpServer.echoHandler());
+        server.start();
 
         sleep(300);
 
@@ -117,7 +117,7 @@ public class TcpOfferPollTest {
 
         server.createQueue("queue", 3);
 
-        server.start(TcpServer.echoHandler());
+        server.start();
 
         sleep(300);
 
@@ -159,7 +159,7 @@ public class TcpOfferPollTest {
 
         server.createQueue("queue", 3);
 
-        server.start(TcpServer.echoHandler());
+        server.start();
 
         sleep(300);
 

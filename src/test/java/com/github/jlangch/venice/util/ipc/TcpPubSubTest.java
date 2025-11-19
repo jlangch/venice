@@ -38,7 +38,7 @@ public class TcpPubSubTest {
         final TcpClient clientSub = new TcpClient(33333);
         final TcpClient clientPub = new TcpClient(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start();
 
         sleep(300);
 
@@ -82,7 +82,7 @@ public class TcpPubSubTest {
         final TcpClient clientSub2 = new TcpClient(33333);
         final TcpClient clientSub3 = new TcpClient(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start();
 
         sleep(300);
 

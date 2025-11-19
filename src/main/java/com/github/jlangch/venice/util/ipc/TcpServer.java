@@ -27,6 +27,7 @@ import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -163,6 +164,15 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * Start the TcpServer without handler for incoming messages.
+     *
+     * <p>A handler is required for send/receive message passing only.
+     */
+    public void start() {
+        start(missingHandler());
+    }
+
+    /**
      * Start the TcpServer
      *
      * @param handler to handle the incoming messages. The handler may return a
@@ -248,6 +258,21 @@ public class TcpServer implements Closeable {
         return req -> req;
     }
 
+    /**
+     * @return an echo handler
+     */
+    public static Function<IMessage,IMessage> missingHandler() {
+        return req -> new Message(
+                            req.getRequestId(),
+                            MessageType.RESPONSE,
+                            ResponseStatus.HANDLER_ERROR,
+                            true,
+                            Message.EXPIRES_NEVER,
+                            ((Message)req).getTopics(),
+                            "text/plain",
+                            "UTF-8",
+                            toBytes("Error: There is no handler defined for this server!", "UTF-8"));
+    }
 
     /**
      * Create a new queue.
@@ -358,6 +383,11 @@ public class TcpServer implements Closeable {
                     ex);
         }
     }
+
+    private static byte[] toBytes(final String s, final String charset) {
+        return s.getBytes(Charset.forName(charset));
+    }
+
 
 
     public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
