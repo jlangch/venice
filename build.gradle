@@ -535,6 +535,9 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
         if(version.toLowerCase().endsWith('snapshot')) {
             throw new GradleException("Rejected publishing snapshot release!")
         }
+        if(!version.matches(version_regex)) {
+            throw new GradleException("Rejected publishing with bad version format!")
+        }
         println "Publishing to Central Sonatype (mode=${sonatypePublishType})"
     }
 }
@@ -551,6 +554,12 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     }
 
     args "${project.version}"
+
+    doFirst {
+        if(!version.matches(version_regex)) {
+            throw new GradleException("Rejected cheatsheet with bad version format!")
+        }
+    }
 }
 
 
@@ -662,8 +671,8 @@ task updateReleaseVersion {
         ) {
             fileset(dir: 'src/main/resources', includes: '**/repl.sh')
             fileset(dir: 'src/main/resources', includes: '**/repl.bat')
-            fileset(dir: 'doc/examples', includes: 'repl.sh')
-            fileset(dir: 'doc/examples', includes: 'repl.bat')
+            fileset(dir: 'doc/examples/repl', includes: 'repl.sh')
+            fileset(dir: 'doc/examples/repl', includes: 'repl.bat')
         }
            
         println "Updating Aviron lib version ${aviron_Version} -> 'aviron.venice'"
@@ -673,8 +682,15 @@ task updateReleaseVersion {
                 flags:   'g'
         ) {
             fileset(dir: 'src/main/resources', includes: 'com/github/jlangch/venice/aviron.venice')
-        }     
-    }
+        }
+        ant.replaceregexp(
+                match:   "<version>[0-9]+[.][0-9]+[.][0-9]+",
+                replace: "<version>${aviron_Version}",
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/resources', includes: 'com/github/jlangch/venice/aviron.venice')
+        }
+     }
 }
 
 task updateReadMeCheatsheetRef {
