@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.64] - 2025-11-xx
 
+### Enhancements
+
 - Added :openai module support for assistant api
 - Added :openai module support for assistant threads api
 - Added :openai module support for assistant message api (in work)
@@ -19,6 +21,8 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.63] - 2025-11-19
 
+### Enhancements
+
 - Corrected the version number. Enhanced the Gradle build to check for a valid
   version number before publishing to Sonatype.
 
@@ -26,21 +30,27 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.62] - 2025-11-19
 
-- Added function `ipc/clone` to clone IPC clients
+### Enhancements
 
+- Added function `ipc/clone` to clone IPC clients
 - Added IPC message expiration
 
-- Fixed the IPC error circular buffer size. It was effectively one item larger than the specified capacity.
+### Bugs
+
+- Fixed the IPC error circular buffer size. It was effectively one item larger 
+  than the specified capacity.
 
 
 
 ## [1.12.61] - 2025-11-16
 
+### Enhancements
+
 - Simplified 'for' macro sequence expression partitioning into groups
-
 - Enhanced IPC api with async functions returning futures
-
 - Added IPC requestId to messages to allow for idempotency checks
+
+### Bugs
 
 - Fixed IPC oneway send function
 
@@ -48,60 +58,60 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.60] - 2025-11-14
 
+### Bugs
+
 - Fixed a 'for' macro edge case when normalizing the sequence expressions into groups
 
 
 
 ## [1.12.59] - 2025-11-12
 
-- Added for list comprehension with `:when`, `:while`, and `:let` modifiers
+### Enhancements
 
+- Added for list comprehension with `:when`, `:while`, and `:let` modifiers
 - Added function `partition-at`
 
 
 
 ## [1.12.58] - 2025-10-20
 
+### Enhancements
+
 - Added optional AES-256 GCM encryption for IPC message transport. 
   The encryption secret is generated and exchanged using the Diffie–Hellman key 
   exchange algorithm.
-
 - Enhanced `str/encode-base64` and `str/decode-base64` to support an optional
   encoding/decoding schema: `:Standard` (RFC4648) or `:UrlSafe` (RFC4648_URLSAFE)
-
 - Overhauled `:crypt` module
 
 
 
 ## [1.12.57] - 2025-10-09
 
-### Added
+### Enhancements
 
-- IPC messaging: message payload data can be gzip compressed
-
-### Removed
-
-- gitpod support
+- Added gzip compression for IPC message payloads
+- Removed gitpod support
 
 
 
 ## [1.12.56] - 2025-10-01
 
-### Added
+### Enhancements
 
-- deque datatype (bounded or unbounded)
+- Added deque datatype (bounded or unbounded)
 
-### Fixed
+### Bugs
 
-- Maven download 403 HTTP error by adding an explicit user agent to the HTTP requests
+- Fixed Maven download 403 HTTP error by adding an explicit user agent to the HTTP requests
 
 
 
 ## [1.12.55] - 2025-09-22
 
-### Added
+### Enhancements
 
-- IPC (Inter-Process-Communication) module. Supports request/response messages
+- Added IPC (Inter-Process-Communication) module. Supports request/response messages
   between a client and a server as well as publish / subcribe with many clients
   and an orchestrating server.
 
@@ -109,104 +119,105 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.54] - 2025-08-29
 
-### Added
+### Enhancements
 
-- function `io/truncate-from-start-keep-lines` to truncate text files honoring
+- Added function `io/truncate-from-start-keep-lines` to truncate text files honoring
   complete lines
-- function `cron/schedule-at-round-times-in-day`. A scheduler that is not prone
+- Added function `cron/schedule-at-round-times-in-day`. A scheduler that is not prone
   to clock shifts/drifts
-- function `cron/schedule-at-fixed-rate`. A scheduler that is not prone
+- Added function `cron/schedule-at-fixed-rate`. A scheduler that is not prone
   to clock shifts/drifts
-- function `cron/schedule-at`. A scheduler that is not prone to clock shifts/drifts
-- a logger with console and file handlers. The file handlers support a max
+- Added function `cron/schedule-at`. A scheduler that is not prone to clock shifts/drifts
+- Added a logger with console and file handlers. The file handlers support a max
   size and daily/monthly file rotation. The scheduler for file rotation handling 
   is not prone to clock shifts/drifts.
 
 ### Updated dependencies:
 
-- bumped the Aviron (ClamAV client) library to V1.9.1
+- Bumped the Aviron (ClamAV client) library to V1.9.1
 
 
 
 ## [1.12.53] - 2025-08-13
 
-### Added
+### Enhancements
 
-- the option to pass a 'fswatch' monitor to the file watcher on MacOS.
+- Added the option to pass a 'fswatch' monitor to the file watcher on MacOS.
 
 ### Updated dependencies:
 
-- migrated the :aviron module to the Aviron library to V1.9.0
-- bumped the Aviron (ClamAV client) library to V1.9.0
+- Migrated the :aviron module to the Aviron library to V1.9.0
+- Bumped the Aviron (ClamAV client) library to V1.9.0
 
 
 
 ## [1.12.52] - 2025-07-30
 
-### Added
+### Enhancements
 
-- the new Aviron quarantine features to the :aviron module
-- the new Aviron dynamic CPU limit features to the :aviron module
-- the new Aviron Clamd CPU limiter features to the :aviron module
+- Added the new Aviron quarantine features to the :aviron module
+- Added the new Aviron dynamic CPU limit features to the :aviron module
+- Added the new Aviron Clamd CPU limiter features to the :aviron module
 
 ### Updated dependencies:
 
-- bumped the Aviron (ClamAV client) library to V 1.5.3
-- bumped VAVR from 0.10.6 to 0.10.7
+- Bumped the Aviron (ClamAV client) library to V 1.5.3
+- Bumped VAVR from 0.10.6 to 0.10.7
 
 
 
 ## [1.12.51] - 2025-07-21
 
-### Added
+### Enhancements
 
-- the newest Aviron features to the :aviron module
+- Added the newest Aviron features to the :aviron module
 
 ### Updated dependencies:
 
-- bumped the Aviron (ClamAV client) library to V 1.3.3
+- Bumped the Aviron (ClamAV client) library to V 1.3.3
 
 
 
 ## [1.12.50] - 2025-07-16
 
-### Fixed
+### Bugs
 
-- a function argument passing problem with the `scan-path` function of the
-  :aviron module
+- Fixed a function argument passing problem with the `scan-path` function 
+  of the :aviron module
 
 ### Updated dependencies:
 
-- bumped the Aviron (ClamAV client) library to V 1.3.0
+- Bumped the Aviron (ClamAV client) library to V 1.3.0
 
 
 
 ## [1.12.49] - 2025-07-12
 
-### Added
+### Enhancements
 
-- function `http-client-j8/create-authorization-bearer` and `http-client-j8/build-url`
-- function `pdf/extract-urls` to extract all URLs from a PDF
-- functions `sh/pgrep` and `sh/pargs` to simplify scripts dealing with 
-  process pids and process command lines
+- Added function `http-client-j8/create-authorization-bearer` and 
+  `http-client-j8/build-url`
+- Added function `pdf/extract-urls` to extract all URLs from a PDF
+- Added functions `sh/pgrep` and `sh/pargs` to simplify scripts dealing
+  with process pids and process command lines
 
-### Fixed
+### Bugs
 
-- an edge case in the `sh` function dealing with binary shell command 
+- Fixed an edge case in the `sh` function dealing with binary shell command 
   output streams.
 
 
 
 ## [1.12.48] - 2025-06-13
 
-### Added
+### Enhancements
 
 - explicit URL query parameter and fragment support for the HTTP Client. 
   Parameters and fragments are encoded appropriately.
 
-### Fixed
+### Bugs
 
-- Maven download URL to "https://archive.apache.org/dist/maven/"
+- Fixed Maven download URL to "https://archive.apache.org/dist/maven/"
   instead of "https://dlcdn.apache.org/maven/maven-3/". Maven changed 
   the latter URL to provide the current version only.
   This unfortunately broke the Venice setup in demo mode and the 
@@ -216,9 +227,9 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.47] - 2025-06-04
 
-### Changed
+### Enhancements
 
-- the publishing to Sonatype's Central Maven repository. The publishing
+- Changed the publishing to Sonatype's Central Maven repository. The publishing
   process uses now more functionality from the 'maven-publish' plugin to
   create the Maven bundle and uploads the bundle explicitly via Sontatype's
   publisher REST api.
@@ -227,10 +238,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.46] - 2025-05-31
 
-### Changed
+### Enhancements
 
-- the Maven publish process for optional auto deployment to Sonatype's new
-  Central Maven repository.
+- Changed the Maven publish process for optional auto deployment to Sonatype's
+  new Central Maven repository.
 
 
 
