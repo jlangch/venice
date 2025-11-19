@@ -79,6 +79,122 @@ public class TcpOfferPollTest {
         }
     }
 
+    @Test
+    public void test_queue_invalid() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client1 = new TcpClient(33333);
+
+        server.createQueue("queue", 3);
+
+        server.start(TcpServer.echoHandler());
+
+        sleep(300);
+
+        client1.open();
+
+        try {
+            final IMessage m = MessageFactory.text("1", "queue-test", "text/plain", "UTF-8", "Hello!");
+
+            final IMessage r = client1.offer(m, "queue-XXX", 1, TimeUnit.SECONDS);
+
+            assertEquals(ResponseStatus.QUEUE_NOT_FOUND, r.getResponseStatus());
+
+            sleep(200);
+        }
+        finally {
+            client1.close();
+
+            sleep(300);
+
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_queue_full() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client1 = new TcpClient(33333);
+
+        server.createQueue("queue", 3);
+
+        server.start(TcpServer.echoHandler());
+
+        sleep(300);
+
+        client1.open();
+
+        try {
+            final IMessage m1 = MessageFactory.text("1", "queue-test", "text/plain", "UTF-8", "Hello!");
+            final IMessage m2 = MessageFactory.text("2", "queue-test", "text/plain", "UTF-8", "Hello!");
+            final IMessage m3 = MessageFactory.text("3", "queue-test", "text/plain", "UTF-8", "Hello!");
+            final IMessage m4 = MessageFactory.text("4", "queue-test", "text/plain", "UTF-8", "Hello!");
+
+            final IMessage r1 = client1.offer(m1, "queue", 1, TimeUnit.SECONDS);
+            final IMessage r2 = client1.offer(m2, "queue", 1, TimeUnit.SECONDS);
+            final IMessage r3 = client1.offer(m3, "queue", 1, TimeUnit.SECONDS);
+
+            final IMessage r4 = client1.offer(m4, "queue", 1, TimeUnit.SECONDS);
+
+            assertEquals(ResponseStatus.OK, r1.getResponseStatus());
+            assertEquals(ResponseStatus.OK, r2.getResponseStatus());
+            assertEquals(ResponseStatus.OK, r3.getResponseStatus());
+            assertEquals(ResponseStatus.QUEUE_FULL, r4.getResponseStatus());
+
+            sleep(200);
+        }
+        finally {
+            client1.close();
+
+            sleep(300);
+
+            server.close();
+        }
+    }
+
+
+    @Test
+    public void test_queue_empty() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client1 = new TcpClient(33333);
+
+        server.createQueue("queue", 3);
+
+        server.start(TcpServer.echoHandler());
+
+        sleep(300);
+
+        client1.open();
+
+        try {
+            final IMessage m1 = MessageFactory.text("1", "queue-test", "text/plain", "UTF-8", "Hello!");
+            final IMessage m2 = MessageFactory.text("2", "queue-test", "text/plain", "UTF-8", "Hello!");
+
+            final IMessage r1 = client1.offer(m1, "queue", 1, TimeUnit.SECONDS);
+            final IMessage r2 = client1.offer(m2, "queue", 1, TimeUnit.SECONDS);
+
+            final IMessage r3 = client1.poll("queue", 1, TimeUnit.SECONDS);
+            final IMessage r4 = client1.poll("queue", 1, TimeUnit.SECONDS);
+            final IMessage r5 = client1.poll("queue", 1, TimeUnit.SECONDS);
+
+            // offer
+            assertEquals(ResponseStatus.OK, r1.getResponseStatus());
+            assertEquals(ResponseStatus.OK, r2.getResponseStatus());
+
+            // poll
+            assertEquals(ResponseStatus.OK, r3.getResponseStatus());
+            assertEquals(ResponseStatus.OK, r4.getResponseStatus());
+            assertEquals(ResponseStatus.QUEUE_EMPTY, r5.getResponseStatus());
+
+            sleep(200);
+        }
+        finally {
+            client1.close();
+
+            sleep(300);
+
+            server.close();
+        }
+    }
 
     private void sleep(final long millis) {
         try {

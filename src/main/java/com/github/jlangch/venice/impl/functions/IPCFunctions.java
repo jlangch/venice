@@ -2407,9 +2407,9 @@ public class IPCFunctions {
                         "ipc/poll",
                         "ipc/offer-async",
                         "ipc/poll-async",
-                        "ipc/server",
                         "ipc/remove-queue",
-                        "ipc/exists-queue?")
+                        "ipc/exists-queue?",
+                        "ipc/server")
                     .build()
         ) {
             @Override
