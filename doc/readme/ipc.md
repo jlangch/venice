@@ -48,15 +48,16 @@ pluggable handler function computes the response from the request.
 ;; response: {:z 300}
 (do
   (defn handler [m]
-    (let [topic    (ipc/message-field m :topic)
-          _        (assert (= "add" topic))
-          request  (ipc/message-field m :payload-venice)
-          result   {:z (+ (:x request) (:y request))}]
-      (ipc/venice-message topic result)))
+    (let [topic      (ipc/message-field m :topic)
+          _          (assert (= "add" topic))
+          request-id (ipc/message-field m :request-id)
+          request    (ipc/message-field m :payload-venice)
+          result     {:z (+ (:x request) (:y request))}]
+      (ipc/venice-message request-id topic result)))
 
   (try-with [server (ipc/server 33333 handler)
              client (ipc/client "localhost" 33333)]
-    (->> (ipc/venice-message "add" {:x 100 :y 200})
+    (->> (ipc/venice-message "1" "add" {:x 100 :y 200})
          (ipc/send client 2000)
          (ipc/message->json true)
          (println))))
@@ -249,28 +250,28 @@ mode and listens for messages. To unsubscribe just close the IPC client.
 ### Message Layout
 
 ```
-  Fields                             Filled by
+  Fields                             Originator
   
  ┌───────────────────────────────┐
- │ ID                            │   by send, offer/poll, publish/subscribe method
+ │ ID                            │   send, offer/poll, publish/subscribe method
  ├───────────────────────────────┤
- │ Message Type                  │   by send, offer/poll, publish/subscribe method
+ │ Message Type                  │   send, offer/poll, publish/subscribe method
  ├───────────────────────────────┤
- │ Oneway                        │   by client or framework method
+ │ Oneway                        │   client or framework method
  ├───────────────────────────────┤
- │ Response Status               │   by server response processor
+ │ Response Status               │   server response processor
  ├───────────────────────────────┤
- │ Timestamp                     │   by message creator
+ │ Timestamp                     │   message creator
  ├───────────────────────────────┤
- │ Request ID                    │   by client (may be used for idempotency checks by the receiver)
+ │ Request ID                    │   client (may be used for idempotency checks by the receiver)
  ├───────────────────────────────┤
- │ Topic                         │   by client
+ │ Topic                         │   client
  ├───────────────────────────────┤
- │ Payload Mimetype              │   by client
+ │ Payload Mimetype              │   client
  ├───────────────────────────────┤
- │ Payload Charset               │   by client if payload data is a string else null
+ │ Payload Charset               │   client if payload data is a string else null
  ├───────────────────────────────┤
- │ Payload data                  │   by client
+ │ Payload data                  │   client
  └───────────────────────────────┘
 ```
 

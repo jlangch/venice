@@ -30,29 +30,29 @@ import com.github.jlangch.venice.impl.types.VncVal;
  * Defines the messages that can be exchanged between a TcpClient and a TcpServer.
  *
  * <pre>
- *           Message                         set by
+ *  Message                            Originator
  * ┌───────────────────────────────┐
- * │ ID                            │   by send, publish/subscribe method
+ * │ ID                            │   send, publish/subscribe method
  * ├───────────────────────────────┤
- * │ Message Type                  │   by send, publish/subscribe method
+ * │ Message Type                  │   send, publish/subscribe method
  * ├───────────────────────────────┤
- * │ Oneway                        │   by client or framework method
+ * │ Oneway                        │   client or framework method
  * ├───────────────────────────────┤
- * │ Response Status               │   by server response processor
+ * │ Response Status               │   server response processor
  * ├───────────────────────────────┤
- * │ Timestamp                     │   by message creator
+ * │ Timestamp                     │   message creator
  * ├───────────────────────────────┤
- * │ ExpiresAt                     │   by client (may be null)
+ * │ ExpiresAt                     │   client (may be null)
  * ├───────────────────────────────┤
- * │ Request ID                    │   by client (may be used for idempotency checks by the receiver)
+ * │ Request ID                    │   client (may be used for idempotency checks by the receiver)
  * ├───────────────────────────────┤
- * │ Topic                         │   by client
+ * │ Topic                         │   client
  * ├───────────────────────────────┤
- * │ Payload Mimetype              │   by client
+ * │ Payload Mimetype              │   client
  * ├───────────────────────────────┤
- * │ Payload Charset               │   by client if payload data is a string else null
+ * │ Payload Charset               │   client if payload data is a string else null
  * ├───────────────────────────────┤
- * │ Payload data                  │   by client
+ * │ Payload data                  │   client
  * └───────────────────────────────┘
  * </pre>
  */
