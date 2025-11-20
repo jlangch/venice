@@ -181,7 +181,8 @@ messages to/from queues but a message is delivered to one client only.
 ### Publish / Subscribe
 
 Publish a message to a topic. All clients that have subscribed to a topic will receive
-the messages on the topic. To unsubscribe just close the IPC client.
+the messages on the topic. After subscribing to a topic the client turns into subscription
+mode and listens for messages. To unsubscribe just close the IPC client.
 
 
 **synchronous publish**

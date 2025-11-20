@@ -54,6 +54,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(charset);
         Objects.requireNonNull(data);
 
+        Topics.validate(topic);
+
         return new Message(
                 requestId,
                 MessageType.NULL,
@@ -91,6 +93,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(charset);
         Objects.requireNonNull(data);
 
+        Topics.validate(topic);
+
         return new Message(
                 requestId,
                 MessageType.NULL,
@@ -123,6 +127,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(charset);
         Objects.requireNonNull(json);
 
+        Topics.validate(topic);
+
         return new Message(
                 requestId,
                 MessageType.NULL,
@@ -157,6 +163,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(charset);
         Objects.requireNonNull(json);
 
+        Topics.validate(topic);
+
         return new Message(
                 requestId,
                 MessageType.NULL,
@@ -188,6 +196,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
+
+        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -223,6 +233,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
 
+        Topics.validate(topic);
+
         return new Message(
                 requestId,
                 MessageType.NULL,
@@ -255,6 +267,8 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
+        Topics.validate(topic);
+
         return json(requestId, topic, "UTF-8", Json.writeJson(data, false));
     }
 
@@ -279,6 +293,8 @@ public abstract class MessageFactory {
     ) {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
+
+        Topics.validate(topic);
 
         return json(requestId, expiresAt, topic, "UTF-8", Json.writeJson(data, false));
     }
