@@ -27,6 +27,16 @@ import java.util.Random;
 
 public class Babelizer {
 
+    public static void main(final String[] args) {
+        if (args != null && args.length > 0) {
+            System.out.println(babelize(args[0]));
+        }
+        else {
+            System.out.println("Please pass a string.");
+        }
+    }
+
+
      public static String babelize(final String arg) {
         if (arg == null || arg.isEmpty()) {
             throw new IllegalArgumentException("The 'arg' string must not be null or empty!");

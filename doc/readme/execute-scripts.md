@@ -136,11 +136,11 @@ From a shell run: `java -jar {path-to-jar}/example.jar`
 **Example 2**
 
 ```clojure
-   ;; run the created JAR:  java -jar {path-to-jar}/example.jar 1 2 
+   ;; create the executable JAR
    (let [script         """
                         (println "sum:" (+ (long (first *ARGV*)) 
                                            (long (second *ARGV*)))) 
-                        """] 
+                        """ 
          script-name    "example"
          script-version "1.0" 
          path-to-jar    "." ]
@@ -148,5 +148,20 @@ From a shell run: `java -jar {path-to-jar}/example.jar`
 ```
 
 From a shell run: `java -jar {path-to-jar}/example.jar 1 2`
+
+
+**Example 3**
+
+```clojure
+   ;; create the executable JAR from a Venice script file:
+   ;; (io/spit "./example.venice" """(println "sum:" (+ 1 2))""" :encoding :utf-8)
+   (let [script         (io/slurp "./example.venice" :encoding :utf-8) 
+         script-name    "example"
+         script-version "1.0" 
+         path-to-jar    "." ]
+     (auto-run-jar script-name script-version script path-to-jar))
+```
+
+From a shell run: `java -jar {path-to-jar}/example.jar`
 
 

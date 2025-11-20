@@ -432,15 +432,26 @@ public class CoreSystemFunctions {
                         "      dir            \".\" ]                                  \n" +
                         "  (auto-run-jar script-name script-version script dir))       ",
 
-                        ";; run the created JAR:  java -jar {path-to-jar}/example.jar 1 2 \n" +
-                        "(let [script         \"\"\"\n" +
-                        "                     (println \"sum:\" (+ (long (first *ARGV*)) \n" +
-                        "                                        (long (second *ARGV*)))) \n" +
-                        "                     \"\"\"] \n" +
-                        "      script-name    \"example\"                              \n" +
-                        "      script-version \"1.0\"                                  \n" +
-                        "      dir            \".\" ]                                  \n" +
-                        "  (auto-run-jar script-name script-version script dir))                      ")
+                        ";; run the created JAR:  java -jar {path-to-jar}/example.jar 1 2  \n" +
+                        "(let [script         \"\"\"                                       \n" +
+                        "                     (println \"sum:\" (+ (long (first *ARGV*))   \n" +
+                        "                                        (long (second *ARGV*))))  \n" +
+                        "                     \"\"\"]                                      \n" +
+                        "      script-name    \"example\"                                  \n" +
+                        "      script-version \"1.0\"                                      \n" +
+                        "      dir            \".\" ]                                      \n" +
+                        "  (auto-run-jar script-name script-version script dir))           ",
+
+                        ";; create the executable JAR from a Venice script file:               \n" +
+                        ";;    (io/spit \"./example.venice\"                                   \n" +
+                        ";;             \"\"\"(println \"sum:\" (+ 1 2))\"\"\"                 \n" +
+                        ";;             :encoding :utf-8)                                      \n" +
+                        ";; run the created JAR:  java -jar {path-to-jar}/example.jar          \n" +
+                        "(let [script         (io/slurp \"./example.venice\" :encoding :utf-8) \n" +
+                        "      script-name    \"example\"                                      \n" +
+                        "      script-version \"1.0\"                                          \n" +
+                        "      dir            \".\" ]                                          \n" +
+                        "  (auto-run-jar script-name script-version script dir))              ")
                     .build()
         ) {
             @Override
