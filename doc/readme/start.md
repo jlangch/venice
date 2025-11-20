@@ -156,7 +156,7 @@ This VSCode **settings.json** file will establish syntax highlighting for Venice
 
 ## Where to head next
 
-- Start a [REPL](https://github.com/jlangch/venice/blob/master/doc/readme/repl.md)
+- start a [REPL](https://github.com/jlangch/venice/blob/master/doc/readme/repl.md)
 - browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md#documentation)
 - see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/8d86f4d/cheatsheet.pdf) and use it as a quick reference
 
