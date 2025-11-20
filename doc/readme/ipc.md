@@ -40,6 +40,28 @@ Send a message from a client to a server and receive a response
          (println "RESPONSE:"))))
 ```
 
+```clojure
+;; handler processing JSON message data 
+;; request: {"x": 100, "y": 200} => add => response: {"z": 300}
+(do
+  (defn handler [m]
+    (let [data   (json/read-str (. m :getText))
+          result (json/write-str { "z" (+ (get data "x") (get data "y"))})]
+      (ipc/text-message (. m :getTopic)
+                        "application/json" :UTF-8
+                        result)))
+                        
+  (try-with [server (ipc/server 33333 handler)
+             client (ipc/client "localhost" 33333)]
+    (->> (ipc/text-message "test"
+                           "application/json" :UTF-8
+                           (json/write-str {"x" 100 "y" 200}))
+         (ipc/send client 2000)
+         (ipc/message->json true)
+         (println))))
+```
+
+
 **asynchronous send / receive**
 
 ```clojure
