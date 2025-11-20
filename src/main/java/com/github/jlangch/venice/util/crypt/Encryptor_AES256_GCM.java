@@ -55,8 +55,8 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncryptor {
 
     private Encryptor_AES256_GCM(
-    		final SecretKeySpec keySpec,
-    		 final boolean efficientMemUse
+            final SecretKeySpec keySpec,
+            final boolean efficientMemUse
     ) {
         Objects.requireNonNull(keySpec);
 
@@ -135,7 +135,7 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
 
         try {
             // IV
-        	final byte[] iv = randomIV();
+            final byte[] iv = randomIV();
 
             // Initialize GCM Parameters, 128 bit auth tag length
             final GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
@@ -149,29 +149,29 @@ public class Encryptor_AES256_GCM extends AbstractEncryptor implements IEncrypto
             }
 
             if (efficientMemUse) {
-            	// AES GCM: output length = input length + 16 bytes
+                // AES GCM: output length = input length + 16 bytes
 
-	            final byte[] outData = new byte[IV_LEN + data.length + 16];
+                final byte[] outData = new byte[IV_LEN + data.length + 16];
 
-	            System.arraycopy(iv, 0, outData, 0, IV_LEN);
+                System.arraycopy(iv, 0, outData, 0, IV_LEN);
 
-	            final int bytesWritten = cipher.doFinal(data, 0, data.length, outData, IV_LEN);
+                final int bytesWritten = cipher.doFinal(data, 0, data.length, outData, IV_LEN);
 
-	            if (bytesWritten != data.length + 16) {
-	            	throw new RuntimeException("AES GCM encryption out buffer length misalignment");
-	            }
-	            return outData;
+                if (bytesWritten != data.length + 16) {
+                    throw new RuntimeException("AES GCM encryption out buffer length misalignment");
+                }
+                return outData;
             }
             else {
-	            // encrypt
-	            byte[] encryptedData = cipher.doFinal(data);
+                // encrypt
+                byte[] encryptedData = cipher.doFinal(data);
 
-	            // IV, and encrypted data
-	            byte[] outData = new byte[IV_LEN + encryptedData.length];
-	            System.arraycopy(iv, 0, outData, 0, IV_LEN);
-	            System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
+                // IV, and encrypted data
+                byte[] outData = new byte[IV_LEN + encryptedData.length];
+                System.arraycopy(iv, 0, outData, 0, IV_LEN);
+                System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
 
-	            return outData;
+                return outData;
             }
         }
         catch(Exception ex) {
