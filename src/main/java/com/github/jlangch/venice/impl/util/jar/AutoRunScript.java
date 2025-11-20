@@ -28,7 +28,6 @@ import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
 import java.nio.charset.StandardCharsets;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.util.crypt.Encryptor_AES256_GCM;
 
@@ -39,7 +38,7 @@ public class AutoRunScript {
         final byte[] script = new ClassPathResource(AutoRunScriptJarRewriter.AUTORUN_SCRIPT_PATH)
                                        .getResourceAsBinary();
         if (script == null) {
-            throw new VncException("Failed to load embedded auto run script!");
+            throw new RuntimeException("Failed to load embedded auto run script!");
         }
 
         return deobfuscate(script);
@@ -73,7 +72,7 @@ public class AutoRunScript {
                     : data;
         }
         catch(Exception ex) {
-           return null;
+            throw new RuntimeException("Failed to process embedded auto run script!");
         }
     }
 
@@ -89,7 +88,7 @@ public class AutoRunScript {
              return new String(data, StandardCharsets.UTF_8);
         }
         catch(Exception ex) {
-            return null;
+            throw new RuntimeException("Failed to load embedded auto run script!");
         }
     }
 

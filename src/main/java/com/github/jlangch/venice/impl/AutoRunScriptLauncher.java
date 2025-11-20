@@ -68,11 +68,13 @@ public class AutoRunScriptLauncher {
             return SystemFunctions.SYSTEM_EXIT_CODE.get();
         }
         catch (VncException ex) {
+            System.err.println("Failed to run script!");
             ex.printVeniceStackTrace();
             return 99;
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+            System.err.println("Failed to run script!");
+            System.err.println(ex.getMessage());
             return 99;
         }
     }
