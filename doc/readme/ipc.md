@@ -27,6 +27,7 @@ Send a message from a client to a server and receive a response
   ;; thread-safe printing to console
   (defn println [& msg] (locking println (apply core/println msg)))
 
+  ;; a simple echo handler that just returns the request
   (defn echo-handler [m]
     (println "REQUEST:" (ipc/message->json true m)) 
     m)
@@ -41,21 +42,20 @@ Send a message from a client to a server and receive a response
 ```
 
 ```clojure
-;; handler processing JSON message data 
-;; request: {"x": 100, "y": 200} => add => response: {"z": 300}
+;; processing Venice message data with a handler that adds two numbers 
+;; request:  {:x 100, :y 200}
+;; response: {:z 300}
 (do
   (defn handler [m]
-    (let [data   (json/read-str (. m :getText))
-          result (json/write-str { "z" (+ (get data "x") (get data "y"))})]
-      (ipc/text-message (. m :getTopic)
-                        "application/json" :UTF-8
-                        result)))
-                        
+    (let [topic    (ipc/message-field m :topic)
+          _        (assert (= "add" topic))
+          request  (ipc/message-field m :payload-venice)
+          result   {:z (+ (:x request) (:y request))}]
+      (ipc/venice-message topic result)))
+
   (try-with [server (ipc/server 33333 handler)
              client (ipc/client "localhost" 33333)]
-    (->> (ipc/text-message "test"
-                           "application/json" :UTF-8
-                           (json/write-str {"x" 100 "y" 200}))
+    (->> (ipc/venice-message "add" {:x 100 :y 200})
          (ipc/send client 2000)
          (ipc/message->json true)
          (println))))
@@ -444,7 +444,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
-             client (ipc/client "localhost" 33333)]
+             client (ipc/client 33333)]
      (ipc/create-queue server "orders" 1_000)))
 ```
 
@@ -453,7 +453,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
-             client (ipc/client "localhost" 33333)]
+             client (ipc/client 33333)]
      (ipc/create-queue server "orders" 1_000)
      ;; ...
      (ipc/remove-queue server "orders")))
@@ -464,7 +464,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
-             client (ipc/client "localhost" 33333)]
+             client (ipc/client 33333)]
      (ipc/create-queue server "orders" 1_000)
      
      (ipc/exists-queue? server "orders")))
@@ -498,7 +498,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 ```clojure
 (do
   (try-with [server (ipc/server 33333 (fn [m] m))
-             client (ipc/client "localhost" 33333)]
+             client (ipc/client 33333)]
     (let [m (ipc/send client (ipc/text-message "1" "test" "text/plain" :UTF-8"Hello!"))]
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
@@ -535,8 +535,10 @@ Hello!
 ```clojure
 (do
   (try-with [server (ipc/server 33333 (fn [m] m))
-             client (ipc/client "localhost" 33333)]
-    (let [m (ipc/send client (ipc/binary-message "1" "test" "application/octet-stream" (bytebuf [0 1 2 3 4 5 6 7])))]
+             client (ipc/client 33333)]
+    (let [m (ipc/send client (ipc/binary-message "1" "test" 
+                                                 "application/octet-stream" 
+                                                 (bytebuf [0 1 2 3 4 5 6 7])))]
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
       (println (ipc/message-field m :oneway?))
@@ -570,7 +572,7 @@ nil
 ```clojure
 (do
   (try-with [server (ipc/server 33333 (fn [m] m))
-             client (ipc/client "localhost" 33333)]
+             client (ipc/client 33333)]
     (let [m (ipc/send client (ipc/venice-message "1" "test" {:a 100, :b 200} ))]
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
