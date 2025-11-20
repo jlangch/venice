@@ -21,11 +21,6 @@
  */
 package com.github.jlangch.venice.impl;
 
-import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
-import static com.github.jlangch.venice.impl.util.StringUtil.splitIntoLines;
-import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
-import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
-
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -37,8 +32,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
-import com.github.jlangch.venice.impl.util.io.ClassPathResource;
-import com.github.jlangch.venice.impl.util.jar.AutoRunScriptJarRewriter;
+import com.github.jlangch.venice.impl.util.jar.AutoRunScript;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
 
@@ -59,8 +53,8 @@ public class AutoRunScriptLauncher {
             final IVeniceInterpreter venice = new VeniceInterpreter(
                                                     new AcceptAllInterceptor());
 
-            final String script = loadAutoRunScript();
-            final String scriptName = loadAutoRunScriptName();
+            final String script = AutoRunScript.loadAutoRunScript();
+            final String scriptName = AutoRunScript.loadAutoRunScriptName();
 
             final Env env = createEnv(
                                 venice,
@@ -94,32 +88,6 @@ public class AutoRunScriptLauncher {
                      .setStdoutPrintStream(new PrintStream(System.out, true))
                      .setStderrPrintStream(new PrintStream(System.err, true))
                      .setStdinReader(new InputStreamReader(System.in));
-    }
-
-    private static String loadAutoRunScript() {
-        final String script = new ClassPathResource(AutoRunScriptJarRewriter.AUTORUN_SCRIPT_PATH)
-                                       .getResourceAsString("UTF-8");
-        if (script == null) {
-            throw new VncException("Failed to load embedded auto run script!");
-        }
-
-        return script;
-    }
-
-    private static String loadAutoRunScriptName() {
-        try {
-            final String data = new ClassPathResource(AutoRunScriptJarRewriter.AUTORUN_META_PATH)
-                                           .getResourceAsString("UTF-8");
-
-            final String line = trimToEmpty(first(splitIntoLines(data)));
-
-            final String name = trimToNull(line.split("=")[1]);
-
-            return name == null ? "autorun" : name;
-        }
-        catch(Exception ex) {
-            return "autorun";
-        }
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {

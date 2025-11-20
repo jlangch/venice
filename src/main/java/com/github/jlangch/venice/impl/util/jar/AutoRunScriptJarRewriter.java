@@ -79,7 +79,7 @@ public class AutoRunScriptJarRewriter {
                                     scriptVersion);
 
         final Map<String, byte[]> additions = new HashMap<>();
-        additions.put(AUTORUN_SCRIPT_PATH, script.getBytes(StandardCharsets.UTF_8));
+        additions.put(AUTORUN_SCRIPT_PATH, AutoRunScript.encrypt(script));
         additions.put(AUTORUN_META_PATH, scriptMeta.getBytes(StandardCharsets.UTF_8));
 
         try {
