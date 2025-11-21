@@ -5,6 +5,7 @@
 * [Using command line arguments](#using-command-line-arguments)
 * [Passing a load-path](#passing-a-load-path)
 * [Create an executable Venice JAR](#create-an-executable-venice-jar)
+* [Unix Shebang Scripts](#unix-shebang-scripts)
 
 
 
@@ -165,3 +166,8 @@ From a shell run: `java -jar {path-to-jar}/example.jar 1 2`
 From a shell run: `java -jar {path-to-jar}/example.jar`
 
 
+## Unix Shebang Scripts
+
+Venice script can be run as a Unix Shebang script.
+
+See the details and examples [here](https://github.com/jlangch/venice/blob/master/doc/readme/shell-shebang.md)
