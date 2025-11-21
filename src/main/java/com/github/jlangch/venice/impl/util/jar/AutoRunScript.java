@@ -70,6 +70,7 @@ public class AutoRunScript {
 
 
     private static byte[] xor(final byte[] data) {
+        // very simple obfuscation, no bells and whistles
         for(int ii=0; ii<data.length; ii++) {
             data[ii] = (byte)(data[ii] ^ (byte)0x55);
         }
