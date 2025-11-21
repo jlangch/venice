@@ -168,6 +168,6 @@ From a shell run: `java -jar {path-to-jar}/example.jar`
 
 ## Unix Shebang Scripts
 
-Venice script can be run as a Unix Shebang script.
+Venice script can be run as a Unix *Shebang* script.
 
 See the details and examples [here](https://github.com/jlangch/venice/blob/master/doc/readme/shell-shebang.md)

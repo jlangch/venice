@@ -3,7 +3,7 @@
 
 ## Running Venice as a Shebang script
 
-With a little bit of sorcery a Venice script can be run as a Unix Shebang script.
+With a little bit of sorcery a Venice script can be run as a Unix *Shebang* script.
 
 
 ### REPL based Venice Shebang Script
