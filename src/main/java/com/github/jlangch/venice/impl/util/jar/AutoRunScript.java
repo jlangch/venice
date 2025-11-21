@@ -46,7 +46,7 @@ public class AutoRunScript {
     public static String loadAutoRunScriptName() {
         try {
             final String data = new ClassPathResource(AutoRunScriptJarRewriter.AUTORUN_META_PATH)
-                                           .getResourceAsString("UTF-8");
+                                        .getResourceAsString("UTF-8");
 
             final String line = trimToEmpty(first(splitIntoLines(data)));
 
@@ -60,22 +60,12 @@ public class AutoRunScript {
     }
 
     public static byte[] obfuscate(final String script) {
-        try {
-            final byte[] data = script.getBytes(StandardCharsets.UTF_8);
-            return obfuscate ? xor(data) : data;
-        }
-        catch(Exception ex) {
-            throw new RuntimeException("Failed to process embedded auto run script!");
-        }
+        final byte[] data = script.getBytes(StandardCharsets.UTF_8);
+        return obfuscate ? xor(data) : data;
     }
 
     public static String deobfuscate(final byte[] script) {
-        try {
-             return new String(obfuscate ? xor(script) : script, StandardCharsets.UTF_8);
-        }
-        catch(Exception ex) {
-            throw new RuntimeException("Failed to load embedded auto run script!");
-        }
+        return new String(obfuscate ? xor(script) : script, StandardCharsets.UTF_8);
     }
 
 
