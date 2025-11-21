@@ -112,7 +112,7 @@ A larger example that zips Tomcat log files on a monthly base:
 
 ## Running Venice as a Shebang script
 
-Venice script can be run as a Unix *Shebang* script.
+Venice scripts can be run as a Unix *Shebang* scripts.
 
 See the details and examples [here](https://github.com/jlangch/venice/blob/master/doc/readme/shell-shebang.md)
 
