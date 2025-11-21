@@ -514,7 +514,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         validateMessageSize(msg);
 
-        final Message m = createQueueOfferRequestMessage((Message)msg, queueName);
+        final Message m = createQueueOfferRequestMessage((Message)msg, queueName, null);
 
         return send(m, timeout, unit);
     }
@@ -540,7 +540,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         validateMessageSize(msg);
 
-        final Message m = createQueueOfferRequestMessage((Message)msg, queueName);
+        final Message m = createQueueOfferRequestMessage((Message)msg, queueName, null);
 
         return sendAsync(m);
     }
@@ -846,7 +846,8 @@ public class TcpClient implements Cloneable, Closeable {
 
     private static Message createQueueOfferRequestMessage(
             final Message msg,
-            final String queueName
+            final String queueName,
+            final String replyToQueueName
     ) {
         return new Message(
                 null,
@@ -855,6 +856,7 @@ public class TcpClient implements Cloneable, Closeable {
                 ResponseStatus.NULL,
                 false,
                 queueName,
+                replyToQueueName,
                 -1L,
                 -1L,
                 msg.getTopics(),
@@ -871,6 +873,7 @@ public class TcpClient implements Cloneable, Closeable {
                 ResponseStatus.NULL,
                 false,
                 queueName,
+                null,
                 -1L,
                 -1L,
                 Topics.of("queue/poll"),

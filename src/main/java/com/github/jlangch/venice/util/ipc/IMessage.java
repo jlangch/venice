@@ -48,6 +48,10 @@ import com.github.jlangch.venice.impl.types.VncVal;
  * ├───────────────────────────────┤
  * │ Topic                         │   client
  * ├───────────────────────────────┤
+ * │ Queue Name                    │   client  (offer/poll, else null)
+ * ├───────────────────────────────┤
+ * │ ReplyTo Queue Name            │   client  (offer/poll, may be null)
+ * ├───────────────────────────────┤
  * │ Payload Mimetype              │   client
  * ├───────────────────────────────┤
  * │ Payload Charset               │   client if payload data is a string else null
@@ -116,6 +120,16 @@ public interface IMessage {
      *         it never expires
      */
     LocalDateTime getExpiresAtAsLocalDateTime();
+
+    /**
+     * @return the message queue name
+     */
+    String getQueueName();
+
+    /**
+     * @return the message replyTo queue name
+     */
+    String getReplyToQueueName();
 
     /**
      * @return the message topic

@@ -45,6 +45,7 @@ public class PayloadMetaData {
             msg.getType(),
             msg.getResponseStatus(),
             msg.getQueueName(),
+            msg.getReplyToQueueName(),
             msg.getTopics(),
             msg.getMimetype(),
             msg.getCharset(),
@@ -57,6 +58,7 @@ public class PayloadMetaData {
             final MessageType type,
             final ResponseStatus responseStatus,
             final String queueName,
+            final String replyToQueueName,
             final Topics topics,
             final String mimetype,
             final String charset,
@@ -73,6 +75,7 @@ public class PayloadMetaData {
         this.type = type;
         this.responseStatus = responseStatus;
         this.queueName = queueName;
+        this.replyToQueueName = replyToQueueName;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -82,6 +85,7 @@ public class PayloadMetaData {
     public PayloadMetaData(
             final String requestId,
             final String queueName,
+            final String replyToQueueName,
             final Topics topics,
             final String mimetype,
             final String charset,
@@ -96,6 +100,7 @@ public class PayloadMetaData {
         this.type = MessageType.NULL;
         this.responseStatus = ResponseStatus.NULL;
         this.queueName = queueName;
+        this.replyToQueueName = replyToQueueName;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -121,6 +126,10 @@ public class PayloadMetaData {
 
     public String getQueueName() {
         return queueName;
+    }
+
+    public String getReplyToQueueName() {
+        return replyToQueueName;
     }
 
     public Topics getTopics() {
@@ -150,6 +159,7 @@ public class PayloadMetaData {
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
         result = prime * result + (oneway ? 1231 : 1237);
         result = prime * result + ((queueName == null) ? 0 : queueName.hashCode());
+        result = prime * result + ((replyToQueueName == null) ? 0 : replyToQueueName.hashCode());
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
         result = prime * result + ((topics == null) ? 0 : topics.hashCode());
@@ -188,6 +198,11 @@ public class PayloadMetaData {
                 return false;
         } else if (!queueName.equals(other.queueName))
             return false;
+        if (replyToQueueName == null) {
+            if (other.replyToQueueName != null)
+                return false;
+        } else if (!replyToQueueName.equals(other.replyToQueueName))
+            return false;
         if (requestId == null) {
             if (other.requestId != null)
                 return false;
@@ -208,14 +223,15 @@ public class PayloadMetaData {
     public static byte[] encode(final PayloadMetaData data) {
         Objects.requireNonNull(data);
 
-        final String s = (data.oneway ? "1" : "0")    + '\n' +
-                         trimToEmpty(data.requestId)  + '\n' +
-                         toCode(data.type)            + '\n' +
-                         toCode(data.responseStatus)  + '\n' +
-                         trimToEmpty(data.queueName)  + '\n' +
-                         Topics.encode(data.topics)   + '\n' +
-                         trimToEmpty(data.mimetype)   + '\n' +
-                         trimToEmpty(data.charset)    + '\n' +
+        final String s = (data.oneway ? "1" : "0")           + '\n' +
+                         trimToEmpty(data.requestId)         + '\n' +
+                         toCode(data.type)                   + '\n' +
+                         toCode(data.responseStatus)         + '\n' +
+                         trimToEmpty(data.queueName)         + '\n' +
+                         trimToEmpty(data.replyToQueueName)  + '\n' +
+                         Topics.encode(data.topics)          + '\n' +
+                         trimToEmpty(data.mimetype)          + '\n' +
+                         trimToEmpty(data.charset)           + '\n' +
                          data.id.toString();
 
         return s.getBytes(StandardCharsets.UTF_8);
@@ -228,17 +244,18 @@ public class PayloadMetaData {
 
         final List<String> lines = StringUtil.splitIntoLines(s);
 
-        if (lines.size() == 9) {
+        if (lines.size() == 10) {
             return new PayloadMetaData(
                     toBool(lines.get(0)),             // oneway
                     trimToNull(lines.get(1)),         // requestId
                     toMessageType(lines.get(2)),      // message type
-                    toResponseStatus(lines.get(3)),   // respone status
+                    toResponseStatus(lines.get(3)),   // response status
                     trimToNull(lines.get(4)),         // queueName
-                    Topics.decode(lines.get(5)),      // topics
-                    lines.get(6),                     // mimetype
-                    trimToNull(lines.get(7)),         // charset
-                    lines.get(8));                    // id
+                    trimToNull(lines.get(5)),         // replyToQueueName
+                    Topics.decode(lines.get(6)),      // topics
+                    lines.get(7),                     // mimetype
+                    trimToNull(lines.get(8)),         // charset
+                    lines.get(9));                    // id
         }
         else {
             throw new VncException(String.format(
@@ -286,6 +303,7 @@ public class PayloadMetaData {
     private final MessageType type;
     private final ResponseStatus responseStatus;
     private final String queueName;
+    private final String replyToQueueName;
     private final Topics topics;
     private final String mimetype;
     private final String charset;

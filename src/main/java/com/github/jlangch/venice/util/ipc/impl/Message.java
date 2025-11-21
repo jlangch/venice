@@ -72,6 +72,7 @@ public class Message implements IMessage {
         this.responseStatus = responseStatus;
         this.oneway = oneway;
         this.queueName = null;
+        this.replyToQueueName = null;
         this.timestamp = Instant.now().toEpochMilli();
         this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
         this.topics = topics;
@@ -87,6 +88,7 @@ public class Message implements IMessage {
             final ResponseStatus responseStatus,
             final boolean oneway,
             final String queueName,
+            final String replyToQueueName,
             final long timestamp,
             final long expiresAt,
             final Topics topics,
@@ -109,6 +111,7 @@ public class Message implements IMessage {
         this.responseStatus = responseStatus;
         this.oneway = oneway;
         this.queueName = StringUtil.trimToNull(queueName);
+        this.replyToQueueName = replyToQueueName;
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
         this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
         this.topics = topics;
@@ -135,7 +138,7 @@ public class Message implements IMessage {
         return new Message(
                 id, requestId,
                 type, responseStatus, oneway,
-                queueName, timestamp, expiresAt,
+                queueName, replyToQueueName, timestamp, expiresAt,
                 topics, mimetype, charset, data);
   }
 
@@ -150,7 +153,7 @@ public class Message implements IMessage {
         return new Message(
                 id, requestId,
                 type, responseStatus, oneway,
-                queueName, timestamp, expiresAt,
+                queueName, replyToQueueName, timestamp, expiresAt,
                 topics, mimetype, charset, data);
     }
 
@@ -194,9 +197,14 @@ public class Message implements IMessage {
         return expiresAt >= 0 && expiresAt < System.currentTimeMillis();
     }
 
-
+    @Override
     public String getQueueName() {
         return queueName;
+    }
+
+    @Override
+    public String getReplyToQueueName() {
+        return replyToQueueName;
     }
 
     @Override
@@ -430,6 +438,7 @@ public class Message implements IMessage {
     private final ResponseStatus responseStatus;
     private final boolean oneway;
     private final String queueName;  // used for offer/poll messages
+    private final String replyToQueueName;  // used for offer/poll messages
     private final long timestamp;
     private final long expiresAt;
     private final Topics topics;

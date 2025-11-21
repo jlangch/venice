@@ -155,6 +155,7 @@ public class Protocol {
                     payloadMeta.getResponseStatus(),
                     payloadMeta.isOneway(),
                     payloadMeta.getQueueName(),
+                    payloadMeta.getReplyToQueueName(),
                     timestamp,
                     expiresAt,
                     payloadMeta.getTopics(),

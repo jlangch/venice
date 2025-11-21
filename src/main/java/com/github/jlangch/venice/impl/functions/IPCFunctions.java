@@ -1890,45 +1890,51 @@ public class IPCFunctions {
                     .doc(
                         "Returns a specific field from the message. \n\n" +
                         "```\n" +
-                        "           Message                         set by \n" +
+                        "   Message                           Originator\n" +
                         " ┌───────────────────────────────┐   \n" +
-                        " │ ID                            │   by send, publish/subscribe method\n" +
+                        " │ ID                            │   send, publish/subscribe method\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Message Type                  │   by send, publish/subscribe method\n" +
+                        " │ Message Type                  │   send, publish/subscribe method\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Oneway                        │   by client or framework method\n" +
+                        " │ Oneway                        │   client or framework method\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Response Status               │   by server response processor\n" +
+                        " │ Response Status               │   server response processor\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Timestamp                     │   by message creator\n" +
+                        " │ Timestamp                     │   message creator\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ ExpiresAt                     │   by client (may be null)\n" +
+                        " │ ExpiresAt                     │   client (may be null)\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Request ID                    │   by client (may be used for idempotency checks by the receiver)\n" +
+                        " │ Request ID                    │   client (may be used for idempotency checks the receiver)\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Topic                         │   by client\n" +
+                        " │ Topic                         │   client\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Payload Mimetype              │   by client\n" +
+                        " │ Queue Name                    │   client  (offer/poll, else null)\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Payload Charset               │   by client if payload data is a string else null\n" +
+                        " │ ReplyTo Queue Name            │   client  (offer/poll, may be null)\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Payload data                  │   by client\n" +
+                        " │ Payload Mimetype              │   client\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Payload Charset               │   client if payload data is a string else null\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Payload data                  │   client\n" +
                         " └───────────────────────────────┘   \n" +
                         "```\n\n" +
                         "**Supported field names:** \n\n" +
-                        "  * `:id`               - the message's technical ID\n" +
-                        "  * `:type`             - the message type (request, response, ..) \n" +
-                        "  * `:oneway?`          - `true` if one-way message else `false`\n" +
-                        "  * `:response-status`  - the response status (ok, bad request, ...) \n" +
-                        "  * `:timestamp`        - the message's creation timestamp in milliseconds since epoch\n" +
-                        "  * `:expires-at`       - the message's expiry timestamp in milliseconds since epoch (may be nil)\n" +
-                        "  * `:request-id`       - the request ID (may be nil)\n" +
-                        "  * `:topic`            - the topic\n" +
-                        "  * `:payload-mimetype` - the payload data mimetype\n" +
-                        "  * `:payload-charset`  - the payload data charset (if payload is a text form)\n" +
-                        "  * `:payload-text`     - the payload converted to text data if payload is textual data else error\n" +
-                        "  * `:payload-binary`   - the payload binary data (the raw message binary data)\n" +
-                        "  * `:payload-venice`   - the payload converted venice data if mimetype is 'application/json' else error\n\n" +
+                        "  * `:id`                  - the message's technical ID\n" +
+                        "  * `:type`                - the message type (request, response, ..) \n" +
+                        "  * `:oneway?`             - `true` if one-way message else `false`\n" +
+                        "  * `:response-status`     - the response status (ok, bad request, ...) \n" +
+                        "  * `:timestamp`           - the message's creation timestamp in milliseconds since epoch\n" +
+                        "  * `:expires-at`          - the message's expiry timestamp in milliseconds since epoch (may be nil)\n" +
+                        "  * `:request-id`          - the request ID (may be nil)\n" +
+                        "  * `:topic`               - the topic\n" +
+                        "  * `:queue-name`          - the queue name\n" +
+                        "  * `:reply-to-queue-name` - the reply to queue name\n" +
+                        "  * `:payload-mimetype`    - the payload data mimetype\n" +
+                        "  * `:payload-charset`     - the payload data charset (if payload is a text form)\n" +
+                        "  * `:payload-text`        - the payload converted to text data if payload is textual data else error\n" +
+                        "  * `:payload-binary`      - the payload binary data (the raw message binary data)\n" +
+                        "  * `:payload-venice`      - the payload converted venice data if mimetype is 'application/json' else error\n\n" +
                         "**Message type:** \n\n" +
                         "  * `:REQUEST`     - a request message\n" +
                         "  * `:PUBLISH`     - a publish message\n" +
@@ -2012,25 +2018,27 @@ public class IPCFunctions {
                 final VncKeyword field = Coerce.toVncKeyword(args.second());
 
                 switch(field.getSimpleName()) {
-                    case "id":               return new VncString(message.getId().toString());
-                    case "type":             return new VncKeyword(message.getType().name());
-                    case "timestamp":        return new VncLong(message.getTimestamp());
-                    case "expires-at":       return message.getExpiresAt() < 0
+                    case "id":                  return new VncString(message.getId().toString());
+                    case "type":                return new VncKeyword(message.getType().name());
+                    case "timestamp":           return new VncLong(message.getTimestamp());
+                    case "expires-at":          return message.getExpiresAt() < 0
                                                         ? Nil
                                                         : new VncLong(message.getExpiresAt());
-                    case "oneway?":          return VncBoolean.of(message.isOneway());
-                    case "response-status":  return new VncKeyword(message.getResponseStatus().name());
-                    case "topic":            return new VncString(message.getTopic());
-                    case "request-id":       return message.getRequestId() == null
+                    case "oneway?":             return VncBoolean.of(message.isOneway());
+                    case "response-status":     return new VncKeyword(message.getResponseStatus().name());
+                    case "topic":               return new VncString(message.getTopic());
+                    case "queue-name":          return new VncString(message.getQueueName());
+                    case "reply-to-queue-name": return new VncString(message.getReplyToQueueName());
+                    case "request-id":          return message.getRequestId() == null
                                                         ? Nil
                                                         : new VncString(message.getRequestId());
-                    case "payload-mimetype": return new VncString(message.getMimetype());
-                    case "payload-charset":  return message.getCharset() == null
+                    case "payload-mimetype":    return new VncString(message.getMimetype());
+                    case "payload-charset":     return message.getCharset() == null
                                                         ? Nil
                                                         : new VncKeyword(message.getCharset());
-                    case "payload-text":     return new VncString(message.getText());
-                    case "payload-binary":   return new VncByteBuffer(message.getData());
-                    case "payload-venice":   return message.getVeniceData();
+                    case "payload-text":        return new VncString(message.getText());
+                    case "payload-binary":      return new VncByteBuffer(message.getData());
+                    case "payload-venice":      return message.getVeniceData();
                     default:
                         throw new VncException ("Invalid message field name :" + field.getSimpleName());
                 }
