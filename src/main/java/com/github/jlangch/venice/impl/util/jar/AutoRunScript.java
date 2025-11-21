@@ -29,7 +29,6 @@ import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 import java.nio.charset.StandardCharsets;
 
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
-import com.github.jlangch.venice.util.crypt.Encryptor_AES256_GCM;
 
 
 public class AutoRunScript {
@@ -63,13 +62,7 @@ public class AutoRunScript {
     public static byte[] obfuscate(final String script) {
         try {
             final byte[] data = script.getBytes(StandardCharsets.UTF_8);
-
-            // just obfuscate the script not encrypt!
-            return obfuscate
-                    ? Encryptor_AES256_GCM
-                        .create("xxxx")
-                        .encrypt(data)
-                    : data;
+            return obfuscate ? xor(data) : data;
         }
         catch(Exception ex) {
             throw new RuntimeException("Failed to process embedded auto run script!");
@@ -78,18 +71,19 @@ public class AutoRunScript {
 
     public static String deobfuscate(final byte[] script) {
         try {
-            // just deobfuscate the script not decrypt!
-            final byte[] data = obfuscate
-                                 ? Encryptor_AES256_GCM
-                                     .create("xxxx")
-                                     .decrypt(script)
-                                 : script;
-
-             return new String(data, StandardCharsets.UTF_8);
+             return new String(obfuscate ? xor(script) : script, StandardCharsets.UTF_8);
         }
         catch(Exception ex) {
             throw new RuntimeException("Failed to load embedded auto run script!");
         }
+    }
+
+
+    private static byte[] xor(final byte[] data) {
+        for(int ii=0; ii<data.length; ii++) {
+            data[ii] = (byte)(data[ii] ^ (byte)0x55);
+        }
+        return data;
     }
 
 
