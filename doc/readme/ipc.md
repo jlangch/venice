@@ -124,20 +124,19 @@ messages to/from queues but a message is delivered to one client only.
           capacity    1_000
           timeout     300]
       ;; create a queue to allow client1 and client2 to exchange messages
-      
       (ipc/create-queue server order-queue capacity)
 
       ;; client1 offers an order Venice data message to the queue
       ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
       (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
         (println "ORDER:" (ipc/message->json true order))
-        
-        ;; publish the order
+
+        ;; client1 offers the order
         (->> (ipc/offer client1 order-queue timeout order)
              (ipc/message->json true)
              (println "OFFERED:")))
 
-      ;; client2 pulls next order from the queue
+      ;; client2 polls next order from the queue
       (->> (ipc/poll client2 order-queue timeout)
            (ipc/message->json true)
            (println "POLLED:")))))
@@ -164,13 +163,13 @@ messages to/from queues but a message is delivered to one client only.
       (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
         (println "ORDER:" (ipc/message->json true order))
 
-        ;; publish the order
+        ;; client1 offers the order
         (-<> (ipc/offer-async client1 order-queue order)
              (deref <> 300 :timeout)
              (ipc/message->json true <>)
              (println "OFFERED:" <>)))
 
-      ;; client2 pulls next order from the queue
+      ;; client2 polls next order from the queue
       (-<> (ipc/poll-async client2 order-queue)
            (deref <> 300 :timeout)
            (ipc/message->json true <>)
@@ -462,7 +461,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
      (ipc/remove-queue server "orders")))
 ```
 
-#### Check Queue Exists
+#### Check if Queue exists
 
 ```clojure
 (do
@@ -487,6 +486,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
   * `:oneway?`          - `true` if one-way message else `false`
   * `:response-status`  - the response status (ok, bad request, ...) 
   * `:timestamp`        - the message's creation timestamp in milliseconds since epoch
+  * `:expires-at`       - the message's expiration time in milliseconds since epoch
   * `:request-id`       - the request ID (may be `nil`)
   * `:topic`            - the topic
   * `:payload-mimetype` - the payload data mimetype
@@ -507,6 +507,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
       (println (ipc/message-field m :type))
       (println (ipc/message-field m :oneway?))
       (println (ipc/message-field m :timestamp))
+      (println (ipc/message-field m :expires-at))
       (println (ipc/message-field m :response-status))
       (println (ipc/message-field m :request-id))
       (println (ipc/message-field m :topic))
@@ -523,6 +524,7 @@ baac8cf8-48fd-4e16-a1cc-b3867bd4e505
 :RESPONSE
 true
 1763313279378
+nil
 :OK
 1
 test
@@ -662,6 +664,29 @@ application/json
          (println "RESPONSE ERR:"))))
 ```
 
+
+
+#### Check Message Expiration
+
+```clojure
+(do
+  ;; thread-safe printing
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  (try-with [server (ipc/server 33333)
+             client1 (ipc/client "localhost" 33333)
+             client2 (ipc/client "localhost" 33333)]
+    (ipc/create-queue server "orders" 1_000)
+
+    ;; client1 offers an new order to the queue
+    (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+      (ipc/offer client1 "orders" 300 order))
+
+    ;; client2 polls next order from the queue
+    (let [m (ipc/poll client2 "orders" 300)]
+      ;; Response message expired?
+      (println "RESPONSE EXPIRED:" (ipc/message-expired? m)))))
+```
 
 
 
