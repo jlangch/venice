@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.functions.TransducerFunctions;
+import com.github.jlangch.venice.impl.modules.CodeLoader;
 import com.github.jlangch.venice.impl.modules.Modules;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;

@@ -29,8 +29,8 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.CodeLoader;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.modules.CodeLoader;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
@@ -187,7 +187,8 @@ public class SpecialForms_LoadCodeMacros {
                     final IInterceptor interceptor = ThreadContext.getInterceptor();
 
                     boolean loaded = new CodeLoader().loadModule(
-                                            module, ctx.getInterpreter(), interceptor, env, force, aliasOpt);
+                                            module, ctx.getInterpreter(),
+                                            interceptor, env, force, aliasOpt);
 
                     return VncVector
                                 .empty()

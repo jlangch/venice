@@ -19,11 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.modules;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
+import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.types.VncKeyword;
