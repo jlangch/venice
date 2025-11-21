@@ -76,7 +76,7 @@ public class JarRewriter {
                                     ? copyManifestFirstIfPresent(jis, out)
                                     : replaceManifestFirst(manifest, jis, out)) {
 
-            long fixedTime = 0L;
+            long fixedTime = System.currentTimeMillis();
             jos.setLevel(Deflater.DEFAULT_COMPRESSION);
 
             // Copy over existing entries except those being replaced
@@ -91,7 +91,7 @@ public class JarRewriter {
                 }
 
                 final JarEntry outEntry = new JarEntry(name);
-                outEntry.setTime(fixedTime);
+                outEntry.setTime(in.getTime());
                 // You could copy extra fields if needed:
                 // outEntry.setComment(in.getComment()); etc.
                 jos.putNextEntry(outEntry);
