@@ -166,6 +166,6 @@ public class AutoRunScriptJarRewriter {
 
     private static final String BASE_PATH = "com/github/jlangch/venice/auto/";
 
-    public static final String AUTORUN_SCRIPT_PATH = BASE_PATH + "autorun.venice";
+    public static final String AUTORUN_SCRIPT_PATH = BASE_PATH + "autorun.data";
     public static final String AUTORUN_META_PATH = BASE_PATH + "autorun.meta";
 }
