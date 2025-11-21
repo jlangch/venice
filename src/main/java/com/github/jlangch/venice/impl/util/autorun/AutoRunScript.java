@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.jar;
+package com.github.jlangch.venice.impl.util.autorun;
 
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.StringUtil.splitIntoLines;

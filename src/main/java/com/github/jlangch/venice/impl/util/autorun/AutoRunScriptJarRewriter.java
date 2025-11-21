@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.jar;
+package com.github.jlangch.venice.impl.util.autorun;
 
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 
@@ -36,6 +36,7 @@ import java.util.jar.Manifest;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.AutoRunScriptLauncher;
+import com.github.jlangch.venice.impl.util.io.JarRewriter;
 
 
 

@@ -46,7 +46,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
-import com.github.jlangch.venice.impl.util.jar.AutoRunScriptJarRewriter;
+import com.github.jlangch.venice.impl.util.autorun.AutoRunScriptJarRewriter;
 
 
 public class CoreSystemFunctions {

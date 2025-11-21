@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
-import com.github.jlangch.venice.impl.util.jar.AutoRunScript;
+import com.github.jlangch.venice.impl.util.autorun.AutoRunScript;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
 
