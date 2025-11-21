@@ -142,6 +142,47 @@ messages to/from queues but a message is delivered to one client only.
            (println "POLLED:")))))
 ```
 
+**synchronous offer / poll with reply-to queue**
+
+```clojure
+(do
+  ;; thread-safe printing
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  (try-with [server  (ipc/server 33333)
+             client  (ipc/client "localhost" 33333)
+             barista (ipc/client "localhost" 33333)]
+    (let [order-queue              "orders"
+          order-confirmation-queue "order-confirmations"
+          capacity                 1_000
+          timeout                  300]
+      ;; create a queues
+      (ipc/create-queue server order-queue capacity)
+      (ipc/create-queue server order-confirmation-queue capacity)
+
+      ;; client places the order
+      (let [order    (ipc/venice-message "1" "order" {:item "espresso", :count 2})
+            response (ipc/offer client order-queue order-confirmation-queue timeout order)]
+        (if (ipc/response-ok? response)
+          (println "(client) ORDER:" (ipc/message->json true order))
+          (throw (ex :VncException "Client failed to place order!"))))
+
+      ;; barista processes the order
+      (let [order        (ipc/poll barista order-queue timeout)
+            request-id   (ipc/message-field order :request-id)
+            reply-to     (ipc/message-field order :reply-to-queue-name)
+            order-data   (ipc/message-field order :payload-venice)
+            confirmation (ipc/venice-message request-id "order-confirmed" order-data)]
+        (println "(barista) ORDER PROCESSED:" (ipc/message->json true order))
+        (ipc/offer barista reply-to timeout confirmation))
+        
+      ;; client1 waits for the order confirmation
+      (let [confirmation (ipc/poll client order-confirmation-queue timeout)]
+        (if (ipc/response-ok? confirmation)
+          (println "(client) ORDER CONFIRMED:" (ipc/message->json true confirmation))
+          (println "(client) ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))))
+```
+
 **asynchronous offer / poll**
 
 ```clojure

@@ -49,7 +49,7 @@ public class TcpOfferPollTest {
         try {
             final IMessage m1 = client1.offer(
                                     MessageFactory.text(null, "queue-test", "text/plain", "UTF-8", "Hello!"),
-                                    "queue-1",
+                                    "queue-1", null,
                                     1,
                                     TimeUnit.SECONDS);
 
@@ -95,7 +95,7 @@ public class TcpOfferPollTest {
         try {
             final IMessage m = MessageFactory.text("1", "queue-test", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage r = client1.offer(m, "queue-XXX", 1, TimeUnit.SECONDS);
+            final IMessage r = client1.offer(m, "queue-XXX", null, 1, TimeUnit.SECONDS);
 
             assertEquals(ResponseStatus.QUEUE_NOT_FOUND, r.getResponseStatus());
 
@@ -129,11 +129,11 @@ public class TcpOfferPollTest {
             final IMessage m3 = MessageFactory.text("3", "queue-test", "text/plain", "UTF-8", "Hello!");
             final IMessage m4 = MessageFactory.text("4", "queue-test", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage r1 = client1.offer(m1, "queue", 1, TimeUnit.SECONDS);
-            final IMessage r2 = client1.offer(m2, "queue", 1, TimeUnit.SECONDS);
-            final IMessage r3 = client1.offer(m3, "queue", 1, TimeUnit.SECONDS);
+            final IMessage r1 = client1.offer(m1, "queue", null, 1, TimeUnit.SECONDS);
+            final IMessage r2 = client1.offer(m2, "queue", null, 1, TimeUnit.SECONDS);
+            final IMessage r3 = client1.offer(m3, "queue", null, 1, TimeUnit.SECONDS);
 
-            final IMessage r4 = client1.offer(m4, "queue", 1, TimeUnit.SECONDS);
+            final IMessage r4 = client1.offer(m4, "queue", null, 1, TimeUnit.SECONDS);
 
             assertEquals(ResponseStatus.OK, r1.getResponseStatus());
             assertEquals(ResponseStatus.OK, r2.getResponseStatus());
@@ -169,8 +169,8 @@ public class TcpOfferPollTest {
             final IMessage m1 = MessageFactory.text("1", "queue-test", "text/plain", "UTF-8", "Hello!");
             final IMessage m2 = MessageFactory.text("2", "queue-test", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage r1 = client1.offer(m1, "queue", 1, TimeUnit.SECONDS);
-            final IMessage r2 = client1.offer(m2, "queue", 1, TimeUnit.SECONDS);
+            final IMessage r1 = client1.offer(m1, "queue", null, 1, TimeUnit.SECONDS);
+            final IMessage r2 = client1.offer(m2, "queue", null, 1, TimeUnit.SECONDS);
 
             final IMessage r3 = client1.poll("queue", 1, TimeUnit.SECONDS);
             final IMessage r4 = client1.poll("queue", 1, TimeUnit.SECONDS);

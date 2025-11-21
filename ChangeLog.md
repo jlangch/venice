@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- added IPC offer/poll optional *reply-to* queue
 - Improved the script auto-run Venice JAR rewriter
 
 

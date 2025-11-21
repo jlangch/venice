@@ -498,6 +498,7 @@ public class TcpClient implements Cloneable, Closeable {
      *
      * @param msg       a message
      * @param queueName a queue name
+     * @param replyToQueueName an optional reply-to queue name
      * @param timeout   the maximum time to wait
      * @param unit      the time unit of the timeout argument
      * @return the server's response
@@ -505,6 +506,7 @@ public class TcpClient implements Cloneable, Closeable {
     public IMessage offer(
             final IMessage msg,
             final String queueName,
+            final String replyToQueueName,
             final long timeout,
             final TimeUnit unit
     ) {
@@ -514,7 +516,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         validateMessageSize(msg);
 
-        final Message m = createQueueOfferRequestMessage((Message)msg, queueName, null);
+        final Message m = createQueueOfferRequestMessage((Message)msg, queueName, replyToQueueName);
 
         return send(m, timeout, unit);
     }
@@ -529,18 +531,20 @@ public class TcpClient implements Cloneable, Closeable {
      *
      * @param msg       a message
      * @param queueName a queue name
+     * @param replyToQueueName an optional reply-to queue name
      * @return a future with the server's response message
      */
     public Future<IMessage> offerAsync(
             final IMessage msg,
-            final String queueName
+            final String queueName,
+            final String replyToQueueName
     ) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(queueName);
 
         validateMessageSize(msg);
 
-        final Message m = createQueueOfferRequestMessage((Message)msg, queueName, null);
+        final Message m = createQueueOfferRequestMessage((Message)msg, queueName, replyToQueueName);
 
         return sendAsync(m);
     }

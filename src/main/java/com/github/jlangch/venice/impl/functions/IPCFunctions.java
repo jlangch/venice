@@ -991,13 +991,15 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/offer client queue-name timeout message)")
+                        "(ipc/offer client queue-name timeout message)",
+                        "(ipc/offer client queue-name reply-to-queue-name timeout message)")
                     .doc(
                         "Offers a message to the named queue.\n\n" +
                         "Returns the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c     | A client to send the offer message from |\n" +
                         "| queue-name q | A queue name to offer the message to|\n" +
+                        "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
                         "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
                         "| message m    | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
@@ -1050,14 +1052,26 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4);
+                ArityExceptions.assertArity(this, args, 4, 5);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-                final String name = Coerce.toVncString(args.second()).getValue();
-                final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
-                final IMessage request = Coerce.toVncJavaObject(args.fourth(), IMessage.class);
+                if (args.size() == 4) {
+                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
+                    final String replyToQueueName = null;
+                    final long timeout = Coerce.toVncLong(args.nth(2)).toJavaLong();
+                    final IMessage request = Coerce.toVncJavaObject(args.nth(3), IMessage.class);
 
-                return new VncJavaObject(client.offer(request, name, timeout, TimeUnit.MILLISECONDS));
+                    return new VncJavaObject(client.offer(request, queueName, replyToQueueName, timeout, TimeUnit.MILLISECONDS));
+                }
+                else {
+                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
+                    final String replyToQueueName = args.nth(2) == Nil ? null : StringUtil.trimToNull(Coerce.toVncString(args.nth(2)).getValue());
+                    final long timeout = Coerce.toVncLong(args.nth(3)).toJavaLong();
+                    final IMessage request = Coerce.toVncJavaObject(args.nth(4), IMessage.class);
+
+                    return new VncJavaObject(client.offer(request, queueName, replyToQueueName, timeout, TimeUnit.MILLISECONDS));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1069,13 +1083,15 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/offer-async client queue-name message)")
+                        "(ipc/offer-async client queue-name message)",
+                        "(ipc/offer-async client queue-name reply-to-queue-name message)")
                     .doc(
                         "Offers a message to the named queue.\n\n" +
                         "Returns a future with the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c     | A client to send the offer message from |\n" +
                         "| queue-name q | A queue name to offer the message to|\n" +
+                        "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
                         "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
                         "| message m    | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
@@ -1130,15 +1146,28 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 3, 4);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
-                final String name = Coerce.toVncString(args.second()).getValue();
-                final IMessage request = Coerce.toVncJavaObject(args.third(), IMessage.class);
+                if (args.size() == 3) {
+                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
+                    final String replyToQueueName = null;
+                    final IMessage request = Coerce.toVncJavaObject(args.nth(2), IMessage.class);
 
-                return new VncJavaObject(
-                        new FutureWrapper(
-                            client.offerAsync(request, name)));
+                    return new VncJavaObject(
+                            new FutureWrapper(
+                                client.offerAsync(request, queueName, replyToQueueName)));
+                }
+                else {
+                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
+                    final String replyToQueueName = args.nth(2) == Nil ? null : StringUtil.trimToNull(Coerce.toVncString(args.nth(2)).getValue());
+                    final IMessage request = Coerce.toVncJavaObject(args.nth(3), IMessage.class);
+
+                    return new VncJavaObject(
+                            new FutureWrapper(
+                                client.offerAsync(request, queueName, replyToQueueName)));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
