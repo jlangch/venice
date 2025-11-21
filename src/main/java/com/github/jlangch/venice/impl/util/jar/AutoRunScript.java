@@ -65,7 +65,8 @@ public class AutoRunScript {
     }
 
     public static String deobfuscate(final byte[] script) {
-        return new String(obfuscate ? xor(script) : script, StandardCharsets.UTF_8);
+        final byte[] data = obfuscate ? xor(script) : script;
+        return new String(data, StandardCharsets.UTF_8);
     }
 
 
