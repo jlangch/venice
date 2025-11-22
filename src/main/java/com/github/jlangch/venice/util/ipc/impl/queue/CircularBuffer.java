@@ -21,22 +21,22 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.queue;
 
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+
+import com.github.jlangch.venice.resilience4j.circularbuffer.ConcurrentEvictingQueue;
 
 
 
 /**
- * A simple, thread-safe implementation of a circular buffer.
+ * Circular buffer.
  */
 public class CircularBuffer<T> implements IpcQueue<T> {
 
     public CircularBuffer(final String name, final int capacity) {
         this.name = name;
         this.capacity = capacity;
-        this.buffer = new LinkedList<>();
+        this.buffer = new ConcurrentEvictingQueue<>(capacity);
     }
 
 
@@ -47,9 +47,7 @@ public class CircularBuffer<T> implements IpcQueue<T> {
 
     @Override
     public int size() {
-        synchronized(this) {
-            return buffer.size();
-        }
+        return buffer.size();
     }
 
     @Override
@@ -59,51 +57,33 @@ public class CircularBuffer<T> implements IpcQueue<T> {
 
     @Override
     public void clear() {
-        synchronized(this) {
-            buffer.clear();
-        }
+        buffer.clear();
     }
 
     @Override
     public T poll() {
-        synchronized(this) {
-            return buffer.isEmpty() ? null : buffer.pollFirst();
-        }
+        return buffer.poll();
     }
 
     @Override
     public T poll(long timeout, TimeUnit unit) {
-        return poll();
+        return buffer.poll();
     }
 
     @Override
     public boolean offer(final T item) {
         Objects.requireNonNull(item);
-
-        synchronized(this) {
-            while (buffer.size() >= capacity) {
-                buffer.removeFirst();
-                discardCount.incrementAndGet();
-            }
-
-            buffer.offerLast(item);
-
-            return true;
-        }
+        return buffer.offer(item);
     }
 
     @Override
     public boolean offer(final T item, long timeout, TimeUnit unit) {
-        return offer(item);
-    }
-
-    public long discardCount() {
-        return discardCount.get();
+        Objects.requireNonNull(item);
+        return buffer.offer(item);
     }
 
 
     private final String name;
     private final int capacity;
-    private final LinkedList<T> buffer;
-    private final AtomicLong discardCount = new AtomicLong(0);
+    private final ConcurrentEvictingQueue<T> buffer;
 }
