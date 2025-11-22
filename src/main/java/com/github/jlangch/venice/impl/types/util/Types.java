@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.VncVolatile;
+import com.github.jlangch.venice.impl.types.collections.VncCircularBuffer;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncDAG;
 import com.github.jlangch.venice.impl.types.collections.VncDelayQueue;
@@ -253,6 +254,10 @@ public class Types {
 
     public static boolean isVncDelayQueue(final VncVal val) {
         return val != null && (val instanceof VncDelayQueue);
+    }
+
+    public static boolean isVncCircularBuffer(final VncVal val) {
+        return val != null && (val instanceof VncCircularBuffer);
     }
 
     public static boolean isVncDAG(final VncVal val) {

@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.VncVolatile;
+import com.github.jlangch.venice.impl.types.collections.VncCircularBuffer;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncDAG;
 import com.github.jlangch.venice.impl.types.collections.VncDelayQueue;
@@ -726,6 +727,22 @@ public class Coerce {
             try (WithCallStack cs = new WithCallStack(callframe(val))) {
                 throw new VncException(String.format(
                         "Cannot coerce value of type %s to delay-queue.",
+                        Types.getType(val)));
+            }
+        }
+    }
+
+    public static VncCircularBuffer toVncCircularBuffer(final VncVal val) {
+        if (val == null) {
+            throw new VncException("Cannot coerce a null value to circular-buffer.");
+        }
+        else if (val instanceof VncCircularBuffer) {
+            return (VncCircularBuffer)val;
+        }
+        else {
+            try (WithCallStack cs = new WithCallStack(callframe(val))) {
+                throw new VncException(String.format(
+                        "Cannot coerce value of type %s to circular-buffer.",
                         Types.getType(val)));
             }
         }

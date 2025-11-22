@@ -3861,6 +3861,37 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction new_circular_buffer =
+        new VncFunction(
+                "circular-buffer",
+                VncFunction
+                    .meta()
+                    .arglists("(circular-buffer capacity)")
+                    .doc(
+                        "Creates a new circular buffer.\n\n" +
+                        "A circular buffer stores the N most recently inserted elements. " +
+                        "If the circular buffer is already full, the oldest element (the head) " +
+                        "will be evicted, and then the new element added at the tail. \n\n" +
+                        "The circular buffer does not permit `nil` elements.")
+                    .examples(
+                        "(let [q (circular-buffer 20)]  \n" +
+                        "  (put! q 1 100)               \n" +
+                        "  (put! q 1 200)               \n" +
+                        "  (take! q))                   ")
+                    .seeAlso(
+                        "peek", "put!", "take!", "poll!", "empty", "empty?", "count", "circular-buffer?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                return new VncDelayQueue(null);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction new_map_entry =
         new VncFunction(
                 "map-entry",
@@ -4084,6 +4115,26 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return VncBoolean.of(Types.isVncDeque(args.first()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction circular_buffer_Q =
+        new VncFunction(
+                "circular-buffer?",
+                VncFunction
+                    .meta()
+                    .arglists("(circular-buffer? coll)")
+                    .doc("Returns true if coll is a circular buffer")
+                    .examples("(circular-buffer? (circular-buffer 20))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                return VncBoolean.of(Types.isVncCircularBuffer(args.first()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -10891,6 +10942,8 @@ public class CoreFunctions {
                 .add(queue_Q)
                 .add(deque_Q)
                 .add(delay_queue_Q)
+                .add(new_circular_buffer)
+                .add(circular_buffer_Q)
                 .add(new_hash_map)
                 .add(new_ordered_map)
                 .add(new_sorted_map)
