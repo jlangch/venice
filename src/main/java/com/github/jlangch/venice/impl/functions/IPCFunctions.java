@@ -577,7 +577,7 @@ public class IPCFunctions {
                     return response == null ? Nil : new VncJavaObject(response);
                 }
                 else {
-                    final IMessage response = client.sendMessage(request, timeout, TimeUnit.MILLISECONDS);
+                    final IMessage response = client.sendMessage(request, timeout);
                     return response == null ? Nil : new VncJavaObject(response);
                 }
             }
@@ -1061,7 +1061,7 @@ public class IPCFunctions {
                     final long timeout = Coerce.toVncLong(args.nth(2)).toJavaLong();
                     final IMessage request = Coerce.toVncJavaObject(args.nth(3), IMessage.class);
 
-                    return new VncJavaObject(client.offer(request, queueName, replyToQueueName, timeout, TimeUnit.MILLISECONDS));
+                    return new VncJavaObject(client.offer(request, queueName, replyToQueueName, timeout));
                 }
                 else {
                     final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
@@ -1070,7 +1070,7 @@ public class IPCFunctions {
                     final long timeout = Coerce.toVncLong(args.nth(3)).toJavaLong();
                     final IMessage request = Coerce.toVncJavaObject(args.nth(4), IMessage.class);
 
-                    return new VncJavaObject(client.offer(request, queueName, replyToQueueName, timeout, TimeUnit.MILLISECONDS));
+                    return new VncJavaObject(client.offer(request, queueName, replyToQueueName, timeout));
                 }
             }
 
@@ -1244,7 +1244,7 @@ public class IPCFunctions {
                 final String name = Coerce.toVncString(args.second()).getValue();
                 final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
 
-                return new VncJavaObject(client.poll(name, timeout, TimeUnit.MILLISECONDS));
+                return new VncJavaObject(client.poll(name, timeout));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1372,8 +1372,7 @@ public class IPCFunctions {
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""),
-                                            5,
-                                            TimeUnit.SECONDS);
+                                            5_000);
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
@@ -1431,8 +1430,7 @@ public class IPCFunctions {
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""),
-                                            5,
-                                            TimeUnit.SECONDS);
+                                            5_000);
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {

@@ -24,8 +24,6 @@ package com.github.jlangch.venice.util.ipc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.Test;
 
 
@@ -51,15 +49,14 @@ public class TcpOfferPollEncryptedTest {
                                     MessageFactory.text(null, "queue-test", "text/plain", "UTF-8", "Hello!"),
                                     "queue-1",
                                     null,
-                                    1,
-                                    TimeUnit.SECONDS);
+                                    1_000);
 
             assertNotNull(m1);
             assertEquals(ResponseStatus.OK,  m1.getResponseStatus());
             assertEquals("queue-test",       m1.getTopic());
 
 
-            final IMessage m2 = client2.poll("queue-1", 100, TimeUnit.SECONDS);
+            final IMessage m2 = client2.poll("queue-1", 1000);
 
             assertNotNull(m2);
             assertEquals(ResponseStatus.OK,  m2.getResponseStatus());

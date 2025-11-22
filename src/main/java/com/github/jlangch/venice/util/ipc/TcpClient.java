@@ -271,9 +271,7 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Sends a message to the server and returns the server's response.
      *
-     * <p>Blocks while waiting for the server's response.
-     *
-     * <p>Returns <code>null</code> if a one way message was sent
+     * <p>Blocks, potentially forever, while waiting for the server's response.
      *
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
      *
@@ -291,9 +289,10 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Sends a on-way message to the server.
      *
-     * <p>The server does not send a response message.
-     *
-     * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     * <p>The server does not send a response message. Returns immediately after sending
+     * the message. The method just guarantees that the message has been completely sent
+     * over the channel, but returns no information whether the server received the message
+     * and processed it.
      *
      * @param msg a message
      */
@@ -315,16 +314,14 @@ public class TcpClient implements Cloneable, Closeable {
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
      *
      * @param msg     a message
-     * @param timeout the maximum time to wait
-     * @param unit    the time unit of the timeout argument
+     * @param timeout the maximum time in milliseconds to wait
      * @return the server's response
      */
-    public IMessage sendMessage(final IMessage msg, final long timeout, final TimeUnit unit) {
+    public IMessage sendMessage(final IMessage msg, final long timeout) {
         Objects.requireNonNull(msg);
-        Objects.requireNonNull(unit);
 
         final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
-        return send(m, timeout, unit);
+        return send(m, timeout);
     }
 
     /**
@@ -407,8 +404,7 @@ public class TcpClient implements Cloneable, Closeable {
                                             mngdExecutor
                                                 .getExecutor()
                                                 .submit(task),
-                                            5,
-                                            TimeUnit.SECONDS);
+                                            5_000);
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     // start the subscription listener in this client
@@ -452,10 +448,10 @@ public class TcpClient implements Cloneable, Closeable {
         if (subscription.get()) {
             // if this client is in subscription mode publish this message
             // through another client!
-            return sendThroughTemporaryClient(m, 5, TimeUnit.SECONDS);
+            return sendThroughTemporaryClient(m, 5_000);
         }
         else {
-            return send(m, 5, TimeUnit.SECONDS);
+            return send(m, 5_000);
         }
     }
 
@@ -499,7 +495,7 @@ public class TcpClient implements Cloneable, Closeable {
      * @param msg       a message
      * @param queueName a queue name
      * @param replyToQueueName an optional reply-to queue name
-     * @param timeout   the maximum time to wait
+     * @param timeout   the maximum time in milliseconds to wait
      * @param unit      the time unit of the timeout argument
      * @return the server's response
      */
@@ -507,18 +503,16 @@ public class TcpClient implements Cloneable, Closeable {
             final IMessage msg,
             final String queueName,
             final String replyToQueueName,
-            final long timeout,
-            final TimeUnit unit
+            final long timeout
     ) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(queueName);
-        Objects.requireNonNull(unit);
 
         validateMessageSize(msg);
 
         final Message m = createQueueOfferRequestMessage((Message)msg, queueName, replyToQueueName);
 
-        return send(m, timeout, unit);
+        return send(m, timeout);
     }
 
 
@@ -559,21 +553,19 @@ public class TcpClient implements Cloneable, Closeable {
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
      *
      * @param queueName a queue name
-     * @param timeout   the maximum time to wait
+     * @param timeout   the maximum time in milliseconds to wait
      * @param unit      the time unit of the timeout argument
      * @return the server's response
      */
     public IMessage poll(
             final String queueName,
-            final long timeout,
-            final TimeUnit unit
+            final long timeout
     ) {
         Objects.requireNonNull(queueName);
-        Objects.requireNonNull(unit);
 
         final Message m = createQueuePollRequestMessage(queueName);
 
-        return send(m, timeout, unit);
+        return send(m, timeout);
     }
 
     /**
@@ -596,16 +588,14 @@ public class TcpClient implements Cloneable, Closeable {
 
     private IMessage sendThroughTemporaryClient(
             final IMessage msg,
-            final long timeout,
-            final TimeUnit unit
+            final long timeout
     ) {
         Objects.requireNonNull(msg);
-        Objects.requireNonNull(unit);
 
         // use the same configuration as the parent client
         try (final TcpClient client = (TcpClient)this.clone()) {
             client.open();
-            return client.send(msg, timeout, unit);
+            return client.send(msg, timeout);
         }
         catch(IOException ex) {
             // ignore client close exception
@@ -659,9 +649,8 @@ public class TcpClient implements Cloneable, Closeable {
         }
     }
 
-    private IMessage send(final IMessage msg, final long timeout, final TimeUnit unit) {
+    private IMessage send(final IMessage msg, final long timeout) {
         Objects.requireNonNull(msg);
-        Objects.requireNonNull(unit);
 
         validateMessageSize(msg);
 
@@ -673,7 +662,7 @@ public class TcpClient implements Cloneable, Closeable {
             return handleClientLocalMessage(msg);
         }
 
-        return deref(sendAsync(msg), timeout, unit);
+        return deref(sendAsync(msg), timeout);
     }
 
     private Future<IMessage> sendAsync(final IMessage msg) {
@@ -735,8 +724,7 @@ public class TcpClient implements Cloneable, Closeable {
         // exchange the client's and the server's public key
         final Message response = (Message)deref(
                                     sendAsyncRaw(m, ch, Compressor.off(), Encryptor.off()),
-                                    2,
-                                    TimeUnit.SECONDS);
+                                    2_000);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys
@@ -793,9 +781,9 @@ public class TcpClient implements Cloneable, Closeable {
         }
     }
 
-    private IMessage deref(Future<IMessage> future, final long timeout, final TimeUnit unit) {
+    private IMessage deref(Future<IMessage> future, final long timeout) {
         try {
-            return future.get(timeout, unit);
+            return future.get(timeout, TimeUnit.MILLISECONDS);
         }
         catch(VncException ex) {
             throw ex;
