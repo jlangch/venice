@@ -1,6 +1,6 @@
                                  Apache License
                            Version 2.0, January 2004
-                        https://www.apache.org/licenses/
+                        http://www.apache.org/licenses/
 
    TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
@@ -192,36 +192,10 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       https://www.apache.org/licenses/LICENSE-2.0
+       http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-===============================================================================
-
-
-
-
--------------------------------------------------------------------------------
-VENICE SUBCOMPONENTS
--------------------------------------------------------------------------------
-
-The Venice Release 1.12.63 includes a number of subcomponents with separate 
-copyright notices and license terms. The product that includes this file does 
-not necessarily use all the open source subcomponents referred to below. Your 
-use of the source code for these subcomponents is subject to the terms and 
-conditions of the following licenses.
-
-
-VAVR 0.10.7 (io.vavr:vavr:0.10.7)                              LICENSE-Vavr.txt
-JLine3 3.21.0 (org.jline:jline:3.21.0)                       LICENSE-JLine3.txt
-NanoJson 1.6 (com.grack:nanojson:1.6)                      LICENSE-nanojson.txt
-Zip4j 2.11.5 (net.lingala.zip4j:zip4j:2.11.5)                 LICENSE-Zip4J.txt
-Aviron 1.9.1 (com.github.jlangch:aviron:1.9.1)               LICENSE-Aviron.txt
-CronSched 0.1 (io.timeandspace:cron-scheduler:0.1)    LICENSE-CronScheduler.txt
-Resilience4j 2.3.0 (io.github.resilience4j:            LICENSE-Resilience4j.txt
-                      resilience4j-circularbuffer:2.3.0) 
-Audiowide Regular Open Font                               LICENSE-Audiowide.txt
