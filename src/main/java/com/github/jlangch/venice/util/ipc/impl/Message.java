@@ -76,6 +76,7 @@ public class Message implements IMessage {
         this.timestamp = Instant.now().toEpochMilli();
         this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
         this.topics = topics;
+        this.timeout = 0L;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -91,6 +92,7 @@ public class Message implements IMessage {
             final String replyToQueueName,
             final long timestamp,
             final long expiresAt,
+            final long timeout,
             final Topics topics,
             final String mimetype,
             final String charset,
@@ -114,6 +116,7 @@ public class Message implements IMessage {
         this.replyToQueueName = replyToQueueName;
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
         this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
+        this.timeout = timeout < 0 ? NO_TIMEOUT : timeout;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -139,7 +142,7 @@ public class Message implements IMessage {
                 id, requestId,
                 type, responseStatus, oneway,
                 queueName, replyToQueueName, timestamp, expiresAt,
-                topics, mimetype, charset, data);
+                timeout, topics, mimetype, charset, data);
   }
 
     /**
@@ -154,7 +157,7 @@ public class Message implements IMessage {
                 id, requestId,
                 type, responseStatus, oneway,
                 queueName, replyToQueueName, timestamp, expiresAt,
-                topics, mimetype, charset, data);
+                timeout, topics, mimetype, charset, data);
     }
 
     @Override
@@ -195,6 +198,10 @@ public class Message implements IMessage {
     @Override
     public boolean hasExpired() {
         return expiresAt >= 0 && expiresAt < System.currentTimeMillis();
+    }
+
+    public long getTimeout() {
+        return timeout;
     }
 
     @Override
@@ -426,6 +433,7 @@ public class Message implements IMessage {
 
 
     public static final long EXPIRES_NEVER = -1L;
+    public static final long NO_TIMEOUT = -1L;
 
     public static final long QUEUENAME_MAX_LEN = 100;
     public static final long MIMETYPE_MAX_LEN = 100;
@@ -441,6 +449,7 @@ public class Message implements IMessage {
     private final String replyToQueueName;  // used for offer/poll messages
     private final long timestamp;
     private final long expiresAt;
+    private final long timeout;
     private final Topics topics;
     private final String mimetype;
     private final String charset;
