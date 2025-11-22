@@ -44,7 +44,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
  * ├───────────────────────────────┤
  * │ ExpiresAt                     │   client (may be null)
  * ├───────────────────────────────┤
- * │ Timeout                       │   client (server-side queue offer/poll timeout)
+ * │ Timeout                       │   client (used as server-side queue offer/poll timeout)
  * ├───────────────────────────────┤
  * │ Request ID                    │   client (may be used for idempotency checks by the receiver)
  * ├───────────────────────────────┤
