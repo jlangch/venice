@@ -487,11 +487,9 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/send client message)",
-                        "(ipc/send client timeout message)")
+                        "(ipc/send client message)")
                     .doc(
                         "Sends a message to the server the client is associated with. \n\n" +
-                        "The optional timeout is given in milliseconds.\n\n" +
                         "Returns the server's response message or `nil` if the message is " +
                         "declared as one-way message. Throws a timeout exception if the " +
                         "response is not received within the timeout time.\n\n" +
@@ -530,7 +528,7 @@ public class IPCFunctions {
                         "    (->> (ipc/text-message \"test\"                               \n" +
                         "                           \"application/json\" :UTF-8            \n" +
                         "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
-                        "         (ipc/send client 2000)                                   \n" +
+                        "         (ipc/send client)                                        \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ",
 
@@ -564,22 +562,13 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3);
-
-                final boolean hasTimeout =  args.size() > 2;
+                ArityExceptions.assertArity(this, args, 2);
 
                 final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
-                final long timeout = hasTimeout ? Coerce.toVncLong(args.nth(1)).toJavaLong() : 0;
-                final IMessage request = Coerce.toVncJavaObject(args.nth(hasTimeout ? 2 : 1), IMessage.class);
+                final IMessage request = Coerce.toVncJavaObject(args.nth(1), IMessage.class);
 
-                if (timeout <= 0) {
-                    final IMessage response = client.sendMessage(request);
-                    return response == null ? Nil : new VncJavaObject(response);
-                }
-                else {
-                    final IMessage response = client.sendMessage(request, timeout);
-                    return response == null ? Nil : new VncJavaObject(response);
-                }
+                final IMessage response = client.sendMessage(request);
+                return response == null ? Nil : new VncJavaObject(response);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -611,11 +600,11 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
-                        "         (ipc/send-async client)                                  \n" +
-                        "         (deref)                                                  \n" +
-                        "         (ipc/message->map)                                       \n" +
-                        "         (println))))                                             ",
+                        "    (-<> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "         (ipc/send-async client <>)                               \n" +
+                        "         (deref <> 1_000 :timeout)                                \n" +
+                        "         (ipc/message->map <>)                                    \n" +
+                        "         (println <>))))                                          ",
 
                         ";; handler processing JSON message data                           \n" +
                         ";; request: {\"x\": 100, \"y\": 200} => add => response: {\"z\": 300}  \n" +
@@ -628,13 +617,13 @@ public class IPCFunctions {
                         "                        result)))                                 \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/text-message \"test\"                               \n" +
+                        "    (-<> (ipc/text-message \"test\"                               \n" +
                         "                           \"application/json\" :UTF-8            \n" +
                         "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
-                        "         (ipc/send-async client)                                  \n" +
-                        "         (deref)                                                  \n" +
-                        "         (ipc/message->map)                                       \n" +
-                        "         (println))))                                             ",
+                        "         (ipc/send-async client <>)                               \n" +
+                        "         (deref <> 1_000 :timeout)                                \n" +
+                        "         (ipc/message->map <>)                                    \n" +
+                        "         (println <>))))                                          ",
 
                         ";; handler with remote code execution                             \n" +
                         ";; request: \"(+ 1 2)\" => exec => response: \"3\"                \n" +
@@ -646,11 +635,11 @@ public class IPCFunctions {
                         "                              result)))                           \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
-                        "         (ipc/send-async client)                                  \n" +
-                        "         (deref)                                                  \n" +
-                        "         (ipc/message->map)                                       \n" +
-                        "         (println))))                                             ")
+                        "    (-<> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
+                        "         (ipc/send-async client <>)                               \n" +
+                        "         (deref <> 1_000 :timeout)                                \n" +
+                        "         (ipc/message->map <>)                                    \n" +
+                        "         (println <>))))                                          ")
                     .seeAlso(
                         "ipc/send",
                         "ipc/send-oneway",
@@ -947,7 +936,7 @@ public class IPCFunctions {
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
                         "      (println \"PUBLISHING:\" (ipc/message->json true m))           \n" +
                         "      (-<> (ipc/publish-async client2 m)                             \n" +
-                        "           (deref <> 300 :timeout)                                   \n" +
+                        "           (deref <> 1_000 :timeout)                                 \n" +
                         "           (ipc/message->json true <>)                               \n" +
                         "           (println \"PUBLISHED:\" <>)))                             \n" +
                         "                                                                     \n" +
@@ -991,17 +980,17 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/offer client queue-name timeout message)",
-                        "(ipc/offer client queue-name reply-to-queue-name timeout message)")
+                        "(ipc/offer client queue-name queue-offer-timeout message)",
+                        "(ipc/offer client queue-name reply-to-queue-name queue-offer-timeout message)")
                     .doc(
                         "Offers a message to the named queue.\n\n" +
                         "Returns the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| client c     | A client to send the offer message from |\n" +
-                        "| queue-name q | A queue name to offer the message to|\n" +
+                        "| client c              | A client to send the offer message from |\n" +
+                        "| queue-name q          | A queue name to offer the message to|\n" +
                         "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
-                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
-                        "| message m    | The offer request message|\n\n" +
+                        "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue|\n" +
+                        "| message m             | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message added to the queue\n" +
                         "  * `:SERVER_ERROR`    - indicates a server while offering the message to the queue\n" +
@@ -1017,23 +1006,22 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000                                                                   \n" +
-                        "          timeout     300]                                                                    \n" +
+                        "          capacity    1_000]                                                                  \n" +
                         "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
                         "      (ipc/create-queue server order-queue capacity)                                          \n" +
                         "                                                                                              \n" +
                         "      ;; client1 offers order Venice data message to the queue                                \n" +
                         "      ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
                         "      (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
-                        "        (locking mutex (println \"ORDER:\" (ipc/message->json true order)))                   \n" +
+                        "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                              \n" +
                         "        ;; publish the order                                                                  \n" +
-                        "        (->> (ipc/offer client1 order-queue timeout order)                                    \n" +
+                        "        (->> (ipc/offer client1 order-queue 300 order)                                        \n" +
                         "             (ipc/message->json true)                                                         \n" +
                         "             (println \"OFFERED:\")))                                                         \n" +
                         "                                                                                              \n" +
                         "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (->> (ipc/poll client2 order-queue timeout)                                             \n" +
+                        "      (->> (ipc/poll client2 order-queue 300)                                                 \n" +
                         "           (ipc/message->json true)                                                           \n" +
                         "           (println \"POLLED:\")))))                                                          ")
                     .seeAlso(
@@ -1083,17 +1071,17 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/offer-async client queue-name message)",
-                        "(ipc/offer-async client queue-name reply-to-queue-name message)")
+                        "(ipc/offer client queue-name queue-offer-timeout message)",
+                        "(ipc/offer client queue-name reply-to-queue-name queue-offer-timeout message)")
                     .doc(
                         "Offers a message to the named queue.\n\n" +
                         "Returns a future with the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| client c     | A client to send the offer message from |\n" +
-                        "| queue-name q | A queue name to offer the message to|\n" +
+                        "| client c              | A client to send the offer message from |\n" +
+                        "| queue-name q          | A queue name to offer the message to|\n" +
                         "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
-                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
-                        "| message m    | The offer request message|\n\n" +
+                        "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue|\n" +
+                        "| message m             | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message added to the queue\n" +
                         "  * `:SERVER_ERROR`    - indicates a server while offering the message to the queue\n" +
@@ -1109,8 +1097,7 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000                                                                   \n" +
-                        "          timeout     300]                                                                    \n" +
+                        "          capacity    1_000]                                                                  \n" +
                         "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
                         "      (ipc/create-queue server order-queue capacity)                                          \n" +
                         "                                                                                              \n" +
@@ -1120,14 +1107,14 @@ public class IPCFunctions {
                         "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                              \n" +
                         "        ;; publish the order                                                                  \n" +
-                        "        (-<> (ipc/offer-async client1 order-queue order)                                      \n" +
-                        "             (deref <> 300 :timeout)                                                          \n" +
+                        "        (-<> (ipc/offer-async client1 order-queue 300 order)                                  \n" +
+                        "             (deref <> 1_000 :timeout)                                                        \n" +
                         "             (ipc/message->json true <>)                                                      \n" +
                         "             (println \"OFFERED:\" <>)))                                                      \n" +
                         "                                                                                              \n" +
                         "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (-<> (ipc/poll-async client2 order-queue)                                               \n" +
-                        "           (deref <> 300 :timeout)                                                            \n" +
+                        "      (-<> (ipc/poll-async client2 order-queue 300)                                           \n" +
+                        "           (deref <> 1_000 :timeout)                                                          \n" +
                         "           (ipc/message->json true <>)                                                        \n" +
                         "           (println \"POLLED:\" <>)))))                                                       ")
                     .seeAlso(
@@ -1146,27 +1133,29 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3, 4);
+                ArityExceptions.assertArity(this, args, 4, 5);
 
-                if (args.size() == 3) {
+                if (args.size() == 4) {
                     final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
                     final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
                     final String replyToQueueName = null;
-                    final IMessage request = Coerce.toVncJavaObject(args.nth(2), IMessage.class);
+                    final long timeout = Coerce.toVncLong(args.nth(2)).toJavaLong();
+                    final IMessage request = Coerce.toVncJavaObject(args.nth(3), IMessage.class);
 
                     return new VncJavaObject(
                             new FutureWrapper(
-                                client.offerAsync(request, queueName, replyToQueueName)));
+                                client.offerAsync(request, queueName, replyToQueueName, timeout)));
                 }
                 else {
                     final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
                     final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
                     final String replyToQueueName = args.nth(2) == Nil ? null : StringUtil.trimToNull(Coerce.toVncString(args.nth(2)).getValue());
-                    final IMessage request = Coerce.toVncJavaObject(args.nth(3), IMessage.class);
+                    final long timeout = Coerce.toVncLong(args.nth(3)).toJavaLong();
+                    final IMessage request = Coerce.toVncJavaObject(args.nth(4), IMessage.class);
 
                     return new VncJavaObject(
                             new FutureWrapper(
-                                client.offerAsync(request, queueName, replyToQueueName)));
+                                client.offerAsync(request, queueName, replyToQueueName, timeout)));
                 }
             }
 
@@ -1179,15 +1168,15 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/poll client queue-name timeout)")
+                        "(ipc/poll client queue-name queue-poll-timeout)")
                     .doc(
                         "Polls a message from the named queue.\n\n" +
                         "Returns the server's response message.\n\n" +
                        "*Arguments:* \n\n" +
-                        "| client c     | A client to send the poll message from |\n" +
-                        "| queue-name q | A queue name to poll the message to|\n" +
-                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
-                        "| message m    | The poll request message|\n\n" +
+                        "| client c             | A client to send the poll message from |\n" +
+                        "| queue-name q         | A queue name to poll the message to|\n" +
+                        "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue|\n" +
+                        "| message m            | The poll request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message successfully polled from the queue, response holds the data\n" +
                         "  * `:SERVER_ERROR`    - indicates a server while polling a message from the queue\n" +
@@ -1203,8 +1192,7 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000                                                                   \n" +
-                        "          timeout     300]                                                                    \n" +
+                        "          capacity    1_000]                                                                  \n" +
                         "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
                         "      (ipc/create-queue server order-queue capacity)                                          \n" +
                         "                                                                                              \n" +
@@ -1214,12 +1202,12 @@ public class IPCFunctions {
                         "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                              \n" +
                         "        ;; publish the order                                                                  \n" +
-                        "        (->> (ipc/offer client1 order-queue timeout order)                                    \n" +
+                        "        (->> (ipc/offer client1 order-queue 300 order)                                        \n" +
                         "             (ipc/message->json true)                                                         \n" +
                         "             (println \"OFFERED:\")))                                                         \n" +
                         "                                                                                              \n" +
                         "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (->> (ipc/poll client2 order-queue timeout)                                             \n" +
+                        "      (->> (ipc/poll client2 order-queue 300)                                                 \n" +
                         "           (ipc/message->json true)                                                           \n" +
                         "           (println \"POLLED:\")))))                                                          ")
                     .seeAlso(
@@ -1256,15 +1244,15 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/poll-async client queue-name)")
+                        "(ipc/poll-async client queue-name, queue-poll-timeout)")
                     .doc(
                         "Polls a message from the named queue.\n\n" +
                         "Returns a future with the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| client c     | A client to send the poll message from |\n" +
-                        "| queue-name q | A queue name to poll the message to|\n" +
-                        "| timeout t    | A timeout in milliseconds for receiving the response|\n" +
-                        "| message m    | The poll request message|\n\n" +
+                        "| client c             | A client to send the poll message from |\n" +
+                        "| queue-name q         | A queue name to poll the message to|\n" +
+                        "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue|\n" +
+                        "| message m            | The poll request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message successfully polled from the queue, response holds the data\n" +
                         "  * `:SERVER_ERROR`    - indicates a server while polling a message from the queue\n" +
@@ -1280,8 +1268,7 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
                         "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000                                                                   \n" +
-                        "          timeout     300]                                                                    \n" +
+                        "          capacity    1_000]                                                                  \n" +
                         "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
                         "      (ipc/create-queue server order-queue capacity)                                          \n" +
                         "                                                                                              \n" +
@@ -1291,14 +1278,14 @@ public class IPCFunctions {
                         "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                              \n" +
                         "        ;; publish the order                                                                  \n" +
-                        "        (-<> (ipc/offer-async client1 order-queue order)                                      \n" +
-                        "             (deref <> 300 :timeout)                                                          \n" +
+                        "        (-<> (ipc/offer-async client1 order-queue 300 order)                                  \n" +
+                        "             (deref <> 1_000 :timeout)                                                        \n" +
                         "             (ipc/message->json true <>)                                                      \n" +
                         "             (println \"OFFERED:\" <>)))                                                      \n" +
                         "                                                                                              \n" +
                         "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (-<> (ipc/poll-async client2 order-queue)                                               \n" +
-                        "           (deref <> 300 :timeout)                                                            \n" +
+                        "      (-<> (ipc/poll-async client2 order-queue 300)                                           \n" +
+                        "           (deref <> 1_000 :timeout)                                                          \n" +
                         "           (ipc/message->json true <>)                                                        \n" +
                         "           (println \"POLLED:\" <>)))))                                                       ")
                     .seeAlso(
@@ -1316,14 +1303,15 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 3);
 
                 final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
+                final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
 
                 return new VncJavaObject(
                         new FutureWrapper(
-                            client.pollAsync(name)));
+                            client.pollAsync(name, timeout)));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1371,8 +1359,7 @@ public class IPCFunctions {
                                                 "tcp-server/status",
                                                 "appliaction/json",
                                                 "UTF-8",
-                                                ""),
-                                            5_000);
+                                                ""));
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
@@ -1429,8 +1416,7 @@ public class IPCFunctions {
                                                 "tcp-server/thread-pool-statistics",
                                                 "appliaction/json",
                                                 "UTF-8",
-                                                ""),
-                                            5_000);
+                                                ""));
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
