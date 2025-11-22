@@ -75,6 +75,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncCircularBuffer;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncDelayQueue;
 import com.github.jlangch.venice.impl.types.collections.VncDeque;
@@ -3884,9 +3885,10 @@ public class CoreFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 0);
+                ArityExceptions.assertArity(this, args, 1);
 
-                return new VncDelayQueue(null);
+                final long capacity = Coerce.toVncLong(args.first()).toJavaLong();
+                return new VncCircularBuffer((int)capacity);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -8063,6 +8065,9 @@ public class CoreFunctions {
                         }
                     }
                 }
+                else if (Types.isVncCircularBuffer(val)) {
+                   return ((VncCircularBuffer)val).offer(args.second());
+                }
                 else {
                     throw new VncException(String.format(
                             "offer!: type %s not supported",
@@ -8217,6 +8222,10 @@ public class CoreFunctions {
                     else {
                         throw new VncException("put! for a deque requires two args (put! deque val)");
                     }
+                }
+                else if (Types.isVncCircularBuffer(coll)) {
+                    ((VncCircularBuffer)coll).put(args.second());
+                    return Nil;
                 }
                 else {
                     throw new VncException(String.format(
@@ -8378,6 +8387,9 @@ public class CoreFunctions {
                         }
                     }
                 }
+                else if (Types.isVncCircularBuffer(val)) {
+                    return ((VncCircularBuffer)val).poll();
+                }
                 else {
                     throw new VncException(String.format(
                             "poll!: type %s not supported",
@@ -8493,6 +8505,9 @@ public class CoreFunctions {
                 else if (Types.isVncDeque(queue)) {
                     return ((VncDeque)queue).take();
                 }
+                else if (Types.isVncCircularBuffer(queue)) {
+                    return ((VncCircularBuffer)queue).take();
+                }
                 else {
                     throw new VncException(String.format(
                             "take!: type %s not supported",
@@ -8599,6 +8614,9 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncDeque(val)) {
                     return ((VncDeque)val).peek();
+                }
+                else if (Types.isVncCircularBuffer(val)) {
+                    return ((VncCircularBuffer)val).peek();
                 }
                 else {
                     throw new VncException(String.format(

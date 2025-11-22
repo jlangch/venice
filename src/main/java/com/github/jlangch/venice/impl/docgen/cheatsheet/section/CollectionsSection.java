@@ -498,6 +498,28 @@ public class CollectionsSection implements ISectionBuilder {
         deque_test.addItem(diBuilder.getDocItem("deque?"));
 
 
+        final DocSection circularbuf = new DocSection("CircularBuffer", "collections.circularbuffer");
+        section.addSection(circularbuf);
+
+        final DocSection circularbuf_create = new DocSection("Create", "collections.circularbuffer.create");
+        circularbuf.addSection(circularbuf_create);
+        circularbuf_create.addItem(diBuilder.getDocItem("circular-buffer"));
+
+        final DocSection circularbuf_access = new DocSection("Access", "collections.circularbuffer.access");
+        circularbuf.addSection(circularbuf_access);
+        circularbuf_access.addItem(diBuilder.getDocItem("peek"));
+        circularbuf_access.addItem(diBuilder.getDocItem("poll!"));
+        circularbuf_access.addItem(diBuilder.getDocItem("offer!"));
+        circularbuf_access.addItem(diBuilder.getDocItem("take!"));
+        circularbuf_access.addItem(diBuilder.getDocItem("put!"));
+        circularbuf_access.addItem(diBuilder.getDocItem("count"));
+        circularbuf_access.addItem(diBuilder.getDocItem("empty"));
+
+        final DocSection circularbuf_test = new DocSection("Test", "collections.circularbuffer.test");
+        circularbuf.addSection(circularbuf_test);
+        circularbuf_test.addItem(diBuilder.getDocItem("empty?"));
+        circularbuf_test.addItem(diBuilder.getDocItem("circular-buffer?"));
+
 
         final DocSection dag = new DocSection("DAG", "directed acyclic graph", "collections.dag");
         section.addSection(dag);
