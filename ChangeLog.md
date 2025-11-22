@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 
 - Added a circular buffer 
 - Added IPC offer/poll optional *reply-to* queue
+- Improved IPC timeout management
 - Improved the script auto-run Venice JAR rewriter
 
 
