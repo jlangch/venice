@@ -85,6 +85,7 @@ public enum TypeRank {
     DEQUEUE (251),
     DELAYQUEUE (252),
     STACK (253),
+    CIRCULAR_BUFFER (254),
 
     LOCK (260);
 

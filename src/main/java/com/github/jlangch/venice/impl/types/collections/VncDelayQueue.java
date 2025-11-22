@@ -150,7 +150,7 @@ public class VncDelayQueue extends VncCollection implements VncMutable {
 
     @Override
     public TypeRank typeRank() {
-        return TypeRank.QUEUE;
+        return TypeRank.DELAYQUEUE;
     }
 
     @Override
