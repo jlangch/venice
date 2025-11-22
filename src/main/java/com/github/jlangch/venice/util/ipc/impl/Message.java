@@ -76,7 +76,7 @@ public class Message implements IMessage {
         this.timestamp = Instant.now().toEpochMilli();
         this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
         this.topics = topics;
-        this.timeout = 0L;
+        this.timeout = DEFAULT_TIMEOUT;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -434,6 +434,8 @@ public class Message implements IMessage {
 
     public static final long EXPIRES_NEVER = -1L;
     public static final long NO_TIMEOUT = -1L;
+    public static final long DEFAULT_TIMEOUT = 300L;  // 300ms
+    public static final long ZERO_TIMEOUT = 0L;  // 0ms
 
     public static final long QUEUENAME_MAX_LEN = 100;
     public static final long MIMETYPE_MAX_LEN = 100;

@@ -116,7 +116,14 @@ public class TcpServerConnection implements IPublisher, Runnable {
             // to this channels's client.
             // The publish queue is blocking to not get overrun. to prevent
             // a backlash if the queue is full, the message will be discarded!
-            publishQueue.offer(msg, 1, TimeUnit.SECONDS);
+            final long timeout = msg.getTimeout();
+            final boolean ok = timeout < 0L
+                                ? publishQueue.offer(msg)
+                                : publishQueue.offer(msg, timeout, TimeUnit.SECONDS);
+            if (!ok) {
+                errorBuffer.offer(new Error("Failed to enque message for publishing. Publish queue is full!", msg));
+                statistics.incrementDiscardedPublishCount();
+            }
         }
         catch(Exception ex) {
             // there is no dead letter queue yet, just count the
@@ -347,7 +354,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final IpcQueue<Message> queue = p2pQueues.get(queueName);
         if (queue != null) {
             final Message msg = request.withType(MessageType.REQUEST, false);
-            if (queue.offer(msg, 0, TimeUnit.MILLISECONDS)) {
+            final long timeout = msg.getTimeout();
+
+            final boolean ok = timeout < 0
+                                ? queue.offer(msg)
+                                : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
+            if (ok) {
                 Protocol.sendMessage(
                     ch,
                     createPlainTextResponseMessage(
@@ -384,11 +396,14 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private void handlePoll(final Message request) throws InterruptedException {
+        final long timeout = request.getTimeout();
         final String queueName = request.getQueueName();
         final IpcQueue<Message> queue = p2pQueues.get(queueName);
         if (queue != null) {
             while(true) {
-                final Message msg = queue.poll(0, TimeUnit.MILLISECONDS);
+                final Message msg = timeout < 0
+                                        ? queue.poll()
+                                        : queue.poll(timeout, TimeUnit.MILLISECONDS);
                 if (msg == null) {
                     Protocol.sendMessage(
                         ch,
