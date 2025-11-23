@@ -21,7 +21,7 @@ Types supported in Venice:
 * [Keyword](#keyword)
 * [Symbol](#symbol)
 * [Collections](#collections)
-* [Stack, Queue, and Deque (mutable)](#queues-and-deques)
+* [Stack, Queue, Deque, Delay Queue, and Circular Buffer (all mutable)](#queues-and-deques)
 
 
 ## nil
