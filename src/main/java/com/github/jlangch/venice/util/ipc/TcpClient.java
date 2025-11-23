@@ -275,6 +275,11 @@ public class TcpClient implements Cloneable, Closeable {
      *
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
      *
+     * <p><b>Note:</b>
+     *
+     * <p>If the server's handler function takes more than a couple of 10 milliseconds to process
+     * the request, consider to use <i>offer/poll</i> with a reply queue to improve the system throughput!
+     *
      * @param msg a message
      * @return the response
      */
@@ -310,6 +315,9 @@ public class TcpClient implements Cloneable, Closeable {
      * <p>The server sends always a response message back.
      *
      * <p>throws <code>EofException</code> if the channel has reached end-of-stream while reading the response
+     *
+     * <p>If the server's handler function takes more than a couple of 10 milliseconds to process
+     * the request, consider to use <i>offer/poll</i> with a reply queue to improve the system throughput!
      *
      * @param msg a message
      * @return a future with the server's message response
@@ -476,7 +484,8 @@ public class TcpClient implements Cloneable, Closeable {
      * @param queueName a queue name
      * @param replyToQueueName an optional reply-to queue name
      * @param queueOfferTimeout the maximum time in milliseconds the server waits offering
-     *                          the message to the queue
+     *                          the message to the queue. A timeout of -1 means wait as
+     *                          long as it takes.
      * @return the server's response
      */
     public IMessage offer(
@@ -511,7 +520,8 @@ public class TcpClient implements Cloneable, Closeable {
      * @param queueName a queue name
      * @param replyToQueueName an optional reply-to queue name
      * @param queueOfferTimeout the maximum time in milliseconds the server waits offering
-     *                          the message to the queue
+     *                          the message to the queue. A timeout of -1 means wait as
+     *                          long as it takes.
      * @return a future with the server's response message
      */
     public Future<IMessage> offerAsync(
@@ -545,7 +555,8 @@ public class TcpClient implements Cloneable, Closeable {
      *
      * @param queueName a queue name
      * @param queuePollTimeout the maximum time in milliseconds the server waits polling
-     *                         a message from the queue
+     *                         a message from the queue. A timeout of -1 means wait as
+     *                         long as it takes.
      * @return the server's response
      */
     public IMessage poll(
@@ -568,7 +579,8 @@ public class TcpClient implements Cloneable, Closeable {
      *
      * @param queueName a queue name
      * @param queuePollTimeout the maximum time in milliseconds the server waits polling
-     *                         a message from the queue
+     *                         a message from the queue. A timeout of -1 means wait as
+     *                         long as it takes.
      * @return a future with the server's response message
      */
     public Future<IMessage> pollAsync(
@@ -618,30 +630,20 @@ public class TcpClient implements Cloneable, Closeable {
 
         validateMessageSize(msg);
 
-        if (subscription.get()) {
-            throw new VncException("A client in subscription mode cannot send request messages!");
-        }
-
         final SocketChannel ch = channel.get();
         if (ch == null || !ch.isOpen()) {
             throw new VncException("This TcpClient is not open!");
+        }
+
+        if (subscription.get()) {
+            throw new VncException("A client in subscription mode cannot send request messages!");
         }
 
         if (isClientLocalMessage(msg)) {
             return handleClientLocalMessage(msg);
         }
 
-        Protocol.sendMessage(ch, (Message)msg, compressor.get(), encryptor.get());
-        messageSentCount.incrementAndGet();
-
-        if (msg.isOneway()) {
-            return null;
-        }
-        else {
-            final Message response = Protocol.receiveMessage(ch, compressor.get(), encryptor.get());
-            messageReceiveCount.incrementAndGet();
-            return response;
-        }
+        return sendAtomically(msg, ch, compressor.get(), encryptor.get());
     }
 
     private Future<IMessage> sendAsync(final IMessage msg) {
@@ -649,13 +651,13 @@ public class TcpClient implements Cloneable, Closeable {
 
         validateMessageSize(msg);
 
-        if (subscription.get()) {
-            throw new VncException("A client in subscription mode cannot send request messages!");
-        }
-
         final SocketChannel ch = channel.get();
         if (ch == null || !ch.isOpen()) {
             throw new VncException("This TcpClient is not open!");
+        }
+
+        if (subscription.get()) {
+            throw new VncException("A client in subscription mode cannot send request messages!");
         }
 
         if (isClientLocalMessage(msg)) {
@@ -673,7 +675,20 @@ public class TcpClient implements Cloneable, Closeable {
             final Compressor compressor,
             final Encryptor encryptor
     ) {
-        final Callable<IMessage> task = () -> {
+        final Callable<IMessage> task = () -> sendAtomically(msg, ch, compressor, encryptor);
+
+        return mngdExecutor
+                .getExecutor()
+                .submit(task);
+    }
+
+    private IMessage sendAtomically(
+            final IMessage msg,
+            final SocketChannel ch,
+            final Compressor compressor,
+            final Encryptor encryptor
+    ) {
+        synchronized(sendMutex) {
             Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
             messageSentCount.incrementAndGet();
 
@@ -685,11 +700,7 @@ public class TcpClient implements Cloneable, Closeable {
                 messageReceiveCount.incrementAndGet();
                 return response;
             }
-        };
-
-        return mngdExecutor
-                .getExecutor()
-                .submit(task);
+        }
     }
 
     private void diffieHellmanKeyExchange() {
@@ -908,6 +919,8 @@ public class TcpClient implements Cloneable, Closeable {
 
     public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
     public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
+
+    private final Object sendMutex = new Object();
 
     private final String host;
     private final int port;

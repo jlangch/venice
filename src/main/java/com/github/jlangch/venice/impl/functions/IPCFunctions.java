@@ -500,8 +500,11 @@ public class IPCFunctions {
                         "  * `:HANDLER_ERROR` - an error in the server's request processing handler\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c  | A client to send the message from|\n" +
-                        "| timeout t | A timeout in milliseconds for receiving the response|\n" +
-                        "| message m | The message to send|")
+                        "| message m | The message to send|\n\n" +
+                        "**Note**\n\n" +
+                        "If the server's handler function takes more than a couple of 10 milliseconds " +
+                        "to process the request, consider to use *offer/poll* with a reply queue " +
+                        "to improve the system throughput!")
                     .examples(
                         ";; echo handler                                                   \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"              \n" +
@@ -592,7 +595,11 @@ public class IPCFunctions {
                         "  * `:HANDLER_ERROR` - an error in the server's request processing handler\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c  | A client to send the message from|\n" +
-                        "| message m | The message to send|")
+                        "| message m | The message to send|\n\n" +
+                        "**Note**\n\n" +
+                        "If the server's handler function takes more than a couple of 10 milliseconds " +
+                        "to process the request, consider to use *offer/poll* with a reply queue " +
+                        "to improve the system throughput!")
                     .examples(
                         ";; echo handler                                                   \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"              \n" +
@@ -679,7 +686,7 @@ public class IPCFunctions {
                         "(ipc/send-oneway client message)")
                     .doc(
                         "Sends a one-way message to the server the client is associated with. \n\n" +
-                        "Does not wait for response and returns always `nil`.")
+                        "Does not wait for a response and returns always `nil`.")
                     .examples(
                         "(do                                                                               \n" +
                         "  ;; thread-safe printing                                                         \n" +
@@ -989,7 +996,7 @@ public class IPCFunctions {
                         "| client c              | A client to send the offer message from |\n" +
                         "| queue-name q          | A queue name to offer the message to|\n" +
                         "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
-                        "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue|\n" +
+                        "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m             | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message added to the queue\n" +
@@ -1080,7 +1087,7 @@ public class IPCFunctions {
                         "| client c              | A client to send the offer message from |\n" +
                         "| queue-name q          | A queue name to offer the message to|\n" +
                         "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
-                        "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue|\n" +
+                        "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m             | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message added to the queue\n" +
@@ -1175,7 +1182,7 @@ public class IPCFunctions {
                        "*Arguments:* \n\n" +
                         "| client c             | A client to send the poll message from |\n" +
                         "| queue-name q         | A queue name to poll the message to|\n" +
-                        "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue|\n" +
+                        "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m            | The poll request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message successfully polled from the queue, response holds the data\n" +
@@ -1251,7 +1258,7 @@ public class IPCFunctions {
                         "*Arguments:* \n\n" +
                         "| client c             | A client to send the poll message from |\n" +
                         "| queue-name q         | A queue name to poll the message to|\n" +
-                        "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue|\n" +
+                        "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m            | The poll request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
                         "  * `:OK`              - message successfully polled from the queue, response holds the data\n" +

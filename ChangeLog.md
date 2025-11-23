@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.64] - 2025-11-xx
+## [1.12.65] - 2025-11-xx
 
 ### Enhancements
 
@@ -16,7 +16,14 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
-- Added a circular buffer 
+
+
+
+## [1.12.64] - 2025-11-23
+
+### Enhancements
+
+- Added a circular buffer data type
 - Added IPC offer/poll optional *reply-to* queue
 - Improved IPC timeout management
 - Improved the script auto-run Venice JAR rewriter
