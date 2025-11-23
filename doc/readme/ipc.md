@@ -315,9 +315,17 @@ mode and listens for messages. To unsubscribe just close the IPC client.
  ├───────────────────────────────┤
  │ Timestamp                     │   message creator
  ├───────────────────────────────┤
+ │ ExpiresAt                     │   client (may be null)
+ ├───────────────────────────────┤
+ │ Timeout                       │   client (used as server-side queue offer/poll timeout)
+ ├───────────────────────────────┤
  │ Request ID                    │   client (may be used for idempotency checks by the receiver)
  ├───────────────────────────────┤
  │ Topic                         │   client
+ ├───────────────────────────────┤
+ │ Queue Name                    │   client  (offer/poll, else null)
+ ├───────────────────────────────┤
+ │ ReplyTo Queue Name            │   client  (offer/poll, may be null)
  ├───────────────────────────────┤
  │ Payload Mimetype              │   client
  ├───────────────────────────────┤
