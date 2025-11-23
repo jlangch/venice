@@ -3764,6 +3764,7 @@ public class CoreFunctions {
                         "  ;; test the limiter                                              \n" +
                         "  (doseq [x (range 1 26)]                                          \n" +
                         "    (aquire limiter)                                               \n" +
+                        "    (sleep (rand-long 100)) ;; func simulation                     \n" +
                         "    (printf \"%s: run %2d%n\" (time/local-date-time) x)))          \n" +
                         "```")
                     .examples(
@@ -3875,10 +3876,13 @@ public class CoreFunctions {
                         "will be evicted, and then the new element added at the tail. \n\n" +
                         "The circular buffer does not permit `nil` elements.")
                     .examples(
-                        "(let [q (circular-buffer 20)]  \n" +
-                        "  (put! q 1 100)               \n" +
-                        "  (put! q 1 200)               \n" +
-                        "  (take! q))                   ")
+                        "(let [q (circular-buffer 3)]   \n" +
+                        "  (put! q 1)                   \n" +
+                        "  (put! q 2)                   \n" +
+                        "  (put! q 3)                   \n" +
+                        "  (put! q 4)                   \n" +
+                        "  (println q)                  \n" +
+                        "  (println (take! q)))         ")
                     .seeAlso(
                         "peek", "put!", "take!", "poll!", "empty", "empty?", "count", "circular-buffer?")
                     .build()

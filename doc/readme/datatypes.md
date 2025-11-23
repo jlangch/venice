@@ -336,7 +336,6 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
 ```
 
 
-
 ### deque
 
 Threadsafe mutable deque based on the Java type _LinkedBlockingDeque_.
@@ -421,5 +420,76 @@ elements from both sides of the queue.
   (put-head! q 0)
   (take! q)          ;; => 0
   (take-tail! q))    ;; => 3
+```
+
+
+### delay queue
+
+A delay-queue is an unbounded blocking queue of delayed elements,
+in which an element can only be taken when its delay has expired.
+The head of the queue is that delayed element whose delay expired
+furthest in the past. If no delay has expired there is no head and
+`poll!` will return nil. Unexpired elements cannot be removed using
+`take!` or `poll!`, they are otherwise treated as normal elements.
+For example, the `count` method returns the count of both expired and
+unexpired elements.
+
+A delay queue does not permit `nil` elements.
+
+```clojure
+(let [q (delay-queue)]
+  (put! q 1 100)   ;; delay 100ms
+  (put! q 1 200)   ;; delay 200ms
+  (take! q))
+```
+
+**Implement a rate limiter on top of a delay queue:**
+
+```clojure
+(do
+  (defprotocol RateLimiter (init [x]) (aquire [x]))
+
+  (deftype :rate-limiter [queue                :core/delay-queue
+                          limit-for-period     :long
+                          limit-refresh-period :long]
+           RateLimiter
+             (init [this]   (let [q (:queue this)
+                                  n (:limit-for-period this)]
+                              (empty q)
+                              (repeatedly n #(put! q :token 0))
+                              this))
+             (aquire [this] (let [q (:queue this)
+                                  p (:limit-refresh-period this)]
+                              (take! q)
+                              (put! q :token p))))
+ 
+  ;; create a limiter with a limit of 5 actions within a 2s period
+  (def limiter (init (rate-limiter. (delay-queue) 5 2000)))
+
+  ;; test the limiter
+  (doseq [x (range 1 26)]
+    (aquire limiter)
+    (sleep (rand-long 100)) ;; func simulation
+    (printf "%s: run %2d%n" (time/local-date-time) x)))
+```
+
+
+### circular buffer
+
+A circular buffer stores the N most recently inserted elements.
+If the circular buffer is already full, the oldest element (the head)
+will be evicted, and then the new element added at the tail.
+
+The circular buffer does not permit `nil` elements."
+
+```clojure
+(let [q (circular-buffer 3)]
+  (put! q 1)
+  (put! q 2)
+  (put! q 3)
+  (put! q 4)
+  (println q)
+  (println (take! q)))
+
 ```
 
