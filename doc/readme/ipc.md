@@ -62,7 +62,7 @@ throughput!
   (try-with [server (ipc/server 33333 handler)
              client (ipc/client "localhost" 33333)]
     (->> (ipc/venice-message "1" "add" {:x 100 :y 200})
-         (ipc/send client 2000)
+         (ipc/send client)
          (ipc/message->json true)
          (println))))
 ```
@@ -84,7 +84,7 @@ throughput!
     ;; send a plain text message: requestId="1", topic="test", payload="hello"
     (let [response (->> (ipc/plain-text-message "1" "test" "hello")
                         (ipc/send-async client))]
-      (->> (deref response 300 :timeout)  ;; deref the result future with 300ms timeout
+      (->> (deref response 1_000 :timeout)  ;; deref the result future with 1s timeout
            (ipc/message->json true)
            (println "RESPONSE:")))))
 ```
@@ -125,8 +125,7 @@ messages to/from queues but a message is delivered to one client only.
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
     (let [order-queue "orders"
-          capacity    1_000
-          timeout     300]
+          capacity    1_000]
       ;; create a queue to allow client1 and client2 to exchange messages
       (ipc/create-queue server order-queue capacity)
 
@@ -136,14 +135,65 @@ messages to/from queues but a message is delivered to one client only.
         (println "ORDER:" (ipc/message->json true order))
 
         ;; client1 offers the order
-        (->> (ipc/offer client1 order-queue timeout order)
+        (->> (ipc/offer client1 order-queue 300 order)
              (ipc/message->json true)
              (println "OFFERED:")))
 
       ;; client2 polls next order from the queue
-      (->> (ipc/poll client2 order-queue timeout)
+      (->> (ipc/poll client2 order-queue 300)
            (ipc/message->json true)
            (println "POLLED:")))))
+```
+
+**synchronous offer / poll with reply queue**
+
+```clojure
+(do
+  ;; thread-safe printing
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  ;; the barista processes the order and sends the order confirmation back  
+  ;; via the message's reply queue
+  (defn barista-worker [client queue]
+    (println "(barista) STARTED")
+    (while true
+      (let [order (ipc/poll client queue 1_000)]
+        (when (ipc/response-ok? order)
+          (let [request-id     (ipc/message-field order :request-id)
+                reply-to-queue (ipc/message-field order :reply-to-queue-name)
+                order-data     (ipc/message-field order :payload-venice)
+                confirmation   (ipc/venice-message request-id "order-confirmed" order-data)]
+            (println "(barista) ORDER PROCESSED:" (ipc/message->json true order))
+            (ipc/offer client reply-to-queue 1_000 confirmation)))))
+    (println "(barista) TERMINATED"))
+
+  (try-with [server  (ipc/server 33333)
+             client  (ipc/client "localhost" 33333)
+             barista (ipc/client "localhost" 33333)]
+    (let [order-queue              "orders"
+          order-confirmation-queue "order-confirmations"
+          capacity                 100]
+      ;; create the queues
+      (ipc/create-queue server order-queue capacity)
+      (ipc/create-queue server order-confirmation-queue capacity)
+
+      ;; start the barista workers
+      (futures-fork 1 (fn worker-factory [n] #(barista-worker barista order-queue)))
+      
+      (println "(client) ORDERING...")
+
+      ;; client places the order
+      (let [order    (ipc/venice-message "1" "order" {:item "espresso", :count 2})
+            response (ipc/offer client order-queue order-confirmation-queue 500 order)]
+        (if (ipc/response-ok? response)
+          (do
+            (println "(client) ORDER:" (ipc/message->json true order))
+            ;; client waits for the order confirmation
+            (let [confirmation (ipc/poll client order-confirmation-queue 500)]
+              (if (ipc/response-ok? confirmation)
+               (println "(client) ORDER CONFIRMED:" (ipc/message->json true confirmation))
+               (println "(client) ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))
+          (println "(client) FAILED TO PLACE ORDER"))))))
 ```
 
 **asynchronous offer / poll**
@@ -157,8 +207,7 @@ messages to/from queues but a message is delivered to one client only.
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
     (let [order-queue "orders"
-          capacity    1_000
-          timeout     300]
+          capacity    1_000]
       ;; create a queue to allow client1 and client2 to exchange messages
       (ipc/create-queue server order-queue capacity)
 
@@ -168,14 +217,14 @@ messages to/from queues but a message is delivered to one client only.
         (println "ORDER:" (ipc/message->json true order))
 
         ;; client1 offers the order
-        (-<> (ipc/offer-async client1 order-queue order)
-             (deref <> 300 :timeout)
+        (-<> (ipc/offer-async client1 order-queue 300 order)
+             (deref <> 1_000 :timeout)
              (ipc/message->json true <>)
              (println "OFFERED:" <>)))
 
       ;; client2 polls next order from the queue
-      (-<> (ipc/poll-async client2 order-queue)
-           (deref <> 300 :timeout)
+      (-<> (ipc/poll-async client2 order-queue 300)
+           (deref <> 1_000 :timeout)
            (ipc/message->json true <>)
            (println "POLLED:" <>)))))
 ```
@@ -239,7 +288,7 @@ mode and listens for messages. To unsubscribe just close the IPC client.
     (let [m (ipc/plain-text-message "1" "test" "hello")]
       (println "PUBLISHING:" (ipc/message->json true m))
       (-<> (ipc/publish-async client2 m)
-           (deref <> 300 :timeout)
+           (deref <> 1_000 :timeout)
            (ipc/message->json true <>)
            (println "PUBLISHED:" <>)))
 
