@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -688,18 +689,27 @@ public class TcpClient implements Cloneable, Closeable {
             final Compressor compressor,
             final Encryptor encryptor
     ) {
-        synchronized(sendMutex) {
-            Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
-            messageSentCount.incrementAndGet();
+        if (sendSemaphore.tryAcquire()) {
+            try {
+                Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
+                messageSentCount.incrementAndGet();
 
-            if (msg.isOneway()) {
-                return null;
+                if (msg.isOneway()) {
+                    return null;
+                }
+                else {
+                    final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
+                    messageReceiveCount.incrementAndGet();
+                    return response;
+                }
             }
-            else {
-                final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
-                messageReceiveCount.incrementAndGet();
-                return response;
+            finally {
+                sendSemaphore.release();
             }
+        }
+        else {
+           throw new com.github.jlangch.venice.TimeoutException(
+                "Timeout while trying to send an IPC message");
         }
     }
 
@@ -920,7 +930,7 @@ public class TcpClient implements Cloneable, Closeable {
     public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
     public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
 
-    private final Object sendMutex = new Object();
+    private final Semaphore sendSemaphore = new Semaphore(1);
 
     private final String host;
     private final int port;
