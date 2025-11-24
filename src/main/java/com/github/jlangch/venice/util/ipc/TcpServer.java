@@ -28,10 +28,10 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -290,12 +290,7 @@ public class TcpServer implements Closeable {
         }
 
         // do not overwrite the queue if it already exists
-        if (!p2pQueues.containsKey(queueName)) {
-            // create the queue
-            p2pQueues.put(
-                queueName,
-                new BoundedQueue<Message>(queueName, capacity));
-        }
+        p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity));
     }
 
     /**
@@ -314,12 +309,7 @@ public class TcpServer implements Closeable {
         }
 
         // do not overwrite the queue if it already exists
-        if (!p2pQueues.containsKey(queueName)) {
-            // create the queue
-            p2pQueues.put(
-                queueName,
-                new CircularBuffer<Message>(queueName, capacity));
-        }
+        p2pQueues.putIfAbsent(queueName, new CircularBuffer<Message>(queueName, capacity));
     }
 
     /**
@@ -402,7 +392,7 @@ public class TcpServer implements Closeable {
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
-    private final Map<String, IpcQueue<Message>> p2pQueues = new HashMap<>();
+    private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
 
     // compression
     private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());

@@ -22,10 +22,11 @@
 package com.github.jlangch.venice.util.ipc.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Subscriptions {
@@ -94,5 +95,5 @@ public class Subscriptions {
 
 
     // subscriptions: publisher -> topics
-    private final HashMap<IPublisher, Set<String>> subscriptions = new HashMap<>();
+    private final Map<IPublisher, Set<String>> subscriptions = new ConcurrentHashMap<>();
 }
