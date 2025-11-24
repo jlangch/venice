@@ -689,27 +689,33 @@ public class TcpClient implements Cloneable, Closeable {
             final Compressor compressor,
             final Encryptor encryptor
     ) {
-        if (sendSemaphore.tryAcquire()) {
-            try {
-                Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
-                messageSentCount.incrementAndGet();
+        try {
+            if (sendSemaphore.tryAcquire(120L, TimeUnit.SECONDS)) {
+                try {
+                    Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
+                    messageSentCount.incrementAndGet();
 
-                if (msg.isOneway()) {
-                    return null;
+                    if (msg.isOneway()) {
+                        return null;
+                    }
+                    else {
+                        final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
+                        messageReceiveCount.incrementAndGet();
+                        return response;
+                    }
                 }
-                else {
-                    final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
-                    messageReceiveCount.incrementAndGet();
-                    return response;
+                finally {
+                    sendSemaphore.release();
                 }
             }
-            finally {
-                sendSemaphore.release();
+            else {
+               throw new com.github.jlangch.venice.TimeoutException(
+                    "Timeout while trying to send an IPC message.");
             }
         }
-        else {
-           throw new com.github.jlangch.venice.TimeoutException(
-                "Timeout while trying to send an IPC message");
+        catch(InterruptedException ex) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                    "Interrupted while trying to send an IPC message");
         }
     }
 
