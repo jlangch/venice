@@ -690,6 +690,9 @@ public class TcpClient implements Cloneable, Closeable {
             final Encryptor encryptor
     ) {
         try {
+            // sending the request message and receiving the response
+            // must be atomic otherwise request and response can be mixed
+            // in multi-threaded environments
             if (sendSemaphore.tryAcquire(120L, TimeUnit.SECONDS)) {
                 try {
                     Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
