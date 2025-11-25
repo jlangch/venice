@@ -2526,7 +2526,7 @@ public class IPCFunctions {
                         "Use `ipc/offer` to offer a new message to a temporary queue.¶" +
                         "Use `ipc/poll` to poll a message from a temporary queue.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| client c   | A client |\n" +
+                        "| client c   | A client. Can only be called on behalf of a client! |\n" +
                         "| capacity n | The queue's capacity (max number of messages)|")
                     .examples(
                         "(do                                                                                   \n" +
@@ -2641,11 +2641,11 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/exists-queue? server name)")
+                        "(ipc/exists-queue? node name)")
                     .doc(
                         "Returns `true` if the named queue exists else `false`.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| server s | A server |\n" +
+                        "| node n | A server (client is not yet supported) |\n" +
                         "| name n   | A queue name (string)|")
                     .examples(
                         "(do                                                    \n" +
