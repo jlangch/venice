@@ -2390,8 +2390,8 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/create-queue server name capacity)",
-                        "(ipc/create-queue server name capacity type)")
+                        "(ipc/create-queue node name capacity)",
+                        "(ipc/create-queue node name capacity type)")
                     .doc(
                         "Creates a named queue on the server. Messages can be exchanged asynchronously " +
                         "between two clients using a queue. Each message is delivered to exactly " +
@@ -2406,9 +2406,9 @@ public class IPCFunctions {
                         "Use `ipc/poll` to poll a message from a queue.\n\n" +
                         "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| server s   | A server |\n" +
-                        "| name n     | A queue name (string)|\n" +
-                        "| capacity t | The queue's capacity (max number of messages)|\n" +
+                        "| node s     | A server  or a client|\n" +
+                        "| name s     | A queue name (string)|\n" +
+                        "| capacity n | The queue's capacity (max number of messages)|\n" +
                         "| type t     | Optional queue type `bounded`or `circular`. Defaults to `bounded`.|")
                     .examples(
                         "(do                                                                       \n" +
@@ -2432,13 +2432,15 @@ public class IPCFunctions {
                         "           (ipc/message->json true)                                       \n" +
                         "           (println \"POLLED:\")))))                                      ")
                     .seeAlso(
+                        "ipc/create-temporary-queue",
+                        "ipc/remove-queue",
+                        "ipc/exists-queue?",
                         "ipc/offer",
                         "ipc/poll",
                         "ipc/offer-async",
                         "ipc/poll-async",
-                        "ipc/remove-queue",
-                        "ipc/exists-queue?",
-                        "ipc/server")
+                        "ipc/server",
+                        "ipc/client")
                     .build()
         ) {
             @Override
@@ -2514,40 +2516,53 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/create-temporary-queue client capacity)")
                     .doc(
-                        "Creates a named temporary queue on the server. \n\n" +
+                        "Creates a named temporary queue on the server. The lives as long as the " +
+                        "client, that created it, lives.\n\n" +
+                        "Venice can create a temporary queue dynamically for use as a dedicated reply " +
+                        "queue for a client. You can use this to ensure that a reply message can be sent " +
+                        "to the appropriate queue and reaches the desired client.\n\n" +
                         "Returns the name of the created temporary queue.\n\n" +
+                        "Use `ipc/offer` to offer a new message to a temporary queue.¶" +
+                        "Use `ipc/poll` to poll a message from a temporary queue.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| client s   | A client |\n" +
-                        "| capacity t | The queue's capacity (max number of messages)|")
+                        "| client c   | A client |\n" +
+                        "| capacity n | The queue's capacity (max number of messages)|")
                     .examples(
-                        "(do                                                                       \n" +
-                        "  (defn echo-handler [m] m)                                               \n" +
-                        "                                                                          \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
-                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
-                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
-                        "    (let [order-queue \"orders\"                                          \n" +
-                        "          capacity    100_000                                             \n" +
-                        "          order       (ipc/venice-message                                 \n" +
-                        "                            \"order\"                                     \n" +
-                        "                            {:item \"espresso\", :count 2})]              \n" +
-                        "      (ipc/create-queue server order-queue capacity)                      \n" +
-                        "      (->> (ipc/message->json true order)                                 \n" +
-                        "           (println \"ORDER:\"))                                          \n" +
-                        "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
-                        "           (ipc/message->json true)                                       \n" +
-                        "           (println \"OFFERED:\"))                                        \n" +
-                        "      (->> (ipc/poll client2 order-queue 300)                             \n" +
-                        "           (ipc/message->json true)                                       \n" +
-                        "           (println \"POLLED:\")))))                                      ")
+                        "(do                                                                                   \n" +
+                        "  (try-with [server (ipc/server 33333)                                                \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                                 \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]                                \n" +
+                        "    (let [order-queue    \"orders\"                                                   \n" +
+                        "          confirm-queue  (ipc/create-temporary-queue client1 capacity)                \n" +
+                        "          capacity       1_000                                                        \n" +
+                        "          order          (ipc/venice-message                                          \n" +
+                        "                            \"order\"                                                 \n" +
+                        "                            {:item \"espresso\", :count 2})]                          \n" +
+                        "      (ipc/create-queue server order-queue capacity)                                  \n" +
+                        "                                                                                      \n" +
+                        "      ;; client1 sends order to order queue                                           \n" +
+                        "      (ipc/offer client1 order-queue confirm-queue 300 order)                         \n" +
+                        "                                                                                      \n" +
+                        "      ;; client2 receives order from order queue and replies to the reply-to queue    \n" +
+                        "      (let [order          (ipc/poll client2 order-queue 300)]                        \n" +
+                        "            request-id     (ipc/message-field order :request-id)                      \n" +
+                        "            reply-to-queue (ipc/message-field order :reply-to-queue-name)             \n" +
+                        "            order-data     (ipc/message-field order :payload-venice)                  \n" +
+                        "            confirmation   (ipc/venice-message request-id \"confirmed\" order-data)]  \n" +
+                        "        (ipc/offer client2 reply-to-queue 1_000 confirmation))                        \n" +
+                        "                                                                                      \n" +
+                        "      ;; client1 receives confirmation                                                \n" +
+                        "      (ipc/poll client2 confirm-queue 300))))                                         ")
                     .seeAlso(
+                        "ipc/create-queue",
+                        "ipc/remove-queue",
+                        "ipc/exists-queue?",
                         "ipc/offer",
                         "ipc/poll",
                         "ipc/offer-async",
                         "ipc/poll-async",
-                        "ipc/remove-queue",
-                        "ipc/exists-queue?",
-                        "ipc/server")
+                        "ipc/server",
+                        "ipc/client")
                     .build()
         ) {
             @Override
@@ -2569,13 +2584,13 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/remove-queue server name)")
+                        "(ipc/remove-queue node name)")
                     .doc(
-                        "Removes a named queue from the server.\n\n" +
+                        "Removes a named queue.\n\n" +
                         "Returns always `nil` or throws an exception.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| server s | A server |\n" +
-                        "| name n   | A queue name (string)|")
+                        "| node s | A server or a client |\n" +
+                        "| name n | A queue name (string)|")
                     .examples(
                         "(do                                                    \n" +
                         "  (defn echo-handler [m] m)                            \n" +
@@ -2587,9 +2602,11 @@ public class IPCFunctions {
                         "      ;; ...                                           \n" +
                         "      (ipc/remove-queue server order-queue))))         ")
                     .seeAlso(
-                        "ipc/server",
                         "ipc/create-queue",
-                        "ipc/exists-queue?")
+                        "ipc/create-temporary-queue",
+                        "ipc/exists-queue?",
+                        "ipc/server",
+                        "ipc/client")
                     .build()
         ) {
             @Override
@@ -2640,9 +2657,11 @@ public class IPCFunctions {
                         "      ;; ...                                           \n" +
                         "      (ipc/exists-queue? server order-queue))))        ")
                     .seeAlso(
-                            "ipc/server",
-                            "ipc/create-queue",
-                            "ipc/remove-queue")
+                        "ipc/create-queue",
+                        "ipc/create-temporary-queue",
+                        "ipc/remove-queue",
+                        "ipc/server",
+                        "ipc/client")
                     .build()
         ) {
             @Override
