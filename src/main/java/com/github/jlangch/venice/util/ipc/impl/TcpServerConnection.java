@@ -478,10 +478,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final IpcQueue<Message> queue = bounded
                                                 ? new BoundedQueue<Message>(queueName, capacity, false)
                                                 : new CircularBuffer<Message>(queueName, capacity, false);
+
             // do not overwrite the queue if it already exists
-            if (p2pQueues.putIfAbsent(queueName, queue) == null) {
-                tmpQueues.put(queueName, 0);
-            }
+            p2pQueues.putIfAbsent(queueName, queue);
 
             sendOkMessageResponse(
                 request,
@@ -510,7 +509,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final String queueName = "queue/" + UUID.randomUUID().toString();
 
             // do not overwrite the queue if it already exists
-            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, true)) != null) {
+            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, true)) == null) {
                 tmpQueues.put(queueName, 0);
             }
 
@@ -691,7 +690,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("subscription-client-count", subscriptions.getClientSubscriptionCount())
                            .add("subscription-topic-count", subscriptions.getTopicSubscriptionCount())
                            .add("queue-count", p2pQueues.size())
-                           .add("temp-queue-count", 0)
+                           .add("temp-queue-count", p2pQueues.values().stream().filter(q -> q.isTemporary()).count())
+                           .add("temp-queue-this-client-count", tmpQueues.size())
                            .add("publish-queue-capacity", publishQueueCapacity)
                            .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
                            .add("message-size-min", TcpServer.MESSAGE_LIMIT_MIN)
@@ -748,7 +748,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 ResponseStatus.OK,
                 null,
                 "tcp-server/thread-pool-statistics",
-                Json.writeJson(statistics, false));
+                Json.writeJson(statistics, true));
     }
 
     private static Message createJsonResponseMessage(
@@ -808,7 +808,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private void removeAllChannelTmpQueues() {
         try {
             final Set<String> names = tmpQueues.keySet();
-            names.forEach(n ->  p2pQueues.remove(n));
+            names.forEach(n -> p2pQueues.remove(n));
             tmpQueues.clear();
         }
         catch(Exception ignore) {}

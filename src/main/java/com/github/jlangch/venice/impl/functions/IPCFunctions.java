@@ -2512,7 +2512,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/create-temporaryqueue client capacity)")
+                        "(ipc/create-temporary-queue client capacity)")
                     .doc(
                         "Creates a named temporary queue on the server. \n\n" +
                         "Returns the name of the created temporary queue.\n\n" +

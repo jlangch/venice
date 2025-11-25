@@ -638,7 +638,7 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Create a new temporary queue.
      *
-     * <p>The temporary queue is automatically removed if the client terminates.
+     * <p>The temporary queue is automatically removed when the client terminates.
      *
      * @param capacity the queue capacity
      * @return the name of the temporary queue
