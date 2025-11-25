@@ -173,19 +173,18 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
             switch(request.getType()) {
                 case REQUEST:
-                    // client sent a normal message request, send the response
-                    // back
+                    // client sent a normal message request, send the response back.
                     // call the server handler to process the request into a
                     // response and send the response only for non one-way
                     // requests back to the caller
-                    final Message response = handleRequest(request);
+                    final Message response = handleSend(request);
 
                     if (!server.isRunning()) {
                         return State.Terminated;  // this server was closed
                     }
 
                     // [3] Send response
-                    if (response != null && !request.isOneway()) {
+                    if (!request.isOneway()) {
                         Protocol.sendMessage(
                                 ch,
                                 response,
@@ -261,45 +260,31 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return State.Publish;
     }
 
-    private Message handleRequest(final Message request) {
+    private Message handleSend(final Message request) {
         try {
             final IMessage response = handler.apply(request);
 
-            if (request.isOneway()) {
-                // do not reply on one-way messages
-                // just discard the handler's response and return null!
-                return null;
+            if (response == null) {
+                // create an empty text response
+                return createPlainTextResponseMessage(
+                          ResponseStatus.OK,
+                          request.getRequestId(),
+                          request.getTopics(),
+                          "");
             }
             else {
-                if (response == null) {
-                    // create an empty text response
-                    return createPlainTextResponseMessage(
-                              ResponseStatus.OK,
-                              request.getRequestId(),
-                              request.getTopics(),
-                              "");
-                }
-                else {
-                    return ((Message)response)
-                                .withType(MessageType.RESPONSE, true)
-                                .withResponseStatus(ResponseStatus.OK);
-                }
+                return ((Message)response)
+                            .withType(MessageType.RESPONSE, true)
+                            .withResponseStatus(ResponseStatus.OK);
             }
         }
         catch(Exception ex) {
-            if (request.isOneway()) {
-                // do not reply on one-way messages
-                // just discard the exception
-                return null;
-            }
-            else {
-                // send an error response
-                return createPlainTextResponseMessage(
-                         ResponseStatus.HANDLER_ERROR,
-                         request.getRequestId(),
-                         request.getTopics(),
-                         ExceptionUtil.printStackTraceToString(ex));
-            }
+            // send an error response
+            return createPlainTextResponseMessage(
+                     ResponseStatus.HANDLER_ERROR,
+                     request.getRequestId(),
+                     request.getTopics(),
+                     ExceptionUtil.printStackTraceToString(ex));
         }
     }
 
@@ -308,7 +293,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         subscriptions.addSubscriptions(request.getTopicsSet(), this);
 
         // acknowledge the subscription
-        sendOkMessageResponse(request, "Subscribed to the topics.");
+        sendOkTextMessageResponse(request, "Subscribed to the topics.");
     }
 
     private void handleUnsubscribe(final Message request) {
@@ -316,7 +301,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         subscriptions.removeSubscriptions(request.getTopicsSet(), this);
 
         // acknowledge the unsubscription
-        sendOkMessageResponse(request, "Unsubscribed from the topics.");
+        sendOkTextMessageResponse(request, "Unsubscribed from the topics.");
     }
 
     private void handlePublish(final Message request) {
@@ -324,7 +309,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         subscriptions.publish(request);
 
         // acknowledge the publish
-        sendOkMessageResponse(request, "Message has been enqued to publish.");
+        sendOkTextMessageResponse(request, "Message has been enqued to publish.");
     }
 
     private void handleOffer(final Message request) throws InterruptedException {
@@ -338,30 +323,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                 ? queue.offer(msg)
                                 : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
             if (ok) {
-                sendOkMessageResponse(request, "Offered the message to the queue.");
+                sendOkTextMessageResponse(request, "Offered the message to the queue.");
             }
             else {
-                Protocol.sendMessage(
-                    ch,
-                    createPlainTextResponseMessage(
-                        ResponseStatus.QUEUE_FULL,
-                        request.getRequestId(),
-                        request.getTopics(),
-                        "Offer rejected! The queue is full."),
-                    compressor,
-                    encryptor.get());
+                sendTextMessageResponse(
+                    request,
+                    ResponseStatus.QUEUE_FULL,
+                    "Offer rejected! The queue is full.");
             }
         }
         else {
-            Protocol.sendMessage(
-                ch,
-                createPlainTextResponseMessage(
-                    ResponseStatus.QUEUE_NOT_FOUND,
-                    request.getRequestId(),
-                    request.getTopics(),
-                    "Offer rejected! The queue does not exist."),
-                compressor,
-                encryptor.get());
+            sendTextMessageResponse(
+                request,
+                ResponseStatus.QUEUE_NOT_FOUND,
+                "Offer rejected! The queue does not exist.");
         }
     }
 
@@ -375,15 +350,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                         ? queue.poll()
                                         : queue.poll(timeout, TimeUnit.MILLISECONDS);
                 if (msg == null) {
-                    Protocol.sendMessage(
-                        ch,
-                        createPlainTextResponseMessage(
+                    sendTextMessageResponse(
+                            request,
                             ResponseStatus.QUEUE_EMPTY,
-                            request.getRequestId(),
-                            request.getTopics(),
-                            "Poll rejected! The queue is empty."),
-                        compressor,
-                        encryptor.get());
+                            "Poll rejected! The queue is empty.");
                     return;
                 }
                 else if (msg.hasExpired()) {
@@ -410,15 +380,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
         }
         else {
-            Protocol.sendMessage(
-                ch,
-                createPlainTextResponseMessage(
+            sendTextMessageResponse(
+                    request,
                     ResponseStatus.QUEUE_NOT_FOUND,
-                    request.getRequestId(),
-                    request.getTopics(),
-                    "Poll rejected! The queue does not exist."),
-                compressor,
-                encryptor.get());
+                    "Poll rejected! The queue does not exist.");
         }
     }
 
@@ -445,7 +410,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     encryptor.get());
         }
         else {
-            sendBadRequestMessageResponse(
+            sendBadRequestTextMessageResponse(
                 request,
                 "Unknown tcp server request topic. \n"
                       + "Valid topics are:\n"
@@ -457,7 +422,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private void handleCreateQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            sendBadRequestMessageResponse(
+            sendBadRequestTextMessageResponse(
                 request,
                 String.format("Request %s: Expected a JSON payload", request.getType()));
         }
@@ -468,7 +433,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
 
         if (StringUtil.isBlank(queueName) || capacity < 1) {
-            sendBadRequestMessageResponse(
+            sendBadRequestTextMessageResponse(
                 request,
                 String.format(
                    "Request %s: A queue name must not be blank and the capacity must not be lower than 1",
@@ -482,7 +447,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             // do not overwrite the queue if it already exists
             p2pQueues.putIfAbsent(queueName, queue);
 
-            sendOkMessageResponse(
+            sendOkTextMessageResponse(
                 request,
                 String.format("Request %s: Queue %s created.", request.getType(), queueName));
         }
@@ -490,7 +455,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private void handleCreateTemporaryQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            sendBadRequestMessageResponse(
+            sendBadRequestTextMessageResponse(
                 request,
                 String.format("Request %s: Expected a JSON payload", request.getType()));
         }
@@ -499,7 +464,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
 
         if (capacity < 1) {
-            sendBadRequestMessageResponse(
+            sendBadRequestTextMessageResponse(
                 request,
                 String.format(
                    "Request %s: A queue capacity must not be lower than 1",
@@ -513,13 +478,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 tmpQueues.put(queueName, 0);
             }
 
-            sendOkMessageResponse(request, queueName);
+            sendOkTextMessageResponse(request, queueName);
         }
     }
 
     private void handleRemoveQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            sendBadRequestMessageResponse(
+            sendBadRequestTextMessageResponse(
                 request,
                 String.format("Request %s: Expected a JSON payload", request.getType()));
         }
@@ -531,12 +496,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
             p2pQueues.remove(queueName);
             tmpQueues.remove(queueName);
 
-            sendOkMessageResponse(
+            sendOkTextMessageResponse(
                 request,
                 String.format("Request %s: Queue %s removed.", request.getType(), queueName));
         }
         else {
-            sendBadRequestMessageResponse(
+            sendBadRequestTextMessageResponse(
                 request,
                 String.format("Request %s: A queue name must not be null or empty.", request.getType()));
         }
@@ -596,7 +561,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 statistics.incrementDiscardedResponseCount();
             }
             else {
-                sendBadRequestMessageResponse(
+                sendBadRequestTextMessageResponse(
                     request,
                     "Bad request type: " + request.getType().name());
             }
@@ -630,42 +595,38 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private void sendTooLargeMessageResponse(final Message request) {
-        if (!request.isOneway()) {
-            sendBadRequestMessageResponse(
-                request,
-                String.format(
-                    "The message (%d bytes) is too large! The limit is at %d bytes.",
-                    request.getData().length,
-                    maxMessageSize));
-        }
+        sendBadRequestTextMessageResponse(
+            request,
+            String.format(
+                "The message (%d bytes) is too large! The limit is at %d bytes.",
+                request.getData().length,
+                maxMessageSize));
     }
 
-    private void sendBadRequestMessageResponse(
+    private void sendBadRequestTextMessageResponse(
             final Message request,
             final String errorMsg
     ) {
-        if (!request.isOneway()) {
-            Protocol.sendMessage(
-                    ch,
-                    createPlainTextResponseMessage(
-                        ResponseStatus.BAD_REQUEST,
-                        request.getRequestId(),
-                        request.getTopics(),
-                        errorMsg),
-                    compressor,
-                    encryptor.get());
-        }
+        sendTextMessageResponse(request, ResponseStatus.BAD_REQUEST, errorMsg);
     }
 
-    private void sendOkMessageResponse(
+    private void sendOkTextMessageResponse(
             final Message request,
+            final String message
+    ) {
+       sendTextMessageResponse(request, ResponseStatus.OK, message);
+    }
+
+    private void sendTextMessageResponse(
+            final Message request,
+            final ResponseStatus responseStatus,
             final String message
     ) {
         if (!request.isOneway()) {
             Protocol.sendMessage(
                     ch,
                     createPlainTextResponseMessage(
-                        ResponseStatus.OK,
+                        responseStatus,
                         request.getRequestId(),
                         request.getTopics(),
                         message),
@@ -768,23 +729,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 "UTF-8",
                 toBytes(json, "UTF-8"));
     }
-
-//    private static Message createPlainTextResponseMessage(
-//            final ResponseStatus status,
-//            final String requestID,
-//            final String topic,
-//            final String text
-//    ) {
-//        return new Message(
-//                requestID,
-//                MessageType.RESPONSE,
-//                status,
-//                true,
-//                Topics.of(topic),
-//                "text/plain",
-//                "UTF-8",
-//                toBytes(text, "UTF-8"));
-//    }
 
     private static Message createPlainTextResponseMessage(
             final ResponseStatus status,
