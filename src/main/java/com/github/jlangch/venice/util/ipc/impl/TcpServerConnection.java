@@ -25,6 +25,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -77,8 +78,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
 
-        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity);
-        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY);
+        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity, false);
+        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false);
         this.p2pQueues = p2pQueues;
 
         this.dhKeys = DiffieHellmanKeys.create();
@@ -464,6 +465,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
+        final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
 
         if (StringUtil.isBlank(queueName) || capacity < 1) {
             sendBadRequestMessageResponse(
@@ -473,8 +475,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    request.getType()));
         }
         else {
+            final IpcQueue<Message> queue = bounded
+                                                ? new BoundedQueue<Message>(queueName, capacity, false)
+                                                : new CircularBuffer<Message>(queueName, capacity, false);
             // do not overwrite the queue if it already exists
-            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity)) == null) {
+            if (p2pQueues.putIfAbsent(queueName, queue) == null) {
                 tmpQueues.put(queueName, 0);
             }
 
@@ -492,25 +497,24 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
-        final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
 
-        if (StringUtil.isBlank(queueName) || capacity < 1) {
+        if (capacity < 1) {
             sendBadRequestMessageResponse(
                 request,
                 String.format(
-                   "Request %s: A queue name must not be blank and the capacity must not be lower than 1",
+                   "Request %s: A queue capacity must not be lower than 1",
                    request.getType()));
         }
         else {
+            final String queueName = "queue/" + UUID.randomUUID().toString();
+
             // do not overwrite the queue if it already exists
-            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity)) != null) {
+            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, true)) != null) {
                 tmpQueues.put(queueName, 0);
             }
 
-            sendOkMessageResponse(
-                request,
-                String.format("Request %s: Queue %s created.", request.getType(), queueName));
+            sendOkMessageResponse(request, queueName);
         }
     }
 

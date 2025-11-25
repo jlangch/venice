@@ -601,8 +601,9 @@ public class TcpClient implements Cloneable, Closeable {
      *
      * @param queueName a queue name
      * @param capacity the queue capacity
+     * @param bounded if true create a bounded queue else create a circular queue
      */
-    public void createQueue(final String queueName, final int capacity) {
+    public void createQueue(final String queueName, final int capacity, final boolean bounded) {
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
@@ -613,6 +614,7 @@ public class TcpClient implements Cloneable, Closeable {
         final String payload = new JsonBuilder()
                                     .add("name", queueName)
                                     .add("capacity", capacity)
+                                    .add("bounded", bounded)
                                     .toJson(false);
 
         final Message m = new Message(
@@ -638,19 +640,15 @@ public class TcpClient implements Cloneable, Closeable {
      *
      * <p>The temporary queue is automatically removed if the client terminates.
      *
-     * @param queueName a queue name
      * @param capacity the queue capacity
+     * @return the name of the temporary queue
      */
-    public void createTemporaryQueue(final String queueName, final int capacity) {
-        if (StringUtil.isBlank(queueName)) {
-            throw new IllegalArgumentException("A queue name must not be blank");
-        }
+    public String createTemporaryQueue(final int capacity) {
         if (capacity < 1) {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
 
         final String payload = new JsonBuilder()
-                                    .add("name", queueName)
                                     .add("capacity", capacity)
                                     .toJson(false);
 
@@ -666,9 +664,12 @@ public class TcpClient implements Cloneable, Closeable {
                                 toBytes(payload, "UTF-8"));
 
         final IMessage response = send(m);
-        if (response.getResponseStatus() != ResponseStatus.OK) {
+        if (response.getResponseStatus() == ResponseStatus.OK) {
+           return response.getText();
+        }
+        else {
             throw new VncException(
-                    "Failed to create temporary queue " + queueName + "! Reason: " + response.getText());
+                    "Failed to create temporary queue! Reason: " + response.getText());
         }
     }
 

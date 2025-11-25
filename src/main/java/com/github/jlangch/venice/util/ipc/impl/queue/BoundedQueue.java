@@ -32,9 +32,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class BoundedQueue<T> implements IpcQueue<T> {
 
-    public BoundedQueue(final String name, final int capacity) {
+    public BoundedQueue(final String name, final int capacity, final boolean temporary) {
         this.name = name;
         this.capacity = capacity;
+        this.temporary = temporary;
         this.queue = new LinkedBlockingQueue<>(capacity);
     }
 
@@ -45,14 +46,19 @@ public class BoundedQueue<T> implements IpcQueue<T> {
     }
 
     @Override
-    public int size() {
-        return queue.size();
+    public int capacity() {
+        return capacity;
+    }
+
+    @Override
+    public boolean isTemporary() {
+        return temporary;
     }
 
 
     @Override
-    public int capacity() {
-        return capacity;
+    public int size() {
+        return queue.size();
     }
 
     @Override
@@ -86,6 +92,7 @@ public class BoundedQueue<T> implements IpcQueue<T> {
 
 
     private final String name;
+    private final boolean temporary;
     private final int capacity;
     private final LinkedBlockingQueue<T> queue;
 }

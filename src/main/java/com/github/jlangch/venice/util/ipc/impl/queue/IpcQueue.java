@@ -28,6 +28,8 @@ public interface IpcQueue<T> {
 
     String name();
 
+    boolean isTemporary();
+
     int size();
 
     int capacity();

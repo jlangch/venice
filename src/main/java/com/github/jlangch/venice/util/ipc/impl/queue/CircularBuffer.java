@@ -33,9 +33,10 @@ import com.github.jlangch.venice.resilience4j.circularbuffer.ConcurrentEvictingQ
  */
 public class CircularBuffer<T> implements IpcQueue<T> {
 
-    public CircularBuffer(final String name, final int capacity) {
+    public CircularBuffer(final String name, final int capacity, final boolean temporary) {
         this.name = name;
         this.capacity = capacity;
+        this.temporary = temporary;
         this.buffer = new ConcurrentEvictingQueue<>(capacity);
     }
 
@@ -46,13 +47,19 @@ public class CircularBuffer<T> implements IpcQueue<T> {
     }
 
     @Override
-    public int size() {
-        return buffer.size();
+    public int capacity() {
+        return capacity;
     }
 
     @Override
-    public int capacity() {
-        return capacity;
+    public boolean isTemporary() {
+        return temporary;
+    }
+
+
+    @Override
+    public int size() {
+        return buffer.size();
     }
 
     @Override
@@ -84,6 +91,7 @@ public class CircularBuffer<T> implements IpcQueue<T> {
 
 
     private final String name;
+    private final boolean temporary;
     private final int capacity;
     private final ConcurrentEvictingQueue<T> buffer;
 }

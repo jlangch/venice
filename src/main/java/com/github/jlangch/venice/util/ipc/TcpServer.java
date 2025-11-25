@@ -289,7 +289,7 @@ public class TcpServer implements Closeable {
         }
 
         // do not overwrite the queue if it already exists
-        p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity));
+        p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, false));
     }
 
     /**
@@ -307,7 +307,7 @@ public class TcpServer implements Closeable {
         }
 
         // do not overwrite the queue if it already exists
-        p2pQueues.putIfAbsent(queueName, new CircularBuffer<Message>(queueName, capacity));
+        p2pQueues.putIfAbsent(queueName, new CircularBuffer<Message>(queueName, capacity, false));
     }
 
     /**

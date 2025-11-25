@@ -2445,31 +2445,119 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 3, 4);
 
-                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
-                final String name = Coerce.toVncString(args.second()).getValue();
-                final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
+                if (Types.isVncJavaObject(args.first(), TcpServer.class)) {
+                    final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
 
-                final VncVal type = args.fourth() == Nil ? Nil : Coerce.toVncKeyword(args.fourth());
+                    final VncVal type = args.fourth() == Nil ? Nil : Coerce.toVncKeyword(args.fourth());
 
-                if (type == Nil) {
-                    server.createQueue(name, capacity);
+                    if (type == Nil) {
+                        server.createQueue(name, capacity);
+                    }
+                    else {
+                        final String sType = ((VncKeyword)type).getSimpleName();
+                        switch(sType) {
+                            case "bounded":
+                                server.createQueue(name, capacity);
+                                break;
+                            case "circular":
+                                server.createCircularBufferQueue(name, capacity);
+                                break;
+                            default:
+                                throw new VncException (
+                                    "Invalid queue type :" + sType + "! Use one of {:bounded, :circular}.");
+                        }
+                    }
+                    return Nil;
+                }
+                else  if (Types.isVncJavaObject(args.first(), TcpClient.class)) {
+                    final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
+
+                    final VncVal type = args.fourth() == Nil ? Nil : Coerce.toVncKeyword(args.fourth());
+
+                    if (type == Nil) {
+                        client.createQueue(name, capacity, true);
+                    }
+                    else {
+                        final String sType = ((VncKeyword)type).getSimpleName();
+                        switch(sType) {
+                            case "bounded":
+                                client.createQueue(name, capacity, true);
+                                break;
+                            case "circular":
+                                client.createQueue(name, capacity, false);
+                                break;
+                            default:
+                                throw new VncException (
+                                    "Invalid queue type :" + sType + "! Use one of {:bounded, :circular}.");
+                        }
+                    }
+                    return Nil;
                 }
                 else {
-                    final String sType = ((VncKeyword)type).getSimpleName();
-                    switch(sType) {
-                        case "bounded":
-                            server.createQueue(name, capacity);
-                            break;
-                        case "circular":
-                            server.createCircularBufferQueue(name, capacity);
-                            break;
-                        default:
-                            throw new VncException (
-                                "Invalid queue type :" + sType + "! Use one of {:bounded, :circular}.");
-                    }
+                    throw new VncException (
+                            "The first arg must be either a server or client.");
                 }
+            }
 
-                return Nil;
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_create_temporary_queue =
+        new VncFunction(
+                "ipc/create-temporary-queue",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/create-temporaryqueue client capacity)")
+                    .doc(
+                        "Creates a named temporary queue on the server. \n\n" +
+                        "Returns the name of the created temporary queue.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client s   | A client |\n" +
+                        "| capacity t | The queue's capacity (max number of messages)|")
+                    .examples(
+                        "(do                                                                       \n" +
+                        "  (defn echo-handler [m] m)                                               \n" +
+                        "                                                                          \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
+                        "    (let [order-queue \"orders\"                                          \n" +
+                        "          capacity    100_000                                             \n" +
+                        "          order       (ipc/venice-message                                 \n" +
+                        "                            \"order\"                                     \n" +
+                        "                            {:item \"espresso\", :count 2})]              \n" +
+                        "      (ipc/create-queue server order-queue capacity)                      \n" +
+                        "      (->> (ipc/message->json true order)                                 \n" +
+                        "           (println \"ORDER:\"))                                          \n" +
+                        "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"OFFERED:\"))                                        \n" +
+                        "      (->> (ipc/poll client2 order-queue 300)                             \n" +
+                        "           (ipc/message->json true)                                       \n" +
+                        "           (println \"POLLED:\")))))                                      ")
+                    .seeAlso(
+                        "ipc/offer",
+                        "ipc/poll",
+                        "ipc/offer-async",
+                        "ipc/poll-async",
+                        "ipc/remove-queue",
+                        "ipc/exists-queue?",
+                        "ipc/server")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final int capacity = (int)Coerce.toVncLong(args.second()).toJavaLong();
+
+                return new VncString(client.createTemporaryQueue(capacity));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2508,11 +2596,22 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
-                final String name = Coerce.toVncString(args.second()).getValue();
-
-                server.removeQueue(name);
-                return Nil;
+                if (Types.isVncJavaObject(args.first(), TcpServer.class)) {
+                    final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    server.removeQueue(name);
+                    return Nil;
+                }
+                else  if (Types.isVncJavaObject(args.first(), TcpClient.class)) {
+                    final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    client.removeQueue(name);
+                    return Nil;
+                }
+                else {
+                    throw new VncException (
+                            "The first arg must be either a server or client.");
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2668,6 +2767,7 @@ public class IPCFunctions {
                     .add(ipc_response_errQ)
 
                     .add(ipc_create_queue)
+                    .add(ipc_create_temporary_queue)
                     .add(ipc_remove_queue)
                     .add(ipc_exists_queueQ)
 
