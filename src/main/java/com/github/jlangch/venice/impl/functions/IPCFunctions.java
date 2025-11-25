@@ -1370,7 +1370,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return Json.readJson(response.getText(), true);
+                        return response.getVeniceData();
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get server status", ex);
@@ -1427,7 +1427,7 @@ public class IPCFunctions {
 
                 if (response.getResponseStatus() == ResponseStatus.OK) {
                     try {
-                        return Json.readJson(response.getText(), true);
+                        return response.getVeniceData();
                     }
                     catch(Exception ex) {
                         throw new VncException ("Failed to get server thread pool statistics", ex);
