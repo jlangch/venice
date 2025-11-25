@@ -2397,8 +2397,9 @@ public class IPCFunctions {
                         "between two clients using a queue. Each message is delivered to exactly " +
                         "one client. 1 to N clients can *offer* / *poll* messages *from* / *to* the " +
                         "queue. \n\n" +
+                        "Queues live as long as server lives. They are not durable!\n\n" +
                         "A queue can be bounded or circular. Bounded queues block when offering new " +
-                        "messages and the queue is full. " +
+                        "messages and the queue is full.¶" +
                         "Circular queues never block but just keep the last 'capacity' messages. The " +
                         "oldest messages get discarded if the buffer is full and new messages are " +
                         "offered to the queue.\n\n" +
@@ -2516,8 +2517,8 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/create-temporary-queue client capacity)")
                     .doc(
-                        "Creates a named temporary queue on the server. The lives as long as the " +
-                        "client, that created it, lives.\n\n" +
+                        "Creates a named temporary queue on the server. Temporary queues live as long as " +
+                        "the client, that created it, lives.\n\n" +
                         "Venice can create a temporary queue dynamically for use as a dedicated reply " +
                         "queue for a client. You can use this to ensure that a reply message can be sent " +
                         "to the appropriate queue and reaches the desired client.\n\n" +
