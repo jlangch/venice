@@ -2407,7 +2407,7 @@ public class IPCFunctions {
                         "Use `ipc/poll` to poll a message from a queue.\n\n" +
                         "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| node s     | A server  or a client|\n" +
+                        "| node s     | A server or a client|\n" +
                         "| name s     | A queue name (string)|\n" +
                         "| capacity n | The queue's capacity (max number of messages)|\n" +
                         "| type t     | Optional queue type `bounded`or `circular`. Defaults to `bounded`.|")
@@ -2419,7 +2419,7 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                     \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
                         "    (let [order-queue \"orders\"                                          \n" +
-                        "          capacity    100_000                                             \n" +
+                        "          capacity    1_000                                               \n" +
                         "          order       (ipc/venice-message                                 \n" +
                         "                            \"order\"                                     \n" +
                         "                            {:item \"espresso\", :count 2})]              \n" +
@@ -2598,7 +2598,7 @@ public class IPCFunctions {
                         "                                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)]   \n" +
                         "    (let [order-queue \"orders\"                       \n" +
-                        "          capacity    100_000]                         \n" +
+                        "          capacity    1_000]                           \n" +
                         "      (ipc/create-queue server order-queue capacity)   \n" +
                         "      ;; ...                                           \n" +
                         "      (ipc/remove-queue server order-queue))))         ")
@@ -2653,7 +2653,7 @@ public class IPCFunctions {
                         "                                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)]   \n" +
                         "    (let [order-queue \"orders\"                       \n" +
-                        "          capacity    100_000]                         \n" +
+                        "          capacity    1_000]                           \n" +
                         "      (ipc/create-queue server order-queue capacity)   \n" +
                         "      ;; ...                                           \n" +
                         "      (ipc/exists-queue? server order-queue))))        ")
