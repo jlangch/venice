@@ -281,7 +281,6 @@ public class TcpServer implements Closeable {
      * @param capacity the queue capacity
      */
     public void createQueue(final String queueName, final int capacity) {
-        Objects.requireNonNull(queueName);
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
@@ -300,7 +299,6 @@ public class TcpServer implements Closeable {
      * @param capacity the queue capacity
      */
     public void createCircularBufferQueue(final String queueName, final int capacity) {
-        Objects.requireNonNull(queueName);
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
@@ -318,9 +316,9 @@ public class TcpServer implements Closeable {
      * @param queueName a queue name
      */
     public void removeQueue(final String queueName) {
-        Objects.requireNonNull(queueName);
-
-        p2pQueues.remove(queueName);
+        if (StringUtil.isNotBlank(queueName)) {
+            p2pQueues.remove(queueName);
+        }
     }
 
     /**

@@ -54,6 +54,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
+import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 
 
 public class TcpClient implements Cloneable, Closeable {
@@ -593,6 +594,114 @@ public class TcpClient implements Cloneable, Closeable {
         final Message m = createQueuePollRequestMessage(queueName, queuePollTimeout);
 
         return sendAsync(m);
+    }
+
+    /**
+     * Create a new queue.
+     *
+     * @param queueName a queue name
+     * @param capacity the queue capacity
+     */
+    public void createQueue(final String queueName, final int capacity) {
+        if (StringUtil.isBlank(queueName)) {
+            throw new IllegalArgumentException("A queue name must not be blank");
+        }
+        if (capacity < 1) {
+            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", queueName)
+                                    .add("capacity", capacity)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.CREATE_QUEUE,
+                                ResponseStatus.NULL,
+                                false,
+                                1_000L,
+                                Topics.of("queue/create"),
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() != ResponseStatus.OK) {
+            throw new VncException(
+                    "Failed to create queue " + queueName + "! Reason: " + response.getText());
+        }
+    }
+
+    /**
+     * Create a new temporary queue.
+     *
+     * <p>The temporary queue is automatically removed if the client terminates.
+     *
+     * @param queueName a queue name
+     * @param capacity the queue capacity
+     */
+    public void createTemporaryQueue(final String queueName, final int capacity) {
+        if (StringUtil.isBlank(queueName)) {
+            throw new IllegalArgumentException("A queue name must not be blank");
+        }
+        if (capacity < 1) {
+            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", queueName)
+                                    .add("capacity", capacity)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.CREATE_TEMP_QUEUE,
+                                ResponseStatus.NULL,
+                                false,
+                                1_000L,
+                                Topics.of("queue/create-temporary"),
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() != ResponseStatus.OK) {
+            throw new VncException(
+                    "Failed to create temporary queue " + queueName + "! Reason: " + response.getText());
+        }
+    }
+
+    /**
+     * Remove a queue.
+     *
+     * @param queueName a queue name
+     */
+    public void removeQueue(final String queueName) {
+        if (StringUtil.isBlank(queueName)) {
+            throw new IllegalArgumentException("A queue name must not be blank");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", queueName)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.CREATE_TEMP_QUEUE,
+                                ResponseStatus.NULL,
+                                false,
+                                1_000L,
+                                Topics.of("queue/create-temporary"),
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() != ResponseStatus.OK) {
+            throw new VncException(
+                    "Failed to remove queue " + queueName + "! Reason: " + response.getText());
+        }
     }
 
     private IMessage sendThroughTemporaryClient(

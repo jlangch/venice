@@ -28,22 +28,26 @@ public enum MessageType {
 
     REQUEST(0),
 
-    PUBLISH(1),
-    SUBSCRIBE(2),
-    UNSUBSCRIBE(3),
+    PUBLISH(10),
+    SUBSCRIBE(11),
+    UNSUBSCRIBE(12),
 
-    OFFER(4),
-    POLL(5),
+    OFFER(20),
+    POLL(21),
 
-    DIFFIE_HELLMAN_KEY_REQUEST(9),
+    CREATE_QUEUE(30),
+    CREATE_TEMP_QUEUE(31),
+    REMOVE_QUEUE(32),
+
+    DIFFIE_HELLMAN_KEY_REQUEST(40),
 
 
     // responses
 
-    RESPONSE(10),
+    RESPONSE(60),
 
 
-    // null, not yet determined
+    // null, message type not yet determined
 
     NULL(90);
 

@@ -265,12 +265,9 @@ public class Message implements IMessage {
 
     @Override
     public String getText() {
-        if (isTextMessage()) {
-            return new String(data, Charset.forName(charset));
-        }
-        else {
-            throw new VncException("A binary message can not be converted to text data!");
-        }
+        return isTextMessage()
+                ? new String(data, Charset.forName(charset))
+                : new String("Binary data, " + data.length + " bytes");
     }
 
     @Override

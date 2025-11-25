@@ -24,13 +24,18 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -103,6 +108,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             //   - quit this connection and close the channel
         }
         finally {
+            removeAllChannelTmpQueues();
             statistics.decrementConnectionCount();
             subscriptions.removeSubscriptions(this);
             IO.safeClose(ch);
@@ -144,30 +150,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return State.Terminated; // client closed connection
         }
 
-        if (!isRequestDiffieHellman(request)) {
-            statistics.incrementMessageCount();
-        }
-
         if (!server.isRunning()) {
             return State.Terminated;  // this server was closed
         }
 
-        // send an error back if the received message is not a request
-        if (!(isRequestMsg(request)
-              || isRequestPublish(request)
-              || isRequestSubscribe(request)
-              || isRequestUnsubscribe(request)
-              || isRequestOffer(request)
-              || isRequestPoll(request)
-              || isRequestDiffieHellman(request))
-        ) {
-            handleInvalidRequestType(request);
-            return mode;
-        }
-
-        if (request.getData().length > maxMessageSize.get()) {
-            handleRequestTooLarge(request);
-            return mode;
+        if (request.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST) {
+            statistics.incrementMessageCount();
         }
 
         // [2] Handle the request
@@ -176,70 +164,83 @@ public class TcpServerConnection implements IPublisher, Runnable {
             handleTcpServerRequest(request);
             return State.Request_Response;
         }
-        else if (isRequestPublish(request)) {
-            // the client sent a message to be published to all subscribers
-            // of the message's topic
-            handlePublish(request);
-            return State.Request_Response;
-        }
-        else if (isRequestMsg(request)) {
-            // client sent a normal message request, send the response
-            // back
-            // call the server handler to process the request into a
-            // response and send the response only for non one-way
-            // requests back to the caller
-            final Message response = handleRequest(request);
-
-            if (!server.isRunning()) {
-                return State.Terminated;  // this server was closed
-            }
-
-            // [3] Send response
-            if (response != null && !request.isOneway()) {
-                Protocol.sendMessage(
-                        ch,
-                        response,
-                        compressor,
-                        encryptor.get());
-            }
-
-            return State.Request_Response;
-        }
-        else if (isRequestOffer(request)) {
-            // the client offers a new message to a queue
-            handleOffer(request);
-
-            return State.Request_Response;
-        }
-        else if (isRequestPoll(request)) {
-            // the client polls a new message from a queue
-            handlePoll(request);
-
-            return State.Request_Response;
-        }
-        else if (isRequestSubscribe(request)) {
-            // the client wants to subscribe a topic
-            handleSubscribe(request);
-
-            // switch to publish mode for this connections
-            return State.Publish;
-        }
-        else if (isRequestUnsubscribe(request)) {
-            // the client wants to subscribe a topic
-            handleUnsubscribe(request);
-
-            // switch to publish mode for this connections
-            return State.Publish;
-        }
-        else if (isRequestDiffieHellman(request)) {
-            handleDiffieHellmanKeyExchange(request);
-
-            return State.Request_Response;
-        }
         else {
-            // should not get here
-            handleInvalidRequestType(request);
-            return State.Request_Response;
+            if (request.getData().length > maxMessageSize.get()) {
+                handleRequestTooLarge(request);
+                return mode;
+            }
+
+            switch(request.getType()) {
+                case REQUEST:
+                    // client sent a normal message request, send the response
+                    // back
+                    // call the server handler to process the request into a
+                    // response and send the response only for non one-way
+                    // requests back to the caller
+                    final Message response = handleRequest(request);
+
+                    if (!server.isRunning()) {
+                        return State.Terminated;  // this server was closed
+                    }
+
+                    // [3] Send response
+                    if (response != null && !request.isOneway()) {
+                        Protocol.sendMessage(
+                                ch,
+                                response,
+                                compressor,
+                                encryptor.get());
+                    }
+                    return State.Request_Response;
+
+                case SUBSCRIBE:
+                    // the client wants to subscribe a topic
+                    handleSubscribe(request);
+                    // switch to publish mode for this connections
+                    return State.Publish;
+
+                case UNSUBSCRIBE:
+                    // the client wants to subscribe a topic
+                    handleUnsubscribe(request);
+                    // switch to publish mode for this connections
+                    return State.Publish;
+
+                case PUBLISH:
+                    // the client sent a message to be published to all subscribers
+                    // of the message's topic
+                    handlePublish(request);
+                    return State.Request_Response;
+
+                case OFFER:
+                    // the client offers a new message to a queue
+                    handleOffer(request);
+                    return State.Request_Response;
+
+                case POLL:
+                    // the client polls a new message from a queue
+                    handlePoll(request);
+                    return State.Request_Response;
+
+                case CREATE_QUEUE:
+                    handleCreateQueueRequest(request);
+                    return mode;
+
+                case CREATE_TEMP_QUEUE:
+                    handleCreateTemporaryQueueRequest(request);
+                    return mode;
+
+                case REMOVE_QUEUE:
+                    handleRemoveQueueRequest(request);
+                    return mode;
+
+                case DIFFIE_HELLMAN_KEY_REQUEST:
+                    handleDiffieHellmanKeyExchange(request);
+                    return State.Request_Response;
+
+                default:
+                    handleInvalidRequestType(request);
+                    return mode;
+            }
         }
     }
 
@@ -306,15 +307,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         subscriptions.addSubscriptions(request.getTopicsSet(), this);
 
         // acknowledge the subscription
-        Protocol.sendMessage(
-            ch,
-            createPlainTextResponseMessage(
-                ResponseStatus.OK,
-                request.getRequestId(),
-                request.getTopics(),
-                "Subscribed to the topics."),
-            compressor,
-            encryptor.get());
+        sendOkMessageResponse(request, "Subscribed to the topics.");
     }
 
     private void handleUnsubscribe(final Message request) {
@@ -322,15 +315,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         subscriptions.removeSubscriptions(request.getTopicsSet(), this);
 
         // acknowledge the unsubscription
-        Protocol.sendMessage(
-            ch,
-            createPlainTextResponseMessage(
-                ResponseStatus.OK,
-                request.getRequestId(),
-                request.getTopics(),
-                "Unsubscribed from the topics."),
-            compressor,
-            encryptor.get());
+        sendOkMessageResponse(request, "Unsubscribed from the topics.");
     }
 
     private void handlePublish(final Message request) {
@@ -338,15 +323,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         subscriptions.publish(request);
 
         // acknowledge the publish
-        Protocol.sendMessage(
-            ch,
-            createPlainTextResponseMessage(
-                ResponseStatus.OK,
-                request.getRequestId(),
-                request.getTopics(),
-                "Message has been enqued to publish."),
-            compressor,
-            encryptor.get());
+        sendOkMessageResponse(request, "Message has been enqued to publish.");
     }
 
     private void handleOffer(final Message request) throws InterruptedException {
@@ -360,15 +337,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                 ? queue.offer(msg)
                                 : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
             if (ok) {
-                Protocol.sendMessage(
-                    ch,
-                    createPlainTextResponseMessage(
-                        ResponseStatus.OK,
-                        request.getRequestId(),
-                        request.getTopics(),
-                        "Offered the message to the queue."),
-                    compressor,
-                    encryptor.get());
+                sendOkMessageResponse(request, "Offered the message to the queue.");
             }
             else {
                 Protocol.sendMessage(
@@ -475,19 +444,98 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     encryptor.get());
         }
         else {
-            Protocol.sendMessage(
-                ch,
-                createPlainTextResponseMessage(
-                    ResponseStatus.BAD_REQUEST,
-                    request.getRequestId(),
-                    request.getTopics(),
-                    "Unknown tcp server request topic. \n"
+            sendBadRequestMessageResponse(
+                request,
+                "Unknown tcp server request topic. \n"
                       + "Valid topics are:\n"
                       + "  • tcp-server/status\n"
                       + "  • tcp-server/thread-pool-statistics\n"
-                      + "  • tcp-server/error\n"),
-                compressor,
-                encryptor.get());
+                      + "  • tcp-server/error");
+        }
+    }
+
+    private void handleCreateQueueRequest(final Message request) {
+        if (!"application/json".equals(request.getMimetype())) {
+            sendBadRequestMessageResponse(
+                request,
+                String.format("Request %s: Expected a JSON payload", request.getType()));
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
+        final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
+
+        if (StringUtil.isBlank(queueName) || capacity < 1) {
+            sendBadRequestMessageResponse(
+                request,
+                String.format(
+                   "Request %s: A queue name must not be blank and the capacity must not be lower than 1",
+                   request.getType()));
+        }
+        else {
+            // do not overwrite the queue if it already exists
+            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity)) == null) {
+                tmpQueues.put(queueName, 0);
+            }
+
+            sendOkMessageResponse(
+                request,
+                String.format("Request %s: Queue %s created.", request.getType(), queueName));
+        }
+    }
+
+    private void handleCreateTemporaryQueueRequest(final Message request) {
+        if (!"application/json".equals(request.getMimetype())) {
+            sendBadRequestMessageResponse(
+                request,
+                String.format("Request %s: Expected a JSON payload", request.getType()));
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
+        final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
+
+        if (StringUtil.isBlank(queueName) || capacity < 1) {
+            sendBadRequestMessageResponse(
+                request,
+                String.format(
+                   "Request %s: A queue name must not be blank and the capacity must not be lower than 1",
+                   request.getType()));
+        }
+        else {
+            // do not overwrite the queue if it already exists
+            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity)) != null) {
+                tmpQueues.put(queueName, 0);
+            }
+
+            sendOkMessageResponse(
+                request,
+                String.format("Request %s: Queue %s created.", request.getType(), queueName));
+        }
+    }
+
+    private void handleRemoveQueueRequest(final Message request) {
+        if (!"application/json".equals(request.getMimetype())) {
+            sendBadRequestMessageResponse(
+                request,
+                String.format("Request %s: Expected a JSON payload", request.getType()));
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
+
+        if (StringUtil.isNotBlank(queueName)) {
+            p2pQueues.remove(queueName);
+            tmpQueues.remove(queueName);
+
+            sendOkMessageResponse(
+                request,
+                String.format("Request %s: Queue %s removed.", request.getType(), queueName));
+        }
+        else {
+            sendBadRequestMessageResponse(
+                request,
+                String.format("Request %s: A queue name must not be null or empty.", request.getType()));
         }
     }
 
@@ -545,15 +593,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 statistics.incrementDiscardedResponseCount();
             }
             else {
-                Protocol.sendMessage(
-                    ch,
-                    createPlainTextResponseMessage(
-                       ResponseStatus.BAD_REQUEST,
-                       null,
-                       request.getTopics(),
-                       "Bad request type: " + request.getType().name()),
-                    compressor,
-                    encryptor.get());
+                sendBadRequestMessageResponse(
+                    request,
+                    "Bad request type: " + request.getType().name());
             }
         }
         else {
@@ -585,11 +627,48 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private void sendTooLargeMessageResponse(final Message request) {
-        Protocol.sendMessage(
-            ch,
-            createTooLargeErrorMessageResponse(request),
-            compressor,
-            encryptor.get());
+        if (!request.isOneway()) {
+            sendBadRequestMessageResponse(
+                request,
+                String.format(
+                    "The message (%d bytes) is too large! The limit is at %d bytes.",
+                    request.getData().length,
+                    maxMessageSize));
+        }
+    }
+
+    private void sendBadRequestMessageResponse(
+            final Message request,
+            final String errorMsg
+    ) {
+        if (!request.isOneway()) {
+            Protocol.sendMessage(
+                    ch,
+                    createPlainTextResponseMessage(
+                        ResponseStatus.BAD_REQUEST,
+                        request.getRequestId(),
+                        request.getTopics(),
+                        errorMsg),
+                    compressor,
+                    encryptor.get());
+        }
+    }
+
+    private void sendOkMessageResponse(
+            final Message request,
+            final String message
+    ) {
+        if (!request.isOneway()) {
+            Protocol.sendMessage(
+                    ch,
+                    createPlainTextResponseMessage(
+                        ResponseStatus.OK,
+                        request.getRequestId(),
+                        request.getTopics(),
+                        message),
+                    compressor,
+                    encryptor.get());
+        }
     }
 
     private Message getTcpServerStatus() {
@@ -607,8 +686,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("publish-discarded-count", statistics.getDiscardedPublishCount())
                            .add("subscription-client-count", subscriptions.getClientSubscriptionCount())
                            .add("subscription-topic-count", subscriptions.getTopicSubscriptionCount())
+                           .add("queue-count", p2pQueues.size())
+                           .add("temp-queue-count", 0)
                            .add("publish-queue-capacity", publishQueueCapacity)
-                           .add("p2p-queue-count", p2pQueues.size())
                            .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
                            .add("message-size-min", TcpServer.MESSAGE_LIMIT_MIN)
                            .add("message-size-max", maxMessageSize.get())
@@ -720,46 +800,17 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 toBytes(text, "UTF-8"));
     }
 
-    private Message createTooLargeErrorMessageResponse(final Message request) {
-        return createPlainTextResponseMessage(
-                ResponseStatus.BAD_REQUEST,
-                request.getRequestId(),
-                request.getTopics(),
-                String.format(
-                        "The message (%d bytes) is too large! The limit is at %d bytes.",
-                        request.getData().length,
-                        maxMessageSize));
+
+    private void removeAllChannelTmpQueues() {
+        try {
+            final Set<String> names = tmpQueues.keySet();
+            names.forEach(n ->  p2pQueues.remove(n));
+            tmpQueues.clear();
+        }
+        catch(Exception ignore) {}
     }
 
 
-    private static boolean isRequestMsg(final Message msg) {
-        return msg.getType() == MessageType.REQUEST;
-    }
-
-    private static boolean isRequestSubscribe(final Message msg) {
-        return msg.getType() == MessageType.SUBSCRIBE;
-    }
-
-
-    private static boolean isRequestUnsubscribe(final Message msg) {
-        return msg.getType() == MessageType.UNSUBSCRIBE;
-    }
-
-    private static boolean isRequestPublish(final Message msg) {
-        return msg.getType() == MessageType.PUBLISH;
-    }
-
-    private static boolean isRequestOffer(final Message msg) {
-        return msg.getType() == MessageType.OFFER;
-    }
-
-    private static boolean isRequestPoll(final Message msg) {
-        return msg.getType() == MessageType.POLL;
-    }
-
-    private static boolean isRequestDiffieHellman(final Message msg) {
-        return msg.getType() == MessageType.DIFFIE_HELLMAN_KEY_REQUEST;
-    }
 
     private static byte[] toBytes(final String s, final String charset) {
         return s.getBytes(Charset.forName(charset));
@@ -792,4 +843,5 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final IpcQueue<Error> errorBuffer;
     private final IpcQueue<Message> publishQueue;
     private final Map<String, IpcQueue<Message>> p2pQueues;
+    private final Map<String, Integer> tmpQueues = new ConcurrentHashMap<>();
 }
