@@ -48,6 +48,7 @@ public class TcpReplyQueueTest {
             final String tmpQueue = client1.createTemporaryQueue(10);
             assertNotNull(tmpQueue);
 
+
             // client1: offer message to "queue/1" with reply-to queue
 
             final IMessage m1 = client1.offer(
@@ -70,6 +71,7 @@ public class TcpReplyQueueTest {
             assertEquals("text/plain",       m2.getMimetype());
             assertEquals("UTF-8",            m2.getCharset());
             assertEquals("Hello!",           m2.getText());
+
 
             // client2: offer reply message to reply-to queue
 
@@ -94,7 +96,7 @@ public class TcpReplyQueueTest {
             assertEquals("UTF-8",            m4.getCharset());
             assertEquals("Good-By!",         m4.getText());
 
-           sleep(200);
+            sleep(200);
         }
         finally {
             client2.close();

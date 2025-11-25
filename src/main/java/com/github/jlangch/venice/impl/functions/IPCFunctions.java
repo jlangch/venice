@@ -2179,7 +2179,7 @@ public class IPCFunctions {
                             new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
                             new VncKeyword("topic"),      new VncString(m.getTopic()),
                             new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
-                            new VncKeyword("data"),       Json.readJson(m.getText(), true));
+                            new VncKeyword("data"),       m.getVeniceData());
                 }
                 else {
                     // text
