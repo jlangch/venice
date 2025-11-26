@@ -71,7 +71,7 @@ available in the installation directory.
 
   # Venice Shebang demo script
 
-  VERSION=1.12.64                      # Venice version to use
+  VERSION=1.12.65                      # Venice version to use
   DIR=/tmp/venice                      # Install dir
   REPO=https://repo1.maven.org/maven2  # Maven repository
 
