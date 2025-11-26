@@ -311,7 +311,7 @@ public class Message implements IMessage {
        sb.append(String.format(
                    "%s %s\n",
                    padRight("Request Id:", 12),
-                   requestId));
+                   requestId == null ? "-" : requestId));
 
        sb.append(String.format(
                    "%s %s\n",
