@@ -341,7 +341,7 @@ public class Message implements IMessage {
        sb.append(String.format(
                    "%s %s\n",
                    padRight("ExpiresAt:", 12),
-                   getExpiresAtAsLocalDateTime()));
+                   expiresAt < 0 ? "never" : getExpiresAtAsLocalDateTime()));
 
        sb.append(String.format(
                    "%s %s\n",
