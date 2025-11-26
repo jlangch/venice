@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -99,7 +100,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     mode = processPublication();
                 }
                 else {
-                    break;
+                    break; // should no get here
                 }
             }
         }
@@ -128,21 +129,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                 ? publishQueue.offer(msg)
                                 : publishQueue.offer(msg, timeout, TimeUnit.SECONDS);
             if (!ok) {
-                errorBuffer.offer(new Error("Failed to enque message for publishing. Publish queue is full!", msg));
-                statistics.incrementDiscardedPublishCount();
+                auditPublishError(msg, "Failed to enque message for publishing. Publish queue is full!");
             }
         }
         catch(Exception ex) {
             // there is no dead letter queue yet, just count the
             // discarded messages
-            try {
-                errorBuffer.offer(new Error("Failed to enque message for publishing!", msg, ex));
-                statistics.incrementDiscardedPublishCount();
-            }
-            catch(InterruptedException ignore) {
-            }
+            auditPublishError(msg, "Failed to enque message for publishing!", ex);
         }
     }
+
+
+    // ------------------------------------------------------------------------
+    // Process requests
+    // ------------------------------------------------------------------------
 
     private State processRequestResponse() throws InterruptedException {
         // [1] receive message
@@ -159,94 +159,98 @@ public class TcpServerConnection implements IPublisher, Runnable {
             statistics.incrementMessageCount();
         }
 
-        // [2] Handle the request
+        // [2] Handle max message payload size
+        if (request.getData().length > maxMessageSize.get()) {
+            if (request.isOneway()) {
+                // oneway request -> cannot send and error message back
+                auditResponseError(
+                    request,
+                    "Request too large! Cannot send error response back for oneway request!");
+            }
+            else {
+               final Message response = createBadRequestTextMessageResponse(
+                                            request,
+                                            String.format(
+                                                "The message (%d bytes) is too large! The limit is at %d bytes.",
+                                                request.getData().length,
+                                                maxMessageSize));
+               Protocol.sendMessage(ch, response, compressor,encryptor.get());
+            }
+            return mode;
+        }
+
+        // [3] Handle server info requests
         if (request.getTopic().startsWith("tcp-server/")) {
             // process a server status request
-            handleTcpServerRequest(request);
-            return State.Request_Response;
-        }
-        else {
-            if (request.getData().length > maxMessageSize.get()) {
-                handleRequestTooLarge(request);
-                return mode;
+            final Message response = handleTcpServerRequest(request);
+            if (!request.isOneway()) {
+                Protocol.sendMessage(ch, response, compressor,encryptor.get());
             }
+            return mode;
+        }
 
-            switch(request.getType()) {
-                case REQUEST:
-                    // client sent a normal message request, send the response back.
-                    // call the server handler to process the request into a
-                    // response and send the response only for non one-way
-                    // requests back to the caller
-                    final Message response = handleSend(request);
+        // [4] Handle all other requests
+        final Tuple2<State, Message> result = handleRequestMessage(mode, request);
+        final State newState = result._1;
+        final Message response = result._2;
 
-                    if (!server.isRunning()) {
-                        return State.Terminated;  // this server was closed
-                    }
+        if (!server.isRunning()) {
+            return State.Terminated;  // this server was closed
+        }
 
-                    // [3] Send response
-                    if (!request.isOneway()) {
-                        Protocol.sendMessage(
-                                ch,
-                                response,
-                                compressor,
-                                encryptor.get());
-                    }
-                    return State.Request_Response;
-
-                case SUBSCRIBE:
-                    // the client wants to subscribe a topic
-                    handleSubscribe(request);
-                    // switch to publish mode for this connections
-                    return State.Publish;
-
-                case UNSUBSCRIBE:
-                    // the client wants to subscribe a topic
-                    handleUnsubscribe(request);
-                    // switch to publish mode for this connections
-                    return State.Publish;
-
-                case PUBLISH:
-                    // the client sent a message to be published to all subscribers
-                    // of the message's topic
-                    handlePublish(request);
-                    return State.Request_Response;
-
-                case OFFER:
-                    // the client offers a new message to a queue
-                    handleOffer(request);
-                    return State.Request_Response;
-
-                case POLL:
-                    // the client polls a new message from a queue
-                    handlePoll(request);
-                    return State.Request_Response;
-
-                case CREATE_QUEUE:
-                    handleCreateQueueRequest(request);
-                    return mode;
-
-                case CREATE_TEMP_QUEUE:
-                    handleCreateTemporaryQueueRequest(request);
-                    return mode;
-
-                case REMOVE_QUEUE:
-                    handleRemoveQueueRequest(request);
-                    return mode;
-
-                case STATUS_QUEUE:
-                    handleStatusQueueRequest(request);
-                    return mode;
-
-                case DIFFIE_HELLMAN_KEY_REQUEST:
-                    handleDiffieHellmanKeyExchange(request);
-                    return State.Request_Response;
+        // [5] Send response
+        if (request.isOneway()) {
+            // oneway request -> do not send any response message back
+            switch(response.getResponseStatus()) {
+                case SERVER_ERROR:
+                case HANDLER_ERROR:
+                case BAD_REQUEST:
+                    auditResponseError(
+                            request,
+                            String.format(
+                              "Cannot send error response %s for oneway requests! Request: %s",
+                              response.getResponseStatus(),
+                              request.getType()));
+                    break;
 
                 default:
-                    handleInvalidRequestType(request);
-                    return mode;
+                    break;
             }
         }
+        else {
+            // request -> response
+            if (mode == State.Request_Response) {
+                switch(response.getResponseStatus()) {
+                    case DIFFIE_HELLMAN_ACK:
+                    case DIFFIE_HELLMAN_NAK:
+                        // Diffie Hellman responses with compressing and encrypting!
+                        Protocol.sendMessage(ch, response, Compressor.off(), Encryptor.off());
+                        break;
+
+                    default:
+                        Protocol.sendMessage(ch, response, compressor,  encryptor.get());
+                        break;
+                }
+            }
+            else if (mode == State.Publish) {
+                auditResponseError(
+                        request,
+                        String.format(
+                          "Cannot send message response back to clients in subscription mode! Request: %s",
+                          request.getType()));
+            }
+            else {
+               // do nothing
+            }
+        }
+
+        return newState;
     }
+
+
+    // ------------------------------------------------------------------------
+    // Process publications
+    // ------------------------------------------------------------------------
 
     private State processPublication() throws InterruptedException {
         // check the publish queue
@@ -263,6 +267,92 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         return State.Publish;
     }
+
+    private Tuple2<State,Message> handleRequestMessage(
+            final State currState,
+            final Message request
+    ) {
+        switch(request.getType()) {
+            case REQUEST:
+                // client sent a normal message request, send the response back.
+                // call the server handler to process the request into a
+                // response and send the response only for non one-way
+                // requests back to the caller
+                return new Tuple2<State,Message>(
+                            State.Request_Response,
+                            handleSend(request));
+
+            case SUBSCRIBE:
+                // the client wants to subscribe to a topic
+                return new Tuple2<State,Message>(
+                        State.Publish,
+                        handleSubscribe(request));
+
+            case UNSUBSCRIBE:
+                // the client wants to unsubscribe from topic
+                return new Tuple2<State,Message>(
+                        State.Publish,
+                        handleUnsubscribe(request));
+
+            case PUBLISH:
+                // the client sent a message to be published to all subscribers
+                // of the message's topic
+                return new Tuple2<State,Message>(
+                        State.Request_Response,
+                        handlePublish(request));
+
+            case OFFER:
+                // the client offers a new message to a queue
+                return new Tuple2<State,Message>(
+                        State.Request_Response,
+                        handleOffer(request));
+
+            case POLL:
+                // the client polls a new message from a queue
+                return new Tuple2<State,Message>(
+                        State.Request_Response,
+                        handlePoll(request));
+
+            case CREATE_QUEUE:
+                return new Tuple2<State,Message>(
+                        currState,
+                        handleCreateQueueRequest(request));
+
+            case CREATE_TEMP_QUEUE:
+                return new Tuple2<State,Message>(
+                        currState,
+                        handleCreateTemporaryQueueRequest(request));
+
+            case REMOVE_QUEUE:
+                return new Tuple2<State,Message>(
+                        currState,
+                        handleRemoveQueueRequest(request));
+
+            case STATUS_QUEUE:
+                return new Tuple2<State,Message>(
+                        currState,
+                        handleStatusQueueRequest(request));
+
+            case DIFFIE_HELLMAN_KEY_REQUEST:
+                return new Tuple2<State,Message>(
+                        State.Request_Response,
+                        handleDiffieHellmanKeyExchange(request));
+
+            default:
+                // Invalid request type
+                return new Tuple2<State,Message>(
+                        currState,
+                        createBadRequestTextMessageResponse(
+                                request,
+                                "Invalid request type: " + request.getType()));
+        }
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // Request handler
+    // ------------------------------------------------------------------------
 
     private Message handleSend(final Message request) {
         try {
@@ -292,141 +382,140 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private void handleSubscribe(final Message request) {
+    private Message handleSubscribe(final Message request) {
         // register subscription
         subscriptions.addSubscriptions(request.getTopicsSet(), this);
 
         // acknowledge the subscription
-        sendOkTextMessageResponse(request, "Subscribed to the topics.");
+        return createOkTextMessageResponse(request, "Subscribed to the topics.");
     }
 
-    private void handleUnsubscribe(final Message request) {
+    private Message handleUnsubscribe(final Message request) {
         // unregister subscription
         subscriptions.removeSubscriptions(request.getTopicsSet(), this);
 
         // acknowledge the unsubscription
-        sendOkTextMessageResponse(request, "Unsubscribed from the topics.");
+        return createOkTextMessageResponse(request, "Unsubscribed from the topics.");
     }
 
-    private void handlePublish(final Message request) {
+    private Message handlePublish(final Message request) {
         // asynchronously publish to all subscriptions
         subscriptions.publish(request);
 
         // acknowledge the publish
-        sendOkTextMessageResponse(request, "Message has been enqued to publish.");
+        return createOkTextMessageResponse(request, "Message has been enqued to publish.");
     }
 
-    private void handleOffer(final Message request) throws InterruptedException {
-        final String queueName = request.getQueueName();
-        final IpcQueue<Message> queue = p2pQueues.get(queueName);
-        if (queue != null) {
-            final Message msg = request.withType(MessageType.REQUEST, false);
-            final long timeout = msg.getTimeout();
+    private Message handleOffer(final Message request) {
+        try {
+            final String queueName = request.getQueueName();
+            final IpcQueue<Message> queue = p2pQueues.get(queueName);
+            if (queue != null) {
+                final Message msg = request.withType(MessageType.REQUEST, false);
+                final long timeout = msg.getTimeout();
 
-            final boolean ok = timeout < 0
-                                ? queue.offer(msg)
-                                : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
-            if (ok) {
-                sendOkTextMessageResponse(request, "Offered the message to the queue.");
+                final boolean ok = timeout < 0
+                                    ? queue.offer(msg)
+                                    : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
+                if (ok) {
+                    return createOkTextMessageResponse(request, "Offered the message to the queue.");
+                }
+                else {
+                    return createTextMessageResponse(
+                            request,
+                            ResponseStatus.QUEUE_FULL,
+                            "Offer rejected! The queue is full.");
+                }
             }
             else {
-                sendTextMessageResponse(
-                    request,
-                    ResponseStatus.QUEUE_FULL,
-                    "Offer rejected! The queue is full.");
+                return createTextMessageResponse(
+                        request,
+                        ResponseStatus.QUEUE_NOT_FOUND,
+                        "Offer rejected! The queue does not exist.");
             }
         }
-        else {
-            sendTextMessageResponse(
-                request,
-                ResponseStatus.QUEUE_NOT_FOUND,
-                "Offer rejected! The queue does not exist.");
+        catch(InterruptedException ex) {
+            // interrupted while waiting for queue
+            return createTextMessageResponse(
+                    request,
+                    ResponseStatus.QUEUE_ACCESS_INTERRUPTED,
+                    "Offer rejected! Queue access interrupted.");
         }
     }
 
-    private void handlePoll(final Message request) throws InterruptedException {
-        final long timeout = request.getTimeout();
-        final String queueName = request.getQueueName();
-        final IpcQueue<Message> queue = p2pQueues.get(queueName);
-        if (queue != null) {
-            while(true) {
-                final Message msg = timeout < 0
-                                        ? queue.poll()
-                                        : queue.poll(timeout, TimeUnit.MILLISECONDS);
-                if (msg == null) {
-                    sendTextMessageResponse(
+    private Message handlePoll(final Message request) {
+        try {
+            final long timeout = request.getTimeout();
+            final String queueName = request.getQueueName();
+            final IpcQueue<Message> queue = p2pQueues.get(queueName);
+            if (queue != null) {
+                while(true) {
+                    final Message msg = timeout < 0
+                                            ? queue.poll()
+                                            : queue.poll(timeout, TimeUnit.MILLISECONDS);
+                    if (msg == null) {
+                        return createTextMessageResponse(
+                                request,
+                                ResponseStatus.QUEUE_EMPTY,
+                                "Poll rejected! The queue is empty.");
+                    }
+                    else if (msg.hasExpired()) {
+                        // discard expired message -> try next message from the queue
+                        auditResponseError(
                             request,
-                            ResponseStatus.QUEUE_EMPTY,
-                            "Poll rejected! The queue is empty.");
-                    return;
-                }
-                else if (msg.hasExpired()) {
-                    // discard expired message -> try next message from the queue
-                    errorBuffer.offer(
-                        new Error(
                             String.format(
                                 "Discarded expired message (request-id: %s)" +
                                 "polling from queue '%s'!",
                                 msg.getRequestId(),
-                                queueName),
-                            request));
-                   continue;
-                }
-                else {
-                    Protocol.sendMessage(
-                        ch,
-                        msg.withType(MessageType.RESPONSE, true)
-                           .withResponseStatus(ResponseStatus.OK),
-                        compressor,
-                        encryptor.get());
-                    return;
+                                queueName));
+                       continue;
+                    }
+                    else {
+                        return msg.withType(MessageType.RESPONSE, true)
+                                  .withResponseStatus(ResponseStatus.OK);
+                    }
                 }
             }
+            else {
+                return createTextMessageResponse(
+                        request,
+                        ResponseStatus.QUEUE_NOT_FOUND,
+                        "Poll rejected! The queue does not exist.");
+            }
         }
-        else {
-            sendTextMessageResponse(
+        catch(InterruptedException ex) {
+            // interrupted while waiting for queue
+            return createTextMessageResponse(
                     request,
-                    ResponseStatus.QUEUE_NOT_FOUND,
-                    "Poll rejected! The queue does not exist.");
+                    ResponseStatus.QUEUE_ACCESS_INTERRUPTED,
+                    "Poll rejected! Queue access interrupted.");
         }
     }
 
-    private void handleTcpServerRequest(final Message request) {
+    private Message handleTcpServerRequest(final Message request) {
         if ("tcp-server/status".equals(request.getTopic())) {
-            Protocol.sendMessage(
-                    ch,
-                    getTcpServerStatus(),
-                    compressor,
-                    encryptor.get());
+            return getTcpServerStatus();
         }
         else if ("tcp-server/thread-pool-statistics".equals(request.getTopic())) {
-            Protocol.sendMessage(
-                    ch,
-                    getTcpServerThreadPoolStatistics(),
-                    compressor,
-                    encryptor.get());
+            return getTcpServerThreadPoolStatistics();
         }
         else if ("tcp-server/error".equals(request.getTopic())) {
-            Protocol.sendMessage(
-                    ch,
-                    getTcpServerNextError(),
-                    compressor,
-                    encryptor.get());
+            return getTcpServerNextError();
         }
         else {
-            sendBadRequestTextMessageResponse(
-                request,
-                "Unknown tcp server request topic. \n"
-                      + "Valid topics are:\n"
-                      + "  • tcp-server/status\n"
-                      + "  • tcp-server/thread-pool-statistics\n"
-                      + "  • tcp-server/error");
+            return createBadRequestTextMessageResponse(
+                    request,
+                    "Unknown tcp server request topic. \n"
+                          + "Valid topics are:\n"
+                          + "  • tcp-server/status\n"
+                          + "  • tcp-server/thread-pool-statistics\n"
+                          + "  • tcp-server/error");
         }
     }
 
-    private void handleCreateQueueRequest(final Message request) {
+    private Message handleCreateQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            sendBadRequestTextMessageResponse(
+            createBadRequestTextMessageResponse(
                 request,
                 String.format("Request %s: Expected a JSON payload", request.getType()));
         }
@@ -437,11 +526,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
 
         if (StringUtil.isBlank(queueName) || capacity < 1) {
-            sendBadRequestTextMessageResponse(
-                request,
-                String.format(
-                   "Request %s: A queue name must not be blank and the capacity must not be lower than 1",
-                   request.getType()));
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format(
+                       "Request %s: A queue name must not be blank and the capacity must not be lower than 1",
+                       request.getType()));
         }
         else {
             final IpcQueue<Message> queue = bounded
@@ -451,15 +540,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
             // do not overwrite the queue if it already exists
             p2pQueues.putIfAbsent(queueName, queue);
 
-            sendOkTextMessageResponse(
+            return createOkTextMessageResponse(
                 request,
                 String.format("Request %s: Queue %s created.", request.getType(), queueName));
         }
     }
 
-    private void handleCreateTemporaryQueueRequest(final Message request) {
+    private Message handleCreateTemporaryQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            sendBadRequestTextMessageResponse(
+            return createBadRequestTextMessageResponse(
                 request,
                 String.format("Request %s: Expected a JSON payload", request.getType()));
         }
@@ -468,11 +557,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
 
         if (capacity < 1) {
-            sendBadRequestTextMessageResponse(
-                request,
-                String.format(
-                   "Request %s: A queue capacity must not be lower than 1",
-                   request.getType()));
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format(
+                       "Request %s: A queue capacity must not be lower than 1",
+                       request.getType()));
         }
         else {
             final String queueName = "queue/" + UUID.randomUUID().toString();
@@ -482,15 +571,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 tmpQueues.put(queueName, 0);
             }
 
-            sendOkTextMessageResponse(request, queueName);
+            return createOkTextMessageResponse(request, queueName);
         }
     }
 
-    private void handleRemoveQueueRequest(final Message request) {
+    private Message handleRemoveQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            sendBadRequestTextMessageResponse(
-                request,
-                String.format("Request %s: Expected a JSON payload", request.getType()));
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -500,22 +589,22 @@ public class TcpServerConnection implements IPublisher, Runnable {
             p2pQueues.remove(queueName);
             tmpQueues.remove(queueName);
 
-            sendOkTextMessageResponse(
-                request,
-                String.format("Request %s: Queue %s removed.", request.getType(), queueName));
+            return createOkTextMessageResponse(
+                    request,
+                    String.format("Request %s: Queue %s removed.", request.getType(), queueName));
         }
         else {
-            sendBadRequestTextMessageResponse(
-                request,
-                String.format("Request %s: A queue name must not be null or empty.", request.getType()));
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format("Request %s: A queue name must not be null or empty.", request.getType()));
         }
     }
 
-    private void handleStatusQueueRequest(final Message request) {
+    private Message handleStatusQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            sendBadRequestTextMessageResponse(
-                request,
-                String.format("Request %s: Expected a JSON payload", request.getType()));
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -531,32 +620,26 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                             .add("temporary", q != null && q.isTemporary())
                                             .toJson(false);
 
-            final Message m = createJsonResponseMessage(
-                                ResponseStatus.OK,
-                                request.getRequestId(),
-                                request.getTopics(),
-                                response);
-
-            Protocol.sendMessage(ch, m, compressor, encryptor.get());
+            return createJsonResponseMessage(
+                        ResponseStatus.OK,
+                        request.getRequestId(),
+                        request.getTopics(),
+                        response);
         }
         else {
-            sendBadRequestTextMessageResponse(
-                request,
-                String.format("Request %s: A queue name must not be null or empty.", request.getType()));
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format("Request %s: A queue name must not be null or empty.", request.getType()));
         }
     }
 
-    private void handleDiffieHellmanKeyExchange(final Message request) {
+    private Message handleDiffieHellmanKeyExchange(final Message request) {
         if (encryptor.get().isActive()) {
-            Protocol.sendMessage(
-                    ch,
-                    createPlainTextResponseMessage(
+            return createPlainTextResponseMessage(
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        null,
                        Topics.of("dh"),
-                       "Error: Diffie-Hellman keys already exchanged!"),
-                    Compressor.off(),
-                    Encryptor.off());
+                       "Error: Diffie-Hellman keys already exchanged!");
         }
         else {
             try {
@@ -564,115 +647,91 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(clientPublicKey)));
 
                 // send the server's public key back
-                Protocol.sendMessage(
-                        ch,
-                        createPlainTextResponseMessage(
+                return createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
                            null,
                            Topics.of("dh"),
-                           dhKeys.getPublicKeyBase64()),
-                        Compressor.off(),
-                        Encryptor.off());
+                           dhKeys.getPublicKeyBase64());
             }
             catch(Exception ex) {
-                Protocol.sendMessage(
-                        ch,
-                        createPlainTextResponseMessage(
+                return createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            null,
                            Topics.of("dh"),
-                           "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage()),
-                        Compressor.off(),
-                        Encryptor.off());
+                           "Failed to exchange Diffie-Hellman keys! Reason: " + ex.getMessage());
             }
         }
     }
 
-    private void handleInvalidRequestType(final Message request) throws InterruptedException {
-        if (mode == State.Request_Response) {
-            if (request.isOneway()) {
-                // oneway request -> cannot send and error message back
-                errorBuffer.offer(
-                        new Error(
-                                "Bad request type '" + request.getType() + "'! "
-                                    + "Cannot send error response for oneway request!",
-                                request));
-                statistics.incrementDiscardedResponseCount();
-            }
-            else {
-                sendBadRequestTextMessageResponse(
-                    request,
-                    "Bad request type: " + request.getType().name());
-            }
-        }
-        else {
-            errorBuffer.offer(new Error(
-                "Bad request type '" + request.getType() + "'! "
-                    + "Cannot send error response for channel in publish mode!",
-                request));
-            statistics.incrementDiscardedPublishCount();
-        }
-    }
+    // ------------------------------------------------------------------------
+    // Create response messages
+    // ------------------------------------------------------------------------
 
-    private void handleRequestTooLarge(final Message request) throws InterruptedException {
-        if (mode == State.Request_Response) {
-            if (request.isOneway()) {
-                // oneway request -> cannot send and error message back
-                errorBuffer.offer(new Error(
-                    "Request too large! Cannot send error response for oneway request!",
-                    request));
-                statistics.incrementDiscardedResponseCount();
-            }
-            else {
-                // return error: message to large
-                sendTooLargeMessageResponse(request);
-            }
-        }
-        else {
-            statistics.incrementDiscardedPublishCount();
-        }
-    }
-
-    private void sendTooLargeMessageResponse(final Message request) {
-        sendBadRequestTextMessageResponse(
-            request,
-            String.format(
-                "The message (%d bytes) is too large! The limit is at %d bytes.",
-                request.getData().length,
-                maxMessageSize));
-    }
-
-    private void sendBadRequestTextMessageResponse(
+    private Message createBadRequestTextMessageResponse(
             final Message request,
             final String errorMsg
     ) {
-        sendTextMessageResponse(request, ResponseStatus.BAD_REQUEST, errorMsg);
+        return createTextMessageResponse(request, ResponseStatus.BAD_REQUEST, errorMsg);
     }
 
-    private void sendOkTextMessageResponse(
+    private Message createOkTextMessageResponse(
             final Message request,
             final String message
     ) {
-       sendTextMessageResponse(request, ResponseStatus.OK, message);
+       return createTextMessageResponse(request, ResponseStatus.OK, message);
     }
 
-    private void sendTextMessageResponse(
+    private Message createTextMessageResponse(
             final Message request,
             final ResponseStatus responseStatus,
             final String message
     ) {
-        if (!request.isOneway()) {
-            Protocol.sendMessage(
-                    ch,
-                    createPlainTextResponseMessage(
-                        responseStatus,
-                        request.getRequestId(),
-                        request.getTopics(),
-                        message),
-                    compressor,
-                    encryptor.get());
-        }
+        return createPlainTextResponseMessage(
+                    responseStatus,
+                    request.getRequestId(),
+                    request.getTopics(),
+                    message);
     }
+
+    private static Message createJsonResponseMessage(
+            final ResponseStatus status,
+            final String requestID,
+            final Topics topics,
+            final String json
+    ) {
+        return new Message(
+                requestID,
+                MessageType.RESPONSE,
+                status,
+                true,
+                Message.EXPIRES_NEVER,
+                topics,
+                "application/json",
+                "UTF-8",
+                toBytes(json, "UTF-8"));
+    }
+
+    private static Message createPlainTextResponseMessage(
+            final ResponseStatus status,
+            final String requestID,
+            final Topics topics,
+            final String text
+    ) {
+        return new Message(
+                requestID,
+                MessageType.RESPONSE,
+                status,
+                true,
+                Message.EXPIRES_NEVER,
+                topics,
+                "text/plain",
+                "UTF-8",
+                toBytes(text, "UTF-8"));
+    }
+
+    // ------------------------------------------------------------------------
+    // Server utilities
+    // ------------------------------------------------------------------------
 
     private Message getTcpServerStatus() {
         return createJsonResponseMessage(
@@ -699,6 +758,16 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("compression-cutoff-size", server.getCompressCutoffSize())
                            .add("encryption", encryptor.get().isActive())
                            .toJson(false));
+    }
+
+    private Message getTcpServerThreadPoolStatistics() {
+        final VncMap statistics = serverThreadPoolStatistics.get();
+
+        return createJsonResponseMessage(
+                ResponseStatus.OK,
+                null,
+                Topics.of("tcp-server/thread-pool-statistics"),
+                Json.writeJson(statistics, true));
     }
 
     private Message getTcpServerNextError() {
@@ -741,52 +810,26 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private Message getTcpServerThreadPoolStatistics() {
-        final VncMap statistics = serverThreadPoolStatistics.get();
-
-        return createJsonResponseMessage(
-                ResponseStatus.OK,
-                null,
-                Topics.of("tcp-server/thread-pool-statistics"),
-                Json.writeJson(statistics, true));
+    private void auditResponseError(final Message request, final String errorMsg) {
+        try {
+            errorBuffer.offer(new Error(errorMsg, request));
+            statistics.incrementDiscardedResponseCount();
+        }
+        catch(InterruptedException ignore) {}
     }
 
-    private static Message createJsonResponseMessage(
-            final ResponseStatus status,
-            final String requestID,
-            final Topics topics,
-            final String json
-    ) {
-        return new Message(
-                requestID,
-                MessageType.RESPONSE,
-                status,
-                true,
-                Message.EXPIRES_NEVER,
-                topics,
-                "application/json",
-                "UTF-8",
-                toBytes(json, "UTF-8"));
+    private void auditPublishError(final Message msg, final String errorMsg) {
+        auditPublishError(msg, errorMsg, null);
     }
 
-    private static Message createPlainTextResponseMessage(
-            final ResponseStatus status,
-            final String requestID,
-            final Topics topics,
-            final String text
-    ) {
-        return new Message(
-                requestID,
-                MessageType.RESPONSE,
-                status,
-                true,
-                Message.EXPIRES_NEVER,
-                topics,
-                "text/plain",
-                "UTF-8",
-                toBytes(text, "UTF-8"));
-    }
 
+    private void auditPublishError(final Message msg, final String errorMsg, final Exception ex) {
+        try {
+            errorBuffer.offer(new Error(errorMsg, msg, ex));
+            statistics.incrementDiscardedPublishCount();
+        }
+        catch(InterruptedException ignore) {}
+    }
 
     private void removeAllChannelTmpQueues() {
         try {
