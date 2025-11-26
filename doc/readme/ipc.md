@@ -111,6 +111,7 @@ throughput!
 ```
 
 
+
 ### Offer and Poll
 
 Offer messages to a queue and poll messages from a queue. More than one client can offer/poll
@@ -148,56 +149,6 @@ messages to/from queues but a message is delivered to one client only.
            (println "POLLED:")))))
 ```
 
-**synchronous offer / poll with reply queue**
-
-```clojure
-(do
-  ;; thread-safe printing
-  (defn println [& msg] (locking println (apply core/println msg)))
-
-  ;; the barista processes the order and sends the order confirmation back  
-  ;; via the message's reply queue
-  (defn barista-worker [client queue]
-    (println "(barista) STARTED")
-    (while true
-      (let [order (ipc/poll client queue 1_000)]
-        (when (ipc/response-ok? order)
-          (let [request-id     (ipc/message-field order :request-id)
-                reply-to-queue (ipc/message-field order :reply-to-queue-name)
-                order-data     (ipc/message-field order :payload-venice)
-                confirmation   (ipc/venice-message request-id "order-confirmed" order-data)]
-            (println "(barista) ORDER PROCESSED:" (ipc/message->json true order))
-            (ipc/offer client reply-to-queue 1_000 confirmation)))))
-    (println "(barista) TERMINATED"))
-
-  (try-with [server  (ipc/server 33333)
-             client  (ipc/client "localhost" 33333)
-             barista (ipc/client "localhost" 33333)]
-    (let [order-queue              "orders"
-          order-confirmation-queue "order-confirmations"
-          capacity                 100]
-      ;; create the queues
-      (ipc/create-queue server order-queue capacity)
-      (ipc/create-queue server order-confirmation-queue capacity)
-
-      ;; start the barista workers
-      (futures-fork 1 (fn worker-factory [n] #(barista-worker barista order-queue)))
-      
-      (println "(client) ORDERING...")
-
-      ;; client places the order
-      (let [order    (ipc/venice-message "1" "order" {:item "espresso", :count 2})
-            response (ipc/offer client order-queue order-confirmation-queue 500 order)]
-        (if (ipc/response-ok? response)
-          (do
-            (println "(client) ORDER:" (ipc/message->json true order))
-            ;; client waits for the order confirmation
-            (let [confirmation (ipc/poll client order-confirmation-queue 500)]
-              (if (ipc/response-ok? confirmation)
-               (println "(client) ORDER CONFIRMED:" (ipc/message->json true confirmation))
-               (println "(client) ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))
-          (println "(client) FAILED TO PLACE ORDER"))))))
-```
 
 **asynchronous offer / poll**
 
@@ -230,6 +181,62 @@ messages to/from queues but a message is delivered to one client only.
            (deref <> 1_000 :timeout)
            (ipc/message->json true <>)
            (println "POLLED:" <>)))))
+```
+
+
+**temporary queues**
+
+Temporary queues can be created dynamically for use as a dedicated reply queue for a client. You can use these queues to ensure that a reply message can be sent to the appropriate client.
+
+Temporary queues live only as long as the client, that created it, lives.
+
+
+```clojure
+(do
+  ;; thread-safe printing
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  ;; the barista processes the order and sends the order confirmation back  
+  ;; via the message's reply queue
+  (defn barista-worker [client queue]
+    (println "(barista) STARTED")
+    (while true
+      (let [order (ipc/poll client queue 1_000)]
+        (when (ipc/response-ok? order)
+          (let [request-id     (ipc/message-field order :request-id)
+                reply-to-queue (ipc/message-field order :reply-to-queue-name)
+                order-data     (ipc/message-field order :payload-venice)
+                confirmation   (ipc/venice-message request-id "order-confirmed" order-data)]
+            (println "(barista) ORDER PROCESSED:" (ipc/message->json true order))
+            (ipc/offer client reply-to-queue 1_000 confirmation)))))
+    (println "(barista) TERMINATED"))
+
+  (try-with [server  (ipc/server 33333)
+             client  (ipc/client "localhost" 33333)
+             barista (ipc/client "localhost" 33333)]
+    (let [capacity         100
+          order-queue      "orders"
+          confirm-queue    (ipc/create-temporary-queue client capacity)]
+      ;; create the order queue
+      (ipc/create-queue server order-queue capacity)
+
+      ;; start the barista workers
+      (futures-fork 1 (fn worker-factory [n] #(barista-worker barista order-queue)))
+      
+      (println "(client) ORDERING...")
+
+      ;; client places the order
+      (let [order    (ipc/venice-message "1" "order" {:item "espresso", :count 2})
+            response (ipc/offer client order-queue confirm-queue 500 order)]
+        (if (ipc/response-ok? response)
+          (do
+            (println "(client) ORDER:" (ipc/message->json true order))
+            ;; client waits for the order confirmation
+            (let [confirmation (ipc/poll client confirm-queue 500)]
+              (if (ipc/response-ok? confirmation)
+               (println "(client) ORDER CONFIRMED:" (ipc/message->json true confirmation))
+               (println "(client) ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))
+          (println "(client) FAILED TO PLACE ORDER"))))))
 ```
 
 
