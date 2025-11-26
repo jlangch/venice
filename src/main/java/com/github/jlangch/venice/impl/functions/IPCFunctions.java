@@ -2539,6 +2539,7 @@ public class IPCFunctions {
                         "          order-queue    \"orders\"                                                   \n" +
                         "          confirm-queue  (ipc/create-temporary-queue client1 capacity)                \n" +
                         "          order          (ipc/venice-message                                          \n" +
+                        "                            \"1\"                                                     \n" +
                         "                            \"order\"                                                 \n" +
                         "                            {:item \"espresso\", :count 2})]                          \n" +
                         "      (ipc/create-queue server order-queue capacity)                                  \n" +
