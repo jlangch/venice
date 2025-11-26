@@ -28,7 +28,7 @@ to process the request, consider to use *offer/poll* with a reply queue to impro
 throughput!
 
 
-**synchronous send / receive**
+**Synchronous send / receive**
 
 ```clojure
 (do
@@ -71,7 +71,7 @@ throughput!
 ```
 
 
-**asynchronous send / receive**
+**Asynchronous send / receive**
 
 ```clojure
 (do
@@ -92,7 +92,7 @@ throughput!
            (println "RESPONSE:")))))
 ```
 
-**oneway send (no response)**
+**Oneway send (no response)**
 
 ```clojure
 (do
@@ -118,7 +118,7 @@ Offer messages to a queue and poll messages from a queue. More than one client c
 messages to/from queues but a message is delivered to one client only.
 
 
-**synchronous offer / poll**
+**Synchronous offer / poll**
 
 ```clojure
 (do
@@ -150,7 +150,7 @@ messages to/from queues but a message is delivered to one client only.
 ```
 
 
-**asynchronous offer / poll**
+**Asynchronous offer / poll**
 
 ```clojure
 (do
@@ -184,7 +184,7 @@ messages to/from queues but a message is delivered to one client only.
 ```
 
 
-**temporary queues**
+**Temporary queues**
 
 Temporary queues can be created dynamically for use as a dedicated reply queue for a client. You can use these queues to ensure that a reply message can be sent to the appropriate client.
 
@@ -248,7 +248,7 @@ the messages on the topic. After subscribing to a topic the client turns into su
 mode and listens for messages. To unsubscribe just close the IPC client.
 
 
-**synchronous publish**
+**Synchronous publish**
 
 ```clojure
 (do
@@ -276,7 +276,7 @@ mode and listens for messages. To unsubscribe just close the IPC client.
     (sleep 300)))
 ```
 
-**asynchronous publish**
+**Asynchronous publish**
 
 ```clojure
 (do
