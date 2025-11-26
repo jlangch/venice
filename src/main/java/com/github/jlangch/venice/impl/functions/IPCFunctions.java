@@ -34,6 +34,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -2436,6 +2437,7 @@ public class IPCFunctions {
                         "ipc/create-temporary-queue",
                         "ipc/remove-queue",
                         "ipc/exists-queue?",
+                        "ipc/queue-status",
                         "ipc/offer",
                         "ipc/poll",
                         "ipc/offer-async",
@@ -2558,6 +2560,7 @@ public class IPCFunctions {
                         "ipc/create-queue",
                         "ipc/remove-queue",
                         "ipc/exists-queue?",
+                        "ipc/queue-status",
                         "ipc/offer",
                         "ipc/poll",
                         "ipc/offer-async",
@@ -2606,6 +2609,7 @@ public class IPCFunctions {
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
                         "ipc/exists-queue?",
+                        "ipc/queue-status",
                         "ipc/server",
                         "ipc/client")
                     .build()
@@ -2645,7 +2649,7 @@ public class IPCFunctions {
                     .doc(
                         "Returns `true` if the named queue exists else `false`.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| node n | A server or client) |\n" +
+                        "| node n | A server or client |\n" +
                         "| name n | A queue name (string)|")
                     .examples(
                         "(do                                                    \n" +
@@ -2661,6 +2665,7 @@ public class IPCFunctions {
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
                         "ipc/remove-queue",
+                        "ipc/queue-status",
                         "ipc/server",
                         "ipc/client")
                     .build()
@@ -2683,6 +2688,58 @@ public class IPCFunctions {
                     throw new VncException (
                             "The first arg must be either a server or client.");
                 }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction ipc_queue_status =
+        new VncFunction(
+                "ipc/queue-status",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/queue-status? client name)")
+                    .doc(
+                        "Returns a map with the queue status key - values.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| client c | A client |\n" +
+                        "| name n   | A queue name (string)|\n\n" +
+                        "*Queue status map keys:* \n\n" +
+                        "| \"name\"      | The queue name (string) |\n" +
+                        "| \"exists\"    | Queue exists: `true` or `false` |\n" +
+                        "| \"type\"      | Queue type \"bounded\" or \"circular\" |\n" +
+                        "| \"temporary\" | Queue is temporary: `true` or `false` |\n" +
+                        "| \"capycity\"  | The capacity (long) |\n" +
+                        "| \"size\"      | The current size (long) |")
+                    .examples(
+                        "(do                                                    \n" +
+                        "  (defn echo-handler [m] m)                            \n" +
+                        "                                                       \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)    \n" +
+                        "             client (ipc/client \"localhost\" 33333)]  \n" +
+                        "    (let [queue     \"orders\"                         \n" +
+                        "          capacity  1_000]                             \n" +
+                        "      (ipc/create-queue server queue capacity)         \n" +
+                        "      ;; ...                                           \n" +
+                        "      (ipc/queue-status client queue))))               ")
+                    .seeAlso(
+                        "ipc/create-queue",
+                        "ipc/create-temporary-queue",
+                        "ipc/remove-queue",
+                        "ipc/exists-queue?",
+                        "ipc/server",
+                        "ipc/client")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final String name = Coerce.toVncString(args.second()).getValue();
+                return JavaInteropUtil.convertToVncVal(client.getQueueStatus(name));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2800,6 +2857,7 @@ public class IPCFunctions {
                     .add(ipc_create_temporary_queue)
                     .add(ipc_remove_queue)
                     .add(ipc_exists_queueQ)
+                    .add(ipc_queue_status)
 
                     .add(ipc_server_status)
                     .add(ipc_server_thread_pool_statistics)

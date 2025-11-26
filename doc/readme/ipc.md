@@ -347,7 +347,7 @@ mode and listens for messages. To unsubscribe just close the IPC client.
   * `:OFFER`       - an offer message for a queue
   * `:POLL`        - a poll message from a queue
   * `:RESPONSE`    - a response to a request message
-  * `:NULL`        - a message with yet undefined type\n
+  * `:NULL`        - a message with yet undefined type
 
 
 **Response Status**

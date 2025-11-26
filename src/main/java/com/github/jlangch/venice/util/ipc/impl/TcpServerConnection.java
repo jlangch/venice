@@ -110,7 +110,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             //   - quit this connection and close the channel
         }
         finally {
-            removeAllChannelTmpQueues();
+            removeAllChannelTemporaryQueues();
             statistics.decrementConnectionCount();
             subscriptions.removeSubscriptions(this);
             IO.safeClose(ch);
@@ -625,10 +625,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final IpcQueue<Message> q = p2pQueues.get(queueName);
 
             final String response = new JsonBuilder()
-                                            .add("name", queueName)
-                                            .add("exists", q != null)
-                                            .add("type", q == null ? null : (q instanceof BoundedQueue ? "bounded" : "circular"))
+                                            .add("name",      queueName)
+                                            .add("exists",    q != null)
+                                            .add("type",      q == null ? null
+                                                                        : (q instanceof BoundedQueue
+                                                                               ? "bounded"
+                                                                               : "circular"))
                                             .add("temporary", q != null && q.isTemporary())
+                                            .add("capacity",  q == null ? 0L : (long)q.capacity())
+                                            .add("size",      q == null ? 0L : (long)q.size())
                                             .toJson(false);
 
             return createJsonResponseMessage(
@@ -825,7 +830,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         auditResponseError(request, errorMsg, null);
     }
 
-    private void auditResponseError(final Message request, final String errorMsg,final Exception ex) {
+    private void auditResponseError(
+            final Message request,
+            final String errorMsg,
+            final Exception ex
+    ) {
         try {
             errorBuffer.offer(new Error(errorMsg, request, ex));
             statistics.incrementDiscardedResponseCount();
@@ -838,7 +847,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         auditPublishError(msg, errorMsg, null);
     }
 
-    private void auditPublishError(final Message msg, final String errorMsg, final Exception ex) {
+    private void auditPublishError(
+            final Message msg,
+            final String errorMsg,
+            final Exception ex
+    ) {
         try {
             errorBuffer.offer(new Error(errorMsg, msg, ex));
             statistics.incrementDiscardedPublishCount();
@@ -846,7 +859,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(InterruptedException ignore) {}
     }
 
-    private void removeAllChannelTmpQueues() {
+    private void removeAllChannelTemporaryQueues() {
         try {
             final Set<String> names = tmpQueues.keySet();
             names.forEach(n -> p2pQueues.remove(n));

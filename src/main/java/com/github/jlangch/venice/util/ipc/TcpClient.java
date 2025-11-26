@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -739,6 +741,55 @@ public class TcpClient implements Cloneable, Closeable {
            final VncMap data = (VncMap)response.getVeniceData();
            final VncVal exists = data.get(new VncKeyword("exists"));
            return VncBoolean.isTrue(exists);
+        }
+        else {
+            throw new VncException(
+                    "Failed to check if queue " + queueName + " exists! Reason: " + response.getText());
+        }
+    }
+
+    /**
+     * Return a queue's status.
+     *
+     * @param queueName a queue name
+     * @return a map with the status fields
+     */
+    public Map<String,Object> getQueueStatus(final String queueName) {
+        if (StringUtil.isBlank(queueName)) {
+            throw new IllegalArgumentException("A queue name must not be blank");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", queueName)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.STATUS_QUEUE,
+                                ResponseStatus.NULL,
+                                false,
+                                1_000L,
+                                Topics.of("queue/status"),
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() == ResponseStatus.OK) {
+           final VncMap data = (VncMap)response.getVeniceData();
+
+           @SuppressWarnings("unchecked")
+           final Map<Object,Object> tmp = (Map<Object,Object>)data.convertToJavaObject();
+
+           final Map<String,Object> map = new LinkedHashMap<>();
+           map.put("name",      tmp.get("name"));
+           map.put("exists",    tmp.get("exists"));
+           map.put("type",      tmp.get("type"));
+           map.put("temporary", tmp.get("temporary"));
+           map.put("capacity",  tmp.get("capacity"));
+           map.put("size",      tmp.get("size"));
+
+           return map;
         }
         else {
             throw new VncException(

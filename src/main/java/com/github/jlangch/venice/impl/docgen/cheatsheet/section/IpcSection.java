@@ -86,6 +86,7 @@ public class IpcSection implements ISectionBuilder {
         queue.addItem(diBuilder.getDocItem("ipc/create-temporary-queue", false));
         queue.addItem(diBuilder.getDocItem("ipc/remove-queue", false));
         queue.addItem(diBuilder.getDocItem("ipc/exists-queue?", false));
+        queue.addItem(diBuilder.getDocItem("ipc/queue-status", false));
 
         final DocSection util = new DocSection("Util", "ipc.util");
         all.addSection(util);

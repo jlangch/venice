@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 
@@ -69,6 +71,40 @@ public class TcpOfferPollTest {
         finally {
             client2.close();
             client1.close();
+
+            sleep(300);
+
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_queue_status() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.createQueue("queue-1", 10);
+
+        server.start();
+
+        sleep(300);
+
+        client.open();
+
+        try {
+            final Map<String,Object>  s = client.getQueueStatus("queue-1");
+
+            assertEquals("queue-1", s.get("name"));
+            assertEquals(true,      s.get("exists"));
+            assertEquals("bounded", s.get("type"));
+            assertEquals(false,     s.get("temporary"));
+            assertEquals(10L,       s.get("capacity"));
+            assertEquals(0L,        s.get("size"));
+
+            sleep(200);
+        }
+        finally {
+            client.close();
 
             sleep(300);
 
