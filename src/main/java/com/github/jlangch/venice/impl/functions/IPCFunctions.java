@@ -2535,7 +2535,7 @@ public class IPCFunctions {
                         "  (try-with [server (ipc/server 33333)                                                \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                                 \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                \n" +
-                        "    (let [capacity       1_000                                                        \n" +
+                        "    (let [capacity       100                                                          \n" +
                         "          order-queue    \"orders\"                                                   \n" +
                         "          confirm-queue  (ipc/create-temporary-queue client1 capacity)                \n" +
                         "          order          (ipc/venice-message                                          \n" +
