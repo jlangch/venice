@@ -2535,9 +2535,9 @@ public class IPCFunctions {
                         "  (try-with [server (ipc/server 33333)                                                \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                                 \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                \n" +
-                        "    (let [order-queue    \"orders\"                                                   \n" +
+                        "    (let [capacity       1_000                                                        \n" +
+                        "          order-queue    \"orders\"                                                   \n" +
                         "          confirm-queue  (ipc/create-temporary-queue client1 capacity)                \n" +
-                        "          capacity       1_000                                                        \n" +
                         "          order          (ipc/venice-message                                          \n" +
                         "                            \"order\"                                                 \n" +
                         "                            {:item \"espresso\", :count 2})]                          \n" +
@@ -2547,7 +2547,7 @@ public class IPCFunctions {
                         "      (ipc/offer client1 order-queue confirm-queue 300 order)                         \n" +
                         "                                                                                      \n" +
                         "      ;; client2 receives order from order queue and replies to the reply-to queue    \n" +
-                        "      (let [order          (ipc/poll client2 order-queue 300)]                        \n" +
+                        "      (let [order          (ipc/poll client2 order-queue 300)                         \n" +
                         "            request-id     (ipc/message-field order :request-id)                      \n" +
                         "            reply-to-queue (ipc/message-field order :reply-to-queue-name)             \n" +
                         "            order-data     (ipc/message-field order :payload-venice)                  \n" +
