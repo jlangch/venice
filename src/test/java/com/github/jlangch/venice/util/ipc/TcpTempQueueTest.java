@@ -22,7 +22,9 @@
 package com.github.jlangch.venice.util.ipc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,6 +54,16 @@ public class TcpTempQueueTest {
         try {
             final String tmpQueue = client1.createTemporaryQueue(10);
             assertNotNull(tmpQueue);
+
+            assertTrue(client1.existsQueue("queue/1"));
+            assertTrue(client1.existsQueue("queue/2"));
+            assertFalse(client1.existsQueue("queue/???"));
+            assertTrue(client1.existsQueue(tmpQueue));
+
+            assertTrue(client2.existsQueue("queue/1"));
+            assertTrue(client2.existsQueue("queue/2"));
+            assertFalse(client2.existsQueue("queue/???"));
+            assertTrue(client2.existsQueue(tmpQueue));
 
             final IMessage request = MessageFactory.text(
                                         null,

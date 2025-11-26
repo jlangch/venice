@@ -42,6 +42,9 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -665,7 +668,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         final IMessage response = send(m);
         if (response.getResponseStatus() == ResponseStatus.OK) {
-           return response.getText();
+            return response.getText();
         }
         else {
             throw new VncException(
@@ -702,6 +705,44 @@ public class TcpClient implements Cloneable, Closeable {
         if (response.getResponseStatus() != ResponseStatus.OK) {
             throw new VncException(
                     "Failed to remove queue " + queueName + "! Reason: " + response.getText());
+        }
+    }
+
+    /**
+     * Check if a queue exists.
+     *
+     * @param queueName a queue name
+     * @return true if the queue exists els false
+     */
+    public boolean existsQueue(final String queueName) {
+        if (StringUtil.isBlank(queueName)) {
+            throw new IllegalArgumentException("A queue name must not be blank");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", queueName)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.STATUS_QUEUE,
+                                ResponseStatus.NULL,
+                                false,
+                                1_000L,
+                                Topics.of("queue/status"),
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() == ResponseStatus.OK) {
+           final VncMap data = (VncMap)response.getVeniceData();
+           final VncVal exists = data.get(new VncKeyword("exists"));
+           return VncBoolean.isTrue(exists);
+        }
+        else {
+            throw new VncException(
+                    "Failed to check if queue " + queueName + " exists! Reason: " + response.getText());
         }
     }
 

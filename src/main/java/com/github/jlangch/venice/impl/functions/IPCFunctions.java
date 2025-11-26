@@ -2645,8 +2645,8 @@ public class IPCFunctions {
                     .doc(
                         "Returns `true` if the named queue exists else `false`.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| node n | A server (client is not yet supported) |\n" +
-                        "| name n   | A queue name (string)|")
+                        "| node n | A server or client) |\n" +
+                        "| name n | A queue name (string)|")
                     .examples(
                         "(do                                                    \n" +
                         "  (defn echo-handler [m] m)                            \n" +
@@ -2669,10 +2669,20 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
-                final String name = Coerce.toVncString(args.second()).getValue();
-
-                return VncBoolean.of(server.existsQueue(name));
+                if (Types.isVncJavaObject(args.first(), TcpServer.class)) {
+                    final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(server.existsQueue(name));
+                }
+                else  if (Types.isVncJavaObject(args.first(), TcpClient.class)) {
+                    final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(client.existsQueue(name));
+                }
+                else {
+                    throw new VncException (
+                            "The first arg must be either a server or client.");
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

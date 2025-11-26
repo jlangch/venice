@@ -38,6 +38,7 @@ public enum MessageType {
     CREATE_QUEUE(30),
     CREATE_TEMP_QUEUE(31),
     REMOVE_QUEUE(32),
+    STATUS_QUEUE(33),
 
     DIFFIE_HELLMAN_KEY_REQUEST(40),
 

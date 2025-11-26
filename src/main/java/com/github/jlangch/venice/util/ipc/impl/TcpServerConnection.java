@@ -233,6 +233,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     handleRemoveQueueRequest(request);
                     return mode;
 
+                case STATUS_QUEUE:
+                    handleStatusQueueRequest(request);
+                    return mode;
+
                 case DIFFIE_HELLMAN_KEY_REQUEST:
                     handleDiffieHellmanKeyExchange(request);
                     return State.Request_Response;
@@ -507,6 +511,41 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
     }
 
+    private void handleStatusQueueRequest(final Message request) {
+        if (!"application/json".equals(request.getMimetype())) {
+            sendBadRequestTextMessageResponse(
+                request,
+                String.format("Request %s: Expected a JSON payload", request.getType()));
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
+
+        if (StringUtil.isNotBlank(queueName)) {
+            final IpcQueue<Message> q = p2pQueues.get(queueName);
+
+            final String response = new JsonBuilder()
+                                            .add("name", queueName)
+                                            .add("exists", q != null)
+                                            .add("type", q == null ? null : (q instanceof BoundedQueue ? "bounded" : "circular"))
+                                            .add("temporary", q != null && q.isTemporary())
+                                            .toJson(false);
+
+            final Message m = createJsonResponseMessage(
+                                ResponseStatus.OK,
+                                request.getRequestId(),
+                                request.getTopics(),
+                                response);
+
+            Protocol.sendMessage(ch, m, compressor, encryptor.get());
+        }
+        else {
+            sendBadRequestTextMessageResponse(
+                request,
+                String.format("Request %s: A queue name must not be null or empty.", request.getType()));
+        }
+    }
+
     private void handleDiffieHellmanKeyExchange(final Message request) {
         if (encryptor.get().isActive()) {
             Protocol.sendMessage(
@@ -639,7 +678,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return createJsonResponseMessage(
                    ResponseStatus.OK,
                    null,
-                   "tcp-server/status",
+                   Topics.of("tcp-server/status"),
                    new JsonBuilder()
                            .add("running", server.isRunning())
                            .add("mode", mode.name())
@@ -669,7 +708,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 return createJsonResponseMessage(
                         ResponseStatus.OK,
                         null,
-                        "tcp-server/error",
+                        Topics.of("tcp-server/error"),
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
                                 .toJson(false));
@@ -682,7 +721,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 return createJsonResponseMessage(
                         ResponseStatus.OK,
                         null,
-                        "tcp-server/error",
+                        Topics.of("tcp-server/error"),
                         new JsonBuilder()
                                 .add("status", "error")
                                 .add("description", description)
@@ -695,7 +734,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return createJsonResponseMessage(
                     ResponseStatus.OK,
                     null,
-                    "tcp-server/error",
+                    Topics.of("tcp-server/error"),
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
                             .toJson(false));
@@ -708,14 +747,14 @@ public class TcpServerConnection implements IPublisher, Runnable {
         return createJsonResponseMessage(
                 ResponseStatus.OK,
                 null,
-                "tcp-server/thread-pool-statistics",
+                Topics.of("tcp-server/thread-pool-statistics"),
                 Json.writeJson(statistics, true));
     }
 
     private static Message createJsonResponseMessage(
             final ResponseStatus status,
             final String requestID,
-            final String topic,
+            final Topics topics,
             final String json
     ) {
         return new Message(
@@ -724,7 +763,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 status,
                 true,
                 Message.EXPIRES_NEVER,
-                Topics.of(topic),
+                topics,
                 "application/json",
                 "UTF-8",
                 toBytes(json, "UTF-8"));
