@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -37,7 +38,7 @@ public class JsonBuilder {
 
     public JsonBuilder add(final String key, final String value) {
         elements.add(new VncString(key));
-        elements.add(new VncString(value));
+        elements.add(value == null ? Constants.Nil : new VncString(value));
         return this;
     }
 
@@ -62,6 +63,12 @@ public class JsonBuilder {
     public String toJson(final boolean pretty) {
         final VncMap map = VncHashMap.of(elements.toArray(new VncVal[]{}));
         return Json.writeJson(map, pretty);
+    }
+
+    public JsonBuilder nil(final String key) {
+        elements.add(new VncString(key));
+        elements.add(Constants.Nil);
+        return this;
     }
 
 

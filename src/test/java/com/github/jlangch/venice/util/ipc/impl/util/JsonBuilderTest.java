@@ -34,7 +34,6 @@ public class JsonBuilderTest {
                                      .add("name", "xxx")
                                      .toJson(false);
 
-
         assertEquals("{\"name\":\"xxx\"}", response);
    }
 
@@ -43,7 +42,6 @@ public class JsonBuilderTest {
         final String response = new JsonBuilder()
                                      .add("null", null)
                                      .toJson(false);
-
 
         assertEquals("{\"null\":null}", response);
    }
@@ -54,7 +52,6 @@ public class JsonBuilderTest {
                                      .add("long", 100L)
                                      .toJson(false);
 
-
         assertEquals("{\"long\":100}", response);
    }
 
@@ -64,7 +61,6 @@ public class JsonBuilderTest {
                                      .add("int", 100)
                                      .toJson(false);
 
-
         assertEquals("{\"int\":100}", response);
    }
 
@@ -73,7 +69,6 @@ public class JsonBuilderTest {
         final String response = new JsonBuilder()
                                      .add("bool", true)
                                      .toJson(false);
-
 
         assertEquals("{\"bool\":true}", response);
    }
