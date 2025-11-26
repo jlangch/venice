@@ -272,79 +272,90 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final State currState,
             final Message request
     ) {
-        switch(request.getType()) {
-            case REQUEST:
-                // client sent a normal message request, send the response back.
-                // call the server handler to process the request into a
-                // response and send the response only for non one-way
-                // requests back to the caller
-                return new Tuple2<State,Message>(
+        try {
+            switch(request.getType()) {
+                case REQUEST:
+                    // client sent a normal message request, send the response back.
+                    // call the server handler to process the request into a
+                    // response and send the response only for non one-way
+                    // requests back to the caller
+                    return new Tuple2<State,Message>(
+                                State.Request_Response,
+                                handleSend(request));
+
+                case SUBSCRIBE:
+                    // the client wants to subscribe to a topic
+                    return new Tuple2<State,Message>(
+                            State.Publish,
+                            handleSubscribe(request));
+
+                case UNSUBSCRIBE:
+                    // the client wants to unsubscribe from topic
+                    return new Tuple2<State,Message>(
+                            State.Publish,
+                            handleUnsubscribe(request));
+
+                case PUBLISH:
+                    // the client sent a message to be published to all subscribers
+                    // of the message's topic
+                    return new Tuple2<State,Message>(
                             State.Request_Response,
-                            handleSend(request));
+                            handlePublish(request));
 
-            case SUBSCRIBE:
-                // the client wants to subscribe to a topic
-                return new Tuple2<State,Message>(
-                        State.Publish,
-                        handleSubscribe(request));
+                case OFFER:
+                    // the client offers a new message to a queue
+                    return new Tuple2<State,Message>(
+                            State.Request_Response,
+                            handleOffer(request));
 
-            case UNSUBSCRIBE:
-                // the client wants to unsubscribe from topic
-                return new Tuple2<State,Message>(
-                        State.Publish,
-                        handleUnsubscribe(request));
+                case POLL:
+                    // the client polls a new message from a queue
+                    return new Tuple2<State,Message>(
+                            State.Request_Response,
+                            handlePoll(request));
 
-            case PUBLISH:
-                // the client sent a message to be published to all subscribers
-                // of the message's topic
-                return new Tuple2<State,Message>(
-                        State.Request_Response,
-                        handlePublish(request));
+                case CREATE_QUEUE:
+                    return new Tuple2<State,Message>(
+                            currState,
+                            handleCreateQueueRequest(request));
 
-            case OFFER:
-                // the client offers a new message to a queue
-                return new Tuple2<State,Message>(
-                        State.Request_Response,
-                        handleOffer(request));
+                case CREATE_TEMP_QUEUE:
+                    return new Tuple2<State,Message>(
+                            currState,
+                            handleCreateTemporaryQueueRequest(request));
 
-            case POLL:
-                // the client polls a new message from a queue
-                return new Tuple2<State,Message>(
-                        State.Request_Response,
-                        handlePoll(request));
+                case REMOVE_QUEUE:
+                    return new Tuple2<State,Message>(
+                            currState,
+                            handleRemoveQueueRequest(request));
 
-            case CREATE_QUEUE:
-                return new Tuple2<State,Message>(
-                        currState,
-                        handleCreateQueueRequest(request));
+                case STATUS_QUEUE:
+                    return new Tuple2<State,Message>(
+                            currState,
+                            handleStatusQueueRequest(request));
 
-            case CREATE_TEMP_QUEUE:
-                return new Tuple2<State,Message>(
-                        currState,
-                        handleCreateTemporaryQueueRequest(request));
+                case DIFFIE_HELLMAN_KEY_REQUEST:
+                    return new Tuple2<State,Message>(
+                            State.Request_Response,
+                            handleDiffieHellmanKeyExchange(request));
 
-            case REMOVE_QUEUE:
-                return new Tuple2<State,Message>(
-                        currState,
-                        handleRemoveQueueRequest(request));
-
-            case STATUS_QUEUE:
-                return new Tuple2<State,Message>(
-                        currState,
-                        handleStatusQueueRequest(request));
-
-            case DIFFIE_HELLMAN_KEY_REQUEST:
-                return new Tuple2<State,Message>(
-                        State.Request_Response,
-                        handleDiffieHellmanKeyExchange(request));
-
-            default:
-                // Invalid request type
-                return new Tuple2<State,Message>(
-                        currState,
-                        createBadRequestTextMessageResponse(
-                                request,
-                                "Invalid request type: " + request.getType()));
+                default:
+                    // Invalid request type
+                    return new Tuple2<State,Message>(
+                            currState,
+                            createBadRequestTextMessageResponse(
+                                    request,
+                                    "Invalid request type: " + request.getType()));
+            }
+        }
+        catch(Exception ex) {
+            auditResponseError(request, "Failed to handle request!", ex);
+            return new Tuple2<State,Message>(
+                    currState,
+                    createTextMessageResponse(
+                        request,
+                        ResponseStatus.HANDLER_ERROR,
+                        "Failed to handle request!"));
         }
     }
 
@@ -811,17 +822,21 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private void auditResponseError(final Message request, final String errorMsg) {
+        auditResponseError(request, errorMsg, null);
+    }
+
+    private void auditResponseError(final Message request, final String errorMsg,final Exception ex) {
         try {
-            errorBuffer.offer(new Error(errorMsg, request));
+            errorBuffer.offer(new Error(errorMsg, request, ex));
             statistics.incrementDiscardedResponseCount();
         }
         catch(InterruptedException ignore) {}
     }
 
+
     private void auditPublishError(final Message msg, final String errorMsg) {
         auditPublishError(msg, errorMsg, null);
     }
-
 
     private void auditPublishError(final Message msg, final String errorMsg, final Exception ex) {
         try {
