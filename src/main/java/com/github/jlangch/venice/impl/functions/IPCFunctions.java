@@ -1005,32 +1005,30 @@ public class IPCFunctions {
                         "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
                         "  * `:QUEUE_FULL`      - the queue is full, offer rejected")
                     .examples(
-                        "(do                                                                                           \n" +
-                        "  ;; thread-safe printing                                                                     \n" +
-                        "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
-                        "                                                                                              \n" +
-                        "  (try-with [server (ipc/server 33333)                                                        \n" +
-                        "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
-                        "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
-                        "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000]                                                                  \n" +
-                        "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
-                        "      (ipc/create-queue server order-queue capacity)                                          \n" +
-                        "                                                                                              \n" +
-                        "      ;; client1 offers order Venice data message to the queue                                \n" +
-                        "      ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
-                        "      (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
-                        "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
-                        "                                                                                              \n" +
-                        "        ;; publish the order                                                                  \n" +
-                        "        (->> (ipc/offer client1 order-queue 300 order)                                        \n" +
-                        "             (ipc/message->json true)                                                         \n" +
-                        "             (println \"OFFERED:\")))                                                         \n" +
-                        "                                                                                              \n" +
-                        "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (->> (ipc/poll client2 order-queue 300)                                                 \n" +
-                        "           (ipc/message->json true)                                                           \n" +
-                        "           (println \"POLLED:\")))))                                                          ")
+                        "(do                                                                                         \n" +
+                        "  ;; thread-safe printing                                                                   \n" +
+                        "  (defn println [& msg] (locking println (apply core/println msg)))                         \n" +
+                        "                                                                                            \n" +
+                        "  (try-with [server  (ipc/server 33333)                                                     \n" +
+                        "             client1 (ipc/client 33333)                                                     \n" +
+                        "             client2 (ipc/client 33333)]                                                    \n" +
+                        "    ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
+                        "    (ipc/create-queue server :orders 100)                                                   \n" +
+                        "                                                                                            \n" +
+                        "    ;; client1 offers order Venice data message to the queue                                \n" +
+                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
+                        "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
+                        "                                                                                            \n" +
+                        "      ;; publish the order                                                                  \n" +
+                        "      (->> (ipc/offer client1 :orders 300 order)                                            \n" +
+                        "           (ipc/message->json true)                                                         \n" +
+                        "           (println \"OFFERED:\")))                                                         \n" +
+                        "                                                                                            \n" +
+                        "    ;; client2 pulls next order from the queue                                              \n" +
+                        "    (->> (ipc/poll client2 :orders 300)                                                     \n" +
+                        "         (ipc/message->json true)                                                           \n" +
+                        "         (println \"POLLED:\"))))                                                          ")
                     .seeAlso(
                         "ipc/offer-async",
                         "ipc/poll",
@@ -1096,34 +1094,32 @@ public class IPCFunctions {
                         "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
                         "  * `:QUEUE_FULL`      - the queue is full, offer rejected")
                     .examples(
-                        "(do                                                                                           \n" +
-                        "  ;; thread-safe printing                                                                     \n" +
-                        "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
-                        "                                                                                              \n" +
-                        "  (try-with [server (ipc/server 33333)                                                        \n" +
-                        "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
-                        "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
-                        "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000]                                                                  \n" +
-                        "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
-                        "      (ipc/create-queue server order-queue capacity)                                          \n" +
-                        "                                                                                              \n" +
-                        "      ;; client1 offers order Venice data message to the queue                                \n" +
-                        "      ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
-                        "      (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
-                        "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
-                        "                                                                                              \n" +
-                        "        ;; publish the order                                                                  \n" +
-                        "        (-<> (ipc/offer-async client1 order-queue 300 order)                                  \n" +
-                        "             (deref <> 1_000 :timeout)                                                        \n" +
-                        "             (ipc/message->json true <>)                                                      \n" +
-                        "             (println \"OFFERED:\" <>)))                                                      \n" +
-                        "                                                                                              \n" +
-                        "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (-<> (ipc/poll-async client2 order-queue 300)                                           \n" +
-                        "           (deref <> 1_000 :timeout)                                                          \n" +
-                        "           (ipc/message->json true <>)                                                        \n" +
-                        "           (println \"POLLED:\" <>)))))                                                       ")
+                        "(do                                                                                         \n" +
+                        "  ;; thread-safe printing                                                                   \n" +
+                        "  (defn println [& msg] (locking println (apply core/println msg)))                         \n" +
+                        "                                                                                            \n" +
+                        "  (try-with [server  (ipc/server 33333)                                                     \n" +
+                        "           client1 (ipc/client 33333)                                                       \n" +
+                        "           client2 (ipc/client 33333)]                                                      \n" +
+                        "    ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
+                        "    (ipc/create-queue server :orders 100)                                                   \n" +
+                        "                                                                                            \n" +
+                        "    ;; client1 offers order Venice data message to the queue                                \n" +
+                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
+                        "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
+                        "                                                                                            \n" +
+                        "      ;; publish the order                                                                  \n" +
+                        "      (-<> (ipc/offer-async client1 :orders 300 order)                                      \n" +
+                        "           (deref <> 1_000 :timeout)                                                        \n" +
+                        "           (ipc/message->json true <>)                                                      \n" +
+                        "           (println \"OFFERED:\" <>)))                                                      \n" +
+                        "                                                                                            \n" +
+                        "    ;; client2 pulls next order from the queue                                              \n" +
+                        "    (-<> (ipc/poll-async client2 :orders 300)                                               \n" +
+                        "         (deref <> 1_000 :timeout)                                                          \n" +
+                        "         (ipc/message->json true <>)                                                        \n" +
+                        "         (println \"POLLED:\" <>))))                                                       ")
                     .seeAlso(
                         "ipc/offer",
                         "ipc/poll",
@@ -1191,32 +1187,30 @@ public class IPCFunctions {
                         "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
                         "  * `:QUEUE_EMPTY`     - the queue is empty")
                     .examples(
-                        "(do                                                                                           \n" +
-                        "  ;; thread-safe printing                                                                     \n" +
-                        "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
-                               "                                                                                       \n" +
-                        "  (try-with [server (ipc/server 33333)                                                        \n" +
-                        "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
-                        "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
-                        "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000]                                                                  \n" +
-                        "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
-                        "      (ipc/create-queue server order-queue capacity)                                          \n" +
-                        "                                                                                              \n" +
-                        "      ;; client1 offers order Venice data message to the queue                                \n" +
-                        "      ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
-                        "      (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
-                        "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
-                        "                                                                                              \n" +
-                        "        ;; publish the order                                                                  \n" +
-                        "        (->> (ipc/offer client1 order-queue 300 order)                                        \n" +
-                        "             (ipc/message->json true)                                                         \n" +
-                        "             (println \"OFFERED:\")))                                                         \n" +
-                        "                                                                                              \n" +
-                        "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (->> (ipc/poll client2 order-queue 300)                                                 \n" +
-                        "           (ipc/message->json true)                                                           \n" +
-                        "           (println \"POLLED:\")))))                                                          ")
+                        "(do                                                                                         \n" +
+                        "  ;; thread-safe printing                                                                   \n" +
+                        "  (defn println [& msg] (locking println (apply core/println msg)))                         \n" +
+                        "                                                                                            \n" +
+                        "  (try-with [server (ipc/server 33333)                                                      \n" +
+                        "             client1 (ipc/client 33333)                                                     \n" +
+                        "             client2 (ipc/client 33333)]                                                    \n" +
+                        "    ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
+                        "    (ipc/create-queue server :orders 100)                                                   \n" +
+                        "                                                                                            \n" +
+                        "    ;; client1 offers order Venice data message to the queue                                \n" +
+                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
+                        "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
+                        "                                                                                            \n" +
+                        "      ;; publish the order                                                                  \n" +
+                        "      (->> (ipc/offer client1 :orders 300 order)                                            \n" +
+                        "           (ipc/message->json true)                                                         \n" +
+                        "           (println \"OFFERED:\")))                                                         \n" +
+                        "                                                                                            \n" +
+                        "    ;; client2 pulls next order from the queue                                              \n" +
+                        "    (->> (ipc/poll client2 :orders 300)                                                     \n" +
+                        "         (ipc/message->json true)                                                           \n" +
+                        "         (println \"POLLED:\"))))                                                          ")
                     .seeAlso(
                         "ipc/poll-async",
                         "ipc/offer",
@@ -1267,34 +1261,32 @@ public class IPCFunctions {
                         "  * `:QUEUE_NOT_FOUND` - the queue does not exist\n" +
                         "  * `:QUEUE_EMPTY`     - the queue is empty")
                     .examples(
-                        "(do                                                                                           \n" +
-                        "  ;; thread-safe printing                                                                     \n" +
-                        "  (defn println [& msg] (locking println (apply core/println msg)))                           \n" +
-                        "                                                                                              \n" +
-                        "  (try-with [server (ipc/server 33333)                                                        \n" +
-                        "             client1 (ipc/client \"localhost\" 33333)                                         \n" +
-                        "             client2 (ipc/client \"localhost\" 33333)]                                        \n" +
-                        "    (let [order-queue \"orders\"                                                              \n" +
-                        "          capacity    1_000]                                                                  \n" +
-                        "      ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
-                        "      (ipc/create-queue server order-queue capacity)                                          \n" +
-                        "                                                                                              \n" +
-                        "      ;; client1 offers order Venice data message to the queue                                \n" +
-                        "      ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
-                        "      (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
-                        "        (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
-                        "                                                                                              \n" +
-                        "        ;; publish the order                                                                  \n" +
-                        "        (-<> (ipc/offer-async client1 order-queue 300 order)                                  \n" +
-                        "             (deref <> 1_000 :timeout)                                                        \n" +
-                        "             (ipc/message->json true <>)                                                      \n" +
-                        "             (println \"OFFERED:\" <>)))                                                      \n" +
-                        "                                                                                              \n" +
-                        "      ;; client2 pulls next order from the queue                                              \n" +
-                        "      (-<> (ipc/poll-async client2 order-queue 300)                                           \n" +
-                        "           (deref <> 1_000 :timeout)                                                          \n" +
-                        "           (ipc/message->json true <>)                                                        \n" +
-                        "           (println \"POLLED:\" <>)))))                                                       ")
+                        "(do                                                                                         \n" +
+                        "  ;; thread-safe printing                                                                   \n" +
+                        "  (defn println [& msg] (locking println (apply core/println msg)))                         \n" +
+                        "                                                                                            \n" +
+                        "  (try-with [server (ipc/server 33333)                                                      \n" +
+                        "             client1 (ipc/client 33333)                                                     \n" +
+                        "             client2 (ipc/client 33333)]                                                    \n" +
+                        "    ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
+                        "    (ipc/create-queue server :orders 100)                                                   \n" +
+                        "                                                                                            \n" +
+                        "    ;; client1 offers order Venice data message to the queue                                \n" +
+                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
+                        "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
+                        "                                                                                            \n" +
+                        "      ;; publish the order                                                                  \n" +
+                        "      (-<> (ipc/offer-async client1 :orders 300 order)                                      \n" +
+                        "           (deref <> 1_000 :timeout)                                                        \n" +
+                        "           (ipc/message->json true <>)                                                      \n" +
+                        "           (println \"OFFERED:\" <>)))                                                      \n" +
+                        "                                                                                            \n" +
+                        "    ;; client2 pulls next order from the queue                                              \n" +
+                        "    (-<> (ipc/poll-async client2 :orders 300)                                               \n" +
+                        "         (deref <> 1_000 :timeout)                                                          \n" +
+                        "         (ipc/message->json true <>)                                                        \n" +
+                        "         (println \"POLLED:\" <>))))                                                       ")
                     .seeAlso(
                         "ipc/poll",
                         "ipc/offer-async",
@@ -1460,7 +1452,7 @@ public class IPCFunctions {
                         "Creates a text message\n\n" +
                         "*Arguments:* \n\n" +
                         "| request-id r   | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
-                        "| topic t        | A topic (string) |\n" +
+                        "| topic t        | A topic (string or keyword) |\n" +
                         "| mimetype m     | The mimetype of the payload text. A string like 'text/plain' |\n" +
                         "| charset c      | The charset of the payload text. A keyword like `:UTF-8`|\n" +
                         "| text t         | The message payload text (a string)|\n" +
@@ -1468,7 +1460,7 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
-                        "(->> (ipc/text-message \"test\" \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "(->> (ipc/text-message :test \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
                         "(->> (ipc/text-message \"100\" \"test\"  \"text/plain\" :UTF-8 \"hello\")  \n" +
@@ -1581,13 +1573,13 @@ public class IPCFunctions {
                         "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n"  +
                         "*Arguments:* \n\n" +
                         "| request-id r   | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
-                        "| topic t        | A topic (string) |\n" +
+                        "| topic t        | A topic (string or keyword) |\n" +
                         "| text t         | The message payload text (a string)|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
                         "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
-                        "(->> (ipc/plain-text-message \"test\" \"hello\")          \n" +
+                        "(->> (ipc/plain-text-message :test \"hello\")             \n" +
                         "     (ipc/message->map)                                   \n" +
                         "     (println))                                           ",
                         "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\")  \n" +
@@ -1690,14 +1682,14 @@ public class IPCFunctions {
                         "Creates a binary message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| request-id r   | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
-                        "| topic t        | A topic (string) |\n" +
+                        "| topic t        | A topic (string or keyword) |\n" +
                         "| mimetype m     | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
                         "| data d         | The message payload binary data (a bytebuf)|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
                         "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
-                        "(->> (ipc/binary-message \"test\"                        \n" +
+                        "(->> (ipc/binary-message :test                           \n" +
                         "                         \"application/octet-stream\"    \n" +
                         "                         (bytebuf [0 1 2 3 4 5 6 7]))    \n" +
                         "     (ipc/message->map)                                  \n" +
@@ -1811,13 +1803,13 @@ public class IPCFunctions {
                         "for transport within the message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| request-id r   | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
-                        "| topic t        | A topic (string) |\n" +
+                        "| topic t        | A topic (string or keyword) |\n" +
                         "| data d         | The message payload Venice data (e.g.: a map, list, ...)|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
                         "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
-                        "(->> (ipc/venice-message \"test\" {:a 100, :b 200})      \n" +
+                        "(->> (ipc/venice-message :test {:a 100, :b 200})         \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
                         "(->> (ipc/venice-message \"100\" \"test\" {:a 100, :b 200}) \n" +
@@ -2410,28 +2402,24 @@ public class IPCFunctions {
                         "| node s     | A server or a client|\n" +
                         "| name s     | A queue name (string or keyword)|\n" +
                         "| capacity n | The queue's capacity (max number of messages)|\n" +
-                        "| type t     | Optional queue type `bounded`or `circular`. Defaults to `bounded`.|")
+                        "| type t     | Optional queue type `:bounded` or `:circular`. Defaults to `:bounded`.|")
                     .examples(
-                        "(do                                                                       \n" +
-                        "  (defn echo-handler [m] m)                                               \n" +
-                        "                                                                          \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                       \n" +
-                        "             client1 (ipc/client \"localhost\" 33333)                     \n" +
-                        "             client2 (ipc/client \"localhost\" 33333)]                    \n" +
-                        "    (let [order-queue \"orders\"                                          \n" +
-                        "          capacity    1_000                                               \n" +
-                        "          order       (ipc/venice-message                                 \n" +
-                        "                            \"order\"                                     \n" +
-                        "                            {:item \"espresso\", :count 2})]              \n" +
-                        "      (ipc/create-queue server order-queue capacity)                      \n" +
-                        "      (->> (ipc/message->json true order)                                 \n" +
-                        "           (println \"ORDER:\"))                                          \n" +
-                        "      (->> (ipc/offer client1 order-queue 300 order)                      \n" +
-                        "           (ipc/message->json true)                                       \n" +
-                        "           (println \"OFFERED:\"))                                        \n" +
-                        "      (->> (ipc/poll client2 order-queue 300)                             \n" +
-                        "           (ipc/message->json true)                                       \n" +
-                        "           (println \"POLLED:\")))))                                      ")
+                        "(do                                                       \n" +
+                        "  (try-with [server  (ipc/server 33333)                   \n" +
+                        "             client1 (ipc/client 33333)                   \n" +
+                        "             client2 (ipc/client 33333)]                  \n" +
+                        "    (let [order  (ipc/venice-message                      \n" +
+                        "                     \"order\"                            \n" +
+                        "                     {:item \"espresso\", :count 2})]     \n" +
+                        "      (ipc/create-queue server :orders 100)               \n" +
+                        "      (->> (ipc/message->json true order)                 \n" +
+                        "           (println \"ORDER:\"))                          \n" +
+                        "      (->> (ipc/offer client1 :orders 300 order)          \n" +
+                        "           (ipc/message->json true)                       \n" +
+                        "           (println \"OFFERED:\"))                        \n" +
+                        "      (->> (ipc/poll client2 :orders 300)                 \n" +
+                        "           (ipc/message->json true)                       \n" +
+                        "           (println \"POLLED:\")))))                      ")
                     .seeAlso(
                         "ipc/create-temporary-queue",
                         "ipc/remove-queue",
@@ -2531,9 +2519,9 @@ public class IPCFunctions {
                         "| capacity n | The queue's capacity (max number of messages)|")
                     .examples(
                         "(do                                                                                   \n" +
-                        "  (try-with [server (ipc/server 33333)                                                \n" +
-                        "             client1 (ipc/client \"localhost\" 33333)                                 \n" +
-                        "             client2 (ipc/client \"localhost\" 33333)]                                \n" +
+                        "  (try-with [server  (ipc/server 33333)                                               \n" +
+                        "             client1 (ipc/client 33333)                                               \n" +
+                        "             client2 (ipc/client 33333)]                                              \n" +
                         "                                                                                      \n" +
                         "    (ipc/create-queue server :orders 100)                                             \n" +
                         "                                                                                      \n" +
@@ -2595,15 +2583,10 @@ public class IPCFunctions {
                         "| node s | A server or a client |\n" +
                         "| name n | A queue name (string or keyword)|")
                     .examples(
-                        "(do                                                    \n" +
-                        "  (defn echo-handler [m] m)                            \n" +
-                        "                                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)]   \n" +
-                        "    (let [order-queue \"orders\"                       \n" +
-                        "          capacity    1_000]                           \n" +
-                        "      (ipc/create-queue server order-queue capacity)   \n" +
-                        "      ;; ...                                           \n" +
-                        "      (ipc/remove-queue server order-queue))))         ")
+                        "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
+                        "  (ipc/create-queue server :orders 100)              \n" +
+                        "  ;; ...                                             \n" +
+                        "  (ipc/remove-queue server :orders))                 ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
@@ -2651,15 +2634,10 @@ public class IPCFunctions {
                         "| node n | A server or client |\n" +
                         "| name n | A queue name (string or keyword)|")
                     .examples(
-                        "(do                                                    \n" +
-                        "  (defn echo-handler [m] m)                            \n" +
-                        "                                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)]   \n" +
-                        "    (let [order-queue \"orders\"                       \n" +
-                        "          capacity    1_000]                           \n" +
-                        "      (ipc/create-queue server order-queue capacity)   \n" +
-                        "      ;; ...                                           \n" +
-                        "      (ipc/exists-queue? server order-queue))))        ")
+                        "(try-with [server (ipc/server 33333)]   \n" +
+                        "  (ipc/create-queue server :orders 100) \n" +
+                        "  ;; ...                                \n" +
+                        "  (ipc/exists-queue? server :orders))   ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
