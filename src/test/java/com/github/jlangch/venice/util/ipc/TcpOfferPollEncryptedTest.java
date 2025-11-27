@@ -35,7 +35,7 @@ public class TcpOfferPollEncryptedTest {
         final TcpClient client1 = new TcpClient(33333, true);
         final TcpClient client2 = new TcpClient(33333, true);
 
-        server.createQueue("queue-1", 10);
+        server.createQueue("queue-1", 10, true);
 
         server.start();
 

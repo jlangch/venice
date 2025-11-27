@@ -37,7 +37,7 @@ public class TcpOfferPollTest {
         final TcpClient client1 = new TcpClient(33333);
         final TcpClient client2 = new TcpClient(33333);
 
-        server.createQueue("queue-1", 10);
+        server.createQueue("queue-1", 10, true);
 
         server.start();
 
@@ -83,7 +83,7 @@ public class TcpOfferPollTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        server.createQueue("queue-1", 10);
+        server.createQueue("queue-1", 10, true);
 
         server.start();
 
@@ -117,7 +117,7 @@ public class TcpOfferPollTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client1 = new TcpClient(33333);
 
-        server.createQueue("queue", 3);
+        server.createQueue("queue", 3, true);
 
         server.start();
 
@@ -148,7 +148,7 @@ public class TcpOfferPollTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client1 = new TcpClient(33333);
 
-        server.createQueue("queue", 3);
+        server.createQueue("queue", 3, true);
 
         server.start();
 
@@ -190,7 +190,7 @@ public class TcpOfferPollTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client1 = new TcpClient(33333);
 
-        server.createQueue("queue", 3);
+        server.createQueue("queue", 3, true);
 
         server.start();
 

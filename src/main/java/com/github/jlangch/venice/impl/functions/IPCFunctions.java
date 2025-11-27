@@ -2449,16 +2449,16 @@ public class IPCFunctions {
                     final VncVal type = args.fourth() == Nil ? Nil : Coerce.toVncKeyword(args.fourth());
 
                     if (type == Nil) {
-                        server.createQueue(name, capacity);
+                        server.createQueue(name, capacity, true);
                     }
                     else {
                         final String sType = ((VncKeyword)type).getSimpleName();
                         switch(sType) {
                             case "bounded":
-                                server.createQueue(name, capacity);
+                                server.createQueue(name, capacity, true);
                                 break;
                             case "circular":
-                                server.createCircularBufferQueue(name, capacity);
+                                server.createQueue(name, capacity, false);
                                 break;
                             default:
                                 throw new VncException (

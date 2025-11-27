@@ -279,8 +279,9 @@ public class TcpServer implements Closeable {
      *
      * @param queueName a queue name
      * @param capacity the queue capacity
+     * @param bounded if true create a bounded queue else create a circular queue
      */
-    public void createQueue(final String queueName, final int capacity) {
+    public void createQueue(final String queueName, final int capacity, final boolean bounded) {
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
@@ -289,25 +290,10 @@ public class TcpServer implements Closeable {
         }
 
         // do not overwrite the queue if it already exists
-        p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, false));
-    }
-
-    /**
-     * Create a new circular buffer queue.
-     *
-     * @param queueName a queue name
-     * @param capacity the queue capacity
-     */
-    public void createCircularBufferQueue(final String queueName, final int capacity) {
-        if (StringUtil.isBlank(queueName)) {
-            throw new IllegalArgumentException("A queue name must not be blank");
-        }
-        if (capacity < 1) {
-            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
-        }
-
-        // do not overwrite the queue if it already exists
-        p2pQueues.putIfAbsent(queueName, new CircularBuffer<Message>(queueName, capacity, false));
+        p2pQueues.putIfAbsent(
+            queueName,
+            bounded ? new BoundedQueue<Message>(queueName, capacity, false)
+                    : new CircularBuffer<Message>(queueName, capacity, false));
     }
 
     /**
