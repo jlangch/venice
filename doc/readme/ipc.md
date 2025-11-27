@@ -221,8 +221,8 @@ Temporary queues live only as long as the client, that created it, lives.
                       ;; client waits for the order confirmation
                       (let [confirmation (ipc/poll client reply-queue 500)]
                         (if (ipc/response-ok? confirmation)
-                         (println name " ORDER CONFIRMED:"     (ipc/message->json true confirmation))
-                         (println name " ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))
+                          (println name " ORDER CONFIRMED:"     (ipc/message->json true confirmation))
+                          (println name " ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))
                      (println name " FAILED TO PLACE ORDER")))))))
 
   (try-with [server   (ipc/server 33333)
