@@ -393,6 +393,7 @@ Venice IPC supports messages with various payload types:
 #### 1. Plain Text Messages
 
 ```clojure
+;; plain-text-message: request-id="1" topic="test" data="hello"
 (->> (ipc/plain-text-message "1" "test" "hello")
      (ipc/message->json true)
      (println))
@@ -526,12 +527,43 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 #### Create Queue
 
+through 'server'
+
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-     (ipc/create-queue server "orders" 1_000)))
+     (ipc/create-queue server "orders-queue" 100)
+     
+     (ipc/offer client "orders-queue" 300 
+                (ipc/plain-text-message "1" "test" "hello"))))
 ```
+
+
+through 'client':
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+     (ipc/create-queue client "orders-queue" 100)
+     
+     (ipc/offer client "orders-queue" 300 
+                (ipc/plain-text-message "1" "test" "hello"))))
+```
+
+
+#### Create Temporary Queue
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+    (let [queue-name (ipc/create-temporary-queue client 100)]
+      (ipc/offer client queue-name 300 
+                 (ipc/plain-text-message "1" "test" "hello")))))
+```
+
 
 #### Remove Queue
 
@@ -539,10 +571,11 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-     (ipc/create-queue server "orders" 1_000)
-     ;; ...
-     (ipc/remove-queue server "orders")))
+    (ipc/create-queue server "orders-queue" 100)
+    ;; ...
+    (ipc/remove-queue server "orders-queue")))
 ```
+
 
 #### Check if Queue exists
 
@@ -550,11 +583,38 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-     (ipc/create-queue server "orders" 1_000)
-     
-     (ipc/exists-queue? server "orders")))
+    (ipc/create-queue server "orders-queue" 100)
+    ;; ...
+    (ipc/exists-queue? server "orders-queue")))
 ```
 
+
+#### Check Queue Status
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+    (ipc/create-queue server "orders-queue" 100)
+     
+    (ipc/offer client "orders-queue" 300 
+                 (ipc/plain-text-message "1" "test" "hello"))
+    ;; ...
+    (ipc/queue-status client "orders-queue")))
+```
+
+temporary queue
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+    (let [queue-name (ipc/create-temporary-queue client 100)]
+      (ipc/offer client queue-name 300 
+                 (ipc/plain-text-message "1" "test" "hello"))
+      ;; ...
+      (ipc/queue-status client queue-name))))
+```
 
 
 ## Message Utils
