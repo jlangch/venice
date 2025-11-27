@@ -1591,9 +1591,9 @@ public class IPCFunctions {
                         "                                 (time/to-millis)))       \n" +
                         "     (ipc/message->map)                                   \n" +
                         "     (println))                                           ",
-                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\" 2 :hours)\n" +
-                        "     (ipc/message->map)                                   \n" +
-                        "     (println))                                           ")
+                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\" 2 :hours) \n" +
+                        "     (ipc/message->map)                                           \n" +
+                        "     (println))                                                   ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -1823,8 +1823,8 @@ public class IPCFunctions {
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
                         "(->> (ipc/venice-message \"100\" \"test\" {:a 100, :b 200} 2 :hours) \n" +
-                        "     (ipc/message->map)                                  \n" +
-                        "     (println))                                          ")
+                        "     (ipc/message->map)                                              \n" +
+                        "     (println))                                                      ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -2695,7 +2695,7 @@ public class IPCFunctions {
                         "           client (ipc/client 33333)]         \n" +
                         "   (ipc/create-queue server :orders 100)      \n" +
                         "   ;; ...                                     \n" +
-                        "   (ipc/queue-status client :orders))        ")
+                        "   (ipc/queue-status client :orders))         ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",

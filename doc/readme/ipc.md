@@ -92,6 +92,7 @@ throughput!
            (println "RESPONSE:")))))
 ```
 
+
 **Oneway send (no response)**
 
 ```clojure
@@ -126,27 +127,25 @@ messages to/from queues but a message is delivered to one client only.
   (defn println [& msg] (locking println (apply core/println msg)))
 
   (try-with [server (ipc/server 33333)
-             client1 (ipc/client "localhost" 33333)
-             client2 (ipc/client "localhost" 33333)]
-    (let [order-queue "orders"
-          capacity    1_000]
-      ;; create a queue to allow client1 and client2 to exchange messages
-      (ipc/create-queue server order-queue capacity)
+             client1 (ipc/client 33333)
+             client2 (ipc/client 33333)]
+    ;; create an orders queue (capacity=100) to allow client1 and client2 to exchange messages
+    (ipc/create-queue server :orders 100)
 
-      ;; client1 offers an order Venice data message to the queue
-      ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
-      (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
-        (println "ORDER:" (ipc/message->json true order))
+    ;; client1 offers an order Venice data message to the queue
+    ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
+    (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+      (println "ORDER:" (ipc/message->json true order))
 
-        ;; client1 offers the order
-        (->> (ipc/offer client1 order-queue 300 order)
-             (ipc/message->json true)
-             (println "OFFERED:")))
-
-      ;; client2 polls next order from the queue
-      (->> (ipc/poll client2 order-queue 300)
+      ;; client1 offers the order
+      (->> (ipc/offer client1 :orders 300 order)
            (ipc/message->json true)
-           (println "POLLED:")))))
+           (println "OFFERED:")))
+
+    ;; client2 polls next order from the queue
+    (->> (ipc/poll client2 :orders 300)
+         (ipc/message->json true)
+         (println "POLLED:"))))
 ```
 
 
@@ -158,29 +157,27 @@ messages to/from queues but a message is delivered to one client only.
   (defn println [& msg] (locking println (apply core/println msg)))
 
   (try-with [server (ipc/server 33333)
-             client1 (ipc/client "localhost" 33333)
-             client2 (ipc/client "localhost" 33333)]
-    (let [order-queue "orders"
-          capacity    1_000]
-      ;; create a queue to allow client1 and client2 to exchange messages
-      (ipc/create-queue server order-queue capacity)
+             client1 (ipc/client 33333)
+             client2 (ipc/client 33333)]
+    ;; create an orders queue (capacity=100) to allow client1 and client2 to exchange messages
+    (ipc/create-queue server :orders 100)
 
-      ;; client1 offers order Venice data message to the queue
-      ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
-      (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
-        (println "ORDER:" (ipc/message->json true order))
+    ;; client1 offers order Venice data message to the queue
+    ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
+    (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+      (println "ORDER:" (ipc/message->json true order))
 
-        ;; client1 offers the order
-        (-<> (ipc/offer-async client1 order-queue 300 order)
-             (deref <> 1_000 :timeout)
-             (ipc/message->json true <>)
-             (println "OFFERED:" <>)))
-
-      ;; client2 polls next order from the queue
-      (-<> (ipc/poll-async client2 order-queue 300)
+      ;; client1 offers the order
+      (-<> (ipc/offer-async client1 :orders 300 order)
            (deref <> 1_000 :timeout)
            (ipc/message->json true <>)
-           (println "POLLED:" <>)))))
+           (println "OFFERED:" <>)))
+
+    ;; client2 polls next order from the queue
+    (-<> (ipc/poll-async client2 :orders 300)
+         (deref <> 1_000 :timeout)
+         (ipc/message->json true <>)
+         (println "POLLED:" <>))))
 ```
 
 
@@ -212,22 +209,20 @@ Temporary queues live only as long as the client, that created it, lives.
     (println "(barista) TERMINATED"))
 
   (try-with [server  (ipc/server 33333)
-             client  (ipc/client "localhost" 33333)
-             barista (ipc/client "localhost" 33333)]
-    (let [capacity         100
-          order-queue      "orders"
-          confirm-queue    (ipc/create-temporary-queue client capacity)]
-      ;; create the order queue
-      (ipc/create-queue server order-queue capacity)
+             client  (ipc/client 33333)
+             barista (ipc/client 33333)]
+    (let [confirm-queue    (ipc/create-temporary-queue client 100)]
+      ;; create the orders queue
+      (ipc/create-queue server :orders 100)
 
       ;; start the barista workers
-      (futures-fork 1 (fn worker-factory [n] #(barista-worker barista order-queue)))
+      (futures-fork 1 (fn worker-factory [n] #(barista-worker barista :orders)))
       
       (println "(client) ORDERING...")
 
       ;; client places the order
       (let [order    (ipc/venice-message "1" "order" {:item "espresso", :count 2})
-            response (ipc/offer client order-queue confirm-queue 500 order)]
+            response (ipc/offer client :orders confirm-queue 500 order)]
         (if (ipc/response-ok? response)
           (do
             (println "(client) ORDER:" (ipc/message->json true order))
@@ -258,12 +253,12 @@ mode and listens for messages. To unsubscribe just close the IPC client.
   (defn client-subscribe-handler [m]
     (println "SUBSCRIBED:" (ipc/message->json true m)))
 
-  (try-with [server (ipc/server 33333)
-             client1 (ipc/client "localhost" 33333)
-             client2 (ipc/client "localhost" 33333)]
+  (try-with [server  (ipc/server 33333)
+             client1 (ipc/client 33333)
+             client2 (ipc/client 33333)]
 
     ;; client1 subscribes to messages with topic 'test'
-    (ipc/subscribe client1 ["test"] client-subscribe-handler)
+    (ipc/subscribe client1 [:test] client-subscribe-handler)
 
     ;; client2 publishes a plain text message: 
     ;;   requestId="1", topic="test", payload="hello"
@@ -286,12 +281,12 @@ mode and listens for messages. To unsubscribe just close the IPC client.
   (defn client-subscribe-handler [m]
     (println "SUBSCRIBED:" (ipc/message->json true m)))
 
-  (try-with [server (ipc/server 33333)
-             client1 (ipc/client "localhost" 33333)
-             client2 (ipc/client "localhost" 33333)]
+  (try-with [server  (ipc/server 33333)
+             client1 (ipc/client 33333)
+             client2 (ipc/client 33333)]
 
     ;; client1 subscribes to messages with topic 'test'
-    (ipc/subscribe client1 ["test"] client-subscribe-handler)
+    (ipc/subscribe client1 [:test] client-subscribe-handler)
 
     ;; client2 publishes a plain text message: 
     ;;   requestId="1", topic="test", payload="hello"
@@ -399,14 +394,15 @@ Text message payloads are defined by
   * the textual data
 
 ```clojure
-(->> (ipc/text-message "1" "test" "text/plain" :UTF-8 "hello")
+;; message: request-id="1" topic=:test mimetype="text/plain" charset=:UTF-8 data="hello"
+(->> (ipc/text-message "1" :test "text/plain" :UTF-8 "hello")
      (ipc/message->json true)
      (println))
 ```
 
 ```clojure
 (->> """{"item": "espresso", "count": 2}"""
-     (ipc/text-message "1" "order" "application/json" :UTF-8)
+     (ipc/text-message "1" :order "application/json" :UTF-8)
      (ipc/message->json true)
      (println))
 ```
@@ -420,8 +416,9 @@ Text message payloads are defined by
   * the binary data
 
 ```clojure
+;; message: request-id="1" topic=:test mimetype="application/octet-stream" data=(bytebuf [0 1 2 3 4 5 6 7])
 (->> (bytebuf [0 1 2 3 4 5 6 7])
-     (ipc/binary-message "1" "test" "application/octet-stream")
+     (ipc/binary-message "1" :test "application/octet-stream")
      (ipc/message->json true)
      (println))
 ```
@@ -438,7 +435,8 @@ Text message payloads are defined by
 #### 4. Venice Data Messages
 
 ```clojure
-(->> (ipc/venice-message "1" "order" {:item "espresso", :count 2})
+;; message: request-id="1" topic=:order data={:item "espresso", :count 2}
+(->> (ipc/venice-message "1" :order {:item "espresso", :count 2})
      (ipc/message->json true)
      (println))
 ```
