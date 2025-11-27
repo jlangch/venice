@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -413,6 +415,30 @@ public class IpcFunctionsTest {
         assertEquals("3", venice.eval(script));
     }
 
+    @Test
+    public void test_queue_status() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                             \n" +
+                "  (try-with [server (ipc/server 33333)          \n" +
+                "             client (ipc/client 33333)]         \n" +
+                "     (ipc/create-queue server :orders 100)      \n" +
+                "     ;; ...                                     \n" +
+                "     (ipc/queue-status client :orders)))        ";
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> s = (Map<String,Object>)venice.eval(script);
+        assertNotNull(s);
+
+        assertEquals("orders",  s.get("name"));
+        assertEquals(true,      s.get("exists"));
+        assertEquals("bounded", s.get("type"));
+        assertEquals(false,     s.get("temporary"));
+        assertEquals(100L,      s.get("capacity"));
+        assertEquals(0L,        s.get("size"));
+    }
+
 
     @Test
     public void test_map2json_a() {
@@ -429,7 +455,6 @@ public class IpcFunctionsTest {
         assertNotNull(venice.eval(script));
     }
 
-
     @Test
     public void test_map2json_b() {
         final Venice venice = new Venice();
@@ -444,7 +469,6 @@ public class IpcFunctionsTest {
 
         assertNotNull(venice.eval(script));
     }
-
 
     @Test
     public void test_handler_exception() {

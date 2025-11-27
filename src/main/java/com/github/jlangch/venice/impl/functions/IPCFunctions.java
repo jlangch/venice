@@ -34,7 +34,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -995,8 +994,8 @@ public class IPCFunctions {
                         "Returns the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c              | A client to send the offer message from |\n" +
-                        "| queue-name q          | A queue name to offer the message to|\n" +
-                        "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
+                        "| queue-name q          | A queue name (string or keyword) to offer the message to|\n" +
+                        "| reply-to-queue-name q | An optional reply-to queue name (string or keyword) where replies are sent to |\n" +
                         "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m             | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
@@ -1086,8 +1085,8 @@ public class IPCFunctions {
                         "Returns a future with the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c              | A client to send the offer message from |\n" +
-                        "| queue-name q          | A queue name to offer the message to|\n" +
-                        "| reply-to-queue-name q | An optional reply-to queue name where replies are sent to |\n" +
+                        "| queue-name q          | A queue name (string or keyword) to offer the message to|\n" +
+                        "| reply-to-queue-name q | An optional reply-to queue name (string or keyword) where replies are sent to |\n" +
                         "| queue-offer-timeout t | The maximum time in milliseconds the server waits offering the message to the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m             | The offer request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
@@ -1182,7 +1181,7 @@ public class IPCFunctions {
                         "Returns the server's response message.\n\n" +
                        "*Arguments:* \n\n" +
                         "| client c             | A client to send the poll message from |\n" +
-                        "| queue-name q         | A queue name to poll the message to|\n" +
+                        "| queue-name q         | A queue name (string or keyword) to poll the message to|\n" +
                         "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m            | The poll request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
@@ -1258,7 +1257,7 @@ public class IPCFunctions {
                         "Returns a future with the server's response message.\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c             | A client to send the poll message from |\n" +
-                        "| queue-name q         | A queue name to poll the message to|\n" +
+                        "| queue-name q         | A queue name (string or keyword) to poll the message to|\n" +
                         "| queue-poll-timeout t | The maximum time in milliseconds the server waits to poll a the message from the queue.¶A timeout of -1 means wait as long as it takes.|\n" +
                         "| message m            | The poll request message|\n\n" +
                         "The server returns a response message with one of these status:\n\n" +
@@ -2409,7 +2408,7 @@ public class IPCFunctions {
                         "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
                         "*Arguments:* \n\n" +
                         "| node s     | A server or a client|\n" +
-                        "| name s     | A queue name (string)|\n" +
+                        "| name s     | A queue name (string or keyword)|\n" +
                         "| capacity n | The queue's capacity (max number of messages)|\n" +
                         "| type t     | Optional queue type `bounded`or `circular`. Defaults to `bounded`.|")
                     .examples(
@@ -2535,28 +2534,27 @@ public class IPCFunctions {
                         "  (try-with [server (ipc/server 33333)                                                \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                                 \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]                                \n" +
-                        "    (let [capacity       100                                                          \n" +
-                        "          order-queue    \"orders\"                                                   \n" +
-                        "          confirm-queue  (ipc/create-temporary-queue client1 capacity)                \n" +
-                        "          order          (ipc/venice-message                                          \n" +
+                        "                                                                                      \n" +
+                        "    (ipc/create-queue server :orders 100)                                             \n" +
+                        "                                                                                      \n" +
+                        "    (let [confirm-queue  (ipc/create-temporary-queue client1 100)]                    \n" +
+                        "      ;; client1 sends an order to the order queue                                    \n" +
+                        "      (ipc/offer client1 :orders confirm-queue 300                                    \n" +
+                        "                 (ipc/venice-message                                                  \n" +
                         "                            \"1\"                                                     \n" +
                         "                            \"order\"                                                 \n" +
-                        "                            {:item \"espresso\", :count 2})]                          \n" +
-                        "      (ipc/create-queue server order-queue capacity)                                  \n" +
-                        "                                                                                      \n" +
-                        "      ;; client1 sends order to order queue                                           \n" +
-                        "      (ipc/offer client1 order-queue confirm-queue 300 order)                         \n" +
+                        "                            {:item \"espresso\", :count 2}))                          \n" +
                         "                                                                                      \n" +
                         "      ;; client2 receives order from order queue and replies to the reply-to queue    \n" +
-                        "      (let [order          (ipc/poll client2 order-queue 300)                         \n" +
+                        "      (let [order          (ipc/poll client2 :orders 300)                             \n" +
                         "            request-id     (ipc/message-field order :request-id)                      \n" +
                         "            reply-to-queue (ipc/message-field order :reply-to-queue-name)             \n" +
                         "            order-data     (ipc/message-field order :payload-venice)                  \n" +
-                        "            confirmation   (ipc/venice-message request-id \"confirmed\" order-data)]  \n" +
-                        "        (ipc/offer client2 reply-to-queue 1_000 confirmation))                        \n" +
+                        "            reply-message  (ipc/venice-message request-id \"confirmed\" order-data)]  \n" +
+                        "        (ipc/offer client2 reply-to-queue 1_000 reply-message))                       \n" +
                         "                                                                                      \n" +
                         "      ;; client1 receives confirmation                                                \n" +
-                        "      (ipc/poll client2 confirm-queue 300))))                                         ")
+                        "      (println (ipc/poll client2 confirm-queue 300)))))                               ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/remove-queue",
@@ -2595,7 +2593,7 @@ public class IPCFunctions {
                         "Returns always `nil` or throws an exception.\n\n" +
                         "*Arguments:* \n\n" +
                         "| node s | A server or a client |\n" +
-                        "| name n | A queue name (string)|")
+                        "| name n | A queue name (string or keyword)|")
                     .examples(
                         "(do                                                    \n" +
                         "  (defn echo-handler [m] m)                            \n" +
@@ -2651,7 +2649,7 @@ public class IPCFunctions {
                         "Returns `true` if the named queue exists else `false`.\n\n" +
                         "*Arguments:* \n\n" +
                         "| node n | A server or client |\n" +
-                        "| name n | A queue name (string)|")
+                        "| name n | A queue name (string or keyword)|")
                     .examples(
                         "(do                                                    \n" +
                         "  (defn echo-handler [m] m)                            \n" +
@@ -2701,30 +2699,25 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/queue-status? client name)")
+                        "(ipc/queue-status client name)")
                     .doc(
                         "Returns a map with the queue status key - values.\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c | A client |\n" +
-                        "| name n   | A queue name (string)|\n\n" +
+                        "| name n   | A queue name (string or keyword)|\n\n" +
                         "*Queue status map keys:* \n\n" +
-                        "| \"name\"      | The queue name (string) |\n" +
-                        "| \"exists\"    | Queue exists: `true` or `false` |\n" +
-                        "| \"type\"      | Queue type \"bounded\" or \"circular\" |\n" +
-                        "| \"temporary\" | Queue is temporary: `true` or `false` |\n" +
-                        "| \"capycity\"  | The capacity (long) |\n" +
-                        "| \"size\"      | The current size (long) |")
+                        "| :name      | The queue name (string) |\n" +
+                        "| :exists    | Queue exists: `true` or `false` |\n" +
+                        "| :type      | Queue type \"bounded\" or \"circular\" |\n" +
+                        "| :temporary | Queue is temporary: `true` or `false` |\n" +
+                        "| :capycity  | The capacity (long) |\n" +
+                        "| :size      | The current size (long) |")
                     .examples(
-                        "(do                                                    \n" +
-                        "  (defn echo-handler [m] m)                            \n" +
-                        "                                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)    \n" +
-                        "             client (ipc/client \"localhost\" 33333)]  \n" +
-                        "    (let [queue     \"orders\"                         \n" +
-                        "          capacity  1_000]                             \n" +
-                        "      (ipc/create-queue server queue capacity)         \n" +
-                        "      ;; ...                                           \n" +
-                        "      (ipc/queue-status client queue))))               ")
+                        "(try-with [server (ipc/server 33333)          \n" +
+                        "           client (ipc/client 33333)]         \n" +
+                        "   (ipc/create-queue server :orders 100)      \n" +
+                        "   ;; ...                                     \n" +
+                        "   (ipc/queue-status client :orders))        ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
@@ -2740,7 +2733,7 @@ public class IPCFunctions {
 
                 final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
-                return JavaInteropUtil.convertToVncVal(client.getQueueStatus(name));
+                return client.getQueueStatusAsVncMap(name);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2777,7 +2770,6 @@ public class IPCFunctions {
            throw new VncException("Invalid max-message-size value! Use 20000, 500KB, 10MB, ...");
         }
     }
-
 
     private static class FutureWrapper implements Future<VncVal> {
 

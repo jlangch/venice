@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
@@ -755,6 +756,41 @@ public class TcpClient implements Cloneable, Closeable {
      * @return a map with the status fields
      */
     public Map<String,Object> getQueueStatus(final String queueName) {
+        final VncMap data = getQueueStatusRaw(queueName);
+
+       @SuppressWarnings("unchecked")
+       final Map<Object,Object> tmp = (Map<Object,Object>)data.convertToJavaObject();
+
+       final Map<String,Object> map = new LinkedHashMap<>();
+       map.put("name",      tmp.get("name"));
+       map.put("exists",    tmp.get("exists"));
+       map.put("type",      tmp.get("type"));
+       map.put("temporary", tmp.get("temporary"));
+       map.put("capacity",  tmp.get("capacity"));
+       map.put("size",      tmp.get("size"));
+
+       return map;
+    }
+
+    /**
+     * Return a queue's status.
+     *
+     * @param queueName a queue name
+     * @return a map with the status fields
+     */
+    public VncMap getQueueStatusAsVncMap(final String queueName) {
+       final VncMap data = getQueueStatusRaw(queueName);
+
+       return VncOrderedMap.of(
+               new VncKeyword("name")      , data.get(new VncKeyword("name")),
+               new VncKeyword("exists")    , data.get(new VncKeyword("exists")),
+               new VncKeyword("type")      , data.get(new VncKeyword("type")),
+               new VncKeyword("temporary") , data.get(new VncKeyword("temporary")),
+               new VncKeyword("capacity")  , data.get(new VncKeyword("capacity")),
+               new VncKeyword("size")      , data.get(new VncKeyword("size")));
+    }
+
+    private VncMap getQueueStatusRaw(final String queueName) {
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
@@ -776,20 +812,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         final IMessage response = send(m);
         if (response.getResponseStatus() == ResponseStatus.OK) {
-           final VncMap data = (VncMap)response.getVeniceData();
-
-           @SuppressWarnings("unchecked")
-           final Map<Object,Object> tmp = (Map<Object,Object>)data.convertToJavaObject();
-
-           final Map<String,Object> map = new LinkedHashMap<>();
-           map.put("name",      tmp.get("name"));
-           map.put("exists",    tmp.get("exists"));
-           map.put("type",      tmp.get("type"));
-           map.put("temporary", tmp.get("temporary"));
-           map.put("capacity",  tmp.get("capacity"));
-           map.put("size",      tmp.get("size"));
-
-           return map;
+           return (VncMap)response.getVeniceData();
         }
         else {
             throw new VncException(
