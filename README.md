@@ -64,6 +64,8 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 
 ## Documentation
 
+**Language**
+
 * [Getting started](doc/readme/start.md)
 * [REPL](doc/readme/repl.md)
 * [On Functional Programming](doc/readme/functional-about.md)
@@ -89,6 +91,10 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Multimethods and Protocols](doc/readme/multimethods-and-protocols.md)
 * [Macros](doc/readme/macros.md)
 * [Sandbox](doc/readme/sandbox.md)
+* [Tree walker](doc/readme/walk.md)
+
+**Modules**
+
 * [Cryptography](doc/readme/cryptography.md)
 * [Inter-Process-Communication](doc/readme/ipc.md)
 * [JSON](doc/readme/json.md)
@@ -104,12 +110,14 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Database (JDBC)](doc/readme/database.md)
 * [Shell Scripts](doc/readme/shell-scripts.md)
 * [Extension modules](doc/readme/extension-modules.md)
-* [Source Code as PDF](doc/readme/source2pdf.md)
-* [Tree walker](doc/readme/walk.md)
+
+**etc**
+
 * [Benchmarks](doc/readme/benchmarks.md)
 * [Multi-File Apps](doc/readme/multi-file-app.md)
 * [Development Tools](doc/readme/dev-tools.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
+* [Source Code as PDF](doc/readme/source2pdf.md)
 * [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 
 
