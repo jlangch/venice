@@ -208,30 +208,40 @@ Temporary queues live only as long as the client, that created it, lives.
             (ipc/offer client reply-to-queue 1_000 confirmation)))))
     (println "(barista) TERMINATED"))
 
-  (try-with [server  (ipc/server 33333)
-             client  (ipc/client 33333)
-             barista (ipc/client 33333)]
-    (let [confirm-queue    (ipc/create-temporary-queue client 100)]
+  ;; places an order on behalf of the client - returns a future
+  (defn place-order [client-id client queue reply-queue request-counter]
+    (let [name  (str "(client-" client-id ")")]
+      (future (fn []
+                (let [req-id   (str "client-" client-id "--#" (swap! request-counter inc))
+                      order    (ipc/venice-message req-id "order" {:item "espresso", :count 2})
+                      response (ipc/offer client :orders reply-queue 500 order)]
+                  (if (ipc/response-ok? response)
+                    (do
+                      (println name " ORDER:" (ipc/message->json true order))
+                      ;; client waits for the order confirmation
+                      (let [confirmation (ipc/poll client reply-queue 500)]
+                        (if (ipc/response-ok? confirmation)
+                         (println name " ORDER CONFIRMED:"     (ipc/message->json true confirmation))
+                         (println name " ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))
+                     (println name " FAILED TO PLACE ORDER")))))))
+
+  (try-with [server   (ipc/server 33333)
+             client1  (ipc/client 33333)
+             client2  (ipc/client 33333)
+             barista  (ipc/client 33333)]
+    (let [client1-reply-queue     (ipc/create-temporary-queue client1 100)
+          client1-request-counter (atom 0)
+          client2-reply-queue     (ipc/create-temporary-queue client2 100)
+          client2-request-counter (atom 0)]
       ;; create the orders queue
       (ipc/create-queue server :orders 100)
 
       ;; start the barista workers
       (futures-fork 1 (fn worker-factory [n] #(barista-worker barista :orders)))
-      
-      (println "(client) ORDERING...")
 
-      ;; client places the order
-      (let [order    (ipc/venice-message "1" "order" {:item "espresso", :count 2})
-            response (ipc/offer client :orders confirm-queue 500 order)]
-        (if (ipc/response-ok? response)
-          (do
-            (println "(client) ORDER:" (ipc/message->json true order))
-            ;; client waits for the order confirmation
-            (let [confirmation (ipc/poll client confirm-queue 500)]
-              (if (ipc/response-ok? confirmation)
-               (println "(client) ORDER CONFIRMED:" (ipc/message->json true confirmation))
-               (println "(client) ORDER NOT CONFIRMED:" (ipc/message->json true confirmation)))))
-          (println "(client) FAILED TO PLACE ORDER"))))))
+      (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter))
+      (deref (place-order 2 client2 :orders client2-reply-queue client2-request-counter))
+      (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter)))))
 ```
 
 
