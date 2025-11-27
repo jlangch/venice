@@ -331,7 +331,12 @@ public class Message implements IMessage {
        sb.append(String.format(
                    "%s %s\n",
                    padRight("Queue:", 12),
-                   queueName));
+                   queueName == null ? "-" : queueName));
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Reply Queue:", 12),
+                   replyToQueueName == null ? "-" : replyToQueueName));
 
        sb.append(String.format(
                    "%s %s\n",
@@ -342,6 +347,11 @@ public class Message implements IMessage {
                    "%s %s\n",
                    padRight("ExpiresAt:", 12),
                    expiresAt < 0 ? "never" : getExpiresAtAsLocalDateTime()));
+
+       sb.append(String.format(
+                   "%s %s\n",
+                   padRight("Timeout:", 12),
+                   timeout < 0 ? "-" : String.valueOf(timeout) + "ms"));
 
        sb.append(String.format(
                    "%s %s\n",
@@ -356,7 +366,7 @@ public class Message implements IMessage {
        sb.append(String.format(
                    "%s %s\n",
                    padRight("Charset:", 12),
-                   charset == null ? "" : charset));
+                   charset == null ? "-" : charset));
 
        sb.append(String.format(
                    "%s %s",
@@ -453,5 +463,4 @@ public class Message implements IMessage {
     private final String mimetype;
     private final String charset;
     private final byte[] data;
-
 }
