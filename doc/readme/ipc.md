@@ -233,13 +233,15 @@ Temporary queues live only as long as the client, that created it, lives.
           client1-request-counter (atom 0)
           client2-reply-queue     (ipc/create-temporary-queue client2 100)
           client2-request-counter (atom 0)]
+
       ;; create the orders queue
       (ipc/create-queue server :orders 100)
 
-      ;; start the barista workers
+      ;; start the barista workers (1 worker currently)
+      ;; reads orders from the :orders queue and replies to the order's reply-to queue
       (futures-fork 1 (fn worker-factory [n] #(barista-worker barista :orders)))
 
-      ;; place orders
+      ;; place orders and process the barista's order confirmation
       (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter))
       (deref (place-order 2 client2 :orders client2-reply-queue client2-request-counter))
       (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter)))))
