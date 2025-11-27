@@ -239,6 +239,7 @@ Temporary queues live only as long as the client, that created it, lives.
       ;; start the barista workers
       (futures-fork 1 (fn worker-factory [n] #(barista-worker barista :orders)))
 
+      ;; place orders
       (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter))
       (deref (place-order 2 client2 :orders client2-reply-queue client2-request-counter))
       (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter)))))
