@@ -356,14 +356,18 @@ mode and listens for messages. To unsubscribe just close the IPC client.
 
 **Message Types**
 
-  * `:REQUEST`     - a request message
-  * `:PUBLISH`     - a publish message
-  * `:SUBSCRIBE`   - a subscribe message
-  * `:UNSUBSCRIBE` - an unsubscribe message
-  * `:OFFER`       - an offer message for a queue
-  * `:POLL`        - a poll message from a queue
-  * `:RESPONSE`    - a response to a request message
-  * `:NULL`        - a message with yet undefined type
+  * `:REQUEST`            - a request message
+  * `:PUBLISH`            - a publish message
+  * `:SUBSCRIBE`          - a subscribe message
+  * `:UNSUBSCRIBE`        - an unsubscribe message
+  * `:OFFER`              - an offer message for a queue
+  * `:POLL`               - a poll message from a queue
+  * `:CREATE_QUEUE`       - a queue create request message
+  * `:CREATE_TEMP_QUEUE`  - a temporary queue create request message
+  * `:REMOVE_QUEUE`       - a queue remove request message
+  * `:STATUS_QUEUE`       - a queue status request message
+  * `:RESPONSE`           - a response to a request message
+  * `:NULL`               - a message with yet undefined type
 
 
 **Response Status**

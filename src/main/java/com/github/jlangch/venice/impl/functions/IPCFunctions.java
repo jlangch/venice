@@ -1948,14 +1948,18 @@ public class IPCFunctions {
                         "  * `:payload-binary`      - the payload binary data (the raw message binary data)\n" +
                         "  * `:payload-venice`      - the payload converted venice data if mimetype is 'application/json' else error\n\n" +
                         "**Message type:** \n\n" +
-                        "  * `:REQUEST`     - a request message\n" +
-                        "  * `:PUBLISH`     - a publish message\n" +
-                        "  * `:SUBSCRIBE`   - a subscribe message\n" +
-                        "  * `:UNSUBSCRIBE` - an unsubscribe message\n" +
-                        "  * `:OFFER`       - an offer message for a queue\n" +
-                        "  * `:POLL`        - a poll message from a queue\n" +
-                        "  * `:RESPONSE`    - a response to a request message\n" +
-                        "  * `:NULL`        - a message with yet undefined type\n\n" +
+                        "  * `:REQUEST`            - a request message\n" +
+                        "  * `:PUBLISH`            - a publish message\n" +
+                        "  * `:SUBSCRIBE`          - a subscribe message\n" +
+                        "  * `:UNSUBSCRIBE`        - an unsubscribe message\n" +
+                        "  * `:OFFER`              - an offer message for a queue\n" +
+                        "  * `:POLL`               - a poll message from a queue\n" +
+                        "  * `:CREATE_QUEUE`       - a queue create request message\n" +
+                        "  * `:CREATE_TEMP_QUEUE`  - a temporary queue create request message\n" +
+                        "  * `:REMOVE_QUEUE`       - a queue remove request message\n" +
+                        "  * `:STATUS_QUEUE`       - a queue status request message\n" +
+                        "  * `:RESPONSE`           - a response to a request message\n" +
+                        "  * `:NULL`               - a message with yet undefined type\n\n" +
                         "**Response status:** \n\n" +
                         "  * `:OK`              - a response message for a successfully processed request\n" +
                         "  * `:SERVER_ERROR`    - a response indicating a server side error while processing the request \n" +
