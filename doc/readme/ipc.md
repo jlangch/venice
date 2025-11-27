@@ -187,6 +187,7 @@ Temporary queues can be created dynamically for use as a dedicated reply queue f
 
 Temporary queues live only as long as the client, that created it, lives.
 
+Coffee order example:
 
 ```clojure
 (do
