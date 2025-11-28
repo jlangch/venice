@@ -44,7 +44,7 @@ import java.util.zip.CRC32;
  * | 4 bytes   | 8 bytes   |   4 bytes   |  4 bytes   |
  * +-----------+-----------+-------------+------------+
  * |                    PAYLOAD                       |
- * |                  PAYLOAD_LEN                     |
+ * |                    n bytes                       |
  * +--------------------------------------------------+
  *
  * •  MAGIC        – int constant 0xCAFEBABE
