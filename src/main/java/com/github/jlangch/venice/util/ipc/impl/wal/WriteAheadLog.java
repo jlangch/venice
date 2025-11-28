@@ -55,9 +55,9 @@ import java.util.zip.CRC32;
  * HEADER_SIZE = 4 + 8 + 4 + 4 = 20 bytes.
  * </pre>
  */
-public final class Wal implements Closeable {
+public final class WriteAheadLog implements Closeable {
 
-     public Wal(File file) throws IOException {
+     public WriteAheadLog(final File file) throws IOException {
         this.file = file;
         this.raf = new RandomAccessFile(file, "rw");
         this.channel = raf.getChannel();
@@ -72,7 +72,7 @@ public final class Wal implements Closeable {
      * @param payload bytes of this log record
      * @return LSN assigned to this record
      */
-    public synchronized long append(byte[] payload) throws IOException {
+    public synchronized long append(final byte[] payload) throws IOException {
         if (payload == null) {
             throw new IllegalArgumentException("payload must not be null");
         }
@@ -232,7 +232,10 @@ public final class Wal implements Closeable {
      *
      * @return total bytes read, or -1 if EOF encountered and no bytes read.
      */
-    private static int readFully(FileChannel channel, ByteBuffer buffer) throws IOException {
+    private static int readFully(
+            final FileChannel channel,
+            final ByteBuffer buffer
+    ) throws IOException {
         int totalRead = 0;
         while (buffer.hasRemaining()) {
             final int read = channel.read(buffer);
