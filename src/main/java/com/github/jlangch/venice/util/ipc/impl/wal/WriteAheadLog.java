@@ -200,7 +200,8 @@ public final class WriteAheadLog implements Closeable {
             oldLog.readAll().forEach(e -> {
                 if (ackWalEntryType == e.getType()) {
                     // ACK entry
-                    pending.remove(e.getUUID());
+                    AackWalEntry ackEntry = AackWalEntry.fromWalEntry(e);
+                    pending.remove(ackEntry.getAckedEntryUUID());
                 }
                 else {
                    // data entry

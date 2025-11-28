@@ -83,4 +83,91 @@ public class WriteAheadLogTest {
         }
     }
 
+    @Test
+    public void testCompact() {
+        // with default encoding
+        try {
+            final int TYPE_ACK = 0;
+            final int TYPE_DATA = 1;
+
+            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            walFile.deleteOnExit();
+
+            final UUID uuid1 = UUID.randomUUID();
+            final UUID uuid2 = UUID.randomUUID();
+            final UUID uuid3 = UUID.randomUUID();
+
+
+            // 1. Append some entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+                long lsn1 = wal.append(TYPE_DATA, uuid1, "first record".getBytes());
+                long lsn2 = wal.append(TYPE_DATA, uuid2, "second record".getBytes());
+                long lsn3 = wal.append(TYPE_DATA, uuid3, "third record".getBytes());
+                long lsn4 = wal.append(new AackWalEntry(uuid2).toWalEntry());
+
+                assertEquals(1, lsn1);
+                assertEquals(2, lsn2);
+                assertEquals(3, lsn3);
+                assertEquals(4, lsn4);
+            }
+
+            // 2. Simulate restart: open WAL again and recover entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+                // Recovered
+                assertEquals(4, wal.getLastLsn());
+
+                final List<WalEntry> entries = wal.readAll();
+
+                assertEquals(4, entries.size());
+
+                assertEquals(1, entries.get(0).getLsn());
+                assertEquals(2, entries.get(1).getLsn());
+                assertEquals(3, entries.get(2).getLsn());
+                assertEquals(4, entries.get(3).getLsn());
+
+                assertEquals(TYPE_DATA, entries.get(0).getType());
+                assertEquals(TYPE_DATA, entries.get(1).getType());
+                assertEquals(TYPE_DATA, entries.get(2).getType());
+                assertEquals(TYPE_ACK,  entries.get(3).getType());
+
+                assertEquals(uuid1, entries.get(0).getUUID());
+                assertEquals(uuid2, entries.get(1).getUUID());
+                assertEquals(uuid3, entries.get(2).getUUID());
+
+                assertEquals("first record",  new String(entries.get(0).getPayload()));
+                assertEquals("second record", new String(entries.get(1).getPayload()));
+                assertEquals("third record",  new String(entries.get(2).getPayload()));
+            }
+
+            // 3. Compact
+            WriteAheadLog.compact(walFile, TYPE_ACK, true);
+
+
+            // 4. Simulate restart: open WAL again and recover entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+                // Recovered
+                assertEquals(2, wal.getLastLsn());
+
+                final List<WalEntry> entries = wal.readAll();
+
+                assertEquals(2, entries.size());
+
+                assertEquals(1, entries.get(0).getLsn());
+                assertEquals(2, entries.get(1).getLsn());
+
+                assertEquals(TYPE_DATA, entries.get(0).getType());
+                assertEquals(TYPE_DATA, entries.get(1).getType());
+
+                assertEquals(uuid1, entries.get(0).getUUID());
+                assertEquals(uuid3, entries.get(1).getUUID());
+
+                assertEquals("first record",  new String(entries.get(0).getPayload()));
+                assertEquals("third record",  new String(entries.get(1).getPayload()));
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
 }
