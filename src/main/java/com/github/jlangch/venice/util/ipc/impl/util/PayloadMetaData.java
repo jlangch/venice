@@ -42,6 +42,7 @@ public class PayloadMetaData {
     public PayloadMetaData(final Message msg) {
         this(
             msg.isOneway(),
+            msg.isDurable(),
             msg.getRequestId(),
             msg.getType(),
             msg.getResponseStatus(),
@@ -55,6 +56,7 @@ public class PayloadMetaData {
 
     public PayloadMetaData(
             final boolean oneway,
+            final boolean durable,
             final String requestId,
             final MessageType type,
             final ResponseStatus responseStatus,
@@ -72,6 +74,7 @@ public class PayloadMetaData {
         Objects.requireNonNull(id);
 
         this.oneway = oneway;
+        this.durable = durable;
         this.requestId = requestId;
         this.type = type;
         this.responseStatus = responseStatus;
@@ -97,6 +100,7 @@ public class PayloadMetaData {
         Objects.requireNonNull(id);
 
         this.oneway = false;
+        this.durable = false;
         this.requestId = requestId;
         this.type = MessageType.NULL;
         this.responseStatus = ResponseStatus.NULL;
@@ -111,6 +115,10 @@ public class PayloadMetaData {
 
     public boolean isOneway() {
         return oneway;
+    }
+
+    public boolean isDurable() {
+        return durable;
     }
 
     public String getRequestId() {
@@ -156,6 +164,7 @@ public class PayloadMetaData {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((charset == null) ? 0 : charset.hashCode());
+        result = prime * result + (durable ? 1231 : 1237);
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
         result = prime * result + (oneway ? 1231 : 1237);
@@ -181,6 +190,8 @@ public class PayloadMetaData {
             if (other.charset != null)
                 return false;
         } else if (!charset.equals(other.charset))
+            return false;
+        if (durable != other.durable)
             return false;
         if (id == null) {
             if (other.id != null)
@@ -225,6 +236,7 @@ public class PayloadMetaData {
         Objects.requireNonNull(data);
 
         final String s = (data.oneway ? "1" : "0")           + '\n' +
+                         (data.durable ? "1" : "0")          + '\n' +
                          trimToEmpty(data.requestId)         + '\n' +
                          toCode(data.type)                   + '\n' +
                          toCode(data.responseStatus)         + '\n' +
@@ -245,18 +257,19 @@ public class PayloadMetaData {
 
         final List<String> lines = StringUtil.splitIntoLines(s);
 
-        if (lines.size() == 10) {
+        if (lines.size() == 11) {
             return new PayloadMetaData(
                     toBool(lines.get(0)),             // oneway
-                    trimToNull(lines.get(1)),         // requestId
-                    toMessageType(lines.get(2)),      // message type
-                    toResponseStatus(lines.get(3)),   // response status
-                    trimToNull(lines.get(4)),         // queueName
-                    trimToNull(lines.get(5)),         // replyToQueueName
-                    Topics.decode(lines.get(6)),      // topics
-                    lines.get(7),                     // mimetype
-                    trimToNull(lines.get(8)),         // charset
-                    UUID.fromString(lines.get(9)));   // id
+                    toBool(lines.get(1)),             // durable
+                    trimToNull(lines.get(2)),         // requestId
+                    toMessageType(lines.get(3)),      // message type
+                    toResponseStatus(lines.get(4)),   // response status
+                    trimToNull(lines.get(5)),         // queueName
+                    trimToNull(lines.get(6)),         // replyToQueueName
+                    Topics.decode(lines.get(7)),      // topics
+                    lines.get(8),                     // mimetype
+                    trimToNull(lines.get(9)),         // charset
+                    UUID.fromString(lines.get(10)));  // id
         }
         else {
             throw new VncException(String.format(
@@ -300,6 +313,7 @@ public class PayloadMetaData {
 
 
     private final boolean oneway;
+    private final boolean durable;
     private final String requestId;
     private final MessageType type;
     private final ResponseStatus responseStatus;

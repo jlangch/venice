@@ -719,7 +719,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 requestID,
                 MessageType.RESPONSE,
                 status,
-                true,
+                true,   // oneway
+                false,  // transient
                 Message.EXPIRES_NEVER,
                 topics,
                 "application/json",
@@ -737,7 +738,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 requestID,
                 MessageType.RESPONSE,
                 status,
-                true,
+                true,   // oneway
+                false,  // transient
                 Message.EXPIRES_NEVER,
                 topics,
                 "text/plain",

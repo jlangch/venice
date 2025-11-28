@@ -157,6 +157,7 @@ public class Protocol {
                     payloadMeta.getType(),
                     payloadMeta.getResponseStatus(),
                     payloadMeta.isOneway(),
+                    payloadMeta.isDurable(),
                     payloadMeta.getQueueName(),
                     payloadMeta.getReplyToQueueName(),
                     timestamp,

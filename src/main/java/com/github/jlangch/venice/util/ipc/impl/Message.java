@@ -51,6 +51,7 @@ public class Message implements IMessage {
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
+            final boolean durable,
             final long expiresAt,
             final Topics topics,
             final String mimetype,
@@ -69,6 +70,7 @@ public class Message implements IMessage {
         this.id = UUID.randomUUID();
         this.requestId = requestId;
         this.type = type;
+        this.durable = durable;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
         this.queueName = null;
@@ -88,6 +90,7 @@ public class Message implements IMessage {
             final MessageType type,
             final ResponseStatus responseStatus,
             final boolean oneway,
+            final boolean durable,
             final String queueName,
             final String replyToQueueName,
             final long timestamp,
@@ -110,6 +113,7 @@ public class Message implements IMessage {
         this.id = id == null ? UUID.randomUUID() : id;
         this.requestId = requestId;
         this.type = type;
+        this.durable = durable;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
         this.queueName = StringUtil.trimToNull(queueName);
@@ -140,7 +144,7 @@ public class Message implements IMessage {
         Objects.requireNonNull(type);
         return new Message(
                 id, requestId,
-                type, responseStatus, oneway,
+                type, responseStatus, oneway, durable,
                 queueName, replyToQueueName, timestamp, expiresAt,
                 timeout, topics, mimetype, charset, data);
   }
@@ -155,7 +159,7 @@ public class Message implements IMessage {
         Objects.requireNonNull(responseStatus);
         return new Message(
                 id, requestId,
-                type, responseStatus, oneway,
+                type, responseStatus, oneway, durable,
                 queueName, replyToQueueName, timestamp, expiresAt,
                 timeout, topics, mimetype, charset, data);
     }
@@ -174,6 +178,12 @@ public class Message implements IMessage {
     public MessageType getType() {
         return type;
     }
+
+    @Override
+    public boolean isDurable() {
+        return durable;
+    }
+
 
     @Override
     public ResponseStatus getResponseStatus() {
@@ -319,6 +329,11 @@ public class Message implements IMessage {
                    type.name()));
 
        sb.append(String.format(
+                   "%s %b\n",
+                   padRight("Durable:", 12),
+                   durable));
+
+       sb.append(String.format(
                    "%s %s\n",
                    padRight("Response:", 12),
                    responseStatus.name()));
@@ -452,6 +467,7 @@ public class Message implements IMessage {
     private final UUID id;
     private final String requestId;
     private final MessageType type;
+    private final boolean durable;
     private final ResponseStatus responseStatus;
     private final boolean oneway;
     private final String queueName;  // used for offer/poll messages

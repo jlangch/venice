@@ -266,7 +266,8 @@ public class TcpServer implements Closeable {
                             req.getRequestId(),
                             MessageType.RESPONSE,
                             ResponseStatus.HANDLER_ERROR,
-                            true,
+                            true,   // oneway
+                            false,  // transient
                             Message.EXPIRES_NEVER,
                             ((Message)req).getTopics(),
                             "text/plain",

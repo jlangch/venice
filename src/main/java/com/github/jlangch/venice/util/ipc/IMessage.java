@@ -39,6 +39,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
  * ├───────────────────────────────┤
  * │ Oneway                        │   client or framework method
  * ├───────────────────────────────┤
+ * │ Durable                       │   client or framework method
+ * ├───────────────────────────────┤
  * │ Response Status               │   server response processor
  * ├───────────────────────────────┤
  * │ Timestamp                     │   message creator
@@ -82,16 +84,21 @@ public interface IMessage {
     MessageType getType();
 
     /**
-     * @return the message response status
-     */
-    ResponseStatus getResponseStatus();
-
-    /**
      * @return <code>true</code> if this message is a one-way message
      *        that the receiver must not answer with a reply message,
      *        else <code>false</code>
      */
     boolean isOneway();
+
+    /**
+     * @return true if the message is durable
+     */
+    boolean isDurable();
+
+    /**
+     * @return the message response status
+     */
+    ResponseStatus getResponseStatus();
 
     /**
      * @return the message timestamp (milliseconds since epoch)
