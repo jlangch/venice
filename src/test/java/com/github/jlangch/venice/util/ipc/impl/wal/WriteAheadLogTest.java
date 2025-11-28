@@ -48,9 +48,9 @@ public class WriteAheadLogTest {
 
             // 1. Append some entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
-                long lsn1 = wal.append(DATA, uuid1, "first record".getBytes());
-                long lsn2 = wal.append(DATA, uuid2, "second record".getBytes());
-                long lsn3 = wal.append(DATA, uuid3, "third record".getBytes());
+                long lsn1 = wal.append(new DataWalEntry(uuid1, "first record"));
+                long lsn2 = wal.append(new DataWalEntry(uuid2, "second record"));
+                long lsn3 = wal.append(new DataWalEntry(uuid3, "third record"));
 
                 assertEquals(1, lsn1);
                 assertEquals(2, lsn2);
@@ -98,10 +98,10 @@ public class WriteAheadLogTest {
 
             // 1. Append some entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
-                long lsn1 = wal.append(DATA, uuid1, "first record".getBytes());
-                long lsn2 = wal.append(DATA, uuid2, "second record".getBytes());
-                long lsn3 = wal.append(DATA, uuid3, "third record".getBytes());
-                long lsn4 = wal.append(new AackWalEntry(uuid2).toWalEntry());
+                long lsn1 = wal.append(new DataWalEntry(uuid1, "first record"));
+                long lsn2 = wal.append(new DataWalEntry(uuid2, "second record"));
+                long lsn3 = wal.append(new DataWalEntry(uuid3, "third record"));
+                long lsn4 = wal.append(new AckWalEntry(uuid2));
 
                 assertEquals(1, lsn1);
                 assertEquals(2, lsn2);

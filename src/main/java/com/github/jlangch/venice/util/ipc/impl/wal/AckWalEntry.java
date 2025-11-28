@@ -26,10 +26,14 @@ import java.util.UUID;
 import com.github.jlangch.venice.impl.util.UUIDHelper;
 
 
-public class AackWalEntry {
+public class AckWalEntry {
 
-    public AackWalEntry(final UUID ackedEntryUUID) {
-       this.ackedEntryUUID = ackedEntryUUID;
+    public AckWalEntry(final UUID ackedEntryUUID) {
+        if (ackedEntryUUID == null) {
+            throw new IllegalArgumentException("ackedEntryUUID must not be null");
+        }
+
+        this.ackedEntryUUID = ackedEntryUUID;
     }
 
     public UUID getAckedEntryUUID() {
@@ -44,8 +48,8 @@ public class AackWalEntry {
                     UUIDHelper.convertUUIDToBytes(ackedEntryUUID));
     }
 
-    public static AackWalEntry fromWalEntry(final WalEntry entry) {
-       return new AackWalEntry(UUIDHelper.convertBytesToUUID(entry.getPayload()));
+    public static AckWalEntry fromWalEntry(final WalEntry entry) {
+       return new AckWalEntry(UUIDHelper.convertBytesToUUID(entry.getPayload()));
     }
 
 

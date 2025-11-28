@@ -87,6 +87,38 @@ public final class WriteAheadLog implements Closeable {
          return append(entry.getType(), entry.getUUID(), entry.getPayload());
      }
 
+     /**
+      * Append an ACK entry to the WAL and fsync it.
+      *
+      * @param entry WAL entry
+      * @return LSN assigned to this record starts (from 1 and increments per append)
+      */
+    public synchronized long append(
+             final AckWalEntry entry
+     ) throws IOException {
+         if (entry == null) {
+             throw new IllegalArgumentException("entry must not be null");
+         }
+
+         return append(entry.toWalEntry());
+     }
+
+    /**
+     * Append a DATA entry to the WAL and fsync it.
+     *
+     * @param entry WAL entry
+     * @return LSN assigned to this record starts (from 1 and increments per append)
+     */
+     public synchronized long append(
+             final DataWalEntry entry
+     ) throws IOException {
+         if (entry == null) {
+             throw new IllegalArgumentException("entry must not be null");
+         }
+
+         return append(entry.toWalEntry());
+     }
+
     /**
      * Append a payload to the WAL and fsync it.
      *
@@ -198,7 +230,7 @@ public final class WriteAheadLog implements Closeable {
             oldLog.readAll().forEach(e -> {
                 if (WalEntryType.ACK == e.getType()) {
                     // ACK entry
-                    AackWalEntry ackEntry = AackWalEntry.fromWalEntry(e);
+                    AckWalEntry ackEntry = AckWalEntry.fromWalEntry(e);
                     pending.remove(ackEntry.getAckedEntryUUID());
                 }
                 else {
