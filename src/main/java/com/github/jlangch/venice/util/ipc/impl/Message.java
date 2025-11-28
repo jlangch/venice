@@ -66,7 +66,7 @@ public class Message implements IMessage {
         validateMimetype(mimetype);
         validateCharset(charset);
 
-        this.id = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID();
         this.requestId = requestId;
         this.type = type;
         this.responseStatus = responseStatus;
@@ -83,7 +83,7 @@ public class Message implements IMessage {
     }
 
     public Message(
-            final String id,
+            final UUID id,
             final String requestId,
             final MessageType type,
             final ResponseStatus responseStatus,
@@ -107,7 +107,7 @@ public class Message implements IMessage {
         validateMimetype(mimetype);
         validateCharset(charset);
 
-        this.id = id == null ? UUID.randomUUID().toString() : id;
+        this.id = id == null ? UUID.randomUUID() : id;
         this.requestId = requestId;
         this.type = type;
         this.responseStatus = responseStatus;
@@ -161,7 +161,7 @@ public class Message implements IMessage {
     }
 
     @Override
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -449,7 +449,7 @@ public class Message implements IMessage {
     public static final long CHARSET_MAX_LEN = 50;
 
 
-    private final String id;
+    private final UUID id;
     private final String requestId;
     private final MessageType type;
     private final ResponseStatus responseStatus;

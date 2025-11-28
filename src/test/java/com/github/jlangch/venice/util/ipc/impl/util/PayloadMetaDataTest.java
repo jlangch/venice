@@ -38,7 +38,7 @@ public class PayloadMetaDataTest {
 
     @Test
     public void test_equals_1() {
-        final String id = UUID.randomUUID().toString();
+        final UUID id = UUID.randomUUID();
 
         PayloadMetaData data = null;
 
@@ -51,7 +51,7 @@ public class PayloadMetaDataTest {
 
     @Test
     public void test_equals_2() {
-        final String id = UUID.randomUUID().toString();
+        final UUID id = UUID.randomUUID();
 
         assertEquals(
                 new PayloadMetaData(null, "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id),
@@ -96,7 +96,7 @@ public class PayloadMetaDataTest {
 
     @Test
     public void test_encode_decode() {
-        final String id = UUID.randomUUID().toString();
+        final UUID id = UUID.randomUUID();
 
         PayloadMetaData data = null;
 

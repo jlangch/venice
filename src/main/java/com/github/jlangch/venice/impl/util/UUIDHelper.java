@@ -27,14 +27,14 @@ import java.util.UUID;
 
 public class UUIDHelper {
 
-    public static byte[] convertUUIDToBytes(UUID uuid) {
+    public static byte[] convertUUIDToBytes(final UUID uuid) {
         final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());
         return bb.array();
     }
 
-    public static UUID convertBytesToUUID(byte[] bytes) {
+    public static UUID convertBytesToUUID(final byte[] bytes) {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         long high = byteBuffer.getLong();
         long low = byteBuffer.getLong();

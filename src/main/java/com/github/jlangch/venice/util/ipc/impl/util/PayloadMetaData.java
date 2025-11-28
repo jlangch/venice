@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -62,7 +63,7 @@ public class PayloadMetaData {
             final Topics topics,
             final String mimetype,
             final String charset,
-            final String id
+            final UUID id
     ) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(responseStatus);
@@ -89,7 +90,7 @@ public class PayloadMetaData {
             final Topics topics,
             final String mimetype,
             final String charset,
-            final String id
+            final UUID id
     ) {
         Objects.requireNonNull(topics);
         Objects.requireNonNull(mimetype);
@@ -144,7 +145,7 @@ public class PayloadMetaData {
         return charset;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -255,7 +256,7 @@ public class PayloadMetaData {
                     Topics.decode(lines.get(6)),      // topics
                     lines.get(7),                     // mimetype
                     trimToNull(lines.get(8)),         // charset
-                    lines.get(9));                    // id
+                    UUID.fromString(lines.get(9)));   // id
         }
         else {
             throw new VncException(String.format(
@@ -307,5 +308,5 @@ public class PayloadMetaData {
     private final Topics topics;
     private final String mimetype;
     private final String charset;
-    private final String id;
+    private final UUID id;
 }
