@@ -29,7 +29,9 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
@@ -162,6 +164,93 @@ public final class WriteAheadLog implements Closeable {
         }
         return result;
     }
+
+
+    /**
+     * Compact the given log file in-place.
+     *
+     * @param file the existing write-ahead-log
+     * @param ackWalEntryType the ACK WalEntry type
+     * @param removeBackupLogFile if true remove the created backup write-ahead-log
+     * @return all valid entries from the compacted WAL
+     */
+    public static List<WalEntry> compact(
+        final File logFile,
+        final int ackWalEntryType,
+        final boolean removeBackupLogFile
+    ) throws IOException {
+        if (logFile == null) {
+            throw new IllegalArgumentException("file must not be null");
+        }
+        if (!logFile.exists()) {
+            // nothing to do
+            return new ArrayList<>();
+        }
+
+        File dir = logFile.getAbsoluteFile().getParentFile();
+        String baseName = logFile.getName();
+
+        File tmpFile = new File(dir, baseName + ".compact");
+        File backupFile = new File(dir, baseName + ".bak");
+
+        final Map<UUID, WalEntry> pending = new LinkedHashMap<>();
+
+        // [1] read the entries of the old log
+        try (WriteAheadLog oldLog = new WriteAheadLog(logFile)) {
+            oldLog.readAll().forEach(e -> {
+                if (ackWalEntryType == e.getType()) {
+                    // ACK entry
+                    pending.remove(e.getUUID());
+                }
+                else {
+                   // data entry
+                   pending.put(e.getUUID(), e);
+                }
+            });
+
+            // [2] Write a brand-new log with only pending messages
+            if (tmpFile.exists() && !tmpFile.delete()) {
+                throw new IOException("Could not delete stale tmp file: " + tmpFile);
+            }
+
+            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile)) {
+                for (Map.Entry<UUID, WalEntry> e : pending.entrySet()) {
+                    // keep original uuid / headers
+                    newLog.append(e.getValue());
+                }
+            }
+        }
+
+        // [3] Atomically-ish swap files: old -> .bak, tmp -> original
+        //    (Simple approach; you can fsync directory etc. if you want stricter guarantees.)
+
+        // remove old backup if exists
+        if (backupFile.exists() && !backupFile.delete()) {
+            throw new IOException("Could not delete old backup file: " + backupFile);
+        }
+
+        if (!logFile.renameTo(backupFile)) {
+            // failed before touching tmpFile => safe
+            throw new IOException("Failed to rename original log to backup: " +
+                                  logFile + " -> " + backupFile);
+        }
+
+        if (!tmpFile.renameTo(logFile)) {
+            // try to restore original
+            // (best-effort; in a real system you might log this carefully)
+            backupFile.renameTo(logFile);
+            throw new IOException("Failed to rename compacted log into place: " +
+                                  tmpFile + " -> " + logFile);
+        }
+
+        // [4] Optionally: delete the created backup file
+        if (removeBackupLogFile) {
+            backupFile.delete();
+        }
+
+        return new ArrayList<>(pending.values());
+    }
+
 
     /**
      * Recover WAL state: scan from beginning, validate records,
