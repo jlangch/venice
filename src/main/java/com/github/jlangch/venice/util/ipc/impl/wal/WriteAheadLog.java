@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.CRC32;
 
 
@@ -39,20 +40,22 @@ import java.util.zip.CRC32;
  * <p>WAL record:
  *
  * <pre>
- * +-----------+-----------+-------------+------------+
- * |  MAGIC    |   LSN     | PAYLOAD_LEN |  CHECKSUM  |
- * | 4 bytes   | 8 bytes   |   4 bytes   |  4 bytes   |
- * +-----------+-----------+-------------+------------+
- * |                    PAYLOAD                       |
- * |                    n bytes                       |
- * +--------------------------------------------------+
+ * +-----------+-----------+-----------+------------+-------------+------------+
+ * |   MAGIC   |    LSN    |   TYPE    |    UUID    | PAYLOAD_LEN |  CHECKSUM  |
+ * |  4 bytes  |  8 bytes  |  4 bytes  |  16 bytes  |   4 bytes   |  4 bytes   |
+ * +-----------+-----------+-----------+------------+-------------+------------+
+ * |                                PAYLOAD                                    |
+ * |                                n bytes                                    |
+ * +---------------------------------------------------------------------------+
  *
  * •  MAGIC        – int constant 0xCAFEBABE
  * •  LSN          – long, log sequence number starts from 1 and increments per append.
+ * •  TYPE         – int, record type
+ * •  UUID         – 16 bytes, record UUID
  * •  PAYLOAD_LEN  – int, number of bytes in payload.
  * •  CHECKSUM     – int, CRC32 of payload bytes.
  *
- * HEADER_SIZE = 4 + 8 + 4 + 4 = 20 bytes.
+ * HEADER_SIZE = 4 + 8 + 4 + 16 + 4 + 4 = 40 bytes.
  * </pre>
  */
 public final class WriteAheadLog implements Closeable {
@@ -69,10 +72,19 @@ public final class WriteAheadLog implements Closeable {
     /**
      * Append a payload to the WAL and fsync it.
      *
+     * @param type type of this log record
+     * @param uuid uuid of this log record
      * @param payload bytes of this log record
-     * @return LSN assigned to this record
+     * @return LSN assigned to this record starts (from 1 and increments per append)
      */
-    public synchronized long append(final byte[] payload) throws IOException {
+    public synchronized long append(
+            final int type,
+            final UUID uuid,
+            final byte[] payload
+    ) throws IOException {
+        if (uuid == null) {
+            throw new IllegalArgumentException("uuid must not be null");
+        }
         if (payload == null) {
             throw new IllegalArgumentException("payload must not be null");
         }
@@ -91,6 +103,9 @@ public final class WriteAheadLog implements Closeable {
         ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE + payloadLength);
         buffer.putInt(MAGIC);
         buffer.putLong(lsn);
+        buffer.putInt(type);
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
         buffer.putInt(payloadLength);
         buffer.putInt(checksum);
         buffer.put(payload);
@@ -197,8 +212,13 @@ public final class WriteAheadLog implements Closeable {
         }
 
         final long lsn = headerBuf.getLong();
+        final int type = headerBuf.getInt();
+        final long uuidMostSigBits = headerBuf.getLong();
+        final long uuidLeastSigBits = headerBuf.getLong();
         final int length = headerBuf.getInt();
         final int checksum = headerBuf.getInt();
+
+        final UUID uuid = new UUID(uuidMostSigBits, uuidLeastSigBits);
 
         if (length < 0) {
             throw new CorruptedRecordException("Negative payload length: " + length);
@@ -224,7 +244,7 @@ public final class WriteAheadLog implements Closeable {
                     "Checksum mismatch. expected=" + checksum + " actual=" + actualChecksum);
         }
 
-        return new WalEntry(lsn, payload);
+        return new WalEntry(lsn, type, uuid, payload);
     }
 
     /**
@@ -264,7 +284,7 @@ public final class WriteAheadLog implements Closeable {
 
 
     private static final int MAGIC = 0xCAFEBABE;
-    private static final int HEADER_SIZE = 4 + 8 + 4 + 4; // magic + lsn + length + checksum
+    private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 4 + 4; // magic + lsn + length + checksum
 
     private final File file;
     private final RandomAccessFile raf;

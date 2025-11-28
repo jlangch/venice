@@ -21,11 +21,19 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
+import java.util.UUID;
 
 public final class WalEntry {
 
-    public WalEntry(long lsn, byte[] payload) {
+    public WalEntry(
+            final long lsn,
+            final int type,
+            final UUID uuid,
+            final byte[] payload
+    ) {
         this.lsn = lsn;
+        this.type = type;
+        this.uuid = uuid;
         this.payload = payload;
     }
 
@@ -33,10 +41,20 @@ public final class WalEntry {
         return lsn;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public UUID getUUID() {
+        return uuid;
+    }
+
     public byte[] getPayload() {
         return payload;
     }
 
     private final long lsn;
+    private final int type;
+    private final UUID uuid;
     private final byte[] payload;
 }
