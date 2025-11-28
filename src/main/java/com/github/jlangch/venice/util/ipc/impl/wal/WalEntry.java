@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 
 import java.util.UUID;
 
+
 public final class WalEntry {
 
     public WalEntry(

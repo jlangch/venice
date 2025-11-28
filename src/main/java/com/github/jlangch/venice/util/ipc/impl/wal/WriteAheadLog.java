@@ -69,6 +69,22 @@ public final class WriteAheadLog implements Closeable {
         recover();
     }
 
+     /**
+      * Append an entry to the WAL and fsync it.
+      *
+      * @param entry WAL entry
+      * @return LSN assigned to this record starts (from 1 and increments per append)
+      */
+     public synchronized long append(
+             final WalEntry entry
+     ) throws IOException {
+         if (entry == null) {
+             throw new IllegalArgumentException("entry must not be null");
+         }
+
+         return append(entry.getType(), entry.getUUID(), entry.getPayload());
+     }
+
     /**
      * Append a payload to the WAL and fsync it.
      *
