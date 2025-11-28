@@ -24,7 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 
 public final class WalEntry {
 
-	public WalEntry(long lsn, byte[] payload) {
+    public WalEntry(long lsn, byte[] payload) {
         this.lsn = lsn;
         this.payload = payload;
     }

@@ -39,10 +39,13 @@ import java.util.zip.CRC32;
  * <p>WAL record:
  *
  * <pre>
- * +-----------+-----------+-------------+------------+-------------------+
- * |  MAGIC    |   LSN     | PAYLOAD_LEN |  CHECKSUM  |      PAYLOAD      |
- * | 4 bytes   | 8 bytes   |   4 bytes   |  4 bytes   |   PAYLOAD_LEN     |
- * +-----------+-----------+-------------+------------+-------------------+
+ * +-----------+-----------+-------------+------------+
+ * |  MAGIC    |   LSN     | PAYLOAD_LEN |  CHECKSUM  |
+ * | 4 bytes   | 8 bytes   |   4 bytes   |  4 bytes   |
+ * +-----------+-----------+-------------+------------+
+ * |                    PAYLOAD                       |
+ * |                  PAYLOAD_LEN                     |
+ * +--------------------------------------------------+
  *
  * •  MAGIC        – int constant 0xCAFEBABE
  * •  LSN          – long, log sequence number starts from 1 and increments per append.
