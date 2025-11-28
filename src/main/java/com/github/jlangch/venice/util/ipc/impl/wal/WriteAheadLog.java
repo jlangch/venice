@@ -284,16 +284,19 @@ public final class WriteAheadLog implements Closeable {
 
 
     private static final int MAGIC = 0xCAFEBABE;
-    private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 4 + 4; // magic + lsn + length + checksum
+
+    // header: magic + lsn + type + uuid + length + checksum
+    private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 4 + 4;
+
 
     private final File file;
     private final RandomAccessFile raf;
     private final FileChannel channel;
 
-    // Last written LSN
+    // last written LSN
     private long lastLsn = 0L;
 
-    // Position up to which the log is considered valid (last good record end)
+    // position up to which the log is considered valid (last good record end)
     private long validEndPosition = 0L;
 
 }
