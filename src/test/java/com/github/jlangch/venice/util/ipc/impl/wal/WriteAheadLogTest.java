@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
+import static com.github.jlangch.venice.util.ipc.impl.wal.WalEntryType.ACK;
+import static com.github.jlangch.venice.util.ipc.impl.wal.WalEntryType.DATA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -29,7 +31,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-
 
 public class WriteAheadLogTest {
 
@@ -47,9 +48,9 @@ public class WriteAheadLogTest {
 
             // 1. Append some entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
-                long lsn1 = wal.append(1, uuid1, "first record".getBytes());
-                long lsn2 = wal.append(1, uuid2, "second record".getBytes());
-                long lsn3 = wal.append(1, uuid3, "third record".getBytes());
+                long lsn1 = wal.append(DATA, uuid1, "first record".getBytes());
+                long lsn2 = wal.append(DATA, uuid2, "second record".getBytes());
+                long lsn3 = wal.append(DATA, uuid3, "third record".getBytes());
 
                 assertEquals(1, lsn1);
                 assertEquals(2, lsn2);
@@ -87,9 +88,6 @@ public class WriteAheadLogTest {
     public void testCompact() {
         // with default encoding
         try {
-            final int TYPE_ACK = 0;
-            final int TYPE_DATA = 1;
-
             final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
             walFile.deleteOnExit();
 
@@ -100,9 +98,9 @@ public class WriteAheadLogTest {
 
             // 1. Append some entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
-                long lsn1 = wal.append(TYPE_DATA, uuid1, "first record".getBytes());
-                long lsn2 = wal.append(TYPE_DATA, uuid2, "second record".getBytes());
-                long lsn3 = wal.append(TYPE_DATA, uuid3, "third record".getBytes());
+                long lsn1 = wal.append(DATA, uuid1, "first record".getBytes());
+                long lsn2 = wal.append(DATA, uuid2, "second record".getBytes());
+                long lsn3 = wal.append(DATA, uuid3, "third record".getBytes());
                 long lsn4 = wal.append(new AackWalEntry(uuid2).toWalEntry());
 
                 assertEquals(1, lsn1);
@@ -125,10 +123,10 @@ public class WriteAheadLogTest {
                 assertEquals(3, entries.get(2).getLsn());
                 assertEquals(4, entries.get(3).getLsn());
 
-                assertEquals(TYPE_DATA, entries.get(0).getType());
-                assertEquals(TYPE_DATA, entries.get(1).getType());
-                assertEquals(TYPE_DATA, entries.get(2).getType());
-                assertEquals(TYPE_ACK,  entries.get(3).getType());
+                assertEquals(DATA, entries.get(0).getType());
+                assertEquals(DATA, entries.get(1).getType());
+                assertEquals(DATA, entries.get(2).getType());
+                assertEquals(ACK,  entries.get(3).getType());
 
                 assertEquals(uuid1, entries.get(0).getUUID());
                 assertEquals(uuid2, entries.get(1).getUUID());
@@ -140,7 +138,7 @@ public class WriteAheadLogTest {
             }
 
             // 3. Compact
-            WriteAheadLog.compact(walFile, TYPE_ACK, true);
+            WriteAheadLog.compact(walFile, true);
 
 
             // 4. Simulate restart: open WAL again and recover entries
@@ -155,8 +153,8 @@ public class WriteAheadLogTest {
                 assertEquals(1, entries.get(0).getLsn());
                 assertEquals(2, entries.get(1).getLsn());
 
-                assertEquals(TYPE_DATA, entries.get(0).getType());
-                assertEquals(TYPE_DATA, entries.get(1).getType());
+                assertEquals(DATA, entries.get(0).getType());
+                assertEquals(DATA, entries.get(1).getType());
 
                 assertEquals(uuid1, entries.get(0).getUUID());
                 assertEquals(uuid3, entries.get(1).getUUID());

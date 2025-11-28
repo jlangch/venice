@@ -21,33 +21,29 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
-import java.util.UUID;
 
-import com.github.jlangch.venice.impl.util.UUIDHelper;
+public enum WalEntryType {
+
+    ACK(0),
+
+    DATA(1);
 
 
-public class AackWalEntry {
-
-    public AackWalEntry(final UUID ackedEntryUUID) {
-       this.ackedEntryUUID = ackedEntryUUID;
+    public static WalEntryType fromCode(int code) {
+        for (WalEntryType s : WalEntryType.values()) {
+            if (s.value == code) {
+                return s;
+            }
+        }
+        return null;
     }
 
-    public UUID getAckedEntryUUID() {
-        return ackedEntryUUID;
-    }
+    private final int value;
 
-    public WalEntry toWalEntry() {
-        return new WalEntry(
-                    -1,
-                    WalEntryType.ACK,
-                    UUID.randomUUID(),
-                    UUIDHelper.convertUUIDToBytes(ackedEntryUUID));
-    }
-
-    public static AackWalEntry fromWalEntry(final WalEntry entry) {
-       return new AackWalEntry(UUIDHelper.convertBytesToUUID(entry.getPayload()));
+    private WalEntryType(final int val) {
+        value = val;
     }
 
 
-    private final UUID ackedEntryUUID;
+    public int getValue() { return value; }
 }

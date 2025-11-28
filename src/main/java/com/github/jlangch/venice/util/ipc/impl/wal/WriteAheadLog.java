@@ -96,7 +96,7 @@ public final class WriteAheadLog implements Closeable {
      * @return LSN assigned to this record starts (from 1 and increments per append)
      */
     public synchronized long append(
-            final int type,
+            final WalEntryType type,
             final UUID uuid,
             final byte[] payload
     ) throws IOException {
@@ -121,7 +121,7 @@ public final class WriteAheadLog implements Closeable {
         ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE + payloadLength);
         buffer.putInt(MAGIC);
         buffer.putLong(lsn);
-        buffer.putInt(type);
+        buffer.putInt(type.getValue());
         buffer.putLong(uuid.getMostSignificantBits());
         buffer.putLong(uuid.getLeastSignificantBits());
         buffer.putInt(payloadLength);
@@ -170,13 +170,11 @@ public final class WriteAheadLog implements Closeable {
      * Compact the given log file in-place.
      *
      * @param file the existing write-ahead-log
-     * @param ackWalEntryType the ACK WalEntry type
      * @param removeBackupLogFile if true remove the created backup write-ahead-log
      * @return all valid entries from the compacted WAL
      */
     public static List<WalEntry> compact(
         final File logFile,
-        final int ackWalEntryType,
         final boolean removeBackupLogFile
     ) throws IOException {
         if (logFile == null) {
@@ -198,7 +196,7 @@ public final class WriteAheadLog implements Closeable {
         // [1] read the entries of the old log
         try (WriteAheadLog oldLog = new WriteAheadLog(logFile)) {
             oldLog.readAll().forEach(e -> {
-                if (ackWalEntryType == e.getType()) {
+                if (WalEntryType.ACK == e.getType()) {
                     // ACK entry
                     AackWalEntry ackEntry = AackWalEntry.fromWalEntry(e);
                     pending.remove(ackEntry.getAckedEntryUUID());
@@ -350,7 +348,7 @@ public final class WriteAheadLog implements Closeable {
                     "Checksum mismatch. expected=" + checksum + " actual=" + actualChecksum);
         }
 
-        return new WalEntry(lsn, type, uuid, payload);
+        return new WalEntry(lsn, WalEntryType.fromCode(type), uuid, payload);
     }
 
     /**

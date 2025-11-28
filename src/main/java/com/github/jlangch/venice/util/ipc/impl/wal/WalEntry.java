@@ -28,7 +28,7 @@ public final class WalEntry {
 
     public WalEntry(
             final long lsn,
-            final int type,
+            final WalEntryType type,
             final UUID uuid,
             final byte[] payload
     ) {
@@ -42,7 +42,7 @@ public final class WalEntry {
         return lsn;
     }
 
-    public int getType() {
+    public WalEntryType getType() {
         return type;
     }
 
@@ -55,7 +55,7 @@ public final class WalEntry {
     }
 
     private final long lsn;
-    private final int type;
+    private final WalEntryType type;
     private final UUID uuid;
     private final byte[] payload;
 }
