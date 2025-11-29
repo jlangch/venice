@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.channels.ByteChannel;
 import java.util.UUID;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.protocol.ByteArrayStreamChannel;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
@@ -49,26 +50,33 @@ public class MessageWalEntry {
     }
 
     public WalEntry toWalEntry() {
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final ByteChannel ch = new ByteArrayStreamChannel(out);
+        try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
+             final ByteChannel ch = new ByteArrayStreamChannel(out)
+        ) {
+            Protocol.sendMessage(ch, message, Compressor.off(), Encryptor.off());
 
-        Protocol.sendMessage(ch, message, Compressor.off(), Encryptor.off());
+            final UUID uuid = message.getId();
+            final byte[] payload = out.toByteArray();
 
-        final UUID uuid = message.getId();
-        final byte[] payload = out.toByteArray();
-
-        return new WalEntry(-1, WalEntryType.DATA, uuid, payload);
+            return new WalEntry(-1, WalEntryType.DATA, uuid, payload);
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to serialize Message to WalEntry", ex);
+        }
     }
 
     public static MessageWalEntry fromWalEntry(final WalEntry entry) {
         final byte[] payload = entry.getPayload();
 
-        final ByteArrayInputStream in = new ByteArrayInputStream(payload);
-        final ByteChannel ch = new ByteArrayStreamChannel(in);
-
-        final Message message = Protocol.receiveMessage(ch, Compressor.off(), Encryptor.off());
-
-        return new MessageWalEntry(message);
+        try (final ByteArrayInputStream in = new ByteArrayInputStream(payload);
+             final ByteChannel ch = new ByteArrayStreamChannel(in)
+        ) {
+            final Message message = Protocol.receiveMessage(ch, Compressor.off(), Encryptor.off());
+            return new MessageWalEntry(message);
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to deserialize WalEntry to Message", ex);
+        }
     }
 
 

@@ -21,8 +21,10 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
+import com.github.jlangch.venice.VncException;
 
-public class CorruptedRecordException extends RuntimeException {
+
+public class CorruptedRecordException extends VncException {
 
     public CorruptedRecordException(final String message) {
         super(message);
