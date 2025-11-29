@@ -142,7 +142,7 @@ public class Topics {
 
         if (topic.length() > TOPIC_MAX_LEN) {
             throw new IllegalArgumentException(
-                    "A topic is limit to " + TOPIC_MAX_LEN + "characters!");
+                    "A topic is limited to " + TOPIC_MAX_LEN + " characters!");
         }
 
         if (topic.contains(",")) {

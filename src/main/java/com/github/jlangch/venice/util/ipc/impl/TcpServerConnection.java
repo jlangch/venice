@@ -529,14 +529,14 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private Message handleCreateQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            createBadRequestTextMessageResponse(
-                request,
-                String.format("Request %s: Expected a JSON payload", request.getType()));
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
         final long maxQ =  maxQueues.get();
         if (countStandardQueues() >= maxQ) {
-            createBadRequestTextMessageResponse(
+            return createBadRequestTextMessageResponse(
                     request,
                     String.format(
                         "Request %s: Too many queues! Reached the limit of %d queues.",
@@ -548,6 +548,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
         final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
+
+        try {
+            QueueValidator.validate(queueName);
+        }
+        catch(Exception ex) {
+            return createBadRequestTextMessageResponse(
+                    request,
+                    String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
+        }
 
         if (StringUtil.isBlank(queueName) || capacity < 1) {
             return createBadRequestTextMessageResponse(
@@ -565,21 +574,21 @@ public class TcpServerConnection implements IPublisher, Runnable {
             p2pQueues.putIfAbsent(queueName, queue);
 
             return createOkTextMessageResponse(
-                request,
-                String.format("Request %s: Queue %s created.", request.getType(), queueName));
+                    request,
+                    String.format("Request %s: Queue %s created.", request.getType(), queueName));
         }
     }
 
     private Message handleCreateTemporaryQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
             return createBadRequestTextMessageResponse(
-                request,
-                String.format("Request %s: Expected a JSON payload", request.getType()));
+                    request,
+                    String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
         final long maxQ = maxQueues.get();
         if (tmpQueues.size() >= maxQ) {
-            createBadRequestTextMessageResponse(
+            return createBadRequestTextMessageResponse(
                     request,
                     String.format(
                         "Request %s: Too many temporary queues! "
@@ -601,6 +610,16 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else {
             final String queueName = "queue/" + UUID.randomUUID().toString();
 
+            try {
+                QueueValidator.validate(queueName);
+            }
+            catch(Exception ex) {
+                return createBadRequestTextMessageResponse(
+                        request,
+                        String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
+            }
+
+
             // do not overwrite the queue if it already exists
             if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, true)) == null) {
                 tmpQueues.put(queueName, 0);
@@ -620,24 +639,26 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
 
-        if (StringUtil.isNotBlank(queueName)) {
-            final IpcQueue<Message> queue = p2pQueues.get(queueName);
-            if (queue != null) {
-                queue.onRemove();
-            }
-
-            p2pQueues.remove(queueName);
-            tmpQueues.remove(queueName);
-
-            return createOkTextMessageResponse(
-                    request,
-                    String.format("Request %s: Queue %s removed.", request.getType(), queueName));
+        try {
+            QueueValidator.validate(queueName);
         }
-        else {
+        catch(Exception ex) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: A queue name must not be null or empty.", request.getType()));
+                    String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
         }
+
+        final IpcQueue<Message> queue = p2pQueues.get(queueName);
+        if (queue != null) {
+            queue.onRemove();
+        }
+
+        p2pQueues.remove(queueName);
+        tmpQueues.remove(queueName);
+
+        return createOkTextMessageResponse(
+                request,
+                String.format("Request %s: Queue %s removed.", request.getType(), queueName));
     }
 
     private Message handleStatusQueueRequest(final Message request) {
@@ -650,32 +671,34 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
 
-        if (StringUtil.isNotBlank(queueName)) {
-            final IpcQueue<Message> q = p2pQueues.get(queueName);
-
-            final String response = new JsonBuilder()
-                                            .add("name",      queueName)
-                                            .add("exists",    q != null)
-                                            .add("type",      q == null ? null
-                                                                        : (q instanceof BoundedQueue
-                                                                               ? "bounded"
-                                                                               : "circular"))
-                                            .add("temporary", q != null && q.isTemporary())
-                                            .add("capacity",  q == null ? 0L : (long)q.capacity())
-                                            .add("size",      q == null ? 0L : (long)q.size())
-                                            .toJson(false);
-
-            return createJsonResponseMessage(
-                        ResponseStatus.OK,
-                        request.getRequestId(),
-                        request.getTopics(),
-                        response);
+        try {
+            QueueValidator.validate(queueName);
         }
-        else {
+        catch(Exception ex) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: A queue name must not be null or empty.", request.getType()));
+                    String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
         }
+
+        final IpcQueue<Message> q = p2pQueues.get(queueName);
+
+        final String response = new JsonBuilder()
+                                        .add("name",      queueName)
+                                        .add("exists",    q != null)
+                                        .add("type",      q == null ? null
+                                                                    : (q instanceof BoundedQueue
+                                                                           ? "bounded"
+                                                                           : "circular"))
+                                        .add("temporary", q != null && q.isTemporary())
+                                        .add("capacity",  q == null ? 0L : (long)q.capacity())
+                                        .add("size",      q == null ? 0L : (long)q.size())
+                                        .toJson(false);
+
+        return createJsonResponseMessage(
+                    ResponseStatus.OK,
+                    request.getRequestId(),
+                    request.getTopics(),
+                    response);
     }
 
     private Message handleDiffieHellmanKeyExchange(final Message request) {

@@ -40,8 +40,8 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
@@ -305,9 +305,7 @@ public class TcpServer implements Closeable {
      * @param bounded if true create a bounded queue else create a circular queue
      */
     public void createQueue(final String queueName, final int capacity, final boolean bounded) {
-        if (StringUtil.isBlank(queueName)) {
-            throw new IllegalArgumentException("A queue name must not be blank");
-        }
+        QueueValidator.validate(queueName);
         if (capacity < 1) {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
@@ -325,9 +323,9 @@ public class TcpServer implements Closeable {
      * @param queueName a queue name
      */
     public void removeQueue(final String queueName) {
-        if (StringUtil.isNotBlank(queueName)) {
-            p2pQueues.remove(queueName);
-        }
+        QueueValidator.validate(queueName);
+
+        p2pQueues.remove(queueName);
     }
 
     /**
@@ -337,7 +335,7 @@ public class TcpServer implements Closeable {
      * @return <code>true</code> if the queue exists else <code>false</code>
      */
     public boolean existsQueue(final String queueName) {
-        Objects.requireNonNull(queueName);
+        QueueValidator.validate(queueName);
 
         return p2pQueues.containsKey(queueName);
     }

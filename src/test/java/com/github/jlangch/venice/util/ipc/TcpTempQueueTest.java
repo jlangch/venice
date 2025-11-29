@@ -57,12 +57,12 @@ public class TcpTempQueueTest {
 
             assertTrue(client1.existsQueue("queue/1"));
             assertTrue(client1.existsQueue("queue/2"));
-            assertFalse(client1.existsQueue("queue/???"));
+            assertFalse(client1.existsQueue("queue/---"));
             assertTrue(client1.existsQueue(tmpQueue));
 
             assertTrue(client2.existsQueue("queue/1"));
             assertTrue(client2.existsQueue("queue/2"));
-            assertFalse(client2.existsQueue("queue/???"));
+            assertFalse(client2.existsQueue("queue/---"));
             assertTrue(client2.existsQueue(tmpQueue));
 
             final IMessage request = MessageFactory.text(

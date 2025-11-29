@@ -26,11 +26,12 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 
-public class WalBasedQueue<T> implements IpcQueue<T> {
+public class WalBasedQueue<T> implements IpcQueue<T>, IWalQueue {
 
     public WalBasedQueue(
             final IpcQueue<T> queue,
-            final File walDir
+            final File walDir,
+            final boolean walEnabled
     ) {
         Objects.requireNonNull(queue);
         Objects.requireNonNull(walDir);
@@ -38,8 +39,23 @@ public class WalBasedQueue<T> implements IpcQueue<T> {
         this.queue = queue;
         this.queueName = queue.name();
         this.walDir = walDir;
+        this.walEnabled = walEnabled && !queue.isTemporary();
     }
 
+
+    @Override
+    public void reload() {
+        if (walEnabled) {
+
+        }
+    }
+
+    @Override
+    public void compact() {
+        if (walEnabled) {
+
+        }
+    }
 
     @Override
     public String name() {
@@ -64,11 +80,19 @@ public class WalBasedQueue<T> implements IpcQueue<T> {
 
     @Override
     public void clear() {
+        if (walEnabled) {
+
+        }
+
         queue.clear();
     }
 
     @Override
     public T poll() throws InterruptedException {
+        if (walEnabled) {
+
+        }
+
         return queue.poll();
     }
 
@@ -77,6 +101,10 @@ public class WalBasedQueue<T> implements IpcQueue<T> {
             final long timeout,
             final TimeUnit unit
     ) throws InterruptedException {
+        if (walEnabled) {
+
+        }
+
         return queue.poll(timeout, unit);
     }
 
@@ -84,7 +112,11 @@ public class WalBasedQueue<T> implements IpcQueue<T> {
     public boolean offer(final T item) throws InterruptedException {
         Objects.requireNonNull(item);
 
-       return queue.offer(item, 0, TimeUnit.MILLISECONDS);
+        if (walEnabled) {
+
+        }
+
+        return queue.offer(item, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -95,11 +127,19 @@ public class WalBasedQueue<T> implements IpcQueue<T> {
     ) throws InterruptedException {
         Objects.requireNonNull(item);
 
-       return queue.offer(item, timeout, unit);
+        if (walEnabled) {
+
+        }
+
+        return queue.offer(item, timeout, unit);
     }
 
     @Override
     public void onRemove() {
+        if (walEnabled) {
+
+        }
+
         queue.onRemove();
     }
 
@@ -107,4 +147,5 @@ public class WalBasedQueue<T> implements IpcQueue<T> {
     private final IpcQueue<T> queue;
     private final String queueName;
     private final File walDir;
+    private final boolean walEnabled;
 }
