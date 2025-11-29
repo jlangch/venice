@@ -76,6 +76,7 @@ public final class WriteAheadLog implements Closeable {
       *
       * @param entry WAL entry
       * @return LSN assigned to this record starts (from 1 and increments per append)
+      * @throws IOException on I/O failure
       */
      public synchronized long append(
              final WalEntry entry
@@ -92,6 +93,7 @@ public final class WriteAheadLog implements Closeable {
       *
       * @param entry WAL entry
       * @return LSN assigned to this record starts (from 1 and increments per append)
+      * @throws IOException on I/O failure
       */
     public synchronized long append(
              final AckWalEntry entry
@@ -108,6 +110,7 @@ public final class WriteAheadLog implements Closeable {
      *
      * @param entry WAL entry
      * @return LSN assigned to this record starts (from 1 and increments per append)
+     * @throws IOException on I/O failure
      */
      public synchronized long append(
              final DataWalEntry entry
@@ -126,6 +129,7 @@ public final class WriteAheadLog implements Closeable {
      * @param uuid uuid of this log record
      * @param payload bytes of this log record
      * @return LSN assigned to this record starts (from 1 and increments per append)
+     * @throws IOException on I/O failure
      */
     public synchronized long append(
             final WalEntryType type,
@@ -180,6 +184,9 @@ public final class WriteAheadLog implements Closeable {
 
     /**
      * Read all valid entries from the WAL (from beginning to last good record).
+     *
+     * @return a list of the read entries
+     * @throws IOException on I/O failure
      */
     public synchronized List<WalEntry> readAll() throws IOException {
         final List<WalEntry> result = new ArrayList<>();
@@ -201,9 +208,10 @@ public final class WriteAheadLog implements Closeable {
     /**
      * Compact the given log file in-place.
      *
-     * @param file the existing write-ahead-log
+     * @param logFile the existing write-ahead-log
      * @param removeBackupLogFile if true remove the created backup write-ahead-log
      * @return all valid entries from the compacted WAL
+     * @throws IOException on I/O failure
      */
     public static List<WalEntry> compact(
         final File logFile,
@@ -286,6 +294,8 @@ public final class WriteAheadLog implements Closeable {
     /**
      * Recover WAL state: scan from beginning, validate records,
      * stop at first corruption/partial record, and optionally truncate.
+     *
+     * @throws IOException on I/O failure
      */
     private void recover() throws IOException {
         channel.position(0);
@@ -328,6 +338,9 @@ public final class WriteAheadLog implements Closeable {
      * Read a single entry at the current channel position.
      * On EOF/partial data, throws EOFException.
      * On corruption (bad magic or checksum), throws CorruptedRecordException.
+     *
+     * @return the read WAL entry
+     * @throws IOException on I/O failure
      */
     private WalEntry readOneAtCurrentPosition() throws IOException {
         final ByteBuffer headerBuf = ByteBuffer.allocate(HEADER_SIZE);
@@ -386,7 +399,10 @@ public final class WriteAheadLog implements Closeable {
     /**
      * Read into buffer until it's full or EOF is reached.
      *
+     * @param channel a file channel
+     * @param buffer a buffer to read
      * @return total bytes read, or -1 if EOF encountered and no bytes read.
+     * @throws IOException on I/O failure
      */
     private static int readFully(
             final FileChannel channel,

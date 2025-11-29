@@ -35,16 +35,19 @@ import java.util.Objects;
 /**
  * A ByteChannel backed by ByteArrayInputStream and/or ByteArrayOutputStream.
  *
- * - If constructed with only a ByteArrayInputStream or byte[], the channel is read-only.
- * - If constructed with only a ByteArrayOutputStream, the channel is write-only.
- * - If constructed with both, it is readable and writable.
- *
+ * <ul>
+ *  <li>If constructed with only a ByteArrayInputStream or byte[], the channel is read-only.</li>
+ *  <li>If constructed with only a ByteArrayOutputStream, the channel is write-only.</li>
+ *  <li>If constructed with both, it is readable and writable.</li>
+ </ul> *
  * Not thread-safe.
  */
 public class ByteArrayStreamChannel implements ByteChannel {
 
     /**
      * Creates a read-only channel over a copy of the given byte array.
+     *
+     * @param data a byte array as input data
      */
     public ByteArrayStreamChannel(final byte[] data) {
         this(new ByteArrayInputStream(Objects.requireNonNull(data, "data")), null);
@@ -52,6 +55,8 @@ public class ByteArrayStreamChannel implements ByteChannel {
 
     /**
      * Creates a read-only channel over the given ByteArrayInputStream.
+     *
+     * @param in a ByteArrayInputStream as input data
      */
     public ByteArrayStreamChannel(final ByteArrayInputStream in) {
         this(Objects.requireNonNull(in, "in"), null);
@@ -59,6 +64,8 @@ public class ByteArrayStreamChannel implements ByteChannel {
 
     /**
      * Creates a write-only channel backed by the given ByteArrayOutputStream.
+     *
+     * @param out a ByteArrayOutputStream as input data
      */
     public ByteArrayStreamChannel(final ByteArrayOutputStream out) {
         this(null, Objects.requireNonNull(out, "out"));
@@ -67,6 +74,9 @@ public class ByteArrayStreamChannel implements ByteChannel {
     /**
      * Creates a channel that can be read from and/or written to depending on which
      * streams are non-null.
+     *
+     * @param in a ByteArrayInputStream as input data
+     * @param out a ByteArrayOutputStream as input data
      */
     public ByteArrayStreamChannel(
         final ByteArrayInputStream in,
@@ -75,6 +85,7 @@ public class ByteArrayStreamChannel implements ByteChannel {
         if (in == null && out == null) {
             throw new IllegalArgumentException("At least one of in or out must be non-null");
         }
+
         this.in = in;
         this.out = out;
     }
@@ -91,14 +102,14 @@ public class ByteArrayStreamChannel implements ByteChannel {
             return 0;
         }
 
-        int available = in.available();
+        final int available = in.available();
         if (available == 0) {
             return -1; // EOF
         }
 
-        int toRead = Math.min(dst.remaining(), available);
-        byte[] buf = new byte[toRead];
-        int read = in.read(buf, 0, toRead);
+        final int toRead = Math.min(dst.remaining(), available);
+        final byte[] buf = new byte[toRead];
+        final int read = in.read(buf, 0, toRead);
         if (read == -1) {
             return -1;
         }
@@ -119,8 +130,8 @@ public class ByteArrayStreamChannel implements ByteChannel {
             return 0;
         }
 
-        int len = src.remaining();
-        byte[] buf = new byte[len];
+        final int len = src.remaining();
+        final byte[] buf = new byte[len];
         src.get(buf);
         out.write(buf);
         return len;
@@ -148,6 +159,8 @@ public class ByteArrayStreamChannel implements ByteChannel {
     /**
      * Convenience accessor for the underlying ByteArrayOutputStream's content.
      * Returns null if this channel is not backed by an output stream.
+     *
+     * @return the out data as byte array
      */
     public byte[] toByteArray() {
         return out != null ? out.toByteArray() : null;
