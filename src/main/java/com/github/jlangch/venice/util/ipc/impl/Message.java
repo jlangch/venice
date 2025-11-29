@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -392,6 +393,92 @@ public class Message implements IMessage {
     }
 
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((charset == null) ? 0 : charset.hashCode());
+        result = prime * result + Arrays.hashCode(data);
+        result = prime * result + (durable ? 1231 : 1237);
+        result = prime * result + (int) (expiresAt ^ (expiresAt >>> 32));
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
+        result = prime * result + (oneway ? 1231 : 1237);
+        result = prime * result + ((queueName == null) ? 0 : queueName.hashCode());
+        result = prime * result + ((replyToQueueName == null) ? 0 : replyToQueueName.hashCode());
+        result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
+        result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
+        result = prime * result + (int) (timeout ^ (timeout >>> 32));
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = prime * result + ((topics == null) ? 0 : topics.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Message other = (Message) obj;
+        if (charset == null) {
+            if (other.charset != null)
+                return false;
+        } else if (!charset.equals(other.charset))
+            return false;
+        if (!Arrays.equals(data, other.data))
+            return false;
+        if (durable != other.durable)
+            return false;
+        if (expiresAt != other.expiresAt)
+            return false;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (mimetype == null) {
+            if (other.mimetype != null)
+                return false;
+        } else if (!mimetype.equals(other.mimetype))
+            return false;
+        if (oneway != other.oneway)
+            return false;
+        if (queueName == null) {
+            if (other.queueName != null)
+                return false;
+        } else if (!queueName.equals(other.queueName))
+            return false;
+        if (replyToQueueName == null) {
+            if (other.replyToQueueName != null)
+                return false;
+        } else if (!replyToQueueName.equals(other.replyToQueueName))
+            return false;
+        if (requestId == null) {
+            if (other.requestId != null)
+                return false;
+        } else if (!requestId.equals(other.requestId))
+            return false;
+        if (responseStatus != other.responseStatus)
+            return false;
+        if (timeout != other.timeout)
+            return false;
+        if (timestamp != other.timestamp)
+            return false;
+        if (topics == null) {
+            if (other.topics != null)
+                return false;
+        } else if (!topics.equals(other.topics))
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+
+
     private String formatData() {
        if (isTextMessage()) {
            final String text = getText();
@@ -401,6 +488,7 @@ public class Message implements IMessage {
            return formatDataLen(data.length);
        }
     }
+
 
     private static String formatDataLen(final int len) {
         if (len < 10 * 1024) {

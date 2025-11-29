@@ -23,26 +23,30 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.MessageFactory;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 
-public class AckWalEntryTest {
+
+public class MessageEntryTest {
 
     @Test
     public void test() {
-        final UUID uuid = UUID.randomUUID();
+        final Message m = (Message)MessageFactory.text(
+                                        null,
+                                        "hello", "text/plain", "UTF-8", "Hello!");
 
-        final AckWalEntry entry = new AckWalEntry(uuid) ;
+
+        final MessageWalEntry entry = new MessageWalEntry(m) ;
 
         // serialize
         final WalEntry we = entry.toWalEntry();
 
         // deserialize
-        final AckWalEntry entryOut = AckWalEntry.fromWalEntry(we);
+        final MessageWalEntry entryOut = MessageWalEntry.fromWalEntry(we);
 
-        assertEquals(uuid, entryOut.getAckedEntryUUID());
+        assertEquals(m, entryOut.getMessage());
     }
 
 }
