@@ -63,13 +63,14 @@ import java.util.zip.CRC32;
 public final class WriteAheadLog implements Closeable {
 
      public WriteAheadLog(final File file) throws IOException {
-        this.file = file;
-        this.raf = new RandomAccessFile(file, "rw");
-        this.channel = raf.getChannel();
+         this.file = file;
+         this.raf = new RandomAccessFile(file, "rw");
+         this.channel = raf.getChannel();
 
-        // Recover state if file already exists / has content
-        recover();
-    }
+         // Recover state if file already exists / has content
+         recover();
+     }
+
 
      /**
       * Append an entry to the WAL and fsync it.
