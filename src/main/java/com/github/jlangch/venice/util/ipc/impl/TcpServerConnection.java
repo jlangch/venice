@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.io.File;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -54,6 +55,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
+import com.github.jlangch.venice.util.ipc.impl.wal.WalBasedQueue;
 
 
 public class TcpServerConnection implements IPublisher, Runnable {
@@ -64,6 +66,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final Function<IMessage,IMessage> handler,
             final AtomicLong maxMessageSize,
             final AtomicLong maxQueues,
+            final AtomicReference<File> walDir,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final Map<String, IpcQueue<Message>> p2pQueues,
@@ -76,6 +79,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.handler = handler;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
+        this.walDir = walDir;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
         this.compressor = compressor;
@@ -555,23 +559,43 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
+                    String.format(
+                            "Request %s: Invalid queue name: %s",
+                            request.getType(), ex.getMessage()));
         }
 
         if (StringUtil.isBlank(queueName) || capacity < 1) {
             return createBadRequestTextMessageResponse(
                     request,
                     String.format(
-                       "Request %s: A queue name must not be blank and the capacity must not be lower than 1",
+                       "Request %s: A queue name must not be blank and the "
+                       + "capacity must not be lower than 1",
                        request.getType()));
         }
         else {
             final IpcQueue<Message> queue = bounded
-                                                ? new BoundedQueue<Message>(queueName, capacity, false)
-                                                : new CircularBuffer<Message>(queueName, capacity, false);
+                    ? new BoundedQueue<Message>(queueName, capacity, false)
+                    : new CircularBuffer<Message>(queueName, capacity, false);
 
-            // do not overwrite the queue if it already exists
-            p2pQueues.putIfAbsent(queueName, queue);
+            if (bounded && walDir.get() != null) {
+                // create WAL based bounded queue
+                try {
+                    p2pQueues.putIfAbsent(
+                        queueName,
+                        new WalBasedQueue(queue, walDir.get(), true));
+                }
+                catch(Exception ex) {
+                    return createBadRequestTextMessageResponse(
+                            request,
+                            String.format(
+                                "Request %s: Failed to ceate WAL based queue: %s. Reason: %s",
+                                request.getType(), queueName, ex.getMessage()));
+                }
+            }
+            else {
+                // do not overwrite the queue if it already exists
+                p2pQueues.putIfAbsent(queueName, queue);
+            }
 
             return createOkTextMessageResponse(
                     request,
@@ -616,7 +640,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             catch(Exception ex) {
                 return createBadRequestTextMessageResponse(
                         request,
-                        String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
+                        String.format("Request %s: Invalid queue name: %s", request.getType(), ex.getMessage()));
             }
 
 
@@ -645,7 +669,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
+                    String.format("Request %s: Invalid queue name: %s", request.getType(), ex.getMessage()));
         }
 
         final IpcQueue<Message> queue = p2pQueues.get(queueName);
@@ -677,7 +701,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: Invalid queue name: ", request.getType(), ex.getMessage()));
+                    String.format("Request %s: Invalid queue name: %s", request.getType(), ex.getMessage()));
         }
 
         final IpcQueue<Message> q = p2pQueues.get(queueName);
@@ -948,6 +972,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final Function<IMessage,IMessage> handler;
     private final AtomicLong maxMessageSize;
     private final AtomicLong maxQueues;
+    private final AtomicReference<File> walDir;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;

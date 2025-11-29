@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.ipc;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
@@ -49,6 +50,7 @@ import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
+import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
 // https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
 // https://github.com/baswerc/niossl
@@ -164,6 +166,36 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * Enable  Write-Ahead-Logs
+     *
+     * @param walDir the Write-Ahead-Logs directory
+     */
+    public void enableWriteAheadLog(final File walDir) {
+        Objects.requireNonNull(walDir);
+
+        if (walDir.isDirectory()) {
+            throw new VncException(
+                    "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
+        }
+
+        this.walDir.set(walDir);
+    }
+
+    /**
+     * @return return true if Write-Ahead-Log is enabled.
+     */
+    public boolean isWriteAheadLog() {
+        return walDir.get() != null;
+    }
+
+    /**
+     * @return return the Write-Ahead-Log dir if Write-Ahead-Log is enabled.
+     */
+    public File getWriteAheadLogDir() {
+        return walDir.get();
+    }
+
+    /**
      * @return the endpoint ID of this server
      */
     public String getEndpointId() {
@@ -210,6 +242,11 @@ public class TcpServer implements Closeable {
 
                 ch.configureBlocking(true);
 
+                if (isWriteAheadLog()) {
+                    new WalQueueManager(walDir.get())
+                            .preloadQueues(p2pQueues);
+                }
+
                 // run in an executor thread to not block the caller
                 executor.execute(() -> {
                     while (started.get()) {
@@ -218,7 +255,9 @@ public class TcpServer implements Closeable {
                             channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
                                                                    this, channel, handler,
-                                                                   maxMessageSize, maxQueues,
+                                                                   maxMessageSize,
+                                                                   maxQueues,
+                                                                   walDir,
                                                                    subscriptions,
                                                                    publishQueueCapacity,
                                                                    p2pQueues,
@@ -400,6 +439,7 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
+    private final AtomicReference<File> walDir = new AtomicReference<>();
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();

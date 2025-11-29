@@ -22,17 +22,36 @@
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
+import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 
 
 public class WalQueueManager {
 
     public WalQueueManager(final File walDir) {
         this.walDir = walDir;
+    }
+
+    public void preloadQueues(
+        final Map<String, IpcQueue<Message>> p2pQueues
+    ) throws IOException {
+        for(File logFile :listLogFiles()) {
+            final String queueName = WalQueueManager.toQueueName(logFile);
+            p2pQueues.put(
+                queueName,
+                new WalBasedQueue(
+                        new BoundedQueue<Message>(queueName, 1000, false),
+                        walDir,
+                        true));
+        };
     }
 
     public List<File> listLogFiles() {
