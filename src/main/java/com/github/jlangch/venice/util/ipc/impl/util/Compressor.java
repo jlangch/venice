@@ -62,6 +62,10 @@ public class Compressor {
         return cutoffSize >= 0 && data.length >= cutoffSize;
     }
 
+    public boolean isActive() {
+        return cutoffSize >= 0;
+    }
+
 
     private final long cutoffSize;
 }

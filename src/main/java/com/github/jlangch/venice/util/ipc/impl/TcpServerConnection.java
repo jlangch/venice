@@ -176,7 +176,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                                 "The message (%d bytes) is too large! The limit is at %d bytes.",
                                                 request.getData().length,
                                                 maxMessageSize));
-               Protocol.sendMessage(ch, response, compressor,encryptor.get());
+               Protocol.sendMessage(ch, response, compressor, encryptor.get());
             }
             return mode;
         }
@@ -186,7 +186,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             // process a server status request
             final Message response = handleTcpServerRequest(request);
             if (!request.isOneway()) {
-                Protocol.sendMessage(ch, response, compressor,encryptor.get());
+                Protocol.sendMessage(ch, response, compressor, encryptor.get());
             }
             return mode;
         }
