@@ -142,6 +142,27 @@ public class TcpServer implements Closeable {
         return maxMessageSize.get();
     }
 
+
+    /**
+     * Set the max number of queues.
+     *
+     * <p>Defaults to 20
+     *
+     * @param maxQueues the max number of queues.
+     * @return this server
+     */
+    public TcpServer setMaxQueues(final long maxQueues) {
+        this.maxQueues.set(Math.max(QUEUES_MIN, Math.min(QUEUES_MAX, maxQueues)));
+        return this;
+    }
+
+    /**
+     * @return return the max number of queues.
+     */
+    public long getMaxQueues() {
+        return maxQueues.get();
+    }
+
     /**
      * @return the endpoint ID of this server
      */
@@ -197,7 +218,8 @@ public class TcpServer implements Closeable {
                             channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
                                                                    this, channel, handler,
-                                                                   maxMessageSize, subscriptions,
+                                                                   maxMessageSize, maxQueues,
+                                                                   subscriptions,
                                                                    publishQueueCapacity,
                                                                    p2pQueues,
                                                                    compressor.get(),
@@ -367,6 +389,8 @@ public class TcpServer implements Closeable {
 
     public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
     public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
+    public static final long QUEUES_MIN = 201;
+    public static final long QUEUES_MAX = 20;
 
     private final int port;
     private final int timeout;
@@ -374,6 +398,7 @@ public class TcpServer implements Closeable {
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
+    private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();

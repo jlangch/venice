@@ -90,6 +90,8 @@ public class IPCFunctions {
                                                    " Defaults to `200MB`.¶" +
                                                    " The max size can be specified as a number like `20000`" +
                                                    " or a number with a unit like `:20KB` or `:20MB`|\n" +
+                        "| :max-queues n           | The number of the max queues the server can handle." +
+                                                   " Defaults to 20.|\n" +
                         "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the cutoff" +
@@ -142,6 +144,7 @@ public class IPCFunctions {
 
                 final VncVal maxConnVal = options.get(new VncKeyword("max-connections"));
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
+                final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
 
                 final int maxConn = maxConnVal == Nil
@@ -149,6 +152,7 @@ public class IPCFunctions {
                                         : Coerce.toVncLong(maxConnVal).getIntValue();
 
                 final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
+                final long maxQueues = convertMaxMessageSizeToLong(maxMaxQueuesVal);
                 final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
 
                 final Function<IMessage,IMessage> handlerWrapper;
@@ -182,6 +186,10 @@ public class IPCFunctions {
 
                 if (maxMsgSize > 0) {
                     server.setMaximumMessageSize(maxMsgSize);
+                }
+
+                if (maxQueues > 0) {
+                    server.setMaxQueues(maxQueues);
                 }
 
                 if (compressCutoffSize >= 0) {

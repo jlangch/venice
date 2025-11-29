@@ -62,6 +62,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final SocketChannel ch,
             final Function<IMessage,IMessage> handler,
             final AtomicLong maxMessageSize,
+            final AtomicLong maxQueues,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final Map<String, IpcQueue<Message>> p2pQueues,
@@ -73,6 +74,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.ch = ch;
         this.handler = handler;
         this.maxMessageSize = maxMessageSize;
+        this.maxQueues = maxQueues;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
         this.compressor = compressor;
@@ -531,6 +533,16 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
+        final long maxQ =  maxQueues.get();
+        if (countStandardQueues() >= maxQ) {
+            createBadRequestTextMessageResponse(
+                    request,
+                    String.format(
+                        "Request %s: Too many queues! Reached the limit of %d queues.",
+                        request.getType(),
+                        maxQ));
+        }
+
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
@@ -562,6 +574,17 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return createBadRequestTextMessageResponse(
                 request,
                 String.format("Request %s: Expected a JSON payload", request.getType()));
+        }
+
+        final long maxQ = maxQueues.get();
+        if (tmpQueues.size() >= maxQ) {
+            createBadRequestTextMessageResponse(
+                    request,
+                    String.format(
+                        "Request %s: Too many temporary queues! "
+                        + "Reached the limit of %d temporary queues for this client.",
+                        request.getType(),
+                        maxQ));
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -870,6 +893,14 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ignore) {}
     }
 
+    private long countStandardQueues() {
+        return p2pQueues
+                .values()
+                .stream()
+                .filter(q -> !q.isTemporary())
+                .count();
+    }
+
 
 
     private static byte[] toBytes(final String s, final String charset) {
@@ -887,6 +918,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final SocketChannel ch;
     private final Function<IMessage,IMessage> handler;
     private final AtomicLong maxMessageSize;
+    private final AtomicLong maxQueues;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
