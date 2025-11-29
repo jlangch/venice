@@ -23,7 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.ByteChannel;
 import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
@@ -42,7 +42,7 @@ public class Protocol {
 
 
     public static void sendMessage(
-            final SocketChannel ch,
+            final ByteChannel ch,
             final Message message,
             final Compressor compressor,
             final Encryptor encryptor
@@ -98,7 +98,7 @@ public class Protocol {
     }
 
     public static Message receiveMessage(
-            final SocketChannel ch,
+            final ByteChannel ch,
             final Compressor compressor,
             final Encryptor encryptor
     ) {

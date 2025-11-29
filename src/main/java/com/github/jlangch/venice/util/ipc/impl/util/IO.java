@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ByteChannel;
 import java.nio.channels.SocketChannel;
 
 import com.github.jlangch.venice.EofException;
@@ -32,7 +33,7 @@ import com.github.jlangch.venice.VncException;
 public class IO {
 
     public static ByteBuffer readFrame(
-            final SocketChannel ch
+            final ByteChannel ch
     ) {
         try {
             final ByteBuffer len = ByteBuffer.allocate(4);
@@ -68,7 +69,7 @@ public class IO {
     }
 
     public static void writeFrame(
-            final SocketChannel ch,
+            final ByteChannel ch,
             final ByteBuffer data
     ) {
         try {
@@ -98,7 +99,7 @@ public class IO {
     }
 
     public static void readFully(
-            final SocketChannel ch,
+            final ByteChannel ch,
             final ByteBuffer buf
     ) {
         try {
@@ -122,7 +123,7 @@ public class IO {
     }
 
     public static void writeFully(
-            final SocketChannel ch,
+            final ByteChannel ch,
             final ByteBuffer buf
     ) {
         try {
