@@ -621,6 +621,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
 
         if (StringUtil.isNotBlank(queueName)) {
+            final IpcQueue<Message> queue = p2pQueues.get(queueName);
+            if (queue != null) {
+                queue.onRemove();
+            }
+
             p2pQueues.remove(queueName);
             tmpQueues.remove(queueName);
 

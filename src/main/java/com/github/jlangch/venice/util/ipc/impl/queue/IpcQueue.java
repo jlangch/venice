@@ -44,4 +44,6 @@ public interface IpcQueue<T> {
 
     boolean offer(T item, long timeout, TimeUnit unit) throws InterruptedException;
 
+    void onRemove();
+
 }

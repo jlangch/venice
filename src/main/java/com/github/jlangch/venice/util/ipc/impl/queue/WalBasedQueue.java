@@ -21,42 +21,39 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.queue;
 
+import java.io.File;
 import java.util.Objects;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
+public class WalBasedQueue<T> implements IpcQueue<T> {
 
-/**
- * A bounded, thread-safe queue based on LinkedBlockingQueue
- */
-public class BoundedQueue<T> implements IpcQueue<T> {
-
-    public BoundedQueue(
-            final String name,
-            final int capacity,
-            final boolean temporary
+    public WalBasedQueue(
+            final IpcQueue<T> queue,
+            final File walDir
     ) {
-        this.name = name;
-        this.capacity = capacity;
-        this.temporary = temporary;
-        this.queue = new LinkedBlockingQueue<>(capacity);
+        Objects.requireNonNull(queue);
+        Objects.requireNonNull(walDir);
+
+        this.queue = queue;
+        this.queueName = queue.name();
+        this.walDir = walDir;
     }
 
 
     @Override
     public String name() {
-        return name;
+        return queue.name();
     }
 
     @Override
     public int capacity() {
-        return capacity;
+        return queue.capacity();
     }
 
     @Override
     public boolean isTemporary() {
-        return temporary;
+        return queue.isTemporary();
     }
 
 
@@ -72,11 +69,14 @@ public class BoundedQueue<T> implements IpcQueue<T> {
 
     @Override
     public T poll() throws InterruptedException {
-        return queue.poll(0, TimeUnit.MILLISECONDS);
+        return queue.poll();
     }
 
     @Override
-    public T poll(final long timeout, final TimeUnit unit) throws InterruptedException {
+    public T poll(
+            final long timeout,
+            final TimeUnit unit
+    ) throws InterruptedException {
         return queue.poll(timeout, unit);
     }
 
@@ -88,7 +88,11 @@ public class BoundedQueue<T> implements IpcQueue<T> {
     }
 
     @Override
-    public boolean offer(final T item, final long timeout, final TimeUnit unit) throws InterruptedException {
+    public boolean offer(
+            final T item,
+            final long timeout,
+            final TimeUnit unit
+    ) throws InterruptedException {
         Objects.requireNonNull(item);
 
        return queue.offer(item, timeout, unit);
@@ -96,12 +100,11 @@ public class BoundedQueue<T> implements IpcQueue<T> {
 
     @Override
     public void onRemove() {
-        clear();
+        queue.onRemove();
     }
 
 
-    private final String name;
-    private final boolean temporary;
-    private final int capacity;
-    private final LinkedBlockingQueue<T> queue;
+    private final IpcQueue<T> queue;
+    private final String queueName;
+    private final File walDir;
 }
