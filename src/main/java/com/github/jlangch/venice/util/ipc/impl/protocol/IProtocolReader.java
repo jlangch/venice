@@ -19,19 +19,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.util;
+package com.github.jlangch.venice.util.ipc.impl.protocol;
 
-import java.nio.channels.SocketChannel;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 
-public class IO {
+public interface IProtocolReader {
 
-    public static void safeClose(final SocketChannel ch) {
-        if (ch != null) {
-            try {
-                ch.close();
-            }
-            catch(Exception ignore) { }
-        }
-    }
+    int read(ByteBuffer buf) throws IOException;
+
+    ByteBuffer readFrame() throws IOException;
+
 }

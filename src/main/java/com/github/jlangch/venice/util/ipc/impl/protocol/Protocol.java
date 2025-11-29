@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl;
+package com.github.jlangch.venice.util.ipc.impl.protocol;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -28,10 +28,10 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
-import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.PayloadMetaData;
 
 
@@ -39,7 +39,6 @@ public class Protocol {
 
     public Protocol() {
     }
-
 
     public static void sendMessage(
             final ByteChannel ch,
@@ -49,6 +48,35 @@ public class Protocol {
     ) {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
+        Objects.requireNonNull(compressor);
+        Objects.requireNonNull(encryptor);
+
+        sendMessage(new ChannelProtocolWriter(ch), message, compressor, encryptor);
+    }
+
+    public static Message receiveMessage(
+            final ByteChannel ch,
+            final Compressor compressor,
+            final Encryptor encryptor
+    ) {
+        Objects.requireNonNull(ch);
+        Objects.requireNonNull(compressor);
+        Objects.requireNonNull(encryptor);
+
+        return receiveMessage(new ChannelProtocolReader(ch), compressor, encryptor);
+    }
+
+
+    private static void sendMessage(
+            final IProtocolWriter writer,
+            final Message message,
+            final Compressor compressor,
+            final Encryptor encryptor
+    ) {
+        Objects.requireNonNull(writer);
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(compressor);
+        Objects.requireNonNull(encryptor);
 
         final boolean isCompressData = compressor.needsCompression(message.getData());
 
@@ -73,7 +101,7 @@ public class Protocol {
         // 8 bytes (long) timeout
         header.putLong(message.getTimeout());
         header.flip();
-        IO.writeFully(ch, header);
+        writer.writeFully(header);
 
         // [2] payload meta data (optionally encrypt)
         final byte[] headerAAD = header.array(); ; // GCM AAD: added authenticated data
@@ -84,7 +112,7 @@ public class Protocol {
         final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
         meta.put(metaData);
         meta.flip();
-        IO.writeFrame(ch, meta);
+        writer.writeFrame(meta);
 
         // [3] payload data (optionally compress and encrypt)
         byte[] payloadData = encryptor.encrypt(
@@ -94,20 +122,22 @@ public class Protocol {
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
-        IO.writeFrame(ch, payload);
+        writer.writeFrame(payload);
     }
 
-    public static Message receiveMessage(
-            final ByteChannel ch,
+    private static Message receiveMessage(
+            final IProtocolReader reader,
             final Compressor compressor,
             final Encryptor encryptor
     ) {
-        Objects.requireNonNull(ch);
+        Objects.requireNonNull(reader);
+        Objects.requireNonNull(compressor);
+        Objects.requireNonNull(encryptor);
 
         try {
             // [1] header
             final ByteBuffer header = ByteBuffer.allocate(34);
-            final int bytesRead = ch.read(header);
+            final int bytesRead = reader.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
             }
@@ -135,7 +165,7 @@ public class Protocol {
             }
 
             // [2] payload meta data (maybe encrypted)
-            final ByteBuffer payloadMetaFrame = IO.readFrame(ch);
+            final ByteBuffer payloadMetaFrame = reader.readFrame();
             final byte[] headerAAD = header.array(); // GCM AAD: added authenticated data
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
@@ -144,7 +174,7 @@ public class Protocol {
                                                         isEncryptedData));
 
             // [3] payload data (maybe compressed and encrypted)
-            final ByteBuffer payloadFrame = IO.readFrame(ch);
+            final ByteBuffer payloadFrame = reader.readFrame();
             byte[] payloadData = compressor.decompress(
                                     encryptor.decrypt(
                                         payloadFrame.array(),

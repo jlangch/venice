@@ -19,19 +19,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.util;
+package com.github.jlangch.venice.util.ipc.impl.protocol;
 
-import java.nio.channels.SocketChannel;
+import java.nio.ByteBuffer;
+import java.nio.channels.ByteChannel;
 
 
-public class IO {
+public class ChannelProtocolWriter implements IProtocolWriter{
 
-    public static void safeClose(final SocketChannel ch) {
-        if (ch != null) {
-            try {
-                ch.close();
-            }
-            catch(Exception ignore) { }
-        }
+    public ChannelProtocolWriter(final ByteChannel ch) {
+        this.ch = ch;
     }
+
+    @Override
+    public void writeFully(final ByteBuffer buf) {
+        BufferIO.writeFully(ch, buf);
+    }
+
+    @Override
+    public void writeFrame(final ByteBuffer buf) {
+        BufferIO.writeFrame(ch, buf);
+    }
+
+
+    private final ByteChannel ch;
 }
