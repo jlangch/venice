@@ -2407,6 +2407,8 @@ public class IPCFunctions {
                         "Circular queues never block but just keep the last 'capacity' messages. The " +
                         "oldest messages get discarded if the buffer is full and new messages are " +
                         "offered to the queue.\n\n" +
+                        "A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'. " +
+                        "Up to 80 characters are allowed.\n\n" +
                         "Use `ipc/offer` to offer a new message to a queue.¶" +
                         "Use `ipc/poll` to poll a message from a queue.\n\n" +
                         "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +

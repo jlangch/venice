@@ -300,6 +300,9 @@ public class TcpServer implements Closeable {
     /**
      * Create a new queue.
      *
+     * <p>A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * Up to 80 characters are allowed.
+     *
      * @param queueName a queue name
      * @param capacity the queue capacity
      * @param bounded if true create a bounded queue else create a circular queue
