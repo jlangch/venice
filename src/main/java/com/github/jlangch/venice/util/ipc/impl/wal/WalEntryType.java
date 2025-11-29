@@ -35,7 +35,7 @@ public enum WalEntryType {
                 return s;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown WAL entry type code: " + code);
     }
 
     private final int value;

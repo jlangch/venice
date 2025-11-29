@@ -48,7 +48,7 @@ public enum ResponseStatus {
                 return s;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown response status code: " + code);
     }
 
     private final int value;

@@ -59,7 +59,7 @@ public enum MessageType {
                 return s;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown messsage type code: " + code);
     }
 
     private final int value;
