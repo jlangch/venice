@@ -30,7 +30,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 
 
-public class BufferIO {
+public class ByteChannelIO {
 
     public static ByteBuffer readFrame(
             final ByteChannel ch
@@ -138,4 +138,5 @@ public class BufferIO {
             }
         }
     }
+
 }

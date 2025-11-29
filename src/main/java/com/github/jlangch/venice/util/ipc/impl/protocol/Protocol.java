@@ -51,33 +51,6 @@ public class Protocol {
         Objects.requireNonNull(compressor);
         Objects.requireNonNull(encryptor);
 
-        sendMessage(new ChannelProtocolWriter(ch), message, compressor, encryptor);
-    }
-
-    public static Message receiveMessage(
-            final ByteChannel ch,
-            final Compressor compressor,
-            final Encryptor encryptor
-    ) {
-        Objects.requireNonNull(ch);
-        Objects.requireNonNull(compressor);
-        Objects.requireNonNull(encryptor);
-
-        return receiveMessage(new ChannelProtocolReader(ch), compressor, encryptor);
-    }
-
-
-    private static void sendMessage(
-            final IProtocolWriter writer,
-            final Message message,
-            final Compressor compressor,
-            final Encryptor encryptor
-    ) {
-        Objects.requireNonNull(writer);
-        Objects.requireNonNull(message);
-        Objects.requireNonNull(compressor);
-        Objects.requireNonNull(encryptor);
-
         final boolean isCompressData = compressor.needsCompression(message.getData());
 
         // [1] header
@@ -101,7 +74,7 @@ public class Protocol {
         // 8 bytes (long) timeout
         header.putLong(message.getTimeout());
         header.flip();
-        writer.writeFully(header);
+        ByteChannelIO.writeFully(ch, header);
 
         // [2] payload meta data (optionally encrypt)
         final byte[] headerAAD = header.array(); ; // GCM AAD: added authenticated data
@@ -112,7 +85,7 @@ public class Protocol {
         final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
         meta.put(metaData);
         meta.flip();
-        writer.writeFrame(meta);
+        ByteChannelIO.writeFrame(ch, meta);
 
         // [3] payload data (optionally compress and encrypt)
         byte[] payloadData = encryptor.encrypt(
@@ -122,22 +95,22 @@ public class Protocol {
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();
-        writer.writeFrame(payload);
+        ByteChannelIO.writeFrame(ch, payload);
     }
 
-    private static Message receiveMessage(
-            final IProtocolReader reader,
+    public static Message receiveMessage(
+            final ByteChannel ch,
             final Compressor compressor,
             final Encryptor encryptor
     ) {
-        Objects.requireNonNull(reader);
+        Objects.requireNonNull(ch);
         Objects.requireNonNull(compressor);
         Objects.requireNonNull(encryptor);
 
         try {
             // [1] header
             final ByteBuffer header = ByteBuffer.allocate(34);
-            final int bytesRead = reader.read(header);
+            final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
             }
@@ -165,7 +138,7 @@ public class Protocol {
             }
 
             // [2] payload meta data (maybe encrypted)
-            final ByteBuffer payloadMetaFrame = reader.readFrame();
+            final ByteBuffer payloadMetaFrame = ByteChannelIO.readFrame(ch);
             final byte[] headerAAD = header.array(); // GCM AAD: added authenticated data
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
@@ -174,7 +147,7 @@ public class Protocol {
                                                         isEncryptedData));
 
             // [3] payload data (maybe compressed and encrypted)
-            final ByteBuffer payloadFrame = reader.readFrame();
+            final ByteBuffer payloadFrame = ByteChannelIO.readFrame(ch);
             byte[] payloadData = compressor.decompress(
                                     encryptor.decrypt(
                                         payloadFrame.array(),
