@@ -25,6 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 
+/**
+ * WalEntry serializer/deserializer for data WAL entries
+ */
 public class DataWalEntry {
 
     public DataWalEntry(final UUID uuid, final byte[] payload) {

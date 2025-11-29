@@ -34,6 +34,9 @@ import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 
 
+/**
+ * WalEntry serializer/deserializer for IPC message WAL data entries
+ */
 public class MessageWalEntry {
 
     public MessageWalEntry(final Message message) {

@@ -26,6 +26,9 @@ import java.util.UUID;
 import com.github.jlangch.venice.impl.util.UUIDHelper;
 
 
+/**
+ * WalEntry serializer/deserializer for acknowledge WAL entries
+ */
 public class AckWalEntry {
 
     public AckWalEntry(final UUID ackedEntryUUID) {
