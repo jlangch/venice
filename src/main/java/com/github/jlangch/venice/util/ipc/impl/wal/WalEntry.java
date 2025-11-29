@@ -27,6 +27,14 @@ import java.util.UUID;
 public final class WalEntry {
 
     public WalEntry(
+            final WalEntryType type,
+            final UUID uuid,
+            final byte[] payload
+    ) {
+        this(-1, type, uuid, payload);
+    }
+
+    public WalEntry(
             final long lsn,
             final WalEntryType type,
             final UUID uuid,

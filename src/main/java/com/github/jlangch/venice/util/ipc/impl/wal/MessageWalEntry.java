@@ -61,7 +61,7 @@ public class MessageWalEntry {
             final UUID uuid = message.getId();
             final byte[] payload = out.toByteArray();
 
-            return new WalEntry(-1, WalEntryType.DATA, uuid, payload);
+            return new WalEntry(WalEntryType.DATA, uuid, payload);
         }
         catch(Exception ex) {
             throw new VncException("Failed to serialize Message to WalEntry", ex);

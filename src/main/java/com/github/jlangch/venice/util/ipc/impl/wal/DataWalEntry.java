@@ -63,7 +63,7 @@ public class DataWalEntry {
     }
 
     public WalEntry toWalEntry() {
-        return new WalEntry(-1, WalEntryType.DATA,  uuid, payload);
+        return new WalEntry(WalEntryType.DATA,  uuid, payload);
     }
 
     public static DataWalEntry fromWalEntry(final WalEntry entry) {
