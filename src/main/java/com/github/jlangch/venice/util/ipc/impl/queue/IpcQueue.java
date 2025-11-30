@@ -40,8 +40,6 @@ public interface IpcQueue<T> {
 
     int capacity();
 
-    void clear();
-
     T poll() throws InterruptedException;
 
     T poll(long timeout, TimeUnit unit) throws InterruptedException;

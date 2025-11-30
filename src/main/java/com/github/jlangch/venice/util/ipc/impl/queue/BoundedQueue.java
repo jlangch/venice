@@ -82,11 +82,6 @@ public class BoundedQueue<T> implements IpcQueue<T> {
     }
 
     @Override
-    public void clear() {
-        queue.clear();
-    }
-
-    @Override
     public T poll() throws InterruptedException {
         return queue.poll(0, TimeUnit.MILLISECONDS);
     }
@@ -112,7 +107,7 @@ public class BoundedQueue<T> implements IpcQueue<T> {
 
     @Override
     public void onRemove() {
-        clear();
+        queue.clear();
     }
 
 

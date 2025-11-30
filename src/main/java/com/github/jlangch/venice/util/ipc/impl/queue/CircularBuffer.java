@@ -83,11 +83,6 @@ public class CircularBuffer<T> implements IpcQueue<T> {
     }
 
     @Override
-    public void clear() {
-        buffer.clear();
-    }
-
-    @Override
     public T poll() {
         return buffer.poll();
     }
@@ -111,7 +106,7 @@ public class CircularBuffer<T> implements IpcQueue<T> {
 
     @Override
     public void onRemove() {
-        clear();
+        buffer.clear();
     }
 
 
