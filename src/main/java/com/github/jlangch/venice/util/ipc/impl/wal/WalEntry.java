@@ -77,6 +77,6 @@ public final class WalEntry {
     private final long lsn;
     private final WalEntryType type;
     private final UUID uuid;
-    private final long expiry;  // milliseconds since epoch or -1 if never expires
+    private final long expiry;  // expiry timestamp (millis since epoch or -1 if never expires)
     private final byte[] payload;
 }

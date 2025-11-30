@@ -57,7 +57,7 @@ import java.util.zip.CRC32;
  * •  LSN          – long, log sequence number starts from 1 and increments per append.
  * •  TYPE         – int, record type
  * •  UUID         – 16 bytes, record UUID
- * •  EXPIRE       – 8 bytes, timestamp mills since epoch
+ * •  EXPIRE       – 8 bytes, expiry timestamp (millis since epoch or -1 if never expires)
  * •  PAYLOAD_LEN  – int, number of bytes in payload.
  * •  CHECKSUM     – int, CRC32 of payload bytes.
  *
