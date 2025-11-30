@@ -1472,7 +1472,6 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/text-message topic mimetype charset text)",
                         "(ipc/text-message request-id topic mimetype charset text)",
                         "(ipc/text-message request-id topic mimetype charset text expires-at)",
                         "(ipc/text-message request-id topic mimetype charset text expires-val expires-unit)")
@@ -1518,7 +1517,7 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4, 5, 6, 7);
+                ArityExceptions.assertArity(this, args, 5, 6, 7);
 
                 final VncVal requestId;
                 final VncString topic;
@@ -1527,15 +1526,7 @@ public class IPCFunctions {
                 final VncVal textVal;
                 final VncVal expiresAt;
 
-                if (args.size() == 4) {
-                    requestId = null;
-                    topic = Coerce.toVncString(args.nth(0));
-                    mimetype = Coerce.toVncString(args.nth(1));
-                    charset = Coerce.toVncKeyword(args.nth(2));
-                    textVal = args.nth(3);
-                    expiresAt = null;
-                }
-                else if (args.size() == 5) {
+                if (args.size() == 5) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     mimetype = Coerce.toVncString(args.nth(2));
@@ -1595,7 +1586,6 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/plain-text-message topic text)",
                         "(ipc/plain-text-message request-id topic text)",
                         "(ipc/plain-text-message request-id topic text expires-at)",
                         "(ipc/plain-text-message request-id topic text expires-val expires-unit)")
@@ -1639,20 +1629,14 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3, 4, 5);
+                ArityExceptions.assertArity(this, args, 3, 4, 5);
 
                 final VncVal requestId;
                 final VncString topic;
                 final VncVal textVal;
                 final VncVal expiresAt;
 
-                if (args.size() == 2) {
-                    requestId = null;
-                    topic = Coerce.toVncString(args.nth(0));
-                    textVal = args.nth(1);
-                    expiresAt = null;
-                }
-                else if (args.size() == 3) {
+                if (args.size() == 3) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     textVal = args.nth(2);
@@ -1706,7 +1690,6 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/binary-message topic mimetype data)",
                         "(ipc/binary-message request-id topic mimetype data)",
                         "(ipc/binary-message request-id topic mimetype data expires-at)",
                         "(ipc/binary-message request-id topic mimetype data expires-val expires-unit)")
@@ -1760,7 +1743,7 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3, 4, 5, 6);
+                ArityExceptions.assertArity(this, args, 4, 5, 6);
 
                 final VncVal requestId;
                 final VncString topic;
@@ -1768,14 +1751,7 @@ public class IPCFunctions {
                 final VncByteBuffer data;
                 final VncVal expiresAt;
 
-                if (args.size() == 3) {
-                    requestId = null;
-                    topic = Coerce.toVncString(args.nth(0));
-                    mimetype = Coerce.toVncString(args.nth(1));
-                    data = Coerce.toVncByteBuffer(args.nth(2));
-                    expiresAt = null;
-                }
-                else if (args.size() == 4) {
+                if (args.size() == 4) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     mimetype = Coerce.toVncString(args.nth(2));
@@ -1827,7 +1803,6 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/venice-message topic data)",
                         "(ipc/venice-message request-id topic data)",
                         "(ipc/venice-message request-id topic data expires-at)",
                         "(ipc/venice-message request-id topic data expires-val expires-unit)")
@@ -1873,20 +1848,14 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3, 4, 5);
+                ArityExceptions.assertArity(this, args, 3, 4, 5);
 
                 final VncVal requestId;
                 final VncString topic;
                 final VncVal data;
                 final VncVal expiresAt;
 
-                if (args.size() == 2) {
-                    requestId = null;
-                    topic = Coerce.toVncString(args.nth(0));
-                    data = args.nth(1);
-                    expiresAt = null;
-                }
-                else if (args.size() == 3) {
+                if (args.size() == 3) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     data = args.nth(2);

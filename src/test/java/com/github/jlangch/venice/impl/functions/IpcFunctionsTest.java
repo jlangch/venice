@@ -272,9 +272,9 @@ public class IpcFunctionsTest {
                 "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
                 "             client-2 (ipc/clone client-1)                                      \n" +
                 "             client-3 (ipc/clone client-1)]                                     \n" +
-                "    (ipc/send client-1 (ipc/plain-text-message \"test\" \"hello 1\"))           \n" +
-                "    (ipc/send client-2 (ipc/plain-text-message \"test\" \"hello 2\"))           \n" +
-                "    (ipc/send client-3 (ipc/plain-text-message \"test\" \"hello 3\")))          \n" +
+                "    (ipc/send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))     \n" +
+                "    (ipc/send client-2 (ipc/plain-text-message \"1\" \"test\" \"hello 2\"))     \n" +
+                "    (ipc/send client-3 (ipc/plain-text-message \"1\" \"test\" \"hello 3\")))    \n" +
                 "                                                                                \n" +
                 "  (deref counter))";
 
@@ -286,15 +286,15 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                     \n" +
-                "  (defn echo-handler [m] m)                             \n" +
-                "                                                        \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
-                "             client (ipc/client \"localhost\" 33333)]   \n" +
-                "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
-                "         (ipc/send client)                              \n" +
-                "         (ipc/message->map)                             \n" +
-                "         (:text ))))                                    ";
+                "(do                                                         \n" +
+                "  (defn echo-handler [m] m)                                 \n" +
+                "                                                            \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                "             client (ipc/client \"localhost\" 33333)]       \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")  \n" +
+                "         (ipc/send client)                                  \n" +
+                "         (ipc/message->map)                                 \n" +
+                "         (:text ))))                                        ";
 
         assertEquals("hello", venice.eval(script));
     }
@@ -304,16 +304,16 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                     \n" +
-                "  (defn echo-handler [m] m)                             \n" +
-                "                                                        \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
-                "             client (ipc/client \"localhost\" 33333)]   \n" +
-                "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
-                "         (ipc/send-async client)                        \n" +
-                "         (deref)                                        \n" +
-                "         (ipc/message->map)                             \n" +
-                "         (:text ))))                                    ";
+                "(do                                                         \n" +
+                "  (defn echo-handler [m] m)                                 \n" +
+                "                                                            \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                "             client (ipc/client \"localhost\" 33333)]       \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")  \n" +
+                "         (ipc/send-async client)                            \n" +
+                "         (deref)                                            \n" +
+                "         (ipc/message->map)                                 \n" +
+                "         (:text ))))                                        ";
 
         assertEquals("hello", venice.eval(script));
     }
@@ -323,13 +323,13 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                     \n" +
-                "  (defn echo-handler [m] nil)                           \n" +
-                "                                                        \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
-                "             client (ipc/client \"localhost\" 33333)]   \n" +
-                "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
-                "         (ipc/send-oneway client))))                    ";
+                "(do                                                         \n" +
+                "  (defn echo-handler [m] nil)                               \n" +
+                "                                                            \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                "             client (ipc/client \"localhost\" 33333)]       \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")  \n" +
+                "         (ipc/send-oneway client))))                        ";
 
         assertEquals(null, venice.eval(script));
     }
@@ -339,17 +339,17 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                     \n" +
-                "  (defn echo-handler [m] m)                                             \n" +
-                "                                                                        \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler                      \n" +
-                "                                :compress-cutoff-size -1)               \n" +
-                "             client (ipc/client \"localhost\" 33333                     \n" +
-                "                                :compress-cutoff-size -1)]              \n" +
-                "    (->> (ipc/plain-text-message \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                              \n" +
-                "         (ipc/message->map)                                             \n" +
-                "         (:text ))))                                                    ";
+                "(do                                                                           \n" +
+                "  (defn echo-handler [m] m)                                                   \n" +
+                "                                                                              \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
+                "                                :compress-cutoff-size -1)                     \n" +
+                "             client (ipc/client \"localhost\" 33333                           \n" +
+                "                                :compress-cutoff-size -1)]                    \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                                    \n" +
+                "         (ipc/message->map)                                                   \n" +
+                "         (:text ))))                                                          ";
 
         assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
     }
@@ -359,17 +359,17 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                     \n" +
-                "  (defn echo-handler [m] m)                                             \n" +
-                "                                                                        \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler                      \n" +
-                "                                :compress-cutoff-size 0)                \n" +
-                "             client (ipc/client \"localhost\" 33333                     \n" +
-                "                                :compress-cutoff-size 0)]               \n" +
-                "    (->> (ipc/plain-text-message \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                              \n" +
-                "         (ipc/message->map)                                             \n" +
-                "         (:text ))))                                                    ";
+                "(do                                                                           \n" +
+                "  (defn echo-handler [m] m)                                                   \n" +
+                "                                                                              \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
+                "                                :compress-cutoff-size 0)                      \n" +
+                "             client (ipc/client \"localhost\" 33333                           \n" +
+                "                                :compress-cutoff-size 0)]                     \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                                    \n" +
+                "         (ipc/message->map)                                                   \n" +
+                "         (:text ))))                                                          ";
 
         assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
     }
@@ -379,17 +379,17 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                     \n" +
-                "  (defn echo-handler [m] m)                                             \n" +
-                "                                                                        \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler                      \n" +
-                "                                :compress-cutoff-size :2KB)             \n" +
-                "             client (ipc/client \"localhost\" 33333                     \n" +
-                "                                :compress-cutoff-size :2KB)]            \n" +
-                "    (->> (ipc/plain-text-message \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                              \n" +
-                "         (ipc/message->map)                                             \n" +
-                "         (:text ))))                                                    ";
+                "(do                                                                           \n" +
+                "  (defn echo-handler [m] m)                                                   \n" +
+                "                                                                              \n" +
+                "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
+                "                                :compress-cutoff-size :2KB)                   \n" +
+                "             client (ipc/client \"localhost\" 33333                           \n" +
+                "                                :compress-cutoff-size :2KB)]                  \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                                    \n" +
+                "         (ipc/message->map)                                                   \n" +
+                "         (:text ))))                                                          ";
 
         assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
     }
@@ -399,18 +399,19 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                     \n" +
-                "  (defn handler [m]                                     \n" +
-                "    (let [cmd    (. m :getText)                         \n" +
-                "          result (str (eval (read-string cmd)))]        \n" +
-                "      (ipc/plain-text-message (. m :getTopic)           \n" +
-                "                              result)))                 \n" +
-                "                                                        \n" +
-                "  (try-with [server (ipc/server 33333 handler)          \n" +
-                "             client (ipc/client \"localhost\" 33333)]   \n" +
-                "    (-<> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")  \n" +
-                "         (ipc/send client <>)                           \n" +
-                "         (. <> :getText))))";
+                "(do                                                           \n" +
+                "  (defn handler [m]                                           \n" +
+                "    (let [cmd    (. m :getText)                               \n" +
+                "          result (str (eval (read-string cmd)))]              \n" +
+                "      (ipc/plain-text-message (. m :getRequestId)             \n" +
+                "                              (. m :getTopic)                 \n" +
+                "                              result)))                       \n" +
+                "                                                              \n" +
+                "  (try-with [server (ipc/server 33333 handler)                \n" +
+                "             client (ipc/client \"localhost\" 33333)]         \n" +
+                "    (-<> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")  \n" +
+                "         (ipc/send client <>)                                 \n" +
+                "         (. <> :getText))))                                   ";
 
         assertEquals("3", venice.eval(script));
     }
@@ -446,7 +447,8 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(do                                             \n" +
-                "  (->> (ipc/text-message \"test\"               \n" +
+                "  (->> (ipc/text-message \"1\"                  \n" +
+                "                         \"test\"              \n" +
                 "                         \"text/plain\"         \n" +
                 "                         :UTF-8                 \n" +
                 "                         \"hello\")             \n" +
@@ -461,7 +463,8 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(do                                             \n" +
-                "  (->> (ipc/text-message \"test\"               \n" +
+                "  (->> (ipc/text-message \"1\"                  \n" +
+                "                         \"test\"              \n" +
                 "                         \"text/plain\"         \n" +
                 "                         :UTF-8                 \n" +
                 "                         \"hello\")             \n" +
@@ -475,25 +478,25 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                        \n" +
-                "  (ns junit)                                               \n" +
-                "                                                           \n" +
-                "  (defn handler [m]                                        \n" +
-                "    (let [cmd (. m :getText)]                              \n" +
-                "      (throw :VncException \"TEST\")))                     \n" +
-                "                                                           \n" +
-                "  (try-with [server (ipc/server 33333 handler)             \n" +
-                "             client (ipc/client \"localhost\" 33333)]      \n" +
-                "    (let [m (ipc/plain-text-message \"exec\" \"(+ 1 2)\")  \n" +
-                "          r        (ipc/send client m)                     \n" +
-                "          status   (ipc/message-field r :response-status)  \n" +
-                "          topic    (ipc/message-field r :topic)            \n" +
-                "          mimetype (ipc/message-field r :payload-mimetype) \n" +
-                "          text     (ipc/message-field r :payload-text)]    \n" +
-                "      (assert (= :HANDLER_ERROR status))                   \n" +
-                "      (assert (= \"exec\" topic))                          \n" +
-                "      (assert (= \"text/plain\" mimetype))                 \n" +
-                "      text)))                                              ";
+                "(do                                                              \n" +
+                "  (ns junit)                                                     \n" +
+                "                                                                 \n" +
+                "  (defn handler [m]                                              \n" +
+                "    (let [cmd (. m :getText)]                                    \n" +
+                "      (throw :VncException \"TEST\")))                           \n" +
+                "                                                                 \n" +
+                "  (try-with [server (ipc/server 33333 handler)                   \n" +
+                "             client (ipc/client \"localhost\" 33333)]            \n" +
+                "    (let [m (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")  \n" +
+                "          r        (ipc/send client m)                           \n" +
+                "          status   (ipc/message-field r :response-status)        \n" +
+                "          topic    (ipc/message-field r :topic)                  \n" +
+                "          mimetype (ipc/message-field r :payload-mimetype)       \n" +
+                "          text     (ipc/message-field r :payload-text)]          \n" +
+                "      (assert (= :HANDLER_ERROR status))                         \n" +
+                "      (assert (= \"exec\" topic))                                \n" +
+                "      (assert (= \"text/plain\" mimetype))                       \n" +
+                "      text)))                                                    ";
 
         assertEquals(
                 "throw (test-script: line 6, col 8)\n" +
