@@ -49,11 +49,12 @@ public class WalQueueManager {
         for(File logFile :listLogFiles()) {
             final String queueName = WalQueueManager.toQueueName(logFile);
 
-            // open the Write-Ahead-Log and read the configuration WAL entry to
-            // get the queue type and its capacity
-            final List<WalEntry> entries =  WriteAheadLog.compact(
+            // load all Write-Ahead-Log entries and compact the entries
+            final List<WalEntry> entries = WriteAheadLog.compact(
                                                 WriteAheadLog.loadAll(logFile));
 
+            // read the configuration WAL entry to get the queue type
+            // and its capacity
             final WalEntry firstEntry = CollectionUtil.first(entries);
             final ConfigWalEntry config = firstEntry.getType() == WalEntryType.CONFIG
                                              ? ConfigWalEntry.fromWalEntry(firstEntry)
@@ -61,12 +62,13 @@ public class WalQueueManager {
 
             final IpcQueue<Message> queue = toQueue(queueName, config);
 
-            // load the write-ahead-log entries into the queue
+            // load the write-ahead-log entries into the queue, take care for
+            // the queue capacity
             final int gap = Math.min(entries.size(), queue.capacity() - queue.size());
             if (gap > 0) {
                 for(WalEntry e : entries.subList(entries.size() - gap, entries.size())) {
                     if (WalEntryType.DATA == e.getType()) {
-                         final Message m = MessageWalEntry.fromWalEntry(e).getMessage();
+                        final Message m = MessageWalEntry.fromWalEntry(e).getMessage();
                         queue.offer(m, 0, TimeUnit.MILLISECONDS);
                     }
                 }
@@ -74,43 +76,6 @@ public class WalQueueManager {
 
             p2pQueues.put(queueName, new WalBasedQueue(queue, walDir, true));
         };
-    }
-
-    public String protocol() throws IOException {
-        final StringBuilder sb = new StringBuilder();
-
-        for(File logFile :listLogFiles()) {
-            final String queueName = WalQueueManager.toQueueName(logFile);
-            sb.append("QUEUE: " + queueName + "\n");
-
-            try(WriteAheadLog log = new WriteAheadLog(logFile, false)) {
-                for(WalEntry e : log.readAll()) {
-                    switch(e.getType()) {
-                        case ACK:
-                            AckWalEntry ae = AckWalEntry.fromWalEntry(e);
-                            sb.append("ACK:  " + ae.getAckedEntryUUID() + "\n");
-                            break;
-
-                        case CONFIG:
-                            ConfigWalEntry ce = ConfigWalEntry.fromWalEntry(e);
-                            sb.append("CONF: " + ce.getQueueType() + ", " + ce.getQueueCapacity() + "\n");
-                            break;
-
-                        case DATA:
-                            MessageWalEntry me = MessageWalEntry.fromWalEntry(e);
-                            Message m = me.getMessage();
-                            sb.append("DATA: " + m.getId() + "\n");
-                            break;
-
-                        default:
-                            sb.append("ERR:  " + e.getLsn() + "\n");
-                            break;
-                    }
-                }
-            }
-        };
-
-        return sb.toString();
     }
 
     public List<File> listLogFiles() {
@@ -137,7 +102,10 @@ public class WalQueueManager {
     }
 
 
-    private static IpcQueue<Message> toQueue(final String queueName, final ConfigWalEntry config) {
+    private static IpcQueue<Message> toQueue(
+            final String queueName,
+            final ConfigWalEntry config
+    ) {
         if (config == null) {
             return new BoundedQueue<Message>(queueName, 200, false, true);
         }

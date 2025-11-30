@@ -63,39 +63,14 @@ import java.util.zip.CRC32;
 public final class WriteAheadLog implements Closeable {
 
     public WriteAheadLog(final File file) throws IOException {
-        this(file, true);
-    }
-
-     public WriteAheadLog(final File file, final boolean recover) throws IOException {
          this.file = file;
          this.raf = new RandomAccessFile(file, "rw");
          this.channel = raf.getChannel();
 
          // Recover state if file already exists / has content
-         if (recover) {
-             recover();
-         }
+         recover();
      }
 
-
-     public static ConfigWalEntry readConfigWalEntry(final File file) {
-         try (RandomAccessFile raf = new RandomAccessFile(file, "rw");
-              FileChannel channel = raf.getChannel()) {
-             if (channel.size() > 0) {
-                 channel.position(0);
-                 final WalEntry firstEntry = readOneAtCurrentPosition(channel);
-                 return firstEntry.getType() == WalEntryType.CONFIG
-                          ? ConfigWalEntry.fromWalEntry(firstEntry)
-                          : null;
-             }
-             else {
-                 return null;
-             }
-         }
-         catch(Exception ex) {
-             return null;
-         }
-     }
 
      /**
       * Append an entry to the WAL and fsync it.
@@ -268,7 +243,7 @@ public final class WriteAheadLog implements Closeable {
                 throw new IOException("Could not delete stale tmp file: " + tmpFile);
             }
 
-            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false)) {
+            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile)) {
                 for (WalEntry e : pending) {
                     newLog.append(e);
                 }

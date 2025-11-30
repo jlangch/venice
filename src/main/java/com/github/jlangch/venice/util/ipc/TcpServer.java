@@ -244,9 +244,7 @@ public class TcpServer implements Closeable {
                 if (isWriteAheadLog()) {
                     final WalQueueManager mgr = new WalQueueManager(walDir.get());
 
-                    // System.out.println(mgr.protocol());
-                    // System.out.println();
-
+                    // preload the queues from the Write-Ahead-Log
                     mgr.preloadQueues(p2pQueues);
                 }
 
