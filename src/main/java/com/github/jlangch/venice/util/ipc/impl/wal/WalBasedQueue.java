@@ -37,31 +37,23 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
 
     public WalBasedQueue(
             final IpcQueue<Message> queue,
-            final File walDir,
-            final boolean walEnabled
+            final File walDir
     ) throws IOException {
         Objects.requireNonNull(queue);
         Objects.requireNonNull(walDir);
 
-        final boolean walEnabled_ = walEnabled && !queue.isTemporary();
-
-        if (walEnabled_ && !walDir.isDirectory()) {
+        if (!walDir.isDirectory()) {
             throw new VncException(
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
         this.queue = queue;
-        this.walEnabled = walEnabled_;
 
-        if (walEnabled_) {
-            final String filename = WalQueueManager.toFileName(queue.name());
-            this.log = new WriteAheadLog(new File(walDir, filename));
-            if (this.log.getLastLsn() == 0) {
-                this.log.append(createConfigWalEntry(queue));
-            }
-        }
-        else {
-            this.log = null;
+        final String filename = WalQueueManager.toFileName(queue.name());
+        this.log = new WriteAheadLog(new File(walDir, filename));
+        if (this.log.getLastLsn() == 0) {
+            final ConfigWalEntry ce = new ConfigWalEntry(queue.capacity(), queue.type());
+            this.log.append(ce.toWalEntry());
         }
     }
 
@@ -92,6 +84,11 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
     }
 
     @Override
+    public boolean isEmpty() {
+        return queue.isEmpty();
+    }
+
+    @Override
     public int size() {
         return queue.size();
     }
@@ -102,8 +99,14 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queue.name() + " is closed!");
         }
 
-        if (walEnabled) {
-
+        // TODO: is there a better solution, clear WAL?
+        while (!queue.isEmpty()) {
+            try {
+                queue.poll(10, TimeUnit.MILLISECONDS);
+            }
+            catch(InterruptedException ex) {
+               throw new VncException("The queue " + queue.name() + " clear interrupted!");
+            }
         }
 
         queue.clear();
@@ -228,14 +231,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
     }
 
 
-    private WalEntry createConfigWalEntry(final IpcQueue<Message> queue) {
-        return new ConfigWalEntry(queue.capacity(), queue.type()).toWalEntry();
-    }
-
-
-
     private final IpcQueue<Message> queue;
-    private final boolean walEnabled;
     private final WriteAheadLog log;
 
     private volatile boolean closed = false;

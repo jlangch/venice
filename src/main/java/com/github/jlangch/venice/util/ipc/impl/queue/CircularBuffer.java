@@ -73,6 +73,11 @@ public class CircularBuffer<T> implements IpcQueue<T> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return buffer.isEmpty();
+    }
+
+    @Override
     public int size() {
         return buffer.size();
     }

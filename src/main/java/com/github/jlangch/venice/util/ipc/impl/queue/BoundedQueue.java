@@ -72,6 +72,11 @@ public class BoundedQueue<T> implements IpcQueue<T> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return queue.isEmpty();
+    }
+
+    @Override
     public int size() {
         return queue.size();
     }

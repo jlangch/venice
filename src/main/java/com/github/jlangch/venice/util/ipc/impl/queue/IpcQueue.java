@@ -34,6 +34,8 @@ public interface IpcQueue<T> {
 
     boolean isDurable();
 
+    boolean isEmpty();
+
     int size();
 
     int capacity();

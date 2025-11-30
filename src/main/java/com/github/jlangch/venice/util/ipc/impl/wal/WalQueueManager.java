@@ -74,7 +74,7 @@ public class WalQueueManager {
                 }
             }
 
-            p2pQueues.put(queueName, new WalBasedQueue(queue, walDir, true));
+            p2pQueues.put(queueName, new WalBasedQueue(queue, walDir));
         };
     }
 
