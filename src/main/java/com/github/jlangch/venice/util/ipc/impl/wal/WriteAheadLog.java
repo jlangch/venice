@@ -191,6 +191,7 @@ public final class WriteAheadLog implements Closeable {
     /**
      * Load all valid entries from the WAL
      *
+     * @param file the log file
      * @return a list of the read entries
      * @throws IOException on I/O failure
      */
@@ -293,6 +294,13 @@ public final class WriteAheadLog implements Closeable {
         return pending;
     }
 
+    /**
+     * Compact a list of entries.
+     *
+     * @param entries a list of entries
+     * @param discardExpiredEntries if true discard expired entries
+     * @return the compacted list of entries
+     */
     public static List<WalEntry> compact(
             final List<WalEntry> entries,
             final boolean discardExpiredEntries
