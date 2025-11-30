@@ -445,12 +445,16 @@ public class TcpServerConnection implements IPublisher, Runnable {
                             MessageType.RESPONSE,
                             ResponseStatus.OK,
                             true,   // oneway
-                            durable,
+                            false,  // nondurable response
                             Message.EXPIRES_NEVER,
                             msg.getTopics(),
                             "text/plain",
                             "UTF-8",
-                            toBytes("Offered the message to the queue.", "UTF-8"));
+                            toBytes(String.format(
+                                        "Offered the message to the queue %s (durable: %b).",
+                                        queue.name(),
+                                        durable),
+                                    "UTF-8"));
                 }
                 else {
                     return createTextMessageResponse(
