@@ -1485,7 +1485,7 @@ public class IPCFunctions {
                         "| charset c      | The charset of the payload text. A keyword like `:UTF-8`|\n" +
                         "| text t         | The message payload text (a string)|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
-                        "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
+                        "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
                         "(->> (ipc/text-message :test \"text/plain\" :UTF-8 \"hello\")  \n" +
@@ -1557,7 +1557,9 @@ public class IPCFunctions {
                     mimetype = Coerce.toVncString(args.nth(2));
                     charset = Coerce.toVncKeyword(args.nth(3));
                     textVal = args.nth(4);
-                    expiresAt = TimeFunctions.to_millis.applyOf(
+                    expiresAt = args.nth(5) == Nil
+                                 ? null
+                                 : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
                                         args.nth(6),    // unit
@@ -1604,7 +1606,7 @@ public class IPCFunctions {
                         "| topic t        | A topic (string or keyword) |\n" +
                         "| text t         | The message payload text (a string)|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
-                        "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
+                        "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
                         "(->> (ipc/plain-text-message :test \"hello\")             \n" +
@@ -1666,7 +1668,9 @@ public class IPCFunctions {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     textVal = args.nth(2);
-                    expiresAt = TimeFunctions.to_millis.applyOf(
+                    expiresAt = args.nth(3) == Nil
+                                 ? null
+                                 : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
                                         args.nth(4),    // unit
@@ -1714,7 +1718,7 @@ public class IPCFunctions {
                         "| mimetype m     | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
                         "| data d         | The message payload binary data (a bytebuf)|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
-                        "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
+                        "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
                         "(->> (ipc/binary-message :test                           \n" +
@@ -1790,7 +1794,9 @@ public class IPCFunctions {
                     topic = Coerce.toVncString(args.nth(1));
                     mimetype = Coerce.toVncString(args.nth(2));
                     data = Coerce.toVncByteBuffer(args.nth(3));
-                    expiresAt = TimeFunctions.to_millis.applyOf(
+                    expiresAt = args.nth(4) == Nil
+                                 ? null
+                                 : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
                                         args.nth(5),    // unit
@@ -1834,7 +1840,7 @@ public class IPCFunctions {
                         "| topic t        | A topic (string or keyword) |\n" +
                         "| data d         | The message payload Venice data (e.g.: a map, list, ...)|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
-                        "| expires-val v  | Message expiration duration. E.g.: 2|\n" +
+                        "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
                         "(->> (ipc/venice-message :test {:a 100, :b 200})         \n" +
@@ -1896,7 +1902,9 @@ public class IPCFunctions {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     data = args.nth(2);
-                    expiresAt = TimeFunctions.to_millis.applyOf(
+                    expiresAt = args.nth(4) == Nil
+                                 ? null
+                                 : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
                                         args.nth(4),    // unit
@@ -1963,6 +1971,7 @@ public class IPCFunctions {
                         "  * `:id`                  - the message's technical ID\n" +
                         "  * `:type`                - the message type (request, response, ..) \n" +
                         "  * `:oneway?`             - `true` if one-way message else `false`\n" +
+                        "  * `:durable?`            - `true` if durable message else `false`\n" +
                         "  * `:response-status`     - the response status (ok, bad request, ...) \n" +
                         "  * `:timestamp`           - the message's creation timestamp in milliseconds since epoch\n" +
                         "  * `:expires-at`          - the message's expiry timestamp in milliseconds since epoch (may be nil)\n" +
@@ -2005,6 +2014,7 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :id))                      \n" +
                         "  (println (ipc/message-field m :type))                    \n" +
                         "  (println (ipc/message-field m :oneway?))                 \n" +
+                        "  (println (ipc/message-field m :durable?))                \n" +
                         "  (println (ipc/message-field m :timestamp))               \n" +
                         "  (println (ipc/message-field m :expires-at))              \n" +
                         "  (println (ipc/message-field m :response-status))         \n" +
@@ -2021,6 +2031,7 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :id))                      \n" +
                         "  (println (ipc/message-field m :type))                    \n" +
                         "  (println (ipc/message-field m :oneway?))                 \n" +
+                        "  (println (ipc/message-field m :durable?))                \n" +
                         "  (println (ipc/message-field m :timestamp))               \n" +
                         "  (println (ipc/message-field m :expires-at))              \n" +
                         "  (println (ipc/message-field m :response-status))         \n" +
@@ -2035,6 +2046,7 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :id))                 \n" +
                         "  (println (ipc/message-field m :type))               \n" +
                         "  (println (ipc/message-field m :oneway?))            \n" +
+                        "  (println (ipc/message-field m :durable?))           \n" +
                         "  (println (ipc/message-field m :timestamp))          \n" +
                         "  (println (ipc/message-field m :expires-at))         \n" +
                         "  (println (ipc/message-field m :response-status))    \n" +
@@ -2069,6 +2081,7 @@ public class IPCFunctions {
                                                         ? Nil
                                                         : new VncLong(message.getExpiresAt());
                     case "oneway?":             return VncBoolean.of(message.isOneway());
+                    case "durable?":            return VncBoolean.of(message.isDurable());
                     case "response-status":     return new VncKeyword(message.getResponseStatus().name());
                     case "topic":               return new VncString(message.getTopic());
                     case "queue-name":          return new VncString(message.getQueueName());
@@ -2146,6 +2159,8 @@ public class IPCFunctions {
                         "  * `:status`\n" +
                         "  * `:timestamp`\n" +
                         "  * `:expires-at`\n" +
+                        "  * `:oneway?`\n" +
+                        "  * `:durable?`\n" +
                         "  * `:request-id`\n" +
                         "  * `:topic`\n" +
                         "  * `:mimetype`\n" +
@@ -2189,6 +2204,8 @@ public class IPCFunctions {
                             new VncKeyword("timestamp"),  new VncLong(m.getTimestamp()),
                             new VncKeyword("expires-at"), m.getExpiresAt() < 0 ? Nil : new VncLong(m.getExpiresAt()),
                             new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
+                            new VncKeyword("oneway?"),    VncBoolean.of(m.isOneway()),
+                            new VncKeyword("durable?"),   VncBoolean.of(m.isDurable()),
                             new VncKeyword("topic"),      new VncString(m.getTopic()),
                             new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
                             new VncKeyword("data"),       new VncByteBuffer(m.getData()));
@@ -2201,6 +2218,8 @@ public class IPCFunctions {
                             new VncKeyword("timestamp"),  new VncLong(m.getTimestamp()),
                             new VncKeyword("expires-at"), m.getExpiresAt() < 0 ? Nil : new VncLong(m.getExpiresAt()),
                             new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
+                            new VncKeyword("oneway?"),    VncBoolean.of(m.isOneway()),
+                            new VncKeyword("durable?"),   VncBoolean.of(m.isDurable()),
                             new VncKeyword("topic"),      new VncString(m.getTopic()),
                             new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
                             new VncKeyword("data"),       m.getVeniceData());
@@ -2213,6 +2232,8 @@ public class IPCFunctions {
                             new VncKeyword("timestamp"),  new VncLong(m.getTimestamp()),
                             new VncKeyword("expires-at"), m.getExpiresAt() < 0 ? Nil : new VncLong(m.getExpiresAt()),
                             new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
+                            new VncKeyword("oneway?"),    VncBoolean.of(m.isOneway()),
+                            new VncKeyword("durable?"),   VncBoolean.of(m.isDurable()),
                             new VncKeyword("topic"),      new VncString(m.getTopic()),
                             new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
                             new VncKeyword("charset"),    new VncKeyword(m.getCharset()),

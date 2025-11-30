@@ -64,8 +64,8 @@ public abstract class MessageFactory {
                 requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
-                false,
-                false,
+                false,  // not oneway
+                false,  // not durable
                 Message.EXPIRES_NEVER,
                 Topics.of(topic),
                 mimetype,
@@ -103,8 +103,8 @@ public abstract class MessageFactory {
                 requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
-                false,
-                false,
+                false,  // not oneway
+                false,  // not durable
                 expiresAt,
                 Topics.of(topic),
                 mimetype,
@@ -112,6 +112,46 @@ public abstract class MessageFactory {
                 data.getBytes(Charset.forName(charset)));
     }
 
+    /**
+     * Create a text message
+     *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
+     * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
+     * @param durable a durable message
+     * @param topic a topic
+     * @param mimetype the mimetype of the message's payload data
+     * @param charset the charset of the message's payload data
+     * @param data the textual payload data
+     * @return the message
+     */
+    public static IMessage text(
+            final String requestId,
+            final long expiresAt,
+            final boolean durable,
+            final String topic,
+            final String mimetype,
+            final String charset,
+            final String data
+    ) {
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(mimetype);
+        Objects.requireNonNull(charset);
+        Objects.requireNonNull(data);
+
+        Topics.validate(topic);
+
+        return new Message(
+                requestId,
+                MessageType.NULL,
+                ResponseStatus.NULL,
+                false,  // not oneway
+                durable,
+                expiresAt,
+                Topics.of(topic),
+                mimetype,
+                charset,
+                data.getBytes(Charset.forName(charset)));
+    }
 
     // ------------------------------------------------------------------------
     // JSON messages
@@ -142,8 +182,8 @@ public abstract class MessageFactory {
                 requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
-                false,
-                false,
+                false,  // not oneway
+                false,  // not durable
                 Message.EXPIRES_NEVER,
                 Topics.of(topic),
                 "application/json",
@@ -178,8 +218,46 @@ public abstract class MessageFactory {
                 requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
-                false,
-                false,
+                false,  // not oneway
+                false,  // not durable
+                expiresAt,
+                Topics.of(topic),
+                "application/json",
+                charset,
+                json.getBytes(Charset.forName(charset)));
+    }
+
+    /**
+     * Create a json message
+     *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
+     * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
+     * @param durable a durable message
+     * @param topic a topic
+     * @param charset the charset of the message's payload data
+     * @param json the json payload data
+     * @return the message
+     */
+    public static IMessage json(
+            final String requestId,
+            final long expiresAt,
+            final boolean durable,
+            final String topic,
+            final String charset,
+            final String json
+    ) {
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(charset);
+        Objects.requireNonNull(json);
+
+        Topics.validate(topic);
+
+        return new Message(
+                requestId,
+                MessageType.NULL,
+                ResponseStatus.NULL,
+                false,  // not oneway
+                durable,
                 expiresAt,
                 Topics.of(topic),
                 "application/json",
@@ -217,8 +295,8 @@ public abstract class MessageFactory {
                 requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
-                false,
-                false,
+                false,  // not oneway
+                false,  // not durable
                 Message.EXPIRES_NEVER,
                 Topics.of(topic),
                 mimetype,
@@ -253,8 +331,46 @@ public abstract class MessageFactory {
                 requestId,
                 MessageType.NULL,
                 ResponseStatus.NULL,
-                false,
-                false,
+                false,  // not oneway
+                false,  // not durable
+                expiresAt,
+                Topics.of(topic),
+                mimetype,
+                null,
+                data);
+    }
+
+    /**
+     * Create a binary message
+     *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
+     * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
+     * @param durable a durable message
+     * @param topic a topic
+     * @param mimetype the mimetype of the message's payload data
+     * @param data the binary payload data
+     * @return the message
+     */
+    public static IMessage binary(
+            final String requestId,
+            final long expiresAt,
+            final boolean durable,
+            final String topic,
+            final String mimetype,
+            final byte[] data
+    ) {
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(mimetype);
+        Objects.requireNonNull(data);
+
+        Topics.validate(topic);
+
+        return new Message(
+                requestId,
+                MessageType.NULL,
+                ResponseStatus.NULL,
+                false,  // not oneway
+                durable,
                 expiresAt,
                 Topics.of(topic),
                 mimetype,
@@ -291,7 +407,6 @@ public abstract class MessageFactory {
         return json(requestId, topic, "UTF-8", Json.writeJson(data, false));
     }
 
-
     /**
      * Create a Venice message.
      *
@@ -316,6 +431,34 @@ public abstract class MessageFactory {
         Topics.validate(topic);
 
         return json(requestId, expiresAt, topic, "UTF-8", Json.writeJson(data, false));
+    }
+
+    /**
+     * Create a Venice message.
+     *
+     * <p>The Venice data is serialized to JSON to transport it within
+     * a message
+     *
+     * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
+     * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
+     * @param durable a durable message
+     * @param topic a topic
+     * @param data venice data
+     * @return the message
+     */
+    public static IMessage venice(
+            final String requestId,
+            final long expiresAt,
+            final boolean durable,
+            final String topic,
+            final VncVal data
+    ) {
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(data);
+
+        Topics.validate(topic);
+
+        return json(requestId, expiresAt, durable, topic, "UTF-8", Json.writeJson(data, false));
     }
 
 
