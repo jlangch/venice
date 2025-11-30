@@ -1107,7 +1107,7 @@ public class TcpClient implements Cloneable, Closeable {
                 MessageType.OFFER,
                 ResponseStatus.NULL,
                 false,
-                false,
+                msg.isDurable(),
                 queueName,
                 replyToQueueName,
                 System.currentTimeMillis(),

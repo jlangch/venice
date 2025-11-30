@@ -428,7 +428,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final String queueName = request.getQueueName();
             final IpcQueue<Message> queue = p2pQueues.get(queueName);
             if (queue != null) {
-                final Message msg = request.withType(MessageType.REQUEST, false);
+                // convert message type from OFFER to REQUEST
+                final Message msg = request.withType(MessageType.REQUEST, request.isOneway());
                 final long timeout = msg.getTimeout();
 
                 final boolean ok = timeout < 0
@@ -438,6 +439,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     final boolean durable = msg.isDurable()            // message is durable
                                             && queue.isDurable()       // queue is durable
                                             && walDir.get() != null;   // server supports write-ahead-log
+
                     return new Message(
                             msg.getRequestId(),
                             MessageType.RESPONSE,
