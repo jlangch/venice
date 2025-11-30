@@ -105,17 +105,17 @@ public class IPCFunctions {
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
-                        "(do                                                     \n" +
-                        "  (defn echo-handler [m]                                \n" +
-                        "    (println \"REQUEST:  \" (ipc/message->map m))       \n" +
-                        "    m)                                                  \n" +
-                        "                                                        \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)     \n" +
-                        "             client (ipc/client \"localhost\" 33333)]   \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")    \n" +
-                        "         (ipc/send client)                              \n" +
-                        "         (ipc/message->map)                             \n" +
-                        "         (println \"RESPONSE: \"))))                    ")
+                        "(do                                                           \n" +
+                        "  (defn echo-handler [m]                                      \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))             \n" +
+                        "    m)                                                        \n" +
+                        "                                                              \n" +
+                        "  (try-with [server (ipc/server 33333 echo-handler)           \n" +
+                        "             client (ipc/client \"localhost\" 33333)]         \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
+                        "         (ipc/send client)                                    \n" +
+                        "         (ipc/message->map)                                   \n" +
+                        "         (println \"RESPONSE: \"))))                          ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
@@ -279,9 +279,9 @@ public class IPCFunctions {
                         "             client-1 (ipc/client 33333)                                        \n" +
                         "             client-2 (ipc/client \"localhost\" 33333 :compress-cutoff-size 0)  \n" +
                         "             client-3 (ipc/client :localhost 33333 :encrypt true)]              \n" +
-                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
-                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello\"))                 \n" +
-                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello\"))))               ")
+                        "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello\"))           \n" +
+                        "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello\"))           \n" +
+                        "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello\"))))         ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
@@ -369,9 +369,9 @@ public class IPCFunctions {
                         "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
                         "             client-2 (ipc/clone client-1)                                      \n" +
                         "             client-3 (ipc/clone client-1)]                                     \n" +
-                        "    (send client-1 (ipc/plain-text-message \"test\" \"hello 1\"))               \n" +
-                        "    (send client-2 (ipc/plain-text-message \"test\" \"hello 2\"))               \n" +
-                        "    (send client-3 (ipc/plain-text-message \"test\" \"hello 3\"))))             ")
+                        "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))         \n" +
+                        "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))         \n" +
+                        "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))))       ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
@@ -540,7 +540,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
                         "         (ipc/send client)                                        \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ",
@@ -551,12 +551,14 @@ public class IPCFunctions {
                         "  (defn handler [m]                                               \n" +
                         "    (let [data   (json/read-str (. m :getText))                   \n" +
                         "          result (json/write-str { \"z\" (+ (get data \"x\") (get data \"y\"))})]  \n" +
-                        "      (ipc/text-message (. m :getTopic)                           \n" +
+                        "      (ipc/text-message (. m :getRequestId)                       \n" +
+                        "                        (. m :getTopic)                           \n" +
                         "                        \"application/json\" :UTF-8               \n" +
                         "                        result)))                                 \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/text-message \"test\"                               \n" +
+                        "    (->> (ipc/text-message \"1\"                                  \n" +
+                        "                           \"test\"                               \n" +
                         "                           \"application/json\" :UTF-8            \n" +
                         "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
                         "         (ipc/send client)                                        \n" +
@@ -569,11 +571,12 @@ public class IPCFunctions {
                         "  (defn handler [m]                                               \n" +
                         "    (let [cmd    (. m :getText)                                   \n" +
                         "          result (str (eval (read-string cmd)))]                  \n" +
-                        "      (ipc/plain-text-message (. m :getTopic)                     \n" +
+                        "      (ipc/plain-text-message (. m :getRequestId)                 \n" +
+                        "                              (. m :getTopic)                     \n" +
                         "                              result)))                           \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")      \n" +
                         "         (ipc/send client)                                        \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
@@ -635,7 +638,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (-<> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "    (-<> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
                         "         (ipc/send-async client <>)                               \n" +
                         "         (deref <> 1_000 :timeout)                                \n" +
                         "         (ipc/message->map <>)                                    \n" +
@@ -647,12 +650,14 @@ public class IPCFunctions {
                         "  (defn handler [m]                                               \n" +
                         "    (let [data   (json/read-str (. m :getText))                   \n" +
                         "          result (json/write-str { \"z\" (+ (get data \"x\") (get data \"y\"))})]  \n" +
-                        "      (ipc/text-message (. m :getTopic)                           \n" +
+                        "      (ipc/text-message (. m :getRequestId)                       \n" +
+                        "                        (. m :getTopic)                           \n" +
                         "                        \"application/json\" :UTF-8               \n" +
                         "                        result)))                                 \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (-<> (ipc/text-message \"test\"                               \n" +
+                        "    (-<> (ipc/text-message \"1\"                                  \n" +
+                        "                           \"test\"                               \n" +
                         "                           \"application/json\" :UTF-8            \n" +
                         "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
                         "         (ipc/send-async client <>)                               \n" +
@@ -666,11 +671,12 @@ public class IPCFunctions {
                         "  (defn handler [m]                                               \n" +
                         "    (let [cmd    (. m :getText)                                   \n" +
                         "          result (str (eval (read-string cmd)))]                  \n" +
-                        "      (ipc/plain-text-message (. m :getTopic)                     \n" +
+                        "      (ipc/plain-text-message (. m :getRequestId)                 \n" +
+                        "                              (. m :getTopic)                     \n" +
                         "                              result)))                           \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (-<> (ipc/plain-text-message \"exec\" \"(+ 1 2)\")            \n" +
+                        "    (-<> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")      \n" +
                         "         (ipc/send-async client <>)                               \n" +
                         "         (deref <> 1_000 :timeout)                                \n" +
                         "         (ipc/message->map <>)                                    \n" +
@@ -1364,7 +1370,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
                         "         (ipc/send client))                                       \n" +
                         "    (println \"STATUS:\" (ipc/server-status client))))            ")
                      .seeAlso(
@@ -1420,7 +1426,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                           \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)                   \n" +
                         "             client (ipc/client \"localhost\" 33333)]                 \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")                  \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")            \n" +
                         "         (ipc/send client))                                           \n" +
                         "    (println \"STATS:\" (ipc/server-thread-pool-statistics client)))) ")
                      .seeAlso(
@@ -1487,19 +1493,19 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
-                        "(->> (ipc/text-message :test \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "(->> (ipc/text-message \"1\" :test \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"100\" \"test\"  \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "(->> (ipc/text-message \"1\" \"test\"  \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"100\" \"test\" \"text/plain\" :UTF-8 \"hello\"   \n" +
+                        "(->> (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\"   \n" +
                         "                       (-> (time/local-date-time)        \n" +
                         "                           (time/plus :hours 2)          \n" +
                         "                           (time/to-millis)))            \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"100\" \"test\" \"text/plain\" :UTF-8 \"hello\" 2 :hours) \n" +
+                        "(->> (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\" 2 :hours) \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
@@ -1599,13 +1605,13 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
-                        "(->> (ipc/plain-text-message :test \"hello\")             \n" +
+                        "(->> (ipc/plain-text-message \"1\" :test \"hello\")       \n" +
                         "     (ipc/message->map)                                   \n" +
                         "     (println))                                           ",
-                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\")  \n" +
+                        "(->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
                         "     (ipc/message->map)                                   \n" +
                         "     (println))                                           ",
-                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\"   \n" +
+                        "(->> (ipc/plain-text-message \"1\" \"test\" \"hello\"     \n" +
                         "                             (-> (time/local-date-time)   \n" +
                         "                                 (time/plus :hours 2)     \n" +
                         "                                 (time/to-millis)))       \n" +
@@ -1704,7 +1710,7 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
-                        "(->> (ipc/binary-message :test                           \n" +
+                        "(->> (ipc/binary-message \"100\" :test                  \n" +
                         "                         \"application/octet-stream\"    \n" +
                         "                         (bytebuf [0 1 2 3 4 5 6 7]))    \n" +
                         "     (ipc/message->map)                                  \n" +
@@ -1818,7 +1824,7 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
-                        "(->> (ipc/venice-message :test {:a 100, :b 200})         \n" +
+                        "(->> (ipc/venice-message \"100\" :test {:a 100, :b 200}) \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
                         "(->> (ipc/venice-message \"100\" \"test\" {:a 100, :b 200}) \n" +
@@ -1976,7 +1982,8 @@ public class IPCFunctions {
                         "  * `:QUEUE_FULL`      - the adressed queue in offer request is full\n" +
                         "  * `:NULL`            - a message with yet undefined status")
             .examples(
-                        "(let [m (ipc/text-message \"test\"                         \n" +
+                        "(let [m (ipc/text-message \"100\"                          \n" +
+                        "                          \"test\"                         \n" +
                         "                          \"text/plain\"                   \n" +
                         "                          :UTF-8                           \n" +
                         "                          \"Hello!\")]                     \n" +
@@ -1994,7 +2001,8 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :payload-text))            \n" +
                         "  (println (ipc/message-field m :payload-binary)))         ",
 
-                        "(let [m (ipc/binary-message \"test\"                       \n" +
+                        "(let [m (ipc/binary-message \"100\"                        \n" +
+                        "                            \"test\"                       \n" +
                         "                            \"application/octet-stream\"   \n" +
                         "                            (bytebuf [0 1 2 3 4 5 6 7]))]  \n" +
                         "  (println (ipc/message-field m :id))                      \n" +
@@ -2010,7 +2018,7 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :payload-charset))         \n" +
                         "  (println (ipc/message-field m :payload-binary)))         ",
 
-                        "(let [m (ipc/venice-message \"test\"                  \n" +
+                        "(let [m (ipc/venice-message \"100\" \"test\"          \n" +
                         "                            {:a 100, :b 200})]        \n" +
                         "  (println (ipc/message-field m :id))                 \n" +
                         "  (println (ipc/message-field m :type))               \n" +
@@ -2084,7 +2092,8 @@ public class IPCFunctions {
                         .doc(
                             "Returns `true` the message has expired else `false`.")
                 .examples(
-                            "(let [m (ipc/text-message \"test\"                         \n" +
+                            "(let [m (ipc/text-message \"100\"                          \n" +
+                            "                          \"test\"                         \n" +
                             "                          \"text/plain\"                   \n" +
                             "                          :UTF-8                           \n" +
                             "                          \"Hello!\")]                     \n" +
@@ -2137,13 +2146,13 @@ public class IPCFunctions {
                         "  * `:text` (only set if there is a messsage charset defined)\n" +
                         "  * `:data`\n")
                     .examples(
-                        "(->> (ipc/text-message \"test\"                          \n" +
+                        "(->> (ipc/text-message \"1\" \"test\"                    \n" +
                         "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map))                                 ",
-                        "(->> (ipc/venice-message \"test\"                        \n" +
+                        "(->> (ipc/venice-message \"1\" \"test\"                  \n" +
                         "                         {:a 100, :b 200})               \n" +
                         "     (ipc/message->map))                                 ",
-                        "(->> (ipc/binary-message \"test\"                        \n" +
+                        "(->> (ipc/binary-message \"1\" \"test\"                  \n" +
                         "                         \"application/octet-stream\"    \n" +
                         "                         (bytebuf [0 1 2 3 4]))          \n" +
                         "     (ipc/message->map))                                 ")
@@ -2227,13 +2236,13 @@ public class IPCFunctions {
                             "printing.\n\n" +
                             "Returns a Json string.")
                         .examples(
-                            "(->> (ipc/text-message \"test\"                          \n" +
+                            "(->> (ipc/text-message \"1\" \"test\"                    \n" +
                             "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
                             "     (ipc/message->json true))                           ",
-                            "(->> (ipc/venice-message \"test\"                        \n" +
+                            "(->> (ipc/venice-message \"1\" \"test\"                  \n" +
                             "                         {:a 100, :b 200})               \n" +
                             "     (ipc/message->json true))                           ",
-                            "(->> (ipc/binary-message \"test\"                        \n" +
+                            "(->> (ipc/binary-message \"1\" \"test\"                  \n" +
                             "                         \"application/octet-stream\"    \n" +
                             "                         (bytebuf [0 1 2 3 4]))          \n" +
                             "     (ipc/message->json true))                           ")
@@ -2283,7 +2292,7 @@ public class IPCFunctions {
                         "                                                                  \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
                         "         (ipc/send client)                                        \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
@@ -2325,7 +2334,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
                         "         (ipc/send client)                                        \n" +
                         "         (ipc/response-ok?))))                                    ")
                     .seeAlso(
@@ -2366,7 +2375,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (->> (ipc/plain-text-message \"test\" \"hello\")              \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
                         "         (ipc/send client)                                        \n" +
                         "         (ipc/response-err?))))                                   ")
                     .seeAlso(
@@ -2435,7 +2444,8 @@ public class IPCFunctions {
                         "             client1 (ipc/client 33333)                   \n" +
                         "             client2 (ipc/client 33333)]                  \n" +
                         "    (let [order  (ipc/venice-message                      \n" +
-                        "                     \"order\"                            \n" +
+                        "                     \"1\"                                \n" +
+                        "                     :order                               \n" +
                         "                     {:item \"espresso\", :count 2})]     \n" +
                         "      (ipc/create-queue server :orders 100)               \n" +
                         "      (->> (ipc/message->json true order)                 \n" +
@@ -2562,7 +2572,7 @@ public class IPCFunctions {
                         "      (ipc/offer client1 :orders confirm-queue 300                                    \n" +
                         "                 (ipc/venice-message                                                  \n" +
                         "                            \"1\"                                                     \n" +
-                        "                            \"order\"                                                 \n" +
+                        "                            :order                                                    \n" +
                         "                            {:item \"espresso\", :count 2}))                          \n" +
                         "                                                                                      \n" +
                         "      ;; client2 receives order from order queue and replies to the reply-to queue    \n" +
