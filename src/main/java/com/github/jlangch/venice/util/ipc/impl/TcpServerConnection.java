@@ -55,7 +55,6 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
-import com.github.jlangch.venice.util.ipc.impl.wal.WalBasedQueue;
 
 
 public class TcpServerConnection implements IPublisher, Runnable {
@@ -86,8 +85,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
 
-        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity, false);
-        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false);
+        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity, false, false);
+        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false, false);
         this.p2pQueues = p2pQueues;
 
         this.dhKeys = DiffieHellmanKeys.create();
@@ -552,6 +551,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
         final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
+        final boolean durable = Coerce.toVncBoolean(payload.get(new VncString("durable"))).getValue();
 
         try {
             QueueValidator.validate(queueName);
@@ -573,28 +573,22 @@ public class TcpServerConnection implements IPublisher, Runnable {
                        request.getType()));
         }
         else {
-            final IpcQueue<Message> queue = bounded
-                    ? new BoundedQueue<Message>(queueName, capacity, false)
-                    : new CircularBuffer<Message>(queueName, capacity, false);
-
-            if (bounded && walDir.get() != null) {
-                // create WAL based bounded queue
-                try {
-                    p2pQueues.putIfAbsent(
-                        queueName,
-                        new WalBasedQueue(queue, walDir.get(), true));
-                }
-                catch(Exception ex) {
-                    return createBadRequestTextMessageResponse(
-                            request,
-                            String.format(
-                                "Request %s: Failed to ceate WAL based queue: %s. Reason: %s",
-                                request.getType(), queueName, ex.getMessage()));
-                }
-            }
-            else {
+            try {
+                final IpcQueue<Message> queue = QueueFactory.createQueue(
+                                                    walDir.get(),
+                                                    queueName,
+                                                    capacity,
+                                                    bounded,
+                                                    durable);
                 // do not overwrite the queue if it already exists
                 p2pQueues.putIfAbsent(queueName, queue);
+            }
+            catch(Exception ex) {
+                return createBadRequestTextMessageResponse(
+                        request,
+                        String.format(
+                            "Request %s: Failed to ceate queue: %s. Reason: %s",
+                            request.getType(), queueName, ex.getMessage()));
             }
 
             return createOkTextMessageResponse(
@@ -645,7 +639,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
 
             // do not overwrite the queue if it already exists
-            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, true)) == null) {
+            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, true, false)) == null) {
                 tmpQueues.put(queueName, 0);
             }
 
@@ -714,6 +708,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                                                            ? "bounded"
                                                                            : "circular"))
                                         .add("temporary", q != null && q.isTemporary())
+                                        .add("durable",   q != null && q.isDurable())
                                         .add("capacity",  q == null ? 0L : (long)q.capacity())
                                         .add("size",      q == null ? 0L : (long)q.size())
                                         .toJson(false);
@@ -835,6 +830,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    new JsonBuilder()
                            .add("running", server.isRunning())
                            .add("mode", mode.name())
+                           .add("write-ahead-log-dir", walDir.get() == null ? "-" : walDir.get().getAbsolutePath())
                            .add("connection_count", statistics.getConnectionCount())
                            .add("message-count", statistics.getMessageCount())
                            .add("publish-count", statistics.getPublishCount())

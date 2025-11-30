@@ -26,7 +26,9 @@ public enum WalEntryType {
 
     ACK(0),
 
-    DATA(1);
+    CONFIG(1),
+
+    DATA(2);
 
 
     public static WalEntryType fromCode(int code) {

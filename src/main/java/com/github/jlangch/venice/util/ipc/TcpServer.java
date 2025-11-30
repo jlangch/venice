@@ -42,12 +42,11 @@ import java.util.function.Function;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
-import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
-import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
@@ -345,18 +344,33 @@ public class TcpServer implements Closeable {
      * @param queueName a queue name
      * @param capacity the queue capacity
      * @param bounded if true create a bounded queue else create a circular queue
+     * @param durable if true create a durable queue else a non durable queue
      */
-    public void createQueue(final String queueName, final int capacity, final boolean bounded) {
+    public void createQueue(
+            final String queueName,
+            final int capacity,
+            final boolean bounded,
+            final boolean durable
+    ) {
         QueueValidator.validate(queueName);
         if (capacity < 1) {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
 
+        if (durable && walDir.get() == null) {
+            throw new VncException(
+                    "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
+        }
+
+        final IpcQueue<Message> queue = QueueFactory.createQueue(
+                                            walDir.get(),
+                                            queueName,
+                                            capacity,
+                                            bounded,
+                                            durable);
+
         // do not overwrite the queue if it already exists
-        p2pQueues.putIfAbsent(
-            queueName,
-            bounded ? new BoundedQueue<Message>(queueName, capacity, false)
-                    : new CircularBuffer<Message>(queueName, capacity, false));
+        p2pQueues.putIfAbsent(queueName, queue);
     }
 
     /**

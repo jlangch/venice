@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 
 
@@ -52,10 +53,12 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         this.queue = queue;
         this.walEnabled = walEnabled_;
 
-
         if (walEnabled_) {
             final String filename = WalQueueManager.toFileName(queue.name());
             this.log = new WriteAheadLog(new File(walDir, filename));
+            if (this.log.getLastLsn() == 0) {
+                this.log.append(createConfigWalEntry(queue));
+            }
         }
         else {
             this.log = null;
@@ -76,6 +79,11 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
     @Override
     public boolean isTemporary() {
         return queue.isTemporary();
+    }
+
+    @Override
+    public boolean isDurable() {
+        return queue.isDurable();
     }
 
     @Override
@@ -104,7 +112,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
 
         final Message m = queue.poll();
 
-        if (log != null && m != null) {
+        if (log != null && m != null && m.isDurable()) {
             try {
                 log.append(new AckWalEntry(m.getId()).toWalEntry());
             }
@@ -127,7 +135,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
 
         final Message m = queue.poll(timeout, unit);
 
-        if (log != null && m != null) {
+        if (log != null && m != null && m.isDurable()) {
             try {
                 log.append(new AckWalEntry(m.getId()).toWalEntry());
             }
@@ -147,7 +155,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queue.name() + " is closed!");
         }
 
-        if (log != null) {
+        if (log != null && item.isDurable()) {
             try {
                 log.append(new MessageWalEntry(item).toWalEntry());
             }
@@ -171,7 +179,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queue.name() + " is closed!");
         }
 
-        if (log != null) {
+        if (log != null && item.isDurable()) {
             try {
                 log.append(new MessageWalEntry(item).toWalEntry());
             }
@@ -212,6 +220,14 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         if (log != null) {
             log.close();
         }
+    }
+
+
+    private WalEntry createConfigWalEntry(final IpcQueue<Message> queue) {
+        return new ConfigWalEntry(
+                        queue.capacity(),
+                        queue instanceof BoundedQueue
+                   ).toWalEntry();
     }
 
 

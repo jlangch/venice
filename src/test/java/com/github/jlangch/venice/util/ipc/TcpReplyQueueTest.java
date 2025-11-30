@@ -35,7 +35,7 @@ public class TcpReplyQueueTest {
         final TcpClient client1 = new TcpClient(33333);
         final TcpClient client2 = new TcpClient(33333);
 
-        server.createQueue("queue/1", 10, true);
+        server.createQueue("queue/1", 10, true, false);
 
         server.start();
 

@@ -253,21 +253,21 @@ public class TcpServerTest {
     @Test
     public void test_queues() throws Exception {
         try (TcpServer server = new TcpServer(33333)) {
-            server.createQueue("alpha", 10, true);
-            server.createQueue("beta", 10, true);
+            server.createQueue("queue/1", 10, true, false);
+            server.createQueue("queue/2", 10, true, false);
 
-            assertTrue(server.existsQueue("alpha"));
-            assertTrue(server.existsQueue("beta"));
+            assertTrue(server.existsQueue("queue/1"));
+            assertTrue(server.existsQueue("queue/2"));
 
-            server.removeQueue("alpha");
+            server.removeQueue("queue/1");
 
-            assertFalse(server.existsQueue("alpha"));
-            assertTrue(server.existsQueue("beta"));
+            assertFalse(server.existsQueue("queue/1"));
+            assertTrue(server.existsQueue("queue/2"));
 
-            server.removeQueue("beta");
+            server.removeQueue("queue/2");
 
-            assertFalse(server.existsQueue("alpha"));
-            assertFalse(server.existsQueue("beta"));
+            assertFalse(server.existsQueue("queue/1"));
+            assertFalse(server.existsQueue("queue/2"));
         }
     }
 

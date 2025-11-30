@@ -36,11 +36,13 @@ public class CircularBuffer<T> implements IpcQueue<T> {
     public CircularBuffer(
             final String name,
             final int capacity,
-            final boolean temporary
+            final boolean temporary,
+            final boolean durable
     ) {
         this.name = name;
         this.capacity = capacity;
         this.temporary = temporary;
+        this.durable = durable;
         this.buffer = new ConcurrentEvictingQueue<>(capacity);
     }
 
@@ -60,6 +62,10 @@ public class CircularBuffer<T> implements IpcQueue<T> {
         return temporary;
     }
 
+    @Override
+    public boolean isDurable() {
+        return durable;
+    }
 
     @Override
     public int size() {
@@ -101,6 +107,7 @@ public class CircularBuffer<T> implements IpcQueue<T> {
 
     private final String name;
     private final boolean temporary;
+    private final boolean durable;
     private final int capacity;
     private final ConcurrentEvictingQueue<T> buffer;
 }

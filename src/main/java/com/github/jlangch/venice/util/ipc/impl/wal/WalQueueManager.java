@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
+import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 
 
@@ -45,12 +46,12 @@ public class WalQueueManager {
     ) throws IOException {
         for(File logFile :listLogFiles()) {
             final String queueName = WalQueueManager.toQueueName(logFile);
-            p2pQueues.put(
-                queueName,
-                new WalBasedQueue(
-                        new BoundedQueue<Message>(queueName, 1000, false),
-                        walDir,
-                        true));
+
+            // open the Write-Ahead-Log and read the configuration WAL entry to
+            // get the queue type and its capacity
+            final ConfigWalEntry config = WriteAheadLog.readConfigWalEntry(logFile);
+            final IpcQueue<Message> queue = toQueue(queueName, config);
+            p2pQueues.put(queueName, new WalBasedQueue(queue, walDir, true));
         };
     }
 
@@ -75,6 +76,19 @@ public class WalQueueManager {
 
     public static String toQueueName(final File file) {
         return StringUtil.removeEnd(file.getName().replace('$', '/'), ".wal");
+    }
+
+
+    private static IpcQueue<Message> toQueue(final String queueName, final ConfigWalEntry config) {
+        if (config == null) {
+            return new BoundedQueue<Message>(queueName, 200, false, true);
+        }
+        else if (config.isBoundedQueue()) {
+        	return new BoundedQueue<Message>(queueName, config.getQueueCapacity(), false, true);
+        }
+        else {
+            return new CircularBuffer<Message>(queueName, config.getQueueCapacity(), false, true);
+        }
     }
 
 

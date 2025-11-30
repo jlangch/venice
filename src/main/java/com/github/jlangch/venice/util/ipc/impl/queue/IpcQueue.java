@@ -30,6 +30,8 @@ public interface IpcQueue<T> {
 
     boolean isTemporary();
 
+    boolean isDurable();
+
     int size();
 
     int capacity();

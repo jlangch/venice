@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Map;
@@ -98,7 +99,9 @@ public class IPCFunctions {
                                                    " size it will be compressed.¶" +
                                                    " Defaults to -1 (no compression)¶" +
                                                    " The cutoff size can be specified as a number like `1000`" +
-                                                   " or a number with a unit like `:1KB` or `:2MB`|\n\n" +
+                                                   " or a number with a unit like `:1KB` or `:2MB`|\n" +
+                        "| :write-ahead-log-dir f  | Provide a write-ahead-log directory to support durable queues.¶" +
+                                                   " Defaults to `nil`.|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
@@ -146,6 +149,7 @@ public class IPCFunctions {
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
+                final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
 
                 final int maxConn = maxConnVal == Nil
                                         ? 0
@@ -154,6 +158,18 @@ public class IPCFunctions {
                 final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
                 final long maxQueues = convertMaxMessageSizeToLong(maxMaxQueuesVal);
                 final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
+
+                final File walDir = walDirVal == Nil
+                                    ? null
+                                    : IOFunctions.convertToFile(
+                                        args.first(),
+                                        "Function 'ipc/server' arg ':write-ahead-log-dir' must be an `io/file`");
+
+                if (walDir != null && !walDir.isDirectory() && !walDir.canWrite()) {
+                    throw new VncException(
+                            "The 'write-ahead-log-dir' " + walDir
+                            + " does not exist or is not writable!");
+                }
 
                 final Function<IMessage,IMessage> handlerWrapper;
 
@@ -194,6 +210,10 @@ public class IPCFunctions {
 
                 if (compressCutoffSize >= 0) {
                     server.setCompressCutoffSize(compressCutoffSize);
+                }
+
+                if (walDir != null) {
+                    server.enableWriteAheadLog(walDir);
                 }
 
                 if (handlerWrapper == null) {
@@ -2395,7 +2415,8 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/create-queue node name capacity)",
-                        "(ipc/create-queue node name capacity type)")
+                        "(ipc/create-queue node name capacity type)",
+                        "(ipc/create-queue node name capacity type durable)")
                     .doc(
                         "Creates a named queue on the server. Messages can be exchanged asynchronously " +
                         "between two clients using a queue. Each message is delivered to exactly " +
@@ -2416,7 +2437,8 @@ public class IPCFunctions {
                         "| node s     | A server or a client|\n" +
                         "| name s     | A queue name (string or keyword)|\n" +
                         "| capacity n | The queue's capacity (max number of messages)|\n" +
-                        "| type t     | Optional queue type `:bounded` or `:circular`. Defaults to `:bounded`.|")
+                        "| type t     | Optional queue type `:bounded` or `:circular`. Defaults to `:bounded`.|\n" +
+                        "| durable b  | If `true` create a durable queue (if the server supports it), else create a non durable queue. Defaults to `false`.|")
                     .examples(
                         "(do                                                       \n" +
                         "  (try-with [server  (ipc/server 33333)                   \n" +
@@ -2449,26 +2471,29 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3, 4);
+                ArityExceptions.assertArity(this, args, 3, 4, 5);
 
                 if (Types.isVncJavaObject(args.first(), TcpServer.class)) {
                     final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
 
-                    final VncVal type = args.fourth() == Nil ? Nil : Coerce.toVncKeyword(args.fourth());
+                    final VncVal typeVal = args.size() < 4 || args.nth(3) == Nil ? Nil : Coerce.toVncKeyword(args.nth(3));
+                    final VncVal durableVal = args.size() < 5 || args.nth(4) == Nil ? Nil : Coerce.toVncBoolean(args.nth(4));
 
-                    if (type == Nil) {
-                        server.createQueue(name, capacity, true);
+                    final boolean durable = durableVal == Nil ? false : ((VncBoolean)durableVal).getValue();
+
+                    if (typeVal == Nil) {
+                        server.createQueue(name, capacity, true, durable);
                     }
                     else {
-                        final String sType = ((VncKeyword)type).getSimpleName();
+                        final String sType = ((VncKeyword)typeVal).getSimpleName();
                         switch(sType) {
                             case "bounded":
-                                server.createQueue(name, capacity, true);
+                                server.createQueue(name, capacity, true, durable);
                                 break;
                             case "circular":
-                                server.createQueue(name, capacity, false);
+                                server.createQueue(name, capacity, false, durable);
                                 break;
                             default:
                                 throw new VncException (
@@ -2482,19 +2507,22 @@ public class IPCFunctions {
                     final String name = Coerce.toVncString(args.second()).getValue();
                     final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
 
-                    final VncVal type = args.fourth() == Nil ? Nil : Coerce.toVncKeyword(args.fourth());
+                    final VncVal typeVal = args.nth(3) == Nil ? Nil : Coerce.toVncKeyword(args.nth(3));
+                    final VncVal durableVal = args.nth(4) == Nil ? Nil : Coerce.toVncBoolean(args.nth(4));
 
-                    if (type == Nil) {
-                        client.createQueue(name, capacity, true);
+                    final boolean durable = durableVal == Nil ? false : ((VncBoolean)durableVal).getValue();
+
+                    if (typeVal == Nil) {
+                        client.createQueue(name, capacity, true, durable);
                     }
                     else {
-                        final String sType = ((VncKeyword)type).getSimpleName();
+                        final String sType = ((VncKeyword)typeVal).getSimpleName();
                         switch(sType) {
                             case "bounded":
-                                client.createQueue(name, capacity, true);
+                                client.createQueue(name, capacity, true, durable);
                                 break;
                             case "circular":
-                                client.createQueue(name, capacity, false);
+                                client.createQueue(name, capacity, false, durable);
                                 break;
                             default:
                                 throw new VncException (

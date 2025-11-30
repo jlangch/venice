@@ -67,8 +67,37 @@ public final class WriteAheadLog implements Closeable {
          this.raf = new RandomAccessFile(file, "rw");
          this.channel = raf.getChannel();
 
+         // Open the Write-Ahead-Log and read the configuration WAL entry to
+         // get the queue type and its capacity
+         this.config = readConfigWalEntry(file);
+
          // Recover state if file already exists / has content
          recover();
+     }
+
+
+     public static ConfigWalEntry readConfigWalEntry(final File file) {
+         try (RandomAccessFile raf = new RandomAccessFile(file, "rw");
+              FileChannel channel = raf.getChannel()) {
+             if (channel.size() > 0) {
+                 channel.position(0);
+                 final WalEntry firstEntry = readOneAtCurrentPosition(channel);
+                 return firstEntry.getType() == WalEntryType.CONFIG
+                          ? ConfigWalEntry.fromWalEntry(firstEntry)
+                          : null;
+             }
+             else {
+                 return null;
+             }
+         }
+         catch(Exception ex) {
+             return null;
+         }
+     }
+
+
+     public ConfigWalEntry getConfigWalEntry() {
+         return config;
      }
 
 
@@ -87,40 +116,6 @@ public final class WriteAheadLog implements Closeable {
          }
 
          return append(entry.getType(), entry.getUUID(), entry.getPayload());
-     }
-
-     /**
-      * Append an ACK entry to the WAL and fsync it.
-      *
-      * @param entry WAL entry
-      * @return LSN assigned to this record starts (from 1 and increments per append)
-      * @throws IOException on I/O failure
-      */
-    public synchronized long append(
-             final AckWalEntry entry
-     ) throws IOException {
-         if (entry == null) {
-             throw new IllegalArgumentException("entry must not be null");
-         }
-
-         return append(entry.toWalEntry());
-     }
-
-    /**
-     * Append a DATA entry to the WAL and fsync it.
-     *
-     * @param entry WAL entry
-     * @return LSN assigned to this record starts (from 1 and increments per append)
-     * @throws IOException on I/O failure
-     */
-     public synchronized long append(
-             final DataWalEntry entry
-     ) throws IOException {
-         if (entry == null) {
-             throw new IllegalArgumentException("entry must not be null");
-         }
-
-         return append(entry.toWalEntry());
      }
 
     /**
@@ -195,7 +190,7 @@ public final class WriteAheadLog implements Closeable {
 
         long position = 0L;
         while (position < validEndPosition) {
-            WalEntry entry = readOneAtCurrentPosition();
+            WalEntry entry = readOneAtCurrentPosition(channel);
             if (entry == null) {
                 break;
             }
@@ -237,14 +232,17 @@ public final class WriteAheadLog implements Closeable {
         // [1] read the entries of the old log
         try (WriteAheadLog oldLog = new WriteAheadLog(logFile)) {
             oldLog.readAll().forEach(e -> {
-                if (WalEntryType.ACK == e.getType()) {
-                    // ACK entry
+                if (WalEntryType.CONFIG == e.getType()) {
+                    pending.put(e.getUUID(), e);  // keep
+                }
+                else if (WalEntryType.ACK == e.getType()) {
+                    // acknowledge entry
                     AckWalEntry ackEntry = AckWalEntry.fromWalEntry(e);
-                    pending.remove(ackEntry.getAckedEntryUUID());
+                    pending.remove(ackEntry.getAckedEntryUUID());  // remove by uuid
                 }
                 else {
                    // data entry
-                   pending.put(e.getUUID(), e);
+                   pending.put(e.getUUID(), e);  // keep
                 }
             });
 
@@ -307,7 +305,7 @@ public final class WriteAheadLog implements Closeable {
 
         while (position < fileSize) {
             try {
-                WalEntry entry = readOneAtCurrentPosition();
+                WalEntry entry = readOneAtCurrentPosition(channel);
                 if (entry == null) {
                     break;
                 }
@@ -343,7 +341,7 @@ public final class WriteAheadLog implements Closeable {
      * @return the read WAL entry
      * @throws IOException on I/O failure
      */
-    private WalEntry readOneAtCurrentPosition() throws IOException {
+    private static WalEntry readOneAtCurrentPosition(final FileChannel channel) throws IOException {
         final ByteBuffer headerBuf = ByteBuffer.allocate(HEADER_SIZE);
 
         int bytesRead = readFully(channel, headerBuf);
@@ -421,6 +419,7 @@ public final class WriteAheadLog implements Closeable {
         return totalRead;
     }
 
+
     @Override
     public synchronized void close() throws IOException {
         channel.close();
@@ -445,6 +444,8 @@ public final class WriteAheadLog implements Closeable {
     private final File file;
     private final RandomAccessFile raf;
     private final FileChannel channel;
+
+    private final ConfigWalEntry config;
 
     // last written LSN
     private long lastLsn = 0L;

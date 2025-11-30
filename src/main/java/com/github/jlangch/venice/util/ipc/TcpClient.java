@@ -611,8 +611,14 @@ public class TcpClient implements Cloneable, Closeable {
      * @param queueName a queue name
      * @param capacity the queue capacity
      * @param bounded if true create a bounded queue else create a circular queue
+     * @param durable if true create a durable queue else a non durable queue
      */
-    public void createQueue(final String queueName, final int capacity, final boolean bounded) {
+    public void createQueue(
+            final String queueName,
+            final int capacity,
+            final boolean bounded,
+            final boolean durable
+    ) {
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
@@ -624,6 +630,7 @@ public class TcpClient implements Cloneable, Closeable {
                                     .add("name", queueName)
                                     .add("capacity", capacity)
                                     .add("bounded", bounded)
+                                    .add("durable", durable)
                                     .toJson(false);
 
         final Message m = new Message(
@@ -773,6 +780,7 @@ public class TcpClient implements Cloneable, Closeable {
        map.put("exists",    tmp.get("exists"));
        map.put("type",      tmp.get("type"));
        map.put("temporary", tmp.get("temporary"));
+       map.put("durable",   tmp.get("durable"));
        map.put("capacity",  tmp.get("capacity"));
        map.put("size",      tmp.get("size"));
 
@@ -793,6 +801,7 @@ public class TcpClient implements Cloneable, Closeable {
                new VncKeyword("exists")    , data.get(new VncKeyword("exists")),
                new VncKeyword("type")      , data.get(new VncKeyword("type")),
                new VncKeyword("temporary") , data.get(new VncKeyword("temporary")),
+               new VncKeyword("durable")   , data.get(new VncKeyword("durable")),
                new VncKeyword("capacity")  , data.get(new VncKeyword("capacity")),
                new VncKeyword("size")      , data.get(new VncKeyword("size")));
     }

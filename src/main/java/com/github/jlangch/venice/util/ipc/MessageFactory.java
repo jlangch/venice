@@ -32,7 +32,11 @@ import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 public abstract class MessageFactory {
 
-    /**
+    // ------------------------------------------------------------------------
+    // Text messages
+    // ------------------------------------------------------------------------
+
+	/**
      * Create a text message
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
@@ -69,7 +73,6 @@ public abstract class MessageFactory {
                 data.getBytes(Charset.forName(charset)));
     }
 
-
     /**
      * Create a text message
      *
@@ -110,6 +113,10 @@ public abstract class MessageFactory {
     }
 
 
+    // ------------------------------------------------------------------------
+    // JSON messages
+    // ------------------------------------------------------------------------
+
     /**
      * Create a json message
      *
@@ -143,7 +150,6 @@ public abstract class MessageFactory {
                 charset,
                 json.getBytes(Charset.forName(charset)));
     }
-
 
     /**
      * Create a json message
@@ -182,6 +188,10 @@ public abstract class MessageFactory {
     }
 
 
+    // ------------------------------------------------------------------------
+    // Binary messages
+    // ------------------------------------------------------------------------
+
     /**
      * Create a binary message
      *
@@ -215,7 +225,6 @@ public abstract class MessageFactory {
                 null,
                 data);
     }
-
 
     /**
      * Create a binary message
@@ -253,6 +262,10 @@ public abstract class MessageFactory {
                 data);
     }
 
+
+    // ------------------------------------------------------------------------
+    // Venice data messages
+    // ------------------------------------------------------------------------
 
     /**
      * Create a Venice message.
@@ -305,6 +318,10 @@ public abstract class MessageFactory {
         return json(requestId, expiresAt, topic, "UTF-8", Json.writeJson(data, false));
     }
 
+
+    // ------------------------------------------------------------------------
+    // Text test messages
+    // ------------------------------------------------------------------------
 
     /**
      * Create a simple hello message.
