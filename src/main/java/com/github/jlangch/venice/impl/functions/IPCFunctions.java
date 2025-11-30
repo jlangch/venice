@@ -139,10 +139,17 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                final int port = Coerce.toVncLong(args.first()).getIntValue();
+                final VncVal portVal = args.first();
+                final VncVal handlerVal = args.second();
 
-                final boolean hasHandler = Types.isIVncFunction(args.second());
+                // note: keywords are functions of type IVncFunction but not of type VncFunction!
+                final boolean hasHandler = Types.isVncFunction(handlerVal);
 
+                // arguments: port and handler
+                final int port = Coerce.toVncLong(portVal).getIntValue();
+                final VncFunction handler = hasHandler ? Coerce.toVncFunction(handlerVal) : null;
+
+                // options
                 final VncHashMap options = VncHashMap.ofAll(args.slice(hasHandler ? 2 : 1));
 
                 final VncVal maxConnVal = options.get(new VncKeyword("max-connections"));
@@ -162,7 +169,7 @@ public class IPCFunctions {
                 final File walDir = walDirVal == Nil
                                     ? null
                                     : IOFunctions.convertToFile(
-                                        args.first(),
+                                        walDirVal,
                                         "Function 'ipc/server' arg ':write-ahead-log-dir' must be an `io/file`");
 
                 if (walDir != null && !walDir.isDirectory() && !walDir.canWrite()) {
@@ -173,16 +180,13 @@ public class IPCFunctions {
 
                 final Function<IMessage,IMessage> handlerWrapper;
 
-                if (!hasHandler) {
+                if (handler == null) {
                     handlerWrapper = null; // no handler passed
                 }
                 else {
-                    final VncFunction handler = Coerce.toVncFunction(args.second());
-
                     final CallFrame[] cf = new CallFrame[] {
                                                 new CallFrame(this, args),
                                                 new CallFrame(handler) };
-
 
                     // Create a wrapper that inherits the Venice thread context!
                     final ThreadBridge threadBridge = ThreadBridge.create("tcp-server-handler", cf);
@@ -304,13 +308,26 @@ public class IPCFunctions {
                 ArityExceptions.assertMinArity(this, args, 1);
 
                 if ( args.size() == 1) {
+                    // [port]
                     final int port = Coerce.toVncLong(args.first()).getIntValue();
 
                     final TcpClient client = new TcpClient(port);
                     client.open();
                     return new VncJavaObject(client);
                 }
+                else if ( args.size() == 2) {
+                    // [host port]
+                    final String host = Types.isVncKeyword(args.first())
+                                          ? Coerce.toVncKeyword(args.first()).getSimpleName()
+                                          : Coerce.toVncString(args.first()).getValue();
+                    final int port = Coerce.toVncLong(args.second()).getIntValue();
+
+                    final TcpClient client = new TcpClient(host, port);
+                    client.open();
+                    return new VncJavaObject(client);
+                }
                 else {
+                    // [host port & options]
                     final String host = Types.isVncKeyword(args.first())
                                           ? Coerce.toVncKeyword(args.first()).getSimpleName()
                                           : Coerce.toVncString(args.first()).getValue();

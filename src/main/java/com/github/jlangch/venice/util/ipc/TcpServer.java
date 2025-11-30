@@ -172,7 +172,7 @@ public class TcpServer implements Closeable {
     public void enableWriteAheadLog(final File walDir) {
         Objects.requireNonNull(walDir);
 
-        if (walDir.isDirectory()) {
+        if (!walDir.isDirectory()) {
             throw new VncException(
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }

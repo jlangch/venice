@@ -44,7 +44,7 @@ public class ConfigWalEntry {
     }
 
     public WalEntry toWalEntry() {
-        final ByteBuffer payload = ByteBuffer.allocate(4);
+        final ByteBuffer payload = ByteBuffer.allocate(8);
         payload.putInt(queueCapacity);
         payload.putInt(boundedQueue ? 1 : 0);
         payload.flip();

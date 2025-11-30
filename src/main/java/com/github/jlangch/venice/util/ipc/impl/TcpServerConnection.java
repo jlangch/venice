@@ -435,7 +435,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                     ? queue.offer(msg)
                                     : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
                 if (ok) {
-                    return createOkTextMessageResponse(request, "Offered the message to the queue.");
+                    final boolean durable = msg.isDurable()            // message is durable
+                                            && queue.isDurable()       // queue is durable
+                                            && walDir.get() != null;   // server supports write-ahead-log
+                    return new Message(
+                            msg.getRequestId(),
+                            MessageType.RESPONSE,
+                            ResponseStatus.OK,
+                            true,   // oneway
+                            durable,
+                            Message.EXPIRES_NEVER,
+                            msg.getTopics(),
+                            "text/plain",
+                            "UTF-8",
+                            toBytes("Offered the message to the queue.", "UTF-8"));
                 }
                 else {
                     return createTextMessageResponse(
