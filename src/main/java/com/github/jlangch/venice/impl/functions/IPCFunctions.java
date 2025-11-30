@@ -796,7 +796,7 @@ public class IPCFunctions {
                         "  (defn client-subscribe-handler [m]                                 \n" +
                         "    (println \"SUBSCRIBED:\" (ipc/message->json true m)))            \n" +
                         "                                                                     \n" +
-                        "  (try-with [server (ipc/server 33333)                               \n" +
+                        "  (try-with [server  (ipc/server 33333)                              \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
@@ -898,7 +898,7 @@ public class IPCFunctions {
                         "  (defn client-subscribe-handler [m]                                 \n" +
                         "    (println \"SUBSCRIBED:\" (ipc/message->json true m)))            \n" +
                         "                                                                     \n" +
-                        "  (try-with [server (ipc/server 33333)                               \n" +
+                        "  (try-with [server  (ipc/server 33333)                              \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
@@ -965,7 +965,7 @@ public class IPCFunctions {
                         "  (defn client-subscribe-handler [m]                                 \n" +
                         "    (println \"SUBSCRIBED:\" (ipc/message->json true m)))            \n" +
                         "                                                                     \n" +
-                        "  (try-with [server (ipc/server 33333)                               \n" +
+                        "  (try-with [server  (ipc/server 33333)                              \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
@@ -1133,8 +1133,8 @@ public class IPCFunctions {
                         "  (defn println [& msg] (locking println (apply core/println msg)))                         \n" +
                         "                                                                                            \n" +
                         "  (try-with [server  (ipc/server 33333)                                                     \n" +
-                        "           client1 (ipc/client 33333)                                                       \n" +
-                        "           client2 (ipc/client 33333)]                                                      \n" +
+                        "             client1 (ipc/client 33333)                                                     \n" +
+                        "             client2 (ipc/client 33333)]                                                    \n" +
                         "    ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
                         "    (ipc/create-queue server :orders 100)                                                   \n" +
                         "                                                                                            \n" +
@@ -1225,7 +1225,7 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                                                   \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                         \n" +
                         "                                                                                            \n" +
-                        "  (try-with [server (ipc/server 33333)                                                      \n" +
+                        "  (try-with [server  (ipc/server 33333)                                                     \n" +
                         "             client1 (ipc/client 33333)                                                     \n" +
                         "             client2 (ipc/client 33333)]                                                    \n" +
                         "    ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
@@ -1299,7 +1299,7 @@ public class IPCFunctions {
                         "  ;; thread-safe printing                                                                   \n" +
                         "  (defn println [& msg] (locking println (apply core/println msg)))                         \n" +
                         "                                                                                            \n" +
-                        "  (try-with [server (ipc/server 33333)                                                      \n" +
+                        "  (try-with [server  (ipc/server 33333)                                                     \n" +
                         "             client1 (ipc/client 33333)                                                     \n" +
                         "             client2 (ipc/client 33333)]                                                    \n" +
                         "    ;; create a queue to allow client1 and client2 to exchange messages                     \n" +
@@ -1574,6 +1574,7 @@ public class IPCFunctions {
                                         expiresAt == null || expiresAt == Nil
                                             ? Message.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
+                                        false,
                                         topic.getValue(),
                                         mimetype.getValue(),
                                         charset.getSimpleName(),
@@ -1678,6 +1679,7 @@ public class IPCFunctions {
                                         expiresAt == null || expiresAt == Nil
                                             ? Message.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
+                                        false,
                                         topic.getValue(),
                                         "text/plain",
                                         "UTF-8",
@@ -1710,7 +1712,7 @@ public class IPCFunctions {
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
             .examples(
-                        "(->> (ipc/binary-message \"100\" :test                  \n" +
+                        "(->> (ipc/binary-message \"100\" :test                   \n" +
                         "                         \"application/octet-stream\"    \n" +
                         "                         (bytebuf [0 1 2 3 4 5 6 7]))    \n" +
                         "     (ipc/message->map)                                  \n" +
@@ -1792,6 +1794,7 @@ public class IPCFunctions {
                                         expiresAt == null || expiresAt == Nil
                                             ? Message.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
+                                        false,
                                         topic.getValue(),
                                         mimetype.getValue(),
                                         data.getBytes());
@@ -1893,6 +1896,7 @@ public class IPCFunctions {
                                         expiresAt == null || expiresAt == Nil
                                             ? Message.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
+                                        false,
                                         topic.getValue(),
                                         data);
 
