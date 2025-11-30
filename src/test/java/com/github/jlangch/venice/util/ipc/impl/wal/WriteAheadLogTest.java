@@ -116,6 +116,7 @@ public class WriteAheadLogTest {
 
                 final List<WalEntry> entries = wal.readAll();
 
+                // We've got 4 entries
                 assertEquals(4, entries.size());
 
                 assertEquals(1, entries.get(0).getLsn());
@@ -139,7 +140,6 @@ public class WriteAheadLogTest {
 
             // 3. Compact
             WriteAheadLog.compact(walFile, true);
-
 
             // 4. Simulate restart: open WAL again and recover entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile)) {

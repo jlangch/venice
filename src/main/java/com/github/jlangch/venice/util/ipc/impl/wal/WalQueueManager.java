@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
@@ -43,16 +45,72 @@ public class WalQueueManager {
 
     public void preloadQueues(
         final Map<String, IpcQueue<Message>> p2pQueues
-    ) throws IOException {
+    ) throws IOException, InterruptedException {
         for(File logFile :listLogFiles()) {
             final String queueName = WalQueueManager.toQueueName(logFile);
 
             // open the Write-Ahead-Log and read the configuration WAL entry to
             // get the queue type and its capacity
-            final ConfigWalEntry config = WriteAheadLog.readConfigWalEntry(logFile);
+            final List<WalEntry> entries =  WriteAheadLog.compact(
+                                                WriteAheadLog.loadAll(logFile));
+
+            final WalEntry firstEntry = CollectionUtil.first(entries);
+            final ConfigWalEntry config = firstEntry.getType() == WalEntryType.CONFIG
+                                             ? ConfigWalEntry.fromWalEntry(firstEntry)
+                                             : null;
+
             final IpcQueue<Message> queue = toQueue(queueName, config);
+
+            // load the write-ahead-log entries into the queue
+            final int gap = Math.min(entries.size(), queue.capacity() - queue.size());
+            if (gap > 0) {
+                for(WalEntry e : entries.subList(entries.size() - gap, entries.size())) {
+                    if (WalEntryType.DATA == e.getType()) {
+                         final Message m = MessageWalEntry.fromWalEntry(e).getMessage();
+                        queue.offer(m, 0, TimeUnit.MILLISECONDS);
+                    }
+                }
+            }
+
             p2pQueues.put(queueName, new WalBasedQueue(queue, walDir, true));
         };
+    }
+
+    public String protocol() throws IOException {
+        final StringBuilder sb = new StringBuilder();
+
+        for(File logFile :listLogFiles()) {
+            final String queueName = WalQueueManager.toQueueName(logFile);
+            sb.append("QUEUE: " + queueName + "\n");
+
+            try(WriteAheadLog log = new WriteAheadLog(logFile, false)) {
+                for(WalEntry e : log.readAll()) {
+                    switch(e.getType()) {
+                        case ACK:
+                            AckWalEntry ae = AckWalEntry.fromWalEntry(e);
+                            sb.append("ACK:  " + ae.getAckedEntryUUID() + "\n");
+                            break;
+
+                        case CONFIG:
+                            ConfigWalEntry ce = ConfigWalEntry.fromWalEntry(e);
+                            sb.append("CONF: " + ce.getQueueType() + ", " + ce.getQueueCapacity() + "\n");
+                            break;
+
+                        case DATA:
+                            MessageWalEntry me = MessageWalEntry.fromWalEntry(e);
+                            Message m = me.getMessage();
+                            sb.append("DATA: " + m.getId() + "\n");
+                            break;
+
+                        default:
+                            sb.append("ERR:  " + e.getLsn() + "\n");
+                            break;
+                    }
+                }
+            }
+        };
+
+        return sb.toString();
     }
 
     public List<File> listLogFiles() {
@@ -84,7 +142,7 @@ public class WalQueueManager {
             return new BoundedQueue<Message>(queueName, 200, false, true);
         }
         else if (config.isBoundedQueue()) {
-        	return new BoundedQueue<Message>(queueName, config.getQueueCapacity(), false, true);
+            return new BoundedQueue<Message>(queueName, config.getQueueCapacity(), false, true);
         }
         else {
             return new CircularBuffer<Message>(queueName, config.getQueueCapacity(), false, true);

@@ -62,17 +62,19 @@ import java.util.zip.CRC32;
  */
 public final class WriteAheadLog implements Closeable {
 
-     public WriteAheadLog(final File file) throws IOException {
+    public WriteAheadLog(final File file) throws IOException {
+        this(file, true);
+    }
+
+     public WriteAheadLog(final File file, final boolean recover) throws IOException {
          this.file = file;
          this.raf = new RandomAccessFile(file, "rw");
          this.channel = raf.getChannel();
 
-         // Open the Write-Ahead-Log and read the configuration WAL entry to
-         // get the queue type and its capacity
-         this.config = readConfigWalEntry(file);
-
          // Recover state if file already exists / has content
-         recover();
+         if (recover) {
+             recover();
+         }
      }
 
 
@@ -94,12 +96,6 @@ public final class WriteAheadLog implements Closeable {
              return null;
          }
      }
-
-
-     public ConfigWalEntry getConfigWalEntry() {
-         return config;
-     }
-
 
      /**
       * Append an entry to the WAL and fsync it.
@@ -179,25 +175,59 @@ public final class WriteAheadLog implements Closeable {
     }
 
     /**
-     * Read all valid entries from the WAL (from beginning to last good record).
+     * Read all valid entries from the WAL
      *
      * @return a list of the read entries
      * @throws IOException on I/O failure
      */
     public synchronized List<WalEntry> readAll() throws IOException {
-        final List<WalEntry> result = new ArrayList<>();
-        channel.position(0);
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw");
+             FileChannel channel = raf.getChannel()
+        ) {
+            final long fileSize = channel.size();
 
-        long position = 0L;
-        while (position < validEndPosition) {
-            WalEntry entry = readOneAtCurrentPosition(channel);
-            if (entry == null) {
-                break;
+            final List<WalEntry> result = new ArrayList<>();
+            channel.position(0);
+
+            long position = 0L;
+            while (position < fileSize) {
+                WalEntry entry = readOneAtCurrentPosition(channel);
+                if (entry == null) {
+                    break;
+                }
+                result.add(entry);
+                position = channel.position();
             }
-            result.add(entry);
-            position = channel.position();
+            return result;
         }
-        return result;
+    }
+
+    /**
+     * Load all valid entries from the WAL
+     *
+     * @return a list of the read entries
+     * @throws IOException on I/O failure
+     */
+    public static List<WalEntry> loadAll(final File file) throws IOException {
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw");
+             FileChannel channel = raf.getChannel()
+        ) {
+            final long fileSize = channel.size();
+
+            final List<WalEntry> result = new ArrayList<>();
+            channel.position(0);
+
+            long position = 0L;
+            while (position < fileSize) {
+                WalEntry entry = readOneAtCurrentPosition(channel);
+                if (entry == null) {
+                    break;
+                }
+                result.add(entry);
+                position = channel.position();
+            }
+            return result;
+        }
     }
 
 
@@ -227,35 +257,20 @@ public final class WriteAheadLog implements Closeable {
         File tmpFile = new File(dir, baseName + ".compact");
         File backupFile = new File(dir, baseName + ".bak");
 
-        final Map<UUID, WalEntry> pending = new LinkedHashMap<>();
+        final List<WalEntry> pending = new ArrayList<>();
 
         // [1] read the entries of the old log
         try (WriteAheadLog oldLog = new WriteAheadLog(logFile)) {
-            oldLog.readAll().forEach(e -> {
-                if (WalEntryType.CONFIG == e.getType()) {
-                    pending.put(e.getUUID(), e);  // keep
-                }
-                else if (WalEntryType.ACK == e.getType()) {
-                    // acknowledge entry
-                    AckWalEntry ackEntry = AckWalEntry.fromWalEntry(e);
-                    pending.remove(ackEntry.getAckedEntryUUID());  // remove by uuid
-                }
-                else {
-                   // data entry
-                   // we currently do discard expired message at log compaction!
-                   pending.put(e.getUUID(), e);  // keep
-                }
-            });
+            pending.addAll(compact(oldLog.readAll()));
 
             // [2] Write a brand-new log with only pending messages
             if (tmpFile.exists() && !tmpFile.delete()) {
                 throw new IOException("Could not delete stale tmp file: " + tmpFile);
             }
 
-            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile)) {
-                for (Map.Entry<UUID, WalEntry> e : pending.entrySet()) {
-                    // keep original uuid / headers
-                    newLog.append(e.getValue());
+            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false)) {
+                for (WalEntry e : pending) {
+                    newLog.append(e);
                 }
             }
         }
@@ -286,6 +301,28 @@ public final class WriteAheadLog implements Closeable {
         if (removeBackupLogFile) {
             backupFile.delete();
         }
+
+        return pending;
+    }
+
+    public static List<WalEntry> compact(final List<WalEntry> entries) {
+        final Map<UUID, WalEntry> pending = new LinkedHashMap<>();
+
+        entries.forEach(e -> {
+            if (WalEntryType.CONFIG == e.getType()) {
+                pending.put(e.getUUID(), e);  // keep
+            }
+            else if (WalEntryType.ACK == e.getType()) {
+                // acknowledge data entry
+                AckWalEntry ackEntry = AckWalEntry.fromWalEntry(e);
+                pending.remove(ackEntry.getAckedEntryUUID());  // remove by uuid
+            }
+            else {
+               // data entry
+               // we currently do not discard expired messages at log compaction!
+               pending.put(e.getUUID(), e);  // keep
+            }
+        });
 
         return new ArrayList<>(pending.values());
     }
@@ -445,8 +482,6 @@ public final class WriteAheadLog implements Closeable {
     private final File file;
     private final RandomAccessFile raf;
     private final FileChannel channel;
-
-    private final ConfigWalEntry config;
 
     // last written LSN
     private long lastLsn = 0L;

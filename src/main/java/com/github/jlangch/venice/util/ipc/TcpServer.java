@@ -242,8 +242,12 @@ public class TcpServer implements Closeable {
                 ch.configureBlocking(true);
 
                 if (isWriteAheadLog()) {
-                    new WalQueueManager(walDir.get())
-                            .preloadQueues(p2pQueues);
+                    final WalQueueManager mgr = new WalQueueManager(walDir.get());
+
+                    // System.out.println(mgr.protocol());
+                    // System.out.println();
+
+                    mgr.preloadQueues(p2pQueues);
                 }
 
                 // run in an executor thread to not block the caller
