@@ -242,6 +242,7 @@ public final class WriteAheadLog implements Closeable {
                 }
                 else {
                    // data entry
+                   // we currently do discard expired message at log compaction!
                    pending.put(e.getUUID(), e);  // keep
                 }
             });

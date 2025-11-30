@@ -42,7 +42,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                       \n" +
-                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" nil))  ";
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" false nil))  ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -53,7 +53,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                       \n" +
-                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" (+ (current-time-millis) 3_600_000)))  ";
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" false (+ (current-time-millis) 3_600_000)))  ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -64,7 +64,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                       \n" +
-                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" (- (current-time-millis) 3_600_000)))  ";
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" false (- (current-time-millis) 3_600_000)))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -75,7 +75,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                              \n" +
-                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" 2 :minutes))  ";
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" false 2 :minutes))  ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -86,7 +86,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                               \n" +
-                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" -2 :minutes))  ";
+                "  (ipc/plain-text-message \"1\" \"test\" \"hello 3\" false -2 :minutes))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -97,7 +97,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                      \n" +
-                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" nil)) ";
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" false nil)) ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -108,7 +108,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                      \n" +
-                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" (+ (current-time-millis) 3_600_000))) ";
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" false (+ (current-time-millis) 3_600_000))) ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -119,7 +119,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                      \n" +
-                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" (- (current-time-millis) 3_600_000))) ";
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" false (- (current-time-millis) 3_600_000))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -130,7 +130,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                      \n" +
-                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" 2 :minutes)) ";
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" false 2 :minutes)) ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -141,7 +141,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                      \n" +
-                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" -2 :minutes)) ";
+                "  (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello 3\" false -2 :minutes)) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -152,7 +152,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                                     \n" +
-                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) nil)) ";
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) false nil)) ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -163,7 +163,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                                     \n" +
-                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) (+ (current-time-millis) 3_600_000))) ";
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) false (+ (current-time-millis) 3_600_000))) ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -174,7 +174,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                                     \n" +
-                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) (- (current-time-millis) 3_600_000))) ";
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) false (- (current-time-millis) 3_600_000))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -185,7 +185,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                                     \n" +
-                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) 2 :minutes)) ";
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) false 2 :minutes)) ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -196,7 +196,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                                                     \n" +
-                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) -2 :minutes)) ";
+                "  (ipc/binary-message \"1\" \"test\" \"application/octet-stream\" (bytebuf [0 1 2]) false -2 :minutes)) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -207,7 +207,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                        \n" +
-                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} nil))  ";
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} false nil))  ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -218,7 +218,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                        \n" +
-                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} (+ (current-time-millis) 3_600_000)))  ";
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} false (+ (current-time-millis) 3_600_000)))  ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -229,7 +229,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                        \n" +
-                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} (- (current-time-millis) 3_600_000)))  ";
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} false (- (current-time-millis) 3_600_000)))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -240,7 +240,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                        \n" +
-                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} 2 :minutes))  ";
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} false 2 :minutes))  ";
 
         assertFalse((Boolean)venice.eval(script));
     }
@@ -251,7 +251,7 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(ipc/message-expired?                                        \n" +
-                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} -2 :minutes))  ";
+                "  (ipc/venice-message \"1\" \"test\" {:a 100, :b 200} false -2 :minutes))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }

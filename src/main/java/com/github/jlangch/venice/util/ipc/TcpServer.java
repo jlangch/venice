@@ -344,7 +344,7 @@ public class TcpServer implements Closeable {
      * @param queueName a queue name
      * @param capacity the queue capacity
      * @param bounded if true create a bounded queue else create a circular queue
-     * @param durable if true create a durable queue else a non durable queue
+     * @param durable if true create a durable queue else a nondurable queue
      */
     public void createQueue(
             final String queueName,

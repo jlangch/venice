@@ -1479,8 +1479,9 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/text-message request-id topic mimetype charset text)",
-                        "(ipc/text-message request-id topic mimetype charset text expires-at)",
-                        "(ipc/text-message request-id topic mimetype charset text expires-val expires-unit)")
+                        "(ipc/text-message request-id topic mimetype charset text durable)",
+                        "(ipc/text-message request-id topic mimetype charset text durable expires-at)",
+                        "(ipc/text-message request-id topic mimetype charset text durable expires-val expires-unit)")
                     .doc(
                         "Creates a text message\n\n" +
                         "*Arguments:* \n\n" +
@@ -1489,23 +1490,23 @@ public class IPCFunctions {
                         "| mimetype m     | The mimetype of the payload text. A string like 'text/plain' |\n" +
                         "| charset c      | The charset of the payload text. A keyword like `:UTF-8`|\n" +
                         "| text t         | The message payload text (a string)|\n" +
+                        "| durable b      | If `true` create a durable message if the server supports durable queues.¶Defaults to `false`.|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
                     .examples(
-                        "(->> (ipc/text-message \"1\" :test \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "(->> (ipc/text-message \"1\" :test                       \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"1\" \"test\"  \"text/plain\" :UTF-8 \"hello\")  \n" +
+                        "(->> (ipc/text-message \"1\" \"test\"                    \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\")  \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
-                        "(->> (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\"   \n" +
-                        "                       (-> (time/local-date-time)        \n" +
-                        "                           (time/plus :hours 2)          \n" +
-                        "                           (time/to-millis)))            \n" +
-                        "     (ipc/message->map)                                  \n" +
-                        "     (println))                                          ",
-                        "(->> (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\" 2 :hours) \n" +
+                        "(->> (ipc/text-message \"1\" \"test\"                    \n" +
+                        "                       \"text/plain\" :UTF-8 \"hello\"   \n" +
+                        "                       false                             \n" +
+                        "                       2 :hours)                         \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
                     .seeAlso(
@@ -1523,14 +1524,15 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 5, 6, 7);
+                ArityExceptions.assertArity(this, args, 5, 6, 7, 8);
 
                 final VncVal requestId;
                 final VncString topic;
                 final VncString mimetype ;
                 final VncKeyword charset;
                 final VncVal textVal;
-                final VncVal expiresAt;
+                final VncVal durableVal;
+                final VncVal expiresAtVal;
 
                 if (args.size() == 5) {
                     requestId = args.nth(0);
@@ -1538,7 +1540,8 @@ public class IPCFunctions {
                     mimetype = Coerce.toVncString(args.nth(2));
                     charset = Coerce.toVncKeyword(args.nth(3));
                     textVal = args.nth(4);
-                    expiresAt = null;
+                    durableVal = null;
+                    expiresAtVal = null;
                 }
                 else if (args.size() == 6) {
                     requestId = args.nth(0);
@@ -1546,7 +1549,17 @@ public class IPCFunctions {
                     mimetype = Coerce.toVncString(args.nth(2));
                     charset = Coerce.toVncKeyword(args.nth(3));
                     textVal = args.nth(4);
-                    expiresAt = args.nth(5);
+                    durableVal = args.nth(5);
+                    expiresAtVal = null;
+                }
+                else if (args.size() == 7) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    mimetype = Coerce.toVncString(args.nth(2));
+                    charset = Coerce.toVncKeyword(args.nth(3));
+                    textVal = args.nth(4);
+                    durableVal = args.nth(5);
+                    expiresAtVal = args.nth(6);
                 }
                 else  {
                     requestId = args.nth(0);
@@ -1554,27 +1567,32 @@ public class IPCFunctions {
                     mimetype = Coerce.toVncString(args.nth(2));
                     charset = Coerce.toVncKeyword(args.nth(3));
                     textVal = args.nth(4);
-                    expiresAt = args.nth(5) == Nil
+                    durableVal = args.nth(5);
+                    expiresAtVal = args.nth(6) == Nil
                                  ? null
                                  : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
-                                        args.nth(6),    // unit
-                                        args.nth(5)));  // n
+                                        args.nth(7),    // unit
+                                        args.nth(6)));  // n
                 }
 
                 final String text = Types.isVncString(textVal)
                                         ? ((VncString)textVal).getValue()
                                         : textVal.toString(true);  // aggressively convert to string
 
+                final boolean durable = durableVal != null
+                                            && durableVal != Nil
+                                            && Coerce.toVncBoolean(durableVal).getValue();
+
                 final IMessage msg = MessageFactory.text(
                                         requestId == null || requestId == Nil
                                             ? null
                                             : Coerce.toVncString(requestId).getValue(),
-                                        expiresAt == null || expiresAt == Nil
+                                            expiresAtVal == null || expiresAtVal == Nil
                                             ? Message.EXPIRES_NEVER
-                                            : Coerce.toVncLong(expiresAt).getValue(),
-                                        false,
+                                            : Coerce.toVncLong(expiresAtVal).getValue(),
+                                        durable,
                                         topic.getValue(),
                                         mimetype.getValue(),
                                         charset.getSimpleName(),
@@ -1594,14 +1612,16 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/plain-text-message request-id topic text)",
-                        "(ipc/plain-text-message request-id topic text expires-at)",
-                        "(ipc/plain-text-message request-id topic text expires-val expires-unit)")
+                        "(ipc/plain-text-message request-id topic text durable)",
+                        "(ipc/plain-text-message request-id topic text durable expires-at)",
+                        "(ipc/plain-text-message request-id topic text durable expires-val expires-unit)")
                     .doc(
                         "Creates a plain text message with mimetype `text/plain` and charset `:UTF-8`.\n\n"  +
                         "*Arguments:* \n\n" +
                         "| request-id r   | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t        | A topic (string or keyword) |\n" +
                         "| text t         | The message payload text (a string)|\n" +
+                        "| durable b      | If `true` create a durable message if the server supports durable queues.¶Defaults to `false`.|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
@@ -1612,15 +1632,11 @@ public class IPCFunctions {
                         "(->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
                         "     (ipc/message->map)                                   \n" +
                         "     (println))                                           ",
-                        "(->> (ipc/plain-text-message \"1\" \"test\" \"hello\"     \n" +
-                        "                             (-> (time/local-date-time)   \n" +
-                        "                                 (time/plus :hours 2)     \n" +
-                        "                                 (time/to-millis)))       \n" +
+                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\"   \n" +
+                        "                             false                        \n" +
+                        "                             2 :hours)                    \n" +
                         "     (ipc/message->map)                                   \n" +
-                        "     (println))                                           ",
-                        "(->> (ipc/plain-text-message \"100\" \"test\" \"hello\" 2 :hours) \n" +
-                        "     (ipc/message->map)                                           \n" +
-                        "     (println))                                                   ")
+                        "     (println))                                           ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -1636,41 +1652,56 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3, 4, 5);
+                ArityExceptions.assertArity(this, args, 3, 4, 5, 6);
 
                 final VncVal requestId;
                 final VncString topic;
                 final VncVal textVal;
+                final VncVal durableVal;
                 final VncVal expiresAt;
 
                 if (args.size() == 3) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     textVal = args.nth(2);
+                    durableVal = null;
                     expiresAt = null;
                 }
                 else if (args.size() == 4) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     textVal = args.nth(2);
-                    expiresAt = args.nth(3);
+                    durableVal = args.nth(3);
+                    expiresAt = null;
+                }
+                else if (args.size() == 5) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    textVal = args.nth(2);
+                    durableVal = args.nth(3);
+                    expiresAt = args.nth(4);
                 }
                 else {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     textVal = args.nth(2);
-                    expiresAt = args.nth(3) == Nil
+                    durableVal = args.nth(3);
+                    expiresAt = args.nth(4) == Nil
                                  ? null
                                  : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
-                                        args.nth(4),    // unit
-                                        args.nth(3)));  // n
+                                        args.nth(5),    // unit
+                                        args.nth(4)));  // n
                 }
 
                 final String text = Types.isVncString(textVal)
                                         ? ((VncString)textVal).getValue()
                                         : textVal.toString(true);  // aggressively convert to string
+
+                final boolean durable = durableVal != null
+                                            && durableVal != Nil
+                                            && Coerce.toVncBoolean(durableVal).getValue();
 
                 final IMessage msg = MessageFactory.text(
                                         requestId == null || requestId == Nil
@@ -1679,7 +1710,7 @@ public class IPCFunctions {
                                         expiresAt == null || expiresAt == Nil
                                             ? Message.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
-                                        false,
+                                            durable,
                                         topic.getValue(),
                                         "text/plain",
                                         "UTF-8",
@@ -1699,8 +1730,9 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/binary-message request-id topic mimetype data)",
-                        "(ipc/binary-message request-id topic mimetype data expires-at)",
-                        "(ipc/binary-message request-id topic mimetype data expires-val expires-unit)")
+                        "(ipc/binary-message request-id topic mimetype data durable)",
+                        "(ipc/binary-message request-id topic mimetype data durable expires-at)",
+                        "(ipc/binary-message request-id topic mimetype data durable expires-val expires-unit)")
                     .doc(
                         "Creates a binary message.\n\n" +
                         "*Arguments:* \n\n" +
@@ -1708,6 +1740,7 @@ public class IPCFunctions {
                         "| topic t        | A topic (string or keyword) |\n" +
                         "| mimetype m     | The mimetype of the payload data. A string like 'application/octet-stream', 'image/png'|\n" +
                         "| data d         | The message payload binary data (a bytebuf)|\n" +
+                        "| durable b      | If `true` create a durable message if the server supports durable queues.¶Defaults to `false`.|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
@@ -1725,6 +1758,7 @@ public class IPCFunctions {
                         "(->> (ipc/binary-message \"100\" \"test\"                \n" +
                         "                         \"application/octet-stream\"    \n" +
                         "                         (bytebuf [0 1 2 3 4 5 6 7])     \n" +
+                        "                         false                           \n" +
                         "                         (-> (time/local-date-time)      \n" +
                         "                             (time/plus :hours 2)        \n" +
                         "                             (time/to-millis)))          \n" +
@@ -1733,6 +1767,7 @@ public class IPCFunctions {
                         "(->> (ipc/binary-message \"100\" \"test\"                \n" +
                         "                         \"application/octet-stream\"    \n" +
                         "                         (bytebuf [0 1 2 3 4 5 6 7])     \n" +
+                        "                         false                           \n" +
                         "                         2 :hours)                       \n" +
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ")
@@ -1751,12 +1786,13 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4, 5, 6);
+                ArityExceptions.assertArity(this, args, 4, 5, 6, 7);
 
                 final VncVal requestId;
                 final VncString topic;
                 final VncString mimetype;
                 final VncByteBuffer data;
+                final VncVal durableVal;
                 final VncVal expiresAt;
 
                 if (args.size() == 4) {
@@ -1764,6 +1800,7 @@ public class IPCFunctions {
                     topic = Coerce.toVncString(args.nth(1));
                     mimetype = Coerce.toVncString(args.nth(2));
                     data = Coerce.toVncByteBuffer(args.nth(3));
+                    durableVal = null;
                     expiresAt = null;
                 }
                 else if (args.size() == 5) {
@@ -1771,21 +1808,35 @@ public class IPCFunctions {
                     topic = Coerce.toVncString(args.nth(1));
                     mimetype = Coerce.toVncString(args.nth(2));
                     data = Coerce.toVncByteBuffer(args.nth(3));
-                    expiresAt = args.nth(4);
+                    durableVal = args.nth(4);
+                    expiresAt = null;
+                }
+                else if (args.size() == 6) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    mimetype = Coerce.toVncString(args.nth(2));
+                    data = Coerce.toVncByteBuffer(args.nth(3));
+                    durableVal = args.nth(4);
+                    expiresAt = args.nth(5);
                 }
                 else {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     mimetype = Coerce.toVncString(args.nth(2));
                     data = Coerce.toVncByteBuffer(args.nth(3));
-                    expiresAt = args.nth(4) == Nil
+                    durableVal = args.nth(4);
+                    expiresAt = args.nth(5) == Nil
                                  ? null
                                  : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
-                                        args.nth(5),    // unit
-                                        args.nth(4)));  // n
+                                        args.nth(6),    // unit
+                                        args.nth(5)));  // n
                 }
+
+                final boolean durable = durableVal != null
+                                            && durableVal != Nil
+                                            && Coerce.toVncBoolean(durableVal).getValue();
 
                 final IMessage msg = MessageFactory.binary(
                                         requestId == null || requestId == Nil
@@ -1794,7 +1845,7 @@ public class IPCFunctions {
                                         expiresAt == null || expiresAt == Nil
                                             ? Message.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
-                                        false,
+                                        durable,
                                         topic.getValue(),
                                         mimetype.getValue(),
                                         data.getBytes());
@@ -1813,8 +1864,9 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/venice-message request-id topic data)",
-                        "(ipc/venice-message request-id topic data expires-at)",
-                        "(ipc/venice-message request-id topic data expires-val expires-unit)")
+                        "(ipc/venice-message request-id topic data durable)",
+                        "(ipc/venice-message request-id topic data durable expires-at)",
+                        "(ipc/venice-message request-id topic data durable expires-val expires-unit)")
                     .doc(
                         "Creates a venice message.\n\n" +
                         "The Venice data is serialized as JSON (mimetype: 'application/json') " +
@@ -1823,6 +1875,7 @@ public class IPCFunctions {
                         "| request-id r   | A request ID (string, may be `nil`). May be used for idempotency checks by the receiver |\n" +
                         "| topic t        | A topic (string or keyword) |\n" +
                         "| data d         | The message payload Venice data (e.g.: a map, list, ...)|\n" +
+                        "| durable b      | If `true` create a durable message if the server supports durable queues.¶Defaults to `false`.|\n" +
                         "| expires-at t   | Message expiration time in millis since epoch (may be `nil`)|\n" +
                         "| expires-val v  | Message expiration duration. E.g.: 2 (may be `nil`)|\n" +
                         "| expires-unit u | Message expiration time unit. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}|")
@@ -1831,18 +1884,14 @@ public class IPCFunctions {
                         "     (ipc/message->map)                                  \n" +
                         "     (println))                                          ",
                         "(->> (ipc/venice-message \"100\" \"test\" {:a 100, :b 200}) \n" +
-                        "     (ipc/message->map)                                  \n" +
-                        "     (println))                                          ",
+                        "     (ipc/message->map)                                     \n" +
+                        "     (println))                                             ",
                         "(->> (ipc/venice-message \"100\" \"test\"                \n" +
                         "                         {:a 100, :b 200}                \n" +
-                        "                         (-> (time/local-date-time)      \n" +
-                        "                             (time/plus :hours 2)        \n" +
-                        "                             (time/to-millis)))          \n" +
+                        "                         false                           \n" +
+                        "                         2 :hours)                       \n" +
                         "     (ipc/message->map)                                  \n" +
-                        "     (println))                                          ",
-                        "(->> (ipc/venice-message \"100\" \"test\" {:a 100, :b 200} 2 :hours) \n" +
-                        "     (ipc/message->map)                                              \n" +
-                        "     (println))                                                      ")
+                        "     (println))                                          ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/client",
@@ -1857,37 +1906,52 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3, 4, 5);
+                ArityExceptions.assertArity(this, args, 3, 4, 5, 6);
 
                 final VncVal requestId;
                 final VncString topic;
                 final VncVal data;
+                final VncVal durableVal;
                 final VncVal expiresAt;
 
                 if (args.size() == 3) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     data = args.nth(2);
+                    durableVal = null;
                     expiresAt = null;
                 }
                 else if (args.size() == 4) {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     data = args.nth(2);
-                    expiresAt = args.nth(3);
+                    durableVal = args.nth(3);
+                    expiresAt = null;
+                }
+                else if (args.size() == 5) {
+                    requestId = args.nth(0);
+                    topic = Coerce.toVncString(args.nth(1));
+                    data = args.nth(2);
+                    durableVal = args.nth(3);
+                    expiresAt = args.nth(4);
                 }
                 else {
                     requestId = args.nth(0);
                     topic = Coerce.toVncString(args.nth(1));
                     data = args.nth(2);
+                    durableVal = args.nth(3);
                     expiresAt = args.nth(4) == Nil
                                  ? null
                                  : TimeFunctions.to_millis.applyOf(
                                     TimeFunctions.plus.applyOf(
                                         new VncJavaObject(LocalDateTime.now()),
-                                        args.nth(4),    // unit
-                                        args.nth(3)));  // n
+                                        args.nth(5),    // unit
+                                        args.nth(4)));  // n
                 }
+
+                final boolean durable = durableVal != null
+                                            && durableVal != Nil
+                                            && Coerce.toVncBoolean(durableVal).getValue();
 
                 final IMessage msg = MessageFactory.venice(
                                         requestId == null || requestId == Nil
@@ -1896,7 +1960,7 @@ public class IPCFunctions {
                                         expiresAt == null || expiresAt == Nil
                                             ? Message.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
-                                        false,
+                                        durable,
                                         topic.getValue(),
                                         data);
 
@@ -1924,6 +1988,8 @@ public class IPCFunctions {
                         " │ Message Type                  │   send, publish/subscribe method\n" +
                         " ├───────────────────────────────┤   \n" +
                         " │ Oneway                        │   client or framework method\n" +
+                        " ├───────────────────────────────┤   \n" +
+                        " │ Durable                       │   client or framework method\n" +
                         " ├───────────────────────────────┤   \n" +
                         " │ Response Status               │   server response processor\n" +
                         " ├───────────────────────────────┤   \n" +
@@ -2441,7 +2507,7 @@ public class IPCFunctions {
                         "| name s     | A queue name (string or keyword)|\n" +
                         "| capacity n | The queue's capacity (max number of messages)|\n" +
                         "| type t     | Optional queue type `:bounded` or `:circular`. Defaults to `:bounded`.|\n" +
-                        "| durable b  | If `true` create a durable queue (if the server supports it), else create a non durable queue. Defaults to `false`.|")
+                        "| durable b  | If `true` create a durable queue (if the server supports it), else create a nondurable queue. Defaults to `false`.|")
                     .examples(
                         "(do                                                       \n" +
                         "  (try-with [server  (ipc/server 33333)                   \n" +

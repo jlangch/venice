@@ -330,6 +330,8 @@ mode and listens for messages. To unsubscribe just close the IPC client.
  ├───────────────────────────────┤
  │ Oneway                        │   client or framework method
  ├───────────────────────────────┤
+ │ Durable                       │   client or framework method
+ ├───────────────────────────────┤
  │ Response Status               │   server response processor
  ├───────────────────────────────┤
  │ Timestamp                     │   message creator
@@ -631,6 +633,7 @@ temporary queue
   * `:id`               - the message's technical ID
   * `:type`             - the message type (request, response, ..) 
   * `:oneway?`          - `true` if one-way message else `false`
+  * `:durable?`         - `true` if durable message else `false`
   * `:response-status`  - the response status (ok, bad request, ...) 
   * `:timestamp`        - the message's creation timestamp in milliseconds since epoch
   * `:expires-at`       - the message's expiration time in milliseconds since epoch
@@ -825,8 +828,11 @@ application/json
              client2 (ipc/client "localhost" 33333)]
     (ipc/create-queue server "orders" 1_000)
 
-    ;; client1 offers an new order to the queue
-    (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+    ;; client1 offers an new order to the queue (expires within 5 minutes)
+    (let [order (ipc/venice-message "1" "order" 
+                                    {:item "espresso", :count 2} 
+                                    false  ;; nondurable
+                                    5 :minutes)]
       (ipc/offer client1 "orders" 300 order))
 
     ;; client2 polls next order from the queue
