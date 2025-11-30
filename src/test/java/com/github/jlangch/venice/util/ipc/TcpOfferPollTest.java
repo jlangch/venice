@@ -96,7 +96,7 @@ public class TcpOfferPollTest {
 
             assertEquals("queue-1", s.get("name"));
             assertEquals(true,      s.get("exists"));
-            assertEquals("bounded", s.get("type"));
+            assertEquals("BOUNDED", s.get("type"));
             assertEquals(false,     s.get("temporary"));
             assertEquals(10L,       s.get("capacity"));
             assertEquals(0L,        s.get("size"));

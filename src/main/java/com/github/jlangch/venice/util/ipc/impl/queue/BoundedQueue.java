@@ -52,6 +52,11 @@ public class BoundedQueue<T> implements IpcQueue<T> {
     }
 
     @Override
+    public QueueType type() {
+        return QueueType.BOUNDED;
+    }
+
+    @Override
     public int capacity() {
         return capacity;
     }

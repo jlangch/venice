@@ -24,29 +24,35 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
+import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
+
 
 /**
  * WalEntry serializer/deserializer for queue config WAL entries
  */
 public class ConfigWalEntry {
 
-    public ConfigWalEntry(final int queueCapacity, final boolean boundedQueue) {
+    public ConfigWalEntry(final int queueCapacity, final QueueType queueType) {
         this.queueCapacity = queueCapacity;
-        this.boundedQueue = boundedQueue;
+        this.queueType = queueType;
     }
 
     public int getQueueCapacity() {
         return queueCapacity;
     }
 
+    public QueueType getQueueType() {
+        return queueType;
+    }
+
     public boolean isBoundedQueue() {
-        return boundedQueue;
+        return queueType == QueueType.BOUNDED;
     }
 
     public WalEntry toWalEntry() {
         final ByteBuffer payload = ByteBuffer.allocate(8);
         payload.putInt(queueCapacity);
-        payload.putInt(boundedQueue ? 1 : 0);
+        payload.putInt(queueType.getValue());
         payload.flip();
 
         return new WalEntry(WalEntryType.CONFIG, UUID.randomUUID(), payload.array());
@@ -55,11 +61,11 @@ public class ConfigWalEntry {
     public static ConfigWalEntry fromWalEntry(final WalEntry entry) {
        final ByteBuffer payload = ByteBuffer.wrap(entry.getPayload());
        final int capacity = payload.getInt();
-       final int bounded = payload.getInt();
-       return new ConfigWalEntry(capacity, bounded == 1);
+       final int type = payload.getInt();
+       return new ConfigWalEntry(capacity, QueueType.fromCode(type));
     }
 
 
     private final int queueCapacity;
-    private final boolean boundedQueue;
+    private final QueueType queueType;
 }

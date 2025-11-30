@@ -21,33 +21,29 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.queue;
 
-import java.util.concurrent.TimeUnit;
+
+public enum QueueType {
+
+    BOUNDED(0),
+
+    CIRCULAR(1);
 
 
-public interface IpcQueue<T> {
+    public static QueueType fromCode(int code) {
+        for (QueueType s : QueueType.values()) {
+            if (s.value == code) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException("Unknown queue type code: " + code);
+    }
 
-    String name();
+    private final int value;
 
-    QueueType type();
+    private QueueType(final int val) {
+        value = val;
+    }
 
-    boolean isTemporary();
 
-    boolean isDurable();
-
-    int size();
-
-    int capacity();
-
-    void clear();
-
-    T poll() throws InterruptedException;
-
-    T poll(long timeout, TimeUnit unit) throws InterruptedException;
-
-    boolean offer(T item) throws InterruptedException;
-
-    boolean offer(T item, long timeout, TimeUnit unit) throws InterruptedException;
-
-    void onRemove();
-
+    public int getValue() { return value; }
 }

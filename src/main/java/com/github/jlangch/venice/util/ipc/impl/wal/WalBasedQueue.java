@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
-import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
 
 
 public class WalBasedQueue implements IpcQueue<Message>, Closeable {
@@ -69,6 +69,11 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
     @Override
     public String name() {
         return queue.name();
+    }
+
+    @Override
+    public QueueType type() {
+        return queue.type();
     }
 
     @Override
@@ -224,10 +229,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
 
 
     private WalEntry createConfigWalEntry(final IpcQueue<Message> queue) {
-        return new ConfigWalEntry(
-                        queue.capacity(),
-                        queue instanceof BoundedQueue
-                   ).toWalEntry();
+        return new ConfigWalEntry(queue.capacity(), queue.type()).toWalEntry();
     }
 
 

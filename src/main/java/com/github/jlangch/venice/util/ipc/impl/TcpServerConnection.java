@@ -722,10 +722,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final String response = new JsonBuilder()
                                         .add("name",      queueName)
                                         .add("exists",    q != null)
-                                        .add("type",      q == null ? null
-                                                                    : (q instanceof BoundedQueue
-                                                                           ? "bounded"
-                                                                           : "circular"))
+                                        .add("type",      q == null ? null : q.type().name())
                                         .add("temporary", q != null && q.isTemporary())
                                         .add("durable",   q != null && q.isDurable())
                                         .add("capacity",  q == null ? 0L : (long)q.capacity())

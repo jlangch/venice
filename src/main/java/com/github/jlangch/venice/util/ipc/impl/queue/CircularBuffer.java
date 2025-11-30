@@ -53,6 +53,11 @@ public class CircularBuffer<T> implements IpcQueue<T> {
     }
 
     @Override
+    public QueueType type() {
+        return QueueType.CIRCULAR;
+    }
+
+    @Override
     public int capacity() {
         return capacity;
     }
