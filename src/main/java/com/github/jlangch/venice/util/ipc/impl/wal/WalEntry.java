@@ -29,20 +29,23 @@ public final class WalEntry {
     public WalEntry(
             final WalEntryType type,
             final UUID uuid,
+            final long expiry,
             final byte[] payload
     ) {
-        this(-1, type, uuid, payload);
+        this(-1, type, uuid, expiry, payload);
     }
 
     public WalEntry(
             final long lsn,
             final WalEntryType type,
             final UUID uuid,
+            final long expiry,
             final byte[] payload
     ) {
         this.lsn = lsn;
         this.type = type;
         this.uuid = uuid;
+        this.expiry = -1;
         this.payload = payload;
     }
 
@@ -58,12 +61,22 @@ public final class WalEntry {
         return uuid;
     }
 
+    public long getExpiry() {
+        return expiry;
+    }
+
     public byte[] getPayload() {
         return payload;
     }
 
+    public boolean hasExpired() {
+        return expiry >= 0 && expiry < System.currentTimeMillis();
+    }
+
+
     private final long lsn;
     private final WalEntryType type;
     private final UUID uuid;
+    private final long expiry;  // milliseconds since epoch or -1 if never expires
     private final byte[] payload;
 }

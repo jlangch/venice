@@ -42,22 +42,26 @@ import java.util.zip.CRC32;
  * <p>WAL record:
  *
  * <pre>
- * +-----------+-----------+-----------+------------+-------------+------------+
- * |   MAGIC   |    LSN    |   TYPE    |    UUID    | PAYLOAD_LEN |  CHECKSUM  |
- * |  4 bytes  |  8 bytes  |  4 bytes  |  16 bytes  |   4 bytes   |  4 bytes   |
- * +-----------+-----------+-----------+------------+-------------+------------+
- * |                                PAYLOAD                                    |
- * |                                n bytes                                    |
- * +---------------------------------------------------------------------------+
+ * +-----------+-----------+-------------+------------+
+ * |   MAGIC   |    LSN    |   TYPE      |    UUID    |
+ * |  4 bytes  |  8 bytes  |  4 bytes    |  16 bytes  |
+ * +-----------+-----------+-------------+------------+
+ * |   EXPIRE  |           | PAYLOAD_LEN |  CHECKSUM  |
+ * |  8 bytes  |           |   4 bytes   |  4 bytes   |
+ * +===========+===========+=============+============+
+ * |                    PAYLOAD                       |
+ * |                    n bytes                       |
+ * +--------------------------------------------------+
  *
  * •  MAGIC        – int constant 0xCAFEBABE
  * •  LSN          – long, log sequence number starts from 1 and increments per append.
  * •  TYPE         – int, record type
  * •  UUID         – 16 bytes, record UUID
+ * •  EXPIRE       – 8 bytes, timestamp mills since epoch
  * •  PAYLOAD_LEN  – int, number of bytes in payload.
  * •  CHECKSUM     – int, CRC32 of payload bytes.
  *
- * HEADER_SIZE = 4 + 8 + 4 + 16 + 4 + 4 = 40 bytes.
+ * HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4 = 48 bytes.
  * </pre>
  */
 public final class WriteAheadLog implements Closeable {
@@ -86,7 +90,11 @@ public final class WriteAheadLog implements Closeable {
              throw new IllegalArgumentException("entry must not be null");
          }
 
-         return append(entry.getType(), entry.getUUID(), entry.getPayload());
+         return append(
+                 entry.getType(),
+                 entry.getUUID(),
+                 entry.getExpiry(),
+                 entry.getPayload());
      }
 
     /**
@@ -94,6 +102,7 @@ public final class WriteAheadLog implements Closeable {
      *
      * @param type type of this log record
      * @param uuid uuid of this log record
+     * @param expiry expiration of this log record (milliseconds since epoch or -1 if nor expiration)
      * @param payload bytes of this log record
      * @return LSN assigned to this record starts (from 1 and increments per append)
      * @throws IOException on I/O failure
@@ -101,6 +110,7 @@ public final class WriteAheadLog implements Closeable {
     public synchronized long append(
             final WalEntryType type,
             final UUID uuid,
+            final long expiry,
             final byte[] payload
     ) throws IOException {
         if (uuid == null) {
@@ -127,6 +137,7 @@ public final class WriteAheadLog implements Closeable {
         buffer.putInt(type.getValue());
         buffer.putLong(uuid.getMostSignificantBits());
         buffer.putLong(uuid.getLeastSignificantBits());
+        buffer.putLong(expiry);
         buffer.putInt(payloadLength);
         buffer.putInt(checksum);
         buffer.put(payload);
@@ -211,11 +222,13 @@ public final class WriteAheadLog implements Closeable {
      *
      * @param logFile the existing write-ahead-log
      * @param removeBackupLogFile if true remove the created backup write-ahead-log
+     * @param discardExpiredEntries if true discard expired entries
      * @return all valid entries from the compacted WAL
      * @throws IOException on I/O failure
      */
     public static List<WalEntry> compact(
         final File logFile,
+        final boolean discardExpiredEntries,
         final boolean removeBackupLogFile
     ) throws IOException {
         if (logFile == null) {
@@ -236,7 +249,7 @@ public final class WriteAheadLog implements Closeable {
 
         // [1] read the entries of the old log
         try (WriteAheadLog oldLog = new WriteAheadLog(logFile)) {
-            pending.addAll(compact(oldLog.readAll()));
+            pending.addAll(compact(oldLog.readAll(), discardExpiredEntries));
 
             // [2] Write a brand-new log with only pending messages
             if (tmpFile.exists() && !tmpFile.delete()) {
@@ -280,7 +293,10 @@ public final class WriteAheadLog implements Closeable {
         return pending;
     }
 
-    public static List<WalEntry> compact(final List<WalEntry> entries) {
+    public static List<WalEntry> compact(
+            final List<WalEntry> entries,
+            final boolean discardExpiredEntries
+    ) {
         final Map<UUID, WalEntry> pending = new LinkedHashMap<>();
 
         entries.forEach(e -> {
@@ -292,10 +308,11 @@ public final class WriteAheadLog implements Closeable {
                 AckWalEntry ackEntry = AckWalEntry.fromWalEntry(e);
                 pending.remove(ackEntry.getAckedEntryUUID());  // remove by uuid
             }
-            else {
-               // data entry
-               // we currently do not discard expired messages at log compaction!
-               pending.put(e.getUUID(), e);  // keep
+            else if (WalEntryType.DATA == e.getType()) {
+               // data entry, discard expired entries
+               if (!discardExpiredEntries || !e.hasExpired()) {
+                   pending.put(e.getUUID(), e);  // keep
+               }
             }
         });
 
@@ -376,6 +393,7 @@ public final class WriteAheadLog implements Closeable {
         final int type = headerBuf.getInt();
         final long uuidMostSigBits = headerBuf.getLong();
         final long uuidLeastSigBits = headerBuf.getLong();
+        final long expiry = headerBuf.getLong();
         final int length = headerBuf.getInt();
         final int checksum = headerBuf.getInt();
 
@@ -405,7 +423,7 @@ public final class WriteAheadLog implements Closeable {
                     "Checksum mismatch. expected=" + checksum + " actual=" + actualChecksum);
         }
 
-        return new WalEntry(lsn, WalEntryType.fromCode(type), uuid, payload);
+        return new WalEntry(lsn, WalEntryType.fromCode(type), uuid, expiry, payload);
     }
 
     /**
@@ -451,7 +469,7 @@ public final class WriteAheadLog implements Closeable {
     private static final int MAGIC = 0xCAFEBABE;
 
     // header: magic + lsn + type + uuid + length + checksum
-    private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 4 + 4;
+    private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4;
 
 
     private final File file;

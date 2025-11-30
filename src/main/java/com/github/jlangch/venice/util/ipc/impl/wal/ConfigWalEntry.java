@@ -55,7 +55,7 @@ public class ConfigWalEntry {
         payload.putInt(queueType.getValue());
         payload.flip();
 
-        return new WalEntry(WalEntryType.CONFIG, UUID.randomUUID(), payload.array());
+        return new WalEntry(WalEntryType.CONFIG, UUID.randomUUID(), 1, payload.array());
     }
 
     public static ConfigWalEntry fromWalEntry(final WalEntry entry) {

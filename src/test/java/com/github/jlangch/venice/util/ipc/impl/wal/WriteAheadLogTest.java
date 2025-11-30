@@ -139,7 +139,10 @@ public class WriteAheadLogTest {
             }
 
             // 3. Compact
-            WriteAheadLog.compact(walFile, true);
+            WriteAheadLog.compact(
+                walFile,
+                false,  // discard expired entries,
+                true);  // remove backup logfile
 
             // 4. Simulate restart: open WAL again and recover entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile)) {

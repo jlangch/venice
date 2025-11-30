@@ -47,6 +47,7 @@ public class AckWalEntry {
         return new WalEntry(
                     WalEntryType.ACK,
                     UUID.randomUUID(),
+                    -1,
                     UUIDHelper.convertUUIDToBytes(ackedEntryUUID));
     }
 

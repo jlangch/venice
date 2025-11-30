@@ -118,6 +118,8 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
             final long timeout,
             final TimeUnit unit
     ) throws InterruptedException {
+        Objects.requireNonNull(unit);
+
         if (closed) {
             throw new VncException("The queue " + queue.name() + " is closed!");
         }
@@ -188,7 +190,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
 
         final File logFile = log.getFile();
 
-        try { log.close(); } catch(Exception ignore) {}
+        try { log.close(); } catch(Exception ignore) { }
 
         if (logFile.exists()) {
             logFile.delete();
@@ -196,7 +198,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
 
         closed = true;
 
-        queue.onRemove();
+        try { queue.onRemove(); } catch(Exception ignore) { }
     }
 
     @Override
