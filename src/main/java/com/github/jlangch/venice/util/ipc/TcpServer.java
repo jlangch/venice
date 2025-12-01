@@ -197,7 +197,7 @@ public class TcpServer implements Closeable {
     /**
      * @return the server's statistics
      */
-    public ServerStatistics getStatistics() {
+    public IServerStatistics getStatistics() {
         return statistics;
     }
 

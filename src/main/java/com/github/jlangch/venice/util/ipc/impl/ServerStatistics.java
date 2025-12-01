@@ -23,8 +23,10 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.github.jlangch.venice.util.ipc.IServerStatistics;
 
-public class ServerStatistics {
+
+public class ServerStatistics implements IServerStatistics {
 
     public ServerStatistics() {
         this.connectionCount = new AtomicLong(0L);
@@ -68,22 +70,27 @@ public class ServerStatistics {
     }
 
 
+    @Override
     public long getConnectionCount() {
         return connectionCount.get();
     }
 
+    @Override
     public long getMessageCount() {
         return messageCount.get();
     }
 
+    @Override
     public long getPublishCount() {
         return publishCount.get();
     }
 
+    @Override
     public long getDiscardedPublishCount() {
         return discardedPublishCount.get();
     }
 
+    @Override
     public long getDiscardedResponseCount() {
         return discardedResponseCount.get();
     }
