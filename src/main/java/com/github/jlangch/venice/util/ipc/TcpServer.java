@@ -177,21 +177,14 @@ public class TcpServer implements Closeable {
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
-        this.walDir.set(walDir);
+        this.wal.set(new WalQueueManager(walDir));
     }
 
     /**
      * @return return true if Write-Ahead-Log is enabled.
      */
     public boolean isWriteAheadLog() {
-        return walDir.get() != null;
-    }
-
-    /**
-     * @return return the Write-Ahead-Log dir if Write-Ahead-Log is enabled.
-     */
-    public File getWriteAheadLogDir() {
-        return walDir.get();
+        return wal.get().isEnabled();
     }
 
     /**
@@ -241,10 +234,9 @@ public class TcpServer implements Closeable {
 
                 ch.configureBlocking(true);
 
-                if (isWriteAheadLog()) {
+                if (wal.get().isEnabled()) {
                     // preload the queues from the Write-Ahead-Log
-                    final WalQueueManager mgr = new WalQueueManager(walDir.get());
-                    p2pQueues.putAll(mgr.preloadQueues());
+                    p2pQueues.putAll(wal.get().preloadQueues());
                 }
 
                 // run in an executor thread to not block the caller
@@ -257,7 +249,7 @@ public class TcpServer implements Closeable {
                                                                    this, channel, handler,
                                                                    maxMessageSize,
                                                                    maxQueues,
-                                                                   walDir,
+                                                                   wal,
                                                                    subscriptions,
                                                                    publishQueueCapacity,
                                                                    p2pQueues,
@@ -358,13 +350,13 @@ public class TcpServer implements Closeable {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
 
-        if (durable && walDir.get() == null) {
+        if (durable && !wal.get().isEnabled()) {
             throw new VncException(
                     "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
         }
 
         final IpcQueue<Message> queue = QueueFactory.createQueue(
-                                            walDir.get(),
+                                            wal.get(),
                                             queueName,
                                             capacity,
                                             bounded,
@@ -454,7 +446,7 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
-    private final AtomicReference<File> walDir = new AtomicReference<>();
+    private final AtomicReference<WalQueueManager> wal = new AtomicReference<>(new WalQueueManager());
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();

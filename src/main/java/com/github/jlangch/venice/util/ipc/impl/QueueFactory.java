@@ -21,34 +21,33 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
-import java.io.File;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalBasedQueue;
+import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
 
 public class QueueFactory {
 
     public static IpcQueue<Message> createQueue(
-            final File walDir,
+            final WalQueueManager wal,
             final String queueName,
             final int capacity,
             final boolean bounded,
             final boolean durable
     ) {
-        if (durable && walDir == null) {
+        if (durable && !wal.isEnabled()) {
             throw new VncException(
                     "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
         }
 
-        if (durable && walDir != null) {
+        if (durable && wal.isEnabled()) {
             // durable: create WAL based queue
             try {
                 final IpcQueue<Message> queue = createRawQueue(queueName, capacity, bounded, true);
-                return new WalBasedQueue(queue, walDir);
+                return new WalBasedQueue(queue, wal.getWalDir());
             }
             catch(Exception ex) {
                 throw new VncException("Failed to ceate WAL based queue: " + queueName, ex);

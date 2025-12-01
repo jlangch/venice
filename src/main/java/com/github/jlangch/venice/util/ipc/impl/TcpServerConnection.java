@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
-import java.io.File;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -55,6 +54,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
+import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
 
 public class TcpServerConnection implements IPublisher, Runnable {
@@ -65,7 +65,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final Function<IMessage,IMessage> handler,
             final AtomicLong maxMessageSize,
             final AtomicLong maxQueues,
-            final AtomicReference<File> walDir,
+            final AtomicReference<WalQueueManager> wal,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final Map<String, IpcQueue<Message>> p2pQueues,
@@ -78,7 +78,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.handler = handler;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
-        this.walDir = walDir;
+        this.wal = wal;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
         this.compressor = compressor;
@@ -438,7 +438,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 if (ok) {
                     final boolean durable = msg.isDurable()            // message is durable
                                             && queue.isDurable()       // queue is durable
-                                            && walDir.get() != null;   // server supports write-ahead-log
+                                            && wal.get().isEnabled(); // server supports write-ahead-log
 
                     return new Message(
                             msg.getRequestId(),
@@ -594,7 +594,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else {
             try {
                 final IpcQueue<Message> queue = QueueFactory.createQueue(
-                                                    walDir.get(),
+                                                    wal.get(),
                                                     queueName,
                                                     capacity,
                                                     bounded,
@@ -846,7 +846,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    new JsonBuilder()
                            .add("running", server.isRunning())
                            .add("mode", mode.name())
-                           .add("write-ahead-log-dir", walDir.get() == null ? "-" : walDir.get().getAbsolutePath())
+                           .add("write-ahead-log-dir", wal.get().isEnabled()
+                                                            ? wal.get().getWalDir().getAbsolutePath()
+                                                            : "-" )
                            .add("connection_count", statistics.getConnectionCount())
                            .add("message-count", statistics.getMessageCount())
                            .add("publish-count", statistics.getPublishCount())
@@ -984,7 +986,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final Function<IMessage,IMessage> handler;
     private final AtomicLong maxMessageSize;
     private final AtomicLong maxQueues;
-    private final AtomicReference<File> walDir;
+    private final AtomicReference<WalQueueManager> wal;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
