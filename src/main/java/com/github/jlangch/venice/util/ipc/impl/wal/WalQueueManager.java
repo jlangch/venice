@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,18 @@ public class WalQueueManager {
         };
 
         return queues;
+    }
+
+    public void close(final Collection<IpcQueue<Message>> queues)
+    throws IOException, InterruptedException {
+        for(IpcQueue<Message> q : queues) {
+            if (q instanceof WalBasedQueue) {
+               try {
+                   ((WalBasedQueue)q).close();
+               }
+               catch(Exception ignore) { }
+            }
+        }
     }
 
     public List<File> listLogFiles() {
