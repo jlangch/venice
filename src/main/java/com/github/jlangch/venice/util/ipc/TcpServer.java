@@ -29,6 +29,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -206,6 +207,25 @@ public class TcpServer implements Closeable {
      */
     public void clearStatistics() {
         statistics.clear();
+    }
+
+    /**
+     * Loads the compacted messages from WAL based queue.
+     *
+     * <p>For testing/debugging purposes only!
+     *
+     * @param queueName a queue name
+     * @return the compacted messages from the queue.
+     */
+    public List<IMessage> loadWalQueueMessages(final String queueName) {
+       try {
+          return wal.loadWalQueueMessages(queueName);
+       }
+       catch(Exception ex) {
+           throw new VncException(
+               "Failed to load messages for WAL queue " + queueName,
+               ex);
+       }
     }
 
     /**

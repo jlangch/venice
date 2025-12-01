@@ -23,11 +23,13 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
@@ -63,8 +66,8 @@ public class WalQueueManager {
         return walDir.get();
     }
 
-    public Map<String, IpcQueue<Message>> preloadQueues(
-    ) throws IOException, InterruptedException {
+    public Map<String, IpcQueue<Message>> preloadQueues()
+    throws IOException, InterruptedException {
         if (!isEnabled()) {
             throw new VncException("Write-Ahead-Log is not active");
         }
@@ -73,6 +76,7 @@ public class WalQueueManager {
 
         for(File logFile : listLogFiles()) {
             final String queueName = WalQueueManager.toQueueName(logFile);
+
 
             // load all Write-Ahead-Log entries and compact the entries
             final List<WalEntry> entries = WriteAheadLog.compact(
@@ -104,6 +108,50 @@ public class WalQueueManager {
         };
 
         return queues;
+    }
+
+    public List<IMessage> loadWalQueueMessages(
+        final String queueName
+    ) throws IOException {
+        Objects.requireNonNull(queueName);
+
+        if (!isEnabled()) {
+            throw new VncException("Write-Ahead-Log is not active");
+        }
+
+        final File logFile = new File(walDir.get(), toFileName(queueName));
+        return loadWalQueueMessages(logFile);
+    }
+
+    public List<IMessage> loadWalQueueMessages(
+        final File logFile
+    ) throws IOException {
+        Objects.requireNonNull(logFile);
+
+        if (!isEnabled()) {
+            throw new VncException("Write-Ahead-Log is not active");
+        }
+
+        if (logFile.isFile()) {
+            final List<IMessage> messages = new ArrayList<>();
+
+            // load all Write-Ahead-Log entries and compact the entries
+            final List<WalEntry> entries = WriteAheadLog.compact(
+                                                WriteAheadLog.loadAll(logFile),
+                                                true); // discard expired entries
+
+            for(WalEntry e : entries) {
+                if (WalEntryType.DATA == e.getType()) {
+                    final Message m = MessageWalEntry.fromWalEntry(e).getMessage();
+                    messages.add(m);
+                }
+            }
+
+            return messages;
+        }
+        else {
+            return new ArrayList<>();
+        }
     }
 
     public void close(final Collection<IpcQueue<Message>> queues)
