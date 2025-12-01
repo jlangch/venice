@@ -177,14 +177,14 @@ public class TcpServer implements Closeable {
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
-        this.wal.set(new WalQueueManager(walDir));
+        this.wal.activate(walDir);
     }
 
     /**
      * @return return true if Write-Ahead-Log is enabled.
      */
     public boolean isWriteAheadLog() {
-        return wal.get().isEnabled();
+        return wal.isEnabled();
     }
 
     /**
@@ -234,9 +234,9 @@ public class TcpServer implements Closeable {
 
                 ch.configureBlocking(true);
 
-                if (wal.get().isEnabled()) {
+                if (wal.isEnabled()) {
                     // preload the queues from the Write-Ahead-Log
-                    p2pQueues.putAll(wal.get().preloadQueues());
+                    p2pQueues.putAll(wal.preloadQueues());
                 }
 
                 // run in an executor thread to not block the caller
@@ -350,13 +350,13 @@ public class TcpServer implements Closeable {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
 
-        if (durable && !wal.get().isEnabled()) {
+        if (durable && !wal.isEnabled()) {
             throw new VncException(
                     "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
         }
 
         final IpcQueue<Message> queue = QueueFactory.createQueue(
-                                            wal.get(),
+                                            wal,
                                             queueName,
                                             capacity,
                                             bounded,
@@ -446,7 +446,7 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
-    private final AtomicReference<WalQueueManager> wal = new AtomicReference<>(new WalQueueManager());
+    private final WalQueueManager wal = new WalQueueManager();
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();

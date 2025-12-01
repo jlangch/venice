@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -39,23 +40,26 @@ import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 
 
+/**
+ * Write-Ahead-Log queue manager
+ *
+ * <p>thread-safe
+ */
 public class WalQueueManager {
 
     public WalQueueManager() {
-        this.walDir = null;
     }
 
-    public WalQueueManager(final File walDir) {
-        this.walDir = walDir;
+    public void activate(final File walDir) {
+        this.walDir.set(walDir);
     }
-
 
     public boolean isEnabled() {
-        return walDir != null;
+        return walDir.get() != null;
     }
 
     public File getWalDir() {
-        return walDir;
+        return walDir.get();
     }
 
     public Map<String, IpcQueue<Message>> preloadQueues(
@@ -66,7 +70,7 @@ public class WalQueueManager {
 
         final Map<String, IpcQueue<Message>> queues = new HashMap<>();
 
-        for(File logFile :listLogFiles()) {
+        for(File logFile : listLogFiles()) {
             final String queueName = WalQueueManager.toQueueName(logFile);
 
             // load all Write-Ahead-Log entries and compact the entries
@@ -95,7 +99,7 @@ public class WalQueueManager {
                 }
             }
 
-            queues.put(queueName, new WalBasedQueue(queue, walDir));
+            queues.put(queueName, new WalBasedQueue(queue, walDir.get()));
         };
 
         return queues;
@@ -107,7 +111,7 @@ public class WalQueueManager {
         }
 
         return Arrays
-                .stream(walDir.listFiles())
+                .stream(walDir.get().listFiles())
                 .filter(f -> f.getName().endsWith(".wal"))
                 .collect(Collectors.toList());
     }
@@ -149,5 +153,5 @@ public class WalQueueManager {
     }
 
 
-    private final File walDir;
+    private final AtomicReference<File> walDir = new AtomicReference<>();
 }

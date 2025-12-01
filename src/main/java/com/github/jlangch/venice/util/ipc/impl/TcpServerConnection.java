@@ -65,7 +65,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final Function<IMessage,IMessage> handler,
             final AtomicLong maxMessageSize,
             final AtomicLong maxQueues,
-            final AtomicReference<WalQueueManager> wal,
+            final WalQueueManager wal,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final Map<String, IpcQueue<Message>> p2pQueues,
@@ -436,9 +436,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                     ? queue.offer(msg)
                                     : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
                 if (ok) {
-                    final boolean durable = msg.isDurable()            // message is durable
-                                            && queue.isDurable()       // queue is durable
-                                            && wal.get().isEnabled(); // server supports write-ahead-log
+                    final boolean durable = msg.isDurable()       // message is durable
+                                            && queue.isDurable()  // queue is durable
+                                            && wal.isEnabled();   // server supports write-ahead-log
 
                     return new Message(
                             msg.getRequestId(),
@@ -594,7 +594,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         else {
             try {
                 final IpcQueue<Message> queue = QueueFactory.createQueue(
-                                                    wal.get(),
+                                                    wal,
                                                     queueName,
                                                     capacity,
                                                     bounded,
@@ -846,8 +846,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    new JsonBuilder()
                            .add("running", server.isRunning())
                            .add("mode", mode.name())
-                           .add("write-ahead-log-dir", wal.get().isEnabled()
-                                                            ? wal.get().getWalDir().getAbsolutePath()
+                           .add("write-ahead-log-dir", wal.isEnabled()
+                                                            ? wal.getWalDir().getAbsolutePath()
                                                             : "-" )
                            .add("connection_count", statistics.getConnectionCount())
                            .add("message-count", statistics.getMessageCount())
@@ -986,7 +986,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final Function<IMessage,IMessage> handler;
     private final AtomicLong maxMessageSize;
     private final AtomicLong maxQueues;
-    private final AtomicReference<WalQueueManager> wal;
+    private final WalQueueManager wal;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
