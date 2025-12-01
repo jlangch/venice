@@ -476,7 +476,7 @@ public final class WriteAheadLog implements Closeable {
 
     private static final int MAGIC = 0xCAFEBABE;
 
-    // header: magic + lsn + type + uuid + length + checksum
+    // header: magic + lsn + type + uuid + expire + length + checksum
     private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4;
 
 

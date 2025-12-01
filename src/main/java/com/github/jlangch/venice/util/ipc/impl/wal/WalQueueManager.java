@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -43,9 +44,10 @@ public class WalQueueManager {
         this.walDir = walDir;
     }
 
-    public void preloadQueues(
-        final Map<String, IpcQueue<Message>> p2pQueues
+    public Map<String, IpcQueue<Message>> preloadQueues(
     ) throws IOException, InterruptedException {
+        Map<String, IpcQueue<Message>> queues = new HashMap<>();
+
         for(File logFile :listLogFiles()) {
             final String queueName = WalQueueManager.toQueueName(logFile);
 
@@ -75,8 +77,10 @@ public class WalQueueManager {
                 }
             }
 
-            p2pQueues.put(queueName, new WalBasedQueue(queue, walDir));
+            queues.put(queueName, new WalBasedQueue(queue, walDir));
         };
+
+        return queues;
     }
 
     public List<File> listLogFiles() {
