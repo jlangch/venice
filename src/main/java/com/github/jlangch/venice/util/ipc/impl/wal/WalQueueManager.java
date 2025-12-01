@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
@@ -40,13 +41,30 @@ import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 
 public class WalQueueManager {
 
+    public WalQueueManager() {
+        this.walDir = null;
+    }
+
     public WalQueueManager(final File walDir) {
         this.walDir = walDir;
     }
 
+
+    public boolean isEnabled() {
+        return walDir != null;
+    }
+
+    public File getWalDir() {
+        return walDir;
+    }
+
     public Map<String, IpcQueue<Message>> preloadQueues(
     ) throws IOException, InterruptedException {
-        Map<String, IpcQueue<Message>> queues = new HashMap<>();
+        if (!isEnabled()) {
+            throw new VncException("Write-Ahead-Log is not active");
+        }
+
+        final Map<String, IpcQueue<Message>> queues = new HashMap<>();
 
         for(File logFile :listLogFiles()) {
             final String queueName = WalQueueManager.toQueueName(logFile);
@@ -84,6 +102,10 @@ public class WalQueueManager {
     }
 
     public List<File> listLogFiles() {
+        if (!isEnabled()) {
+            throw new VncException("Write-Ahead-Log is not active");
+        }
+
         return Arrays
                 .stream(walDir.listFiles())
                 .filter(f -> f.getName().endsWith(".wal"))
@@ -91,6 +113,10 @@ public class WalQueueManager {
     }
 
     public List<String> listQueueNames() {
+        if (!isEnabled()) {
+            throw new VncException("Write-Ahead-Log is not active");
+        }
+
         return listLogFiles()
                 .stream()
                 .map(f -> toQueueName(f))
