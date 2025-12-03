@@ -210,7 +210,7 @@ public class TcpServer implements Closeable {
     }
 
     /**
-     * Loads the compacted messages from WAL based queue.
+     * Loads the compacted messages from a WAL based queue.
      *
      * <p>For testing/debugging purposes only!
      *
