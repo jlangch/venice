@@ -591,4 +591,4 @@ static field: `(. :class :field)`
 ## Where to head next
 
 - browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md#documentation)
-- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/13ef46c/cheatsheet.pdf) and use it as a quick reference
+- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/9c18c8e/cheatsheet.pdf) and use it as a quick reference
