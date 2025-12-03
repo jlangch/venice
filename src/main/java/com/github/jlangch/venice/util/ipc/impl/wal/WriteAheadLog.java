@@ -95,9 +95,7 @@ public final class WriteAheadLog implements Closeable {
      * @return LSN assigned to this record starts (from 1 and increments per append)
      * @throws IOException on I/O failure
      */
-    public synchronized long append(
-            final WalEntry entry
-    ) throws IOException {
+    public synchronized long append(final WalEntry entry) throws IOException {
         if (entry == null) {
             throw new IllegalArgumentException("entry must not be null");
         }
@@ -186,7 +184,7 @@ public final class WriteAheadLog implements Closeable {
      * @throws IOException on I/O failure
      */
     public synchronized List<WalEntry> readAll() throws IOException {
-    	return loadAll(file);
+        return loadAll(file);
     }
 
 
@@ -201,8 +199,8 @@ public final class WriteAheadLog implements Closeable {
      * @throws IOException on I/O failure
      */
     private static WalEntry readOneAtCurrentPosition(
-    		final FileChannel channel,
-    		final Compressor compressor
+            final FileChannel channel,
+            final Compressor compressor
     ) throws IOException {
         if (channel == null) {
             throw new IllegalArgumentException("channel must not be null");
@@ -283,7 +281,7 @@ public final class WriteAheadLog implements Closeable {
         try (RandomAccessFile raf = new RandomAccessFile(file, "r");
              FileChannel channel = raf.getChannel()
         ) {
-        	final Compressor compressor = new Compressor(0);
+            final Compressor compressor = new Compressor(0);
 
             final long fileSize = channel.size();
 
