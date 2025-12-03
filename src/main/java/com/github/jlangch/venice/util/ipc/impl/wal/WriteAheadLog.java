@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
+import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
+
 
 /**
  * Write-Ahead-Log
@@ -68,36 +70,44 @@ import java.util.zip.CRC32;
 public final class WriteAheadLog implements Closeable {
 
     public WriteAheadLog(final File file) throws IOException {
-         this.file = file;
-         this.raf = new RandomAccessFile(file, "rw");
-         this.channel = raf.getChannel();
-         this.compressionEnabled = false;
+        this(file, false);
+    }
 
-         // Recover state if file already exists / has content
-         recover();
-     }
+    public WriteAheadLog(final File file, final boolean compress) throws IOException {
+        if (file == null) {
+            throw new IllegalArgumentException("file must not be null");
+        }
+
+        this.file = file;
+        this.raf = new RandomAccessFile(file, "rw");
+        this.channel = raf.getChannel();
+        this.compressor = compress ? new Compressor(300) : Compressor.off();
+
+        // Recover state if file already exists / has content
+        recover();
+    }
 
 
-     /**
-      * Append an entry to the WAL and fsync it.
-      *
-      * @param entry WAL entry
-      * @return LSN assigned to this record starts (from 1 and increments per append)
-      * @throws IOException on I/O failure
-      */
-     public synchronized long append(
-             final WalEntry entry
-     ) throws IOException {
-         if (entry == null) {
-             throw new IllegalArgumentException("entry must not be null");
-         }
+    /**
+     * Append an entry to the WAL and fsync it.
+     *
+     * @param entry WAL entry
+     * @return LSN assigned to this record starts (from 1 and increments per append)
+     * @throws IOException on I/O failure
+     */
+    public synchronized long append(
+            final WalEntry entry
+    ) throws IOException {
+        if (entry == null) {
+            throw new IllegalArgumentException("entry must not be null");
+        }
 
-         return append(
-                 entry.getType(),
-                 entry.getUUID(),
-                 entry.getExpiry(),
-                 entry.getPayload());
-     }
+        return append(
+                entry.getType(),
+                entry.getUUID(),
+                entry.getExpiry(),
+                entry.getPayload());
+    }
 
     /**
      * Append a payload to the WAL and fsync it.
@@ -127,9 +137,15 @@ public final class WriteAheadLog implements Closeable {
 
         final long lsn = ++lastLsn;
 
-        final int payloadLength = payload.length;
+        final boolean compress = compressor.isActive()
+                                    && type == WalEntryType.DATA
+                                    && compressor.needsCompression(payload);
+
+        final byte[] payloadCompressed = compressor.compress(payload, compress);
+
+        final int payloadLength = payloadCompressed.length;
         final CRC32 crc32 = new CRC32();
-        crc32.update(payload);
+        crc32.update(payloadCompressed);
         final int checksum = (int) crc32.getValue();
 
         // Prepare header + payload buffer
@@ -140,10 +156,10 @@ public final class WriteAheadLog implements Closeable {
         buffer.putLong(uuid.getMostSignificantBits());
         buffer.putLong(uuid.getLeastSignificantBits());
         buffer.putLong(expiry);
-        buffer.putInt(compressionEnabled ? 1 : 0);
+        buffer.putInt(compress ? 1 : 0);
         buffer.putInt(payloadLength);
         buffer.putInt(checksum);
-        buffer.put(payload);
+        buffer.put(payloadCompressed);
         buffer.flip();
 
         // Position at end of file
@@ -170,25 +186,7 @@ public final class WriteAheadLog implements Closeable {
      * @throws IOException on I/O failure
      */
     public synchronized List<WalEntry> readAll() throws IOException {
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rw");
-             FileChannel channel = raf.getChannel()
-        ) {
-            final long fileSize = channel.size();
-
-            final List<WalEntry> result = new ArrayList<>();
-            channel.position(0);
-
-            long position = 0L;
-            while (position < fileSize) {
-                WalEntry entry = readOneAtCurrentPosition(channel);
-                if (entry == null) {
-                    break;
-                }
-                result.add(entry);
-                position = channel.position();
-            }
-            return result;
-        }
+    	return loadAll(file);
     }
 
 
@@ -197,10 +195,22 @@ public final class WriteAheadLog implements Closeable {
      * On EOF/partial data, throws EOFException.
      * On corruption (bad magic or checksum), throws CorruptedRecordException.
      *
+     * @param channel the channel to read the entry from
+     * @param compressor a compressor
      * @return the read WAL entry
      * @throws IOException on I/O failure
      */
-    private static WalEntry readOneAtCurrentPosition(final FileChannel channel) throws IOException {
+    private static WalEntry readOneAtCurrentPosition(
+    		final FileChannel channel,
+    		final Compressor compressor
+    ) throws IOException {
+        if (channel == null) {
+            throw new IllegalArgumentException("channel must not be null");
+        }
+        if (compressor == null) {
+            throw new IllegalArgumentException("compressor must not be null");
+        }
+
         final ByteBuffer headerBuf = ByteBuffer.allocate(HEADER_SIZE);
 
         int bytesRead = readFully(channel, headerBuf);
@@ -240,8 +250,10 @@ public final class WriteAheadLog implements Closeable {
         }
 
         payloadBuf.flip();
-        final byte[] payload = new byte[length];
-        payloadBuf.get(payload);
+        final byte[] payloadCompressed = new byte[length];
+        payloadBuf.get(payloadCompressed);
+
+        final byte[] payload = compressor.decompress(payloadCompressed, compressed);
 
         // Validate checksum
         final CRC32 crc32 = new CRC32();
@@ -264,9 +276,15 @@ public final class WriteAheadLog implements Closeable {
      * @throws IOException on I/O failure
      */
     public static List<WalEntry> loadAll(final File file) throws IOException {
+        if (file == null) {
+            throw new IllegalArgumentException("file must not be null");
+        }
+
         try (RandomAccessFile raf = new RandomAccessFile(file, "r");
              FileChannel channel = raf.getChannel()
         ) {
+        	final Compressor compressor = new Compressor(0);
+
             final long fileSize = channel.size();
 
             final List<WalEntry> result = new ArrayList<>();
@@ -274,7 +292,7 @@ public final class WriteAheadLog implements Closeable {
 
             long position = 0L;
             while (position < fileSize) {
-                WalEntry entry = readOneAtCurrentPosition(channel);
+                WalEntry entry = readOneAtCurrentPosition(channel, compressor);
                 if (entry == null) {
                     break;
                 }
@@ -410,7 +428,7 @@ public final class WriteAheadLog implements Closeable {
 
         while (position < fileSize) {
             try {
-                WalEntry entry = readOneAtCurrentPosition(channel);
+                WalEntry entry = readOneAtCurrentPosition(channel, compressor);
                 if (entry == null) {
                     break;
                 }
@@ -487,13 +505,11 @@ public final class WriteAheadLog implements Closeable {
     private final File file;
     private final RandomAccessFile raf;
     private final FileChannel channel;
+    private final Compressor compressor;
 
     // last written LSN
     private long lastLsn = 0L;
 
     // position up to which the log is considered valid (last good record end)
     private long validEndPosition = 0L;
-
-    private final boolean compressionEnabled;
-
 }
