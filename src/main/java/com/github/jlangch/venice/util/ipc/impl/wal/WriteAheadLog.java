@@ -184,7 +184,19 @@ public final class WriteAheadLog implements Closeable {
      * @throws IOException on I/O failure
      */
     public synchronized List<WalEntry> readAll() throws IOException {
-        return loadAll(file);
+        return readAll(false);
+    }
+
+    /**
+     * Read all valid entries from the WAL
+     *
+     * @return a list of the read entries
+     * @throws IOException on I/O failure
+     */
+    public synchronized List<WalEntry> readAll(
+        final boolean avoidDecompression
+    ) throws IOException {
+        return loadAll(file, avoidDecompression);
     }
 
 
@@ -273,7 +285,10 @@ public final class WriteAheadLog implements Closeable {
      * @return a list of the read entries
      * @throws IOException on I/O failure
      */
-    public static List<WalEntry> loadAll(final File file) throws IOException {
+    public static List<WalEntry> loadAll(
+            final File file,
+            final boolean avoidDecompression
+    ) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("file must not be null");
         }
@@ -281,7 +296,9 @@ public final class WriteAheadLog implements Closeable {
         try (RandomAccessFile raf = new RandomAccessFile(file, "r");
              FileChannel channel = raf.getChannel()
         ) {
-            final Compressor compressor = new Compressor(0);
+            final Compressor compressor = avoidDecompression
+                                            ? Compressor.off()
+                                            : new Compressor(0);
 
             final long fileSize = channel.size();
 
@@ -331,16 +348,22 @@ public final class WriteAheadLog implements Closeable {
 
         final List<WalEntry> pending = new ArrayList<>();
 
+
+        // Note: for performance reason the WAL entries are not decompressed
+        //       while reading the entries and not compressed agin on writing
+        //       the compacted entries.
+        //       This avoids a completely unnecessary decompress/compress cycle!
+
         // [1] read the entries of the old log
-        try (WriteAheadLog oldLog = new WriteAheadLog(logFile)) {
-            pending.addAll(compact(oldLog.readAll(), discardExpiredEntries));
+        try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false)) {
+            pending.addAll(compact(oldLog.readAll(true), discardExpiredEntries));
 
             // [2] Write a brand-new log with only pending messages
             if (tmpFile.exists() && !tmpFile.delete()) {
                 throw new IOException("Could not delete stale tmp file: " + tmpFile);
             }
 
-            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile)) {
+            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false)) {
                 for (WalEntry e : pending) {
                     newLog.append(e);
                 }

@@ -80,7 +80,7 @@ public class WalQueueManager {
 
             // load all Write-Ahead-Log entries and compact the entries
             final List<WalEntry> entries = WriteAheadLog.compact(
-                                                WriteAheadLog.loadAll(logFile),
+                                                WriteAheadLog.loadAll(logFile, false),
                                                 true); // discard expired entries
 
             // read the configuration WAL entry to get the queue type
@@ -137,7 +137,7 @@ public class WalQueueManager {
 
             // load all Write-Ahead-Log entries and compact the entries
             final List<WalEntry> entries = WriteAheadLog.compact(
-                                                WriteAheadLog.loadAll(logFile),
+                                                WriteAheadLog.loadAll(logFile, false),
                                                 true); // discard expired entries
 
             for(WalEntry e : entries) {
