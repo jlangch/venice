@@ -42,26 +42,27 @@ import java.util.zip.CRC32;
  * <p>WAL record:
  *
  * <pre>
- * +-----------+-----------+-------------+------------+
- * |   MAGIC   |    LSN    |   TYPE      |    UUID    |
- * |  4 bytes  |  8 bytes  |  4 bytes    |  16 bytes  |
- * +-----------+-----------+-------------+------------+
- * |   EXPIRE  |           | PAYLOAD_LEN |  CHECKSUM  |
- * |  8 bytes  |           |   4 bytes   |  4 bytes   |
- * +===========+===========+=============+============+
- * |                    PAYLOAD                       |
- * |                    n bytes                       |
- * +--------------------------------------------------+
+ * +-----------+------------+-------------+------------+
+ * |   MAGIC   |    LSN     |   TYPE      |    UUID    |
+ * |  4 bytes  |  8 bytes   |  4 bytes    |  16 bytes  |
+ * +-----------+------------+-------------+------------+
+ * |   EXPIRE  | COMPRESSED | PAYLOAD_LEN |  CHECKSUM  |
+ * |  8 bytes  |  4 bytes   |   4 bytes   |  4 bytes   |
+ * +===========+============+=============+============+
+ * |                     PAYLOAD                       |
+ * |                     n bytes                       |
+ * +---------------------------------------------------+
  *
  * •  MAGIC        – int constant 0xCAFEBABE
  * •  LSN          – long, log sequence number starts from 1 and increments per append.
  * •  TYPE         – int, record type
  * •  UUID         – 16 bytes, record UUID
  * •  EXPIRE       – 8 bytes, expiry timestamp (millis since epoch or -1 if never expires)
+ * •  COMPRESSED   – 4 bytes, 0=not compressed, 1=compressed
  * •  PAYLOAD_LEN  – int, number of bytes in payload.
  * •  CHECKSUM     – int, CRC32 of payload bytes.
  *
- * HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4 = 48 bytes.
+ * HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4 + 4 = 52 bytes.
  * </pre>
  */
 public final class WriteAheadLog implements Closeable {
@@ -70,6 +71,7 @@ public final class WriteAheadLog implements Closeable {
          this.file = file;
          this.raf = new RandomAccessFile(file, "rw");
          this.channel = raf.getChannel();
+         this.compressionEnabled = false;
 
          // Recover state if file already exists / has content
          recover();
@@ -138,6 +140,7 @@ public final class WriteAheadLog implements Closeable {
         buffer.putLong(uuid.getMostSignificantBits());
         buffer.putLong(uuid.getLeastSignificantBits());
         buffer.putLong(expiry);
+        buffer.putInt(compressionEnabled ? 1 : 0);
         buffer.putInt(payloadLength);
         buffer.putInt(checksum);
         buffer.put(payload);
@@ -188,6 +191,71 @@ public final class WriteAheadLog implements Closeable {
         }
     }
 
+
+    /**
+     * Read a single entry at the current channel position.
+     * On EOF/partial data, throws EOFException.
+     * On corruption (bad magic or checksum), throws CorruptedRecordException.
+     *
+     * @return the read WAL entry
+     * @throws IOException on I/O failure
+     */
+    private static WalEntry readOneAtCurrentPosition(final FileChannel channel) throws IOException {
+        final ByteBuffer headerBuf = ByteBuffer.allocate(HEADER_SIZE);
+
+        int bytesRead = readFully(channel, headerBuf);
+        if (bytesRead == -1) {
+            // EOF at header start
+            return null;
+        }
+        if (bytesRead < HEADER_SIZE) {
+            throw new EOFException("Partial header encountered");
+        }
+
+        headerBuf.flip();
+        final int magic = headerBuf.getInt();
+        if (magic != MAGIC) {
+            throw new CorruptedRecordException("Bad magic: " + Integer.toHexString(magic));
+        }
+
+        final long lsn = headerBuf.getLong();
+        final int type = headerBuf.getInt();
+        final long uuidMostSigBits = headerBuf.getLong();
+        final long uuidLeastSigBits = headerBuf.getLong();
+        final long expiry = headerBuf.getLong();
+        final boolean compressed = headerBuf.getInt() > 0;
+        final int length = headerBuf.getInt();
+        final int checksum = headerBuf.getInt();
+
+        final UUID uuid = new UUID(uuidMostSigBits, uuidLeastSigBits);
+
+        if (length < 0) {
+            throw new CorruptedRecordException("Negative payload length: " + length);
+        }
+
+        final ByteBuffer payloadBuf = ByteBuffer.allocate(length);
+        bytesRead = readFully(channel, payloadBuf);
+        if (bytesRead < length) {
+            throw new EOFException("Partial payload encountered");
+        }
+
+        payloadBuf.flip();
+        final byte[] payload = new byte[length];
+        payloadBuf.get(payload);
+
+        // Validate checksum
+        final CRC32 crc32 = new CRC32();
+        crc32.update(payload);
+
+        final int actualChecksum = (int) crc32.getValue();
+        if (actualChecksum != checksum) {
+            throw new CorruptedRecordException(
+                    "Checksum mismatch. expected=" + checksum + " actual=" + actualChecksum);
+        }
+
+        return new WalEntry(lsn, WalEntryType.fromCode(type), uuid, expiry, payload);
+    }
+
     /**
      * Load all valid entries from the WAL
      *
@@ -196,7 +264,7 @@ public final class WriteAheadLog implements Closeable {
      * @throws IOException on I/O failure
      */
     public static List<WalEntry> loadAll(final File file) throws IOException {
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rw");
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r");
              FileChannel channel = raf.getChannel()
         ) {
             final long fileSize = channel.size();
@@ -216,7 +284,6 @@ public final class WriteAheadLog implements Closeable {
             return result;
         }
     }
-
 
     /**
      * Compact the given log file in-place.
@@ -372,69 +439,6 @@ public final class WriteAheadLog implements Closeable {
     }
 
     /**
-     * Read a single entry at the current channel position.
-     * On EOF/partial data, throws EOFException.
-     * On corruption (bad magic or checksum), throws CorruptedRecordException.
-     *
-     * @return the read WAL entry
-     * @throws IOException on I/O failure
-     */
-    private static WalEntry readOneAtCurrentPosition(final FileChannel channel) throws IOException {
-        final ByteBuffer headerBuf = ByteBuffer.allocate(HEADER_SIZE);
-
-        int bytesRead = readFully(channel, headerBuf);
-        if (bytesRead == -1) {
-            // EOF at header start
-            return null;
-        }
-        if (bytesRead < HEADER_SIZE) {
-            throw new EOFException("Partial header encountered");
-        }
-
-        headerBuf.flip();
-        final int magic = headerBuf.getInt();
-        if (magic != MAGIC) {
-            throw new CorruptedRecordException("Bad magic: " + Integer.toHexString(magic));
-        }
-
-        final long lsn = headerBuf.getLong();
-        final int type = headerBuf.getInt();
-        final long uuidMostSigBits = headerBuf.getLong();
-        final long uuidLeastSigBits = headerBuf.getLong();
-        final long expiry = headerBuf.getLong();
-        final int length = headerBuf.getInt();
-        final int checksum = headerBuf.getInt();
-
-        final UUID uuid = new UUID(uuidMostSigBits, uuidLeastSigBits);
-
-        if (length < 0) {
-            throw new CorruptedRecordException("Negative payload length: " + length);
-        }
-
-        final ByteBuffer payloadBuf = ByteBuffer.allocate(length);
-        bytesRead = readFully(channel, payloadBuf);
-        if (bytesRead < length) {
-            throw new EOFException("Partial payload encountered");
-        }
-
-        payloadBuf.flip();
-        final byte[] payload = new byte[length];
-        payloadBuf.get(payload);
-
-        // Validate checksum
-        final CRC32 crc32 = new CRC32();
-        crc32.update(payload);
-
-        final int actualChecksum = (int) crc32.getValue();
-        if (actualChecksum != checksum) {
-            throw new CorruptedRecordException(
-                    "Checksum mismatch. expected=" + checksum + " actual=" + actualChecksum);
-        }
-
-        return new WalEntry(lsn, WalEntryType.fromCode(type), uuid, expiry, payload);
-    }
-
-    /**
      * Read into buffer until it's full or EOF is reached.
      *
      * @param channel a file channel
@@ -477,7 +481,7 @@ public final class WriteAheadLog implements Closeable {
     private static final int MAGIC = 0xCAFEBABE;
 
     // header: magic + lsn + type + uuid + expire + length + checksum
-    private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4;
+    private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4 + 4;
 
 
     private final File file;
@@ -489,5 +493,7 @@ public final class WriteAheadLog implements Closeable {
 
     // position up to which the log is considered valid (last good record end)
     private long validEndPosition = 0L;
+
+    private final boolean compressionEnabled;
 
 }
