@@ -74,11 +74,18 @@
   (println))
 
 
+(defn install-module* [m dir silent]
+  (let [r (str/strip-end (name m) "-install")]
+    (println "Installing ~{r} ...")
+    (installer/install-module m :dir dir :silent silent)
+    (println "Installing ~{r} done.")))
+
+
 (defn download-modules-libs [dir modules_ silent]
   (when-not (empty? modules_)
     (println "Downloading modules Java 3rdparty libraries...")
     (if (io/internet-avail?)
-       (docoll #(installer/install-module % :dir dir :silent silent) modules_)
+       (docoll #(install-module* % dir silent) modules_)
        (println *err* "Internet is not available! Jansi lib cannot be installed!")))
   (println))
 
