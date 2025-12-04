@@ -76,6 +76,7 @@ public class IPCFunctions {
                     .doc(
                         "Create a new server on the specified port.\n\n" +
                         "*Arguments:* \n\n" +
+                        "| [![text-align: left; width: 20%]] | [![text-align: left; width: 80%]] |\n" +
                         "| port p    | The TCP/IP port |\n" +
                         "| handler h | A single argument handler function.¶" +
                                      " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
@@ -85,23 +86,26 @@ public class IPCFunctions {
                                      " A handler is only required for send/receive message passing style. It "+
                                      " is not required for offer/poll and publish/subscribe!|\n\n" +
                         "*Options:* \n\n" +
-                        "| :max-connections n      | The number of the max connections the server can handle" +
-                                                   " in parallel. Defaults to 20.|\n" +
-                        "| :max-message-size n     | The max size of the message payload." +
-                                                   " Defaults to `200MB`.¶" +
-                                                   " The max size can be specified as a number like `20000`" +
-                                                   " or a number with a unit like `:20KB` or `:20MB`|\n" +
-                        "| :max-queues n           | The number of the max queues the server can handle." +
-                                                   " Defaults to 20.|\n" +
-                        "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
-                                                   " With a negative cutoff size payload messages will not be" +
-                                                   " compressed. If the payload message size is greater than the cutoff" +
-                                                   " size it will be compressed.¶" +
-                                                   " Defaults to -1 (no compression)¶" +
-                                                   " The cutoff size can be specified as a number like `1000`" +
-                                                   " or a number with a unit like `:1KB` or `:2MB`|\n" +
-                        "| :write-ahead-log-dir f  | Provide a write-ahead-log directory to support durable queues.¶" +
-                                                   " Defaults to `nil`.|\n\n" +
+                        "| [![text-align: left; width: 20%]] | [![text-align: left; width: 80%]] |\n" +
+                        "| :max-connections n           | The number of the max connections the server can handle" +
+                                                        " in parallel.¶Defaults to 20.|\n" +
+                        "| :max-message-size n          | The max size of the message payload.¶" +
+                                                        " Defaults to `200MB`.¶" +
+                                                        " The max size can be specified as a number like `20000`" +
+                                                        " or a number with a unit like `:20KB` or `:20MB`|\n" +
+                        "| :max-queues n                | The number of the max queues the server can handle.¶" +
+                                                        " Defaults to 20.|\n" +
+                        "| :compress-cutoff-size n      | The compression cutoff size for payload messages.¶" +
+                                                        " With a negative cutoff size payload messages will not be" +
+                                                        " compressed. If the payload message size is greater than the cutoff" +
+                                                        " size it will be compressed.¶"  +
+                                                        " The cutoff size can be specified as a number like `1000`" +
+                                                        " or a number with a unit like `:1KB` or `:2MB`.¶" +
+                                                        " Defaults to -1 (no compression)|\n" +
+                        "| :write-ahead-log-dir f       | Provide a write-ahead-log directory to support durable queues.¶" +
+                                                        " Defaults to `nil`.|\n" +
+                        "| :write-ahead-log-compress b  | If `true` compresses the write-ahead-log records.¶" +
+                                                        " Defaults to `false`.|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
@@ -157,6 +161,7 @@ public class IPCFunctions {
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
+                final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
 
                 final int maxConn = maxConnVal == Nil
                                         ? 0
@@ -177,6 +182,8 @@ public class IPCFunctions {
                             "The 'write-ahead-log-dir' " + walDir
                             + " does not exist or is not writable!");
                 }
+
+                final boolean walCompress = walCompressVal != Nil && Coerce.toVncBoolean(walCompressVal).getValue();
 
                 final Function<IMessage,IMessage> handlerWrapper;
 
@@ -217,7 +224,7 @@ public class IPCFunctions {
                 }
 
                 if (walDir != null) {
-                    server.enableWriteAheadLog(walDir);
+                    server.enableWriteAheadLog(walDir, walCompress);
                 }
 
                 if (handlerWrapper == null) {

@@ -37,20 +37,17 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
 
     public WalBasedQueue(
             final IpcQueue<Message> queue,
-            final File walDir
+            final WalQueueManager queueManager
     ) throws IOException {
         Objects.requireNonNull(queue);
-        Objects.requireNonNull(walDir);
-
-        if (!walDir.isDirectory()) {
-            throw new VncException(
-                    "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
-        }
+        Objects.requireNonNull(queueManager);
 
         this.queue = queue;
 
         final String filename = WalQueueManager.toFileName(queue.name());
-        this.log = new WriteAheadLog(new File(walDir, filename));
+        this.log = new WriteAheadLog(
+                            new File(queueManager.getWalDir(), filename),
+                            queueManager.isCompressed());
         if (this.log.getLastLsn() == 0) {
             final ConfigWalEntry ce = new ConfigWalEntry(queue.capacity(), queue.type());
             this.log.append(ce.toWalEntry());

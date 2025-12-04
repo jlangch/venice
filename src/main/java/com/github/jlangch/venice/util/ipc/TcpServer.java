@@ -169,8 +169,9 @@ public class TcpServer implements Closeable {
      * Enable  Write-Ahead-Logs
      *
      * @param walDir the Write-Ahead-Logs directory
+     * @param compress enable/disable Write-Ahead-Log entry compression
      */
-    public void enableWriteAheadLog(final File walDir) {
+    public void enableWriteAheadLog(final File walDir, final boolean compress) {
         Objects.requireNonNull(walDir);
 
         if (!walDir.isDirectory()) {
@@ -178,7 +179,7 @@ public class TcpServer implements Closeable {
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
-        this.wal.activate(walDir);
+        this.wal.activate(walDir, compress);
     }
 
     /**

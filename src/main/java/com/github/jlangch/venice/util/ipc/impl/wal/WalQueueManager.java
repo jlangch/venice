@@ -54,16 +54,32 @@ public class WalQueueManager {
     public WalQueueManager() {
     }
 
-    public void activate(final File walDir) {
+    public void activate(final File walDir, final boolean compress) {
+        if (!walDir.isDirectory()) {
+            throw new VncException(
+                    "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
+        }
+
         this.walDir.set(walDir);
+        this.compress = compress;
     }
 
     public boolean isEnabled() {
         return walDir.get() != null;
     }
 
+    public boolean isCompressed() {
+        return compress;
+    }
+
     public File getWalDir() {
         return walDir.get();
+    }
+
+    public WriteAheadLog createWriteAheadLogForQueue(final IpcQueue<Message> queue)
+    throws IOException {
+        final String filename = WalQueueManager.toFileName(queue.name());
+        return new WriteAheadLog(new File(walDir.get(), filename), compress);
     }
 
     public Map<String, IpcQueue<Message>> preloadQueues()
@@ -104,7 +120,7 @@ public class WalQueueManager {
                 }
             }
 
-            queues.put(queueName, new WalBasedQueue(queue, walDir.get()));
+            queues.put(queueName, new WalBasedQueue(queue, this));
         };
 
         return queues;
@@ -215,4 +231,5 @@ public class WalQueueManager {
 
 
     private final AtomicReference<File> walDir = new AtomicReference<>();
+    private volatile boolean compress;
 }
