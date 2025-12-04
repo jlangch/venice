@@ -32,13 +32,16 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
+
+
 public class WriteAheadLogCompressTest {
 
     @Test
-    public void test() {
+    public void test_SMALL() {
         // with default encoding
         try {
-        	final boolean compress = true;
+            final boolean compress = true;
 
             final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
             walFile.deleteOnExit();
@@ -50,9 +53,9 @@ public class WriteAheadLogCompressTest {
 
             // 1. Append some entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile, compress)) {
-                long lsn1 = wal.append(new DataWalEntry(uuid1, "first record").toWalEntry());
-                long lsn2 = wal.append(new DataWalEntry(uuid2, "second record").toWalEntry());
-                long lsn3 = wal.append(new DataWalEntry(uuid3, "third record").toWalEntry());
+                long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
+                long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
+                long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
 
                 assertEquals(1, lsn1);
                 assertEquals(2, lsn2);
@@ -76,9 +79,9 @@ public class WriteAheadLogCompressTest {
                 assertEquals(uuid2, entries.get(1).getUUID());
                 assertEquals(uuid3, entries.get(2).getUUID());
 
-                assertEquals("first record",  new String(entries.get(0).getPayload()));
-                assertEquals("second record", new String(entries.get(1).getPayload()));
-                assertEquals("third record",  new String(entries.get(2).getPayload()));
+                assertEquals(smallMsg(1), new String(entries.get(0).getPayload()));
+                assertEquals(smallMsg(2), new String(entries.get(1).getPayload()));
+                assertEquals(smallMsg(3), new String(entries.get(2).getPayload()));
             }
         }
         catch(Exception ex) {
@@ -87,10 +90,10 @@ public class WriteAheadLogCompressTest {
     }
 
     @Test
-    public void testCompact() {
+    public void testCompact_SMALL() {
         // with default encoding
         try {
-        	final boolean compress = true;
+            final boolean compress = true;
 
             final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
             walFile.deleteOnExit();
@@ -102,9 +105,9 @@ public class WriteAheadLogCompressTest {
 
             // 1. Append some entries
             try (WriteAheadLog wal = new WriteAheadLog(walFile, compress)) {
-                long lsn1 = wal.append(new DataWalEntry(uuid1, "first record").toWalEntry());
-                long lsn2 = wal.append(new DataWalEntry(uuid2, "second record").toWalEntry());
-                long lsn3 = wal.append(new DataWalEntry(uuid3, "third record").toWalEntry());
+                long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
+                long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
+                long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
                 long lsn4 = wal.append(new AckWalEntry(uuid2).toWalEntry());
 
                 assertEquals(1, lsn1);
@@ -137,9 +140,9 @@ public class WriteAheadLogCompressTest {
                 assertEquals(uuid2, entries.get(1).getUUID());
                 assertEquals(uuid3, entries.get(2).getUUID());
 
-                assertEquals("first record",  new String(entries.get(0).getPayload()));
-                assertEquals("second record", new String(entries.get(1).getPayload()));
-                assertEquals("third record",  new String(entries.get(2).getPayload()));
+                assertEquals(smallMsg(1), new String(entries.get(0).getPayload()));
+                assertEquals(smallMsg(2), new String(entries.get(1).getPayload()));
+                assertEquals(smallMsg(3), new String(entries.get(2).getPayload()));
             }
 
             // 3. Compact
@@ -166,8 +169,8 @@ public class WriteAheadLogCompressTest {
                 assertEquals(uuid1, entries.get(0).getUUID());
                 assertEquals(uuid3, entries.get(1).getUUID());
 
-                assertEquals("first record",  new String(entries.get(0).getPayload()));
-                assertEquals("third record",  new String(entries.get(1).getPayload()));
+                assertEquals(smallMsg(1), new String(entries.get(0).getPayload()));
+                assertEquals(smallMsg(3), new String(entries.get(1).getPayload()));
             }
         }
         catch(Exception ex) {
@@ -175,4 +178,153 @@ public class WriteAheadLogCompressTest {
         }
     }
 
+
+    @Test
+    public void test_LARGE() {
+        // with default encoding
+        try {
+            final boolean compress = true;
+
+            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            walFile.deleteOnExit();
+
+            final UUID uuid1 = UUID.randomUUID();
+            final UUID uuid2 = UUID.randomUUID();
+            final UUID uuid3 = UUID.randomUUID();
+
+
+            // 1. Append some entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress)) {
+                long lsn1 = wal.append(new DataWalEntry(uuid1, largeMsg(1)).toWalEntry());
+                long lsn2 = wal.append(new DataWalEntry(uuid2, largeMsg(2)).toWalEntry());
+                long lsn3 = wal.append(new DataWalEntry(uuid3, largeMsg(3)).toWalEntry());
+
+                assertEquals(1, lsn1);
+                assertEquals(2, lsn2);
+                assertEquals(3, lsn3);
+            }
+
+            // 2. Simulate restart: open WAL again and recover entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress)) {
+                // Recovered
+                assertEquals(3, wal.getLastLsn());
+
+                final List<WalEntry> entries = wal.readAll();
+
+                assertEquals(3, entries.size());
+
+                assertEquals(1, entries.get(0).getLsn());
+                assertEquals(2, entries.get(1).getLsn());
+                assertEquals(3, entries.get(2).getLsn());
+
+                assertEquals(uuid1, entries.get(0).getUUID());
+                assertEquals(uuid2, entries.get(1).getUUID());
+                assertEquals(uuid3, entries.get(2).getUUID());
+
+                assertEquals(largeMsg(1), new String(entries.get(0).getPayload()));
+                assertEquals(largeMsg(2), new String(entries.get(1).getPayload()));
+                assertEquals(largeMsg(3), new String(entries.get(2).getPayload()));
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void testCompact_LARGE() {
+        // with default encoding
+        try {
+            final boolean compress = true;
+
+            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            walFile.deleteOnExit();
+
+            final UUID uuid1 = UUID.randomUUID();
+            final UUID uuid2 = UUID.randomUUID();
+            final UUID uuid3 = UUID.randomUUID();
+
+
+            // 1. Append some entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress)) {
+                long lsn1 = wal.append(new DataWalEntry(uuid1, largeMsg(1)).toWalEntry());
+                long lsn2 = wal.append(new DataWalEntry(uuid2, largeMsg(2)).toWalEntry());
+                long lsn3 = wal.append(new DataWalEntry(uuid3, largeMsg(3)).toWalEntry());
+                long lsn4 = wal.append(new AckWalEntry(uuid2).toWalEntry());
+
+                assertEquals(1, lsn1);
+                assertEquals(2, lsn2);
+                assertEquals(3, lsn3);
+                assertEquals(4, lsn4);
+            }
+
+            // 2. Simulate restart: open WAL again and recover entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress)) {
+                // Recovered
+                assertEquals(4, wal.getLastLsn());
+
+                final List<WalEntry> entries = wal.readAll();
+
+                // We've got 4 entries
+                assertEquals(4, entries.size());
+
+                assertEquals(1, entries.get(0).getLsn());
+                assertEquals(2, entries.get(1).getLsn());
+                assertEquals(3, entries.get(2).getLsn());
+                assertEquals(4, entries.get(3).getLsn());
+
+                assertEquals(DATA, entries.get(0).getType());
+                assertEquals(DATA, entries.get(1).getType());
+                assertEquals(DATA, entries.get(2).getType());
+                assertEquals(ACK,  entries.get(3).getType());
+
+                assertEquals(uuid1, entries.get(0).getUUID());
+                assertEquals(uuid2, entries.get(1).getUUID());
+                assertEquals(uuid3, entries.get(2).getUUID());
+
+                assertEquals(largeMsg(1), new String(entries.get(0).getPayload()));
+                assertEquals(largeMsg(2), new String(entries.get(1).getPayload()));
+                assertEquals(largeMsg(3), new String(entries.get(2).getPayload()));
+            }
+
+            // 3. Compact
+            WriteAheadLog.compact(
+                walFile,
+                false,  // discard expired entries,
+                true);  // remove backup logfile
+
+            // 4. Simulate restart: open WAL again and recover entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+                // Recovered
+                assertEquals(2, wal.getLastLsn());
+
+                final List<WalEntry> entries = wal.readAll();
+
+                assertEquals(2, entries.size());
+
+                assertEquals(1, entries.get(0).getLsn());
+                assertEquals(2, entries.get(1).getLsn());
+
+                assertEquals(DATA, entries.get(0).getType());
+                assertEquals(DATA, entries.get(1).getType());
+
+                assertEquals(uuid1, entries.get(0).getUUID());
+                assertEquals(uuid3, entries.get(1).getUUID());
+
+                assertEquals(largeMsg(1), new String(entries.get(0).getPayload()));
+                assertEquals(largeMsg(3), new String(entries.get(1).getPayload()));
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+
+    private String smallMsg(final int id) {
+        return id + "-" + StringUtil.repeat("a", 10);
+    }
+    private String largeMsg(final int id) {
+        return id + "-" + StringUtil.repeat("a", 100_000);
+    }
 }

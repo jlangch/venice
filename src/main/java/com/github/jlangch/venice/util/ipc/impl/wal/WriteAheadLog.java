@@ -267,7 +267,7 @@ public final class WriteAheadLog implements Closeable {
 
         // Validate checksum
         final CRC32 crc32 = new CRC32();
-        crc32.update(payload);
+        crc32.update(payloadCompressed);
 
         final int actualChecksum = (int) crc32.getValue();
         if (actualChecksum != checksum) {
