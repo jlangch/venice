@@ -522,7 +522,7 @@ public final class WriteAheadLog implements Closeable {
     // header: magic + lsn + type + uuid + expire + length + checksum
     private static final int HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4 + 4;
 
-    // the record payload size at which the paylod is compressed
+    // the record payload size at which the payload is compressed
     private static final int COMPRESSION_CUTOFF = 300;
 
     private final File file;
