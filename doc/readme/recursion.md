@@ -313,7 +313,7 @@ is such an example of a non [primitive recursive function](https://en.wikipedia.
 
 ## Recursion and Memoization
 
-For some recursive algorithms *memoization* can speed up computation dramatically:
+For some recursive algorithms *memoization* can speed up computation impressively:
 
 ```clojure
 (do
@@ -328,8 +328,8 @@ For some recursive algorithms *memoization* can speed up computation dramaticall
   (time (fibonacci 30)))
 ```
 
-
-Please note that this naive approach is dramatically slower than the above:
+Please note that this standard approach is dramatically slower (1.3s vs 3.8ms on a MacBook Air M2)
+than the one with memoization:
 
 ```clojure
 (do
