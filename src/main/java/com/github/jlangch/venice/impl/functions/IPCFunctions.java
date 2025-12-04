@@ -145,6 +145,8 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
+                // -- Parse arguments -----------------------------------------
+
                 final VncVal portVal = args.first();
                 final VncVal handlerVal = args.second();
 
@@ -188,6 +190,8 @@ public class IPCFunctions {
 
                 final boolean walCompress = walCompressVal != Nil && Coerce.toVncBoolean(walCompressVal).getValue();
                 final boolean walCompactAtStart = walCompactAtStartVal != Nil && Coerce.toVncBoolean(walCompactAtStartVal).getValue();
+
+                // -- Setup the handler function ------------------------------
 
                 final Function<IMessage,IMessage> handlerWrapper;
 

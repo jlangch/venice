@@ -149,37 +149,12 @@ public class WalQueueManager {
         }
 
         final File logFile = new File(walDir.get(), toFileName(queueName));
-        return loadWalQueueMessages(logFile);
-    }
-
-    public List<IMessage> loadWalQueueMessages(
-        final File logFile
-    ) throws IOException {
-        Objects.requireNonNull(logFile);
-
-        if (!isEnabled()) {
-            throw new VncException("Write-Ahead-Log is not active");
-        }
-
         if (logFile.isFile()) {
-            final List<IMessage> messages = new ArrayList<>();
-
-            // load all Write-Ahead-Log entries and compact the entries
-            final List<WalEntry> entries = WriteAheadLog.compact(
-                                                WriteAheadLog.loadAll(logFile, false),
-                                                true); // discard expired entries
-
-            for(WalEntry e : entries) {
-                if (WalEntryType.DATA == e.getType()) {
-                    final Message m = MessageWalEntry.fromWalEntry(e).getMessage();
-                    messages.add(m);
-                }
-            }
-
-            return messages;
+            return loadWalQueueMessages(logFile);
         }
         else {
-            return new ArrayList<>();
+            throw new VncException(
+                    "The Write-Ahead-Log for the queue '" + queueName + "' does not exist!");
         }
     }
 
@@ -226,6 +201,37 @@ public class WalQueueManager {
         return StringUtil.removeEnd(file.getName().replace('$', '/'), ".wal");
     }
 
+
+    private List<IMessage> loadWalQueueMessages(
+        final File logFile
+    ) throws IOException {
+        Objects.requireNonNull(logFile);
+
+        if (!isEnabled()) {
+            throw new VncException("Write-Ahead-Log is not active");
+        }
+
+        if (logFile.isFile()) {
+            final List<IMessage> messages = new ArrayList<>();
+
+            // load all Write-Ahead-Log entries and compact the entries
+            final List<WalEntry> entries = WriteAheadLog.compact(
+                                                WriteAheadLog.loadAll(logFile, false),
+                                                true); // discard expired entries
+
+            for(WalEntry e : entries) {
+                if (WalEntryType.DATA == e.getType()) {
+                    final Message m = MessageWalEntry.fromWalEntry(e).getMessage();
+                    messages.add(m);
+                }
+            }
+
+            return messages;
+        }
+        else {
+            return new ArrayList<>();
+        }
+    }
 
     private static IpcQueue<Message> toQueue(
             final String queueName,

@@ -223,7 +223,7 @@ public class TcpServer implements Closeable {
     /**
      * Loads the compacted messages from a WAL based queue.
      *
-     * <p>For testing/debugging purposes only!
+     * <p><b>Use for testing and debugging purposes only!</b>
      *
      * @param queueName a queue name
      * @return the compacted messages from the queue.
@@ -270,7 +270,7 @@ public class TcpServer implements Closeable {
                     //
                     // Note: 1) must be run after starting the ServerSocketChannel
                     //          as a locking mechanism to ensure this server is the
-                    //          running on the port!
+                    //          server in charge!
                     //       2) must be completed before the server accepts messages
                     //          on a SocketChannel!!
                     //       3) will replace any queue with the same name created on this
@@ -280,8 +280,10 @@ public class TcpServer implements Closeable {
 
                 // run in an executor thread to not block the caller
                 executor.execute(() -> {
+                   // loop as long the server is not stopped
                     while (started.get()) {
                         try {
+                            // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
                             channel.configureBlocking(true);
                             final TcpServerConnection conn = new TcpServerConnection(
