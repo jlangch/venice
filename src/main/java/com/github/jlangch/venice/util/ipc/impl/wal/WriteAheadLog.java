@@ -84,9 +84,19 @@ public final class WriteAheadLog implements Closeable {
         this.compressor = compress ? new Compressor(COMPRESSION_CUTOFF) : Compressor.off();
 
         // Recover state if file already exists / has content
-        recover();
+        this.recoveredFromCorruption = recover();
     }
 
+    /**
+     * Checks if this Write-Ahead-Log has been recovered from corruption while reading the
+     * entries at startup.
+     *
+     * @return <code>true</code> if this Write-Ahead-Log has been recovered from corruption
+     *         and <code>false</code> if it has been successfully loaded.
+     */
+    public boolean hasRecoveredFromCorruption() {
+        return recoveredFromCorruption;
+    }
 
     /**
      * Append an entry to the WAL and fsync it.
@@ -442,12 +452,14 @@ public final class WriteAheadLog implements Closeable {
      *
      * @throws IOException on I/O failure
      */
-    private void recover() throws IOException {
+    private boolean recover() throws IOException {
         channel.position(0);
         final long fileSize = channel.size();
         long position = 0L;
         long lastGoodLsn = 0L;
         long lastGoodEnd = 0L;
+
+        boolean recoveredFromCorruption = false;
 
         while (position < fileSize) {
             try {
@@ -461,10 +473,12 @@ public final class WriteAheadLog implements Closeable {
             }
             catch (EOFException e) {
                 // Partial header or payload at the end: stop, treat as corruption
+                recoveredFromCorruption = false;
                 break;
             }
             catch (CorruptedRecordException e) {
                 // Data corruption: stop scanning here
+                recoveredFromCorruption = false;
                 break;
             }
         }
@@ -477,6 +491,9 @@ public final class WriteAheadLog implements Closeable {
         this.lastLsn = lastGoodLsn;
         this.validEndPosition = lastGoodEnd;
         channel.position(validEndPosition);
+
+        return recoveredFromCorruption;
+
     }
 
     /**
@@ -531,6 +548,7 @@ public final class WriteAheadLog implements Closeable {
     private final RandomAccessFile raf;
     private final FileChannel channel;
     private final Compressor compressor;
+    private final boolean recoveredFromCorruption;
 
     // last written LSN
     private long lastLsn = 0L;
