@@ -209,6 +209,8 @@ public class IPCFunctions {
                                      });
                 }
 
+                // -- Configure the server ------------------------------------
+
                 final TcpServer server = new TcpServer(port);
 
                 if (maxConn > 0) {
@@ -230,6 +232,8 @@ public class IPCFunctions {
                 if (walDir != null) {
                     server.enableWriteAheadLog(walDir, walCompress, walCompactAtStart);
                 }
+
+                // -- Start the server ----------------------------------------
 
                 if (handlerWrapper == null) {
                     server.start();
