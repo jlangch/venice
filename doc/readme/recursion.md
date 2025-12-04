@@ -176,7 +176,7 @@ number of arguments to prevent you from writing loops.
 ```
 
 
-**Example 3: Recursively compute the Fibonacci numbers (0 1 1 2 3 5 8 ...):**
+**Example 3: Recursively compute the Fibobacci numbers (0 1 1 2 3 5 8 ...):**
 
 ```clojure
 ;; Definition:
@@ -343,10 +343,14 @@ than the one with memoization:
   (time (fib-memoize 30)))
 ```
 
-*Note:* to get accurate time measurements run the examples multiple times 
-        to warmup the Java runtime optimizer!
+*Note 1:* to get accurate time measurements run the examples multiple times 
+          to warmup the Java runtime optimizer!
 
-*memoization* is doing a good job in computing fibonacci numbers using 
+*Note 2:* there are even faster ways to compute Fibonacci numbers. See the TCO and loop-recur
+          versions below!
+
+
+*memoization* is doing a good job in computing Fibobacci numbers using 
 simple recursion. It eliminates the recurring computation of the predecessors
 values.
 
@@ -358,7 +362,7 @@ where memoization has to raise its arms.
 ## Comparing recursion efficiency
 
 To see how efficient tail call optimization for recursion is we compare 
-simple recursion with self recursion applied to computing Fibonacci numbers. 
+simple recursion with self recursion applied to computing Fibobacci numbers. 
 
 _Note: all examples run with upfront macro expansion enabled._
 
