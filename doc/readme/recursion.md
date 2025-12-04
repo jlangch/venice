@@ -402,14 +402,14 @@ _Note: all examples run with upfront macro expansion enabled._
    ; (b/benchmark (fib-tco 30) 5000 1000)
    ; (b/benchmark (fib-loop-recur 30) 5000 1000)
    ; (time (fib-memoize 30))  ;; note: memoizing functions cannot be benchmarked!
-   
-   
+
+
   ;; run on MacBook Air M2, with 'macroexpand' enabled
   ;; +----------------------+------------+
-  ;; | (fib-simple 30)      |    1.171s  |  
-  ;; | (fib-memoize 30)     |    2.540ms |     
-  ;; | (fib-tco 30)         |   31.286µs |   
-  ;; | (fib-loop-recur 30)  |   27.946µs |  
-  ;; +----------------------+------------+   
+  ;; | (fib-simple 30)      |    1.171s  |
+  ;; | (fib-memoize 30)     |    2.540ms |
+  ;; | (fib-tco 30)         |   31.286µs |
+  ;; | (fib-loop-recur 30)  |   27.946µs |
+  ;; +----------------------+------------+
 ```
 
