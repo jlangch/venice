@@ -190,6 +190,7 @@ public final class WriteAheadLog implements Closeable {
     /**
      * Read all valid entries from the WAL
      *
+     * @param avoidDecompression if true do not decompress compressed entry payloads
      * @return a list of the read entries
      * @throws IOException on I/O failure
      */
@@ -282,6 +283,7 @@ public final class WriteAheadLog implements Closeable {
      * Load all valid entries from the WAL
      *
      * @param file the log file
+     * @param avoidDecompression if true do not decompress compressed entry payloads
      * @return a list of the read entries
      * @throws IOException on I/O failure
      */

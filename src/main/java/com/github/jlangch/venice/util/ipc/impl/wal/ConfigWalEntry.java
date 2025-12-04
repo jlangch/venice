@@ -30,7 +30,7 @@ import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
 /**
  * WalEntry serializer/deserializer for queue config WAL entries
  *
- * <p>The <code>ConfigWalEntry<code> is always the first entry written
+ * <p>The <code>ConfigWalEntry</code> is always the first entry written
  * to a queue WAL file and holds the queue's capacity and type.
  *
  * <p>While reconstructing a queue from a WAL file, the queue's capacity
