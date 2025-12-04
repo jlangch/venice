@@ -54,7 +54,11 @@ public class WalQueueManager {
     public WalQueueManager() {
     }
 
-    public void activate(final File walDir, final boolean compress) {
+    public void activate(
+            final File walDir,
+            final boolean compress,
+            final boolean compactAtStart
+    ) {
         if (!walDir.isDirectory()) {
             throw new VncException(
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
@@ -62,6 +66,7 @@ public class WalQueueManager {
 
         this.walDir.set(walDir);
         this.compress = compress;
+        this.compactAtStart = compactAtStart;
     }
 
     public boolean isEnabled() {
@@ -70,6 +75,10 @@ public class WalQueueManager {
 
     public boolean isCompressed() {
         return compress;
+    }
+
+    public boolean isCompactAtStart() {
+        return compactAtStart;
     }
 
     public File getWalDir() {
@@ -91,6 +100,10 @@ public class WalQueueManager {
         final Map<String, IpcQueue<Message>> queues = new HashMap<>();
 
         for(File logFile : listLogFiles()) {
+            if (compactAtStart) {
+                WriteAheadLog.compact(logFile, true, true);
+            }
+
             final String queueName = WalQueueManager.toQueueName(logFile);
 
 
@@ -232,4 +245,5 @@ public class WalQueueManager {
 
     private final AtomicReference<File> walDir = new AtomicReference<>();
     private volatile boolean compress;
+    private volatile boolean compactAtStart;
 }

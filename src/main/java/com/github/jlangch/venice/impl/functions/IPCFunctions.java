@@ -105,7 +105,9 @@ public class IPCFunctions {
                         "| :write-ahead-log-dir f       | Provide a write-ahead-log directory to support durable queues.¶" +
                                                         " Defaults to `nil`.|\n" +
                         "| :write-ahead-log-compress b  | If `true` compresses the write-ahead-log records.¶" +
-                                                        " Defaults to `false`.|\n\n" +
+                                                        " Defaults to `false`.|\n" +
+                        "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
+                        "                                 Defaults to `false`.|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
@@ -162,6 +164,7 @@ public class IPCFunctions {
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
+                final VncVal walCompactAtStartVal = options.get(new VncKeyword("write-ahead-log-compact"));
 
                 final int maxConn = maxConnVal == Nil
                                         ? 0
@@ -184,6 +187,7 @@ public class IPCFunctions {
                 }
 
                 final boolean walCompress = walCompressVal != Nil && Coerce.toVncBoolean(walCompressVal).getValue();
+                final boolean walCompactAtStart = walCompactAtStartVal != Nil && Coerce.toVncBoolean(walCompactAtStartVal).getValue();
 
                 final Function<IMessage,IMessage> handlerWrapper;
 
@@ -224,7 +228,7 @@ public class IPCFunctions {
                 }
 
                 if (walDir != null) {
-                    server.enableWriteAheadLog(walDir, walCompress);
+                    server.enableWriteAheadLog(walDir, walCompress, walCompactAtStart);
                 }
 
                 if (handlerWrapper == null) {

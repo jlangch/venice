@@ -170,8 +170,13 @@ public class TcpServer implements Closeable {
      *
      * @param walDir the Write-Ahead-Logs directory
      * @param compress enable/disable Write-Ahead-Log entry compression
+     * @param compactAtStart if true compact the Write-Ahead-Log at startup
      */
-    public void enableWriteAheadLog(final File walDir, final boolean compress) {
+    public void enableWriteAheadLog(
+            final File walDir,
+            final boolean compress,
+            final boolean compactAtStart
+     ) {
         Objects.requireNonNull(walDir);
 
         if (!walDir.isDirectory()) {
@@ -179,7 +184,12 @@ public class TcpServer implements Closeable {
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
-        this.wal.activate(walDir, compress);
+        if (started.get()) {
+            throw new VncException(
+                    "Cannot enable the Write-Ahead-Log if the server has already been started!");
+        }
+
+        this.wal.activate(walDir, compress, compactAtStart);
     }
 
     /**
@@ -256,7 +266,15 @@ public class TcpServer implements Closeable {
                 ch.configureBlocking(true);
 
                 if (wal.isEnabled()) {
-                    // preload the queues from the Write-Ahead-Log
+                    // Preload the queues from the Write-Ahead-Log
+                    //
+                    // Note: 1) must be run after starting the ServerSocketChannel
+                    //          as a locking mechanism to ensure this server is the
+                    //          running on the port!
+                    //       2) must be completed before the server accepts messages
+                    //          on a SocketChannel!!
+                    //       3) will replace any queue with the same name created on this
+                    //          server before starting the server
                     p2pQueues.putAll(wal.preloadQueues());
                 }
 
