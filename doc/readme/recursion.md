@@ -325,11 +325,11 @@ For some recursive algorithms *memoization* can speed up computation dramaticall
           (< n 2) 1
           :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
-  (time (fibonacci 25)))
+  (time (fibonacci 30)))
 ```
 
 
-Please note that this naive approach is not working:
+Please note that this naive approach is dramatically slower than the above:
 
 ```clojure
 (do
@@ -340,8 +340,11 @@ Please note that this naive approach is not working:
 
   (def fib-memoize (memoize fib-simple))
   
-  (fib-memoize 30))
+  (time (fib-memoize 30)))
 ```
+
+*Note:* to get accurate time measurements run the examples multiple times 
+        to warmup the Java runtime optimizer!
 
 *memoization* is doing a good job in computing fibonacci numbers using 
 simple recursion. It eliminates the recurring computation of the predecessors
