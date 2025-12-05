@@ -1767,7 +1767,9 @@ public class IOFunctions {
                         // if the directory still exists -> failed to delete
                         if (file.isDirectory()) {
                             throw new VncException(
-                                    String.format("Failed to delete file tree from dir %s", file.toString()));
+                                    String.format(
+                                            "Failed to completely delete file tree from dir %s.",
+                                            file.toString()));
                         }
                     }
                     else if (file.isFile()) {
