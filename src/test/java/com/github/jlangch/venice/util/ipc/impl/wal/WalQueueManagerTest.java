@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 import com.github.jlangch.venice.util.ipc.impl.Message;
@@ -141,6 +142,7 @@ public class WalQueueManagerTest {
     }
 
     @Test
+    @EnableOnMacOrLinux
     public void test_server_reopen_with_wal_compact() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
 
