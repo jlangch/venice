@@ -44,7 +44,7 @@ public class OfferPollTest {
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
                 "                                                                                          \n" +
-                "      ;; create a durable queue                                                           \n" +
+                "      ;; create the durable queue :testq                                                  \n" +
                 "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
                 "                                                                                          \n" +
                 "      ;; offer 3 durable and 1 nondurable message                                         \n" +
@@ -55,12 +55,13 @@ public class OfferPollTest {
                 "                                                                                          \n" +
                 "      ;; poll message #1                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +
+                "        (assert (ipc/response-ok? m))                                                     \n" +
                 "        (assert (== \"hello 1\" (ipc/message-field m :payload-text)))))                   \n" +
                 "                                                                                          \n" +
                 "    (sleep 100)                                                                           \n" +
                 "                                                                                          \n" +
-                "    ;; new client/server                                                                  \n" +
-                "    ;; the new server will read the Write-Ahead-Log and populate the queue :testq         \n" +
+                "    ;; restart client/server to test Write-Ahead-Logs                                     \n" +
+                "    ;; the new server will read the Write-Ahead-Logs and populate the queue :testq        \n" +
                 "    (try-with [server (ipc/server 33333                                                   \n" +
                 "                                  :write-ahead-log-dir wal-dir                            \n" +
                 "                                  :write-ahead-log-compress true                          \n" +
@@ -69,14 +70,21 @@ public class OfferPollTest {
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
                 "                                                                                          \n" +
+                "      ;; create the durable queue :testq                                                  \n" +
+                "      ;; if the queue already exists due to the WAL recovery process, this                \n" +
+                "      ;; queue create request will just be skipped!                                       \n" +
+                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "                                                                                          \n" +
                 "      ;; poll message #2                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +
+                "        (assert (ipc/response-ok? m))                                                     \n" +
                 "        (assert (== \"hello 2\" (ipc/message-field m :payload-text))))                    \n" +
                 "                                                                                          \n" +
                 "      ;; message #3 is nondurable and therefore lost after server shutdown                \n" +
                 "                                                                                          \n" +
                 "      ;; poll message #4                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +
+                "        (assert (ipc/response-ok? m))                                                     \n" +
                 "        (assert (== \"hello 4\" (ipc/message-field m :payload-text)))))                   \n" +
                 "                                                                                          \n" +
                 "    (sleep 100)                                                                           \n" +
@@ -104,7 +112,7 @@ public class OfferPollTest {
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
                 "                                                                                          \n" +
-                "      ;; create a durable queue                                                           \n" +
+                "      ;; create the durable queue :testq                                                  \n" +
                 "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
                 "                                                                                          \n" +
                 "      ;; offer 3 durable and 1 nondurable message                                         \n" +
@@ -115,12 +123,13 @@ public class OfferPollTest {
                 "                                                                                          \n" +
                 "      ;; poll message #1                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +
+                "        (assert (ipc/response-ok? m))                                                     \n" +
                 "        (assert (== \"hello 1\" (ipc/message-field m :payload-text)))))                   \n" +
                 "                                                                                          \n" +
                 "    (sleep 100)                                                                           \n" +
                 "                                                                                          \n" +
-                "    ;; new client/server                                                                  \n" +
-                "    ;; the new server will read the Write-Ahead-Log and populate the queue :testq         \n" +
+                "    ;; restart client/server to test Write-Ahead-Logs                                     \n" +
+                "    ;; the new server will read the Write-Ahead-Logs and populate the queue :testq        \n" +
                 "    (try-with [server (ipc/server 33333                                                   \n" +
                 "                                  :write-ahead-log-dir wal-dir                            \n" +
                 "                                  :write-ahead-log-compress true                          \n" +
@@ -129,14 +138,21 @@ public class OfferPollTest {
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
                 "                                                                                          \n" +
+                "      ;; create the durable queue :testq                                                  \n" +
+                "      ;; if the queue already exists due to the WAL recovery process, this                \n" +
+                "      ;; queue create request will just be skipped!                                       \n" +
+                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "                                                                                          \n" +
                 "      ;; poll message #2                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +
+                "        (assert (ipc/response-ok? m))                                                     \n" +
                 "        (assert (== \"hello 2\" (ipc/message-field m :payload-text))))                    \n" +
                 "                                                                                          \n" +
                 "      ;; message #3 is nondurable and therefore lost after server shutdown                \n" +
                 "                                                                                          \n" +
                 "      ;; poll message #4                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +
+                "        (assert (ipc/response-ok? m))                                                     \n" +
                 "        (assert (== \"hello 4\" (ipc/message-field m :payload-text)))))                   \n" +
                 "                                                                                          \n" +
                 "    (sleep 100)                                                                           \n" +
