@@ -1,0 +1,84 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2025 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; IPC Write-Ahead-Log demo
+
+(let [wal-dir (io/file (io/temp-dir "wal-"))]
+  (try
+    ;; restart client/server with Write-Ahead-Log and offer a few messages
+    (println "Starting server/client ...")
+    (try-with [server (ipc/server 33333
+                                  :write-ahead-log-dir wal-dir
+                                  :write-ahead-log-compress true
+                                  :write-ahead-log-compact true)
+               client (ipc/client 33333)]
+
+      (sleep 100)
+
+      ;; create the durable queue :testq
+      (ipc/create-queue server :testq 100 :bounded true)
+
+      ;; offer 3 durable and 1 nondurable messages
+      (ipc/offer client :testq 300 (ipc/plain-text-message "1" :test "hello 1" true))
+      (ipc/offer client :testq 300 (ipc/plain-text-message "2" :test "hello 2" true))
+      (ipc/offer client :testq 300 (ipc/plain-text-message "3" :test "hello 3" false))
+      (ipc/offer client :testq 300 (ipc/plain-text-message "4" :test "hello 4" true))
+
+      ;; poll message #1
+      (let [m (ipc/poll client :testq 300)]
+        (assert (ipc/response-ok? m))
+        (assert (== "hello 1" (ipc/message-field m :payload-text)))))
+
+    (sleep 100)
+
+    ;; restart client/server to test Write-Ahead-Logs 
+    ;; the new server will read the Write-Ahead-Logs and populate the queue :testq
+    (println "Restarting server/client ...")
+    (try-with [server (ipc/server 33333
+                                  :write-ahead-log-dir wal-dir
+                                  :write-ahead-log-compress true
+                                  :write-ahead-log-compact true)
+               client (ipc/client 33333)]
+
+      (sleep 100)
+
+      ;; create the durable queue :testq
+      ;; if the queue already exists due to the WAL recovery process, this
+      ;; queue create request will just be skipped!
+      (ipc/create-queue server :testq 100 :bounded true)
+
+      ;; poll message #2
+      (let [m (ipc/poll client :testq 300)]
+        (assert (ipc/response-ok? m))
+        (assert (== "hello 2" (ipc/message-field m :payload-text))))
+
+      ;; message #3 is nondurable and therefore lost at server shutdown
+
+      ;; poll message #4
+      (let [m (ipc/poll client :testq 300)]
+        (assert (ipc/response-ok? m))
+        (assert (== "hello 4" (ipc/message-field m :payload-text)))))
+
+    (sleep 100)
+
+    (finally (io/delete-file-tree wal-dir)))
+    
+  (println "Done."))
