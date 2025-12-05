@@ -61,6 +61,7 @@ public class WalQueueManagerTest {
 
             final File walFile = new File(walDir, WalQueueManager.toFileName(queue.name()));
             assertTrue(walFile.isFile());
+            assertTrue(walFile.length() > 0);
 
             wqm.close(CollectionUtil.toList(queue));
 
@@ -72,7 +73,7 @@ public class WalQueueManagerTest {
             walDir.delete();
             assertFalse(walFile.isFile());
             assertFalse(walDir.isDirectory());
-         }
+        }
         catch(Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -81,11 +82,11 @@ public class WalQueueManagerTest {
 
     private Message smallMsg(final int id) {
         return (Message)MessageFactory.text(
-	        		String.valueOf(id),
-	        		"hello",
-	        		"text/plain",
-	        		"UTF-8",
-	        		String.valueOf(id) + "-" + StringUtil.repeat("a", 10));
+                    String.valueOf(id),
+                    "hello",
+                    "text/plain",
+                    "UTF-8",
+                    String.valueOf(id) + "-" + StringUtil.repeat("a", 10));
     }
 
 }
