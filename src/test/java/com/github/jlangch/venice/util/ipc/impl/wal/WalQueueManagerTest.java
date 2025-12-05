@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
+import com.github.jlangch.venice.util.ipc.TcpServer;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
@@ -43,6 +44,7 @@ public class WalQueueManagerTest {
     @Test
     public void test() throws IOException {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+
         try {
             final WalQueueManager wqm = new WalQueueManager();
             wqm.activate(walDir, false, false);
@@ -77,6 +79,34 @@ public class WalQueueManagerTest {
         catch(Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Test
+    public void test_server_with_wal() throws Exception {
+        final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+
+        try(TcpServer server = new TcpServer(33333)) {
+            server.enableWriteAheadLog(walDir, false, false);
+            server.start();
+
+            server.createQueue("queue/test", 100, true, true);
+
+            // uses WalQueueManager to manage the queue
+            final IpcQueue<Message> queue = server.getQueue("queue/test");
+
+            queue.offer(smallMsg(1));
+            queue.offer(smallMsg(2));
+        }
+
+        final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
+        assertTrue(walFile.isFile());
+        assertTrue(walFile.length() > 0);
+
+        // check WAL dir can be deleted
+        walFile.delete();
+        walDir.delete();
+        assertFalse(walFile.isFile());
+        assertFalse(walDir.isDirectory());
     }
 
 

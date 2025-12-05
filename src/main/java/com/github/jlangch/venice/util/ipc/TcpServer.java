@@ -408,6 +408,18 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * Get a queue.
+     *
+     * @param queueName a queue name
+     * @return the queue or <code>null</code> if the queue does not exist
+     */
+    public IpcQueue<Message> getQueue(final String queueName) {
+        QueueValidator.validate(queueName);
+
+        return p2pQueues.get(queueName);
+    }
+
+    /**
      * Remove a queue.
      *
      * @param queueName a queue name
