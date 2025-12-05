@@ -360,7 +360,6 @@ public final class WriteAheadLog implements Closeable {
 
         final List<WalEntry> pending = new ArrayList<>();
 
-
         // Note: for performance reason the WAL entries are not decompressed
         //       while reading the entries and not compressed agin on writing
         //       the compacted entries.
@@ -369,16 +368,15 @@ public final class WriteAheadLog implements Closeable {
         // [1] read the entries of the old log
         try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false)) {
             pending.addAll(compact(oldLog.readAll(true), discardExpiredEntries));
+        }
 
-            // [2] Write a brand-new log with only pending messages
-            if (tmpFile.exists() && !tmpFile.delete()) {
-                throw new IOException("Could not delete stale tmp file: " + tmpFile);
-            }
-
-            try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false)) {
-                for (WalEntry e : pending) {
-                    newLog.append(e);
-                }
+        // [2] Write a brand-new log with only pending messages
+        if (tmpFile.exists() && !tmpFile.delete()) {
+            throw new IOException("Could not delete stale tmp file: " + tmpFile);
+        }
+        try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false)) {
+            for (WalEntry e : pending) {
+                newLog.append(e);
             }
         }
 
