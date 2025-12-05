@@ -39,7 +39,7 @@ public class OfferPollTest {
                 "    (try-with [server (ipc/server 33333                                                   \n" +
                 "                                  :write-ahead-log-dir wal-dir                            \n" +
                 "                                  :write-ahead-log-compress true                          \n" +
-                "                                  ::write-ahead-log-compact true)                         \n" +
+                "                                  :write-ahead-log-compact true)                          \n" +
                 "               client (ipc/client 33333)]                                                 \n" +
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
@@ -65,7 +65,7 @@ public class OfferPollTest {
                 "    (try-with [server (ipc/server 33333                                                   \n" +
                 "                                  :write-ahead-log-dir wal-dir                            \n" +
                 "                                  :write-ahead-log-compress true                          \n" +
-                "                                  ::write-ahead-log-compact true)                         \n" +
+                "                                  :write-ahead-log-compact true)                          \n" +
                 "               client (ipc/client 33333)]                                                 \n" +
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
@@ -107,7 +107,7 @@ public class OfferPollTest {
                 "    (try-with [server (ipc/server 33333                                                   \n" +
                 "                                  :write-ahead-log-dir wal-dir                            \n" +
                 "                                  :write-ahead-log-compress true                          \n" +
-                "                                  ::write-ahead-log-compact false)                        \n" +
+                "                                  :write-ahead-log-compact false)                         \n" +
                 "               client (ipc/client 33333)]                                                 \n" +
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
@@ -133,7 +133,7 @@ public class OfferPollTest {
                 "    (try-with [server (ipc/server 33333                                                   \n" +
                 "                                  :write-ahead-log-dir wal-dir                            \n" +
                 "                                  :write-ahead-log-compress true                          \n" +
-                "                                  ::write-ahead-log-compact false)                        \n" +
+                "                                  :write-ahead-log-compact false)                         \n" +
                 "               client (ipc/client 33333)]                                                 \n" +
                 "                                                                                          \n" +
                 "      (sleep 100)                                                                         \n" +
