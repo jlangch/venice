@@ -31,6 +31,46 @@ public class OfferPollTest {
 
     @Test
     @EnableOnMacOrLinux
+    public void testOfferPollDurableQueue_simple() throws Exception {
+        final Venice venice = new Venice();
+
+        try {
+            venice.eval(
+                "(let [wal-dir (io/file (io/temp-dir \"wal-\"))]                                           \n" +
+                "  (try                                                                                    \n" +
+                "    (try-with [server (ipc/server 33333                                                   \n" +
+                "                                  :write-ahead-log-dir wal-dir                            \n" +
+                "                                  :write-ahead-log-compress true                          \n" +
+                "                                  :write-ahead-log-compact true)                          \n" +
+                "               client (ipc/client 33333)]                                                 \n" +
+                "                                                                                          \n" +
+                "      (sleep 100)                                                                         \n" +
+                "                                                                                          \n" +
+                "      ;; create the durable queue :testq                                                  \n" +
+                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "                                                                                          \n" +
+                "      ;; offer 3 durable and 1 nondurable message                                         \n" +
+                "      (ipc/offer client :testq 300 (ipc/plain-text-message \"1\" :test \"hello 1\" true)) \n" +
+                "      (ipc/offer client :testq 300 (ipc/plain-text-message \"2\" :test \"hello 2\" true)) \n" +
+                "      (ipc/offer client :testq 300 (ipc/plain-text-message \"3\" :test \"hello 3\" false))\n" +
+                "      (ipc/offer client :testq 300 (ipc/plain-text-message \"4\" :test \"hello 4\" true)) \n" +
+                "                                                                                          \n" +
+                "      ;; poll message #1                                                                  \n" +
+                "      (let [m (ipc/poll client :testq 300)]                                               \n" +
+                "        (assert (ipc/response-ok? m))                                                     \n" +
+                "        (assert (== \"hello 1\" (ipc/message-field m :payload-text)))))                   \n" +
+                "                                                                                          \n" +
+                "    (sleep 100)                                                                           \n" +
+                "                                                                                          \n" +
+                "    (finally (io/delete-file-tree wal-dir))))                                             ");
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    @EnableOnMacOrLinux
     public void testOfferPollDurableQueue_with_wal_compact() throws Exception {
         final Venice venice = new Venice();
 
