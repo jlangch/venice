@@ -140,6 +140,53 @@ public class WalQueueManagerTest {
         assertFalse(walDir.isDirectory());
     }
 
+    @Test
+    public void test_server_reopen_with_wal_compact() throws Exception {
+        final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+
+        try(TcpServer server = new TcpServer(33333)) {
+            server.enableWriteAheadLog(walDir, true, true);
+            server.start();
+
+            server.createQueue("queue/test", 100, true, true);
+
+            // uses WalQueueManager to manage the queue
+            final IpcQueue<Message> queue = server.getQueue("queue/test");
+
+            queue.offer(smallMsg(1));
+            queue.offer(smallMsg(2));
+            queue.offer(smallMsg(3));
+            queue.offer(smallMsg(4));
+            queue.poll(0, TimeUnit.MILLISECONDS);
+        }
+
+        Thread.sleep(100);
+
+        try(TcpServer server = new TcpServer(33333)) {
+            server.enableWriteAheadLog(walDir, true, true);
+            server.start();
+
+            server.createQueue("queue/test", 100, true, true);
+
+            // uses WalQueueManager to manage the queue
+            final IpcQueue<Message> queue = server.getQueue("queue/test");
+
+            queue.poll(0, TimeUnit.MILLISECONDS);
+        }
+
+        Thread.sleep(100);
+
+        final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
+        assertTrue(walFile.isFile());
+        assertTrue(walFile.length() > 0);
+
+        // check WAL dir can be deleted
+        walFile.delete();
+        walDir.delete();
+        assertFalse(walFile.isFile());
+        assertFalse(walDir.isDirectory());
+    }
+
 
     private Message smallMsg(final int id) {
         return (Message)MessageFactory.text(
