@@ -1,0 +1,91 @@
+/*   __    __         _
+ *   \ \  / /__ _ __ (_) ___ ___
+ *    \ \/ / _ \ '_ \| |/ __/ _ \
+ *     \  /  __/ | | | | (_|  __/
+ *      \/ \___|_| |_|_|\___\___|
+ *
+ *
+ * Copyright 2017-2025 Venice
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.github.jlangch.venice.util.ipc.impl.wal;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import org.junit.jupiter.api.Test;
+
+import com.github.jlangch.venice.impl.util.CollectionUtil;
+import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.MessageFactory;
+import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
+import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+
+
+public class WalQueueManagerTest {
+
+    @Test
+    public void test() throws IOException {
+        final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+        try {
+            final WalQueueManager wqm = new WalQueueManager();
+            wqm.activate(walDir, false, false);
+
+            final IpcQueue<Message> queue = QueueFactory.createQueue(
+                                                wqm,
+                                                "queue/test",
+                                                100,
+                                                true,
+                                                true);
+
+            assertTrue(queue instanceof WalBasedQueue);
+
+            queue.offer(smallMsg(1));
+            queue.offer(smallMsg(2));
+
+            final File walFile = new File(walDir, WalQueueManager.toFileName(queue.name()));
+            assertTrue(walFile.isFile());
+
+            wqm.close(CollectionUtil.toList(queue));
+
+            assertTrue(walFile.isFile());
+            assertTrue(walDir.isDirectory());
+
+            // check WAL dir can be deleted
+            walFile.delete();
+            walDir.delete();
+            assertFalse(walFile.isFile());
+            assertFalse(walDir.isDirectory());
+         }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+
+    private Message smallMsg(final int id) {
+        return (Message)MessageFactory.text(
+	        		String.valueOf(id),
+	        		"hello",
+	        		"text/plain",
+	        		"UTF-8",
+	        		String.valueOf(id) + "-" + StringUtil.repeat("a", 10));
+    }
+
+}
