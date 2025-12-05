@@ -113,7 +113,7 @@
                   <> 
                   :encoding (charset-default-encoding)))
     (when (io/exists-file? (io/file scripts-dir "shebang-demo.venice"))
-      (println "Making \"scripts/shebang-demo.venice\" executable...")
+      (println "Makeing \"scripts/shebang-demo.venice\" executable...")
       (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir scripts-dir))))
 
 
