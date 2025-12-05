@@ -523,7 +523,6 @@ public final class WriteAheadLog implements Closeable {
 
     @Override
     public synchronized void close() throws IOException {
-        // try { channel.close(); } catch(IOException ex) {}
         try { raf.close(); } catch(IOException ex) {}
     }
 

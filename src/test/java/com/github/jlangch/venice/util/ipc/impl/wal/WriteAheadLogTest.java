@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 import static com.github.jlangch.venice.util.ipc.impl.wal.WalEntryType.ACK;
 import static com.github.jlangch.venice.util.ipc.impl.wal.WalEntryType.DATA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -34,7 +36,35 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
 
+
 public class WriteAheadLogTest {
+
+    @Test
+    public void test_clean_close() {
+        // with default encoding
+        try {
+            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            walFile.deleteOnExit();
+
+            final UUID uuid1 = UUID.randomUUID();
+
+            // Append an entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+                wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
+
+                assertTrue(walFile.isFile());
+            }
+
+            assertTrue(walFile.isFile());
+
+            // ensure the file can be deleted
+            walFile.delete();
+            assertFalse(walFile.isFile());
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     @Test
     public void test_SMALL() {
