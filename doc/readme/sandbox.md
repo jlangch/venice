@@ -12,7 +12,8 @@ undesirable operations.
 * [Examples](#examples)
 * [Sandbox with the REPL](#sandbox-with-the-repl)
 
-
+ 
+ 
 
 ## Multi-Threading
 
@@ -27,6 +28,8 @@ However if you create your own, unmanaged threads, given the sandbox allows it,
 these threads have always a restricted sandbox attached rejecting all Java calls 
 and Venice I/O functions and prohibiting access to stdin, stdout and stderr.
 
+ 
+ 
 
 ## No blacklisting for Java interop
 
@@ -39,6 +42,8 @@ This in practice means you have to whitelist what's OK, as opposed to blacklist
 things that are problematic, because you'll never know all the static methods 
 that are available to the script in the JVM!
 
+ 
+ 
 
 ## Features
 
@@ -53,7 +58,9 @@ that are available to the script in the JVM!
    namespaces, ...
  - blacklist individual Venice functions like `time/date`, ...
  - limiting the execution time of a script
- 
+
+ 
+ 
 
 ## Examples
 
@@ -270,7 +277,9 @@ This means:
  
   @fruits)
 ```
- 
+
+ 
+ 
 
 ## Sandbox with the REPL
 

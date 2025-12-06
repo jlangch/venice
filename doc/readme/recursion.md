@@ -10,6 +10,8 @@
 * [Recursion and Memoization](#recursion-and-memoization)
 * [Comparing recursion efficiency](#comparing-recursion-efficiency)
 
+ 
+ 
 
 ## Introduction
 
@@ -55,6 +57,8 @@ tail call optimization and self recursion through the
 In addition Venice provides the *trampoline* function for mutual recursion for more 
 involved forms of recursion.
 
+ 
+ 
 
 ## Simple Recursion
 
@@ -97,8 +101,10 @@ Simple recursion with [multimethods](multi-methods-and-protocols.md#multimethods
 
 Simple recursion a few thousand calls deep throws a *StackOverflowError*.
 
-*Note: The recursive call to 'factorial' in this example is not in tail position. Thus it can not be tail call optimized!*			
+*Note: The recursive call to 'factorial' in this example is not in tail position. Thus it can not be tail call optimized!*	
 
+ 
+ 
 
 ## Self-Recursive Calls (loop - recur)
 
@@ -195,6 +201,8 @@ number of arguments to prevent you from writing loops.
    (fib 100000)) ; => 259740693472217...28746875N  (20901 digits)
 ```
 
+ 
+ 
 
 ## Recursion with lazy sequences
 
@@ -224,6 +232,8 @@ Example 2: Factorial numbers:
    (factorial 10000))  ; => 284625968091...00000N  (35661 digits)
 ```
 
+ 
+ 
 
 ## Mutually recursive calls (trampoline)
 
@@ -271,6 +281,8 @@ Examples:
    (trampoline (factorial 10000)))
 ```
 
+ 
+ 
 
 ## Tail Call Optimization (TCO) 
 
@@ -290,6 +302,8 @@ position.
   (factorial 10000))  ; => 284625968091...00000N  (35661 digits)
 ```
 
+ 
+ 
 
 ## Recursion vs Folding
 
@@ -310,6 +324,8 @@ But not all recursive functions can be transformed into a tail recursive functio
 and translated into a loop. The [Ackermann's function](https://en.wikipedia.org/wiki/Ackermann_function)
 is such an example of a non [primitive recursive function](https://en.wikipedia.org/wiki/Primitive_recursive_function) that can not be de-recursed into loops.
 
+ 
+ 
 
 ## Recursion and Memoization
 
@@ -357,7 +373,8 @@ values.
 Nevertheless there are recursive algorithms like the *Ackermann* function
 where memoization has to raise its arms.
 
-
+ 
+ 
 
 ## Comparing recursion efficiency
 

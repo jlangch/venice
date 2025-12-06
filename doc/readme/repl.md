@@ -6,12 +6,15 @@ that takes user inputs (lines of code), executes them, and returns the result
 to the user. This process allows for real-time feedback and is great for learning, 
 testing code snippets, and debugging.
 
+ 
+ 
 
 ## Installing Venice and the REPL
 
 Install Venice and the REPL following the [Getting started](start.md) guide.
 
-
+ 
+ 
 
 ## Start a REPL
 
@@ -65,7 +68,8 @@ omit the '-colors' option or place a 'repl.json' config file with customized
 ANSI escape code colors on the working dir. The REPL command `!config` shows
 a sample 'repl.json' that can be modified.
 
-
+ 
+ 
 
 ## Built-in documentation
 
@@ -77,5 +81,7 @@ venice> (doc map)
 venice> (doc +)
 ```
 
+ 
+ 
 
 To learn more about the REPL see [Advanced REPL](repl-advanced.md)

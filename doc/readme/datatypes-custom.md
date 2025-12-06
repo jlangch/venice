@@ -23,8 +23,8 @@ Due to the dynamic nature of Venice, types cannot not be checked at Reader time 
 function arguments are not type checked implicitly, if required so function
 preconditions can be added for runtime checking. 
 
-
-
+ 
+ 
 
 ## Composing types with "AND"
 
@@ -199,6 +199,8 @@ The optional validator is a single arg function receiving the value as the argum
   (point. 0 2))   ; => FAILED
 ```
 
+ 
+ 
 
 ## Composing types with "OR"
 
@@ -276,7 +278,8 @@ Equality:
   (== (color. :blue) 100))            ; => false
 ```
 
-
+ 
+ 
 
 ## Wrapper types
 
@@ -382,6 +385,8 @@ Equality:
   (== (email-address. "foo@foo.org") 100))                            ; => false
 ```
 
+ 
+ 
 
 ## Sample 'Payment' Domain Model
 

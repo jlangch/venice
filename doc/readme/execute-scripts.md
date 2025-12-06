@@ -7,7 +7,8 @@
 * [Create an executable Venice JAR](#create-an-executable-venice-jar)
 * [Unix Shebang Scripts](#unix-shebang-scripts)
 
-
+ 
+ 
 
 ## Run a script
 
@@ -16,6 +17,8 @@ foo> java -jar venice-1.12.66.jar -script "(+ 1 1)"
 => 2
 ```
 
+ 
+ 
 
 ## Load the script from a file and run it
 
@@ -36,7 +39,8 @@ foo> java -jar venice-1.12.66.jar -file script.venice
 => 19.634954084936208
 ```
 
-
+ 
+ 
 
 ## Using command line arguments
 

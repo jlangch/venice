@@ -17,6 +17,8 @@
     * [Disadvantages](#disadvantages)
     
 
+ 
+ 
 
 ## Functional Concepts
 
@@ -145,6 +147,8 @@ arity (number of arguments).
    stages, making it easier to build complex functions from simpler ones.
    
 
+ 
+ 
 
 ## Functional Programming Advantages / Disadvantages
 

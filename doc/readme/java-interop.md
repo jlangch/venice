@@ -17,6 +17,8 @@ Float, Double, and BigDecimal.
 * [Filtering Java objects](#filtering-java-objects)
 * [Java 9+](#java-9)
 
+ 
+ 
 
 ## Calling Java
 
@@ -106,6 +108,8 @@ can be sorted and Java types can be used with sets and maps.
       (hash-map b1 1 b2 2 b3 3)))
 ```
 
+ 
+ 
 
 ## Enum types
 
@@ -143,8 +147,8 @@ Get all values of a Java _enum_
 ;; => [JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER OCTOBER NOVEMBER DECEMBER]
 ```
 
-
-
+ 
+ 
 
 ## Dealing with static nested classes
 
@@ -180,7 +184,8 @@ public class OuterClass {
 }
 ```
 
-
+ 
+ 
 
 ## Java Varargs
 
@@ -197,7 +202,8 @@ Java _Varargs_ are passed as list or vector:
 (. :java.nio.file.Paths :get "/temp" '("xxx" "a.txt"))  ;; => /temp/xxx/a.txt
 ```
 
-
+ 
+ 
 
 ## Dynamic Proxies
 
@@ -321,7 +327,8 @@ use
   (. :FunctionalInterfaces :testFunction op 4))
 ```
 
-
+ 
+ 
 
 ## Mixing Venice functions with Java streams
 
@@ -337,6 +344,8 @@ use
 
 _Note:_  this is not the fastest way to filter/map collections
 
+ 
+ 
 
 ## Filtering Java objects
 
@@ -358,7 +367,8 @@ _Note:_  this is not the fastest way to filter/map collections
    (str (filter #(> (:age %) 30) users)))
 ```
 
-
+ 
+ 
 
 ## Java 9+:
 

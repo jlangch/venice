@@ -9,6 +9,8 @@
 * [Precompilation Benchmark](#precompilation-benchmark)
 * [Sandbox](#sandbox)
 
+ 
+ 
 
 ## Overview
 
@@ -54,6 +56,8 @@ public class Embed_01_Simple {
 }
 ```
 
+ 
+ 
 
 ## Passing Parameters
 
@@ -104,6 +108,8 @@ public class Embed_02_PassingParameters {
 }
 ```
 
+ 
+ 
 
 ## Service Registry
 
@@ -222,6 +228,8 @@ public class Embed_13_ServiceRegistry {
 }
 ```
 
+ 
+ 
 
 ## stdout-stderr Redirection
 
@@ -333,6 +341,8 @@ public class Embed_03_StdOutRedirection {
 }
 ```
 
+ 
+ 
 
 ## Printing exceptions
 
@@ -401,7 +411,8 @@ com.github.jlangch.venice.VncException: / by zero
     at com.github.jlangch.venice.examples.Embed_05_Exceptions.main(Embed_05_Exceptions.java:32)
 ```
 
-
+ 
+ 
 
 ## Precompiling
 
@@ -434,6 +445,8 @@ public class Embed_04_Precompile {
 }
 ```
 
+ 
+ 
 
 ## Precompilation Benchmark
 
@@ -540,7 +553,8 @@ public class PrecompileBenchmark {
 }
 ```
 
-
+ 
+ 
 
 ## Sandbox
 
@@ -741,6 +755,4 @@ public class Embed_10_CustomSandbox {
 ```
 
 For details on customized sandboxes see [Sandbox](sandbox.md)
-
-
 

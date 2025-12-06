@@ -5,7 +5,8 @@ Welcome to Venice!
 Venice can run on any operating system for which a Java VM is available, 
 like Linux, MacOSX, or Windows.
 
-
+ 
+ 
 
 ## Venice Local Setup
 
@@ -155,6 +156,8 @@ This VSCode **settings.json** file will establish syntax highlighting for Venice
 }
 ```
 
+ 
+ 
 
 ## Where to head next
 

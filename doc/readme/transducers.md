@@ -30,6 +30,8 @@ Transducer example:
   ; => [100 300 500 700 900 ....  99900]
 ```
 
+ 
+ 
 
 ### Transduce function
 
@@ -49,8 +51,10 @@ item, etc. If coll contains no items, returns init and f is not called._
 
 Beside the standard reducing functions like `conj`, `+`, `-`, `max`, and `min` Venice provides some additional functions `rf-first`, `rf-every?`,  and `rf-any?`
 
+ 
+ 
 
-## Examples:
+### Examples:
 
 ```clojure
 (do

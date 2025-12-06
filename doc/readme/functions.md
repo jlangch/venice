@@ -15,7 +15,8 @@
 * [Function threading macros](#function-threading-macros)
 * [Functions calling each other](#functions-calling-each-other)
 
-
+ 
+ 
 
 ## Creating Functions
 
@@ -31,6 +32,8 @@
       (f 5 3)))
 ```
 
+ 
+ 
 
 ## Variadic Functions
 
@@ -49,6 +52,8 @@ of fixed arguments.
    (sum 1 2 3 4 5 6 7 8 9 10))
 ```
 
+ 
+ 
 
 ## Multi-Arity Functions
 
@@ -64,6 +69,8 @@ of fixed arguments.
    (arity 1 2))
 ```
 
+ 
+ 
 
 ## Passing Values by Name to Functions 
 
@@ -81,6 +88,8 @@ a default for `y`.
    (foo {:x 1}))      ;; => (1 10)
 ```
 
+ 
+ 
 
 ## Anonymous Functions
 
@@ -103,6 +112,8 @@ a default for `y`.
   (add 1 2)) ; => 3
 ```
 
+ 
+ 
 
 ## Applying Functions
 
@@ -120,7 +131,8 @@ be a list or a vector.
   (apply str 1 2 3 '(4))    ;; same as (str 1 2 3 4) 
 ```
 
-
+ 
+ 
 
 ## Locals and Closures
 
@@ -189,6 +201,8 @@ Even global functions can remember the context they have been created:
   (test))  ; => "x: 100"
 ```
 
+ 
+ 
 
 ## Functions with preconditions
 
@@ -223,6 +237,8 @@ Exception in thread "main" AssertionException: precondition assert failed: (numb
     at: user/sum (user: line 1, col 2)
 ```
 
+ 
+ 
 
 ## Argument type hints
 
@@ -299,6 +315,8 @@ For datatypes of the *core* namespace the namespace can be omitted.
 (defn sum [^:core/long x ^:core/long y] (+ x y)))
 ```
 
+ 
+ 
 
 ## Collections and Keywords as functions
 
@@ -356,6 +374,8 @@ Vectors, maps, sets, and keywords are functions too.
    (:c #{:a :b} 9))    ; -> 9
 ```
 
+ 
+ 
 
 ## Function resolved from a string
 
@@ -364,6 +384,8 @@ Vectors, maps, sets, and keywords are functions too.
    (add 2 5))
 ```
 
+ 
+ 
 
 ## Partial Functions
 
@@ -425,7 +447,8 @@ of reduce on each of those collections:
 (map (partial reduce +) [[1 2 3 4] [5 6 7 8]])  ;; => (10 26)
 ```
 
-
+ 
+ 
 
 ## Function Composition
 
@@ -461,6 +484,8 @@ functions are executed from right to left.
   (xform (range 0 10)))  ;; => (3 5 7 9)
 ```
 
+ 
+ 
 
 ## Function threading macros
 
@@ -550,6 +575,8 @@ of the next form.
      (* <> 2))  ;; => 32
 ```
 
+ 
+ 
 
 ## Functions calling each other
 

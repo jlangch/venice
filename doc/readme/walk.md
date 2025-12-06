@@ -5,6 +5,8 @@ any data structure (list, vector, map, set, ...), calls a function
 on every element, and uses the return value of the function in place 
 of the original. 
 
+ 
+ 
 
 ## API
 
@@ -72,6 +74,8 @@ Walked: 6
 => (1 2 {:a 1 :b [5 6]})
 ```
 
+ 
+ 
 
 ## Examples: Walk & Replace forms
 

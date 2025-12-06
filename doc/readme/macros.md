@@ -8,7 +8,8 @@
 * [Macro Hygiene](#macro-hygiene)
 * [Double Evaluation](#double-evaluation)
 
-
+ 
+ 
 
 ## Overview
 
@@ -23,6 +24,8 @@ control flow constructs and to bend the language to your needs.
 >
 > With great power comes great responsibility to the creator to not misuse it.
 
+ 
+ 
 
 ## Macros vs Functions
 
@@ -50,6 +53,8 @@ Macros evaluate in the namespace they are called from, not in the namespace
 they are defined. This is different from functions that evaluate in the 
 namespace which they are defined.
 
+ 
+ 
 
 ## When to use macros
 
@@ -151,7 +156,8 @@ venice> (test)
 > different time because the macro is always expanded anew at every macro 
 > evaluation! 
 
-
+ 
+ 
 
 ## The Macro toolbox
 
@@ -467,6 +473,8 @@ expands all macros in a form.
            (if :else 0 nil))))
 ```
 
+ 
+ 
 
 ## Macro hygiene
 
@@ -642,6 +650,8 @@ It will result in a *SymbolNotFoundException* for the `dec` argument. The reason
 this behavior is that `(dec a#)` is executed before the symbol a# is created and 
 assigned the value 100 in `(let [a# 100] ...`
 
+ 
+ 
 
 ## Double Evaluation
 

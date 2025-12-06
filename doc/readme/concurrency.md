@@ -11,6 +11,8 @@
 * [Thread local vars](#thread-local-vars)
 * [Examples](#examples)
 
+ 
+ 
 
 ## Atoms
 
@@ -34,7 +36,8 @@ The value held by an atom is changed with the `swap!` method.
    @counter)
 ```
 
-
+ 
+ 
 
 ## Futures and Promises
 
@@ -233,6 +236,8 @@ Timeouts:
     (deref))
 ```
 
+ 
+ 
 
 ## Delays
 
@@ -254,6 +259,8 @@ will cache the result and return it on all subsequent `force` calls.
    (force x))
 ```
 
+ 
+ 
 
 ## Agents
 
@@ -347,6 +354,8 @@ A simple Actors model can be implemented on top of Agents:
    nil)
 ```
 
+ 
+ 
 
 ## Worker Threads
 
@@ -366,7 +375,9 @@ workers and wait for its termination.
   (let [threads (futures-fork 5 #(worker-factory %))]
      (apply futures-wait threads)))
 ```
- 
+
+ 
+ 
 
 ## Locking
 
@@ -402,7 +413,8 @@ Example: coordinating multiple threads printing to stdout
 )
 ```
 
-
+ 
+ 
 
 ## Schedulers
 
@@ -447,6 +459,8 @@ of 3s, and cancel it after 16s:
   (println "done."))
 ```
 
+ 
+ 
 
 ## Bare Threads
 
@@ -479,7 +493,8 @@ Producer/Consumer:
     @(thread #(consume q))))
 ```
 
-
+ 
+ 
 
 ## Thread local vars
 
@@ -521,6 +536,8 @@ Thread local vars get inherited by child threads
 ;; => {:parent {:a 10 :b 20} :child {:a 10 :b 90}}
 ```
 
+ 
+ 
 
 ## Examples
 

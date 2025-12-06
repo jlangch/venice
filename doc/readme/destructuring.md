@@ -9,6 +9,8 @@ by reducing the need for explicit indexing or lookups.
 * [Sequential Destructuring](#sequential-destructuring)
 * [Associative Destructuring](#associative-destructuring)
 
+ 
+ 
 
 ## Sequential Destructuring
 
@@ -139,7 +141,8 @@ and work with complex data structures.
   (sum [1 2]))
 ```
 
-
+ 
+ 
 
 ## Associative Destructuring
 

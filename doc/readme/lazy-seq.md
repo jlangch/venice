@@ -11,7 +11,8 @@ can be infinite. The evaluation of sequence elements is called realization.
 * [Recursive Lazy Sequences](#recursive-lazy-sequences)
 * [Functions working with Lazy Sequences](#functions-working-with-lazy-sequences)
 
-
+ 
+ 
 
 ## Producing Lazy Sequences
 
@@ -69,7 +70,8 @@ Finite lazy sequence created from an item producing function returning `nil` to 
 (lazy-seq 1 #(if (< % 5) (inc %) nil)) ; => (...)
 ```
 
-
+ 
+ 
 
 ## Realizing Lazy Sequences
 
@@ -177,6 +179,8 @@ An item producing function returning `nil` to make the lazy sequence finite
 
 Note: The producing function receives the last element as input to produce the next element. The function `#(if (< % 5) (inc %) nil)` produces the elements `1,2,3,4,5` (up to 5). The last input element that matches the expression `(< % 5)` is 4, hence 5 is the last produced element, the function produces elements and is not a filter.
 
+ 
+ 
 
 ## Realizing Finite Lazy Sequences doall vs docoll
 
@@ -226,6 +230,8 @@ Collecting 3
 Producing  nil
 ```
 
+ 
+ 
 
 ## Implicit Memoization
 
@@ -283,6 +289,8 @@ Example 2:
 )
 ```
 
+ 
+ 
 
 ## Recursive Lazy Sequences
 
@@ -377,7 +385,8 @@ Alternative finite recursive lazy sequence (reading text lines from a Reader)
 )
 ```
 
-
+ 
+ 
 
 ## Functions working with Lazy Sequences
 

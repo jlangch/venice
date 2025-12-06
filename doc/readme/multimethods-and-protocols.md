@@ -4,7 +4,8 @@
 * [Multimethods](#multimethods)
 * [Protocols](#protocols)
 
-
+ 
+ 
 
 ## Expression Problem
 
@@ -36,7 +37,8 @@ Definition from Wikipedia:
 * [Multimethods](#multimethods)
 * [Protocols](#protocols)
 
-
+ 
+ 
 
 ## Multimethods
 
@@ -119,6 +121,8 @@ Keyword as dispatch function:
 )
 ```
 
+ 
+ 
 
 ## Protocols
 

@@ -1,5 +1,8 @@
 # Advanced String features
 
+ 
+ 
+
 ## Text blocks
 
 ```clojure
@@ -16,6 +19,9 @@
    (println s1)
    (println s2))
 ```
+
+ 
+ 
 
 ## Interpolation 
 

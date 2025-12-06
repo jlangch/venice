@@ -12,6 +12,8 @@
 * [Java Interop](#java-interop)
     
 
+ 
+ 
 
 ## Literals and Operations
 
@@ -133,7 +135,8 @@ in the Java programming language.
 
 output: "ten"
 
-
+ 
+ 
 
 ## Variables
 
@@ -166,6 +169,8 @@ to the variable.
 The name of a variable can be composed of letters, digits, and the underscore 
 character. It must begin with either a letter or an underscore. 
 
+ 
+ 
 
 ## Functions
 
@@ -298,6 +303,8 @@ With `->>`:
      (reduce +))        ; Sum the numbers
 ```
 
+ 
+ 
 
 ## Immutability
 
@@ -325,6 +332,8 @@ a new updated structure.
   ;;    digits-2:  [1 2 3 4 5 6 7]
 ```
 
+ 
+ 
 
 ## Let and Local Variables
 
@@ -351,7 +360,8 @@ the value you need), if you find it useful:
 
 output: 5
 
-
+ 
+ 
 
 ## Filter-Map-Reduce
 
@@ -436,7 +446,8 @@ and readable manner. Here’s an example that uses all three operations together
 
 output: `56`
 
-
+ 
+ 
 
 ## Loops
 
@@ -531,7 +542,8 @@ output: `55`
     * Always ensure there’s a condition to exit the loop, or it will 
       run indefinitely.
 
-
+ 
+ 
 
 ## Java Interop
 
@@ -539,7 +551,7 @@ Venice supports calling Java constructors, static and instance methods as well a
 static class and instance fields.
 
 
-## Calling Java
+### Calling Java
 
 Java calls follow the patterns:
 
@@ -587,6 +599,8 @@ static field: `(. :class :field)`
 )
 ```
 
+ 
+ 
 
 ## Where to head next
 

@@ -4,6 +4,8 @@ Filter, map, and reduce are three fundamental operations in functional programmi
 commonly used to process and transform collections of data. These operations form 
 a powerful pattern for data processing pipelines.
 
+ 
+ 
 
 ## Filter
 
@@ -15,6 +17,8 @@ that meet a predicate.
 ; => (2 4 6 8 10)
 ```
 
+ 
+ 
 
 ## Map
 
@@ -36,7 +40,8 @@ It’s possible to have multiple collections that map to each other:
 Map returns a list with the same number of elements that is given to it, 
 it has the same number of inputs to outputs.
 
-
+ 
+ 
 
 ## Reduce
 
@@ -70,7 +75,8 @@ One with a starting value:
 ; => 12
 ```
 
-
+ 
+ 
 
 ## Combine Filter-Map-Reduce
 
