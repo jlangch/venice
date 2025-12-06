@@ -24,7 +24,8 @@
 
 Venice is a Clojure inspired sandboxed Lisp dialect with excellent Java 
 interoperability.
-
+ 
+ 
 
 ## Overview
 
@@ -102,26 +103,31 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Sandbox](doc/readme/sandbox.md)
 * [Tree walker](doc/readme/walk.md)
 
+**Documents**
+
+* [JSON](doc/readme/json.md)
+* [JSON Lines](doc/readme/json-lines.md)
+* [CSV](doc/readme/csv.md)
+* [XML](doc/readme/ext-xml.md)
+* [PDF](doc/readme/pdf.md)
+* [EXCEL](doc/readme/excel.md)
+* [Charts](doc/readme/charts.md)
+* [ASCII Tables](doc/readme/ascii-tables.md)
+
 **Modules**
 
 * [Cryptography](doc/readme/cryptography.md)
 * [Inter-Process-Communication](doc/readme/ipc.md)
-* [JSON](doc/readme/json.md)
-* [JSON Lines](doc/readme/json-lines.md)
-* [CSV](doc/readme/csv.md)
-* [PDF](doc/readme/pdf.md)
-* [EXCEL](doc/readme/excel.md)
-* [Charts](doc/readme/charts.md)
 * [Kira Templates](doc/readme/ext-kira.md)
-* [ASCII Tables](doc/readme/ascii-tables.md)
+* [Parsifal Parser Combinator](doc/readme/ext-parsifal.md)
 * [HTTP Client (Java 8+)](doc/readme/http-client-j8.md)
 * [Venice meets LLMs](doc/readme/venice-meets-llms.md)
 * [Database (JDBC)](doc/readme/database.md)
-* [Shell Scripts](doc/readme/shell-scripts.md)
 * [Extension modules](doc/readme/extension-modules.md)
 
 **etc**
 
+* [Writing Shell Scripts](doc/readme/shell-scripts.md)
 * [Benchmarks](doc/readme/benchmarks.md)
 * [Multi-File Apps](doc/readme/multi-file-app.md)
 * [Development Tools](doc/readme/dev-tools.md)

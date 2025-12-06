@@ -8,8 +8,6 @@ Extension Modules are plain, built-in Venice scripts and must be loaded
 explicitly with `(load-module :name)`. Venice tracks the modules loaded
 and loads a module only once and skips subsequent load attempts.
 
-* [Kira Template Engine](ext-kira.md)
-* [Parsifal Parser Combinator](ext-parsifal.md)
 * [Maven](ext-maven.md)
 * [Shell](ext-shell.md)
 * [Grep](ext-grep.md)
@@ -20,7 +18,6 @@ and loads a module only once and skips subsequent load attempts.
 * [Mercator Maps](ext-mercator.md)
 * [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
 * [Semantic Versioning](ext-semver.md)
-* [XML](ext-xml.md)
 * [Apache Tomcat WEB Server](ext-tomcat.md)
 * [Ring WEB App library](ext-ring.md)
 * [WebDAV](ext-webdav.md)
