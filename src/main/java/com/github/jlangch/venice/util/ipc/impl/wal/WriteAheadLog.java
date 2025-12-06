@@ -89,6 +89,8 @@ public final class WriteAheadLog implements Closeable {
 
         this.logger = logger;
 
+        logger.info(file, "Opening...");
+
         // Recover state if file already exists / has content
         this.recoveredFromCorruption = recover();
 
