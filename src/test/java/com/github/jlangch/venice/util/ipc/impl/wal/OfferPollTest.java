@@ -24,13 +24,11 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 
 
 public class OfferPollTest {
 
     @Test
-    @EnableOnMacOrLinux
     public void testOfferPollDurableQueue_simple() throws Exception {
         final Venice venice = new Venice();
 
@@ -70,7 +68,6 @@ public class OfferPollTest {
     }
 
     @Test
-    @EnableOnMacOrLinux
     public void testOfferPollDurableQueue_with_wal_compact() throws Exception {
         final Venice venice = new Venice();
 
@@ -139,7 +136,6 @@ public class OfferPollTest {
     }
 
     @Test
-    @EnableOnMacOrLinux
     public void testOfferPollDurableQueue_without_wal_compact() throws Exception {
         final Venice venice = new Venice();
 
