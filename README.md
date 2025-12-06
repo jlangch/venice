@@ -10,6 +10,14 @@
 [![Release Date](https://img.shields.io/github/release-date/jlangch/venice?color=blue)](https://github.com/jlangch/venice/releases/latest)
 [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/jlangch/venice/latest)](https://github.com/jlangch/venice/commits/)
 
+ 
+ 
+
+*“Living is worthwhile if one can contribute in some small way to this endless chain of progress.”*
+― Paul A.M. Dirac 
+
+ 
+ 
 
 # Venice
 
