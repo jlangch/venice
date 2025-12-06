@@ -27,10 +27,6 @@ Venice Inter-Process-Communication (IPC), is a Venice API that allows applicatio
 Send a message from a client to a server and receive a response. The server's 
 pluggable handler function computes the response from the request.
 
-**Note:** If the server's handler function takes more than a couple of 10 milliseconds 
-to process the request, consider to use *offer/poll* with a reply queue to improve the system 
-throughput!
-
 
 **Synchronous send / receive**
 

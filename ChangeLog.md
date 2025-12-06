@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Added IPC support Write-Ahead-Log (WAL) compaction
 
 
 ## [1.12.66] - 2025-12-03
