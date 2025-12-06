@@ -35,8 +35,8 @@ This installs also the open Source fonts from [Font Squirrel](https://www.fontsq
   
 to the REPL's classpath. 
 
-
-
+ 
+ 
 
 ## PDF Generation
 
@@ -62,7 +62,8 @@ References:
 * [Copy PDF](#copy-pdf)
 * [Kira Template Engine](ext-kira.md)
 
-
+ 
+ 
 
 ## Introduction Example
 
@@ -145,7 +146,8 @@ References:
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Tables
 
@@ -334,7 +336,8 @@ References:
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Images
 
@@ -483,7 +486,8 @@ These images are then referred to as:
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Fonts
 
@@ -672,7 +676,8 @@ Run the example:
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Table of Content
 
@@ -837,7 +842,8 @@ Run the example:
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Page Footers
 
@@ -970,7 +976,8 @@ Run the example:
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Watermarks
 
@@ -1073,7 +1080,8 @@ Run the example:
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Text to PDF
 
@@ -1128,7 +1136,8 @@ Venice supports simplified text to PDF
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## PDF to Text
 
@@ -1226,6 +1235,8 @@ the text extraction tool produces:
 
 [top](#pdf-generation)
 
+ 
+ 
 
 ## Merge PDFs
 
@@ -1247,7 +1258,8 @@ Merge multiple PDFs into a single one
 
 [top](#pdf-generation)
 
-
+ 
+ 
 
 ## Copy PDF
 

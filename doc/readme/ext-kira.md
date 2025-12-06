@@ -2,6 +2,8 @@
 
 Kira is a simple templating module for Venice.
 
+ 
+ 
 
 ## Syntax
 
@@ -45,6 +47,9 @@ The delimiters can be customized:
   ;;=> "Hello Alice"
 )
 ```
+
+ 
+ 
 
 ## API Documentation
 
@@ -125,7 +130,8 @@ Defining a template with parameters passed in a vector:
 )
 ```
 
-
+ 
+ 
 
 ## Building blocks
 
@@ -440,7 +446,8 @@ Output:
 }
 ```
 
-
+ 
+ 
 
 ## Examples
 

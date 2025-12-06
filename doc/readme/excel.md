@@ -24,7 +24,8 @@ libraries:
   (repl/restart))
 ```
 
-</br>
+ 
+ 
 
 ## Content
 
@@ -71,10 +72,15 @@ libraries:
 
 </br>
 
+ 
+ 
+
 ## Writing Excel files
 
 The function `excel/writer` opens a new XLS or XLSX Excel file for writing. 
 
+ 
+ 
 
 ### Introduction Example
 
@@ -165,6 +171,8 @@ Modify an existing Excel (read-modify-write).
 
 [top](#content)
 
+ 
+ 
 
 ### Writing Modes
 
@@ -294,7 +302,8 @@ Write the data starting at a row/col offset:
 
 [top](#content)
 
-
+ 
+ 
 
 ### Write to file, stream, bytes
 
@@ -367,6 +376,8 @@ Write the data starting at a row/col offset:
 
 [top](#content)
 
+ 
+ 
 
 ### Write Examples
 
@@ -917,8 +928,8 @@ for formulas:
 
 [top](#content)
 
-
-
+ 
+ 
 
 ### Styling
 
@@ -1258,7 +1269,8 @@ Available border styles:
 
 [top](#content)
 
-
+ 
+ 
 
 ### Background colors
 
@@ -1287,7 +1299,8 @@ Available border styles:
 
 [top](#content)
 
-
+ 
+ 
 
 ### Shading alternate rows
 
@@ -1316,6 +1329,8 @@ Available border styles:
 
 [top](#content)
 
+ 
+ 
 
 ### Styling cells
 
@@ -1359,7 +1374,8 @@ Available border styles:
 
 [top](#content)
 
-
+ 
+ 
 
 ### Styling cell region
 
@@ -1393,7 +1409,8 @@ Available border styles:
 
 [top](#content)
 
-
+ 
+ 
 
 ### Freeze Panes
 
@@ -1423,6 +1440,8 @@ Freeze the top row:
 
 </br>
 
+ 
+ 
 
 ## Reading Excel files
 
@@ -1435,7 +1454,9 @@ The file is specified by:
 - a byte buffer
 - a input stream: `(io/file-in-stream "./sample.xlsx")`
 
-        
+ 
+ 
+
 ### Open Excel
 
 ```clojure
@@ -1495,6 +1516,8 @@ Sheet "Data2" (referenced by index):
 
 [top](#content)
 
+ 
+ 
 
 ### Reading Cell Metadata
 
@@ -1536,6 +1559,8 @@ B1>  type: string, empty: false, locked: true, hidden: false
 C1>  type: numeric, empty: false, locked: true, hidden: false
 ```
 
+ 
+ 
 
 ### Reading Cell Data Type
 
@@ -1613,7 +1638,8 @@ Cell (1,9) empty: true
 
 [top](#content)
 
-
+ 
+ 
 
 ### Reading Cells
 

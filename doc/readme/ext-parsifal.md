@@ -6,6 +6,8 @@ project.
 
 See [A Guide to Parsifal](ext-parsifal-guide.md)
 
+ 
+ 
 
 ## Simple Examples
 
@@ -152,6 +154,9 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 (evaluate (apply str [#\" #\1 #\\ #\" #\2 #\"]))  ; => [#\1 #\" #\2]
 ```
 
+ 
+ 
+
 ## Expression evaluator 1
 
 Parsifal expression evaluator example
@@ -252,6 +257,8 @@ The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports
            expression)))
 ```
 
+ 
+ 
 
 ## Expression evaluator 2
 
