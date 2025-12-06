@@ -128,7 +128,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [HTTP Client (Java 8+)](doc/readme/http-client-j8.md)
 * [Venice meets LLMs](doc/readme/venice-meets-llms.md)
 * [Database (JDBC)](doc/readme/database.md)
-* [Extension modules](doc/readme/extension-modules.md)
+* [More Extension modules](doc/readme/extension-modules.md)
 
 **etc**
 
