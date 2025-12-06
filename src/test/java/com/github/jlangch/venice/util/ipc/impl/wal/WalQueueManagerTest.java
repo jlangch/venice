@@ -46,6 +46,7 @@ public class WalQueueManagerTest {
     @Test
     public void test() throws IOException {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+        final File log = new File(walDir, "wal.log");
 
         try {
             final WalQueueManager wqm = new WalQueueManager();
@@ -62,8 +63,6 @@ public class WalQueueManagerTest {
 
             queue.offer(smallMsg(1));
             queue.offer(smallMsg(2));
-
-            final File log = new File(walDir, "wal.log");
 
             final File walFile = new File(walDir, WalQueueManager.toFileName(queue.name()));
             assertTrue(walFile.isFile());
@@ -88,6 +87,7 @@ public class WalQueueManagerTest {
     @Test
     public void test_server_with_wal() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+        final File log = new File(walDir, "wal.log");
 
         try(TcpServer server = new TcpServer(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
@@ -102,8 +102,6 @@ public class WalQueueManagerTest {
             queue.offer(smallMsg(2));
             queue.poll(0, TimeUnit.MILLISECONDS);
         }
-
-        final File log = new File(walDir, "wal.log");
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
@@ -122,6 +120,7 @@ public class WalQueueManagerTest {
     @Test
     public void test_server_with_wal_compact() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+        final File log = new File(walDir, "wal.log");
 
         try(TcpServer server = new TcpServer(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
@@ -138,8 +137,6 @@ public class WalQueueManagerTest {
         }
 
         Thread.sleep(100);
-
-        final File log = new File(walDir, "wal.log");
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
@@ -159,6 +156,7 @@ public class WalQueueManagerTest {
     @EnableOnMacOrLinux
     public void test_server_reopen_with_wal() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+        final File log = new File(walDir, "wal.log");
 
         try(TcpServer server = new TcpServer(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
@@ -191,8 +189,6 @@ public class WalQueueManagerTest {
         }
 
         Thread.sleep(100);
-
-        final File log = new File(walDir, "wal.log");
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
@@ -212,6 +208,7 @@ public class WalQueueManagerTest {
     @EnableOnMacOrLinux
     public void test_server_reopen_with_wal_compact() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
+        final File log = new File(walDir, "wal.log");
 
         try(TcpServer server = new TcpServer(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
@@ -244,8 +241,6 @@ public class WalQueueManagerTest {
         }
 
         Thread.sleep(100);
-
-        final File log = new File(walDir, "wal.log");
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
