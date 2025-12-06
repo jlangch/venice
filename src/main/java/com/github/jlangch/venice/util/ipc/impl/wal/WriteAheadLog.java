@@ -381,7 +381,7 @@ public final class WriteAheadLog implements Closeable {
         }
 
         // [3] Atomically-ish swap files: old -> .bak, tmp -> original
-        //    (Simple approach; you can fsync directory etc. if you want stricter guarantees.)
+        //     (Simple approach; fsync directory etc. if stricter guarantees are required.)
 
         // remove old backup if exists
         if (backupFile.exists() && !backupFile.delete()) {
@@ -396,7 +396,7 @@ public final class WriteAheadLog implements Closeable {
 
         if (!tmpFile.renameTo(logFile)) {
             // try to restore original
-            // (best-effort; in a real system you might log this carefully)
+            // TODO: log this
             backupFile.renameTo(logFile);
             throw new IOException("Failed to rename compacted log into place: " +
                                   tmpFile + " -> " + logFile);
