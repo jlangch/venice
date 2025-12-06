@@ -69,11 +69,15 @@ import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
  */
 public final class WriteAheadLog implements Closeable {
 
-    public WriteAheadLog(final File file) throws IOException {
-        this(file, false);
+    public WriteAheadLog(final File file, final WalLogger logger) throws IOException {
+        this(file, false, logger);
     }
 
-    public WriteAheadLog(final File file, final boolean compress) throws IOException {
+    public WriteAheadLog(
+            final File file,
+            final boolean compress,
+            final WalLogger logger
+    ) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("file must not be null");
         }
@@ -83,8 +87,12 @@ public final class WriteAheadLog implements Closeable {
         this.channel = raf.getChannel();
         this.compressor = compress ? new Compressor(COMPRESSION_CUTOFF) : Compressor.off();
 
+        this.logger = logger;
+
         // Recover state if file already exists / has content
         this.recoveredFromCorruption = recover();
+
+        logger.info(file, "Opened");
     }
 
     /**
@@ -358,6 +366,9 @@ public final class WriteAheadLog implements Closeable {
         File tmpFile = new File(dir, baseName + ".compact");
         File backupFile = new File(dir, baseName + ".bak");
 
+        final WalLogger logger = WalLogger.withinDir(logFile.getParentFile());
+        logger.info(logFile, "Compacting...");
+
         final List<WalEntry> pending = new ArrayList<>();
 
         // Note: for performance reason the WAL entries are not decompressed
@@ -366,15 +377,16 @@ public final class WriteAheadLog implements Closeable {
         //       This avoids a completely unnecessary decompress/compress cycle!
 
         // [1] read the entries of the old log
-        try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false)) {
+        try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false, logger)) {
             pending.addAll(compact(oldLog.readAll(true), discardExpiredEntries));
         }
 
         // [2] Write a brand-new log with only pending messages
         if (tmpFile.exists() && !tmpFile.delete()) {
+            logger.warn(logFile, "Compacting: Deleting stale tmp WAL failed.");
             throw new IOException("Could not delete stale tmp file: " + tmpFile);
         }
-        try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false)) {
+        try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false, logger)) {
             for (WalEntry e : pending) {
                 newLog.append(e);
             }
@@ -385,6 +397,7 @@ public final class WriteAheadLog implements Closeable {
 
         // remove old backup if exists
         if (backupFile.exists() && !backupFile.delete()) {
+            logger.warn(logFile, "Compacting: Deleting old backup WAL failed.");
             throw new IOException("Could not delete old backup file: " + backupFile);
         }
 
@@ -396,16 +409,22 @@ public final class WriteAheadLog implements Closeable {
 
         if (!tmpFile.renameTo(logFile)) {
             // try to restore original
-            // TODO: log this
-            backupFile.renameTo(logFile);
+            logger.warn(logFile, "Compacting: Rename compacted WAL to old WAL failed.");
+            if (!backupFile.renameTo(logFile)) {
+                logger.warn(logFile, "Compacting: Compensation rename backup WAL to old WAL failed.");
+            }
             throw new IOException("Failed to rename compacted log into place: " +
                                   tmpFile + " -> " + logFile);
         }
 
         // [4] Optionally: delete the created backup file
         if (removeBackupLogFile) {
-            backupFile.delete();
+            if (!backupFile.delete()) {
+                logger.warn(logFile, "Compacting: Deleting backup WAL failed.");
+            }
         }
+
+        logger.info(logFile, "Compacting done.");
 
         return pending;
     }
@@ -457,7 +476,7 @@ public final class WriteAheadLog implements Closeable {
         long lastGoodLsn = 0L;
         long lastGoodEnd = 0L;
 
-        boolean recoveredFromCorruption = false;
+        boolean recoveredFromCorruption = true;
 
         while (position < fileSize) {
             try {
@@ -490,8 +509,13 @@ public final class WriteAheadLog implements Closeable {
         this.validEndPosition = lastGoodEnd;
         channel.position(validEndPosition);
 
-        return recoveredFromCorruption;
+        logger.info(
+                file,
+                recoveredFromCorruption
+                    ? "Recovered successfully."
+                    : "Recovered from corrupted file.");
 
+        return recoveredFromCorruption;
     }
 
     /**
@@ -521,7 +545,13 @@ public final class WriteAheadLog implements Closeable {
 
     @Override
     public synchronized void close() throws IOException {
-        try { raf.close(); } catch(IOException ex) {}
+        try {
+            raf.close();
+            logger.info(file, "Closed");
+        }
+        catch(Exception ex) {
+            logger.error(file, "Close error", ex);
+        }
     }
 
     public long getLastLsn() {
@@ -546,6 +576,8 @@ public final class WriteAheadLog implements Closeable {
     private final FileChannel channel;
     private final Compressor compressor;
     private final boolean recoveredFromCorruption;
+
+    private final WalLogger logger;
 
     // last written LSN
     private long lastLsn = 0L;

@@ -65,17 +65,17 @@ public class WalQueueManagerTest {
 
             final File walFile = new File(walDir, WalQueueManager.toFileName(queue.name()));
             assertTrue(walFile.isFile());
+            assertTrue(new File(walDir, "wal.log").isFile());
             assertTrue(walFile.length() > 0);
 
             wqm.close(CollectionUtil.toList(queue));
 
-            assertTrue(walFile.isFile());
-            assertTrue(walDir.isDirectory());
-
             // check WAL dir can be deleted
             walFile.delete();
+            new File(walDir, "wal.log").delete();
             walDir.delete();
             assertFalse(walFile.isFile());
+            assertFalse(new File(walDir, "wal.log").isFile());
             assertFalse(walDir.isDirectory());
         }
         catch(Exception ex) {
@@ -103,12 +103,15 @@ public class WalQueueManagerTest {
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
+        assertTrue(new File(walDir, "wal.log").isFile());
         assertTrue(walFile.length() > 0);
 
         // check WAL dir can be deleted
         walFile.delete();
+        new File(walDir, "wal.log").delete();
         walDir.delete();
         assertFalse(walFile.isFile());
+        assertFalse(new File(walDir, "wal.log").isFile());
         assertFalse(walDir.isDirectory());
     }
 
@@ -132,12 +135,15 @@ public class WalQueueManagerTest {
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
+        assertTrue(new File(walDir, "wal.log").isFile());
         assertTrue(walFile.length() > 0);
 
         // check WAL dir can be deleted
         walFile.delete();
+        new File(walDir, "wal.log").delete();
         walDir.delete();
         assertFalse(walFile.isFile());
+        assertFalse(new File(walDir, "wal.log").isFile());
         assertFalse(walDir.isDirectory());
     }
 
@@ -180,12 +186,15 @@ public class WalQueueManagerTest {
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
+        assertTrue(new File(walDir, "wal.log").isFile());
         assertTrue(walFile.length() > 0);
 
         // check WAL dir can be deleted
         walFile.delete();
+        new File(walDir, "wal.log").delete();
         walDir.delete();
         assertFalse(walFile.isFile());
+        assertFalse(new File(walDir, "wal.log").isFile());
         assertFalse(walDir.isDirectory());
     }
 
@@ -228,12 +237,15 @@ public class WalQueueManagerTest {
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
+        assertTrue(new File(walDir, "wal.log").isFile());
         assertTrue(walFile.length() > 0);
 
         // check WAL dir can be deleted
         walFile.delete();
+        new File(walDir, "wal.log").delete();
         walDir.delete();
         assertFalse(walFile.isFile());
+        assertFalse(new File(walDir, "wal.log").isFile());
         assertFalse(walDir.isDirectory());
     }
 

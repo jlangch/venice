@@ -47,7 +47,8 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         final String filename = WalQueueManager.toFileName(queue.name());
         this.log = new WriteAheadLog(
                             new File(queueManager.getWalDir(), filename),
-                            queueManager.isCompressed());
+                            queueManager.isCompressed(),
+                            queueManager.getLogger());
         if (this.log.getLastLsn() == 0) {
             final ConfigWalEntry ce = new ConfigWalEntry(queue.capacity(), queue.type());
             this.log.append(ce.toWalEntry());

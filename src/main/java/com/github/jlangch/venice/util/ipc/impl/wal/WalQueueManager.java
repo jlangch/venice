@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -64,13 +63,14 @@ public class WalQueueManager {
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
-        this.walDir.set(walDir);
+        this.walDir = walDir;
+        this.logger = WalLogger.withinDir(walDir);
         this.compress = compress;
         this.compactAtStart = compactAtStart;
     }
 
     public boolean isEnabled() {
-        return walDir.get() != null;
+        return walDir != null;
     }
 
     public boolean isCompressed() {
@@ -82,13 +82,17 @@ public class WalQueueManager {
     }
 
     public File getWalDir() {
-        return walDir.get();
+        return walDir;
+    }
+
+    public WalLogger getLogger() {
+        return logger;
     }
 
     public WriteAheadLog createWriteAheadLogForQueue(final IpcQueue<Message> queue)
     throws IOException {
         final String filename = WalQueueManager.toFileName(queue.name());
-        return new WriteAheadLog(new File(walDir.get(), filename), compress);
+        return new WriteAheadLog(new File(walDir, filename), compress, logger);
     }
 
     public Map<String, IpcQueue<Message>> preloadQueues()
@@ -148,7 +152,7 @@ public class WalQueueManager {
             throw new VncException("Write-Ahead-Log is not active");
         }
 
-        final File logFile = new File(walDir.get(), toFileName(queueName));
+        final File logFile = new File(walDir, toFileName(queueName));
         if (logFile.isFile()) {
             return loadWalQueueMessages(logFile);
         }
@@ -176,7 +180,7 @@ public class WalQueueManager {
         }
 
         return Arrays
-                .stream(walDir.get().listFiles())
+                .stream(walDir.listFiles())
                 .filter(f -> f.getName().endsWith(".wal"))
                 .collect(Collectors.toList());
     }
@@ -249,7 +253,8 @@ public class WalQueueManager {
     }
 
 
-    private final AtomicReference<File> walDir = new AtomicReference<>();
+    private volatile File walDir;
+    private volatile WalLogger logger;
     private volatile boolean compress;
     private volatile boolean compactAtStart;
 }

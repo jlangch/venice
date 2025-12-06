@@ -49,7 +49,7 @@ public class WriteAheadLogTest {
             final UUID uuid1 = UUID.randomUUID();
 
             // Append an entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
 
                 assertTrue(walFile.isFile());
@@ -79,7 +79,7 @@ public class WriteAheadLogTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
@@ -90,7 +90,7 @@ public class WriteAheadLogTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 // Recovered
                 assertEquals(3, wal.getLastLsn());
 
@@ -129,7 +129,7 @@ public class WriteAheadLogTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
@@ -142,7 +142,7 @@ public class WriteAheadLogTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 // Recovered
                 assertEquals(4, wal.getLastLsn());
 
@@ -177,7 +177,7 @@ public class WriteAheadLogTest {
                 true);  // remove backup logfile
 
             // 4. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 // Recovered
                 assertEquals(2, wal.getLastLsn());
 
@@ -217,7 +217,7 @@ public class WriteAheadLogTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, largeMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, largeMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, largeMsg(3)).toWalEntry());
@@ -228,7 +228,7 @@ public class WriteAheadLogTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 // Recovered
                 assertEquals(3, wal.getLastLsn());
 
@@ -267,7 +267,7 @@ public class WriteAheadLogTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, largeMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, largeMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, largeMsg(3)).toWalEntry());
@@ -280,7 +280,7 @@ public class WriteAheadLogTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 // Recovered
                 assertEquals(4, wal.getLastLsn());
 
@@ -315,7 +315,7 @@ public class WriteAheadLogTest {
                 true);  // remove backup logfile
 
             // 4. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile)) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
                 // Recovered
                 assertEquals(2, wal.getLastLsn());
 
@@ -345,8 +345,8 @@ public class WriteAheadLogTest {
     private String smallMsg(final int id) {
         return id + "-" + StringUtil.repeat("a", 10);
     }
+
     private String largeMsg(final int id) {
         return id + "-" + StringUtil.repeat("a", 100_000);
     }
-
 }
