@@ -60,18 +60,22 @@ can easily add it as a standalone JAR to your classpath.
 
 Venice requires Java 8 or newer.
 
+ 
+ 
 
 ## Cheat Sheet
 
 Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangch/venice/9c18c8e/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/9c18c8e/cheatsheet.pdf)
 
-
+ 
+ 
 
 ## Change Log
 
 [Change Log](ChangeLog.md)
 
-
+ 
+ 
 
 ## Documentation
 
@@ -136,7 +140,8 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Source Code as PDF](doc/readme/source2pdf.md)
 * [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 
-
+ 
+ 
 
 ## Getting the latest release
 
@@ -150,6 +155,8 @@ You can can pull it from the central Maven repositories:
 </dependency>
 ```
 
+ 
+ 
 
 ## Building
 
@@ -175,6 +182,8 @@ venice% ./gradlew clean shadowJar
 C:\Users\foo\venice> gradlew.bat clean shadowJar
 ```
 
+ 
+ 
 
 ## Contributing
 
@@ -185,16 +194,22 @@ I accept Pull Requests via GitHub. There are some guidelines which will make app
 - Create minimal diffs - disable on save actions like reformat source code or organize imports. If you feel the source code should be reformatted create a separate PR for this change.
 - Provide JUnit tests for your changes and make sure your changes don't break any existing tests by running gradle.
 
+ 
+ 
 
 ## License
 
 This code is licensed under the [Apache License v2](LICENSE).
 
+ 
+ 
 
 ## 3rd Party Open Source
 
 * [Copyright Notice](doc/readme/3rdparty-lic.md)
 
+ 
+ 
 
 ## Stargazers over time
 
