@@ -3,6 +3,8 @@
 
 Venice Inter-Process-Communication (IPC), is a Venice API that allows application components to communicate with each other by sending and receiving messages. It enables asynchronous and loosely coupled communication, making it ideal for distributed applications. Venice IPC works by either exchanging messages between a client and a server or using a messaging provider, such as a server, that routes messages from producers to consumers through queues with either a single consumer (offer-poll) or multiple consumers (publish-subscribe).
 
+ 
+ 
 
 * [IPC Communication Modes](#ipc-communication-modes)
     * [Send and Receive](#send-and-receive)
@@ -15,6 +17,8 @@ Venice Inter-Process-Communication (IPC), is a Venice API that allows applicatio
 * [Message Utils](#message-utils)
 * [Timeouts, Retries, and Idempotency in Distributed Systems](#timeouts-retries-and-idempotency-in-distributed-systems)
 
+ 
+ 
 
 ## IPC Communication Modes
 
@@ -314,6 +318,8 @@ mode and listens for messages. To unsubscribe just close the IPC client.
     (sleep 300)))
 ```
 
+ 
+ 
 
 ## Messages
 
@@ -462,7 +468,8 @@ Text message payloads are defined by
      (println))
 ```
 
-
+ 
+ 
 
 ## Compressing Messages
 
@@ -495,6 +502,8 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
          (println "RESPONSE:"))))
 ```
 
+ 
+ 
 
 ## Encrypting Messages
 
@@ -528,6 +537,8 @@ exchanged using the Diffie-Hellman key exchange algorithm.
          (println "RESPONSE:"))))
 ```
 
+ 
+ 
 
 ## Managing Queues
 
@@ -622,6 +633,8 @@ temporary queue
       (ipc/queue-status client queue-name))))
 ```
 
+ 
+ 
 
 ## Message Utils
 
@@ -841,7 +854,8 @@ application/json
       (println "RESPONSE EXPIRED:" (ipc/message-expired? m)))))
 ```
 
-
+ 
+ 
 
 ## Timeouts, Retries, and Idempotency in Distributed Systems
 

@@ -130,7 +130,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Database (JDBC)](doc/readme/database.md)
 * [More Extension modules](doc/readme/extension-modules.md)
 
-**etc**
+**/etc**
 
 * [Writing Shell Scripts](doc/readme/shell-scripts.md)
 * [Benchmarks](doc/readme/benchmarks.md)

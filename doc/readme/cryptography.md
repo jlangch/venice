@@ -4,6 +4,8 @@
 * [File Hashing](#file-hashing)
 * [String and Password Hashing](#string-and-password-hashing)
 
+ 
+ 
 
 ## File Encryption
 
@@ -382,6 +384,8 @@ Test decrypt: read file -> decrypt -> write file
                                                (elapsed time in milliseconds)
 ```
 
+ 
+ 
 
 ## File Hashing
 
@@ -492,7 +496,8 @@ Test: read file -> hash
                                            (elapsed time in milliseconds)
 ```
 
-
+ 
+ 
 
 ## String and Password Hashing
 
