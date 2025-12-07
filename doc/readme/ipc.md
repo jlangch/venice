@@ -9,7 +9,7 @@ Venice Inter-Process-Communication (IPC), is a Venice API that allows applicatio
 * [IPC Communication Modes](#ipc-communication-modes)
     * [Send and Receive](#send-and-receive)
     * [Offer and Poll](#offer-and-poll)
-    * [Offer and Poll with durable queues](#offer-and-poll-with-durable-queues)
+    * [Offer and Poll with durable Queues](#offer-and-poll-with-durable-queues)
     * [Publish and Subscribe](#publish-and-subscribe)
 * [Messages](#messages)
 * [Compressing Messages](#compressing-messages)
