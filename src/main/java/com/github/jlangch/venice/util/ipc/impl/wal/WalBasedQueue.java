@@ -203,7 +203,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         // delegate queue
         try { queue.onRemove(); } catch(Exception ignore) { }
 
-        logInfo("WAL based queue '" + queue.name() + "' removed");
+        logInfo("WAL based queue '" + queue.name() + "' removed.");
     }
 
     @Override
@@ -215,7 +215,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
             log.close();
         }
         finally {
-            logInfo("WAL based queue '" + queue.name() + "' closed");
+            logInfo("WAL based queue '" + queue.name() + "' closed.");
         }
     }
 

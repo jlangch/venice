@@ -89,12 +89,12 @@ public final class WriteAheadLog implements Closeable {
 
         this.logger = logger;
 
-        logger.info(file, "Opening...");
+        logger.info(file, "WAL opening...");
 
         // Recover state if file already exists / has content
         this.recoveredFromCorruption = recover();
 
-        logger.info(file, "Opened");
+        logger.info(file, "WAL opened");
     }
 
     /**
@@ -369,7 +369,7 @@ public final class WriteAheadLog implements Closeable {
         File backupFile = new File(dir, baseName + ".bak");
 
         final WalLogger logger = WalLogger.withinDir(logFile.getParentFile());
-        logger.info(logFile, "Compacting...");
+        logger.info(logFile, "WAL compacting...");
 
         final List<WalEntry> pending = new ArrayList<>();
 
@@ -385,7 +385,7 @@ public final class WriteAheadLog implements Closeable {
 
         // [2] Write a brand-new log with only pending messages
         if (tmpFile.exists() && !tmpFile.delete()) {
-            logger.warn(logFile, "Compacting: Deleting stale tmp WAL failed.");
+            logger.warn(logFile, "WAL compacting: Deleting stale tmp WAL " + tmpFile.getName() + " failed.");
             throw new IOException("Could not delete stale tmp file: " + tmpFile);
         }
         try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false, logger)) {
@@ -399,7 +399,7 @@ public final class WriteAheadLog implements Closeable {
 
         // remove old backup if exists
         if (backupFile.exists() && !backupFile.delete()) {
-            logger.warn(logFile, "Compacting: Deleting old backup WAL failed.");
+            logger.warn(logFile, "WAL compacting: Deleting old backup WAL " + backupFile.getName() + " failed.");
             throw new IOException("Could not delete old backup file: " + backupFile);
         }
 
@@ -411,7 +411,7 @@ public final class WriteAheadLog implements Closeable {
 
         if (!tmpFile.renameTo(logFile)) {
             // try to restore original
-            logger.warn(logFile, "Compacting: Rename compacted WAL to old WAL failed.");
+            logger.warn(logFile, "WAL compacting: Rename " + tmpFile.getName() + " -> " + logFile.getName() + " failed.");
             if (!backupFile.renameTo(logFile)) {
                 logger.warn(logFile, "Compacting: Compensation rename backup WAL to old WAL failed.");
             }
@@ -422,11 +422,11 @@ public final class WriteAheadLog implements Closeable {
         // [4] Optionally: delete the created backup file
         if (removeBackupLogFile) {
             if (!backupFile.delete()) {
-                logger.warn(logFile, "Compacting: Deleting backup WAL failed.");
+                logger.warn(logFile, "WAL compacting: Deleting backup WAL " + backupFile.getName() + " failed.");
             }
         }
 
-        logger.info(logFile, "Compacting done.");
+        logger.info(logFile, "WAL compacting done.");
 
         return pending;
     }
@@ -514,8 +514,8 @@ public final class WriteAheadLog implements Closeable {
         logger.info(
                 file,
                 recoveredFromCorruption
-                    ? "Recovered successfully."
-                    : "Recovered from corrupted file.");
+                    ? "WAL recovered successfully."
+                    : "WAL recovered from corrupted file.");
 
         return recoveredFromCorruption;
     }
@@ -549,10 +549,10 @@ public final class WriteAheadLog implements Closeable {
     public synchronized void close() throws IOException {
         try {
             raf.close();
-            logger.info(file, "Closed");
+            logger.info(file, "WAL closed");
         }
         catch(Exception ex) {
-            logger.error(file, "Close error", ex);
+            logger.error(file, "WAL close error", ex);
         }
     }
 
