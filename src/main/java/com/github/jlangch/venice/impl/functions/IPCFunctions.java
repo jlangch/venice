@@ -2527,7 +2527,7 @@ public class IPCFunctions {
                         "between two clients using a queue. Each message is delivered to exactly " +
                         "one client. 1 to N clients can *offer* / *poll* messages *from* / *to* the " +
                         "queue. \n\n" +
-                        "Queues live as long as server lives. They are not durable!\n\n" +
+                        "Queues live as long as server lives if they are not durable.\n\n" +
                         "A queue can be bounded or circular. Bounded queues block when offering new " +
                         "messages and the queue is full.¶" +
                         "Circular queues never block but just keep the last 'capacity' messages. The " +
