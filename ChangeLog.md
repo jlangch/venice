@@ -5,8 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-
-## [1.12.67] - 2025-12-xx
+## [1.12.68] - 2025-12-xx
 
 ### Enhancements
 
@@ -16,8 +15,14 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
-- Added IPC Write-Ahead-Log (WAL) compaction
-- Added IPC Write-Ahead-Log (WAL) record compression
+
+
+## [1.12.67] - 2025-12-07
+
+### Enhancements
+
+- Added IPC Write-Ahead-Log (WAL) compaction (optional)
+- Added IPC Write-Ahead-Log (WAL) record compression (optional)
 - Added IPC Write-Ahead-Log (WAL) technical logging for WAL lifecycle events and errors
 
 

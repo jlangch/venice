@@ -153,7 +153,7 @@ list        list*       list?       list-comp
 ```text
 REPL_HOME
 ├── libs
-│   ├── venice-1.12.66.jar
+│   ├── venice-1.12.67.jar
 │   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
@@ -182,7 +182,7 @@ venice> !classpath
 REPL classpath:
   libs
   libs/jansi-2.4.1.jar
-  libs/venice-1.12.66.jar
+  libs/venice-1.12.67.jar
 ```
 
 
