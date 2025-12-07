@@ -43,12 +43,16 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         Objects.requireNonNull(queueManager);
 
         this.queue = queue;
+        this.logger = queueManager.getLogger();
+
+        logInfo("WAL based queue '" + queue.name() + "' created");
 
         final String filename = WalQueueManager.toFileName(queue.name());
         this.log = new WriteAheadLog(
                             new File(queueManager.getWalDir(), filename),
                             queueManager.isCompressed(),
                             queueManager.getLogger());
+
         if (this.log.getLastLsn() == 0) {
             final ConfigWalEntry ce = new ConfigWalEntry(queue.capacity(), queue.type());
             this.log.append(ce.toWalEntry());
@@ -197,6 +201,8 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         closed = true;
 
         try { queue.onRemove(); } catch(Exception ignore) { }
+
+        logInfo("WAL based queue '" + queue.name() + "' removed");
     }
 
     @Override
@@ -206,11 +212,22 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         closed = true;
 
         log.close();
+
+        logInfo("WAL based queue '" + queue.name() + "' closed");
     }
+
+
+    private void logInfo(final String message) {
+       logger.info(
+           new File(WalQueueManager.toFileName(queue.name())),
+           message);
+    }
+
 
 
     private final IpcQueue<Message> queue;
     private final WriteAheadLog log;
+    private final WalLogger logger;
 
     private volatile boolean closed = false;
 }
