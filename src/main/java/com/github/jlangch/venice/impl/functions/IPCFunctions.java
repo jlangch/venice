@@ -76,7 +76,7 @@ public class IPCFunctions {
                     .doc(
                         "Create a new server on the specified port.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| [![text-align: left; width: 20%]] | [![text-align: left; width: 80%]] |\n" +
+                        "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
                         "| port p    | The TCP/IP port |\n" +
                         "| handler h | A single argument handler function.¶" +
                                      " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
@@ -86,7 +86,7 @@ public class IPCFunctions {
                                      " A handler is only required for send/receive message passing style. It "+
                                      " is not required for offer/poll and publish/subscribe!|\n\n" +
                         "*Options:* \n\n" +
-                        "| [![text-align: left; width: 20%]] | [![text-align: left; width: 80%]] |\n" +
+                        "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
                         "| :max-connections n           | The number of the max connections the server can handle" +
                                                         " in parallel.¶Defaults to 20.|\n" +
                         "| :max-message-size n          | The max size of the message payload.¶" +
