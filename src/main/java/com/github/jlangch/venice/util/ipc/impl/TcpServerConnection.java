@@ -572,6 +572,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
         final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
         final boolean durable = Coerce.toVncBoolean(payload.get(new VncString("durable"))).getValue();
 
+        if (durable && !wal.isEnabled()) {
+            return createBadRequestTextMessageResponse(
+                    request,
+                    "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
+        }
+
         try {
             QueueValidator.validate(queueName);
         }
