@@ -23,7 +23,7 @@
 
 (let [wal-dir (io/file (io/temp-dir "wal-"))]
   (try
-    ;; restart client/server with Write-Ahead-Log and offer a few messages
+    ;; start client/server with Write-Ahead-Log and offer a few messages
     (println "Starting server/client ...")
     (try-with [server (ipc/server 33333
                                   :write-ahead-log-dir wal-dir

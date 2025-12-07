@@ -26,7 +26,7 @@
       half-msgs      (/ total-msgs 2)
       queue-capacity 1_000_000]    ;; capacity must be big enough
   (try
-    ;; restart client/server with Write-Ahead-Log and offer a few messages
+    ;; start client/server with Write-Ahead-Log and offer a few messages
     (println "Starting server/client ...")
     (try-with [server (ipc/server 33333
                                   :write-ahead-log-dir wal-dir

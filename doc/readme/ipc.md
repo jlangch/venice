@@ -9,6 +9,7 @@ Venice Inter-Process-Communication (IPC), is a Venice API that allows applicatio
 * [IPC Communication Modes](#ipc-communication-modes)
     * [Send and Receive](#send-and-receive)
     * [Offer and Poll](#offer-and-poll)
+    * [Offer and Poll with durable queues](#offer-and-poll-with-durable-queues)
     * [Publish and Subscribe](#publish-and-subscribe)
 * [Messages](#messages)
 * [Compressing Messages](#compressing-messages)
@@ -246,6 +247,78 @@ Coffee order example:
       (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter))
       (deref (place-order 2 client2 :orders client2-reply-queue client2-request-counter))
       (deref (place-order 1 client1 :orders client1-reply-queue client1-request-counter)))))
+```
+
+
+
+### Offer and Poll with durable Queues
+
+Venice supports durable queues if the Write-Ahead-Log option is activated on 
+the server. 
+
+
+```clojure
+(let [wal-dir (io/file (io/temp-dir "wal-"))]
+  (try
+    ;; start client/server with Write-Ahead-Log and offer a few messages
+    (println "Starting server/client ...")
+    (try-with [server (ipc/server 33333
+                                  :write-ahead-log-dir wal-dir
+                                  :write-ahead-log-compress true
+                                  :write-ahead-log-compact true)
+               client (ipc/client 33333)]
+
+      (sleep 100)
+
+      ;; create the durable queue :testq
+      (ipc/create-queue server :testq 100 :bounded true)
+
+      ;; offer 3 durable and 1 nondurable messages
+      (ipc/offer client :testq 300 (ipc/plain-text-message "1" :test "hello 1" true))
+      (ipc/offer client :testq 300 (ipc/plain-text-message "2" :test "hello 2" true))
+      (ipc/offer client :testq 300 (ipc/plain-text-message "3" :test "hello 3" false))
+      (ipc/offer client :testq 300 (ipc/plain-text-message "4" :test "hello 4" true))
+
+      ;; poll message #1
+      (let [m (ipc/poll client :testq 300)]
+        (assert (ipc/response-ok? m))
+        (assert (== "hello 1" (ipc/message-field m :payload-text)))))
+
+    (sleep 100)
+
+    ;; restart client/server to test Write-Ahead-Logs 
+    ;; the new server will read the Write-Ahead-Logs and populate the queue :testq
+    (println "Restarting server/client ...")
+    (try-with [server (ipc/server 33333
+                                  :write-ahead-log-dir wal-dir
+                                  :write-ahead-log-compress true
+                                  :write-ahead-log-compact true)
+               client (ipc/client 33333)]
+
+      (sleep 100)
+
+      ;; create the durable queue :testq
+      ;; if the queue already exists due to the WAL recovery process, this
+      ;; queue create request will just be skipped!
+      (ipc/create-queue server :testq 100 :bounded true)
+
+      ;; poll message #2
+      (let [m (ipc/poll client :testq 300)]
+        (assert (ipc/response-ok? m))
+        (assert (== "hello 2" (ipc/message-field m :payload-text))))
+
+      ;; message #3 is nondurable and therefore lost at server shutdown
+
+      ;; poll message #4
+      (let [m (ipc/poll client :testq 300)]
+        (assert (ipc/response-ok? m))
+        (assert (== "hello 4" (ipc/message-field m :payload-text)))))
+
+    (sleep 100)
+
+    (finally (io/delete-file-tree wal-dir)))
+    
+  (println "Done."))
 ```
 
 
