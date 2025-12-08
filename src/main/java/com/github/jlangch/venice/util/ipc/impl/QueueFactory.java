@@ -45,6 +45,9 @@ public class QueueFactory {
 
         if (durable && wal.isEnabled()) {
             // durable: create WAL based queue
+        	if (!bounded) {
+                throw new VncException("Only bounded queues can be made durable!");
+            }
             try {
                 final IpcQueue<Message> queue = createRawQueue(queueName, capacity, bounded, true);
                 return new WalBasedQueue(queue, wal);
