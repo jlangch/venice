@@ -111,8 +111,8 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queue.name() + " is closed!");
         }
 
-        // TODO 1: need to atomically handle queue and write-ahead-log!
-    	//         to handle this we most probably need to implement our own queue!
+        // TODO: need to atomically handle queue and write-ahead-log!
+        //       ==> the new DurableBoundedQueue will replace this WalBasedQueue
 
         final Message m = queue.poll(timeout, unit);
 
@@ -121,7 +121,6 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
                 log.append(new AckWalEntry(m.getId()).toWalEntry());
             }
             catch(Exception ex) {
-            	// TODO 2: fix this case see TODO 1
                 throw new VncException("Failed to poll message from queue " + queue.name(), ex);
             }
         }
@@ -147,11 +146,9 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         }
 
         if (item.isDurable()) {
-        	final long timoutMillis = unit.toMillis(timeout);
-        	final long deadline = System.currentTimeMillis() + timoutMillis;
-
             // TODO: need to atomically handle queue and write-ahead-log!
-        	//       to handle this we most probably need to implement our own queue!
+            //       ==> the new DurableBoundedQueue will replace this WalBasedQueue
+
             try {
                 log.append(new MessageWalEntry(item).toWalEntry());
             }
@@ -159,7 +156,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
                 throw new VncException("Failed to offer message to queue " + queue.name(), ex);
             }
 
-            return queue.offer(item, timoutMillis, TimeUnit.MILLISECONDS);
+            return queue.offer(item, timeout, unit);
         }
         else {
             return queue.offer(item, timeout, unit);
