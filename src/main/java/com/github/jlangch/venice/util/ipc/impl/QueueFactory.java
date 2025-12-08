@@ -38,16 +38,13 @@ public class QueueFactory {
             final boolean bounded,
             final boolean durable
     ) {
-        if (durable && !wal.isEnabled()) {
-            throw new VncException(
-                    "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
-        }
-
-        if (durable && wal.isEnabled()) {
-            // durable: create WAL based queue
-        	if (!bounded) {
-                throw new VncException("Only bounded queues can be made durable!");
+        if (durable) {
+            if (!wal.isEnabled()) {
+                throw new VncException(
+                        "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
             }
+
+            // durable: create WAL based queue
             try {
                 final IpcQueue<Message> queue = createRawQueue(queueName, capacity, bounded, true);
                 return new WalBasedQueue(queue, wal);
