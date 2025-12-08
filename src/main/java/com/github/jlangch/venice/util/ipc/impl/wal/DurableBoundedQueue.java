@@ -162,7 +162,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
 
         lock.lock();
         try {
-
             // load the write-ahead-log entries into the queue, take care for
             // the queue capacity
             final List<WalEntry> entries = replayEntries.size() <= capacity()
