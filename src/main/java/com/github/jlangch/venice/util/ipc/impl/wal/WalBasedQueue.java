@@ -112,6 +112,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         }
 
         // TODO 1: need to atomically handle queue and write-ahead-log!
+    	//         to handle this we most probably need to implement our own queue!
 
         final Message m = queue.poll(timeout, unit);
 
@@ -120,7 +121,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
                 log.append(new AckWalEntry(m.getId()).toWalEntry());
             }
             catch(Exception ex) {
-            	// TODO 2: fix this case see todo 1
+            	// TODO 2: fix this case see TODO 1
                 throw new VncException("Failed to poll message from queue " + queue.name(), ex);
             }
         }
@@ -150,6 +151,7 @@ public class WalBasedQueue implements IpcQueue<Message>, Closeable {
         	final long deadline = System.currentTimeMillis() + timoutMillis;
 
             // TODO: need to atomically handle queue and write-ahead-log!
+        	//       to handle this we most probably need to implement our own queue!
             try {
                 log.append(new MessageWalEntry(item).toWalEntry());
             }
