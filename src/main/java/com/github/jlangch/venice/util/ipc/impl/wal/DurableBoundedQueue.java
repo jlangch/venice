@@ -140,12 +140,17 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         // read the configuration WAL entry to get the queue type
         // and its capacity
         final WalEntry firstEntry = CollectionUtil.first(entries);
-        final ConfigWalEntry config = firstEntry.getType() == WalEntryType.CONFIG
-                                         ? ConfigWalEntry.fromWalEntry(firstEntry)
-                                         : null;
+        if (firstEntry == null || firstEntry.getType() != WalEntryType.CONFIG) {
+            final String errMsg = "Failed create queue " + queueName + " from WAL. "
+                                   + "The WAL does not have a ConfigWalEntry";
+            logger.error(new File(WalQueueManager.toFileName(queueName)), errMsg);
+            throw new VncException(errMsg);
+        }
+
+        final ConfigWalEntry config = ConfigWalEntry.fromWalEntry(firstEntry);
+        entries.remove(0);  // remove the config entry from the entry list
 
         final int capacity = config.getQueueCapacity();
-
 
         final DurableBoundedQueue q = new DurableBoundedQueue(queueName, capacity, wal, logger);
         q.replayFromWal(entries);
