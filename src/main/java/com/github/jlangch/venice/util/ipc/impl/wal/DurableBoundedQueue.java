@@ -25,6 +25,7 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -107,6 +108,21 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         }
     }
 
+    public void clear() {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            Arrays.fill(elements, null);
+            head = 0;
+            tail = 0;
+            size = 0;
+            notFull.signal();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
 
     // ------------------------------------------------------------
     // Recovery hook: rebuild state from WAL
@@ -180,54 +196,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         finally {
             lock.unlock();
         }
-    }
-
-    // ------------------------------------------------------------
-    // Internal helpers (must be called with lock held)
-    // ------------------------------------------------------------
-
-    private void enqueueWithoutLogging(Message m) {
-        Objects.requireNonNull(m);
-
-        elements[tail] = m;
-        tail = (tail + 1) % elements.length;
-        size++;
-        notEmpty.signal();
-    }
-
-    private void enqueueWithLogging(Message m) {
-        Objects.requireNonNull(m);
-
-        // 1. WAL first (durable intent)
-        try {
-            wal.append(new MessageWalEntry(m).toWalEntry());
-        }
-        catch(IOException ex) {
-            throw new VncException("Failed to enqueue message on queue " + queueName, ex);
-        }
-
-        // 2. Then in-memory mutation
-        enqueueWithoutLogging(m);
-    }
-
-    private Message dequeueWithLogging() {
-        final Message m = elements[head];
-
-        // 1. WAL: mark as consumed
-        try {
-            wal.append(new AckWalEntry(m.getId()).toWalEntry());
-        }
-        catch(IOException ex) {
-            throw new VncException("Failed to dequeue message from queue " + queueName, ex);
-        }
-
-        // 2. In-memory mutation
-        elements[head] = null; // help GC
-        head = (head + 1) % elements.length;
-        size--;
-        notFull.signal();
-
-        return m;
     }
 
     // ------------------------------------------------------------
@@ -455,6 +423,60 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             logInfo("Durable queue '" + queueName + "' closed.");
         }
     }
+
+
+
+    // ------------------------------------------------------------
+    // Internal helpers (must be called with lock held)
+    // ------------------------------------------------------------
+
+    private void enqueueWithoutLogging(Message m) {
+        Objects.requireNonNull(m);
+
+        elements[tail] = m;
+        tail = (tail + 1) % elements.length;
+        size++;
+        notEmpty.signal();
+    }
+
+    private void enqueueWithLogging(Message m) {
+        Objects.requireNonNull(m);
+
+        // 1. WAL first (durable intent)
+        try {
+            wal.append(new MessageWalEntry(m).toWalEntry());
+        }
+        catch(IOException ex) {
+            throw new VncException("Failed to enqueue message on queue " + queueName, ex);
+        }
+
+        // 2. Then in-memory mutation
+        enqueueWithoutLogging(m);
+    }
+
+    private Message dequeueWithLogging() {
+        final Message m = elements[head];
+
+        // 1. WAL: mark as consumed
+        try {
+            wal.append(new AckWalEntry(m.getId()).toWalEntry());
+        }
+        catch(IOException ex) {
+            throw new VncException("Failed to dequeue message from queue " + queueName, ex);
+        }
+
+        // 2. In-memory mutation
+        elements[head] = null; // help GC
+        head = (head + 1) % elements.length;
+        size--;
+        notFull.signal();
+
+        return m;
+    }
+
+    // ------------------------------------------------------------
+    // Internal logger helpers
+    // ------------------------------------------------------------
 
     private void logInfo(final String message) {
         logger.info(
