@@ -649,11 +649,11 @@ Create through 'client':
 #### Create Bounded Durable Queues
 
 > [!NOTE]
-> To use durable queues the server must be started with Write-Ahead-Lopg enabled!
+> To use durable queues the server must be started with Write-Ahead-Log enabled!
 >
 > Only bounded queues can be made durable!
 > 
-> Servers with Write-Ahead-Lopg enabled support all types of queues: bounded/durable
+> Servers with Write-Ahead-Lopg enabled support all types of queues: bounded/durable, 
 > bounded, circular, and temporary
 
 Create through 'server'
