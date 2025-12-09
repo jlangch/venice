@@ -1,7 +1,7 @@
 # Inter-Process-Communication
 
 
-Venice Inter-Process-Communication (IPC), is a Venice API that allows application to send and receive messages. It enables asynchronous and loosely coupled communication, making it ideal for distributed applications. 
+Venice Inter-Process-Communication (IPC), is a Venice API that allows applications to send and receive messages. It enables asynchronous and loosely coupled communication, making it ideal for distributed applications. 
 
  
  
