@@ -611,35 +611,87 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ## Managing Queues
 
-#### Create Queue
+#### Create Bounded and Circular Queues
 
-through 'server'
-
-```clojure
-(do
-  (try-with [server (ipc/server 33333)
-             client (ipc/client 33333)]
-     (ipc/create-queue server "orders-queue" 100)
-     
-     (ipc/offer client "orders-queue" 300 
-                (ipc/plain-text-message "1" "test" "hello"))))
-```
-
-
-through 'client':
+Create through 'server'
 
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-     (ipc/create-queue client "orders-queue" 100)
+     (ipc/create-queue server "queue/1" 100 :bounded)
+     (ipc/create-queue server "queue/2" 100 :circular)
      
-     (ipc/offer client "orders-queue" 300 
-                (ipc/plain-text-message "1" "test" "hello"))))
+     (ipc/offer client "queue/1" 300 
+                (ipc/plain-text-message "1" "test" "hello"))
+                
+     (ipc/offer client "queue/2" 300 
+                (ipc/plain-text-message "2" "test" "hello"))))
 ```
 
 
-#### Create Temporary Queue
+Create through 'client':
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+     (ipc/create-queue client "queue/1" 100 :bounded)
+     (ipc/create-queue client "queue/2" 100 :circular)
+     
+     (ipc/offer client "queue/1" 300 
+                (ipc/plain-text-message "1" "test" "hello"))
+                
+     (ipc/offer client "queue/2" 300 
+                (ipc/plain-text-message "2" "test" "hello"))))
+```
+
+#### Create Bounded Durable Queues
+
+> [!NOTE]
+> To use durable queues the server must be started with Write-Ahead-Lopg enabled!
+>
+> Only bounded queues can be made durable!
+> 
+> Servers with Write-Ahead-Lopg enabled support all types of queues: bounded/durable
+> bounded, circular, and temporary
+
+Create through 'server'
+
+```clojure
+(let [wal-dir (io/file (io/temp-dir "wal-"))]
+  (try-with [server (ipc/server 33333
+                                :write-ahead-log-dir wal-dir
+                                :write-ahead-log-compress true
+                                :write-ahead-log-compact true)
+             client (ipc/client 33333)]
+     (ipc/create-queue server "queue/1" 100 :bounded true)
+     (ipc/offer client "queue/1" 300 
+                (ipc/plain-text-message "1" "test" "hello"))
+    (finally (io/delete-file-tree wal-dir))))
+```
+
+
+Create through 'client':
+
+```clojure
+(let [wal-dir (io/file (io/temp-dir "wal-"))]
+  (try-with [server (ipc/server 33333
+                                :write-ahead-log-dir wal-dir
+                                :write-ahead-log-compress true
+                                :write-ahead-log-compact true)
+             client (ipc/client 33333)]
+     (ipc/create-queue client "queue/1" 100 :bounded true)
+     (ipc/offer client "queue/1" 300 
+                (ipc/plain-text-message "1" "test" "hello"))
+    (finally (io/delete-file-tree wal-dir))))
+```
+
+
+#### Create Temporary Queues
+
+Temporary queues can only be created on behalf of a client. They only live 
+as long as the client lives!
 
 ```clojure
 (do
@@ -651,45 +703,47 @@ through 'client':
 ```
 
 
-#### Remove Queue
+#### Remove Queues
 
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (ipc/create-queue server "orders-queue" 100)
+    (ipc/create-queue server "queue/1" 100)
     ;; ...
-    (ipc/remove-queue server "orders-queue")))
+    (ipc/remove-queue server "queue/1")))
 ```
 
 
-#### Check if Queue exists
+#### Check if a Queue exists
 
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (ipc/create-queue server "orders-queue" 100)
+    (ipc/create-queue server "queue/1" 100)
     ;; ...
-    (ipc/exists-queue? server "orders-queue")))
+    (ipc/exists-queue? server "queue/1")))
 ```
 
 
 #### Check Queue Status
 
+for bounded or circular queues
+
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (ipc/create-queue server "orders-queue" 100)
+    (ipc/create-queue server "queue/1" 100)
      
-    (ipc/offer client "orders-queue" 300 
+    (ipc/offer client "queue/1" 300 
                  (ipc/plain-text-message "1" "test" "hello"))
     ;; ...
-    (ipc/queue-status client "orders-queue")))
+    (ipc/queue-status client "queue/1")))
 ```
 
-temporary queue
+for temporary queue
 
 ```clojure
 (do
