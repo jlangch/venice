@@ -37,6 +37,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.MessageWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType;
 
 
 /**

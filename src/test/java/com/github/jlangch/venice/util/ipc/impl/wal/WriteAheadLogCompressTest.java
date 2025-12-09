@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
-import static com.github.jlangch.venice.util.ipc.impl.wal.WalEntryType.ACK;
-import static com.github.jlangch.venice.util.ipc.impl.wal.WalEntryType.DATA;
+import static com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType.ACK;
+import static com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType.DATA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -33,6 +33,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.AckWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.DataWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
 
 
 public class WriteAheadLogCompressTest {

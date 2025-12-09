@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.MessageWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
 
 
 public class MessageEntryTest {

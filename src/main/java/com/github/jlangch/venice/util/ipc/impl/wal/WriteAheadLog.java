@@ -36,6 +36,9 @@ import java.util.UUID;
 import java.util.zip.CRC32;
 
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.AckWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType;
 
 
 /**

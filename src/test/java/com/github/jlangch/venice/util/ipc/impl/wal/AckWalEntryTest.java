@@ -27,6 +27,9 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.AckWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
+
 
 public class AckWalEntryTest {
 

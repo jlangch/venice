@@ -37,6 +37,11 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.AckWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.ConfigWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.MessageWalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
+import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType;
 
 
 public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
