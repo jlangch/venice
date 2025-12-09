@@ -38,10 +38,16 @@ import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
  */
 public class ConfigWalEntry {
 
-    public ConfigWalEntry(final int queueCapacity, final QueueType queueType) {
+    public ConfigWalEntry(
+            final int queueCapacity,
+            final QueueType queueType,
+            final boolean walCompressed
+    ) {
         this.queueCapacity = queueCapacity;
         this.queueType = queueType;
+        this.walCompressed = walCompressed;
     }
+
 
     public int getQueueCapacity() {
         return queueCapacity;
@@ -51,14 +57,19 @@ public class ConfigWalEntry {
         return queueType;
     }
 
+    public boolean isWalCompressed() {
+        return walCompressed;
+    }
+
     public boolean isBoundedQueue() {
         return queueType == QueueType.BOUNDED;
     }
 
     public WalEntry toWalEntry() {
-        final ByteBuffer payload = ByteBuffer.allocate(8);
+        final ByteBuffer payload = ByteBuffer.allocate(12);
         payload.putInt(queueCapacity);
         payload.putInt(queueType.getValue());
+        payload.putInt(walCompressed ? 1 : 0);
         payload.flip();
 
         return new WalEntry(WalEntryType.CONFIG, UUID.randomUUID(), 1, payload.array());
@@ -68,10 +79,12 @@ public class ConfigWalEntry {
        final ByteBuffer payload = ByteBuffer.wrap(entry.getPayload());
        final int capacity = payload.getInt();
        final int type = payload.getInt();
-       return new ConfigWalEntry(capacity, QueueType.fromCode(type));
+       final boolean compressed = payload.getInt() == 0 ? false : true;
+       return new ConfigWalEntry(capacity, QueueType.fromCode(type), compressed);
     }
 
 
     private final int queueCapacity;
+    private final boolean walCompressed;
     private final QueueType queueType;
 }

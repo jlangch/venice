@@ -30,16 +30,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.Message;
-import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
-import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 
 
@@ -108,36 +104,8 @@ public class WalQueueManager {
                 WriteAheadLog.compact(logFile, true, true);
             }
 
-            final String queueName = WalQueueManager.toQueueName(logFile);
-
-
-            // load all Write-Ahead-Log entries and compact the entries
-            final List<WalEntry> entries = WriteAheadLog.compact(
-                                                WriteAheadLog.loadAll(logFile, false),
-                                                true); // discard expired entries
-
-            // read the configuration WAL entry to get the queue type
-            // and its capacity
-            final WalEntry firstEntry = CollectionUtil.first(entries);
-            final ConfigWalEntry config = firstEntry.getType() == WalEntryType.CONFIG
-                                             ? ConfigWalEntry.fromWalEntry(firstEntry)
-                                             : null;
-
-            final IpcQueue<Message> queue = toQueue(queueName, config);
-
-            // load the write-ahead-log entries into the queue, take care for
-            // the queue capacity
-            final int gap = Math.min(entries.size(), queue.capacity() - queue.size());
-            if (gap > 0) {
-                for(WalEntry e : entries.subList(entries.size() - gap, entries.size())) {
-                    if (WalEntryType.DATA == e.getType()) {
-                        final Message m = MessageWalEntry.fromWalEntry(e).getMessage();
-                        queue.offer(m, 0, TimeUnit.MILLISECONDS);
-                    }
-                }
-            }
-
-            queues.put(queueName, new WalBasedQueue(queue, this));
+            final IpcQueue<Message> queue = DurableBoundedQueue.createFromWal(logFile, logger);
+            queues.put(queue.name(), queue);
         };
 
         return queues;
@@ -165,9 +133,9 @@ public class WalQueueManager {
     public void close(final Collection<IpcQueue<Message>> queues)
     throws IOException, InterruptedException {
         for(IpcQueue<Message> q : queues) {
-            if (q instanceof WalBasedQueue) {
+            if (q instanceof DurableBoundedQueue) {
                try {
-                   ((WalBasedQueue)q).close();
+                   ((DurableBoundedQueue)q).close();
                }
                catch(Exception ignore) { }
             }
@@ -234,21 +202,6 @@ public class WalQueueManager {
         }
         else {
             return new ArrayList<>();
-        }
-    }
-
-    private static IpcQueue<Message> toQueue(
-            final String queueName,
-            final ConfigWalEntry config
-    ) {
-        if (config == null) {
-            return new BoundedQueue<Message>(queueName, 200, false, true);
-        }
-        else if (config.isBoundedQueue()) {
-            return new BoundedQueue<Message>(queueName, config.getQueueCapacity(), false, true);
-        }
-        else {
-            return new CircularBuffer<Message>(queueName, config.getQueueCapacity(), false, true);
         }
     }
 

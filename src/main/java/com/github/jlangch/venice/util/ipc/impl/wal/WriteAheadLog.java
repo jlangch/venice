@@ -97,6 +97,11 @@ public final class WriteAheadLog implements Closeable {
         logger.info(file, "WAL opened");
     }
 
+    public boolean isCompressing() {
+        return compressor.isActive();
+    }
+
+
     /**
      * Checks if this Write-Ahead-Log has been recovered from corruption while reading the
      * entries at startup.

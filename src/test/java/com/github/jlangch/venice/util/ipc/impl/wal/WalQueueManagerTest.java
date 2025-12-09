@@ -58,7 +58,7 @@ public class WalQueueManagerTest {
                                                 true,
                                                 true);
 
-            assertTrue(queue instanceof WalBasedQueue);
+            assertTrue(queue instanceof DurableBoundedQueue);
 
             queue.offer(smallMsg(1));
             queue.offer(smallMsg(2));

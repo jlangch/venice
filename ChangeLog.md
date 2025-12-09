@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Complete rewrite of the durable queue. Optimized the lock critical section
+  that read/writes WAL records and offers/polls the message from the queue.
+
 
 
 ## [1.12.67] - 2025-12-07

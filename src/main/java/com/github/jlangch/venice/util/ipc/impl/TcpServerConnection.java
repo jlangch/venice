@@ -85,8 +85,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
 
-        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity, false, false);
-        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false, false);
+        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity, false);
+        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false);
         this.p2pQueues = p2pQueues;
 
         this.dhKeys = DiffieHellmanKeys.create();
@@ -665,7 +665,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
 
             // do not overwrite the queue if it already exists
-            if (p2pQueues.putIfAbsent(queueName, new BoundedQueue<Message>(queueName, capacity, true, false)) == null) {
+            final IpcQueue<Message> q = p2pQueues.computeIfAbsent(
+                                           queueName,
+                                           k -> new BoundedQueue<Message>(queueName, capacity, true));
+            if (q != null) {
                 tmpQueues.put(queueName, 0);
             }
 

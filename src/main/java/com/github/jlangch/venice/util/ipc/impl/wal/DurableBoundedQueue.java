@@ -44,7 +44,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     public DurableBoundedQueue(
             final String queueName,
             final int capacity,
-            final WriteAheadLog wal,
+             final WriteAheadLog wal,
             final WalLogger logger
     ) throws IOException {
         Objects.requireNonNull(queueName);
@@ -61,7 +61,10 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
 
         // if the queue wal is new, append the config entry to the wal
         if (wal.getLastLsn() == 0) {
-            final ConfigWalEntry ce = new ConfigWalEntry(capacity, QueueType.BOUNDED);
+            final ConfigWalEntry ce = new ConfigWalEntry(
+                                            capacity,
+                                            QueueType.BOUNDED,
+                                            wal.isCompressing());
             wal.append(ce.toWalEntry());
         }
     }
@@ -138,13 +141,13 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
      * @throws IOException if the queue could not be created from Write-Ahead-Log
      */
     public static DurableBoundedQueue createFromWal(
-            final WriteAheadLog wal,
+            final File logFile,
             final WalLogger logger
     ) throws IOException {
-        Objects.requireNonNull(wal);
+        Objects.requireNonNull(logFile);
         Objects.requireNonNull(logger);
 
-        final File logFile = wal.getFile();
+        final File walDir = logFile.getParentFile();
 
         final String queueName = WalQueueManager.toQueueName(logFile);
 
@@ -167,8 +170,20 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         entries.remove(0);  // remove the config entry from the entry list
 
         final int capacity = config.getQueueCapacity();
+        final boolean compress = config.isWalCompressed();
 
-        final DurableBoundedQueue q = new DurableBoundedQueue(queueName, capacity, wal, logger);
+        final WriteAheadLog wal = new WriteAheadLog(
+                                          new File(
+                                                  walDir,
+                                                  WalQueueManager.toFileName(queueName)),
+                                          compress,
+                                          logger);
+
+        final DurableBoundedQueue q = new DurableBoundedQueue(
+                                            queueName,
+                                            capacity,
+                                            wal,
+                                            logger);
         q.replayFromWal(entries);
         return q;
     }
@@ -444,12 +459,14 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queueName + " is closed!");
         }
 
-        // 1. WAL first (durable intent)
-        try {
-            wal.append(new MessageWalEntry(m).toWalEntry());
-        }
-        catch(IOException ex) {
-            throw new VncException("Failed to enqueue message on queue " + queueName, ex);
+        if (m.isDurable()) {
+            // 1. WAL first (durable intent)
+            try {
+                wal.append(new MessageWalEntry(m).toWalEntry());
+            }
+            catch(IOException ex) {
+                throw new VncException("Failed to enqueue message on queue " + queueName, ex);
+            }
         }
 
         // 2. Then in-memory mutation
