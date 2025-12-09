@@ -210,7 +210,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     public boolean offer(Message m) {
         Objects.requireNonNull(m);
 
-
         if (closed) {
             throw new VncException("The queue " + queueName + " is closed!");
         }
@@ -391,7 +390,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         }
     }
 
-
     @Override
     public void onRemove() {
         if (closed) {
@@ -442,6 +440,10 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     private void enqueueWithLogging(Message m) {
         Objects.requireNonNull(m);
 
+        if (closed) {
+            throw new VncException("The queue " + queueName + " is closed!");
+        }
+
         // 1. WAL first (durable intent)
         try {
             wal.append(new MessageWalEntry(m).toWalEntry());
@@ -455,6 +457,10 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     }
 
     private Message dequeueWithLogging() {
+        if (closed) {
+            throw new VncException("The queue " + queueName + " is closed!");
+        }
+
         final Message m = elements[head];
 
         // 1. WAL: mark as consumed
