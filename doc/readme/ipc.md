@@ -595,7 +595,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
   (defn echo-handler [m]
     (println "REQUEST:" (ipc/message->json true m)) 
     m)
-  
+
   ;; transparently encrypt messages
   (try-with [server (ipc/server 33333 echo-handler)
              client (ipc/client "localhost" 33333 :encrypt true)]
@@ -619,14 +619,14 @@ Create through 'server'
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-     (ipc/create-queue server "queue/1" 100 :bounded)
-     (ipc/create-queue server "queue/2" 100 :circular)
-     
-     (ipc/offer client "queue/1" 300 
-                (ipc/plain-text-message "1" "test" "hello"))
-                
-     (ipc/offer client "queue/2" 300 
-                (ipc/plain-text-message "2" "test" "hello"))))
+    (ipc/create-queue server "queue/1" 100 :bounded)
+    (ipc/create-queue server "queue/2" 100 :circular)
+
+    (ipc/offer client "queue/1" 300 
+               (ipc/plain-text-message "1" "test" "hello"))
+
+    (ipc/offer client "queue/2" 300 
+               (ipc/plain-text-message "2" "test" "hello"))))
 ```
 
 
@@ -636,14 +636,14 @@ Create through 'client':
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-     (ipc/create-queue client "queue/1" 100 :bounded)
-     (ipc/create-queue client "queue/2" 100 :circular)
-     
-     (ipc/offer client "queue/1" 300 
-                (ipc/plain-text-message "1" "test" "hello"))
-                
-     (ipc/offer client "queue/2" 300 
-                (ipc/plain-text-message "2" "test" "hello"))))
+    (ipc/create-queue client "queue/1" 100 :bounded)
+    (ipc/create-queue client "queue/2" 100 :circular)
+
+    (ipc/offer client "queue/1" 300 
+               (ipc/plain-text-message "1" "test" "hello"))
+
+    (ipc/offer client "queue/2" 300 
+               (ipc/plain-text-message "2" "test" "hello"))))
 ```
 
 #### Create Bounded Durable Queues
@@ -665,9 +665,9 @@ Create through 'server'
                                 :write-ahead-log-compress true
                                 :write-ahead-log-compact true)
              client (ipc/client 33333)]
-     (ipc/create-queue server "queue/1" 100 :bounded true)
-     (ipc/offer client "queue/1" 300 
-                (ipc/plain-text-message "1" "test" "hello"))
+    (ipc/create-queue server "queue/1" 100 :bounded true)
+    (ipc/offer client "queue/1" 300 
+               (ipc/plain-text-message "1" "test" "hello"))
     (finally (io/delete-file-tree wal-dir))))
 ```
 
@@ -681,9 +681,9 @@ Create through 'client':
                                 :write-ahead-log-compress true
                                 :write-ahead-log-compact true)
              client (ipc/client 33333)]
-     (ipc/create-queue client "queue/1" 100 :bounded true)
-     (ipc/offer client "queue/1" 300 
-                (ipc/plain-text-message "1" "test" "hello"))
+    (ipc/create-queue client "queue/1" 100 :bounded true)
+    (ipc/offer client "queue/1" 300 
+               (ipc/plain-text-message "1" "test" "hello"))
     (finally (io/delete-file-tree wal-dir))))
 ```
 
