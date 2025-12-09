@@ -223,9 +223,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     public boolean offer(Message m) {
         Objects.requireNonNull(m);
 
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         lock.lock();
         try {
@@ -246,9 +244,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
      */
     @Override
     public Message poll() {
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         lock.lock();
         try {
@@ -267,9 +263,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
      * @return front element or null if queue is empty.
      */
     public Message peek() {
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         lock.lock();
         try {
@@ -302,9 +296,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         Objects.requireNonNull(m);
         Objects.requireNonNull(unit);
 
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         long nanos = unit.toNanos(timeout);
         lock.lockInterruptibly();
@@ -314,6 +306,8 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
                     return false; // timed out
                 }
                 nanos = notFull.awaitNanos(nanos);
+
+                handleClosedQueue();
             }
             enqueueWithLogging(m);
             return true;
@@ -336,9 +330,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     ) throws InterruptedException {
         Objects.requireNonNull(unit);
 
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         long nanos = unit.toNanos(timeout);
         lock.lockInterruptibly();
@@ -348,6 +340,8 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
                     return null; // timed out
                 }
                 nanos = notEmpty.awaitNanos(nanos);
+
+                handleClosedQueue();
             }
             return dequeueWithLogging();
         }
@@ -363,9 +357,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     public void put(final Message m) throws InterruptedException {
         Objects.requireNonNull(m);
 
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         lock.lockInterruptibly();
         try {
@@ -380,9 +372,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     }
 
     public Message take() throws InterruptedException {
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         lock.lockInterruptibly();
         try {
@@ -398,9 +388,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
 
     @Override
     public void onRemove() {
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         final File walFile = wal.getFile();
 
@@ -429,6 +417,12 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     }
 
 
+    private void handleClosedQueue() {
+        if (closed) {
+            throw new VncException("The queue " + queueName + " is closed!");
+        }
+    }
+
 
     // ------------------------------------------------------------
     // Internal helpers (must be called with lock held)
@@ -446,9 +440,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     private void enqueueWithLogging(Message m) {
         Objects.requireNonNull(m);
 
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         if (m.isDurable()) {
             // 1. WAL first (durable intent)
@@ -465,9 +457,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     }
 
     private Message dequeueWithLogging() {
-        if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
-        }
+        handleClosedQueue();
 
         final Message m = elements[head];
 

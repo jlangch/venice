@@ -85,12 +85,6 @@ public class WalQueueManager {
         return logger;
     }
 
-    public WriteAheadLog createWriteAheadLogForQueue(final IpcQueue<Message> queue)
-    throws IOException {
-        final String filename = WalQueueManager.toFileName(queue.name());
-        return new WriteAheadLog(new File(walDir, filename), compress, logger);
-    }
-
     public Map<String, IpcQueue<Message>> preloadQueues()
     throws IOException, InterruptedException {
         if (!isEnabled()) {

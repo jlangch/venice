@@ -446,8 +446,10 @@ public class TcpServer implements Closeable {
     private void safeClose(final ServerSocketChannel ch) {
         if (ch != null) {
             try {
-                // WalBasedQueue
-                wal.close(p2pQueues.values());
+                // close the durable queues
+                if (wal.isEnabled()) {
+                    wal.close(p2pQueues.values());
+                }
 
                 ch.close();
             }
