@@ -710,6 +710,7 @@ task updateReadMeCheatsheetRef {
             fileset(dir: 'doc/readme', includes: 'start.md')
             fileset(dir: 'doc/readme', includes: 'sudoku-solver.md')
             fileset(dir: 'doc/readme', includes: 'functional-first-steps.md')
+            fileset(dir: 'doc/readme', includes: 'ipc.md')
         }
     }
 }
