@@ -561,7 +561,7 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
     (println "REQUEST:" (ipc/message->json true m)) 
     m)
   
-  ;; transparently compress/decompress messages with a size > 1KB bytes
+  ;; transparently compress/decompress messages with a size > 1KB
   (try-with [server (ipc/server 33333 echo-handler :compress-cutoff-size :1KB)
              client (ipc/client "localhost" 33333 :compress-cutoff-size :1KB)]
     ;; send a plain text message: requestId="1", topic="test", payload="hello"
@@ -584,7 +584,7 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 > [!NOTE]
 > If multiple clients are involved in message passing turn on 
-> encryption on all clients!
+> encryption for all clients!
 
 
 ```clojure
