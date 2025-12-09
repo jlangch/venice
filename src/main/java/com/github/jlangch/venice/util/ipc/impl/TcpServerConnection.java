@@ -599,14 +599,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
         else {
             try {
-                final IpcQueue<Message> queue = QueueFactory.createQueue(
-                                                    wal,
-                                                    queueName,
-                                                    capacity,
-                                                    bounded,
-                                                    durable);
                 // do not overwrite the queue if it already exists
-                p2pQueues.putIfAbsent(queueName, queue);
+                p2pQueues.computeIfAbsent(
+                        queueName,
+                        k -> QueueFactory.createQueue(
+                                wal,
+                                queueName,
+                                capacity,
+                                bounded,
+                                durable));
             }
             catch(Exception ex) {
                 return createBadRequestTextMessageResponse(
