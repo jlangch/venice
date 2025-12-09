@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.68] - 2025-12-xx
+## [1.12.69] - 2025-12-xx
 
 ### Enhancements
 
@@ -15,8 +15,18 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+
+
+## [1.12.68] - 2025-12-xx
+
+### Enhancements
+
 - Complete rewrite of the durable queue. Optimized the lock critical section
-  that read/writes WAL records and offers/polls the message from the queue.
+  for read/write WAL records together with offer/poll of messages.
+
+### Bugs
+
+- Fixed `ipc/create-queue` function argument parsing when called for a client node
 
 
 
