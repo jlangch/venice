@@ -2613,8 +2613,8 @@ public class IPCFunctions {
                     final String name = Coerce.toVncString(args.second()).getValue();
                     final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
 
-                    final VncVal typeVal = args.nth(3) == Nil ? Nil : Coerce.toVncKeyword(args.nth(3));
-                    final VncVal durableVal = args.nth(4) == Nil ? Nil : Coerce.toVncBoolean(args.nth(4));
+                    final VncVal typeVal = args.size() < 4 || args.nth(3) == Nil ? Nil : Coerce.toVncKeyword(args.nth(3));
+                    final VncVal durableVal = args.size() < 5 || args.nth(4) == Nil ? Nil : Coerce.toVncBoolean(args.nth(4));
 
                     final boolean durable = durableVal == Nil ? false : ((VncBoolean)durableVal).getValue();
 
