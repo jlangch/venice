@@ -19,36 +19,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.wal;
+package com.github.jlangch.venice.util.ipc.impl.wal.entry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.util.ipc.MessageFactory;
-import com.github.jlangch.venice.util.ipc.impl.Message;
-import com.github.jlangch.venice.util.ipc.impl.wal.entry.MessageWalEntry;
-import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
 
-
-public class MessageEntryTest {
+public class AckWalEntryTest {
 
     @Test
     public void test() {
-        final Message m = (Message)MessageFactory.text(
-                                        null,
-                                        "hello", "text/plain", "UTF-8", "Hello!");
+        final UUID uuid = UUID.randomUUID();
 
-
-        final MessageWalEntry entry = new MessageWalEntry(m) ;
+        final AckWalEntry entry = new AckWalEntry(uuid) ;
 
         // serialize
         final WalEntry we = entry.toWalEntry();
 
         // deserialize
-        final MessageWalEntry entryOut = MessageWalEntry.fromWalEntry(we);
+        final AckWalEntry entryOut = AckWalEntry.fromWalEntry(we);
 
-        assertEquals(m, entryOut.getMessage());
+        assertEquals(uuid, entryOut.getAckedEntryUUID());
     }
 
 }
