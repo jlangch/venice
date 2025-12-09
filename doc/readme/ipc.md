@@ -705,6 +705,9 @@ as long as the client lives!
 
 #### Remove Queues
 
+> [!NOTE]
+> If the queue is durable, its Write-Ahead-Log will be removed as well!
+
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
