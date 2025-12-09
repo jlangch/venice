@@ -135,7 +135,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
      * Factory to create a queue that replays the WAL on startup.
      * Assumes wal.replay() returns the "live" elements in queue order.
      *
-     * @param wal the queue's Write-Ahead-Log
+     * @param logFile the queue's Write-Ahead-Log file
      * @param logger the logger
      * @return the durable queue with the replayed entries from the Write-Ahead-Log
      * @throws IOException if the queue could not be created from Write-Ahead-Log
