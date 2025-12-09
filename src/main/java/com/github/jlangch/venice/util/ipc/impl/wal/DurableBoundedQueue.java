@@ -101,7 +101,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
 
     @Override
     public int size() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             return size;
@@ -112,7 +111,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     }
 
     public void clear() {
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             Arrays.fill(elements, null);
@@ -229,7 +227,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queueName + " is closed!");
         }
 
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             if (size == elements.length) {
@@ -253,7 +250,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queueName + " is closed!");
         }
 
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             if (size == 0) {
@@ -275,7 +271,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queueName + " is closed!");
         }
 
-        final ReentrantLock lock = this.lock;
         lock.lock();
         try {
             if (size == 0) {
@@ -312,7 +307,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         }
 
         long nanos = unit.toNanos(timeout);
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             while (size == elements.length) {
@@ -347,7 +341,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         }
 
         long nanos = unit.toNanos(timeout);
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             while (size == 0) {
@@ -374,7 +367,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queueName + " is closed!");
         }
 
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             while (size == elements.length) {
@@ -392,7 +384,6 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             throw new VncException("The queue " + queueName + " is closed!");
         }
 
-        final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             while (size == 0) {
