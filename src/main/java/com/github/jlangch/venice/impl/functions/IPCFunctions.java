@@ -2599,6 +2599,9 @@ public class IPCFunctions {
                                 server.createQueue(name, capacity, true, durable);
                                 break;
                             case "circular":
+                                if (durable) {
+                                    throw new VncException ("Circular queues can not be made durable.");
+                                }
                                 server.createQueue(name, capacity, false, durable);
                                 break;
                             default:
@@ -2628,6 +2631,9 @@ public class IPCFunctions {
                                 client.createQueue(name, capacity, true, durable);
                                 break;
                             case "circular":
+                                if (durable) {
+                                    throw new VncException ("Circular queues can not be made durable.");
+                                }
                                 client.createQueue(name, capacity, false, durable);
                                 break;
                             default:
@@ -2639,7 +2645,7 @@ public class IPCFunctions {
                 }
                 else {
                     throw new VncException (
-                            "The first arg must be either a server or client.");
+                            "ipc/create-queue: the first arg must be either a server or client.");
                 }
             }
 
@@ -2762,7 +2768,7 @@ public class IPCFunctions {
                 }
                 else {
                     throw new VncException (
-                            "The first arg must be either a server or client.");
+                            "ipc/remove-queue: the first arg must be either a server or client.");
                 }
             }
 
@@ -2811,7 +2817,7 @@ public class IPCFunctions {
                 }
                 else {
                     throw new VncException (
-                            "The first arg must be either a server or client.");
+                            "ipc/exists-queue?: the first arg must be either a server or client.");
                 }
             }
 
