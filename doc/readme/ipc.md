@@ -86,9 +86,9 @@ pluggable handler function computes the response from the request.
   (try-with [server (ipc/server 33333 echo-handler)
              client (ipc/client "localhost" 33333)]
     ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (let [response (->> (ipc/plain-text-message "1" "test" "hello")
-                        (ipc/send-async client))]
-      (->> (deref response 1_000 :timeout)  ;; deref the result future with 1s timeout
+    (let [msg       (ipc/plain-text-message "1" "test" "hello")
+          response  (ipc/send-async client msg)]  ;; returns a future
+      (->> (deref response 1_000 :timeout)  ;; deref the repsonse future with 1s timeout
            (ipc/message->json true)
            (println "RESPONSE:")))))
 ```
@@ -169,13 +169,13 @@ messages to/from queues but a message is delivered to one client only.
       (println "ORDER:" (ipc/message->json true order))
 
       ;; client1 offers the order
-      (-<> (ipc/offer-async client1 :orders 300 order)
+      (-<> (ipc/offer-async client1 :orders 300 order)  ;; returns a future
            (deref <> 1_000 :timeout)
            (ipc/message->json true <>)
            (println "OFFERED:" <>)))
 
     ;; client2 polls next order from the queue
-    (-<> (ipc/poll-async client2 :orders 300)
+    (-<> (ipc/poll-async client2 :orders 300)  ;; returns a future
          (deref <> 1_000 :timeout)
          (ipc/message->json true <>)
          (println "POLLED:" <>))))
@@ -379,7 +379,7 @@ mode and listens for messages. To unsubscribe just close the IPC client.
     ;;   requestId="1", topic="test", payload="hello"
     (let [m (ipc/plain-text-message "1" "test" "hello")]
       (println "PUBLISHING:" (ipc/message->json true m))
-      (-<> (ipc/publish-async client2 m)
+      (-<> (ipc/publish-async client2 m)   ;; returns a future
            (deref <> 1_000 :timeout)
            (ipc/message->json true <>)
            (println "PUBLISHED:" <>)))
