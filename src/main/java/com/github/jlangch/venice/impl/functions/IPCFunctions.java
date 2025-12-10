@@ -102,6 +102,11 @@ public class IPCFunctions {
                                                         " The cutoff size can be specified as a number like `1000`" +
                                                         " or a number with a unit like `:1KB` or `:2MB`.¶" +
                                                         " Defaults to -1 (no compression)|\n" +
+                        "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
+                                                        " with this server.¶" +
+                                                        " The data is AES-256-GCM encrypted using a secret that is" +
+                                                        " created and exchanged using the Diffie-Hellman key exchange " +
+                                                        " algorithm.|\n\n" +
                         "| :write-ahead-log-dir f       | Provide a write-ahead-log directory to support durable queues.¶" +
                                                         " Defaults to `nil`.|\n" +
                         "| :write-ahead-log-compress b  | If `true` compresses the write-ahead-log records.¶" +
@@ -164,6 +169,7 @@ public class IPCFunctions {
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
+                final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
                 final VncVal walCompactAtStartVal = options.get(new VncKeyword("write-ahead-log-compact"));
@@ -175,6 +181,7 @@ public class IPCFunctions {
                 final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
                 final long maxQueues = convertMaxMessageSizeToLong(maxMaxQueuesVal);
                 final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
+                final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
 
                 final File walDir = walDirVal == Nil
                                     ? null
@@ -233,6 +240,8 @@ public class IPCFunctions {
                     server.setCompressCutoffSize(compressCutoffSize);
                 }
 
+                server.setEncryption(encrypt);
+
                 if (walDir != null) {
                     server.enableWriteAheadLog(walDir, walCompress, walCompactAtStart);
                 }
@@ -268,10 +277,6 @@ public class IPCFunctions {
                         "| port p | The server's TCP/IP port |\n" +
                         "| host h | The server's TCP/IP host |\n\n" +
                         "*Options:* \n\n" +
-                        "| :max-message-size n     | The max size of the message payload." +
-                                                   " Defaults to `200MB`.¶" +
-                                                   " The max size can be specified as a number like `20000`" +
-                                                   " or a number with a unit like `:20KB` or `:20MB`|\n" +
                         "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
                                                    " With a negative cutoff size payload messages will not be" +
                                                    " compressed. If the payload message size is greater than the" +
@@ -353,19 +358,15 @@ public class IPCFunctions {
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-                    final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
                     final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                     final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
 
-                    final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
                     final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
                     final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
 
-                    final TcpClient client = new TcpClient(host, port, encrypt);
+                    final TcpClient client = new TcpClient(host, port);
 
-                    if (maxMsgSize > 0) {
-                        client.setMaximumMessageSize(maxMsgSize);
-                    }
+                    client.setEncryption(encrypt);
 
                     if (compressCutoffSize >= 0) {
                         client.setCompressCutoffSize(compressCutoffSize);

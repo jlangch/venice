@@ -161,7 +161,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             return State.Terminated;  // this server was closed
         }
 
-        if (request.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST) {
+        if (request.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST
+            && request.getType() != MessageType.CLIENT_CONFIG
+        ) {
             statistics.incrementMessageCount();
         }
 
@@ -339,6 +341,11 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     return new Tuple2<State,Message>(
                             currState,
                             handleStatusQueueRequest(request));
+
+                case CLIENT_CONFIG:
+                    return new Tuple2<State,Message>(
+                            currState,
+                            handleClientConfigRequest(request));
 
                 case DIFFIE_HELLMAN_KEY_REQUEST:
                     return new Tuple2<State,Message>(
@@ -746,6 +753,17 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     response);
     }
 
+    private Message handleClientConfigRequest(final Message request) {
+        return createJsonResponseMessage(
+                    ResponseStatus.OK,
+                    request.getRequestId(),
+                    request.getTopics(),
+                    new JsonBuilder()
+                            .add("max-msg-size", maxMessageSize.get())
+                            .add("encrypt",      enforceEncryption)
+                            .toJson(false));
+    }
+
     private Message handleDiffieHellmanKeyExchange(final Message request) {
         if (encryptor.get().isActive()) {
             return createPlainTextResponseMessage(
@@ -856,12 +874,19 @@ public class TcpServerConnection implements IPublisher, Runnable {
                    new JsonBuilder()
                            .add("running", server.isRunning())
                            .add("mode", mode.name())
+                           // config
+                           .add("message-size-max", maxMessageSize.get())
+                           .add("compression-cutoff-size", server.getCompressCutoffSize())
+                           .add("encryption", encryptor.get().isActive())
                            .add("write-ahead-log-dir", wal.isEnabled()
                                                             ? wal.getWalDir().getAbsolutePath()
                                                             : "-" )
                            .add("write-ahead-log-count", wal.isEnabled()
                                                             ? wal.countLogFiles()
                                                             : 0 )
+                           .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
+                           .add("publish-queue-capacity", publishQueueCapacity)
+                           // statistics
                            .add("connection_count", statistics.getConnectionCount())
                            .add("message-count", statistics.getMessageCount())
                            .add("publish-count", statistics.getPublishCount())
@@ -872,12 +897,6 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("queue-count", p2pQueues.size())
                            .add("temp-queue-count", p2pQueues.values().stream().filter(q -> q.isTemporary()).count())
                            .add("temp-queue-this-client-count", tmpQueues.size())
-                           .add("publish-queue-capacity", publishQueueCapacity)
-                           .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
-                           .add("message-size-min", TcpServer.MESSAGE_LIMIT_MIN)
-                           .add("message-size-max", maxMessageSize.get())
-                           .add("compression-cutoff-size", server.getCompressCutoffSize())
-                           .add("encryption", encryptor.get().isActive())
                            .toJson(false));
     }
 
@@ -1009,6 +1028,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private final Compressor compressor;
 
     // encryption
+    private final boolean enforceEncryption = false;
     private final DiffieHellmanKeys dhKeys;
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
 

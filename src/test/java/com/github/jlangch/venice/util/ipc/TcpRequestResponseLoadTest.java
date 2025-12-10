@@ -60,8 +60,8 @@ public class TcpRequestResponseLoadTest {
 
             assertEquals(10_000L, server.getStatistics().getMessageCount());
             assertEquals(0L, server.getStatistics().getPublishCount());
-            assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
-            assertEquals( 0, server.getStatistics().getDiscardedResponseCount());
+            assertEquals(0L, server.getStatistics().getDiscardedPublishCount());
+            assertEquals(0L, server.getStatistics().getDiscardedResponseCount());
        }
         finally {
             client.close();
@@ -105,8 +105,8 @@ public class TcpRequestResponseLoadTest {
 
             assertEquals(10_000L, server.getStatistics().getMessageCount());
             assertEquals(0L, server.getStatistics().getPublishCount());
-            assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
-            assertEquals( 0, server.getStatistics().getDiscardedResponseCount());
+            assertEquals(0L, server.getStatistics().getDiscardedPublishCount());
+            assertEquals(0L, server.getStatistics().getDiscardedResponseCount());
        }
         finally {
             client1.close();
@@ -150,8 +150,8 @@ public class TcpRequestResponseLoadTest {
 
             assertEquals(10_001L, server.getStatistics().getMessageCount());
             assertEquals(0L, server.getStatistics().getPublishCount());
-            assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
-            assertEquals( 0, server.getStatistics().getDiscardedResponseCount());
+            assertEquals(0L, server.getStatistics().getDiscardedPublishCount());
+            assertEquals(0L, server.getStatistics().getDiscardedResponseCount());
         }
         finally {
             client.close();

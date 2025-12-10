@@ -46,9 +46,11 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
@@ -76,7 +78,7 @@ public class TcpClient implements Cloneable, Closeable {
      * @param port a port
      */
     public TcpClient(final int port) {
-        this(null, port, false);
+        this(null, port);
     }
 
     /**
@@ -91,42 +93,8 @@ public class TcpClient implements Cloneable, Closeable {
      * @param port a port
      */
     public TcpClient(final String host, final int port) {
-        this(host, port, false);
-    }
-
-    /**
-     * Create a new TcpClient connecting to a TcpServer on the local host
-     * and port
-     *
-     * <p>The client is NOT thread safe!
-     *
-     * <p>The client must be closed after use!
-     *
-     * @param port a port
-     * @param encrypt if <code>true</code> encrypt the payload data at transport
-     *                level communication between this client and the server.
-     */
-    public TcpClient(final int port, final boolean encrypt) {
-        this(null, port, encrypt);
-    }
-
-    /**
-     * Create a new TcpClient connecting to a TcpServer on the specified host
-     * and port
-     *
-     * <p>The client is NOT thread safe!
-     *
-     * <p>The client must be closed after use!
-     *
-     * @param host a host
-     * @param port a port
-     * @param encrypt if <code>true</code> encrypt the payload data at transport
-     *                level communication between this client and the server.
-     */
-    public TcpClient(final String host, final int port, final boolean encrypt) {
         this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
         this.port = port;
-        this.encrypt = encrypt;
         this.endpointId = UUID.randomUUID().toString();
         this.dhKeys = DiffieHellmanKeys.create();
     }
@@ -134,10 +102,25 @@ public class TcpClient implements Cloneable, Closeable {
 
     @Override
     public Object clone() {
-        final TcpClient client = new TcpClient(host, port, isEncrypted());
+        final TcpClient client = new TcpClient(host, port);
+        client.setEncryption(isEncrypted());
         client.setCompressCutoffSize(getCompressCutoffSize());
-        client.setMaximumMessageSize(getMaximumMessageSize());
-        return client;
+         return client;
+    }
+
+    /**
+     * Set the encryption mode
+     *
+     * @param encrypt if <code>true</code> encrypt the payload data at transport
+     *                level communication between this client and the server.
+     */
+    public void setEncryption(final boolean encrypt) {
+        if (opened.get()) {
+            throw new VncException(
+                   "The encryption mode cannot be set anymore "
+                   + "once the client has been opened!");
+        }
+        this.encrypt.set(encrypt);
     }
 
     /**
@@ -145,7 +128,7 @@ public class TcpClient implements Cloneable, Closeable {
      *         enabled else <code>false</code>
      */
     public boolean isEncrypted() {
-        return encryptor.get().isActive();
+        return encrypt.get();
     }
 
     /**
@@ -178,22 +161,14 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     /**
-     * Set the maximum message size.
-     *
-     * <p>Defaults to 200 MB
-     *
-     * @param maxSize the max message size in bytes
-     * @return this client
-     */
-    public TcpClient setMaximumMessageSize(final long maxSize) {
-        maxMessageSize.set(Math.max(MESSAGE_LIMIT_MIN, Math.min(MESSAGE_LIMIT_MAX, maxSize)));
-        return this;
-    }
-
-    /**
      * @return return the client's max message size
      */
     public long getMaximumMessageSize() {
+        if (!opened.get()) {
+            throw new VncException(
+                   "The max message size cannot be queried if the client has "
+                   + "been opened and has requested the size from the server!");
+        }
         return maxMessageSize.get();
     }
 
@@ -237,7 +212,37 @@ public class TcpClient implements Cloneable, Closeable {
                         ex);
             }
 
-            if (encrypt) {
+            // request config from server
+            try {
+                final IMessage response = send(createConfigRequestMessage());
+                if (response.getResponseStatus() != ResponseStatus.OK) {
+                    throw new VncException(
+                            "Failed to get client config from server. Server answered with "
+                            + response.getResponseStatus() + " !");
+                }
+
+                // handle config
+                final VncMap config = (VncMap)((Message)response).getVeniceData();
+                maxMessageSize.set(
+                    Coerce.toVncLong(
+                        config.get(
+                            new VncKeyword("max-msg-size"),
+                            new VncLong(MESSAGE_LIMIT_MAX))).toJavaLong());
+                encrypt.set(
+                    encrypt.get()             // client side encrypt request
+                    || VncBoolean.isTrue(     // server side encrypt request
+                        config.get(
+                            new VncKeyword(":encrypt"),
+	                        VncBoolean.False)));
+        }
+            catch(Exception ex) {
+                IO.safeClose(ch);
+                opened.set(false);
+                channel.set(null);
+                throw new VncException("Failed to get client config from server!", ex);
+            }
+
+            if (encrypt.get()) {
                 try {
                     diffieHellmanKeyExchange();
                 }
@@ -932,20 +937,27 @@ public class TcpClient implements Cloneable, Closeable {
             final Encryptor encryptor
     ) {
         try {
+            final boolean auditCount = msg.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST
+                                       && msg.getType() != MessageType.CLIENT_CONFIG;
+
             // sending the request message and receiving the response
             // must be atomic otherwise request and response can be mixed
             // in multi-threaded environments
             if (sendSemaphore.tryAcquire(120L, TimeUnit.SECONDS)) {
                 try {
                     Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
-                    messageSentCount.incrementAndGet();
+                    if (auditCount) {
+                        messageSentCount.incrementAndGet();
+                    }
 
                     if (msg.isOneway()) {
                         return null;
                     }
                     else {
                         final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
-                        messageReceiveCount.incrementAndGet();
+                        if (auditCount) {
+                            messageReceiveCount.incrementAndGet();
+                        }
                         return response;
                     }
                 }
@@ -1141,6 +1153,25 @@ public class TcpClient implements Cloneable, Closeable {
                 new byte[0]);
     }
 
+    private static Message createConfigRequestMessage() {
+        return new Message(
+                null,
+                null,
+                MessageType.CLIENT_CONFIG,
+                ResponseStatus.NULL,
+                false,
+                false,
+                null,
+                null,
+                System.currentTimeMillis(),
+                Message.EXPIRES_NEVER,
+                Message.NO_TIMEOUT,
+                Topics.of("client-config"),
+                "text/plain",
+                "UTF-8",
+                new byte[0]);
+    }
+
 
     private static class FutureNull implements Future<IMessage> {
 
@@ -1202,8 +1233,8 @@ public class TcpClient implements Cloneable, Closeable {
     private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
 
     // encryption
-    private final boolean encrypt;
     private final DiffieHellmanKeys dhKeys;
+    private final AtomicBoolean encrypt = new AtomicBoolean(false);
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =

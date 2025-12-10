@@ -42,11 +42,13 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_text() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333, true);
+        final TcpClient client = new TcpClient(33333);
 
         server.start(TcpServer.echoHandler());
 
         sleep(300);
+
+        client.setEncryption(true);
 
         client.open();
 
@@ -72,12 +74,13 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_binary() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333, true);
+        final TcpClient client = new TcpClient(33333);
 
         server.start(TcpServer.echoHandler());
 
         sleep(300);
 
+        client.setEncryption(true);
         client.open();
 
         try {
@@ -105,12 +108,13 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333, true);
+        final TcpClient client = new TcpClient(33333);
 
         server.start(TcpServer.echoHandler());
 
         sleep(300);
 
+        client.setEncryption(true);
         client.open();
 
         try {
@@ -144,12 +148,13 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333, true);
+        final TcpClient client = new TcpClient(33333);
 
         server.start(TcpServer.echoHandler());
 
         sleep(300);
 
+        client.setEncryption(true);
         client.open();
 
         try {
@@ -185,12 +190,13 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages_oneway() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333, true);
+        final TcpClient client = new TcpClient(33333);
 
         server.start(TcpServer.echoHandler());
 
         sleep(300);
 
+        client.setEncryption(true);
         client.open();
 
         try {
@@ -216,12 +222,13 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages_mixed() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333, true);
+        final TcpClient client = new TcpClient(33333);
 
         server.start(TcpServer.echoHandler());
 
         sleep(300);
 
+        client.setEncryption(true);
         client.open();
 
         try {
@@ -271,8 +278,9 @@ public class TcpRequestResponseEncryptedTest {
                 final int clientNr = cc;
 
                 futures.add(es.submit(() -> {
-                    final TcpClient client = new TcpClient(33333, true);
+                    final TcpClient client = new TcpClient(33333);
                     try {
+                        client.setEncryption(true);
                         client.open();
 
                         for(int msgIdx=0; msgIdx<messagesPerClient; msgIdx++) {
@@ -312,7 +320,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_remote_code_execution() throws Exception {
         final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333, true);
+        final TcpClient client = new TcpClient(33333);
 
         final Venice venice = new Venice();
 
@@ -331,6 +339,7 @@ public class TcpRequestResponseEncryptedTest {
 
         sleep(300);
 
+        client.setEncryption(true);
         client.open();
 
         try {

@@ -40,7 +40,9 @@ public enum MessageType {
     REMOVE_QUEUE(32),
     STATUS_QUEUE(33),
 
-    DIFFIE_HELLMAN_KEY_REQUEST(40),
+    CLIENT_CONFIG(40),
+
+    DIFFIE_HELLMAN_KEY_REQUEST(50),
 
 
     // responses

@@ -96,6 +96,29 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * Set the encryption mode
+     *
+     * @param encrypt if <code>true</code> encrypt the payload data at transport
+     *                level communication between this client and the server.
+     */
+    public void setEncryption(final boolean encrypt) {
+        if (started.get()) {
+            throw new VncException(
+                   "The encryption mode cannot be set anymore "
+                   + "once the server has been started!");
+        }
+        this.encrypt.set(encrypt);
+    }
+
+    /**
+     * @return <code>true</code> if this server has transport level encryption
+     *         enabled else <code>false</code>
+     */
+    public boolean isEncrypted() {
+        return encrypt.get();
+    }
+
+    /**
      * Set the compression cutoff size for payload messages.
      *
      * <p>With a negative cutoff size payload messages will not be compressed.
@@ -504,6 +527,7 @@ public class TcpServer implements Closeable {
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
+    private final AtomicBoolean encrypt = new AtomicBoolean(false);
     private final WalQueueManager wal = new WalQueueManager();
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
