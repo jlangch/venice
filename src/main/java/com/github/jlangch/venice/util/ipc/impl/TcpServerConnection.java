@@ -784,12 +784,12 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
         else {
             try {
-                logger.info("conn-" + connectionId, "Diffie-Hellman key exchange initiated");
+                logger.info("conn-" + connectionId, "Diffie-Hellman key exchange initiated!");
 
                 final String clientPublicKey = request.getText();
                 encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(clientPublicKey)));
 
-                logger.info("conn-" + connectionId, "Diffie-Hellman key exchanged completed");
+                logger.info("conn-" + connectionId, "Diffie-Hellman key exchange completed!");
                 logger.info("conn-" + connectionId, "Activated message encryption!");
 
                 // send the server's public key back
