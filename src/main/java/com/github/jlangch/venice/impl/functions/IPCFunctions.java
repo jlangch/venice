@@ -190,7 +190,7 @@ public class IPCFunctions {
                 final File serverLogDir = serverLogDirVal == Nil
                                             ? null
                                             : IOFunctions.convertToFile(
-                                                walDirVal,
+                                                serverLogDirVal,
                                                 "Function 'ipc/server' arg ':server-log-dir' must be an `io/file`");
 
                 if (serverLogDir != null && !serverLogDir.isDirectory() && !serverLogDir.canWrite()) {

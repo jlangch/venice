@@ -98,8 +98,11 @@ public class WalQueueManager {
 
         for(File logFile : listLogFiles()) {
             if (compactAtStart) {
+                logger.info(logFile, "WalQueueManager@preloadQueues: compacting WAL");
                 WriteAheadLog.compact(logFile, true, true);
             }
+
+            logger.info(logFile, "WalQueueManager@preloadQueues: create queue from WAL");
 
             final IpcQueue<Message> queue = DurableBoundedQueue.createFromWal(logFile, logger);
             queues.put(queue.name(), queue);
