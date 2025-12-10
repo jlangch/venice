@@ -115,7 +115,11 @@ public class SpecialForms_OtherFunctions {
                         "Did you mean?           \n" +
                         "   dag/dag              \n" +
                         "   dec                  \n" +
-                        "```")
+                        "```                     \n\n" +
+                        "If you search for functions provided by a module use:\n\n" +
+                        "```                     \n" +
+                        "(finder \"ipc/*\")      \n" +
+                        "```                     \n")
                     .examples(
                         ";; documentation of function '+'\n" +
                         "(doc +)",

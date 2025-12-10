@@ -1,7 +1,7 @@
 # Inter-Process-Communication
 
 
-Venice Inter-Process-Communication (IPC), is a Venice API that allows applications to send and receive messages. It enables asynchronous and loosely coupled communication, making it ideal for distributed applications. 
+Venice Inter-Process-Communication (IPC) is a Venice API that allows applications to send and receive messages. It enables asynchronous and loosely coupled communication, making it ideal for distributed applications. 
 
  
  
@@ -290,7 +290,8 @@ the server.
       (let [m (ipc/poll client :testq 300)]
         (assert (ipc/response-ok? m))
         (assert (== "hello 1" (ipc/message-field m :payload-text)))))
-
+    (println "Shutdown server/client")
+    
     (sleep 100)
 
     ;; restart client/server to test Write-Ahead-Logs 
@@ -320,10 +321,13 @@ the server.
       (let [m (ipc/poll client :testq 300)]
         (assert (ipc/response-ok? m))
         (assert (== "hello 4" (ipc/message-field m :payload-text)))))
-
+    (println "Shutdown server/client")
+    
     (sleep 100)
 
-    (finally (io/delete-file-tree wal-dir)))
+    (finally 
+      (io/delete-file-tree wal-dir)
+      (println "WAL dir cleaned and removed")))
     
   (println "Done."))
 ```

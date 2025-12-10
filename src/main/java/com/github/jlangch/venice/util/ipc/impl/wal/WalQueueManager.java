@@ -161,6 +161,13 @@ public class WalQueueManager {
                 .collect(Collectors.toList());
     }
 
+    public int countLogFiles() {
+        if (!isEnabled()) {
+            throw new VncException("Write-Ahead-Log is not active");
+        }
+
+        return listQueueNames().size();
+    }
 
     public static String toFileName(final String queueName) {
         return queueName.replace('/', '$') + ".wal";
