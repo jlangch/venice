@@ -107,6 +107,9 @@ public class IPCFunctions {
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
                                                         " created and exchanged using the Diffie-Hellman key exchange " +
                                                         " algorithm.|\n\n" +
+                        "| :server-log-dir f            | If the server-log-dir is specified writes a server log to this " +
+                                                        " directory.¶" +
+                                                        " Defaults to `nil`.|\n" +
                         "| :write-ahead-log-dir f       | Provide a write-ahead-log directory to support durable queues.¶" +
                                                         " Defaults to `nil`.|\n" +
                         "| :write-ahead-log-compress b  | If `true` compresses the write-ahead-log records.¶" +
