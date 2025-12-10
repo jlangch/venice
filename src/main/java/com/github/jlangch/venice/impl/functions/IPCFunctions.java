@@ -170,6 +170,7 @@ public class IPCFunctions {
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                final VncVal serverLogDirVal = options.get(new VncKeyword("server-log-dir"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
                 final VncVal walCompactAtStartVal = options.get(new VncKeyword("write-ahead-log-compact"));
@@ -182,6 +183,18 @@ public class IPCFunctions {
                 final long maxQueues = convertMaxMessageSizeToLong(maxMaxQueuesVal);
                 final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+
+                final File serverLogDir = serverLogDirVal == Nil
+                                            ? null
+                                            : IOFunctions.convertToFile(
+                                                walDirVal,
+                                                "Function 'ipc/server' arg ':server-log-dir' must be an `io/file`");
+
+                if (serverLogDir != null && !serverLogDir.isDirectory() && !serverLogDir.canWrite()) {
+                    throw new VncException(
+                            "The 'server-log-dir' " + serverLogDir
+                            + " does not exist or is not writable!");
+                }
 
                 final File walDir = walDirVal == Nil
                                     ? null
@@ -241,6 +254,10 @@ public class IPCFunctions {
                 }
 
                 server.setEncryption(encrypt);
+
+                if (serverLogDir != null) {
+                    server.enableLogger(serverLogDir);
+                }
 
                 if (walDir != null) {
                     server.enableWriteAheadLog(walDir, walCompress, walCompactAtStart);

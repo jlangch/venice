@@ -54,6 +54,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
+import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
 
@@ -62,6 +63,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
     public TcpServerConnection(
             final TcpServer server,
             final SocketChannel ch,
+            final long connectionId,
+            final ServerLogger logger,
             final Function<IMessage,IMessage> handler,
             final AtomicLong maxMessageSize,
             final AtomicLong maxQueues,
@@ -75,6 +78,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
     ) {
         this.server = server;
         this.ch = ch;
+        this.connectionId = connectionId;
+        this.logger = logger;
         this.handler = handler;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
@@ -95,6 +100,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
     @Override
     public void run() {
         try {
+            logger.info("conn-" + connectionId, "Listening on connection from " + IO.getRemoteAddress(ch));
+
             statistics.incrementConnectionCount();
             while(mode != State.Terminated && server.isRunning() && ch.isOpen()) {
                 if (mode == State.Request_Response) {
@@ -120,6 +127,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
             statistics.decrementConnectionCount();
             subscriptions.removeSubscriptions(this);
             IO.safeClose(ch);
+
+            logger.info("conn-" + connectionId, "Closed connection");
         }
     }
 
@@ -884,6 +893,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .add("write-ahead-log-count", wal.isEnabled()
                                                             ? wal.countLogFiles()
                                                             : 0 )
+                           .add("logger-enabled", logger.isEnabled())
+                           .add("logger-file", logger.getLogFile() != null
+                                                ? logger.getLogFile().getAbsolutePath()
+                                                : "-")
                            .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
                            .add("publish-queue-capacity", publishQueueCapacity)
                            // statistics
@@ -1015,6 +1028,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private final TcpServer server;
     private final SocketChannel ch;
+    private final long connectionId;
+    private final ServerLogger logger;
+
     private final Function<IMessage,IMessage> handler;
     private final AtomicLong maxMessageSize;
     private final AtomicLong maxQueues;

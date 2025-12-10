@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
+import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 
 
@@ -32,6 +33,15 @@ public class IO {
                 ch.close();
             }
             catch(Exception ignore) { }
+        }
+    }
+
+    public static SocketAddress getRemoteAddress(final SocketChannel channel) {
+        try {
+            return channel.getRemoteAddress();
+        }
+        catch(Exception ex) {
+            return null;
         }
     }
 }

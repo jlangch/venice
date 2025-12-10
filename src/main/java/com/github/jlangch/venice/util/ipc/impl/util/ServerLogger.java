@@ -19,10 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.wal;
+package com.github.jlangch.venice.util.ipc.impl.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -30,71 +29,78 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
+
 
 /**
- * A simple WAL logger
+ * A simple server logger
  *
- * <p>Use only for Write-Ahead-Log logging!
+ * <p>Use only for TcpServer logging!
  */
-public final class WalLogger {
+public final class ServerLogger {
 
-    private WalLogger(final File logFile) {
-        Objects.requireNonNull(logFile);
-        this.logFile = logFile;
+    public ServerLogger() {
+        logFile = null;
     }
 
 
-    public static WalLogger withinDir(final File walDir) {
-        Objects.requireNonNull(walDir);
-        return new WalLogger(new File(walDir, "wal.log"));
+
+    public void enable(final File dir) {
+        logFile = dir == null ? null : new File(dir, "server.log");
     }
 
-    public static WalLogger asTemporary() throws IOException {
-        final File file = Files.createTempFile("wal", ".log").toFile();
-        file.deleteOnExit();
-        return new WalLogger(file);
+    public boolean isEnabled() {
+        return logFile != null;
+    }
+
+    public File getLogFile() {
+        return logFile;
     }
 
 
-    public void info(final File walFile, final String message) {
+    public void info(final String context, final String message) {
         Objects.requireNonNull(message);
-        log("INFO", walFile, message, null);
+        log("INFO", context, message, null);
     }
 
-    public void warn(final File walFile, final String message) {
+    public void warn(final String context, final String message) {
         Objects.requireNonNull(message);
-        log("WARN", walFile, message, null);
+        log("WARN", context, message, null);
     }
 
-    public void warn(final File walFile, final String message, final Exception ex) {
+    public void warn(final String context, final String message, final Exception ex) {
         Objects.requireNonNull(message);
-        log("WARN", walFile, message, ex);
+        log("WARN", context, message, ex);
     }
 
-    public void error(final File walFile, final String message) {
+    public void error(final String context, final String message) {
         Objects.requireNonNull(message);
-        log("ERROR", walFile, message, null);
+        log("ERROR", context, message, null);
     }
 
-    public void error(final File walFile, final String message, final Exception ex) {
+    public void error(final String context, final String message, final Exception ex) {
         Objects.requireNonNull(message);
-        log("ERROR", walFile, message, ex);
+        log("ERROR", context, message, ex);
     }
 
 
     private synchronized void log(
             final String level,
-            final File walFile,
+            final String context,
             final String message,
             final Exception ex
     ) {
+        if (logFile == null) {
+            return;
+        }
+
         final String msg = ex == null ? message : message + ". Cause: " + ex.getMessage();
 
         final String logMsg = String.format(
                                 "%s|%s|%s|%s%n",
                                 LocalDateTime.now().format(dtf),
                                 level,
-                                walFile.getName(),
+                                StringUtil.trimToEmpty(context),
                                 msg);
         try {
             Files.write(
@@ -109,5 +115,6 @@ public final class WalLogger {
 
 
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-    private final File logFile;
+
+    private volatile File logFile = null;
 }

@@ -50,6 +50,8 @@ import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
 // https://medium.com/coderscorner/tale-of-client-server-and-socket-a6ef54a74763
@@ -222,6 +224,23 @@ public class TcpServer implements Closeable {
         return wal.isEnabled();
     }
 
+
+    /**
+     * Enable the server logger within the specified log directory
+     *
+     * @param logDir a log directory
+     */
+    public void enableLogger(final File logDir) {
+        Objects.requireNonNull(logDir);
+
+        if (!logDir.isDirectory()) {
+            throw new VncException(
+                    "The server log directory '" + logDir.getAbsolutePath() + "' does not exist!");
+        }
+
+        logger.enable(logDir);
+    }
+
     /**
      * @return the endpoint ID of this server
      */
@@ -288,6 +307,8 @@ public class TcpServer implements Closeable {
 
                 ch.configureBlocking(true);
 
+                logger.info("server", "Server started on port " + port);
+
                 if (wal.isEnabled()) {
                     // Preload the queues from the Write-Ahead-Log
                     //
@@ -309,8 +330,19 @@ public class TcpServer implements Closeable {
                             // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
                             channel.configureBlocking(true);
+
+                            final long connId = connectionId.incrementAndGet();
+                            logger.info(
+                                "server",
+                                "Server accepted new connection (" + connId + ") from "
+                                + IO.getRemoteAddress(channel));
+
                             final TcpServerConnection conn = new TcpServerConnection(
-                                                                   this, channel, handler,
+                                                                   this,
+                                                                   channel,
+                                                                   connId,
+                                                                   logger,
+                                                                   handler,
                                                                    maxMessageSize,
                                                                    maxQueues,
                                                                    wal,
@@ -330,18 +362,19 @@ public class TcpServer implements Closeable {
                 });
             }
             catch(Exception ex) {
+                final String msg = "Closed TcpServer @ 127.0.0.1 on port " + port + "!";
+                logger.error("server", msg, ex);
                 safeClose(ch);
                 started.set(false);
                 server.set(null);
-                throw new VncException(
-                        "Closed TcpServer @ 127.0.0.1 on port " + port + "!",
-                        ex);
+                throw new VncException(msg, ex);
             }
         }
         else {
-            throw new VncException(
-                    "The TcpServer @ 127.0.0.1 on port " + port
-                        + " has already been started!");
+            final String msg = "The TcpServer @ 127.0.0.1 on port " + port
+                                  + " has already been started!";
+            logger.error("server", msg);
+            throw new VncException(msg);
         }
     }
 
@@ -528,11 +561,15 @@ public class TcpServer implements Closeable {
     private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
+    private final AtomicLong connectionId = new AtomicLong(0);
     private final WalQueueManager wal = new WalQueueManager();
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
     private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
+
+    // logger
+    private final ServerLogger logger = new ServerLogger();
 
     // compression
     private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
