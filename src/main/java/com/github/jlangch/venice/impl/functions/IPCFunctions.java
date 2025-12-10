@@ -241,11 +241,11 @@ public class IPCFunctions {
                 final TcpServer server = new TcpServer(port);
 
                 if (maxConn > 0) {
-                    server.setMaximumParallelConnections(maxConn);
+                    server.setMaxParallelConnections(maxConn);
                 }
 
                 if (maxMsgSize > 0) {
-                    server.setMaximumMessageSize(maxMsgSize);
+                    server.setMaxMessageSize(maxMsgSize);
                 }
 
                 if (maxQueues > 0) {

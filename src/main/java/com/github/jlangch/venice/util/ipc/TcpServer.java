@@ -92,7 +92,7 @@ public class TcpServer implements Closeable {
      * @param count the max parallel connection count
      * @return this server
      */
-    public TcpServer setMaximumParallelConnections(final int count) {
+    public TcpServer setMaxParallelConnections(final int count) {
         mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
         return this;
     }
@@ -157,7 +157,7 @@ public class TcpServer implements Closeable {
      * @param maxSize the max message size in bytes
      * @return this server
      */
-    public TcpServer setMaximumMessageSize(final long maxSize) {
+    public TcpServer setMaxMessageSize(final long maxSize) {
         maxMessageSize.set(Math.max(MESSAGE_LIMIT_MIN, Math.min(MESSAGE_LIMIT_MAX, maxSize)));
         return this;
     }
@@ -165,7 +165,7 @@ public class TcpServer implements Closeable {
     /**
      * @return return the server's max message size
      */
-    public long getMaximumMessageSize() {
+    public long getMaxMessageSize() {
         return maxMessageSize.get();
     }
 
@@ -239,6 +239,7 @@ public class TcpServer implements Closeable {
         }
 
         logger.enable(logDir);
+
     }
 
     /**
@@ -308,6 +309,14 @@ public class TcpServer implements Closeable {
                 ch.configureBlocking(true);
 
                 logger.info("server", "Server started on port " + port);
+                logger.info("server", "Socket Timeout: " + timeout);
+                logger.info("server", "Encryption: " + isEncrypted());
+                logger.info("server", "Max Queues: " + getMaxQueues());
+                logger.info("server", "Max Msg Size: " + getMaxMessageSize());
+                logger.info("server", "Compress Cutoff Size: " + getCompressCutoffSize());
+                logger.info("server", "Log-File: " + logger.getLogFile());
+                logger.info("server", "Write-Ahead-Log: " + isWriteAheadLog());
+                logger.info("server", "Write-Ahead-Log-Dir: " + wal.getWalDir());
 
                 if (wal.isEnabled()) {
                     // Preload the queues from the Write-Ahead-Log
@@ -362,8 +371,9 @@ public class TcpServer implements Closeable {
                 });
             }
             catch(Exception ex) {
-                final String msg = "Closed TcpServer @ 127.0.0.1 on port " + port + "!";
+                final String msg = "Closed server on port " + port + "!";
                 logger.error("server", msg, ex);
+
                 safeClose(ch);
                 started.set(false);
                 server.set(null);
@@ -371,9 +381,9 @@ public class TcpServer implements Closeable {
             }
         }
         else {
-            final String msg = "The TcpServer @ 127.0.0.1 on port " + port
-                                  + " has already been started!";
+            final String msg = "The server on port " + port + " has already been started!";
             logger.error("server", msg);
+
             throw new VncException(msg);
         }
     }
@@ -525,20 +535,22 @@ public class TcpServer implements Closeable {
             return srv;
         }
         catch(BindException ex) {
+            final String msg = "Already running! Failed to start server on port " + port + "!";
+            logger.error("server", msg, ex);
+
             safeClose(srv);
             started.set(false);
             server.set(null);
-            throw new VncException(
-                    "Failed to start TcpServer @ 127.0.0.1 on port " + port + "! " + ex.getMessage(),
-                    ex);
+            throw new VncException(msg, ex);
         }
         catch(Exception ex) {
+            final String msg = "Failed to start server on port " + port + "!";
+            logger.error("server", msg, ex);
+
             safeClose(srv);
             started.set(false);
             server.set(null);
-            throw new VncException(
-                    "Failed to start TcpServer @ 127.0.0.1 on port " + port + "!",
-                    ex);
+            throw new VncException(msg, ex);
         }
     }
 

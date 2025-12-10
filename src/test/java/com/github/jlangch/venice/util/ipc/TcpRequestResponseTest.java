@@ -279,7 +279,7 @@ public class TcpRequestResponseTest {
         final TcpServer server = new TcpServer(33333);
 
         // increase connections to support the test client count
-        server.setMaximumParallelConnections(50);
+        server.setMaxParallelConnections(50);
 
         final int clients = 30;
         final int messagesPerClient = 25;
