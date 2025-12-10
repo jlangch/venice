@@ -775,6 +775,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private Message handleDiffieHellmanKeyExchange(final Message request) {
         if (encryptor.get().isActive()) {
+            logger.warn("conn-" + connectionId, "Diffie-Hellman keys already exchanged!");
             return createPlainTextResponseMessage(
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        null,
@@ -783,8 +784,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
         else {
             try {
+                logger.info("conn-" + connectionId, "Diffie-Hellman keys exchanged started");
+
                 final String clientPublicKey = request.getText();
                 encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(clientPublicKey)));
+
+                logger.info("conn-" + connectionId, "Diffie-Hellman keys exchanged");
+                logger.info("conn-" + connectionId, "Activated message encryption!");
 
                 // send the server's public key back
                 return createPlainTextResponseMessage(
@@ -794,6 +800,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            dhKeys.getPublicKeyBase64());
             }
             catch(Exception ex) {
+                logger.warn("conn-" + connectionId, "Diffie-Hellman key exchange error!", ex);
+
                 return createPlainTextResponseMessage(
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            null,
