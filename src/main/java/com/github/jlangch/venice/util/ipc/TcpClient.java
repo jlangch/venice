@@ -140,7 +140,7 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * @return return the client's max message size
      */
-    public long getMaximumMessageSize() {
+    public long getMaxMessageSize() {
         if (!opened.get()) {
             throw new VncException(
                    "The max message size cannot be queried if the client has "
