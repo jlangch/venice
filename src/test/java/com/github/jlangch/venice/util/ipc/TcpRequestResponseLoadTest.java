@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
 public class TcpRequestResponseLoadTest {
@@ -39,7 +40,7 @@ public class TcpRequestResponseLoadTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -78,7 +79,7 @@ public class TcpRequestResponseLoadTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client1.open();
         client2.open();
@@ -123,7 +124,7 @@ public class TcpRequestResponseLoadTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -168,13 +169,5 @@ public class TcpRequestResponseLoadTest {
         assertEquals(request.getMimetype(),  response.getMimetype());
         assertEquals(request.getCharset(),   response.getCharset());
         assertEquals(request.getText(),      response.getText());
-    }
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
-        }
     }
 }

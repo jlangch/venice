@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
 public class TcpServerTest {
@@ -47,7 +48,7 @@ public class TcpServerTest {
 
         server.start(handler);
 
-        sleep(300);
+        IO.sleep(300);
 
         assertTrue(server.isRunning());
 
@@ -66,7 +67,7 @@ public class TcpServerTest {
         try {
             server.start(handler);
 
-            sleep(300);
+            IO.sleep(300);
 
             assertTrue(server.isRunning());
 
@@ -105,11 +106,11 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        final Function<IMessage,IMessage> echoHandler = req -> { sleep(1000); return req; };
+        final Function<IMessage,IMessage> echoHandler = req -> { IO.sleep(1000); return req; };
 
         server.start(echoHandler);
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -117,7 +118,7 @@ public class TcpServerTest {
             final IMessage request = MessageFactory.hello();
 
             // this will abort the next message send/receive
-            Thread th = new Thread(() -> { try { sleep(200); client.close();} catch (Exception ex) {} });
+            Thread th = new Thread(() -> { try { IO.sleep(200); client.close();} catch (Exception ex) {} });
             th.start();
 
             // the server waits 1000ms with replying on the received request
@@ -140,7 +141,7 @@ public class TcpServerTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -151,7 +152,7 @@ public class TcpServerTest {
             assertNotNull(response);
 
             server.close();
-            sleep(500);
+            IO.sleep(500);
             assertFalse(server.isRunning());
 
             // this will cause a EofException or a VncException "broken pipe"
@@ -177,7 +178,7 @@ public class TcpServerTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -208,7 +209,7 @@ public class TcpServerTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -269,14 +270,6 @@ public class TcpServerTest {
 
             assertFalse(server.existsQueue("queue/1"));
             assertFalse(server.existsQueue("queue/2"));
-        }
-    }
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

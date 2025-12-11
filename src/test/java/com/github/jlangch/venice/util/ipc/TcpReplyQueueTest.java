@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+
 
 public class TcpReplyQueueTest {
 
@@ -39,7 +41,7 @@ public class TcpReplyQueueTest {
 
         server.start();
 
-        sleep(100);
+        IO.sleep(100);
 
         client1.open();
         client2.open();
@@ -96,24 +98,15 @@ public class TcpReplyQueueTest {
             assertEquals("UTF-8",            m4.getCharset());
             assertEquals("Good-By!",         m4.getText());
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client2.close();
             client1.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

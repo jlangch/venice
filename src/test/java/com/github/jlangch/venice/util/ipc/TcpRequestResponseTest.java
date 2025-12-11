@@ -35,6 +35,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
 public class TcpRequestResponseTest {
@@ -46,7 +47,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -71,7 +72,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -101,7 +102,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -134,7 +135,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -173,7 +174,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -200,7 +201,7 @@ public class TcpRequestResponseTest {
         finally {
             client.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -214,7 +215,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -231,7 +232,7 @@ public class TcpRequestResponseTest {
         finally {
             client.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -245,7 +246,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -267,7 +268,7 @@ public class TcpRequestResponseTest {
         finally {
             client.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -286,7 +287,7 @@ public class TcpRequestResponseTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         try {
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
@@ -354,7 +355,7 @@ public class TcpRequestResponseTest {
 
         server.start(execHandler);
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -378,15 +379,6 @@ public class TcpRequestResponseTest {
         finally {
             client.close();
             server.close();
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

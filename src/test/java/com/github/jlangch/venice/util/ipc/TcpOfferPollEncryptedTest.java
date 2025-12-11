@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+
 
 public class TcpOfferPollEncryptedTest {
 
@@ -39,7 +41,7 @@ public class TcpOfferPollEncryptedTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client1.setEncryption(true);
         client2.setEncryption(true);
@@ -68,24 +70,15 @@ public class TcpOfferPollEncryptedTest {
             assertEquals("UTF-8",            m2.getCharset());
             assertEquals("Hello!",           m2.getText());
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client2.close();
             client1.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

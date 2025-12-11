@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+
 
 public class TcpPubSubTest {
 
@@ -40,7 +42,7 @@ public class TcpPubSubTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         clientSub.open();
         clientPub.open();
@@ -56,13 +58,13 @@ public class TcpPubSubTest {
                 clientPub.publish(request);
             }
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             clientPub.close();
             clientSub.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -84,7 +86,7 @@ public class TcpPubSubTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         clientSub1.open();
         clientSub2.open();
@@ -116,7 +118,7 @@ public class TcpPubSubTest {
                 clientPub.publish(request);
             }
 
-            sleep(200);
+            IO.sleep(200);
 
             assertEquals(18, server.getStatistics().getMessageCount());
             assertEquals(25, server.getStatistics().getPublishCount());
@@ -129,7 +131,7 @@ public class TcpPubSubTest {
             clientSub2.close();
             clientSub3.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -147,15 +149,6 @@ public class TcpPubSubTest {
         }
         for(int ii=0; ii<5; ii++) {
             assertEquals("Hello beta " + ii, subMessages2.get(ii + 10).getText());
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

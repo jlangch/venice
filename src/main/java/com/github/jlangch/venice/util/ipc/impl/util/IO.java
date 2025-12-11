@@ -36,6 +36,14 @@ public class IO {
         }
     }
 
+    public static void sleep(final long millis) {
+        try {
+            Thread.sleep(millis);
+        }
+        catch(Exception ignore ) {
+        }
+    }
+
     public static SocketAddress getRemoteAddress(final SocketChannel channel) {
         try {
             return channel.getRemoteAddress();

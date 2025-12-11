@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
 public class TcpClientRuntimeConfigTest {
@@ -38,7 +39,7 @@ public class TcpClientRuntimeConfigTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -67,7 +68,7 @@ public class TcpClientRuntimeConfigTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -83,15 +84,6 @@ public class TcpClientRuntimeConfigTest {
         finally {
             client.close();
             server.close();
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

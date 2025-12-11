@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+
 
 public class TcpPubSubEncryptedTest {
 
@@ -40,7 +42,7 @@ public class TcpPubSubEncryptedTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         clientSub.setEncryption(true);
         clientPub.setEncryption(true);
@@ -59,13 +61,13 @@ public class TcpPubSubEncryptedTest {
                 clientPub.publish(request);
             }
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             clientPub.close();
             clientSub.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -87,7 +89,7 @@ public class TcpPubSubEncryptedTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         clientPub.setEncryption(true);
         clientSub1.setEncryption(true);
@@ -124,7 +126,7 @@ public class TcpPubSubEncryptedTest {
                 clientPub.publish(request);
             }
 
-            sleep(200);
+            IO.sleep(200);
 
             assertEquals(18, server.getStatistics().getMessageCount());
             assertEquals(25, server.getStatistics().getPublishCount());
@@ -137,7 +139,7 @@ public class TcpPubSubEncryptedTest {
             clientSub2.close();
             clientSub3.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -155,15 +157,6 @@ public class TcpPubSubEncryptedTest {
         }
         for(int ii=0; ii<5; ii++) {
             assertEquals("Hello beta " + ii, subMessages2.get(ii + 10).getText());
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

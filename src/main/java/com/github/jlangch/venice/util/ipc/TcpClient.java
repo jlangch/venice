@@ -202,16 +202,16 @@ public class TcpClient implements Cloneable, Closeable {
                         ex);
             }
 
-            // request the config from server
+            // request the config from the server
             try {
                 final IMessage response = send(createConfigRequestMessage());
                 if (response.getResponseStatus() != ResponseStatus.OK) {
                     throw new VncException(
                             "Failed to get client config from server. Server answered with "
-                            + response.getResponseStatus() + " !");
+                            + response.getResponseStatus() + "!");
                 }
 
-                // handle config
+                // handle config values
                 final VncMap config = (VncMap)((Message)response).getVeniceData();
                 maxMessageSize.set(getLong(config, "max-msg-size", Message.MESSAGE_LIMIT_MAX));
                 compressor.set(new Compressor(getLong(config, "compress-cutoff-size", -1)));

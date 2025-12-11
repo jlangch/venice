@@ -28,6 +28,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
+
 
 public class TcpOfferPollTest {
 
@@ -41,7 +43,7 @@ public class TcpOfferPollTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client1.open();
         client2.open();
@@ -66,13 +68,13 @@ public class TcpOfferPollTest {
             assertEquals("UTF-8",            m2.getCharset());
             assertEquals("Hello!",           m2.getText());
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client2.close();
             client1.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -87,7 +89,7 @@ public class TcpOfferPollTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client.open();
 
@@ -101,12 +103,12 @@ public class TcpOfferPollTest {
             assertEquals(10L,       s.get("capacity"));
             assertEquals(0L,        s.get("size"));
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -121,7 +123,7 @@ public class TcpOfferPollTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client1.open();
 
@@ -132,12 +134,12 @@ public class TcpOfferPollTest {
 
             assertEquals(ResponseStatus.QUEUE_NOT_FOUND, r.getResponseStatus());
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client1.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -152,7 +154,7 @@ public class TcpOfferPollTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client1.open();
 
@@ -173,12 +175,12 @@ public class TcpOfferPollTest {
             assertEquals(ResponseStatus.OK, r3.getResponseStatus());
             assertEquals(ResponseStatus.QUEUE_FULL, r4.getResponseStatus());
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client1.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -194,7 +196,7 @@ public class TcpOfferPollTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client1.open();
 
@@ -218,22 +220,14 @@ public class TcpOfferPollTest {
             assertEquals(ResponseStatus.OK, r4.getResponseStatus());
             assertEquals(ResponseStatus.QUEUE_EMPTY, r5.getResponseStatus());
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client1.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
-        }
-    }
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

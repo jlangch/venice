@@ -35,6 +35,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
 public class TcpRequestResponseEncryptedTest {
@@ -46,7 +47,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.setEncryption(true);
 
@@ -78,7 +79,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.setEncryption(true);
         client.open();
@@ -112,7 +113,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.setEncryption(true);
         client.open();
@@ -152,7 +153,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.setEncryption(true);
         client.open();
@@ -180,7 +181,7 @@ public class TcpRequestResponseEncryptedTest {
         finally {
             client.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -194,7 +195,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.setEncryption(true);
         client.open();
@@ -212,7 +213,7 @@ public class TcpRequestResponseEncryptedTest {
         finally {
             client.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -226,7 +227,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         client.setEncryption(true);
         client.open();
@@ -249,7 +250,7 @@ public class TcpRequestResponseEncryptedTest {
         finally {
             client.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
         }
@@ -268,7 +269,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(TcpServer.echoHandler());
 
-        sleep(300);
+        IO.sleep(300);
 
         try {
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
@@ -337,7 +338,7 @@ public class TcpRequestResponseEncryptedTest {
 
         server.start(execHandler);
 
-        sleep(300);
+        IO.sleep(300);
 
         client.setEncryption(true);
         client.open();
@@ -362,15 +363,6 @@ public class TcpRequestResponseEncryptedTest {
         finally {
             client.close();
             server.close();
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

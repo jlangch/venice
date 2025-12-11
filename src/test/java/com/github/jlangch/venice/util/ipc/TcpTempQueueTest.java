@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
 public class TcpTempQueueTest {
@@ -46,7 +47,7 @@ public class TcpTempQueueTest {
 
         server.start();
 
-        sleep(100);
+        IO.sleep(100);
 
         client1.open();
         client2.open();
@@ -111,7 +112,7 @@ public class TcpTempQueueTest {
 
             client1.close();
 
-            sleep(100);
+            IO.sleep(100);
 
             // client 2 (after closing client 1) => removed temporary queue
 
@@ -131,12 +132,12 @@ public class TcpTempQueueTest {
                                 .toVncLong(data3.get(new VncKeyword("temp-queue-this-client-count")))
                                 .toJavaLong());
 
-            sleep(50);
+            IO.sleep(50);
         }
         finally {
             client2.close();
 
-            sleep(100);
+            IO.sleep(100);
 
             server.close();
         }
@@ -150,7 +151,7 @@ public class TcpTempQueueTest {
 
         server.start();
 
-        sleep(300);
+        IO.sleep(300);
 
         client1.open();
         client2.open();
@@ -178,24 +179,15 @@ public class TcpTempQueueTest {
             assertEquals("UTF-8",            m2.getCharset());
             assertEquals("Hello!",           m2.getText());
 
-            sleep(200);
+            IO.sleep(200);
         }
         finally {
             client2.close();
             client1.close();
 
-            sleep(300);
+            IO.sleep(300);
 
             server.close();
-        }
-    }
-
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (Exception ignore) {
         }
     }
 }

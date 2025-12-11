@@ -102,14 +102,16 @@ public class TcpServer implements Closeable {
      *
      * @param encrypt if <code>true</code> encrypt the payload data at transport
      *                level communication between this client and the server.
+     * @return this server
      */
-    public void setEncryption(final boolean encrypt) {
+    public TcpServer setEncryption(final boolean encrypt) {
         if (started.get()) {
             throw new VncException(
                    "The encryption mode cannot be set anymore "
                    + "once the server has been started!");
         }
         this.encrypt.set(encrypt);
+        return this;
     }
 
     /**
@@ -198,8 +200,9 @@ public class TcpServer implements Closeable {
      * @param walDir the Write-Ahead-Logs directory
      * @param compress enable/disable Write-Ahead-Log entry compression
      * @param compactAtStart if true compact the Write-Ahead-Log at startup
+     * @return this server
      */
-    public void enableWriteAheadLog(
+    public TcpServer enableWriteAheadLog(
             final File walDir,
             final boolean compress,
             final boolean compactAtStart
@@ -217,6 +220,8 @@ public class TcpServer implements Closeable {
         }
 
         this.wal.activate(walDir, compress, compactAtStart);
+
+        return this;
     }
 
     /**
@@ -231,8 +236,9 @@ public class TcpServer implements Closeable {
      * Enable the server logger within the specified log directory
      *
      * @param logDir a log directory
+     * @return this server
      */
-    public void enableLogger(final File logDir) {
+    public TcpServer enableLogger(final File logDir) {
         Objects.requireNonNull(logDir);
 
         if (!logDir.isDirectory()) {
@@ -242,6 +248,7 @@ public class TcpServer implements Closeable {
 
         logger.enable(logDir);
 
+        return this;
     }
 
     /**
@@ -312,7 +319,9 @@ public class TcpServer implements Closeable {
 
                 logger.info("server", "Server started on port " + port);
                 logger.info("server", "Socket Timeout: " + timeout);
+                logger.info("server", "Endpoint ID: " + endpointId);
                 logger.info("server", "Encryption: " + isEncrypted());
+                logger.info("server", "Max Parallel Connections: " + mngdExecutor.getMaximumThreadPoolSize());
                 logger.info("server", "Max Queues: " + getMaxQueues());
                 logger.info("server", "Max Msg Size: " + getMaxMessageSize());
                 logger.info("server", "Compress Cutoff Size: " + getCompressCutoffSize());
@@ -396,8 +405,11 @@ public class TcpServer implements Closeable {
     @Override
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
+            final String msg = "Closed server on port " + port + "!";
+            logger.info("server", msg);
+
             // do not shutdown the thread-pools too early
-            try { Thread.sleep(300); } catch(Exception ignore ) {}
+            IO.sleep(300);
 
             safeClose(server.get());
             server.set(null);
