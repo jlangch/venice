@@ -182,9 +182,9 @@ public class IPCFunctions {
                                         ? 0
                                         : Coerce.toVncLong(maxConnVal).getIntValue();
 
-                final long maxMsgSize = convertMaxMessageSizeToLong(maxMsgSizeVal);
-                final long maxQueues = convertMaxMessageSizeToLong(maxMaxQueuesVal);
-                final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
+                final long maxMsgSize = convertUnitValueToLong(maxMsgSizeVal);
+                final long maxQueues = convertUnitValueToLong(maxMaxQueuesVal);
+                final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
 
                 final File serverLogDir = serverLogDirVal == Nil
@@ -297,13 +297,6 @@ public class IPCFunctions {
                         "| port p | The server's TCP/IP port |\n" +
                         "| host h | The server's TCP/IP host |\n\n" +
                         "*Options:* \n\n" +
-                        "| :compress-cutoff-size n | The compression cutoff size for payload messages.¶" +
-                                                   " With a negative cutoff size payload messages will not be" +
-                                                   " compressed. If the payload message size is greater than the" +
-                                                   " cutoff size it will be compressed.¶" +
-                                                   " Defaults to -1 (no compression)¶" +
-                                                   " The cutoff size can be specified as a number like `1000`" +
-                                                   " or a number with a unit like `:1KB` or `:2MB`|\n" +
                         "| :encrypt b              | If `true` encrypt the payload data of all messages exchanged" +
                                                    " between this client and its associated server.¶" +
                                                    " The data is AES-256-GCM encrypted using a secret that is" +
@@ -325,7 +318,7 @@ public class IPCFunctions {
                         "                                                                                \n" +
                         "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
                         "             client-1 (ipc/client 33333)                                        \n" +
-                        "             client-2 (ipc/client \"localhost\" 33333 :compress-cutoff-size 0)  \n" +
+                        "             client-2 (ipc/client \"localhost\" 33333)                          \n" +
                         "             client-3 (ipc/client :localhost 33333 :encrypt true)]              \n" +
                         "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello\"))           \n" +
                         "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello\"))           \n" +
@@ -378,19 +371,13 @@ public class IPCFunctions {
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-                    final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                     final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
 
-                    final long compressCutoffSize = convertMaxMessageSizeToLong(compressCutoffSizeVal);
                     final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
 
                     final TcpClient client = new TcpClient(host, port);
 
                     client.setEncryption(encrypt);
-
-                    if (compressCutoffSize >= 0) {
-                        client.setCompressCutoffSize(compressCutoffSize);
-                    }
 
                     client.open();
 
@@ -2897,7 +2884,7 @@ public class IPCFunctions {
     // Utils
     // ------------------------------------------------------------------------
 
-    private static long convertMaxMessageSizeToLong(final VncVal val) {
+    private static long convertUnitValueToLong(final VncVal val) {
         if (val == Nil) {
             return 0L;
         }
@@ -2916,11 +2903,11 @@ public class IPCFunctions {
                 return Long.parseLong(StringUtil.removeEnd(sVal, "MB")) * 1024 * 1024;
             }
             else {
-                throw new VncException("Invalid max-message-size value! Use 20000, 500KB, 10MB, ...");
+                throw new VncException("Invalid unit value! Use 20000, 500KB, 10MB, ...");
             }
         }
         else {
-           throw new VncException("Invalid max-message-size value! Use 20000, 500KB, 10MB, ...");
+           throw new VncException("Invalid unit value! Use 20000, 500KB, 10MB, ...");
         }
     }
 

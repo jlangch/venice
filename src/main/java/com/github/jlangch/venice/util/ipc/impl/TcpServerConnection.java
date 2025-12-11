@@ -769,6 +769,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     request.getTopics(),
                     new JsonBuilder()
                             .add("max-msg-size", maxMessageSize.get())
+                            .add("compress-cutoff-size", compressor.cutoffSize())
                             .add("encrypt",      enforceEncryption)
                             .toJson(false));
     }

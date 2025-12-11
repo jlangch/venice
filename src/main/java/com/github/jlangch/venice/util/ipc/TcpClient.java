@@ -104,8 +104,7 @@ public class TcpClient implements Cloneable, Closeable {
     public Object clone() {
         final TcpClient client = new TcpClient(host, port);
         client.setEncryption(isEncrypted());
-        client.setCompressCutoffSize(getCompressCutoffSize());
-         return client;
+        return client;
     }
 
     /**
@@ -129,28 +128,6 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public boolean isEncrypted() {
         return encrypt.get();
-    }
-
-    /**
-     * Set the compression cutoff size for payload messages.
-     *
-     * <p>With a negative cutoff size payload messages will not be compressed.
-     * If the payload message size is greater than the cutoff size it will be
-     * compressed.
-     *
-     * <p>Defaults to -1 (no compression)
-     *
-     * @param cutoffSize the compress cutoff size in bytes
-     * @return this server
-     */
-    public TcpClient setCompressCutoffSize(final long cutoffSize) {
-        if (opened.get()) {
-            throw new VncException(
-                   "The compression cutoff size cannot be set anymore "
-                   + "once the client has been opened!");
-        }
-        compressor.set(new Compressor(cutoffSize));
-        return this;
     }
 
     /**
@@ -228,6 +205,12 @@ public class TcpClient implements Cloneable, Closeable {
                         config.get(
                             new VncKeyword("max-msg-size"),
                             new VncLong(MESSAGE_LIMIT_MAX))).toJavaLong());
+                compressor.set(
+                    new Compressor(
+                        Coerce.toVncLong(
+                            config.get(
+                                new VncKeyword("compress-cutoff-size"),
+                                new VncLong(MESSAGE_LIMIT_MAX))).toJavaLong()));
                 encrypt.set(
                     encrypt.get()             // client side encrypt request
                     || VncBoolean.isTrue(     // server side encrypt request
