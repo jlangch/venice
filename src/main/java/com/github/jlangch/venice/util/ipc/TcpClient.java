@@ -110,6 +110,9 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Set the encryption mode
      *
+     * <p>The encryption is basically controlled by the server the client is attached to.
+     * It can be overridden by the client but it can never be weakened by the client.
+     *
      * @param encrypt if <code>true</code> encrypt the payload data at transport
      *                level communication between this client and the server.
      */
@@ -127,6 +130,11 @@ public class TcpClient implements Cloneable, Closeable {
      *         enabled else <code>false</code>
      */
     public boolean isEncrypted() {
+        if (!opened.get()) {
+            throw new VncException(
+                   "Wait until the client has been opened to get the encryption mode!");
+        }
+
         return encrypt.get();
     }
 
@@ -134,6 +142,11 @@ public class TcpClient implements Cloneable, Closeable {
      * @return return the client's payload message compression cutoff size
      */
     public long getCompressCutoffSize() {
+        if (!opened.get()) {
+            throw new VncException(
+                   "Wait until the client has been opened to get the compression cutoff size!");
+        }
+
         return compressor.get().cutoffSize();
     }
 
@@ -143,9 +156,9 @@ public class TcpClient implements Cloneable, Closeable {
     public long getMaxMessageSize() {
         if (!opened.get()) {
             throw new VncException(
-                   "The max message size cannot be queried if the client has "
-                   + "been opened and has requested the size from the server!");
+                   "Wait until the client has been opened to get the max message size!");
         }
+
         return maxMessageSize.get();
     }
 
@@ -203,8 +216,8 @@ public class TcpClient implements Cloneable, Closeable {
                 maxMessageSize.set(getLong(config, "max-msg-size", Message.MESSAGE_LIMIT_MAX));
                 compressor.set(new Compressor(getLong(config, "compress-cutoff-size", -1)));
                 encrypt.set(
-                    encrypt.get()                                // client side encrypt request
-                    || getBoolean(config, "encrypt", false));    // server side encrypt request
+                    encrypt.get()                                // client side encrypt
+                    || getBoolean(config, "encrypt", false));    // server side encrypt
             }
             catch(Exception ex) {
                 IO.safeClose(ch);
