@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Added an optional logger for the IPC server
+
 
 
 ## [1.12.68] - 2025-12-10
