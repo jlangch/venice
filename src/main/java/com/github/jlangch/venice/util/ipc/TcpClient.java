@@ -189,7 +189,7 @@ public class TcpClient implements Cloneable, Closeable {
                         ex);
             }
 
-            // request config from server
+            // request the config from server
             try {
                 final IMessage response = send(createConfigRequestMessage());
                 if (response.getResponseStatus() != ResponseStatus.OK) {
@@ -204,20 +204,20 @@ public class TcpClient implements Cloneable, Closeable {
                     Coerce.toVncLong(
                         config.get(
                             new VncKeyword("max-msg-size"),
-                            new VncLong(MESSAGE_LIMIT_MAX))).toJavaLong());
+                            new VncLong(Message.MESSAGE_LIMIT_MAX))).toJavaLong());
                 compressor.set(
                     new Compressor(
                         Coerce.toVncLong(
                             config.get(
                                 new VncKeyword("compress-cutoff-size"),
-                                new VncLong(MESSAGE_LIMIT_MAX))).toJavaLong()));
+                                new VncLong(-1))).toJavaLong()));
                 encrypt.set(
                     encrypt.get()             // client side encrypt request
                     || VncBoolean.isTrue(     // server side encrypt request
                         config.get(
                             new VncKeyword(":encrypt"),
-	                        VncBoolean.False)));
-        }
+                            VncBoolean.False)));
+            }
             catch(Exception ex) {
                 IO.safeClose(ch);
                 opened.set(false);
@@ -1197,9 +1197,6 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
 
-    public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
-    public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
-
     private final Semaphore sendSemaphore = new Semaphore(1);
 
     private final String host;
@@ -1208,7 +1205,7 @@ public class TcpClient implements Cloneable, Closeable {
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
     private final AtomicBoolean subscription = new AtomicBoolean(false);
-    private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
+    private final AtomicLong maxMessageSize = new AtomicLong(Message.MESSAGE_LIMIT_MAX);
     private final AtomicLong messageSentCount = new AtomicLong(0L);
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
 

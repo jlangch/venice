@@ -542,6 +542,10 @@ public class Message implements IMessage {
     }
 
 
+
+    public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
+    public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
+
     public static final long EXPIRES_NEVER = -1L;
     public static final long NO_TIMEOUT = -1L;
     public static final long DEFAULT_TIMEOUT = 300L;  // 300ms

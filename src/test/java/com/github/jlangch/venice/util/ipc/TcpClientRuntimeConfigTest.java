@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.ipc.impl.Message;
+
 
 public class TcpClientRuntimeConfigTest {
 
@@ -43,7 +45,7 @@ public class TcpClientRuntimeConfigTest {
         try {
             assertEquals(false, client.isEncrypted());
             assertEquals(-1, client.getCompressCutoffSize());
-            assertEquals(TcpServer.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
+            assertEquals(Message.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
         }
         catch(Exception ex) {
             // OK

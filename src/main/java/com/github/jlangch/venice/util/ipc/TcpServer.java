@@ -158,7 +158,9 @@ public class TcpServer implements Closeable {
      * @return this server
      */
     public TcpServer setMaxMessageSize(final long maxSize) {
-        maxMessageSize.set(Math.max(MESSAGE_LIMIT_MIN, Math.min(MESSAGE_LIMIT_MAX, maxSize)));
+        maxMessageSize.set(Math.max(
+                            Message.MESSAGE_LIMIT_MIN,
+                            Math.min(Message.MESSAGE_LIMIT_MAX, maxSize)));
         return this;
     }
 
@@ -560,8 +562,6 @@ public class TcpServer implements Closeable {
 
 
 
-    public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
-    public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
     public static final long QUEUES_MIN = 201;
     public static final long QUEUES_MAX = 20;
 
@@ -570,7 +570,7 @@ public class TcpServer implements Closeable {
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
-    private final AtomicLong maxMessageSize = new AtomicLong(MESSAGE_LIMIT_MAX);
+    private final AtomicLong maxMessageSize = new AtomicLong(Message.MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
     private final AtomicLong connectionId = new AtomicLong(0);
