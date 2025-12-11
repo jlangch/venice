@@ -479,12 +479,23 @@ public class TcpServer implements Closeable {
         // do not overwrite the queue if it already exists
         p2pQueues.computeIfAbsent(
             queueName,
-            k -> QueueFactory.createQueue(
-                    wal,
-                    queueName,
-                    capacity,
-                    bounded,
-                    durable));
+            k -> { final IpcQueue<Message> q = QueueFactory.createQueue(
+                                                    wal,
+                                                    queueName,
+                                                    capacity,
+                                                    bounded,
+                                                    durable);
+                   logger.info(
+                      "server",
+                      String.format(
+                          "Created queue %s. Capacity=%d, bounded=%b, durable=%b",
+                          queueName,
+                          capacity,
+                          bounded,
+                          durable));
+
+                   return q;
+            });
     }
 
     /**
@@ -508,6 +519,8 @@ public class TcpServer implements Closeable {
         QueueValidator.validate(queueName);
 
         p2pQueues.remove(queueName);
+
+        logger.info("server", String.format("Removed queue %s.", queueName));
     }
 
     /**

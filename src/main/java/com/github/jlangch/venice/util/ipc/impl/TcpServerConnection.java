@@ -618,12 +618,23 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 // do not overwrite the queue if it already exists
                 p2pQueues.computeIfAbsent(
                         queueName,
-                        k -> QueueFactory.createQueue(
-                                wal,
-                                queueName,
-                                capacity,
-                                bounded,
-                                durable));
+                        k -> { final IpcQueue<Message> q = QueueFactory.createQueue(
+                                                                wal,
+                                                                queueName,
+                                                                capacity,
+                                                                bounded,
+                                                                durable);
+                               logger.info(
+                                  "conn-" + connectionId,
+                                  String.format(
+                                      "Created queue %s. Capacity=%d, bounded=%b, durable=%b",
+                                      queueName,
+                                      capacity,
+                                      bounded,
+                                      durable));
+
+                               return q;
+                        });
             }
             catch(Exception ex) {
                 return createBadRequestTextMessageResponse(
@@ -681,12 +692,21 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
 
             // do not overwrite the queue if it already exists
-            final IpcQueue<Message> q = p2pQueues.computeIfAbsent(
-                                           queueName,
-                                           k -> new BoundedQueue<Message>(queueName, capacity, true));
-            if (q != null) {
-                tmpQueues.put(queueName, 0);
-            }
+           p2pQueues.computeIfAbsent(
+               queueName,
+               k -> {
+                   final IpcQueue<Message> q = new BoundedQueue<Message>(queueName, capacity, true);
+                   tmpQueues.put(queueName, 0);
+
+                   logger.info(
+                           "conn-" + connectionId,
+                           String.format(
+                               "Created temporary queue %s. Capacity=%d",
+                               queueName,
+                               capacity));
+
+                   return q;
+               });
 
             return createOkTextMessageResponse(request, queueName);
         }
@@ -718,6 +738,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         p2pQueues.remove(queueName);
         tmpQueues.remove(queueName);
+
+        logger.info("conn-" + connectionId, String.format("Removed queue %s.", queueName));
 
         return createOkTextMessageResponse(
                 request,
