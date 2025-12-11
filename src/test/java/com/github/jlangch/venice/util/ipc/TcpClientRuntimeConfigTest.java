@@ -72,8 +72,8 @@ public class TcpClientRuntimeConfigTest {
         try {
             // check if the client obtained the config from the server
             assertEquals(false, client.isEncrypted());
-            assertEquals(2000, client.getCompressCutoffSize());
             assertEquals(3000, client.getMaxMessageSize());
+            assertEquals(2000, client.getCompressCutoffSize());
         }
         catch(Exception ex) {
             // OK
