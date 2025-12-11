@@ -200,23 +200,11 @@ public class TcpClient implements Cloneable, Closeable {
 
                 // handle config
                 final VncMap config = (VncMap)((Message)response).getVeniceData();
-                maxMessageSize.set(
-                    Coerce.toVncLong(
-                        config.get(
-                            new VncKeyword("max-msg-size"),
-                            new VncLong(Message.MESSAGE_LIMIT_MAX))).toJavaLong());
-                compressor.set(
-                    new Compressor(
-                        Coerce.toVncLong(
-                            config.get(
-                                new VncKeyword("compress-cutoff-size"),
-                                new VncLong(-1))).toJavaLong()));
+                maxMessageSize.set(getLong(config, "max-msg-size", Message.MESSAGE_LIMIT_MAX));
+                compressor.set(new Compressor(getLong(config, "compress-cutoff-size", -1)));
                 encrypt.set(
-                    encrypt.get()             // client side encrypt request
-                    || VncBoolean.isTrue(     // server side encrypt request
-                        config.get(
-                            new VncKeyword(":encrypt"),
-                            VncBoolean.False)));
+                    encrypt.get()                                // client side encrypt request
+                    || getBoolean(config, "encrypt", false));    // server side encrypt request
             }
             catch(Exception ex) {
                 IO.safeClose(ch);
@@ -1195,6 +1183,22 @@ public class TcpClient implements Cloneable, Closeable {
     private static byte[] toBytes(final String s, final String charset) {
         return s.getBytes(Charset.forName(charset));
     }
+
+    private static long getLong(final VncMap map, final String entryName, final long defaulValue) {
+        return Coerce.toVncLong(
+                map.get(
+                   new VncKeyword(entryName),
+                   new VncLong(defaulValue))).toJavaLong();
+    }
+
+    private static boolean getBoolean(final VncMap map, final String entryName, final boolean defaulValue) {
+        return VncBoolean.isTrue(
+                map.get(
+                     new VncKeyword(entryName),
+                     VncBoolean.of(defaulValue)));
+    }
+
+
 
 
     private final Semaphore sendSemaphore = new Semaphore(1);

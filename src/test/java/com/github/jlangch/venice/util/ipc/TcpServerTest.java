@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
 public class TcpServerTest {
@@ -234,11 +235,11 @@ public class TcpServerTest {
     @Test
     public void test_server_max_size() throws Exception {
         try (TcpServer server = new TcpServer(33333)) {
-            assertEquals(TcpServer.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
+            assertEquals(Message.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
 
             // below minimum
             server.setMaxMessageSize(100L);
-            assertEquals(TcpServer.MESSAGE_LIMIT_MIN, server.getMaxMessageSize());
+            assertEquals(Message.MESSAGE_LIMIT_MIN, server.getMaxMessageSize());
 
             // in range
             server.setMaxMessageSize(100L * 1024L);
@@ -246,7 +247,7 @@ public class TcpServerTest {
 
             // above maximum
             server.setMaxMessageSize(800L * 1024L * 1024L);
-            assertEquals(TcpServer.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
+            assertEquals(Message.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
         }
     }
 
