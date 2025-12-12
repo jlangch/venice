@@ -380,6 +380,8 @@ public class TcpServer implements Closeable {
                         }
                     }
                 });
+
+                logger.info("server", "Server is operational and ready to accept connections.");
             }
             catch(Exception ex) {
                 final String msg = "Closed server on port " + port + "!";
