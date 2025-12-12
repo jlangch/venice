@@ -23,9 +23,8 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Complete rewrite of the durable queue. Optimized the lock critical section
-  for read/write WAL records together with offer/poll of messages to process 
-  these as an atomical operation.
+- Complete rewrite of the durable queue. Optimized the lock critical section for read/write 
+  WAL records together with offer/poll of messages to process these as an atomical operation.
 
 ### Bugs
 
