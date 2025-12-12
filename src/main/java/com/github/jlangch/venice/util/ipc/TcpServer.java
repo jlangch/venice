@@ -330,6 +330,11 @@ public class TcpServer implements Closeable {
                 logger.info("server", "Write-Ahead-Log-Dir: " + wal.getWalDir());
 
                 if (wal.isEnabled()) {
+                    final int queueCount = wal.countLogFiles();
+                    if (queueCount > 0) {
+                        logger.info("server", "Loading " + queueCount + " queue(s) from WAL...");
+                    }
+
                     // Preload the queues from the Write-Ahead-Log
                     //
                     // Note: 1) must be run after starting the ServerSocketChannel
@@ -427,7 +432,7 @@ public class TcpServer implements Closeable {
                 "server",
                 terminated
                     ? "Server closed."
-                    : "Server closed. Some connection are delaying shutdown confirmation.");
+                    : "Server closed. Some connections are delaying shutdown confirmation.");
         }
     }
 
