@@ -57,17 +57,20 @@ public abstract class ManagedExecutor {
         }
     }
 
-    public final void awaitTermination(final long timeoutMillis) {
+    public final boolean awaitTermination(final long timeoutMillis) {
         synchronized(this) {
             if (executor != null) {
                 try {
-                    executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
+                    return executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
                 }
                 catch(Exception ex) {
                     throw new VncException(
                             "Failed awaiting for executor termination",
                             ex);
                 }
+            }
+            else {
+                return true;
             }
         }
     }

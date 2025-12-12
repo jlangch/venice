@@ -419,6 +419,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
         // register subscription
         subscriptions.addSubscriptions(request.getTopicsSet(), this);
 
+        logger.info(
+                "conn-" + connectionId,
+                String.format("Subscribed to topics: %s.", Topics.encode(request.getTopics())));
+
         // acknowledge the subscription
         return createOkTextMessageResponse(request, "Subscribed to the topics.");
     }
@@ -426,6 +430,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
     private Message handleUnsubscribe(final Message request) {
         // unregister subscription
         subscriptions.removeSubscriptions(request.getTopicsSet(), this);
+
+        logger.info(
+                "conn-" + connectionId,
+                String.format("Unsubscribed from topics: %s.", Topics.encode(request.getTopics())));
 
         // acknowledge the unsubscription
         return createOkTextMessageResponse(request, "Unsubscribed from the topics.");
@@ -1024,7 +1032,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             errorBuffer.offer(new Error(errorMsg, msg, ex));
             statistics.incrementDiscardedPublishCount();
         }
-        catch(InterruptedException ignore) {}
+        catch(InterruptedException ignore) { }
     }
 
     private void removeAllChannelTemporaryQueues() {
@@ -1032,8 +1040,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final Set<String> names = tmpQueues.keySet();
             names.forEach(n -> p2pQueues.remove(n));
             tmpQueues.clear();
+
+            logger.info("conn-" + connectionId, "Removed all temporary queues of the connnection");
         }
-        catch(Exception ignore) {}
+        catch(Exception ignore) { }
     }
 
     private long countStandardQueues() {

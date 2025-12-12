@@ -405,15 +405,27 @@ public class TcpServer implements Closeable {
     @Override
     public void close() throws IOException {
         if (started.compareAndSet(true, false)) {
-            final String msg = "Closed server on port " + port + "!";
-            logger.info("server", msg);
+            logger.info("server", "Server closing...");
 
             // do not shutdown the thread-pools too early
             IO.sleep(300);
 
             safeClose(server.get());
             server.set(null);
+
+            // This method does not wait for actively executing tasks to terminate.
             mngdExecutor.shutdownNow();
+
+            // wait max 1'000ms
+            final boolean terminated = mngdExecutor.awaitTermination(1_000);
+
+            IO.sleep(100);
+
+            logger.info(
+                "server",
+                terminated
+                    ? "Server closed."
+                    : "Server closed. Some connection are delaying shutdown confirmation.");
         }
     }
 
@@ -539,14 +551,21 @@ public class TcpServer implements Closeable {
     private void safeClose(final ServerSocketChannel ch) {
         if (ch != null) {
             try {
-                // close the durable queues
-                if (wal.isEnabled()) {
-                    wal.close(p2pQueues.values());
+                try {
+                    // close the durable queues
+                    if (wal.isEnabled()) {
+                        wal.close(p2pQueues.values());
+                    }
+                }
+                catch(Exception ex) {
+                    logger.warn("server", "Error while closing queue WALs.", ex);
                 }
 
                 ch.close();
             }
-            catch(Exception ignore) {}
+            catch(Exception ex) {
+                logger.warn("server", "Error while closing server.", ex);
+            }
         }
     }
 
