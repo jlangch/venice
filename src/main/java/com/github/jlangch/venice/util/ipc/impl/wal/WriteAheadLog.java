@@ -72,7 +72,10 @@ import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType;
  */
 public final class WriteAheadLog implements Closeable {
 
-    public WriteAheadLog(final File file, final WalLogger logger) throws IOException {
+    public WriteAheadLog(
+            final File file,
+            final WalLogger logger
+    ) throws IOException {
         this(file, false, logger);
     }
 

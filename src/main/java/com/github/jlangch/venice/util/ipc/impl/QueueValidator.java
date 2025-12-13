@@ -36,6 +36,11 @@ public class QueueValidator {
                     "A queue name is limited to " + QUEUE_NAME_MAX_LEN + " characters!");
         }
 
+        if (!queueName.matches("wal")) {
+            throw new IllegalArgumentException(
+                    "The queue name 'wal' is a preserved name!");
+        }
+
         if (!queueName.matches("[a-zA-Z0-9_\\-/]+")) {
             throw new IllegalArgumentException(
                     "The queue name \"" + queueName + "\" must only contain the characters: "
