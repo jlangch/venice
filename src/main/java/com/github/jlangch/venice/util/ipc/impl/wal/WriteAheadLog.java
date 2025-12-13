@@ -503,11 +503,13 @@ public final class WriteAheadLog implements Closeable {
             }
             catch (EOFException e) {
                 // Partial header or payload at the end: stop, treat as corruption
+                logger.warn(file, "WAL recovery faced early EOF.");
                 recoveredFromCorruption = false;
                 break;
             }
             catch (CorruptedRecordException e) {
                 // Data corruption: stop scanning here
+                logger.warn(file, "WAL recovery faced corrupted recorder.");
                 recoveredFromCorruption = false;
                 break;
             }
@@ -522,11 +524,16 @@ public final class WriteAheadLog implements Closeable {
         this.validEndPosition = lastGoodEnd;
         channel.position(validEndPosition);
 
-        logger.info(
-                file,
-                recoveredFromCorruption
-                    ? "WAL recovered successfully."
-                    : "WAL recovered from corrupted file.");
+        if (recoveredFromCorruption) {
+            logger.info(file, "WAL recovered successfully.");
+        }
+        else {
+            logger.warn(file, String.format(
+                                "WAL truncated at lastGoodFilePos=%d, fileSize=%d",
+                                lastGoodEnd,
+                                 fileSize));
+            logger.warn(file, "WAL recovered from corrupted file.");
+        }
 
         return recoveredFromCorruption;
     }
