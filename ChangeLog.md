@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 
 - Added an optional logger for the IPC server
 
+### Updated dependencies:
+
+- Bumped VAVR from 0.10.7 to 0.11.0
+
 
 
 ## [1.12.68] - 2025-12-10
