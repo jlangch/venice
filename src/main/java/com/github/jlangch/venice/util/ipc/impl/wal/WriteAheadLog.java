@@ -154,58 +154,68 @@ public final class WriteAheadLog implements Closeable {
             final long expiry,
             final byte[] payload
     ) throws IOException {
-        if (uuid == null) {
-            throw new IllegalArgumentException("uuid must not be null");
+        try {
+            if (uuid == null) {
+                throw new IllegalArgumentException("uuid must not be null");
+            }
+            if (payload == null) {
+                throw new IllegalArgumentException("payload must not be null");
+            }
+            if (payload.length < 0) {
+                throw new IllegalArgumentException("payload length invalid");
+            }
+
+            final long lsn = ++lastLsn;
+
+            final boolean compress = compressor.isActive()
+                                        && type == WalEntryType.DATA
+                                        && compressor.needsCompression(payload);
+
+            final byte[] payloadCompressed = compressor.compress(payload, compress);
+
+            final int payloadLength = payloadCompressed.length;
+            final CRC32 crc32 = new CRC32();
+            crc32.update(payloadCompressed);
+            final int checksum = (int) crc32.getValue();
+
+            // Prepare header + payload buffer
+            ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE + payloadLength);
+            buffer.putInt(MAGIC);
+            buffer.putLong(lsn);
+            buffer.putInt(type.getValue());
+            buffer.putLong(uuid.getMostSignificantBits());
+            buffer.putLong(uuid.getLeastSignificantBits());
+            buffer.putLong(expiry);
+            buffer.putInt(compress ? 1 : 0);
+            buffer.putInt(payloadLength);
+            buffer.putInt(checksum);
+            buffer.put(payloadCompressed);
+            buffer.flip();
+
+            // Position at end of file
+            channel.position(channel.size());
+
+            // Write fully
+            while (buffer.hasRemaining()) {
+                channel.write(buffer);
+            }
+
+            // Force write to disk (data only, not metadata)
+            channel.force(false);
+
+            // Update valid end position
+            validEndPosition = channel.position();
+
+            return lsn;
         }
-        if (payload == null) {
-            throw new IllegalArgumentException("payload must not be null");
+        catch(IOException ex) {
+            logger.error(file, "Failed to append WAL record (type=" + type +")", ex);
+            throw ex;
         }
-        if (payload.length < 0) {
-            throw new IllegalArgumentException("payload length invalid");
+        catch(RuntimeException ex) {
+            logger.error(file, "Failed to append WAL record (type=" + type +")", ex);
+            throw ex;
         }
-
-        final long lsn = ++lastLsn;
-
-        final boolean compress = compressor.isActive()
-                                    && type == WalEntryType.DATA
-                                    && compressor.needsCompression(payload);
-
-        final byte[] payloadCompressed = compressor.compress(payload, compress);
-
-        final int payloadLength = payloadCompressed.length;
-        final CRC32 crc32 = new CRC32();
-        crc32.update(payloadCompressed);
-        final int checksum = (int) crc32.getValue();
-
-        // Prepare header + payload buffer
-        ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE + payloadLength);
-        buffer.putInt(MAGIC);
-        buffer.putLong(lsn);
-        buffer.putInt(type.getValue());
-        buffer.putLong(uuid.getMostSignificantBits());
-        buffer.putLong(uuid.getLeastSignificantBits());
-        buffer.putLong(expiry);
-        buffer.putInt(compress ? 1 : 0);
-        buffer.putInt(payloadLength);
-        buffer.putInt(checksum);
-        buffer.put(payloadCompressed);
-        buffer.flip();
-
-        // Position at end of file
-        channel.position(channel.size());
-
-        // Write fully
-        while (buffer.hasRemaining()) {
-            channel.write(buffer);
-        }
-
-        // Force write to disk (data only, not metadata)
-        channel.force(false);
-
-        // Update valid end position
-        validEndPosition = channel.position();
-
-        return lsn;
     }
 
     /**
@@ -389,48 +399,77 @@ public final class WriteAheadLog implements Closeable {
         //       the compacted entries.
         //       This avoids a completely unnecessary decompress/compress cycle!
 
-        // [1] read the entries of the old log
-        try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false, logger)) {
-            pending.addAll(compact(oldLog.readAll(true), discardExpiredEntries));
-        }
+        // Phase 1: xxx.log -> [compact to] -> xxx.log.compact
+        //          xxx.log -> [rename to]  -> xxx.log.bak
+        try {
+            // [1] read the entries of the old log
+            try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false, logger)) {
+                pending.addAll(compact(oldLog.readAll(true), discardExpiredEntries));
+            }
 
-        // [2] Write a brand-new log with only pending messages
-        if (tmpFile.exists() && !tmpFile.delete()) {
-            logger.warn(logFile, "WAL compacting: Deleting stale tmp WAL " + tmpFile.getName() + " failed.");
-            throw new IOException("Could not delete stale tmp file: " + tmpFile);
-        }
-        try (WriteAheadLog newLog = new WriteAheadLog(tmpFile, false, logger)) {
-            for (WalEntry e : pending) {
-                newLog.append(e);
+            // [2] Write a brand-new tmpLog with only pending messages
+            if (tmpFile.exists() && !tmpFile.delete()) {
+                logger.warn(logFile, "WAL compacting: Deleting stale tmp WAL " + tmpFile.getName() + " failed.");
+                throw new IOException("Could not delete stale tmp file: " + tmpFile);
+            }
+            try (WriteAheadLog tmpLog = new WriteAheadLog(tmpFile, false, logger)) {
+                for (WalEntry e : pending) {
+                    tmpLog.append(e);
+                }
+            }
+
+            // [3] Atomically-ish swap files: old -> .bak, tmp -> original
+            //     (Simple approach; fsync directory etc. if stricter guarantees are required.)
+
+            // remove old backup if exists
+            if (backupFile.exists() && !backupFile.delete()) {
+                logger.warn(logFile, "WAL compacting: Deleting old backup WAL " + backupFile.getName() + " failed.");
+                throw new IOException("Could not delete old backup file: " + backupFile);
+            }
+
+            if (!logFile.renameTo(backupFile)) {
+                // failed before touching tmpFile => safe
+                throw new IOException("Failed to rename original log to backup: " +
+                                      logFile + " -> " + backupFile);
             }
         }
-
-        // [3] Atomically-ish swap files: old -> .bak, tmp -> original
-        //     (Simple approach; fsync directory etc. if stricter guarantees are required.)
-
-        // remove old backup if exists
-        if (backupFile.exists() && !backupFile.delete()) {
-            logger.warn(logFile, "WAL compacting: Deleting old backup WAL " + backupFile.getName() + " failed.");
-            throw new IOException("Could not delete old backup file: " + backupFile);
+        catch(IOException ex) {
+            logger.warn(logFile, "WAL compacting failed! Leaving Write-Ahead-Log unchanged!", ex);
+            throw ex;
+        }
+        catch(RuntimeException ex) {
+            logger.warn(logFile, "WAL compacting failed! Leaving Write-Ahead-Log unchanged!", ex);
+            throw ex;
         }
 
-        if (!logFile.renameTo(backupFile)) {
-            // failed before touching tmpFile => safe
-            throw new IOException("Failed to rename original log to backup: " +
-                                  logFile + " -> " + backupFile);
-        }
 
+        // Phase 2: xxx.log.compact -> [rename to] -> xxx.log
+        //          xxx.log.bak     -> [remove]
+
+        // [4] Rename compacted logfile to logfile
         if (!tmpFile.renameTo(logFile)) {
+            final String failedRenameAction = "Rename compacted " + tmpFile.getName() + " -> " + logFile.getName()
+                                                + " failed!";
             // try to restore original
-            logger.warn(logFile, "WAL compacting: Rename " + tmpFile.getName() + " -> " + logFile.getName() + " failed.");
-            if (!backupFile.renameTo(logFile)) {
-                logger.warn(logFile, "Compacting: Compensation rename backup WAL to old WAL failed.");
+            logger.warn(logFile, "WAL compacting failed: " + failedRenameAction);
+
+            if (backupFile.renameTo(logFile)) {
+                // old, uncompacted logfile successfully restored
+                logger.warn(logFile, "Successfully restored uncompacted Write-Ahead-Log! No data lost!");
+                throw new IOException(
+                        "WAL compacting failed: " + failedRenameAction +
+                        " Successfully restored uncompacted Write-Ahead-Log! No data lost!");
             }
-            throw new IOException("Failed to rename compacted log into place: " +
-                                  tmpFile + " -> " + logFile);
+            else {
+                // FATAL error
+                logger.error(logFile, "Fatal failure: Compensation rename backup WAL to old WAL failed! DATA LOST!");
+                throw new IOException(
+                        "WAL compacting failed: " + failedRenameAction +
+                        " Fatal failure: Compensation rename backup WAL to old WAL failed! DATA LOST!");
+            }
         }
 
-        // [4] Optionally: delete the created backup file
+        // [5] Optionally: delete the created backup file
         if (removeBackupLogFile) {
             if (!backupFile.delete()) {
                 logger.warn(logFile, "WAL compacting: Deleting backup WAL " + backupFile.getName() + " failed.");
