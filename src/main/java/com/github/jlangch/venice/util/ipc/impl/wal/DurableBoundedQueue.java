@@ -34,6 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
@@ -49,9 +50,9 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     public DurableBoundedQueue(
             final String queueName,
             final int capacity,
-             final WriteAheadLog wal,
+            final WriteAheadLog wal,
             final WalLogger logger
-    ) throws IOException {
+    ) throws IpcException {
         Objects.requireNonNull(queueName);
         Objects.requireNonNull(wal);
         Objects.requireNonNull(logger);
@@ -66,11 +67,22 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
 
         // if the queue wal is new, append the config entry to the wal
         if (wal.getLastLsn() == 0) {
-            final ConfigWalEntry ce = new ConfigWalEntry(
-                                            capacity,
-                                            QueueType.BOUNDED,
-                                            wal.isCompressing());
-            wal.append(ce.toWalEntry());
+            try {
+                final ConfigWalEntry ce = new ConfigWalEntry(
+                                                capacity,
+                                                QueueType.BOUNDED,
+                                                wal.isCompressing());
+
+                wal.append(ce.toWalEntry());
+            }
+            catch(Exception ex) {
+                throw new IpcException(
+                        String.format(
+                            "Failed to append the configuration entry to new "
+                            + "Write-Ahead-Log of the durable queue %s!",
+                            queueName),
+                        ex);
+            }
         }
     }
 
@@ -141,12 +153,12 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
      * @param logFile the queue's Write-Ahead-Log file
      * @param logger the logger
      * @return the durable queue with the replayed entries from the Write-Ahead-Log
-     * @throws IOException if the queue could not be created from Write-Ahead-Log
+     * @throws IpcException if the queue could not be created from Write-Ahead-Log
      */
     public static DurableBoundedQueue createFromWal(
             final File logFile,
             final WalLogger logger
-    ) throws IOException {
+    ) throws IpcException {
         Objects.requireNonNull(logFile);
         Objects.requireNonNull(logger);
 
@@ -154,41 +166,58 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
 
         final String queueName = WalQueueManager.toQueueName(logFile);
 
-        // load all Write-Ahead-Log entries and compact the entries
-        final List<WalEntry> entries = WriteAheadLog.compact(
-                                            WriteAheadLog.loadAll(logFile, false),
-                                            true); // discard expired entries
+        try {
+            // load all Write-Ahead-Log entries and compact the entries
+            final List<WalEntry> entries = WriteAheadLog.compact(
+                                                WriteAheadLog.loadAll(logFile, false),
+                                                true); // discard expired entries
 
-        // read the configuration WAL entry to get the queue type
-        // and its capacity
-        final WalEntry firstEntry = CollectionUtil.first(entries);
-        if (firstEntry == null || firstEntry.getType() != WalEntryType.CONFIG) {
-            final String errMsg = "Failed create queue " + queueName + " from WAL. "
-                                   + "The WAL does not have a ConfigWalEntry";
-            logger.error(new File(WalQueueManager.toFileName(queueName)), errMsg);
-            throw new VncException(errMsg);
+            // read the configuration WAL entry to get the queue type
+            // and its capacity
+            final WalEntry firstEntry = CollectionUtil.first(entries);
+            if (firstEntry == null || firstEntry.getType() != WalEntryType.CONFIG) {
+                final String errMsg = "Failed create queue " + queueName + " from WAL. "
+                                       + "The WAL does not have a ConfigWalEntry";
+                logger.error(new File(WalQueueManager.toFileName(queueName)), errMsg);
+                throw new VncException(errMsg);
+            }
+
+            final ConfigWalEntry config = ConfigWalEntry.fromWalEntry(firstEntry);
+            entries.remove(0);  // remove the config entry from the entry list
+
+            final int capacity = config.getQueueCapacity();
+            final boolean compress = config.isWalCompressed();
+
+            final WriteAheadLog wal = new WriteAheadLog(
+                                              new File(
+                                                      walDir,
+                                                      WalQueueManager.toFileName(queueName)),
+                                              compress,
+                                              logger);
+
+            final DurableBoundedQueue q = new DurableBoundedQueue(
+                                                queueName,
+                                                capacity,
+                                                wal,
+                                                logger);
+            q.replayFromWal(entries);
+            return q;
         }
-
-        final ConfigWalEntry config = ConfigWalEntry.fromWalEntry(firstEntry);
-        entries.remove(0);  // remove the config entry from the entry list
-
-        final int capacity = config.getQueueCapacity();
-        final boolean compress = config.isWalCompressed();
-
-        final WriteAheadLog wal = new WriteAheadLog(
-                                          new File(
-                                                  walDir,
-                                                  WalQueueManager.toFileName(queueName)),
-                                          compress,
-                                          logger);
-
-        final DurableBoundedQueue q = new DurableBoundedQueue(
-                                            queueName,
-                                            capacity,
-                                            wal,
-                                            logger);
-        q.replayFromWal(entries);
-        return q;
+        catch(CorruptedRecordException ex) {
+            throw new IpcException(
+                    String.format(
+                        "Failed to load the durable queue %s from its Write-Ahead-Log! "
+                        + "The Write-Ahead-Log is corrupted!",
+                        queueName),
+                    ex);
+        }
+        catch(Exception ex) {
+            throw new IpcException(
+                    String.format(
+                        "Failed to load the durable queue %s from its Write-Ahead-Log!",
+                        queueName),
+                    ex);
+        }
     }
 
     private void replayFromWal(final List<WalEntry> replayEntries) {

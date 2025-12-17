@@ -23,6 +23,8 @@ package com.github.jlangch.venice.util.ipc.impl.wal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -88,14 +90,12 @@ public final class WalLogger {
             final String message,
             final Exception ex
     ) {
-        final String msg = ex == null ? message : message + ". Cause: " + ex.getMessage();
-
         final String logMsg = String.format(
                                 "%s|%s|%s|%s%n",
                                 LocalDateTime.now().format(dtf),
                                 level,
                                 walFile.getName(),
-                                msg);
+                                formatMessage(message, ex));
         try {
             Files.write(
                 logFile.toPath(),
@@ -105,6 +105,28 @@ public final class WalLogger {
                 StandardOpenOption.CREATE);
         }
         catch(Exception ignore) { }
+    }
+
+    private String formatMessage(
+            final String message,
+            final Exception ex
+    ) {
+        return ex == null
+                ? message
+                : message + "\n" + formatException(ex);
+    }
+
+    private String formatException(final Exception ex) {
+        try (StringWriter sw = new StringWriter();
+             PrintWriter pw = new PrintWriter(sw)
+        ) {
+            ex.printStackTrace(pw);
+            pw.flush();
+            return sw.toString();
+        }
+        catch(IOException e) {
+            return ex.getMessage();
+        }
     }
 
 

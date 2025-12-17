@@ -19,20 +19,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.wal;
+package com.github.jlangch.venice.util.ipc;
+
+import com.github.jlangch.venice.VncException;
 
 
-public class CorruptedRecordException extends RuntimeException {
+public class IpcException extends VncException {
 
-    public CorruptedRecordException(final String message) {
+    public IpcException(final String message) {
         super(message);
     }
 
-    public CorruptedRecordException(final String message, final Throwable cause) {
+    public IpcException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public CorruptedRecordException(final Throwable cause) {
+    public IpcException(final Throwable cause) {
         super(cause);
     }
 

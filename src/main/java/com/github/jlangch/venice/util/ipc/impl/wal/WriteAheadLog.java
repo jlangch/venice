@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.AckWalEntry;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
@@ -83,24 +84,33 @@ public final class WriteAheadLog implements Closeable {
             final File file,
             final boolean compress,
             final WalLogger logger
-    ) throws IOException {
+    ) {
         if (file == null) {
             throw new IllegalArgumentException("file must not be null");
         }
 
-        this.file = file;
-        this.raf = new RandomAccessFile(file, "rw");
-        this.channel = raf.getChannel();
-        this.compressor = compress ? new Compressor(COMPRESSION_CUTOFF) : Compressor.off();
+        try {
+            this.file = file;
+            this.raf = new RandomAccessFile(file, "rw");
+            this.channel = raf.getChannel();
+            this.compressor = compress ? new Compressor(COMPRESSION_CUTOFF) : Compressor.off();
 
-        this.logger = logger;
+            this.logger = logger;
 
-        logger.info(file, "WAL opening...");
+            logger.info(file, "WAL opening...");
 
-        // Recover state if file already exists / has content
-        this.recoveredFromCorruption = recover();
+            // Recover state if file already exists / has content
+            this.recoveredFromCorruption = recover();
 
-        logger.info(file, "WAL opened");
+            logger.info(file, "WAL opened");
+        }
+        catch(Exception ex) {
+            throw new IpcException(
+                    String.format(
+                        "Failed to open and recover Write-Ahead-Log \"%s\"!",
+                        file.getAbsolutePath()),
+                    ex);
+        }
     }
 
     public boolean isCompressing() {
@@ -326,12 +336,13 @@ public final class WriteAheadLog implements Closeable {
      * @param file the log file
      * @param avoidDecompression if true do not decompress compressed entry payloads
      * @return a list of the read entries
-     * @throws IOException on I/O failure
+     * @throws CorruptedRecordException if the Write-Ahead-Log contains a corrupted record
+     * @throws IpcException for any I/O error while reading the Write-Ahead-Log
      */
     public static List<WalEntry> loadAll(
             final File file,
             final boolean avoidDecompression
-    ) throws IOException {
+    ) throws CorruptedRecordException, IpcException {
         if (file == null) {
             throw new IllegalArgumentException("file must not be null");
         }
@@ -358,6 +369,20 @@ public final class WriteAheadLog implements Closeable {
                 position = channel.position();
             }
             return result;
+        }
+        catch(CorruptedRecordException ex) {
+            throw new CorruptedRecordException(
+                    String.format(
+                        "Corrupted Write-Ahead-Log \"%s\"!",
+                        file.getAbsolutePath()),
+                    ex);
+        }
+        catch(Exception ex) {
+            throw new IpcException(
+                    String.format(
+                        "Failed to read the entries from the Write-Ahead-Log \"%s\"!",
+                        file.getAbsolutePath()),
+                        ex);
         }
     }
 
