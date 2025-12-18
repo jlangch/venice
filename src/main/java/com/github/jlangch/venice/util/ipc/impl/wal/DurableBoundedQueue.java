@@ -32,9 +32,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.IpcException;
+import com.github.jlangch.venice.util.ipc.WriteAheadLogException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
@@ -52,7 +52,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             final int capacity,
             final WriteAheadLog wal,
             final WalLogger logger
-    ) throws IpcException {
+    ) throws WriteAheadLogException {
         Objects.requireNonNull(queueName);
         Objects.requireNonNull(wal);
         Objects.requireNonNull(logger);
@@ -76,7 +76,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
                 wal.append(ce.toWalEntry());
             }
             catch(Exception ex) {
-                throw new IpcException(
+                throw new WriteAheadLogException(
                         String.format(
                             "Failed to append the configuration entry to new "
                             + "Write-Ahead-Log of the durable queue %s!",
@@ -153,12 +153,12 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
      * @param logFile the queue's Write-Ahead-Log file
      * @param logger the logger
      * @return the durable queue with the replayed entries from the Write-Ahead-Log
-     * @throws IpcException if the queue could not be created from Write-Ahead-Log
+     * @throws WriteAheadLogException if the queue could not be created from Write-Ahead-Log
      */
     public static DurableBoundedQueue createFromWal(
             final File logFile,
             final WalLogger logger
-    ) throws IpcException {
+    ) throws WriteAheadLogException {
         Objects.requireNonNull(logFile);
         Objects.requireNonNull(logger);
 
@@ -179,7 +179,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
                 final String errMsg = "Failed create queue " + queueName + " from WAL. "
                                        + "The WAL does not have a ConfigWalEntry";
                 logger.error(new File(WalQueueManager.toFileName(queueName)), errMsg);
-                throw new VncException(errMsg);
+                throw new IpcException(errMsg);
             }
 
             final ConfigWalEntry config = ConfigWalEntry.fromWalEntry(firstEntry);
@@ -204,7 +204,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             return q;
         }
         catch(CorruptedRecordException ex) {
-            throw new IpcException(
+            throw new WriteAheadLogException(
                     String.format(
                         "Failed to load the durable queue %s from its Write-Ahead-Log! "
                         + "The Write-Ahead-Log is corrupted!",
@@ -212,7 +212,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
                     ex);
         }
         catch(Exception ex) {
-            throw new IpcException(
+            throw new WriteAheadLogException(
                     String.format(
                         "Failed to load the durable queue %s from its Write-Ahead-Log!",
                         queueName),
@@ -453,7 +453,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
 
     private void handleClosedQueue() {
         if (closed) {
-            throw new VncException("The queue " + queueName + " is closed!");
+            throw new IpcException("The queue " + queueName + " is closed!");
         }
     }
 
@@ -481,8 +481,8 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
             try {
                 wal.append(new MessageWalEntry(m).toWalEntry());
             }
-            catch(IOException ex) {
-                throw new VncException("Failed to enqueue message on queue " + queueName, ex);
+            catch(Exception ex) {
+                throw new IpcException("Failed to enqueue message on queue " + queueName, ex);
             }
         }
 
@@ -499,8 +499,8 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
         try {
             wal.append(new AckWalEntry(m.getId()).toWalEntry());
         }
-        catch(IOException ex) {
-            throw new VncException("Failed to dequeue message from queue " + queueName, ex);
+        catch(Exception ex) {
+            throw new IpcException("Failed to dequeue message from queue " + queueName, ex);
         }
 
         // 2. In-memory mutation

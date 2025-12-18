@@ -499,9 +499,10 @@ public class IpcFunctionsTest {
                 "      text)))                                                    ";
 
         assertEquals(
-                "throw (test-script: line 6, col 8)\n" +
-                "junit/handler (test-script: line 4, col 9)\n" +
-                "ipc/server (unknown: line -1, col -1)",
+                "Failed to handle request of type REQUEST!\n"
+                + "throw (test-script: line 6, col 8)\n"
+                + "junit/handler (test-script: line 4, col 9)\n"
+                + "ipc/server (unknown: line -1, col -1)",
                 venice.eval("test-script", script));
     }
 

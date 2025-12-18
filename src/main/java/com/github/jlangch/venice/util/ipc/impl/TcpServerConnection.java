@@ -371,13 +371,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
             }
         }
         catch(Exception ex) {
+        	// send an error response
             auditResponseError(request, "Failed to handle request!", ex);
             return new Tuple2<State,Message>(
                     currState,
                     createTextMessageResponse(
                         request,
                         ResponseStatus.HANDLER_ERROR,
-                        "Failed to handle request!"));
+                        "Failed to handle request of type " + request.getType() + "!\n"
+                        + ExceptionUtil.printStackTraceToString(ex)));
         }
     }
 
@@ -388,30 +390,20 @@ public class TcpServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message handleSend(final Message request) {
-        try {
-            final IMessage response = handler.apply(request);
+        final IMessage response = handler.apply(request);
 
-            if (response == null) {
-                // create an empty text response
-                return createPlainTextResponseMessage(
-                          ResponseStatus.OK,
-                          request.getRequestId(),
-                          request.getTopics(),
-                          "");
-            }
-            else {
-                return ((Message)response)
-                            .withType(MessageType.RESPONSE, true)
-                            .withResponseStatus(ResponseStatus.OK);
-            }
-        }
-        catch(Exception ex) {
-            // send an error response
+        if (response == null) {
+            // create an empty text response
             return createPlainTextResponseMessage(
-                     ResponseStatus.HANDLER_ERROR,
-                     request.getRequestId(),
-                     request.getTopics(),
-                     ExceptionUtil.printStackTraceToString(ex));
+                      ResponseStatus.OK,
+                      request.getRequestId(),
+                      request.getTopics(),
+                      "");
+        }
+        else {
+            return ((Message)response)
+                        .withType(MessageType.RESPONSE, true)
+                        .withResponseStatus(ResponseStatus.OK);
         }
     }
 

@@ -97,7 +97,7 @@ public class WriteAheadLogTest {
                 // Recovered
                 assertEquals(3, wal.getLastLsn());
 
-                final List<WalEntry> entries = wal.readAll();
+                final List<WalEntry> entries = wal.readAll(false);
 
                 assertEquals(3, entries.size());
 
@@ -149,7 +149,7 @@ public class WriteAheadLogTest {
                 // Recovered
                 assertEquals(4, wal.getLastLsn());
 
-                final List<WalEntry> entries = wal.readAll();
+                final List<WalEntry> entries = wal.readAll(false);
 
                 // We've got 4 entries
                 assertEquals(4, entries.size());
@@ -184,7 +184,7 @@ public class WriteAheadLogTest {
                 // Recovered
                 assertEquals(2, wal.getLastLsn());
 
-                final List<WalEntry> entries = wal.readAll();
+                final List<WalEntry> entries = wal.readAll(false);
 
                 assertEquals(2, entries.size());
 
@@ -235,7 +235,7 @@ public class WriteAheadLogTest {
                 // Recovered
                 assertEquals(3, wal.getLastLsn());
 
-                final List<WalEntry> entries = wal.readAll();
+                final List<WalEntry> entries = wal.readAll(false);
 
                 assertEquals(3, entries.size());
 
@@ -287,7 +287,7 @@ public class WriteAheadLogTest {
                 // Recovered
                 assertEquals(4, wal.getLastLsn());
 
-                final List<WalEntry> entries = wal.readAll();
+                final List<WalEntry> entries = wal.readAll(false);
 
                 // We've got 4 entries
                 assertEquals(4, entries.size());
@@ -322,7 +322,7 @@ public class WriteAheadLogTest {
                 // Recovered
                 assertEquals(2, wal.getLastLsn());
 
-                final List<WalEntry> entries = wal.readAll();
+                final List<WalEntry> entries = wal.readAll(false);
 
                 assertEquals(2, entries.size());
 

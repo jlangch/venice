@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
-import com.github.jlangch.venice.util.ipc.IpcException;
+import com.github.jlangch.venice.util.ipc.WriteAheadLogException;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.AckWalEntry;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
@@ -76,7 +76,7 @@ public final class WriteAheadLog implements Closeable {
     public WriteAheadLog(
             final File file,
             final WalLogger logger
-    ) throws IOException {
+    ) throws WriteAheadLogException {
         this(file, false, logger);
     }
 
@@ -84,7 +84,7 @@ public final class WriteAheadLog implements Closeable {
             final File file,
             final boolean compress,
             final WalLogger logger
-    ) {
+    ) throws WriteAheadLogException {
         if (file == null) {
             throw new IllegalArgumentException("file must not be null");
         }
@@ -99,13 +99,13 @@ public final class WriteAheadLog implements Closeable {
 
             logger.info(file, "WAL opening...");
 
-            // Recover state if file already exists / has content
-            this.recoveredFromCorruption = recover();
+            // Recover state if Write-Ahead-Log exists / has content
+            recover();
 
             logger.info(file, "WAL opened");
         }
         catch(Exception ex) {
-            throw new IpcException(
+            throw new WriteAheadLogException(
                     String.format(
                         "Failed to open and recover Write-Ahead-Log \"%s\"!",
                         file.getAbsolutePath()),
@@ -113,20 +113,14 @@ public final class WriteAheadLog implements Closeable {
         }
     }
 
+    /**
+     * Checks if this Write-Ahead-Log is compressing data
+     *
+     * @return <code>true</code> if this Write-Ahead-Log is compressing the WAL entries
+     *         else <code>false</code>
+     */
     public boolean isCompressing() {
         return compressor.isActive();
-    }
-
-
-    /**
-     * Checks if this Write-Ahead-Log has been recovered from corruption while reading the
-     * entries at startup.
-     *
-     * @return <code>true</code> if this Write-Ahead-Log has been recovered from corruption
-     *         and <code>false</code> if it has been successfully loaded.
-     */
-    public boolean hasRecoveredFromCorruption() {
-        return recoveredFromCorruption;
     }
 
     /**
@@ -156,14 +150,14 @@ public final class WriteAheadLog implements Closeable {
      * @param expiry expiration of this log record (milliseconds since epoch or -1 if nor expiration)
      * @param payload bytes of this log record
      * @return LSN assigned to this record starts (from 1 and increments per append)
-     * @throws IOException on I/O failure
+     * @throws WriteAheadLogException on any failure appending the record to the Write-Ahead-Log
      */
     public synchronized long append(
             final WalEntryType type,
             final UUID uuid,
             final long expiry,
             final byte[] payload
-    ) throws IOException {
+    ) throws WriteAheadLogException {
         try {
             if (uuid == null) {
                 throw new IllegalArgumentException("uuid must not be null");
@@ -218,24 +212,10 @@ public final class WriteAheadLog implements Closeable {
 
             return lsn;
         }
-        catch(IOException ex) {
+        catch(Exception ex) {
             logger.error(file, "Failed to append WAL record (type=" + type +")", ex);
-            throw ex;
+            throw new WriteAheadLogException("Failed to append WAL record (type=" + type +")");
         }
-        catch(RuntimeException ex) {
-            logger.error(file, "Failed to append WAL record (type=" + type +")", ex);
-            throw ex;
-        }
-    }
-
-    /**
-     * Read all valid entries from the WAL
-     *
-     * @return a list of the read entries
-     * @throws IOException on I/O failure
-     */
-    public synchronized List<WalEntry> readAll() throws IOException {
-        return readAll(false);
     }
 
     /**
@@ -243,12 +223,230 @@ public final class WriteAheadLog implements Closeable {
      *
      * @param avoidDecompression if true do not decompress compressed entry payloads
      * @return a list of the read entries
-     * @throws IOException on I/O failure
+     * @throws WriteAheadLogException if the Write-Ahead-Log contains a corrupted record or
+     *         for any I/O error while reading the Write-Ahead-Log
      */
     public synchronized List<WalEntry> readAll(
         final boolean avoidDecompression
-    ) throws IOException {
+    ) throws WriteAheadLogException {
         return loadAll(file, avoidDecompression);
+    }
+
+    /**
+     * Load all valid entries from the WAL
+     *
+     * @param file the log file
+     * @param avoidDecompression if true do not decompress compressed entry payloads
+     * @return a list of the read entries
+     * @throws WriteAheadLogException if the Write-Ahead-Log contains a corrupted record or
+     *         for any I/O error while reading the Write-Ahead-Log
+     */
+    public static List<WalEntry> loadAll(
+            final File file,
+            final boolean avoidDecompression
+    ) throws WriteAheadLogException {
+        if (file == null) {
+            throw new IllegalArgumentException("file must not be null");
+        }
+
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r");
+             FileChannel channel = raf.getChannel()
+        ) {
+            final Compressor compressor = avoidDecompression
+                                            ? Compressor.off()
+                                            : new Compressor(0);
+
+            final long fileSize = channel.size();
+
+            final List<WalEntry> result = new ArrayList<>();
+            channel.position(0);
+
+            long position = 0L;
+            while (position < fileSize) {
+                WalEntry entry = readOneAtCurrentPosition(channel, compressor);
+                if (entry == null) {
+                    break;
+                }
+                result.add(entry);
+                position = channel.position();
+            }
+            return result;
+        }
+        catch(CorruptedRecordException ex) {
+            throw new WriteAheadLogException(
+                    String.format(
+                        "Corrupted Write-Ahead-Log \"%s\"!",
+                        file.getAbsolutePath()),
+                    ex);
+        }
+        catch(Exception ex) {
+            throw new WriteAheadLogException(
+                    String.format(
+                        "Failed to read the entries from the Write-Ahead-Log \"%s\"!",
+                        file.getAbsolutePath()),
+                        ex);
+        }
+    }
+
+    /**
+     * Compact the given log file in-place.
+     *
+     * @param logFile the existing write-ahead-log
+     * @param removeBackupLogFile if true remove the created backup write-ahead-log
+     * @param discardExpiredEntries if true discard expired entries
+     * @return all valid entries from the compacted WAL
+     * @throws WriteAheadLogException if the Write-Ahead-Log contains a corrupted record or
+     *         for any I/O error while reading the Write-Ahead-Log
+     */
+    public static List<WalEntry> compact(
+        final File logFile,
+        final boolean discardExpiredEntries,
+        final boolean removeBackupLogFile
+    ) throws WriteAheadLogException {
+        if (logFile == null) {
+            throw new IllegalArgumentException("file must not be null");
+        }
+        if (!logFile.exists()) {
+            // nothing to do
+            return new ArrayList<>();
+        }
+
+        File dir = logFile.getAbsoluteFile().getParentFile();
+        String baseName = logFile.getName();
+
+        File tmpFile = new File(dir, baseName + ".compact");
+        File backupFile = new File(dir, baseName + ".bak");
+
+        final WalLogger logger = WalLogger.withinDir(logFile.getParentFile());
+        logger.info(logFile, "WAL compacting...");
+
+        final List<WalEntry> pending = new ArrayList<>();
+
+        // Note: for performance reason the WAL entries are not decompressed
+        //       while reading the entries and not compressed agin on writing
+        //       the compacted entries.
+        //       This avoids a completely unnecessary decompress/compress cycle!
+
+        // Phase 1: xxx.log -> [compact to] -> xxx.log.compact
+        //          xxx.log -> [rename to]  -> xxx.log.bak
+        try {
+            // [1] read the entries of the old log
+            try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false, logger)) {
+                pending.addAll(compact(oldLog.readAll(true), discardExpiredEntries));
+            }
+
+            // [2] Write a brand-new tmpLog with only pending messages
+            if (tmpFile.exists() && !tmpFile.delete()) {
+                logger.warn(logFile, "WAL compacting: Deleting stale tmp WAL " + tmpFile.getName() + " failed.");
+                throw new IOException("Could not delete stale tmp file: " + tmpFile);
+            }
+            try (WriteAheadLog tmpLog = new WriteAheadLog(tmpFile, false, logger)) {
+                for (WalEntry e : pending) {
+                    tmpLog.append(e);
+                }
+            }
+
+            // [3] Atomically-ish swap files: old -> .bak, tmp -> original
+            //     (Simple approach; fsync directory etc. if stricter guarantees are required.)
+
+            // remove old backup if exists
+            if (backupFile.exists() && !backupFile.delete()) {
+                logger.warn(logFile, "WAL compacting: Deleting old backup WAL " + backupFile.getName() + " failed.");
+                throw new IOException("Could not delete old backup file: " + backupFile);
+            }
+
+            if (!logFile.renameTo(backupFile)) {
+                // failed before touching tmpFile => safe
+                throw new IOException("Failed to rename original log to backup: " +
+                                      logFile + " -> " + backupFile);
+            }
+        }
+        catch(IOException ex) {
+        	final String msg = "WAL compacting failed due to I/O error! Leaving Write-Ahead-Log unchanged!";
+            logger.warn(logFile, msg, ex);
+            throw new WriteAheadLogException(msg, ex);
+        }
+        catch(CorruptedRecordException ex) {
+        	final String msg = "WAL compacting failed due to corrupted data! Leaving Write-Ahead-Log unchanged!";
+            logger.warn(logFile, msg, ex);
+            throw new WriteAheadLogException(msg, ex);
+        }
+        catch(RuntimeException ex) {
+        	final String msg = "WAL compacting failed! Leaving Write-Ahead-Log unchanged!";
+            logger.warn(logFile, msg, ex);
+            throw new WriteAheadLogException(msg, ex);
+        }
+
+
+        // Phase 2: xxx.log.compact -> [rename to] -> xxx.log
+        //          xxx.log.bak     -> [remove]
+
+        // [4] Rename compacted logfile to logfile
+        if (!tmpFile.renameTo(logFile)) {
+            final String failedRenameAction = "Rename compacted " + tmpFile.getName() + " -> " + logFile.getName()
+                                                + " failed!";
+            // try to restore original
+            logger.warn(logFile, "WAL compacting failed: " + failedRenameAction);
+
+            if (backupFile.renameTo(logFile)) {
+                // old, uncompacted logfile successfully restored
+                logger.warn(logFile, "Successfully restored uncompacted Write-Ahead-Log! No data lost!");
+                throw new WriteAheadLogException(
+                        "WAL compacting failed: " + failedRenameAction +
+                        " Successfully restored uncompacted Write-Ahead-Log! No data lost!");
+            }
+            else {
+                // FATAL error
+                logger.error(logFile, "Fatal failure: Compensation rename backup WAL to old WAL failed! DATA LOST!");
+                throw new WriteAheadLogException(
+                        "WAL compacting failed: " + failedRenameAction +
+                        " Fatal failure: Compensation rename backup WAL to old WAL failed! DATA LOST!");
+            }
+        }
+
+        // [5] Optionally: delete the created backup file
+        if (removeBackupLogFile) {
+            if (!backupFile.delete()) {
+                logger.warn(logFile, "WAL compacting: Deleting backup WAL " + backupFile.getName() + " failed.");
+            }
+        }
+
+        logger.info(logFile, "WAL compacting done.");
+
+        return pending;
+    }
+
+    /**
+     * Compact a list of entries.
+     *
+     * @param entries a list of entries
+     * @param discardExpiredEntries if true discard expired entries
+     * @return the compacted list of entries
+     */
+    public static List<WalEntry> compact(
+            final List<WalEntry> entries,
+            final boolean discardExpiredEntries
+    ) {
+        final Map<UUID, WalEntry> pending = new LinkedHashMap<>();
+
+        entries.forEach(e -> {
+            if (WalEntryType.CONFIG == e.getType()) {
+                pending.put(e.getUUID(), e);  // keep
+            }
+            else if (WalEntryType.ACK == e.getType()) {
+                // acknowledge data entry
+                AckWalEntry ackEntry = AckWalEntry.fromWalEntry(e);
+                pending.remove(ackEntry.getAckedEntryUUID());  // remove by uuid
+            }
+            else if (WalEntryType.DATA == e.getType()) {
+               // data entry, discard expired entries
+               if (!discardExpiredEntries || !e.hasExpired()) {
+                   pending.put(e.getUUID(), e);  // keep
+               }
+            }
+        });
+
+        return new ArrayList<>(pending.values());
     }
 
 
@@ -261,11 +459,12 @@ public final class WriteAheadLog implements Closeable {
      * @param compressor a compressor
      * @return the read WAL entry
      * @throws IOException on I/O failure
+     * @throws CorruptedRecordException if the read entry is corrupted
      */
     private static WalEntry readOneAtCurrentPosition(
             final FileChannel channel,
             final Compressor compressor
-    ) throws IOException {
+    ) throws IOException, CorruptedRecordException {
         if (channel == null) {
             throw new IllegalArgumentException("channel must not be null");
         }
@@ -329,216 +528,6 @@ public final class WriteAheadLog implements Closeable {
 
         return new WalEntry(lsn, WalEntryType.fromCode(type), uuid, expiry, payload);
     }
-
-    /**
-     * Load all valid entries from the WAL
-     *
-     * @param file the log file
-     * @param avoidDecompression if true do not decompress compressed entry payloads
-     * @return a list of the read entries
-     * @throws CorruptedRecordException if the Write-Ahead-Log contains a corrupted record
-     * @throws IpcException for any I/O error while reading the Write-Ahead-Log
-     */
-    public static List<WalEntry> loadAll(
-            final File file,
-            final boolean avoidDecompression
-    ) throws CorruptedRecordException, IpcException {
-        if (file == null) {
-            throw new IllegalArgumentException("file must not be null");
-        }
-
-        try (RandomAccessFile raf = new RandomAccessFile(file, "r");
-             FileChannel channel = raf.getChannel()
-        ) {
-            final Compressor compressor = avoidDecompression
-                                            ? Compressor.off()
-                                            : new Compressor(0);
-
-            final long fileSize = channel.size();
-
-            final List<WalEntry> result = new ArrayList<>();
-            channel.position(0);
-
-            long position = 0L;
-            while (position < fileSize) {
-                WalEntry entry = readOneAtCurrentPosition(channel, compressor);
-                if (entry == null) {
-                    break;
-                }
-                result.add(entry);
-                position = channel.position();
-            }
-            return result;
-        }
-        catch(CorruptedRecordException ex) {
-            throw new CorruptedRecordException(
-                    String.format(
-                        "Corrupted Write-Ahead-Log \"%s\"!",
-                        file.getAbsolutePath()),
-                    ex);
-        }
-        catch(Exception ex) {
-            throw new IpcException(
-                    String.format(
-                        "Failed to read the entries from the Write-Ahead-Log \"%s\"!",
-                        file.getAbsolutePath()),
-                        ex);
-        }
-    }
-
-    /**
-     * Compact the given log file in-place.
-     *
-     * @param logFile the existing write-ahead-log
-     * @param removeBackupLogFile if true remove the created backup write-ahead-log
-     * @param discardExpiredEntries if true discard expired entries
-     * @return all valid entries from the compacted WAL
-     * @throws IOException on I/O failure
-     */
-    public static List<WalEntry> compact(
-        final File logFile,
-        final boolean discardExpiredEntries,
-        final boolean removeBackupLogFile
-    ) throws IOException {
-        if (logFile == null) {
-            throw new IllegalArgumentException("file must not be null");
-        }
-        if (!logFile.exists()) {
-            // nothing to do
-            return new ArrayList<>();
-        }
-
-        File dir = logFile.getAbsoluteFile().getParentFile();
-        String baseName = logFile.getName();
-
-        File tmpFile = new File(dir, baseName + ".compact");
-        File backupFile = new File(dir, baseName + ".bak");
-
-        final WalLogger logger = WalLogger.withinDir(logFile.getParentFile());
-        logger.info(logFile, "WAL compacting...");
-
-        final List<WalEntry> pending = new ArrayList<>();
-
-        // Note: for performance reason the WAL entries are not decompressed
-        //       while reading the entries and not compressed agin on writing
-        //       the compacted entries.
-        //       This avoids a completely unnecessary decompress/compress cycle!
-
-        // Phase 1: xxx.log -> [compact to] -> xxx.log.compact
-        //          xxx.log -> [rename to]  -> xxx.log.bak
-        try {
-            // [1] read the entries of the old log
-            try (WriteAheadLog oldLog = new WriteAheadLog(logFile, false, logger)) {
-                pending.addAll(compact(oldLog.readAll(true), discardExpiredEntries));
-            }
-
-            // [2] Write a brand-new tmpLog with only pending messages
-            if (tmpFile.exists() && !tmpFile.delete()) {
-                logger.warn(logFile, "WAL compacting: Deleting stale tmp WAL " + tmpFile.getName() + " failed.");
-                throw new IOException("Could not delete stale tmp file: " + tmpFile);
-            }
-            try (WriteAheadLog tmpLog = new WriteAheadLog(tmpFile, false, logger)) {
-                for (WalEntry e : pending) {
-                    tmpLog.append(e);
-                }
-            }
-
-            // [3] Atomically-ish swap files: old -> .bak, tmp -> original
-            //     (Simple approach; fsync directory etc. if stricter guarantees are required.)
-
-            // remove old backup if exists
-            if (backupFile.exists() && !backupFile.delete()) {
-                logger.warn(logFile, "WAL compacting: Deleting old backup WAL " + backupFile.getName() + " failed.");
-                throw new IOException("Could not delete old backup file: " + backupFile);
-            }
-
-            if (!logFile.renameTo(backupFile)) {
-                // failed before touching tmpFile => safe
-                throw new IOException("Failed to rename original log to backup: " +
-                                      logFile + " -> " + backupFile);
-            }
-        }
-        catch(IOException ex) {
-            logger.warn(logFile, "WAL compacting failed! Leaving Write-Ahead-Log unchanged!", ex);
-            throw ex;
-        }
-        catch(RuntimeException ex) {
-            logger.warn(logFile, "WAL compacting failed! Leaving Write-Ahead-Log unchanged!", ex);
-            throw ex;
-        }
-
-
-        // Phase 2: xxx.log.compact -> [rename to] -> xxx.log
-        //          xxx.log.bak     -> [remove]
-
-        // [4] Rename compacted logfile to logfile
-        if (!tmpFile.renameTo(logFile)) {
-            final String failedRenameAction = "Rename compacted " + tmpFile.getName() + " -> " + logFile.getName()
-                                                + " failed!";
-            // try to restore original
-            logger.warn(logFile, "WAL compacting failed: " + failedRenameAction);
-
-            if (backupFile.renameTo(logFile)) {
-                // old, uncompacted logfile successfully restored
-                logger.warn(logFile, "Successfully restored uncompacted Write-Ahead-Log! No data lost!");
-                throw new IOException(
-                        "WAL compacting failed: " + failedRenameAction +
-                        " Successfully restored uncompacted Write-Ahead-Log! No data lost!");
-            }
-            else {
-                // FATAL error
-                logger.error(logFile, "Fatal failure: Compensation rename backup WAL to old WAL failed! DATA LOST!");
-                throw new IOException(
-                        "WAL compacting failed: " + failedRenameAction +
-                        " Fatal failure: Compensation rename backup WAL to old WAL failed! DATA LOST!");
-            }
-        }
-
-        // [5] Optionally: delete the created backup file
-        if (removeBackupLogFile) {
-            if (!backupFile.delete()) {
-                logger.warn(logFile, "WAL compacting: Deleting backup WAL " + backupFile.getName() + " failed.");
-            }
-        }
-
-        logger.info(logFile, "WAL compacting done.");
-
-        return pending;
-    }
-
-    /**
-     * Compact a list of entries.
-     *
-     * @param entries a list of entries
-     * @param discardExpiredEntries if true discard expired entries
-     * @return the compacted list of entries
-     */
-    public static List<WalEntry> compact(
-            final List<WalEntry> entries,
-            final boolean discardExpiredEntries
-    ) {
-        final Map<UUID, WalEntry> pending = new LinkedHashMap<>();
-
-        entries.forEach(e -> {
-            if (WalEntryType.CONFIG == e.getType()) {
-                pending.put(e.getUUID(), e);  // keep
-            }
-            else if (WalEntryType.ACK == e.getType()) {
-                // acknowledge data entry
-                AckWalEntry ackEntry = AckWalEntry.fromWalEntry(e);
-                pending.remove(ackEntry.getAckedEntryUUID());  // remove by uuid
-            }
-            else if (WalEntryType.DATA == e.getType()) {
-               // data entry, discard expired entries
-               if (!discardExpiredEntries || !e.hasExpired()) {
-                   pending.put(e.getUUID(), e);  // keep
-               }
-            }
-        });
-
-        return new ArrayList<>(pending.values());
-    }
-
 
     /**
      * Recover WAL state: scan from beginning, validate records,
@@ -659,7 +648,6 @@ public final class WriteAheadLog implements Closeable {
     private final RandomAccessFile raf;
     private final FileChannel channel;
     private final Compressor compressor;
-    private final boolean recoveredFromCorruption;
 
     private final WalLogger logger;
 

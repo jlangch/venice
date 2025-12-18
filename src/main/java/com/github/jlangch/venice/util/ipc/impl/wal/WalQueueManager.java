@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.WriteAheadLogException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.MessageWalEntry;
@@ -89,7 +90,7 @@ public class WalQueueManager {
     }
 
     public Map<String, IpcQueue<Message>> preloadQueues()
-    throws IOException, InterruptedException {
+    throws WriteAheadLogException, InterruptedException {
         if (!isEnabled()) {
             throw new VncException("Write-Ahead-Log is not active");
         }
@@ -113,7 +114,7 @@ public class WalQueueManager {
 
     public List<IMessage> loadWalQueueMessages(
         final String queueName
-    ) throws IOException {
+    ) throws WriteAheadLogException {
         Objects.requireNonNull(queueName);
 
         if (!isEnabled()) {
@@ -183,7 +184,7 @@ public class WalQueueManager {
 
     private List<IMessage> loadWalQueueMessages(
         final File logFile
-    ) throws IOException {
+    ) throws WriteAheadLogException {
         Objects.requireNonNull(logFile);
 
         if (!isEnabled()) {
