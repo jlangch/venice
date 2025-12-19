@@ -373,6 +373,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
         	// send an error response
             auditResponseError(request, "Failed to handle request!", ex);
+
+            // TODO: how much information from the exception shall we pass back
+            //       to the client
             return new Tuple2<State,Message>(
                     currState,
                     createTextMessageResponse(

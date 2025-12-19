@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
@@ -337,6 +338,74 @@ public class WriteAheadLogTest {
 
                 assertEquals(largeMsg(1), new String(entries.get(0).getPayload()));
                 assertEquals(largeMsg(3), new String(entries.get(1).getPayload()));
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+
+    @Test
+    public void testCorruptedWAL() {
+        // with default encoding
+        try {
+            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            walFile.deleteOnExit();
+
+            final UUID uuid1 = UUID.randomUUID();
+            final UUID uuid2 = UUID.randomUUID();
+            final UUID uuid3 = UUID.randomUUID();
+            final UUID uuid4 = UUID.randomUUID();
+
+
+            // 1. Append some entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+                long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
+                long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
+                long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
+                long lsn4 = wal.append(new DataWalEntry(uuid4, smallMsg(3)).toWalEntry());
+
+                assertEquals(1, lsn1);
+                assertEquals(2, lsn2);
+                assertEquals(3, lsn3);
+                assertEquals(4, lsn4);
+            }
+
+            // 2. Damage the WAL at the last entry
+            try(RandomAccessFile raf = new RandomAccessFile(walFile, "rw")) {
+            	final long size = raf.length();
+            	raf.seek(size - 10);
+            	raf.write(0x55);
+            	raf.write(0xAA);
+            }
+
+            // 3. Simulate restart: open WAL again and recover entries
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+                // Recovered, we lost the last entry that is corrupted
+            	// Getting 3 instead of 4 entries
+                assertEquals(3, wal.getLastLsn());
+
+                final List<WalEntry> entries = wal.readAll(false);
+
+                // We've got 3 entries
+                assertEquals(3, entries.size());
+
+                assertEquals(1, entries.get(0).getLsn());
+                assertEquals(2, entries.get(1).getLsn());
+                assertEquals(3, entries.get(2).getLsn());
+
+                assertEquals(DATA, entries.get(0).getType());
+                assertEquals(DATA, entries.get(1).getType());
+                assertEquals(DATA, entries.get(2).getType());
+
+                assertEquals(uuid1, entries.get(0).getUUID());
+                assertEquals(uuid2, entries.get(1).getUUID());
+                assertEquals(uuid3, entries.get(2).getUUID());
+
+                assertEquals(smallMsg(1), new String(entries.get(0).getPayload()));
+                assertEquals(smallMsg(2), new String(entries.get(1).getPayload()));
+                assertEquals(smallMsg(3), new String(entries.get(2).getPayload()));
             }
         }
         catch(Exception ex) {

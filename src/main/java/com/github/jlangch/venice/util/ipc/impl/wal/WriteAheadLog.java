@@ -105,11 +105,11 @@ public final class WriteAheadLog implements Closeable {
             logger.info(file, "WAL opened");
         }
         catch(Exception ex) {
-            throw new WriteAheadLogException(
-                    String.format(
-                        "Failed to open and recover Write-Ahead-Log \"%s\"!",
-                        file.getAbsolutePath()),
-                    ex);
+        	final String msg = String.format(
+                                "Failed to open and recover Write-Ahead-Log \"%s\"!",
+                                file.getAbsolutePath());
+            logger.error(file, msg, ex);
+            throw new WriteAheadLogException(msg, ex);
         }
     }
 
@@ -183,7 +183,7 @@ public final class WriteAheadLog implements Closeable {
             final int checksum = (int) crc32.getValue();
 
             // Prepare header + payload buffer
-            ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE + payloadLength);
+            final ByteBuffer buffer = ByteBuffer.allocate(HEADER_SIZE + payloadLength);
             buffer.putInt(MAGIC);
             buffer.putLong(lsn);
             buffer.putInt(type.getValue());
@@ -263,7 +263,7 @@ public final class WriteAheadLog implements Closeable {
 
             long position = 0L;
             while (position < fileSize) {
-                WalEntry entry = readOneAtCurrentPosition(channel, compressor);
+                final WalEntry entry = readOneAtCurrentPosition(channel, compressor);
                 if (entry == null) {
                     break;
                 }
@@ -311,11 +311,11 @@ public final class WriteAheadLog implements Closeable {
             return new ArrayList<>();
         }
 
-        File dir = logFile.getAbsoluteFile().getParentFile();
-        String baseName = logFile.getName();
+        final File dir = logFile.getAbsoluteFile().getParentFile();
+        final String baseName = logFile.getName();
 
-        File tmpFile = new File(dir, baseName + ".compact");
-        File backupFile = new File(dir, baseName + ".bak");
+        final File tmpFile = new File(dir, baseName + ".compact");
+        final File backupFile = new File(dir, baseName + ".bak");
 
         final WalLogger logger = WalLogger.withinDir(logFile.getParentFile());
         logger.info(logFile, "WAL compacting...");
@@ -535,7 +535,7 @@ public final class WriteAheadLog implements Closeable {
      *
      * @throws IOException on I/O failure
      */
-    private boolean recover() throws IOException {
+    private void recover() throws IOException {
         channel.position(0);
         final long fileSize = channel.size();
         long position = 0L;
@@ -556,13 +556,13 @@ public final class WriteAheadLog implements Closeable {
             }
             catch (EOFException e) {
                 // Partial header or payload at the end: stop, treat as corruption
-                logger.warn(file, "WAL recovery faced early EOF.");
+                logger.warn(file, "WAL recovery faced an early EOF.");
                 recoveredFromCorruption = false;
                 break;
             }
             catch (CorruptedRecordException e) {
                 // Data corruption: stop scanning here
-                logger.warn(file, "WAL recovery faced corrupted recorder.");
+                logger.warn(file, "WAL recovery faced a corrupted record.");
                 recoveredFromCorruption = false;
                 break;
             }
@@ -585,10 +585,9 @@ public final class WriteAheadLog implements Closeable {
                                 "WAL truncated at lastGoodFilePos=%d, fileSize=%d",
                                 lastGoodEnd,
                                  fileSize));
-            logger.warn(file, "WAL recovered from corrupted file.");
+            logger.warn(file, "WAL recovered from corrupted file. "
+            		          + "Truncated the WAL at the last good position!");
         }
-
-        return recoveredFromCorruption;
     }
 
     /**
