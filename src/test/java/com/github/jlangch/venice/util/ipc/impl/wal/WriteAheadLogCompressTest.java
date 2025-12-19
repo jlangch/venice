@@ -46,8 +46,10 @@ public class WriteAheadLogCompressTest {
         try {
             final boolean compress = true;
 
-            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            final File walFile = Files.createTempFile("test", ".wal").normalize().toFile();
             walFile.deleteOnExit();
+
+            final WalLogger logger = WalLogger.asTemporary();
 
             final UUID uuid1 = UUID.randomUUID();
             final UUID uuid2 = UUID.randomUUID();
@@ -55,7 +57,7 @@ public class WriteAheadLogCompressTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
@@ -66,7 +68,7 @@ public class WriteAheadLogCompressTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 // Recovered
                 assertEquals(3, wal.getLastLsn());
 
@@ -98,8 +100,10 @@ public class WriteAheadLogCompressTest {
         try {
             final boolean compress = true;
 
-            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            final File walFile = Files.createTempFile("test", ".wal").normalize().toFile();
             walFile.deleteOnExit();
+
+            final WalLogger logger = WalLogger.asTemporary();
 
             final UUID uuid1 = UUID.randomUUID();
             final UUID uuid2 = UUID.randomUUID();
@@ -107,7 +111,7 @@ public class WriteAheadLogCompressTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
@@ -120,7 +124,7 @@ public class WriteAheadLogCompressTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 // Recovered
                 assertEquals(4, wal.getLastLsn());
 
@@ -151,11 +155,12 @@ public class WriteAheadLogCompressTest {
             // 3. Compact
             WriteAheadLog.compact(
                 walFile,
+                logger,
                 false,  // discard expired entries,
                 true);  // remove backup logfile
 
             // 4. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, logger)) {
                 // Recovered
                 assertEquals(2, wal.getLastLsn());
 
@@ -188,8 +193,10 @@ public class WriteAheadLogCompressTest {
         try {
             final boolean compress = true;
 
-            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            final File walFile = Files.createTempFile("test", ".wal").normalize().toFile();
             walFile.deleteOnExit();
+
+            final WalLogger logger = WalLogger.asTemporary();
 
             final UUID uuid1 = UUID.randomUUID();
             final UUID uuid2 = UUID.randomUUID();
@@ -197,7 +204,7 @@ public class WriteAheadLogCompressTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, largeMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, largeMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, largeMsg(3)).toWalEntry());
@@ -208,7 +215,7 @@ public class WriteAheadLogCompressTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 // Recovered
                 assertEquals(3, wal.getLastLsn());
 
@@ -240,8 +247,10 @@ public class WriteAheadLogCompressTest {
         try {
             final boolean compress = true;
 
-            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            final File walFile = Files.createTempFile("test", ".wal").normalize().toFile();
             walFile.deleteOnExit();
+
+            final WalLogger logger = WalLogger.asTemporary();
 
             final UUID uuid1 = UUID.randomUUID();
             final UUID uuid2 = UUID.randomUUID();
@@ -249,7 +258,7 @@ public class WriteAheadLogCompressTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, largeMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, largeMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, largeMsg(3)).toWalEntry());
@@ -262,7 +271,7 @@ public class WriteAheadLogCompressTest {
             }
 
             // 2. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, compress, logger)) {
                 // Recovered
                 assertEquals(4, wal.getLastLsn());
 
@@ -293,11 +302,12 @@ public class WriteAheadLogCompressTest {
             // 3. Compact
             WriteAheadLog.compact(
                 walFile,
+                logger,
                 false,  // discard expired entries,
                 true);  // remove backup logfile
 
             // 4. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, logger)) {
                 // Recovered
                 assertEquals(2, wal.getLastLsn());
 

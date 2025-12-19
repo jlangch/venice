@@ -45,7 +45,7 @@ public class WalQueueManagerTest {
     @Test
     public void test() throws IOException {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
-        final File log = new File(walDir, "wal.log");
+        final File logger = new File(walDir, "wal.log");
 
         try {
             final WalQueueManager wqm = new WalQueueManager();
@@ -65,17 +65,17 @@ public class WalQueueManagerTest {
 
             final File walFile = new File(walDir, WalQueueManager.toFileName(queue.name()));
             assertTrue(walFile.isFile());
-            assertTrue(log.isFile());
+            assertTrue(logger.isFile());
             assertTrue(walFile.length() > 0);
 
             wqm.close(CollectionUtil.toList(queue));
 
             // check WAL dir can be deleted
             walFile.delete();
-            log.delete();
+            logger.delete();
             walDir.delete();
             assertFalse(walFile.isFile());
-            assertFalse(log.isFile());
+            assertFalse(logger.isFile());
             assertFalse(walDir.isDirectory());
         }
         catch(Exception ex) {
@@ -119,7 +119,7 @@ public class WalQueueManagerTest {
     @Test
     public void test_server_with_wal_compact() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
-        final File log = new File(walDir, "wal.log");
+        final File logger = new File(walDir, "wal.log");
 
         try(TcpServer server = new TcpServer(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
@@ -139,22 +139,22 @@ public class WalQueueManagerTest {
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
-        assertTrue(log.isFile());
+        assertTrue(logger.isFile());
         assertTrue(walFile.length() > 0);
 
         // check WAL dir can be deleted
         walFile.delete();
-        log.delete();
+        logger.delete();
         walDir.delete();
         assertFalse(walFile.isFile());
-        assertFalse(log.isFile());
+        assertFalse(logger.isFile());
         assertFalse(walDir.isDirectory());
     }
 
     @Test
     public void test_server_reopen_with_wal() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
-        final File log = new File(walDir, "wal.log");
+        final File logger = new File(walDir, "wal.log");
 
         try(TcpServer server = new TcpServer(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
@@ -190,22 +190,22 @@ public class WalQueueManagerTest {
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
-        assertTrue(log.isFile());
+        assertTrue(logger.isFile());
         assertTrue(walFile.length() > 0);
 
         // check WAL dir can be deleted
         walFile.delete();
-        log.delete();
+        logger.delete();
         walDir.delete();
         assertFalse(walFile.isFile());
-        assertFalse(log.isFile());
+        assertFalse(logger.isFile());
         assertFalse(walDir.isDirectory());
     }
 
     @Test
     public void test_server_reopen_with_wal_compact() throws Exception {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
-        final File log = new File(walDir, "wal.log");
+        final File logger = new File(walDir, "wal.log");
 
         try(TcpServer server = new TcpServer(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
@@ -241,15 +241,15 @@ public class WalQueueManagerTest {
 
         final File walFile = new File(walDir, WalQueueManager.toFileName("queue/test"));
         assertTrue(walFile.isFile());
-        assertTrue(log.isFile());
+        assertTrue(logger.isFile());
         assertTrue(walFile.length() > 0);
 
         // check WAL dir can be deleted
         walFile.delete();
-        log.delete();
+        logger.delete();
         walDir.delete();
         assertFalse(walFile.isFile());
-        assertFalse(log.isFile());
+        assertFalse(logger.isFile());
         assertFalse(walDir.isDirectory());
     }
 

@@ -44,8 +44,10 @@ public class WriteAheadLogCorruptionTest {
     public void testOpenCorrupted_WAL() {
         // with default encoding
         try {
-            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            final File walFile = Files.createTempFile("test", ".wal").normalize().toFile();
             walFile.deleteOnExit();
+
+            final WalLogger logger = WalLogger.asTemporary();
 
             final UUID uuid1 = UUID.randomUUID();
             final UUID uuid2 = UUID.randomUUID();
@@ -54,7 +56,7 @@ public class WriteAheadLogCorruptionTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, logger)) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
@@ -68,16 +70,16 @@ public class WriteAheadLogCorruptionTest {
 
             // 2. Damage the WAL at the last entry
             try(RandomAccessFile raf = new RandomAccessFile(walFile, "rw")) {
-            	final long size = raf.length();
-            	raf.seek(size - 10);
-            	raf.write(0x55);
-            	raf.write(0xAA);
+                final long size = raf.length();
+                raf.seek(size - 10);
+                raf.write(0x55);
+                raf.write(0xAA);
             }
 
             // 3. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, logger)) {
                 // Recovered, we lost the last entry that is corrupted
-            	// Getting 3 instead of 4 entries
+                // Getting 3 instead of 4 entries
                 assertEquals(3, wal.getLastLsn());
 
                 final List<WalEntry> entries = wal.readAll(false);
@@ -112,8 +114,10 @@ public class WriteAheadLogCorruptionTest {
     public void testCompactCorrupted_WAL() {
         // with default encoding
         try {
-            final File walFile = Files.createTempFile("wal", ".txt").normalize().toFile();
+            final File walFile = Files.createTempFile("test", ".wal").normalize().toFile();
             walFile.deleteOnExit();
+
+            final WalLogger logger = WalLogger.asTemporary();
 
             final UUID uuid1 = UUID.randomUUID();
             final UUID uuid2 = UUID.randomUUID();
@@ -122,7 +126,7 @@ public class WriteAheadLogCorruptionTest {
 
 
             // 1. Append some entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, logger)) {
                 long lsn1 = wal.append(new DataWalEntry(uuid1, smallMsg(1)).toWalEntry());
                 long lsn2 = wal.append(new DataWalEntry(uuid2, smallMsg(2)).toWalEntry());
                 long lsn3 = wal.append(new DataWalEntry(uuid3, smallMsg(3)).toWalEntry());
@@ -139,16 +143,17 @@ public class WriteAheadLogCorruptionTest {
 
             // 2. Damage the WAL at the last entry
             try(RandomAccessFile raf = new RandomAccessFile(walFile, "rw")) {
-            	final long size = raf.length();
-            	raf.seek(size - 10);
-            	raf.write(0x55);
-            	raf.write(0xAA);
+                final long size = raf.length();
+                raf.seek(size - 10);
+                raf.write(0x55);
+                raf.write(0xAA);
             }
 
 
             // 3. Compact
             WriteAheadLog.compact(
                 walFile,
+                logger,
                 false,  // discard expired entries,
                 true);  // remove backup logfile
 
@@ -156,9 +161,9 @@ public class WriteAheadLogCorruptionTest {
 
 
             // 4. Simulate restart: open WAL again and recover entries
-            try (WriteAheadLog wal = new WriteAheadLog(walFile, WalLogger.asTemporary())) {
+            try (WriteAheadLog wal = new WriteAheadLog(walFile, logger)) {
                 // Recovered, we lost the last entry that is corrupted
-            	// Getting 3 instead of 4 entries
+                // Getting 3 instead of 4 entries
                 assertEquals(3, wal.getLastLsn());
 
                 final List<WalEntry> entries = wal.readAll(false);

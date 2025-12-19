@@ -100,7 +100,7 @@ public class WalQueueManager {
         for(File logFile : listLogFiles()) {
             if (compactAtStart) {
                 logger.info(logFile, "WalQueueManager@preloadQueues: compacting WAL");
-                WriteAheadLog.compact(logFile, true, true);
+                WriteAheadLog.compact(logFile, logger, true, true);
             }
 
             logger.info(logFile, "WalQueueManager@preloadQueues: create queue from WAL");

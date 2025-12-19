@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
@@ -105,7 +106,7 @@ public final class WriteAheadLog implements Closeable {
             logger.info(file, "WAL opened");
         }
         catch(Exception ex) {
-        	final String msg = String.format(
+            final String msg = String.format(
                                 "Failed to open and recover Write-Ahead-Log \"%s\"!",
                                 file.getAbsolutePath());
             logger.error(file, msg, ex);
@@ -292,6 +293,7 @@ public final class WriteAheadLog implements Closeable {
      * Compact the given log file in-place.
      *
      * @param logFile the existing write-ahead-log
+     * @param logger the logger
      * @param removeBackupLogFile if true remove the created backup write-ahead-log
      * @param discardExpiredEntries if true discard expired entries
      * @return all valid entries from the compacted WAL
@@ -299,13 +301,13 @@ public final class WriteAheadLog implements Closeable {
      *         for any I/O error while reading the Write-Ahead-Log
      */
     public static List<WalEntry> compact(
-        final File logFile,
-        final boolean discardExpiredEntries,
-        final boolean removeBackupLogFile
+            final File logFile,
+            final WalLogger logger,
+            final boolean discardExpiredEntries,
+            final boolean removeBackupLogFile
     ) throws WriteAheadLogException {
-        if (logFile == null) {
-            throw new IllegalArgumentException("file must not be null");
-        }
+    	Objects.requireNonNull(logFile);
+    	Objects.requireNonNull(logger);
         if (!logFile.exists()) {
             // nothing to do
             return new ArrayList<>();
@@ -317,7 +319,6 @@ public final class WriteAheadLog implements Closeable {
         final File tmpFile = new File(dir, baseName + ".compact");
         final File backupFile = new File(dir, baseName + ".bak");
 
-        final WalLogger logger = WalLogger.withinDir(logFile.getParentFile());
         logger.info(logFile, "WAL compacting...");
 
         final List<WalEntry> pending = new ArrayList<>();
@@ -346,6 +347,8 @@ public final class WriteAheadLog implements Closeable {
                 }
             }
 
+            logger.info(logFile, "WAL compacting: compacted entries written to temp log " + tmpFile.getName());
+
             // [3] Atomically-ish swap files: old -> .bak, tmp -> original
             //     (Simple approach; fsync directory etc. if stricter guarantees are required.)
 
@@ -355,24 +358,29 @@ public final class WriteAheadLog implements Closeable {
                 throw new IOException("Could not delete old backup file: " + backupFile);
             }
 
-            if (!logFile.renameTo(backupFile)) {
+            if (logFile.renameTo(backupFile)) {
+                logger.info(
+                        logFile,
+                        String.format("WAL compacting: moved to backup log %s -> %s", logFile.getName(), backupFile.getName()));
+            }
+            else {
                 // failed before touching tmpFile => safe
                 throw new IOException("Failed to rename original log to backup: " +
                                       logFile + " -> " + backupFile);
             }
         }
         catch(IOException ex) {
-        	final String msg = "WAL compacting failed due to I/O error! Leaving Write-Ahead-Log unchanged!";
+            final String msg = "WAL compacting failed due to I/O error! Leaving Write-Ahead-Log unchanged!";
             logger.warn(logFile, msg, ex);
             throw new WriteAheadLogException(msg, ex);
         }
         catch(CorruptedRecordException ex) {
-        	final String msg = "WAL compacting failed due to corrupted data! Leaving Write-Ahead-Log unchanged!";
+            final String msg = "WAL compacting failed due to corrupted data! Leaving Write-Ahead-Log unchanged!";
             logger.warn(logFile, msg, ex);
             throw new WriteAheadLogException(msg, ex);
         }
         catch(RuntimeException ex) {
-        	final String msg = "WAL compacting failed! Leaving Write-Ahead-Log unchanged!";
+            final String msg = "WAL compacting failed! Leaving Write-Ahead-Log unchanged!";
             logger.warn(logFile, msg, ex);
             throw new WriteAheadLogException(msg, ex);
         }
@@ -382,7 +390,12 @@ public final class WriteAheadLog implements Closeable {
         //          xxx.log.bak     -> [remove]
 
         // [4] Rename compacted logfile to logfile
-        if (!tmpFile.renameTo(logFile)) {
+        if (tmpFile.renameTo(logFile)) {
+            logger.info(
+                logFile,
+                String.format("WAL compacting: renamed compacted temp log %s -> %s", tmpFile.getName(), logFile.getName()));
+        }
+        else {
             final String failedRenameAction = "Rename compacted " + tmpFile.getName() + " -> " + logFile.getName()
                                                 + " failed!";
             // try to restore original
@@ -406,8 +419,11 @@ public final class WriteAheadLog implements Closeable {
 
         // [5] Optionally: delete the created backup file
         if (removeBackupLogFile) {
-            if (!backupFile.delete()) {
-                logger.warn(logFile, "WAL compacting: Deleting backup WAL " + backupFile.getName() + " failed.");
+            if (backupFile.delete()) {
+                logger.info(logFile, "WAL compacting: deleted backup WAL " + backupFile.getName());
+            }
+            else {
+                logger.warn(logFile, "WAL compacting: deleting backup WAL " + backupFile.getName() + " failed.");
             }
         }
 
@@ -443,6 +459,10 @@ public final class WriteAheadLog implements Closeable {
                if (!discardExpiredEntries || !e.hasExpired()) {
                    pending.put(e.getUUID(), e);  // keep
                }
+            }
+            else {
+                throw new WriteAheadLogException(
+                        "Unsupported Write-Ahead-Log entry type " + e.getType());
             }
         });
 
@@ -586,7 +606,7 @@ public final class WriteAheadLog implements Closeable {
                                 lastGoodEnd,
                                  fileSize));
             logger.warn(file, "WAL recovered from corrupted file. "
-            		          + "Truncated the WAL at the last good position!");
+                              + "Truncated the WAL at the last good position!");
         }
     }
 
