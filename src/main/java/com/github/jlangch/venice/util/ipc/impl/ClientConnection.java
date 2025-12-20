@@ -220,6 +220,19 @@ public class ClientConnection implements Closeable {
         }
     }
 
+    public Future<IMessage> sendAsync(final IMessage msg, final long timeoutMillis) {
+        Objects.requireNonNull(msg);
+
+        if (!isOpen()) {
+            throw new IpcException(
+                    "This TcpClient conection is not open! Cannot send the message!");
+        }
+
+        return mngdExecutor
+                .getExecutor()
+                .submit(() -> send(msg, timeoutMillis));
+    }
+
     /**
      * Closes the connection
      */

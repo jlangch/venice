@@ -24,8 +24,19 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 
+import com.github.jlangch.venice.util.ipc.impl.ClientConnection;
+
 
 public class IO {
+
+    public static void safeClose(final ClientConnection c) {
+        if (c != null) {
+            try {
+                c.close();
+            }
+            catch(Exception ignore) { }
+        }
+    }
 
     public static void safeClose(final SocketChannel ch) {
         if (ch != null) {
