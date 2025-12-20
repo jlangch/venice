@@ -461,6 +461,7 @@ public class TcpServer implements Closeable {
                             ResponseStatus.HANDLER_ERROR,
                             true,   // oneway
                             false,  // transient
+                            false,  // not subscribed
                             Message.EXPIRES_NEVER,
                             ((Message)req).getTopics(),
                             "text/plain",

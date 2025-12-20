@@ -53,6 +53,7 @@ public class Message implements IMessage {
             final ResponseStatus responseStatus,
             final boolean oneway,
             final boolean durable,
+            final boolean subscriptionReply,
             final long expiresAt,
             final Topics topics,
             final String mimetype,
@@ -71,9 +72,10 @@ public class Message implements IMessage {
         this.id = UUID.randomUUID();
         this.requestId = requestId;
         this.type = type;
-        this.durable = durable;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
+        this.durable = durable;
+        this.subscriptionReply = subscriptionReply;
         this.queueName = null;
         this.replyToQueueName = null;
         this.timestamp = Instant.now().toEpochMilli();
@@ -92,6 +94,7 @@ public class Message implements IMessage {
             final ResponseStatus responseStatus,
             final boolean oneway,
             final boolean durable,
+            final boolean subscriptionReply,
             final String queueName,
             final String replyToQueueName,
             final long timestamp,
@@ -114,9 +117,10 @@ public class Message implements IMessage {
         this.id = id == null ? UUID.randomUUID() : id;
         this.requestId = requestId;
         this.type = type;
-        this.durable = durable;
         this.responseStatus = responseStatus;
         this.oneway = oneway;
+        this.durable = durable;
+        this.subscriptionReply = subscriptionReply;
         this.queueName = StringUtil.trimToNull(queueName);
         this.replyToQueueName = replyToQueueName;
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
@@ -145,7 +149,7 @@ public class Message implements IMessage {
         Objects.requireNonNull(type);
         return new Message(
                 id, requestId,
-                type, responseStatus, oneway, durable,
+                type, responseStatus, oneway, durable, subscriptionReply,
                 queueName, replyToQueueName, timestamp, expiresAt,
                 timeout, topics, mimetype, charset, data);
   }
@@ -160,10 +164,27 @@ public class Message implements IMessage {
         Objects.requireNonNull(responseStatus);
         return new Message(
                 id, requestId,
-                type, responseStatus, oneway, durable,
+                type, responseStatus, oneway, durable, subscriptionReply,
                 queueName, replyToQueueName, timestamp, expiresAt,
                 timeout, topics, mimetype, charset, data);
     }
+
+
+    /**
+     * Mark the message as subscription reply.
+     *
+     * @param subscriptionReply subscription reply
+     * @return a new message with the subscription
+     */
+    public Message withSubscriptionReply(
+            final boolean subscriptionReply
+    ) {
+        return new Message(
+                id, requestId,
+                type, responseStatus, oneway, durable, subscriptionReply,
+                queueName, replyToQueueName, timestamp, expiresAt,
+                timeout, topics, mimetype, charset, data);
+  }
 
     @Override
     public UUID getId() {
@@ -183,6 +204,10 @@ public class Message implements IMessage {
     @Override
     public boolean isDurable() {
         return durable;
+    }
+
+    public boolean isSubscriptionReply() {
+        return subscriptionReply;
     }
 
 
@@ -408,6 +433,7 @@ public class Message implements IMessage {
         result = prime * result + ((replyToQueueName == null) ? 0 : replyToQueueName.hashCode());
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
+        result = prime * result + (subscriptionReply ? 1231 : 1237);
         result = prime * result + (int) (timeout ^ (timeout >>> 32));
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((topics == null) ? 0 : topics.hashCode());
@@ -464,6 +490,8 @@ public class Message implements IMessage {
             return false;
         if (responseStatus != other.responseStatus)
             return false;
+        if (subscriptionReply != other.subscriptionReply)
+            return false;
         if (timeout != other.timeout)
             return false;
         if (timestamp != other.timestamp)
@@ -477,6 +505,7 @@ public class Message implements IMessage {
             return false;
         return true;
     }
+
 
 
     private String formatData() {
@@ -562,6 +591,7 @@ public class Message implements IMessage {
     private final boolean durable;
     private final ResponseStatus responseStatus;
     private final boolean oneway;
+    private final boolean subscriptionReply;
     private final String queueName;  // used for offer/poll messages
     private final String replyToQueueName;  // used for offer/poll messages
     private final long timestamp;

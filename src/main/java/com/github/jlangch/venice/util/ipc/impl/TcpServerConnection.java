@@ -465,6 +465,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                             ResponseStatus.OK,
                             true,   // oneway
                             false,  // nondurable response
+                            false,  // not subscribed
                             Message.EXPIRES_NEVER,
                             msg.getTopics(),
                             "text/plain",
@@ -879,6 +880,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 status,
                 true,   // oneway
                 false,  // transient
+                false,  // not subscribed
                 Message.EXPIRES_NEVER,
                 topics,
                 "application/json",
@@ -898,6 +900,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 status,
                 true,   // oneway
                 false,  // transient
+                false,  // not subscribed
                 Message.EXPIRES_NEVER,
                 topics,
                 "text/plain",

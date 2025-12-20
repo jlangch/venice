@@ -74,14 +74,17 @@ public class Subscriptions {
     }
 
     public void publish(final Message msg) {
-        final String topic = msg.getTopic();
+        // mark the message as a subscription reply
+        final Message m = msg.withSubscriptionReply(true);
+
+        final String topic = m.getTopic();
 
         final List<IPublisher> publishers = new ArrayList<>(subscriptions.keySet());
 
         publishers.forEach(p -> {
             final Set<String> topics = subscriptions.get(p);
             if (topics != null && topics.contains(topic)) {
-                p.publish(msg);
+                p.publish(m);
             }
         });
     }

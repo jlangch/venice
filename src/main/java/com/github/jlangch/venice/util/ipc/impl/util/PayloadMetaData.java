@@ -43,6 +43,7 @@ public class PayloadMetaData {
         this(
             msg.isOneway(),
             msg.isDurable(),
+            msg.isSubscriptionReply(),
             msg.getRequestId(),
             msg.getType(),
             msg.getResponseStatus(),
@@ -57,6 +58,7 @@ public class PayloadMetaData {
     public PayloadMetaData(
             final boolean oneway,
             final boolean durable,
+            final boolean subscriptionReply,
             final String requestId,
             final MessageType type,
             final ResponseStatus responseStatus,
@@ -75,6 +77,7 @@ public class PayloadMetaData {
 
         this.oneway = oneway;
         this.durable = durable;
+        this.subscriptionReply = subscriptionReply;
         this.requestId = requestId;
         this.type = type;
         this.responseStatus = responseStatus;
@@ -101,6 +104,7 @@ public class PayloadMetaData {
 
         this.oneway = false;
         this.durable = false;
+        this.subscriptionReply = false;
         this.requestId = requestId;
         this.type = MessageType.NULL;
         this.responseStatus = ResponseStatus.NULL;
@@ -119,6 +123,10 @@ public class PayloadMetaData {
 
     public boolean isDurable() {
         return durable;
+    }
+
+    public boolean isSubscriptionReply() {
+        return subscriptionReply;
     }
 
     public String getRequestId() {
@@ -158,7 +166,6 @@ public class PayloadMetaData {
     }
 
 
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -172,6 +179,7 @@ public class PayloadMetaData {
         result = prime * result + ((replyToQueueName == null) ? 0 : replyToQueueName.hashCode());
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
+        result = prime * result + (subscriptionReply ? 1231 : 1237);
         result = prime * result + ((topics == null) ? 0 : topics.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
@@ -222,6 +230,8 @@ public class PayloadMetaData {
             return false;
         if (responseStatus != other.responseStatus)
             return false;
+        if (subscriptionReply != other.subscriptionReply)
+            return false;
         if (topics == null) {
             if (other.topics != null)
                 return false;
@@ -232,11 +242,13 @@ public class PayloadMetaData {
         return true;
     }
 
+
     public static byte[] encode(final PayloadMetaData data) {
         Objects.requireNonNull(data);
 
         final String s = (data.oneway ? "1" : "0")           + '\n' +
                          (data.durable ? "1" : "0")          + '\n' +
+                         (data.subscriptionReply ? "1" : "0")+ '\n' +
                          trimToEmpty(data.requestId)         + '\n' +
                          toCode(data.type)                   + '\n' +
                          toCode(data.responseStatus)         + '\n' +
@@ -257,19 +269,20 @@ public class PayloadMetaData {
 
         final List<String> lines = StringUtil.splitIntoLines(s);
 
-        if (lines.size() == 11) {
+        if (lines.size() == 12) {
             return new PayloadMetaData(
                     toBool(lines.get(0)),             // oneway
                     toBool(lines.get(1)),             // durable
-                    trimToNull(lines.get(2)),         // requestId
-                    toMessageType(lines.get(3)),      // message type
-                    toResponseStatus(lines.get(4)),   // response status
-                    trimToNull(lines.get(5)),         // queueName
-                    trimToNull(lines.get(6)),         // replyToQueueName
-                    Topics.decode(lines.get(7)),      // topics
-                    lines.get(8),                     // mimetype
-                    trimToNull(lines.get(9)),         // charset
-                    UUID.fromString(lines.get(10)));  // id
+                    toBool(lines.get(2)),             // subscriptionReply
+                    trimToNull(lines.get(3)),         // requestId
+                    toMessageType(lines.get(4)),      // message type
+                    toResponseStatus(lines.get(5)),   // response status
+                    trimToNull(lines.get(6)),         // queueName
+                    trimToNull(lines.get(7)),         // replyToQueueName
+                    Topics.decode(lines.get(8)),      // topics
+                    lines.get(9),                     // mimetype
+                    trimToNull(lines.get(10)),        // charset
+                    UUID.fromString(lines.get(11)));  // id
         }
         else {
             throw new VncException(String.format(
@@ -314,6 +327,7 @@ public class PayloadMetaData {
 
     private final boolean oneway;
     private final boolean durable;
+    private final boolean subscriptionReply;
     private final String requestId;
     private final MessageType type;
     private final ResponseStatus responseStatus;

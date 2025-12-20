@@ -66,6 +66,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 false,  // not durable
+                false,  // no subscription reply
                 Message.EXPIRES_NEVER,
                 Topics.of(topic),
                 mimetype,
@@ -105,6 +106,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 false,  // not durable
+                false,  // no subscription reply
                 expiresAt,
                 Topics.of(topic),
                 mimetype,
@@ -146,6 +148,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 durable,
+                false,  // no subscription reply
                 expiresAt,
                 Topics.of(topic),
                 mimetype,
@@ -184,6 +187,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 false,  // not durable
+                false,  // no subscription reply
                 Message.EXPIRES_NEVER,
                 Topics.of(topic),
                 "application/json",
@@ -220,6 +224,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 false,  // not durable
+                false,  // no subscription reply
                 expiresAt,
                 Topics.of(topic),
                 "application/json",
@@ -258,6 +263,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 durable,
+                false,  // no subscription reply
                 expiresAt,
                 Topics.of(topic),
                 "application/json",
@@ -297,6 +303,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 false,  // not durable
+                false,  // no subscription reply
                 Message.EXPIRES_NEVER,
                 Topics.of(topic),
                 mimetype,
@@ -333,6 +340,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 false,  // not durable
+                false,  // no subscription reply
                 expiresAt,
                 Topics.of(topic),
                 mimetype,
@@ -371,6 +379,7 @@ public abstract class MessageFactory {
                 ResponseStatus.NULL,
                 false,  // not oneway
                 durable,
+                false,  // no subscription reply
                 expiresAt,
                 Topics.of(topic),
                 mimetype,
