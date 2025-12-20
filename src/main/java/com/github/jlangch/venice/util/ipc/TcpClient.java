@@ -202,9 +202,9 @@ public class TcpClient implements Cloneable, Closeable {
      */
     @Override
     public void close() throws IOException {
-        IO.sleep(50);
-
         if (opened.compareAndSet(true, false)) {
+            IO.sleep(100);
+
             IO.safeClose(conn.get());
             conn.set(null);
         }

@@ -45,9 +45,9 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
+import com.github.jlangch.venice.util.ipc.impl.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
-import com.github.jlangch.venice.util.ipc.impl.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -420,10 +420,8 @@ public class TcpServer implements Closeable {
             safeClose(server.get());
             server.set(null);
 
-            // This method does not wait for actively executing tasks to terminate.
-            mngdExecutor.shutdownNow();
-
-            // wait max 1'000ms
+            // wait max 1'000ms for tasks to be completed
+            mngdExecutor.shutdown();
             final boolean terminated = mngdExecutor.awaitTermination(1_000);
 
             IO.sleep(100);

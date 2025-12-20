@@ -263,7 +263,11 @@ public class ClientConnection implements Closeable {
     @Override
     public void close() throws IOException {
         if (opened.compareAndSet(true, false)) {
-            mngdExecutor.shutdownNow();
+
+            // wait max 500ms for tasks to be completed
+            mngdExecutor.shutdown();
+            mngdExecutor.awaitTermination(500);
+
             IO.safeClose(channel);
         }
     }
