@@ -58,9 +58,9 @@ import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
 
-public class TcpServerConnection implements IPublisher, Runnable {
+public class ServerConnection implements IPublisher, Runnable {
 
-    public TcpServerConnection(
+    public ServerConnection(
             final TcpServer server,
             final SocketChannel ch,
             final long connectionId,

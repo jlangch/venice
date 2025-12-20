@@ -47,7 +47,7 @@ import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
-import com.github.jlangch.venice.util.ipc.impl.TcpServerConnection;
+import com.github.jlangch.venice.util.ipc.impl.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -362,7 +362,7 @@ public class TcpServer implements Closeable {
                                 "Server accepted new connection (" + connId + ") from "
                                 + IO.getRemoteAddress(channel));
 
-                            final TcpServerConnection conn = new TcpServerConnection(
+                            final ServerConnection conn = new ServerConnection(
                                                                    this,
                                                                    channel,
                                                                    connId,
