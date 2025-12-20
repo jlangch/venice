@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -61,16 +64,14 @@ public class ClientConnection implements Closeable {
     public ClientConnection(
             final String host,
             final int port,
-            final boolean useEncryption,
-            final Consumer<IMessage> subscriptionHandler
+            final boolean useEncryption
     ) {
-        // [1] Open the connection to the server
         this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
         this.port = port;
-        this.subscriptionHandler = subscriptionHandler;
 
         final String serverAddress = this.host + "/" + this.port;
 
+        // [1] Open the connection to the server
         try {
             channel = SocketChannel.open(
                         new InetSocketAddress(this.host, this.port));
@@ -83,7 +84,10 @@ public class ClientConnection implements Closeable {
 
         dhKeys = DiffieHellmanKeys.create();
 
-        // [2] Request the client configuration from the server
+        // [2] Start the executor after the connection has been established
+        mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
+
+        // [3] Request the client configuration from the server
         try {
             final VncMap config = getClientConfiguration(channel);
 
@@ -93,16 +97,18 @@ public class ClientConnection implements Closeable {
                       || getBoolean(config, "encrypt", false);   // server side encrypt
         }
         catch(Exception ex) {
+            mngdExecutor.shutdownNow();
             IO.safeClose(channel);
             throw new IpcException("Failed to get client config from server!", ex);
         }
 
-        // [3] Establish encryption through Diffie-Hellman key exchange
+        // [4] Establish encryption through Diffie-Hellman key exchange
         if (encrypt) {
             try {
                 encryptor = diffieHellmanKeyExchange(channel);
             }
             catch(Exception ex) {
+                mngdExecutor.shutdownNow();
                 IO.safeClose(channel);
                 throw new IpcException(
                         "Failed to open TcpClient for server " + serverAddress +
@@ -114,10 +120,7 @@ public class ClientConnection implements Closeable {
             encryptor = Encryptor.off();
         }
 
-        // [5] Start the executor after the connection has been established
-        mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
-
-        // [6] Start the message listener worker
+        // [5] Start the message listener worker
         mngdExecutor
            .getExecutor()
            .submit(() -> backgroundMessageListener());
@@ -162,6 +165,27 @@ public class ClientConnection implements Closeable {
         return mngdExecutor.info();
     }
 
+    public void addSubscriptionHandler(
+            final Set<String> topics,
+            final Consumer<IMessage> handler
+    ) {
+        Objects.requireNonNull(topics);
+
+        if (handler != null) {
+            topics.forEach(t -> subscriptionHandlers.put(t, handler));
+        }
+        else {
+            topics.forEach(t -> subscriptionHandlers.remove(t));
+        }
+    }
+
+    public void removeSubscriptionHandler(
+            final Set<String> topics
+    ) {
+        Objects.requireNonNull(topics);
+
+        topics.forEach(t -> subscriptionHandlers.remove(t));
+    }
 
     public IMessage send(final IMessage msg, final long timeoutMillis) {
         Objects.requireNonNull(msg);
@@ -239,10 +263,7 @@ public class ClientConnection implements Closeable {
     @Override
     public void close() throws IOException {
         if (opened.compareAndSet(true, false)) {
-            try {
-                mngdExecutor.shutdownNow();
-            }
-            catch(Exception ignore) { }
+            mngdExecutor.shutdownNow();
             IO.safeClose(channel);
         }
     }
@@ -251,13 +272,14 @@ public class ClientConnection implements Closeable {
     private void backgroundMessageListener() {
         while(!Thread.interrupted() && isOpen()) {
             try {
-                final IMessage msg = Protocol.receiveMessage(channel, compressor, encryptor);
+                final Message msg = Protocol.receiveMessage(channel, compressor, encryptor);
                 if (msg != null && !Thread.interrupted() && isOpen()) {
-                    if (((Message)msg).isSubscriptionReply()) {
-                        if (subscriptionHandler != null) {
+                    if (msg.isSubscriptionReply()) {
+                        final Consumer<IMessage> handler = getSubscriptionHandler(msg);
+                        if (handler != null) {
                             try {
                                 // deliver subscription reply msg via subscription handler
-                                subscriptionHandler.accept(msg);
+                                handler.accept(msg);
                             }
                             catch(Exception ignore) {}
                         }
@@ -299,23 +321,15 @@ public class ClientConnection implements Closeable {
             final Encryptor encryptor
     ) {
         try {
-            final boolean auditCount = msg.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST
-                                       && msg.getType() != MessageType.CLIENT_CONFIG;
-
             // sending the request message and receiving the response
             // must be atomic otherwise request and response can be mixed
             // in multi-threaded environments
-            if (sendSemaphore.tryAcquire(3L, TimeUnit.SECONDS)) {
+            if (sendSemaphore.tryAcquire(10L, TimeUnit.SECONDS)) {
                 try {
                     Protocol.sendMessage(ch, msg, compressor, encryptor);
-                    if (auditCount) {
-                        messageSentCount.incrementAndGet();
-                    }
 
                     final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
-                    if (auditCount) {
-                        messageReceiveCount.incrementAndGet();
-                    }
+
                     return response;
                 }
                 finally {
@@ -330,6 +344,12 @@ public class ClientConnection implements Closeable {
             throw new com.github.jlangch.venice.InterruptedException(
                     "Interrupted while trying to send an IPC message");
         }
+    }
+
+    private Consumer<IMessage> getSubscriptionHandler(final IMessage msg) {
+        final String topic = msg.getTopic();
+
+        return subscriptionHandlers.get(topic);
     }
 
     private VncMap getClientConfiguration(final SocketChannel ch) {
@@ -469,7 +489,7 @@ public class ClientConnection implements Closeable {
     private final Encryptor encryptor;
 
     // subscriptions
-    private final Consumer<IMessage> subscriptionHandler;
+    private final Map<String,Consumer<IMessage>> subscriptionHandlers = new ConcurrentHashMap<>();
 
     // statistics
     private final AtomicLong messageSentCount = new AtomicLong(0L);

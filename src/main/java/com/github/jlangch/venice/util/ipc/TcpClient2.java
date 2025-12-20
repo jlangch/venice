@@ -170,7 +170,7 @@ public class TcpClient2 implements Cloneable, Closeable {
         if (opened.compareAndSet(false, true)) {
             ClientConnection c = null;
             try {
-                c = new ClientConnection(host, port, encrypt.get(), null);
+                c = new ClientConnection(host, port, encrypt.get());
                 conn.set(c);
             }
             catch(Exception ex) {
@@ -304,7 +304,65 @@ public class TcpClient2 implements Cloneable, Closeable {
             throw new VncException("A subscription topic set must not be empty!");
         }
 
+        final ClientConnection c = conn.get();
+        if (c == null || !c.isOpen()) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        c.addSubscriptionHandler(topics, handler);
+
         final Message m = createSubscribeRequestMessage(topics, endpointId);
+        return send(m);
+    }
+
+
+    /**
+     * Unsubscribe from a topic.
+     *
+     * <p>Puts this client in subscription mode and listens for subscriptions
+     * on the specified topic.
+     *
+     * <p>throws an exception if the client could not put into subscription mode
+     *
+     * @param topic  a topic
+     * @param handler the subscription message handler
+     * @return the response for the subscribe
+     */
+    public IMessage unsubscribe(final String topic, final Consumer<IMessage> handler) {
+        Objects.requireNonNull(topic);
+        Objects.requireNonNull(handler);
+
+        return unsubscribe(CollectionUtil.toSet(topic), handler);
+    }
+
+    /**
+     * Unsubscribe from a set of topics.
+     *
+     * <p>Puts this client in subscription mode and listens for subscriptions
+     * on the specified topic.
+     *
+     * <p>throws an exception if the client could not put into subscription mode
+     *
+     * @param topics  a set of topics
+     * @param handler the subscription message handler
+     * @return the response for the subscribe
+     */
+    public IMessage unsubscribe(final Set<String> topics, final Consumer<IMessage> handler) {
+        Objects.requireNonNull(topics);
+        Objects.requireNonNull(handler);
+
+        if (topics.isEmpty()) {
+            throw new VncException("A subscription topic set must not be empty!");
+        }
+
+        final ClientConnection c = conn.get();
+        if (c == null || !c.isOpen()) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        c.removeSubscriptionHandler(topics);
+
+        final Message m = createUnsubscribeRequestMessage(topics, endpointId);
         return send(m);
     }
 
@@ -793,6 +851,29 @@ public class TcpClient2 implements Cloneable, Closeable {
                 null,
                 null,
                 MessageType.SUBSCRIBE,
+                ResponseStatus.NULL,
+                false,
+                false,
+                false,
+                null,
+                null,
+                System.currentTimeMillis(),
+                Message.EXPIRES_NEVER,
+                Message.DEFAULT_TIMEOUT,
+                Topics.of(topics),
+                "text/plain",
+                "UTF-8",
+                toBytes(endpointId, "UTF-8"));
+    }
+
+    private static Message createUnsubscribeRequestMessage(
+            final Set<String> topics,
+            final String endpointId
+    ) {
+        return new Message(
+                null,
+                null,
+                MessageType.UNSUBSCRIBE,
                 ResponseStatus.NULL,
                 false,
                 false,
