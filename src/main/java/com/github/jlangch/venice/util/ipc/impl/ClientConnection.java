@@ -27,17 +27,16 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -48,6 +47,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
@@ -76,30 +76,17 @@ public class ClientConnection implements Closeable {
                         new InetSocketAddress(this.host, this.port));
         }
         catch(Exception ex) {
-            throw new VncException(
+            throw new IpcException(
                     "Failed to open TcpClient connection to server " + serverAddress + "!",
                     ex);
         }
 
         dhKeys = DiffieHellmanKeys.create();
 
-        // [2] request the config from the server
+        // [2] Request the client configuration from the server
         try {
-            final IMessage response = deref(
-                                        sendAsync(
-                                            createConfigRequestMessage(),
-                                            channel,
-                                            Compressor.off(),
-                                            Encryptor.off()),
-                                        2_000);
-            if (response.getResponseStatus() != ResponseStatus.OK) {
-                throw new VncException(
-                        "Failed to get client config from server. Server answered with "
-                        + response.getResponseStatus() + "!");
-            }
+            final VncMap config = getClientConfiguration(channel);
 
-            // handle config values
-            final VncMap config = (VncMap)((Message)response).getVeniceData();
             maxMessageSize = getLong(config, "max-msg-size", Message.MESSAGE_LIMIT_MAX);
             compressor = new Compressor(getLong(config, "compress-cutoff-size", -1));
             encrypt = useEncryption                              // client side encrypt
@@ -107,7 +94,7 @@ public class ClientConnection implements Closeable {
         }
         catch(Exception ex) {
             IO.safeClose(channel);
-            throw new VncException("Failed to get client config from server!", ex);
+            throw new IpcException("Failed to get client config from server!", ex);
         }
 
         // [3] Establish encryption through Diffie-Hellman key exchange
@@ -117,7 +104,7 @@ public class ClientConnection implements Closeable {
             }
             catch(Exception ex) {
                 IO.safeClose(channel);
-                throw new VncException(
+                throw new IpcException(
                         "Failed to open TcpClient for server " + serverAddress +
                         "! Diffie-Hellman key exchange error!",
                         ex);
@@ -127,13 +114,13 @@ public class ClientConnection implements Closeable {
             encryptor = Encryptor.off();
         }
 
-        // [5] start the executor after the connections has been established
+        // [5] Start the executor after the connection has been established
         mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
 
-        // [6] start message listener worker
+        // [6] Start the message listener worker
         mngdExecutor
            .getExecutor()
-           .submit(() -> messageListener());
+           .submit(() -> backgroundMessageListener());
 
         opened.set(true);
     }
@@ -176,32 +163,20 @@ public class ClientConnection implements Closeable {
     }
 
 
-    public Future<IMessage> sendAsync(final IMessage msg) {
+    public IMessage send(final IMessage msg, final long timeoutMillis) {
         Objects.requireNonNull(msg);
 
         if (!isOpen()) {
-            throw new VncException(
+            throw new IpcException(
                     "This TcpClient conection is not open! Cannot send the message!");
         }
 
-        return mngdExecutor
-                .getExecutor()
-                .submit(() -> send(msg));
-    }
-
-    public IMessage send(final IMessage msg) {
-        Objects.requireNonNull(msg);
-
-        if (!isOpen()) {
-            throw new VncException(
-                    "This TcpClient conection is not open! Cannot send the message!");
-        }
+        final long limit = System.currentTimeMillis() + timeoutMillis;
 
         try {
-            // sending the request message and receiving the response
-            // must be atomic otherwise request and response can be mixed
-            // in multi-threaded environments
-            if (sendSemaphore.tryAcquire(120L, TimeUnit.SECONDS)) {
+            // sending the request message atomically preventing any other thread to
+            // interfere with this message send
+            if (sendSemaphore.tryAcquire(timeoutMillis, TimeUnit.MILLISECONDS)) {
                 try {
                     Protocol.sendMessage(channel, (Message)msg, compressor, encryptor);
                     messageSentCount.incrementAndGet();
@@ -209,20 +184,35 @@ public class ClientConnection implements Closeable {
                     if (msg.isOneway()) {
                         return null;
                     }
+
+                    // poll the response from the receive queue
+                    while(true) {
+                        final long timeout = limit - System.currentTimeMillis();
+
+                        if (timeout >= 0) {
+                            final Message response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
+                            if (response == null) {
+                                throw new TimeoutException("Timeout while trying to send an IPC message.");
+                            }
+                            else if (response.getId().equals(msg.getId())) {
+                                return response;
+                            }
+                            else {
+                                // discard out-of-order response
+                                continue;
+                            }
+                        }
+                        else {
+                            break; // timeout
+                        }
+                    }
                 }
                 finally {
                     sendSemaphore.release();
                 }
             }
-            else {
-               throw new com.github.jlangch.venice.TimeoutException(
-                    "Timeout while trying to send an IPC message.");
-            }
 
-
-            // receive from queue
-            return receiveQueue.poll();
-
+            throw new TimeoutException("Timeout while trying to send an IPC message.");
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
@@ -245,7 +235,7 @@ public class ClientConnection implements Closeable {
     }
 
 
-    private void messageListener() {
+    private void backgroundMessageListener() {
         while(!Thread.interrupted() && isOpen()) {
             try {
                 final IMessage msg = Protocol.receiveMessage(channel, compressor, encryptor);
@@ -253,15 +243,18 @@ public class ClientConnection implements Closeable {
                     if (((Message)msg).isSubscriptionReply()) {
                         if (subscriptionHandler != null) {
                             try {
+                                // deliver subscription reply msg via subscription handler
                                 subscriptionHandler.accept(msg);
                             }
                             catch(Exception ignore) {}
                         }
                         else {
+                            // can not deliver without subscription handler
                             discardedMessageSubscriptionCount.incrementAndGet();
                         }
                     }
                     else {
+                        // regular response message for a request
                         receiveQueue.offer(msg);
                         messageReceiveCount.incrementAndGet();
                     }
@@ -272,21 +265,22 @@ public class ClientConnection implements Closeable {
         }
     }
 
-    private Future<IMessage> sendAsync(
-            final IMessage msg,
+    private Message sendDirect(
+            final Message msg,
             final SocketChannel ch,
             final Compressor compressor,
-            final Encryptor encryptor
+            final Encryptor encryptor,
+            final long timeoutMillis
     ) {
-        final Callable<IMessage> task = () -> sendAtomically(msg, ch, compressor, encryptor);
-
-        return mngdExecutor
-                .getExecutor()
-                .submit(task);
+        return deref(
+                mngdExecutor
+                        .getExecutor()
+                        .submit(() -> sendDirect(msg, ch, compressor, encryptor)),
+                    timeoutMillis);
     }
 
-    private IMessage sendAtomically(
-            final IMessage msg,
+    private Message sendDirect(
+            final Message msg,
             final SocketChannel ch,
             final Compressor compressor,
             final Encryptor encryptor
@@ -298,31 +292,25 @@ public class ClientConnection implements Closeable {
             // sending the request message and receiving the response
             // must be atomic otherwise request and response can be mixed
             // in multi-threaded environments
-            if (sendSemaphore.tryAcquire(120L, TimeUnit.SECONDS)) {
+            if (sendSemaphore.tryAcquire(3L, TimeUnit.SECONDS)) {
                 try {
-                    Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
+                    Protocol.sendMessage(ch, msg, compressor, encryptor);
                     if (auditCount) {
                         messageSentCount.incrementAndGet();
                     }
 
-                    if (msg.isOneway()) {
-                        return null;
+                    final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
+                    if (auditCount) {
+                        messageReceiveCount.incrementAndGet();
                     }
-                    else {
-                        final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
-                        if (auditCount) {
-                            messageReceiveCount.incrementAndGet();
-                        }
-                        return response;
-                    }
+                    return response;
                 }
                 finally {
                     sendSemaphore.release();
                 }
             }
             else {
-               throw new com.github.jlangch.venice.TimeoutException(
-                    "Timeout while trying to send an IPC message.");
+               throw new TimeoutException("Timeout while trying to send an IPC message.");
             }
         }
         catch(InterruptedException ex) {
@@ -331,13 +319,27 @@ public class ClientConnection implements Closeable {
         }
     }
 
+    private VncMap getClientConfiguration(final SocketChannel ch) {
+        final IMessage response = sendDirect(
+                                    createConfigRequestMessage(),
+                                    ch,
+                                    Compressor.off(),
+                                    Encryptor.off(),
+                                    2_000);
+        if (response.getResponseStatus() != ResponseStatus.OK) {
+            throw new IpcException(
+                    "Failed to get client config from server. Server answered with "
+                    + response.getResponseStatus() + "!");
+        }
+
+        return (VncMap)((Message)response).getVeniceData();
+    }
+
     private Encryptor diffieHellmanKeyExchange(final SocketChannel ch) {
-        final IMessage m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
+        final Message m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
 
         // exchange the client's and the server's public key
-        final Message response = (Message)deref(
-                                    sendAsync(m, ch, Compressor.off(), Encryptor.off()),
-                                    2_000);
+        final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), 2_000);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys
@@ -347,10 +349,10 @@ public class ClientConnection implements Closeable {
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
             final String errText = response.getText();
-            throw new VncException("Error: The server rejected the Diffie-Hellman key exchange! " + errText);
+            throw new IpcException("Error: The server rejected the Diffie-Hellman key exchange! " + errText);
         }
         else {
-            throw new VncException("Failed to process Diffie-Hellman key exchange!");
+            throw new IpcException("Failed to process Diffie-Hellman key exchange!");
         }
     }
 
@@ -390,16 +392,15 @@ public class ClientConnection implements Closeable {
                 new byte[0]);
     }
 
-    private static IMessage deref(Future<IMessage> future, final long timeout) {
+    private static Message deref(Future<Message> future, final long timeout) {
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
         }
         catch(VncException ex) {
             throw ex;
         }
-        catch(TimeoutException ex) {
-            throw new com.github.jlangch.venice.TimeoutException(
-                    "Timeout while waiting for IPC response.");
+        catch(java.util.concurrent.TimeoutException ex) {
+            throw new TimeoutException("Timeout while waiting for IPC response.");
         }
         catch(ExecutionException ex) {
             final Throwable cause = ex.getCause();
