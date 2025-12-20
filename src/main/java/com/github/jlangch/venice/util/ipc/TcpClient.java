@@ -21,45 +21,33 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+
+
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
-import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
+import com.github.jlangch.venice.util.ipc.impl.ClientConnection;
 import com.github.jlangch.venice.util.ipc.impl.Message;
-import com.github.jlangch.venice.util.ipc.impl.TcpSubscriptionListener;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
-import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
-import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
-import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
+import com.github.jlangch.venice.util.ipc.impl.util.ConstantFuture;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
@@ -96,14 +84,13 @@ public class TcpClient implements Cloneable, Closeable {
         this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
         this.port = port;
         this.endpointId = UUID.randomUUID().toString();
-        this.dhKeys = DiffieHellmanKeys.create();
     }
 
 
     @Override
     public Object clone() {
         final TcpClient client = new TcpClient(host, port);
-        client.setEncryption(isEncrypted());
+        client.setEncryption(encrypt.get());
         return client;
     }
 
@@ -117,11 +104,6 @@ public class TcpClient implements Cloneable, Closeable {
      *                level communication between this client and the server.
      */
     public void setEncryption(final boolean encrypt) {
-        if (opened.get()) {
-            throw new VncException(
-                   "The encryption mode cannot be set anymore "
-                   + "once the client has been opened!");
-        }
         this.encrypt.set(encrypt);
     }
 
@@ -135,7 +117,7 @@ public class TcpClient implements Cloneable, Closeable {
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
-        return encrypt.get();
+        return conn.get().isEncrypted();
     }
 
     /**
@@ -147,7 +129,7 @@ public class TcpClient implements Cloneable, Closeable {
                    "Wait until the client has been opened to get the compression cutoff size!");
         }
 
-        return compressor.get().cutoffSize();
+        return conn.get().getCompressCutoffSize();
     }
 
     /**
@@ -159,21 +141,21 @@ public class TcpClient implements Cloneable, Closeable {
                    "Wait until the client has been opened to get the max message size!");
         }
 
-        return maxMessageSize.get();
+        return conn.get().getMaxMessageSize();
     }
 
     /**
      * @return return the client's message send count
      */
     public long getMessageSendCount() {
-       return messageSentCount.get();
+       return opened.get() ? conn.get().getMessageSendCount() : 0L;
     }
 
     /**
      * @return return the client's message receive count
      */
     public long getMessageReceiveCount() {
-       return messageReceiveCount.get();
+       return opened.get() ? conn.get().getMessageReceiveCount() : 0L;
     }
 
     /**
@@ -188,57 +170,18 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public void open() {
         if (opened.compareAndSet(false, true)) {
-            SocketChannel ch = null;
+            ClientConnection c = null;
             try {
-                ch = SocketChannel.open(new InetSocketAddress(host, port));
-                channel.set(ch);
+                c = new ClientConnection(host, port, encrypt.get());
+                conn.set(c);
             }
             catch(Exception ex) {
-                IO.safeClose(ch);
+                IO.safeClose(c);
                 opened.set(false);
-                channel.set(null);
+                conn.set(null);
                 throw new VncException(
                         "Failed to open TcpClient for server " + host + "/" + port + "!",
                         ex);
-            }
-
-            // request the config from the server
-            try {
-                final IMessage response = send(createConfigRequestMessage());
-                if (response.getResponseStatus() != ResponseStatus.OK) {
-                    throw new VncException(
-                            "Failed to get client config from server. Server answered with "
-                            + response.getResponseStatus() + "!");
-                }
-
-                // handle config values
-                final VncMap config = (VncMap)((Message)response).getVeniceData();
-                maxMessageSize.set(getLong(config, "max-msg-size", Message.MESSAGE_LIMIT_MAX));
-                compressor.set(new Compressor(getLong(config, "compress-cutoff-size", -1)));
-                encrypt.set(
-                    encrypt.get()                                // client side encrypt
-                    || getBoolean(config, "encrypt", false));    // server side encrypt
-            }
-            catch(Exception ex) {
-                IO.safeClose(ch);
-                opened.set(false);
-                channel.set(null);
-                throw new VncException("Failed to get client config from server!", ex);
-            }
-
-            if (encrypt.get()) {
-                try {
-                    diffieHellmanKeyExchange();
-                }
-                catch(Exception ex) {
-                    IO.safeClose(ch);
-                    opened.set(false);
-                    channel.set(null);
-                    throw new VncException(
-                            "Failed to open TcpClient for server " + host + "/" + port +
-                            "! Diffie-Hellman key exchange error!",
-                            ex);
-                }
             }
         }
         else {
@@ -250,8 +193,8 @@ public class TcpClient implements Cloneable, Closeable {
      * @return <code>true</code> if the client is running else <code>false</code>
      */
     public boolean isRunning() {
-       final SocketChannel ch = channel.get();
-       return ch != null && ch.isOpen();
+       final ClientConnection c = conn.get();
+       return c != null && c.isOpen();
     }
 
     /**
@@ -260,13 +203,8 @@ public class TcpClient implements Cloneable, Closeable {
     @Override
     public void close() throws IOException {
         if (opened.compareAndSet(true, false)) {
-            try {
-                mngdExecutor.shutdownNow();
-            }
-            catch(Exception ignore) { }
-
-            IO.safeClose(channel.get());
-            channel.set(null);
+            IO.safeClose(conn.get());
+            conn.set(null);
         }
     }
 
@@ -289,7 +227,6 @@ public class TcpClient implements Cloneable, Closeable {
         Objects.requireNonNull(msg);
 
         final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
-
         return send(m);
     }
 
@@ -307,7 +244,6 @@ public class TcpClient implements Cloneable, Closeable {
         Objects.requireNonNull(msg);
 
         final Message m = ((Message)msg).withType(MessageType.REQUEST, true);
-
         send(m);
     }
 
@@ -334,10 +270,7 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Subscribe for a topic.
      *
-     * <p>Puts this client in subscription mode and listens for subscriptions
-     * on the specified topic.
-     *
-     * <p>throws an exception if the client could not put into subscription mode
+     * <p>Multiple subscriptions with different handlers are supported.
      *
      * @param topic  a topic
      * @param handler the subscription message handler
@@ -353,10 +286,7 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Subscribe for a set of topics.
      *
-     * <p>Puts this client in subscription mode and listens for subscriptions
-     * on the specified topic.
-     *
-     * <p>throws an exception if the client could not put into subscription mode
+     * <p>Multiple subscriptions with different handlers are supported.
      *
      * @param topics  a set of topics
      * @param handler the subscription message handler
@@ -370,76 +300,51 @@ public class TcpClient implements Cloneable, Closeable {
             throw new VncException("A subscription topic set must not be empty!");
         }
 
-        final SocketChannel ch = channel.get();
-
-        if (ch == null || !ch.isOpen()) {
+        final ClientConnection c = conn.get();
+        if (c == null || !c.isOpen()) {
             throw new VncException("This TcpClient is not open!");
         }
 
-        final Message subscribeMsg = createSubscribeRequestMessage(topics, endpointId);
+        c.addSubscriptionHandler(topics, handler);
 
-        if (subscription.compareAndSet(false, true)) {
-            try {
-                final Callable<IMessage> task = () -> {
-                    Protocol.sendMessage(ch, subscribeMsg, compressor.get(), encryptor.get());
-                    messageSentCount.incrementAndGet();
-
-                    final Message response = Protocol.receiveMessage(ch, compressor.get(), encryptor.get());
-                    messageReceiveCount.incrementAndGet();
-
-                    return response;
-                };
-
-                final IMessage response = deref(
-                                            mngdExecutor
-                                                .getExecutor()
-                                                .submit(task),
-                                            5_000);
-
-                if (response.getResponseStatus() == ResponseStatus.OK) {
-                    // start the subscription listener in this client
-                    mngdExecutor
-                        .getExecutor()
-                        .submit(new TcpSubscriptionListener(ch, handler, compressor.get(), encryptor.get()));
-
-                    return response;
-                }
-                else {
-                   throw new VncException("Failed to start subscription mode");
-                }
-            }
-            catch(Exception ex) {
-                subscription.set(false);
-                throw ex;
-            }
-        }
-        else {
-            throw new VncException("The client is already in subscription mode!");
-        }
+        final Message m = createSubscribeRequestMessage(topics, endpointId);
+        return send(m);
     }
 
     /**
      * Unsubscribe from a topic.
      *
-     * <p>throws an exception if the client could not put into subscription mode
-     *
      * @param topic  a topic
      * @return the response for the subscribe
      */
     public IMessage unsubscribe(final String topic) {
-        throw new VncException("Not imolemented!");
+        Objects.requireNonNull(topic);
+
+        return unsubscribe(CollectionUtil.toSet(topic));
     }
 
     /**
      * Unsubscribe from a set of topics.
      *
-     * <p>throws an exception if the client could not put into subscription mode
-     *
      * @param topics  a set of topics
      * @return the response for the subscribe
      */
     public IMessage unsubscribe(final Set<String> topics) {
-        throw new VncException("Not imolemented!");
+        Objects.requireNonNull(topics);
+
+        if (topics.isEmpty()) {
+            throw new VncException("A subscription topic set must not be empty!");
+        }
+
+        final ClientConnection c = conn.get();
+        if (c == null || !c.isOpen()) {
+            throw new VncException("This TcpClient is not open!");
+        }
+
+        c.removeSubscriptionHandler(topics);
+
+        final Message m = createUnsubscribeRequestMessage(topics, endpointId);
+        return send(m);
     }
 
     /**
@@ -455,18 +360,8 @@ public class TcpClient implements Cloneable, Closeable {
     public IMessage publish(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        validateMessageSize(msg);
-
         final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
-
-        if (subscription.get()) {
-            // if this client is in subscription mode publish this message
-            // through another client!
-            return sendThroughTemporaryClient(m);
-        }
-        else {
-            return send(m);
-        }
+        return send(m);
     }
 
 
@@ -483,18 +378,8 @@ public class TcpClient implements Cloneable, Closeable {
     public Future<IMessage> publishAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        validateMessageSize(msg);
-
         final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
-
-        if (subscription.get()) {
-            // if this client is in subscription mode publish this message
-            // through another client!
-            return sendThroughTemporaryClientAsync(m);
-        }
-        else {
-            return sendAsync(m);
-        }
+        return sendAsync(m);
     }
 
     /**
@@ -522,8 +407,6 @@ public class TcpClient implements Cloneable, Closeable {
     ) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(queueName);
-
-        validateMessageSize(msg);
 
         final Message m = createQueueOfferRequestMessage(
                                 (Message)msg,
@@ -558,8 +441,6 @@ public class TcpClient implements Cloneable, Closeable {
     ) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(queueName);
-
-        validateMessageSize(msg);
 
         final Message m = createQueueOfferRequestMessage(
                             (Message)msg,
@@ -860,166 +741,40 @@ public class TcpClient implements Cloneable, Closeable {
         }
     }
 
-    private IMessage sendThroughTemporaryClient(
-            final IMessage msg
-    ) {
-        Objects.requireNonNull(msg);
-
-        // use the same configuration as the parent client
-        try (final TcpClient client = (TcpClient)this.clone()) {
-            client.open();
-            return client.send(msg);
-        }
-        catch(IOException ex) {
-            // ignore client close exception
-            return null;
-        }
-    }
-
-    private Future<IMessage> sendThroughTemporaryClientAsync(final IMessage msg) {
-        Objects.requireNonNull(msg);
-
-        // use the same configuration as the parent client
-        try (final TcpClient client = (TcpClient)this.clone()) {
-            client.open();
-            return client.sendAsync(msg);
-        }
-        catch(IOException ex) {
-            // ignore client close exception
-            return new FutureNull();
-        }
-    }
-
 
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        validateMessageSize(msg);
-
-        final SocketChannel ch = channel.get();
-        if (ch == null || !ch.isOpen()) {
+        final ClientConnection c = conn.get();
+        if (c == null || !c.isOpen()) {
             throw new VncException("This TcpClient is not open!");
         }
 
-        if (subscription.get()) {
-            throw new VncException("A client in subscription mode cannot send request messages!");
-        }
+        validateMessageSize(msg, c);
 
         if (isClientLocalMessage(msg)) {
             return handleClientLocalMessage(msg);
         }
 
-        return sendAtomically(msg, ch, compressor.get(), encryptor.get());
+        return c.send(msg, 2000);
     }
 
     private Future<IMessage> sendAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        validateMessageSize(msg);
 
-        final SocketChannel ch = channel.get();
-        if (ch == null || !ch.isOpen()) {
+        final ClientConnection c = conn.get();
+        if (c == null || !c.isOpen()) {
             throw new VncException("This TcpClient is not open!");
         }
 
-        if (subscription.get()) {
-            throw new VncException("A client in subscription mode cannot send request messages!");
-        }
+        validateMessageSize(msg, c);
 
         if (isClientLocalMessage(msg)) {
-            return mngdExecutor
-                    .getExecutor()
-                    .submit(() -> handleClientLocalMessage(msg));
+            return new ConstantFuture<IMessage>(handleClientLocalMessage(msg));
         }
 
-        return sendAsyncRaw(msg, ch, compressor.get(), encryptor.get());
-    }
-
-    private Future<IMessage> sendAsyncRaw(
-            final IMessage msg,
-            final SocketChannel ch,
-            final Compressor compressor,
-            final Encryptor encryptor
-    ) {
-        final Callable<IMessage> task = () -> sendAtomically(msg, ch, compressor, encryptor);
-
-        return mngdExecutor
-                .getExecutor()
-                .submit(task);
-    }
-
-    private IMessage sendAtomically(
-            final IMessage msg,
-            final SocketChannel ch,
-            final Compressor compressor,
-            final Encryptor encryptor
-    ) {
-        try {
-            final boolean auditCount = msg.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST
-                                       && msg.getType() != MessageType.CLIENT_CONFIG;
-
-            // sending the request message and receiving the response
-            // must be atomic otherwise request and response can be mixed
-            // in multi-threaded environments
-            if (sendSemaphore.tryAcquire(120L, TimeUnit.SECONDS)) {
-                try {
-                    Protocol.sendMessage(ch, (Message)msg, compressor, encryptor);
-                    if (auditCount) {
-                        messageSentCount.incrementAndGet();
-                    }
-
-                    if (msg.isOneway()) {
-                        return null;
-                    }
-                    else {
-                        final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
-                        if (auditCount) {
-                            messageReceiveCount.incrementAndGet();
-                        }
-                        return response;
-                    }
-                }
-                finally {
-                    sendSemaphore.release();
-                }
-            }
-            else {
-               throw new com.github.jlangch.venice.TimeoutException(
-                    "Timeout while trying to send an IPC message.");
-            }
-        }
-        catch(InterruptedException ex) {
-            throw new com.github.jlangch.venice.InterruptedException(
-                    "Interrupted while trying to send an IPC message");
-        }
-    }
-
-    private void diffieHellmanKeyExchange() {
-        final SocketChannel ch = channel.get();
-        if (ch == null || !ch.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
-        }
-
-        final IMessage m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
-
-        // exchange the client's and the server's public key
-        final Message response = (Message)deref(
-                                    sendAsyncRaw(m, ch, Compressor.off(), Encryptor.off()),
-                                    2_000);
-
-        if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
-            // successfully exchanged keys
-            final String serverPublicKey = response.getText();
-            encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey)));
-        }
-        else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
-            // server rejects key exchange
-            final String errText = response.getText();
-            throw new VncException("Error: The server rejected the Diffie-Hellman key exchange! " + errText);
-        }
-        else {
-            throw new VncException("Failed to process Diffie-Hellman key exchange!");
-        }
+        return c.sendAsync(msg, 2000);
     }
 
     private Message handleClientLocalMessage(final IMessage request) {
@@ -1036,7 +791,7 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     private Message getClientThreadPoolStatistics() {
-        final VncMap statistics = mngdExecutor.info();
+        final VncMap statistics = conn.get().getThreadPoolStatistics();
 
         return new Message(
                 null,
@@ -1052,58 +807,22 @@ public class TcpClient implements Cloneable, Closeable {
                 toBytes(Json.writeJson(statistics, false), "UTF-8"));
     }
 
-    private void validateMessageSize(final IMessage msg) {
+    private void validateMessageSize(
+            final IMessage msg,
+            final ClientConnection conn
+    ) {
         Objects.requireNonNull(msg);
+        Objects.requireNonNull(conn);
 
-        if (msg.getData().length > maxMessageSize.get()) {
+        if (msg.getData().length > conn.getMaxMessageSize()) {
             throw new VncException(
                     String.format(
                             "The message (%dB) is too large! The limit is at %dB",
                             msg.getData().length,
-                            maxMessageSize.get()));
+                            conn.getMaxMessageSize()));
         }
     }
 
-    private IMessage deref(Future<IMessage> future, final long timeout) {
-        try {
-            return future.get(timeout, TimeUnit.MILLISECONDS);
-        }
-        catch(VncException ex) {
-            throw ex;
-        }
-        catch(TimeoutException ex) {
-            throw new com.github.jlangch.venice.TimeoutException(
-                    "Timeout while waiting for IPC response.");
-        }
-        catch(ExecutionException ex) {
-            final Throwable cause = ex.getCause();
-            if (cause instanceof VncException) {
-                throw (VncException)cause;
-            }
-            else {
-                throw new VncException("Error in IPC call", cause);
-            }
-        }
-        catch(InterruptedException ex) {
-            throw new com.github.jlangch.venice.InterruptedException(
-                    "Interrupted while waiting for IPC response.");
-        }
-    }
-
-    private static Message createDiffieHellmanRequestMessage(final String clientPublicKey) {
-        return new Message(
-                null,
-                MessageType.DIFFIE_HELLMAN_KEY_REQUEST,
-                ResponseStatus.NULL,
-                false,
-                false,
-                false,
-                Message.EXPIRES_NEVER,
-                Topics.of("dh"),
-                "text/plain",
-                "UTF-8",
-                toBytes(clientPublicKey, "UTF-8"));
-    }
 
     private static Message createSubscribeRequestMessage(
             final Set<String> topics,
@@ -1113,6 +832,29 @@ public class TcpClient implements Cloneable, Closeable {
                 null,
                 null,
                 MessageType.SUBSCRIBE,
+                ResponseStatus.NULL,
+                false,
+                false,
+                false,
+                null,
+                null,
+                System.currentTimeMillis(),
+                Message.EXPIRES_NEVER,
+                Message.DEFAULT_TIMEOUT,
+                Topics.of(topics),
+                "text/plain",
+                "UTF-8",
+                toBytes(endpointId, "UTF-8"));
+    }
+
+    private static Message createUnsubscribeRequestMessage(
+            final Set<String> topics,
+            final String endpointId
+    ) {
+        return new Message(
+                null,
+                null,
+                MessageType.UNSUBSCRIBE,
                 ResponseStatus.NULL,
                 false,
                 false,
@@ -1176,104 +918,16 @@ public class TcpClient implements Cloneable, Closeable {
                 new byte[0]);
     }
 
-    private static Message createConfigRequestMessage() {
-        return new Message(
-                null,
-                null,
-                MessageType.CLIENT_CONFIG,
-                ResponseStatus.NULL,
-                false,
-                false,
-                false,
-                null,
-                null,
-                System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                Message.NO_TIMEOUT,
-                Topics.of("client-config"),
-                "text/plain",
-                "UTF-8",
-                new byte[0]);
-    }
-
-
-    private static class FutureNull implements Future<IMessage> {
-
-        public FutureNull() {
-        }
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return cancelled = true;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return cancelled;
-        }
-
-        @Override
-        public boolean isDone() {
-            return true;
-        }
-
-        @Override
-        public IMessage get() throws InterruptedException, ExecutionException {
-            return null;
-        }
-
-        @Override
-        public IMessage get(final long timeout, final TimeUnit unit)
-                throws InterruptedException, ExecutionException, TimeoutException {
-            return null;
-        }
-
-
-        private boolean cancelled = false;
-    }
-
-
     private static byte[] toBytes(final String s, final String charset) {
         return s.getBytes(Charset.forName(charset));
     }
 
-    private static long getLong(final VncMap map, final String entryName, final long defaulValue) {
-        return Coerce.toVncLong(
-                map.get(
-                   new VncKeyword(entryName),
-                   new VncLong(defaulValue))).toJavaLong();
-    }
-
-    private static boolean getBoolean(final VncMap map, final String entryName, final boolean defaulValue) {
-        return VncBoolean.isTrue(
-                map.get(
-                     new VncKeyword(entryName),
-                     VncBoolean.of(defaulValue)));
-    }
-
-
-
-
-    private final Semaphore sendSemaphore = new Semaphore(1);
 
     private final String host;
     private final int port;
     private final String endpointId;
+
     private final AtomicBoolean opened = new AtomicBoolean(false);
-    private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
-    private final AtomicBoolean subscription = new AtomicBoolean(false);
-    private final AtomicLong maxMessageSize = new AtomicLong(Message.MESSAGE_LIMIT_MAX);
-    private final AtomicLong messageSentCount = new AtomicLong(0L);
-    private final AtomicLong messageReceiveCount = new AtomicLong(0L);
-
-    // compression
-    private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
-
-    // encryption
-    private final DiffieHellmanKeys dhKeys;
+    private final AtomicReference<ClientConnection> conn = new AtomicReference<>();
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
-    private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
-
-    private final ManagedCachedThreadPoolExecutor mngdExecutor =
-            new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
 }
