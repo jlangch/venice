@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -149,6 +150,57 @@ public class TcpPubSubTest {
         }
         for(int ii=0; ii<5; ii++) {
             assertEquals("Hello beta " + ii, subMessages2.get(ii + 10).getText());
+        }
+    }
+
+    @Test
+    @Disabled
+    public void test_pub_unsub_1() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient clientSub = new TcpClient(33333);
+        final TcpClient clientPub = new TcpClient(33333);
+
+        server.start();
+
+        IO.sleep(300);
+
+        clientSub.open();
+        clientPub.open();
+
+        final List<IMessage> subMessages = new ArrayList<>();
+
+        try {
+            clientSub.subscribe("test", m -> subMessages.add(m));
+
+            for(int ii=0; ii<3; ii++) {
+                final String msg = "Hello 1 " + ii;
+                final IMessage request = MessageFactory.text(null, "test", "text/plain", "UTF-8", msg);
+                clientPub.publish(request);
+            }
+
+            clientSub.unsubscribe("test");
+
+            for(int ii=0; ii<3; ii++) {
+                final String msg = "Hello 2 " + ii;
+                final IMessage request = MessageFactory.text(null, "test", "text/plain", "UTF-8", msg);
+                clientPub.publish(request);
+            }
+
+            IO.sleep(200);
+        }
+        finally {
+            clientPub.close();
+            clientSub.close();
+
+            IO.sleep(300);
+
+            server.close();
+        }
+
+        assertEquals(3, subMessages.size());
+
+        for(int ii=0; ii<10; ii++) {
+            assertEquals("Hello 1 " + ii, subMessages.get(ii).getText());
         }
     }
 }

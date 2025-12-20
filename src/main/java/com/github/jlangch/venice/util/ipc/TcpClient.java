@@ -202,6 +202,8 @@ public class TcpClient implements Cloneable, Closeable {
      */
     @Override
     public void close() throws IOException {
+        IO.sleep(50);
+
         if (opened.compareAndSet(true, false)) {
             IO.safeClose(conn.get());
             conn.set(null);
@@ -756,7 +758,7 @@ public class TcpClient implements Cloneable, Closeable {
             return handleClientLocalMessage(msg);
         }
 
-        return c.send(msg, 2000);
+        return c.send(msg, 10_000);  // TODO: do the timeout right
     }
 
     private Future<IMessage> sendAsync(final IMessage msg) {
@@ -774,7 +776,7 @@ public class TcpClient implements Cloneable, Closeable {
             return new ConstantFuture<IMessage>(handleClientLocalMessage(msg));
         }
 
-        return c.sendAsync(msg, 2000);
+        return c.sendAsync(msg, 10_000);   // TODO: do the timeout right
     }
 
     private Message handleClientLocalMessage(final IMessage request) {

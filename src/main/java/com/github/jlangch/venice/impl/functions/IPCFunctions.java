@@ -824,9 +824,7 @@ public class IPCFunctions {
                         "(ipc/subscribe client topic msg-handler)")
                     .doc(
                         "Subscribe to a topic.\n\n" +
-                        "Puts this client into subscription mode and listens for messages of the " +
-                        "specified topic.\n\n" +
-                        "To unsubscribe from the topics just close the client.\n\n" +
+                        "Multiple subscriptions with different handlers are supported.\n\n" +
                         "Returns the server's response message.\n\n" +
                         "The response message has one of these status:\n\n" +
                         "  * `:OK`            - subscription added. Subscribed messages will be delivered through the 'msg-handler'\n" +
@@ -855,6 +853,7 @@ public class IPCFunctions {
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
+                        "ipc/unsubscribe",
                         "ipc/publish",
                         "ipc/publish-async",
                         "ipc/client",
@@ -918,7 +917,6 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
     public static VncFunction ipc_unsubscribe =
         new VncFunction(
                 "ipc/unsubscribe",
@@ -948,6 +946,9 @@ public class IPCFunctions {
                         "    ;; client1 subscribes to messages with topic 'test'              \n" +
                         "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
                         "                                                                     \n" +
+                        "    ;; client1 unsubscribes from messages with topic 'test'          \n" +
+                        "    (ipc/unsubscribe client1 \"test\")                               \n" +
+                        "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
                         "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
@@ -956,6 +957,7 @@ public class IPCFunctions {
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
+                        "ipc/subscribe",
                         "ipc/publish",
                         "ipc/publish-async",
                         "ipc/client",
@@ -1045,8 +1047,9 @@ public class IPCFunctions {
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
-                        "ipc/subscribe",
                         "ipc/publish-async",
+                        "ipc/subscribe",
+                        "ipc/unsubscribe",
                         "ipc/client",
                         "ipc/server",
                         "ipc/text-message",
@@ -1115,6 +1118,7 @@ public class IPCFunctions {
                     .seeAlso(
                         "ipc/publish",
                         "ipc/subscribe",
+                        "ipc/unsubscribe",
                         "ipc/client",
                         "ipc/server",
                         "ipc/text-message",
