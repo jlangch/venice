@@ -260,6 +260,11 @@ public class TcpClient implements Cloneable, Closeable {
     @Override
     public void close() throws IOException {
         if (opened.compareAndSet(true, false)) {
+            try {
+                mngdExecutor.shutdownNow();
+            }
+            catch(Exception ignore) { }
+
             IO.safeClose(channel.get());
             channel.set(null);
         }
