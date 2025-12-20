@@ -329,7 +329,6 @@ public class TcpClient2 implements Cloneable, Closeable {
      * <p>throws an exception if the client could not put into subscription mode
      *
      * @param topics  a set of topics
-     * @param handler the subscription message handler
      * @return the response for the subscribe
      */
     public IMessage unsubscribe(final Set<String> topics) {
