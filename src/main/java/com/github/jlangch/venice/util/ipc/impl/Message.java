@@ -95,6 +95,47 @@ public class Message implements IMessage {
             final boolean oneway,
             final boolean durable,
             final boolean subscriptionReply,
+            final long expiresAt,
+            final Topics topics,
+            final String mimetype,
+            final String charset,
+            final byte[] data
+    ) {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(responseStatus);
+        Objects.requireNonNull(topics);
+        Objects.requireNonNull(mimetype);
+        Objects.requireNonNull(data);
+
+        validateMimetype(mimetype);
+        validateCharset(charset);
+
+        this.id = id == null ? UUID.randomUUID() : id;
+        this.requestId = requestId;
+        this.type = type;
+        this.responseStatus = responseStatus;
+        this.oneway = oneway;
+        this.durable = durable;
+        this.subscriptionReply = subscriptionReply;
+        this.queueName = null;
+        this.replyToQueueName = null;
+        this.timestamp = Instant.now().toEpochMilli();
+        this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
+        this.topics = topics;
+        this.timeout = DEFAULT_TIMEOUT;
+        this.mimetype = mimetype;
+        this.charset = charset;
+        this.data = data;
+    }
+
+    public Message(
+            final UUID id,
+            final String requestId,
+            final MessageType type,
+            final ResponseStatus responseStatus,
+            final boolean oneway,
+            final boolean durable,
+            final boolean subscriptionReply,
             final String queueName,
             final String replyToQueueName,
             final long timestamp,
@@ -157,10 +198,15 @@ public class Message implements IMessage {
     /**
      * Change the response status of a message
      *
+     * @param id a a message id
      * @param responseStatus a response status
      * @return a new message with the topic
      */
-    public Message withResponseStatus(final ResponseStatus responseStatus) {
+    public Message withResponseStatus(
+           final UUID id,
+           final ResponseStatus responseStatus
+    ) {
+        Objects.requireNonNull(id);
         Objects.requireNonNull(responseStatus);
         return new Message(
                 id, requestId,

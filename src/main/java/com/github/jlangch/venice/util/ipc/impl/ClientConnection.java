@@ -30,11 +30,13 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
@@ -59,11 +61,13 @@ public class ClientConnection implements Closeable {
     public ClientConnection(
             final String host,
             final int port,
-            final boolean useEncryption
+            final boolean useEncryption,
+            final Consumer<IMessage> subscriptionHandler
     ) {
         // [1] Open the connection to the server
         this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
         this.port = port;
+        this.subscriptionHandler = subscriptionHandler;
 
         final String serverAddress = this.host + "/" + this.port;
 
@@ -123,6 +127,14 @@ public class ClientConnection implements Closeable {
             encryptor = Encryptor.off();
         }
 
+        // [5] start the executor after the connections has been established
+        mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
+
+        // [6] start message listener worker
+        mngdExecutor
+           .getExecutor()
+           .submit(() -> messageListener());
+
         opened.set(true);
     }
 
@@ -172,10 +184,12 @@ public class ClientConnection implements Closeable {
                     "This TcpClient conection is not open! Cannot send the message!");
         }
 
-        return sendAsync(msg, channel, compressor, encryptor);
+        return mngdExecutor
+                .getExecutor()
+                .submit(() -> send(msg));
     }
 
-    public IMessage sendAtomically(final IMessage msg) {
+    public IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
 
         if (!isOpen()) {
@@ -183,7 +197,37 @@ public class ClientConnection implements Closeable {
                     "This TcpClient conection is not open! Cannot send the message!");
         }
 
-        return sendAtomically(msg, channel, compressor, encryptor);
+        try {
+            // sending the request message and receiving the response
+            // must be atomic otherwise request and response can be mixed
+            // in multi-threaded environments
+            if (sendSemaphore.tryAcquire(120L, TimeUnit.SECONDS)) {
+                try {
+                    Protocol.sendMessage(channel, (Message)msg, compressor, encryptor);
+                    messageSentCount.incrementAndGet();
+
+                    if (msg.isOneway()) {
+                        return null;
+                    }
+                }
+                finally {
+                    sendSemaphore.release();
+                }
+            }
+            else {
+               throw new com.github.jlangch.venice.TimeoutException(
+                    "Timeout while trying to send an IPC message.");
+            }
+
+
+            // receive from queue
+            return receiveQueue.poll();
+
+        }
+        catch(InterruptedException ex) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                    "Interrupted while trying to send an IPC message");
+        }
     }
 
     /**
@@ -196,11 +240,37 @@ public class ClientConnection implements Closeable {
                 mngdExecutor.shutdownNow();
             }
             catch(Exception ignore) { }
-
             IO.safeClose(channel);
         }
     }
 
+
+    private void messageListener() {
+        while(!Thread.interrupted() && isOpen()) {
+            try {
+                final IMessage msg = Protocol.receiveMessage(channel, compressor, encryptor);
+                if (msg != null && !Thread.interrupted() && isOpen()) {
+                    if (((Message)msg).isSubscriptionReply()) {
+                        if (subscriptionHandler != null) {
+                            try {
+                                subscriptionHandler.accept(msg);
+                            }
+                            catch(Exception ignore) {}
+                        }
+                        else {
+                            discardedMessageSubscriptionCount.incrementAndGet();
+                        }
+                    }
+                    else {
+                        receiveQueue.offer(msg);
+                        messageReceiveCount.incrementAndGet();
+                    }
+                }
+            }
+            catch(Exception ignore) {
+            }
+        }
+    }
 
     private Future<IMessage> sendAsync(
             final IMessage msg,
@@ -384,11 +454,16 @@ public class ClientConnection implements Closeable {
     private final boolean encrypt;
     private final Encryptor encryptor;
 
+    // subscriptions
+    private final Consumer<IMessage> subscriptionHandler;
+
     // statistics
     private final AtomicLong messageSentCount = new AtomicLong(0L);
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
+    private final AtomicLong discardedMessageSubscriptionCount = new AtomicLong(0L);
+
+    private final LinkedBlockingQueue<IMessage> receiveQueue = new LinkedBlockingQueue<>(100);
 
     // thread pool
-    private final ManagedCachedThreadPoolExecutor mngdExecutor =
-            new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
+    private final ManagedCachedThreadPoolExecutor mngdExecutor;
 }

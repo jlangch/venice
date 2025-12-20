@@ -397,16 +397,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         if (response == null) {
             // create an empty text response
-            return createPlainTextResponseMessage(
-                      ResponseStatus.OK,
-                      request.getRequestId(),
-                      request.getTopics(),
-                      "");
+            return createTextMessageResponse(
+                        request,
+                        ResponseStatus.OK,
+                        "");
         }
         else {
             return ((Message)response)
                         .withType(MessageType.RESPONSE, true)
-                        .withResponseStatus(ResponseStatus.OK);
+                        .withResponseStatus(request.getId(), ResponseStatus.OK);
         }
     }
 
@@ -465,7 +464,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                             ResponseStatus.OK,
                             true,   // oneway
                             false,  // nondurable response
-                            false,  // not subscribed
+                            false,  // not a subscription msg
                             Message.EXPIRES_NEVER,
                             msg.getTopics(),
                             "text/plain",
@@ -528,7 +527,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                     }
                     else {
                         return msg.withType(MessageType.RESPONSE, true)
-                                  .withResponseStatus(ResponseStatus.OK);
+                                  .withResponseStatus(request.getId(), ResponseStatus.OK);
                     }
                 }
             }
@@ -550,13 +549,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
     private Message handleTcpServerRequest(final Message request) {
         if ("tcp-server/status".equals(request.getTopic())) {
-            return getTcpServerStatus();
+            return getTcpServerStatus(request);
         }
         else if ("tcp-server/thread-pool-statistics".equals(request.getTopic())) {
-            return getTcpServerThreadPoolStatistics();
+            return getTcpServerThreadPoolStatistics(request);
         }
         else if ("tcp-server/error".equals(request.getTopic())) {
-            return getTcpServerNextError();
+            return getTcpServerNextError(request);
         }
         else {
             return createBadRequestTextMessageResponse(
@@ -691,7 +690,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
             catch(Exception ex) {
                 return createBadRequestTextMessageResponse(
                         request,
-                        String.format("Request %s: Invalid queue name: %s", request.getType(), ex.getMessage()));
+                        String.format(
+                            "Request %s: Invalid queue name: %s",
+                            request.getType(), ex.getMessage()));
             }
 
 
@@ -720,7 +721,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
         if (!"application/json".equals(request.getMimetype())) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: Expected a JSON payload", request.getType()));
+                    String.format(
+                        "Request %s: Expected a JSON payload",
+                        request.getType()));
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -732,7 +735,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: Invalid queue name: %s", request.getType(), ex.getMessage()));
+                    String.format(
+                        "Request %s: Invalid queue name: %s",
+                        request.getType(), ex.getMessage()));
         }
 
         final IpcQueue<Message> queue = p2pQueues.get(queueName);
@@ -747,14 +752,18 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
         return createOkTextMessageResponse(
                 request,
-                String.format("Request %s: Queue %s removed.", request.getType(), queueName));
+                String.format(
+                    "Request %s: Queue %s removed.",
+                    request.getType(), queueName));
     }
 
     private Message handleStatusQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: Expected a JSON payload", request.getType()));
+                    String.format(
+                        "Request %s: Expected a JSON payload",
+                        request.getType()));
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -766,7 +775,9 @@ public class TcpServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createBadRequestTextMessageResponse(
                     request,
-                    String.format("Request %s: Invalid queue name: %s", request.getType(), ex.getMessage()));
+                    String.format(
+                        "Request %s: Invalid queue name: %s",
+                        request.getType(), ex.getMessage()));
         }
 
         final IpcQueue<Message> q = p2pQueues.get(queueName);
@@ -782,17 +793,15 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                         .toJson(false);
 
         return createJsonResponseMessage(
+                    request,
                     ResponseStatus.OK,
-                    request.getRequestId(),
-                    request.getTopics(),
                     response);
     }
 
     private Message handleClientConfigRequest(final Message request) {
         return createJsonResponseMessage(
+                    request,
                     ResponseStatus.OK,
-                    request.getRequestId(),
-                    request.getTopics(),
                     new JsonBuilder()
                             .add("max-msg-size", maxMessageSize.get())
                             .add("compress-cutoff-size", compressor.cutoffSize())
@@ -804,6 +813,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
         if (encryptor.get().isActive()) {
             logger.warn("conn-" + connectionId, "Diffie-Hellman key already exchanged!");
             return createPlainTextResponseMessage(
+                       request.getId(),
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        null,
                        Topics.of("dh"),
@@ -821,6 +831,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
 
                 // send the server's public key back
                 return createPlainTextResponseMessage(
+                           request.getId(),
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
                            null,
                            Topics.of("dh"),
@@ -830,6 +841,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 logger.warn("conn-" + connectionId, "Diffie-Hellman key exchange error!", ex);
 
                 return createPlainTextResponseMessage(
+                           request.getId(),
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            null,
                            Topics.of("dh"),
@@ -862,6 +874,7 @@ public class TcpServerConnection implements IPublisher, Runnable {
             final String message
     ) {
         return createPlainTextResponseMessage(
+                    request.getId(),
                     responseStatus,
                     request.getRequestId(),
                     request.getTopics(),
@@ -869,38 +882,40 @@ public class TcpServerConnection implements IPublisher, Runnable {
     }
 
     private static Message createJsonResponseMessage(
+            final Message request,
             final ResponseStatus status,
-            final String requestID,
-            final Topics topics,
             final String json
     ) {
         return new Message(
-                requestID,
+                request.getId(),
+                request.getRequestId(),
                 MessageType.RESPONSE,
                 status,
                 true,   // oneway
                 false,  // transient
-                false,  // not subscribed
+                false,  // not a subscription msg
                 Message.EXPIRES_NEVER,
-                topics,
+                request.getTopics(),
                 "application/json",
                 "UTF-8",
                 toBytes(json, "UTF-8"));
     }
 
     private static Message createPlainTextResponseMessage(
+            final UUID id,
             final ResponseStatus status,
             final String requestID,
             final Topics topics,
             final String text
     ) {
         return new Message(
+                id,
                 requestID,
                 MessageType.RESPONSE,
                 status,
                 true,   // oneway
                 false,  // transient
-                false,  // not subscribed
+                false,  // not a subscription msg
                 Message.EXPIRES_NEVER,
                 topics,
                 "text/plain",
@@ -912,11 +927,10 @@ public class TcpServerConnection implements IPublisher, Runnable {
     // Server utilities
     // ------------------------------------------------------------------------
 
-    private Message getTcpServerStatus() {
+    private Message getTcpServerStatus(final Message request) {
         return createJsonResponseMessage(
+                   request,
                    ResponseStatus.OK,
-                   null,
-                   Topics.of("tcp-server/status"),
                    new JsonBuilder()
                            .add("running", server.isRunning())
                            .add("mode", mode.name())
@@ -950,24 +964,22 @@ public class TcpServerConnection implements IPublisher, Runnable {
                            .toJson(false));
     }
 
-    private Message getTcpServerThreadPoolStatistics() {
+    private Message getTcpServerThreadPoolStatistics(final Message request) {
         final VncMap statistics = serverThreadPoolStatistics.get();
 
         return createJsonResponseMessage(
+                request,
                 ResponseStatus.OK,
-                null,
-                Topics.of("tcp-server/thread-pool-statistics"),
                 Json.writeJson(statistics, true));
     }
 
-    private Message getTcpServerNextError() {
+    private Message getTcpServerNextError(final Message request) {
         try {
             final Error err = errorBuffer.poll();
             if (err == null) {
                 return createJsonResponseMessage(
+                        request,
                         ResponseStatus.OK,
-                        null,
-                        Topics.of("tcp-server/error"),
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
                                 .toJson(false));
@@ -978,9 +990,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
                 final String exMsg = ex == null ? null :  ex.getMessage();
 
                 return createJsonResponseMessage(
+                        request,
                         ResponseStatus.OK,
-                        null,
-                        Topics.of("tcp-server/error"),
                         new JsonBuilder()
                                 .add("status", "error")
                                 .add("description", description)
@@ -991,9 +1002,8 @@ public class TcpServerConnection implements IPublisher, Runnable {
         }
         catch(Exception ex) {
             return createJsonResponseMessage(
+                    request,
                     ResponseStatus.OK,
-                    null,
-                    Topics.of("tcp-server/error"),
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
                             .toJson(false));
