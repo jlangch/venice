@@ -268,9 +268,6 @@ public class TcpClient2 implements Cloneable, Closeable {
     /**
      * Subscribe for a topic.
      *
-     * <p>Puts this client in subscription mode and listens for subscriptions
-     * on the specified topic.
-     *
      * <p>throws an exception if the client could not put into subscription mode
      *
      * @param topic  a topic
@@ -286,9 +283,6 @@ public class TcpClient2 implements Cloneable, Closeable {
 
     /**
      * Subscribe for a set of topics.
-     *
-     * <p>Puts this client in subscription mode and listens for subscriptions
-     * on the specified topic.
      *
      * <p>throws an exception if the client could not put into subscription mode
      *
@@ -315,31 +309,22 @@ public class TcpClient2 implements Cloneable, Closeable {
         return send(m);
     }
 
-
     /**
      * Unsubscribe from a topic.
-     *
-     * <p>Puts this client in subscription mode and listens for subscriptions
-     * on the specified topic.
      *
      * <p>throws an exception if the client could not put into subscription mode
      *
      * @param topic  a topic
-     * @param handler the subscription message handler
      * @return the response for the subscribe
      */
-    public IMessage unsubscribe(final String topic, final Consumer<IMessage> handler) {
+    public IMessage unsubscribe(final String topic) {
         Objects.requireNonNull(topic);
-        Objects.requireNonNull(handler);
 
-        return unsubscribe(CollectionUtil.toSet(topic), handler);
+        return unsubscribe(CollectionUtil.toSet(topic));
     }
 
     /**
      * Unsubscribe from a set of topics.
-     *
-     * <p>Puts this client in subscription mode and listens for subscriptions
-     * on the specified topic.
      *
      * <p>throws an exception if the client could not put into subscription mode
      *
@@ -347,9 +332,8 @@ public class TcpClient2 implements Cloneable, Closeable {
      * @param handler the subscription message handler
      * @return the response for the subscribe
      */
-    public IMessage unsubscribe(final Set<String> topics, final Consumer<IMessage> handler) {
+    public IMessage unsubscribe(final Set<String> topics) {
         Objects.requireNonNull(topics);
-        Objects.requireNonNull(handler);
 
         if (topics.isEmpty()) {
             throw new VncException("A subscription topic set must not be empty!");

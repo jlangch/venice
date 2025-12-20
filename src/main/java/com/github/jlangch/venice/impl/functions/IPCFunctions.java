@@ -918,6 +918,92 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+    public static VncFunction ipc_unsubscribe =
+        new VncFunction(
+                "ipc/unsubscribe",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/unsubscribe client topic)")
+                    .doc(
+                        "Unsubscribe from a topic.\n\n" +
+                        "Returns the server's response message.\n\n" +
+                        "The response message has one of these status:\n\n" +
+                        "  * `:OK`            - subscription added. Subscribed messages will be delivered through the 'msg-handler'\n" +
+                        "  * `:SERVER_ERROR`  - indicates a server side error while processing the request\n" +
+                        "  * `:BAD_REQUEST`   - invalid request, details in the payload")
+                    .examples(
+                        "(do                                                                  \n" +
+                        "  ;; thread-safe printing                                            \n" +
+                        "  (defn println [& msg] (locking println (apply core/println msg)))  \n" +
+                        "                                                                     \n" +
+                        "  (defn client-subscribe-handler [m]                                 \n" +
+                        "    (println \"SUBSCRIBED:\" (ipc/message->json true m)))            \n" +
+                        "                                                                     \n" +
+                        "  (try-with [server  (ipc/server 33333)                              \n" +
+                        "             client1 (ipc/client \"localhost\" 33333)                \n" +
+                        "             client2 (ipc/client \"localhost\" 33333)]               \n" +
+                        "                                                                     \n" +
+                        "    ;; client1 subscribes to messages with topic 'test'              \n" +
+                        "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
+                        "                                                                     \n" +
+                        "    ;; client2 publishes a plain text message:                       \n" +
+                        "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
+                        "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
+                        "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
+                        "      (ipc/publish client2 m))                                       \n" +
+                        "                                                                     \n" +
+                        "    (sleep 300)))                                                    ")
+                    .seeAlso(
+                        "ipc/publish",
+                        "ipc/publish-async",
+                        "ipc/client",
+                        "ipc/server",
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final VncVal topicVal = args.nth(1);
+
+                final HashSet<String> topics = new HashSet<>();
+                if (Types.isVncString(topicVal)) {
+                    topics.add(Coerce.toVncString(topicVal).getValue());
+                }
+                else if (Types.isVncSequence(topicVal)) {
+                    Coerce.toVncSequence(topicVal).forEach(t -> {
+                        if (Types.isVncString(t)) {
+                            topics.add(Coerce.toVncString(t).getValue());
+                        }
+                        else {
+                            throw new VncException(
+                                    "Function 'ipc/unsubscribe' expects either a single string "
+                                    + "topic or a sequence of topic strings!");
+                            }
+                    });
+                }
+                else {
+                    throw new VncException(
+                            "Function 'ipc/unsubscribe' expects either a single string "
+                            + "topic or a sequence of topic strings!");
+                }
+
+                final IMessage response = client.unsubscribe(topics);
+
+                return new VncJavaObject(response);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction ipc_publish =
         new VncFunction(
                 "ipc/publish",
@@ -2968,6 +3054,7 @@ public class IPCFunctions {
                     .add(ipc_publish)
                     .add(ipc_publish_async)
                     .add(ipc_subscribe)
+                    .add(ipc_unsubscribe)
 
                     .add(ipc_offer)
                     .add(ipc_offer_async)

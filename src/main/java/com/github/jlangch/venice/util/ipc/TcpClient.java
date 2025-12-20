@@ -419,6 +419,32 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     /**
+     * Unsubscribe from a topic.
+     *
+     * <p>throws an exception if the client could not put into subscription mode
+     *
+     * @param topic  a topic
+     * @param handler the subscription message handler
+     * @return the response for the subscribe
+     */
+    public IMessage unsubscribe(final String topic) {
+        throw new VncException("Not imolemented!");
+    }
+
+    /**
+     * Unsubscribe from a set of topics.
+     *
+     * <p>throws an exception if the client could not put into subscription mode
+     *
+     * @param topics  a set of topics
+     * @param handler the subscription message handler
+     * @return the response for the subscribe
+     */
+    public IMessage unsubscribe(final Set<String> topics) {
+        throw new VncException("Not imolemented!");
+    }
+
+    /**
      * Publish a message to any other client that have subscribed to the
      * message's topic.
      *
