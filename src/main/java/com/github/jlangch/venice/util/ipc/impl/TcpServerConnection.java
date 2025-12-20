@@ -458,22 +458,13 @@ public class TcpServerConnection implements IPublisher, Runnable {
                                             && queue.isDurable()  // queue is durable
                                             && wal.isEnabled();   // server supports write-ahead-log
 
-                    return new Message(
-                            msg.getRequestId(),
-                            MessageType.RESPONSE,
+                    return createTextMessageResponse(
+                            request,
                             ResponseStatus.OK,
-                            true,   // oneway
-                            false,  // nondurable response
-                            false,  // not a subscription msg
-                            Message.EXPIRES_NEVER,
-                            msg.getTopics(),
-                            "text/plain",
-                            "UTF-8",
-                            toBytes(String.format(
-                                        "Offered the message to the queue %s (durable: %b).",
-                                        queue.name(),
-                                        durable),
-                                    "UTF-8"));
+                            String.format(
+                                "Offered the message to the queue %s (durable: %b).",
+                                queue.name(),
+                                durable));
                 }
                 else {
                     return createTextMessageResponse(
