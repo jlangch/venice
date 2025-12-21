@@ -197,7 +197,7 @@ public class ClientConnection implements Closeable {
         }
 
         final long start = System.currentTimeMillis();
-//        final long limit = start + timeoutMillis;
+        final long limit = start + timeoutMillis;
 
         try {
             // sending the request message atomically preventing any other thread to
@@ -211,7 +211,12 @@ public class ClientConnection implements Closeable {
                         return null;
                     }
 
-                    return listener.readResponse((Message)msg, timeoutMillis, opened);
+                    final long remainingTimeout = limit - System.currentTimeMillis();
+
+                    return listener.readResponse(
+                            (Message)msg,
+                            Math.max(0, remainingTimeout),
+                            opened);
 
 //                    final long sendDone = System.currentTimeMillis();
 //

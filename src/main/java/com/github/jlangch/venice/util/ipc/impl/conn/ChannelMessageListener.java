@@ -86,8 +86,12 @@ public class ChannelMessageListener implements Runnable {
         while(connectionOpen.get()) {
             // if a response is ready consume immediately
             Message response = poll();
-            if (request.hasSameId(response)) {
+            if (response != null && request.hasSameId(response)) {
                 return response; // the response matches the request
+            }
+
+            if (timeoutMillis <= 0) {
+                throw new TimeoutException("Timeout on receiving IPC message response.");
             }
 
             // check server status
