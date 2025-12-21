@@ -39,7 +39,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -125,23 +124,8 @@ public class ServerConnection implements IPublisher, Runnable {
             publisherThread.start();
 
             while(!isStop()) {
-                mode = processRequestResponse();
+                processRequestResponse();
             }
-
-//            while(!isStop()) {
-//                if (mode == State.Request_Response) {
-//                    // process a request/response message
-//                    mode = processRequestResponse();
-//               }
-//                else if (mode == State.Publish) {
-//                    // process publish messages if there are any waiting
-//                    //mode = processPublication();
-//                    Thread.sleep(1000);
-//                }
-//                else {
-//                    break; // should no get here
-//                }
-//            }
         }
         catch(Exception ex) {
             // when the client closed the connection
@@ -242,15 +226,17 @@ public class ServerConnection implements IPublisher, Runnable {
     // Process requests
     // ------------------------------------------------------------------------
 
-    private State processRequestResponse() throws InterruptedException {
+    private void processRequestResponse() throws InterruptedException {
         // [1] receive message
         final Message request = Protocol.receiveMessage(ch, compressor, encryptor.get());
         if (request == null) {
-            return State.Terminated; // client closed connection
+            mode = State.Terminated; // client closed connection
+            return;
         }
 
         if (!server.isRunning()) {
-            return State.Terminated;  // this server was closed
+            mode = State.Terminated;  // this server was closed
+            return;
         }
 
         if (request.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST
@@ -276,7 +262,8 @@ public class ServerConnection implements IPublisher, Runnable {
                                                 maxMessageSize));
                sendResponse(response);
             }
-            return mode;
+
+            return;
         }
 
         // [3] Handle server info requests
@@ -286,16 +273,15 @@ public class ServerConnection implements IPublisher, Runnable {
             if (!request.isOneway()) {
                 sendResponse(response);
             }
-            return mode;
+            return;
         }
 
         // [4] Handle all other requests
-        final Tuple2<State, Message> result = handleRequestMessage(mode, request);
-        final State newState = result._1;
-        final Message response = result._2;
+        final Message response = handleRequestMessage(request);
 
         if (!server.isRunning()) {
-            return State.Terminated;  // this server was closed
+            mode = State.Terminated;  // this server was closed
+            return;
         }
 
         // [5] Send response
@@ -319,57 +305,21 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         else {
             // request -> response
-            if (mode == State.Request_Response) {
-                switch(response.getResponseStatus()) {
-                    case DIFFIE_HELLMAN_ACK:
-                    case DIFFIE_HELLMAN_NAK:
-                        // Diffie Hellman responses without compressing and encrypting!
-                        sendDiffieHellmanResponse(response);
-                        break;
+            switch(response.getResponseStatus()) {
+                case DIFFIE_HELLMAN_ACK:
+                case DIFFIE_HELLMAN_NAK:
+                    // Diffie Hellman responses without compressing and encrypting!
+                    sendDiffieHellmanResponse(response);
+                    break;
 
-                    default:
-                        sendResponse(response);
-                        break;
-                }
-            }
-//            else if (mode == State.Publish) {
-//                auditResponseError(
-//                        request,
-//                        String.format(
-//                          "Cannot send message response back to clients in subscription mode! Request: %s",
-//                          request.getType()));
-//            }
-            else {
-               // do nothing
+                default:
+                    sendResponse(response);
+                    break;
             }
         }
-
-        return newState;
     }
 
-
-    // ------------------------------------------------------------------------
-    // Process publications
-    // ------------------------------------------------------------------------
-
-//    private State processPublication() throws InterruptedException {
-//        // check the publish queue
-//        final Message msg = publishQueue.poll(5, TimeUnit.SECONDS);
-//
-//        if (msg != null) {
-//            statistics.incrementPublishCount();
-//            final Message pubMsg = msg.withType(MessageType.REQUEST, true);
-//
-//            sendResponse(pubMsg);
-//        }
-//
-//        return State.Publish;
-//    }
-
-    private Tuple2<State,Message> handleRequestMessage(
-            final State currState,
-            final Message request
-    ) {
+    private Message handleRequestMessage(final Message request) {
         try {
             switch(request.getType()) {
                 case REQUEST:
@@ -377,78 +327,52 @@ public class ServerConnection implements IPublisher, Runnable {
                     // call the server handler to process the request into a
                     // response and send the response only for non one-way
                     // requests back to the caller
-                    return new Tuple2<State,Message>(
-                                State.Request_Response,
-                                handleSend(request));
+                    return handleSend(request);
 
                 case SUBSCRIBE:
                     // the client wants to subscribe to a topic
-                    return new Tuple2<State,Message>(
-                            State.Request_Response,
-                            handleSubscribe(request));
+                    return handleSubscribe(request);
 
                 case UNSUBSCRIBE:
                     // the client wants to unsubscribe from topic
-                    return new Tuple2<State,Message>(
-                            State.Request_Response,
-                            handleUnsubscribe(request));
+                    return handleUnsubscribe(request);
 
                 case PUBLISH:
                     // the client sent a message to be published to all subscribers
                     // of the message's topic
-                    return new Tuple2<State,Message>(
-                            State.Request_Response,
-                            handlePublish(request));
+                    return handlePublish(request);
 
                 case OFFER:
                     // the client offers a new message to a queue
-                    return new Tuple2<State,Message>(
-                            State.Request_Response,
-                            handleOffer(request));
+                    return handleOffer(request);
 
                 case POLL:
                     // the client polls a new message from a queue
-                    return new Tuple2<State,Message>(
-                            State.Request_Response,
-                            handlePoll(request));
+                    return handlePoll(request);
 
                 case CREATE_QUEUE:
-                    return new Tuple2<State,Message>(
-                            currState,
-                            handleCreateQueueRequest(request));
+                    return handleCreateQueueRequest(request);
 
                 case CREATE_TEMP_QUEUE:
-                    return new Tuple2<State,Message>(
-                            currState,
-                            handleCreateTemporaryQueueRequest(request));
+                    return handleCreateTemporaryQueueRequest(request);
 
                 case REMOVE_QUEUE:
-                    return new Tuple2<State,Message>(
-                            currState,
-                            handleRemoveQueueRequest(request));
+                    return handleRemoveQueueRequest(request);
 
                 case STATUS_QUEUE:
-                    return new Tuple2<State,Message>(
-                            currState,
-                            handleStatusQueueRequest(request));
+                    return handleStatusQueueRequest(request);
 
                 case CLIENT_CONFIG:
-                    return new Tuple2<State,Message>(
-                            currState,
-                            handleClientConfigRequest(request));
+                    return handleClientConfigRequest(request);
 
                 case DIFFIE_HELLMAN_KEY_REQUEST:
-                    return new Tuple2<State,Message>(
-                            State.Request_Response,
-                            handleDiffieHellmanKeyExchange(request));
+                    return handleDiffieHellmanKeyExchange(request);
 
                 default:
                     // Invalid request type
-                    return new Tuple2<State,Message>(
-                            currState,
-                            createBadRequestTextMessageResponse(
+                    return createBadRequestTextMessageResponse(
                                     request,
-                                    "Invalid request type: " + request.getType()));
+                                    "Invalid request type: " + request.getType());
             }
         }
         catch(Exception ex) {
@@ -457,13 +381,11 @@ public class ServerConnection implements IPublisher, Runnable {
 
             // TODO: how much information from the exception shall we pass back
             //       to the client
-            return new Tuple2<State,Message>(
-                    currState,
-                    createTextMessageResponse(
+            return createTextMessageResponse(
                         request,
                         ResponseStatus.HANDLER_ERROR,
                         "Failed to handle request of type " + request.getType() + "!\n"
-                        + ExceptionUtil.printStackTraceToString(ex)));
+                        + ExceptionUtil.printStackTraceToString(ex));
         }
     }
 
@@ -1145,7 +1067,8 @@ public class ServerConnection implements IPublisher, Runnable {
 
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
-    private State mode = State.Request_Response;
+    private volatile State mode = State.Request_Response;
+    private volatile Thread publisherThread;
 
     private final TcpServer server;
     private final SocketChannel ch;
@@ -1164,8 +1087,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final AtomicBoolean stop = new AtomicBoolean(false);
 
     private final Semaphore sendSemaphore = new Semaphore(1);
-
-    private volatile Thread publisherThread;
 
     // compression
     private final Compressor compressor;
