@@ -217,50 +217,6 @@ public class ClientConnection implements Closeable {
                             (Message)msg,
                             Math.max(0, remainingTimeout),
                             opened);
-
-//                    final long sendDone = System.currentTimeMillis();
-//
-//                    // poll the response from the receive queue
-//                    while(isOpen()) {
-//                        // if a response is ready consume immediately
-//                        Message response = listener.poll();
-//                        if (msg.hasSameId(response)) {
-//                            return response; // the response matches the request
-//                        }
-//
-//                        // check server status
-//                        if (!channel.isOpen() || listener.isEOF()) {
-//                           break;
-//                        }
-//
-//                        // check response in 80ms steps, to react faster if client or server has closed!!
-//                        final long timeout = Math.min(80, limit - System.currentTimeMillis());
-//
-//                        if (timeout >= 0) {
-//                            response = listener.poll(timeout);
-//                            if (response == null) {
-//                                continue;
-//                            }
-//                            else if (msg.hasSameId(response)) {
-//                                return response; // the response matches the request
-//                            }
-//                            else {
-//                                continue;  // discard out-of-order response
-//                            }
-//                        }
-//                        else {
-//                            final String errMsg = String.format(
-//                                    "Timeout after %dms (send took %dms) on receiving IPC message response.",
-//                                    System.currentTimeMillis() - start,
-//                                    sendDone - start);
-//                            System.err.println(errMsg);
-//                            throw new TimeoutException(errMsg);
-//                        }
-//                    }
-//
-//                    final String errMsg = "EOF while receiving IPC message response.";
-//                    System.err.println(errMsg);
-//                    throw new EofException(errMsg);
                 }
                 finally {
                     sendSemaphore.release();

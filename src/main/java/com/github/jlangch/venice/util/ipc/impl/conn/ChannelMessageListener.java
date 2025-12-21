@@ -112,13 +112,13 @@ public class ChannelMessageListener implements Runnable {
             while(true) {
                 final Message response = poll();
                 if (response == null) {
-                    break;  // no response message ready
+                    break;  // no response message ready - do not spin lock
                 }
                 else if (request.hasSameId(response)) {
                     return response; // the response matches the request
                 }
                 else {
-                    continue;
+                    continue;  // try for another message that is immediately ready
                 }
             }
 
