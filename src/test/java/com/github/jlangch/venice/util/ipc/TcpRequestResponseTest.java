@@ -304,7 +304,6 @@ public class TcpRequestResponseTest {
                 futures.add(es.submit(() -> {
                     final TcpClient client = new TcpClient(33333);
 
-                    System.out.println("Started Client " + clientNr);
                     try {
                         client.open();
 

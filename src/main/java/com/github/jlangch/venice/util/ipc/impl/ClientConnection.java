@@ -301,6 +301,9 @@ public class ClientConnection implements Closeable {
 
 
     private void backgroundChannelMessageListener() {
+        receiveQueueEOF.set(false);
+        receiveQueueERR.set(false);
+
         while(true) {
             if (Thread.interrupted() || !isOpen()) break;
 
@@ -342,6 +345,8 @@ public class ClientConnection implements Closeable {
                 break;
            }
         }
+
+        receiveQueueEOF.set(true);
     }
 
     private Message sendDirect(

@@ -287,7 +287,6 @@ public class TcpRequestResponseEncryptedTest {
                 futures.add(es.submit(() -> {
                     final TcpClient client = new TcpClient(33333);
 
-                    System.out.println("Started Client " + clientNr);
                     try {
                         client.setEncryption(true);
                         client.open();
