@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -154,7 +153,6 @@ public class TcpPubSubTest {
     }
 
     @Test
-    @Disabled
     public void test_pub_unsub_1() throws Exception {
         final TcpServer server = new TcpServer(33333);
         final TcpClient clientSub = new TcpClient(33333);
@@ -199,7 +197,7 @@ public class TcpPubSubTest {
 
         assertEquals(3, subMessages.size());
 
-        for(int ii=0; ii<10; ii++) {
+        for(int ii=0; ii<3; ii++) {
             assertEquals("Hello 1 " + ii, subMessages.get(ii).getText());
         }
     }
