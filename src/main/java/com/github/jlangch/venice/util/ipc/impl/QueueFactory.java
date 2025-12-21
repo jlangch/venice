@@ -59,9 +59,6 @@ public class QueueFactory {
                                                 logger);
 
                 return new DurableBoundedQueue(queueName, capacity, log, logger);
-
-//                final IpcQueue<Message> queue = createRawQueue(queueName, capacity, bounded, true);
-//                return new WalBasedQueue(queue, wal);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to ceate WAL based queue: " + queueName, ex);

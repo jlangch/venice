@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl;
+package com.github.jlangch.venice.util.ipc.impl.conn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
 public class Subscriptions {
