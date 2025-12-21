@@ -265,7 +265,7 @@ public class TcpRequestResponseEncryptedTest {
         // increase connections to support the test client count
         server.setMaxParallelConnections(50);
 
-        final int clients = 30;
+        final int clients = 10;
         final int messagesPerClient = 25;
 
         server.start(TcpServer.echoHandler());

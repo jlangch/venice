@@ -315,7 +315,6 @@ public class ClientConnection implements Closeable {
                 receiveQueueIRQ.set(true);
                 break;
             }
-            if (!isOpen()) break;
 
             try {
                 final Message msg = Protocol.receiveMessage(channel, compressor, encryptor);
@@ -342,12 +341,12 @@ public class ClientConnection implements Closeable {
                     }
                 }
             }
-            catch(EofException ignore) {
+            catch(EofException ex) {
                 // channel was closed
                 receiveQueueEOF.set(true);
                 break;
             }
-            catch(Exception ignore) {
+            catch(Exception ex) {
                 // channel error
                 receiveQueueERR.set(true);
                 break;
