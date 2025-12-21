@@ -158,6 +158,7 @@ public class ChannelMessageListener implements Runnable {
         eof.set(true);
     }
 
+
     private Consumer<IMessage> getSubscriptionHandler(final Message msg) {
         final String topic = msg.getTopic();
 

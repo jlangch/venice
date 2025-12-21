@@ -26,13 +26,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -124,9 +121,10 @@ public class ClientConnection implements Closeable {
         }
 
         // [5] Start the channel message listener
+        listener = new ChannelMessageListener(channel, compressor, encryptor);
         mngdExecutor
            .getExecutor()
-           .submit(() -> backgroundChannelMessageListener());
+           .submit(listener);
 
         opened.set(true);
     }
@@ -161,7 +159,7 @@ public class ClientConnection implements Closeable {
     }
 
     public long getMessageReceiveCount() {
-       return messageReceiveCount.get();
+       return listener.getMessageReceiveCount();
     }
 
     public VncMap getThreadPoolStatistics() {
@@ -172,22 +170,13 @@ public class ClientConnection implements Closeable {
             final Set<String> topics,
             final Consumer<IMessage> handler
     ) {
-        Objects.requireNonNull(topics);
-
-        if (handler != null) {
-            topics.forEach(t -> subscriptionHandlers.put(t, handler));
-        }
-        else {
-            topics.forEach(t -> subscriptionHandlers.remove(t));
-        }
+        listener.addSubscriptionHandler(topics, handler);
     }
 
     public void removeSubscriptionHandler(
             final Set<String> topics
     ) {
-        Objects.requireNonNull(topics);
-
-        topics.forEach(t -> subscriptionHandlers.remove(t));
+       listener.removeSubscriptionHandler(topics);
     }
 
     public IMessage send(final IMessage msg, final long timeoutMillis) {
@@ -201,11 +190,11 @@ public class ClientConnection implements Closeable {
             throw new IpcException("Server connection is closed! Cannot send the message!");
         }
 
-        if (receiveQueueEOF.get()) {
+        if (listener.isEOF()) {
             throw new IpcException(String.format(
                         "EOF on server connection (err: %b, irq: %b)! Cannot send the message!",
-                        receiveQueueERR.get(),
-                        receiveQueueIRQ.get()));
+                        listener.isERR(),
+                        listener.isIRQ()));
         }
 
         final long start = System.currentTimeMillis();
@@ -228,13 +217,13 @@ public class ClientConnection implements Closeable {
                     // poll the response from the receive queue
                     while(isOpen()) {
                         // if a response is ready consume immediately
-                        Message response = (Message)receiveQueue.poll();
+                        Message response = listener.poll();
                         if (msg.hasSameId(response)) {
                             return response; // the response matches the request
                         }
 
                         // check server status
-                        if (!channel.isOpen() || receiveQueueEOF.get()) {
+                        if (!channel.isOpen() || listener.isEOF()) {
                            break;
                         }
 
@@ -242,7 +231,7 @@ public class ClientConnection implements Closeable {
                         final long timeout = Math.min(80, limit - System.currentTimeMillis());
 
                         if (timeout >= 0) {
-                            response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
+                            response = listener.poll(timeout);
                             if (response == null) {
                                 continue;
                             }
@@ -315,57 +304,6 @@ public class ClientConnection implements Closeable {
     }
 
 
-    private void backgroundChannelMessageListener() {
-        receiveQueueEOF.set(false);
-        receiveQueueERR.set(false);
-        receiveQueueIRQ.set(false);
-
-        while(true) {
-            if (Thread.interrupted()) {
-                receiveQueueIRQ.set(true);
-                break;
-            }
-
-            try {
-                final Message msg = Protocol.receiveMessage(channel, compressor, encryptor);
-
-                if (msg != null) {
-                    if (msg.isSubscriptionReply()) {
-                        final Consumer<IMessage> handler = getSubscriptionHandler(msg);
-                        if (handler != null) {
-                            try {
-                                // deliver subscription reply msg via subscription handler
-                                handler.accept(msg);
-                            }
-                            catch(Exception ignore) {}
-                        }
-                        else {
-                            // can not deliver without subscription handler
-                            discardedMessageSubscriptionCount.incrementAndGet();
-                        }
-                    }
-                    else {
-                        // regular response message for a request
-                        receiveQueue.offer(msg);
-                        messageReceiveCount.incrementAndGet();
-                    }
-                }
-            }
-            catch(EofException ex) {
-                // channel was closed
-                receiveQueueEOF.set(true);
-                break;
-            }
-            catch(Exception ex) {
-                // channel error
-                receiveQueueERR.set(true);
-                break;
-           }
-        }
-
-        receiveQueueEOF.set(true);
-    }
-
     private Message sendDirect(
             final Message msg,
             final SocketChannel ch,
@@ -412,12 +350,6 @@ public class ClientConnection implements Closeable {
             throw new com.github.jlangch.venice.InterruptedException(
                     "Interrupted while trying to send an IPC message");
         }
-    }
-
-    private Consumer<IMessage> getSubscriptionHandler(final IMessage msg) {
-        final String topic = msg.getTopic();
-
-        return subscriptionHandlers.get(topic);
     }
 
     private VncMap getClientConfiguration(final SocketChannel ch) {
@@ -556,18 +488,10 @@ public class ClientConnection implements Closeable {
     private final boolean encrypt;
     private final Encryptor encryptor;
 
-    // subscriptions
-    private final Map<String,Consumer<IMessage>> subscriptionHandlers = new ConcurrentHashMap<>();
-
     // statistics
     private final AtomicLong messageSentCount = new AtomicLong(0L);
-    private final AtomicLong messageReceiveCount = new AtomicLong(0L);
-    private final AtomicLong discardedMessageSubscriptionCount = new AtomicLong(0L);
 
-    private final LinkedBlockingQueue<IMessage> receiveQueue = new LinkedBlockingQueue<>(100);
-    private final AtomicBoolean receiveQueueEOF = new AtomicBoolean(false);
-    private final AtomicBoolean receiveQueueERR = new AtomicBoolean(false);
-    private final AtomicBoolean receiveQueueIRQ = new AtomicBoolean(false);
+    private final ChannelMessageListener listener;
 
     // thread pool
     private final ManagedCachedThreadPoolExecutor mngdExecutor;
