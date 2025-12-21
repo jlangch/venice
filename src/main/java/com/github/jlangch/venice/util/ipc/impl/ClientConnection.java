@@ -195,7 +195,8 @@ public class ClientConnection implements Closeable {
                     "This TcpClient conection is not open! Cannot send the message!");
         }
 
-        final long limit = System.currentTimeMillis() + timeoutMillis;
+        final long start = System.currentTimeMillis();
+        final long limit = start + timeoutMillis;
 
         try {
             // sending the request message atomically preventing any other thread to
@@ -211,8 +212,8 @@ public class ClientConnection implements Closeable {
 
                     // poll the response from the receive queue
                     while(isOpen() && channel.isOpen()) {
-                        // check response in 100ms steps, to react faster if client or server has closed!
-                        final long timeout = Math.min(100, limit - System.currentTimeMillis());
+                        // check response in 80ms steps, to react faster if client or server has closed!!
+                        final long timeout = Math.min(80, limit - System.currentTimeMillis());
 
                         if (timeout >= 0) {
                             final Message response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
@@ -220,6 +221,7 @@ public class ClientConnection implements Closeable {
                                 continue;
                             }
                             else if (response.getId().equals(msg.getId())) {
+                                // the response matches the request
                                 return response;
                             }
                             else {
@@ -228,18 +230,32 @@ public class ClientConnection implements Closeable {
                             }
                         }
                         else {
-                            throw new TimeoutException("Timeout on receiving IPC message response.");
+                            final String errMsg = String.format(
+                                    "Timeout after %dms on receiving IPC message response.",
+                                    System.currentTimeMillis() - start);
+                            System.err.println(errMsg);
+                            throw new TimeoutException(errMsg);
                         }
                     }
 
-                    throw new TimeoutException("Timeout on receiving IPC message response. Client or server closed!");
+                    final String errMsg = String.format(
+                            "Timeout after %dms on receiving IPC message response. "
+                                + "Client or server closed!",
+                            System.currentTimeMillis() - start);
+                    System.err.println(errMsg);
+                    throw new TimeoutException(errMsg);
                 }
                 finally {
                     sendSemaphore.release();
                 }
             }
             else {
-                throw new TimeoutException("Timeout on sending IPC message. Could not aquire send semaphore!");
+                final String errMsg = String.format(
+                            "Timeout after %dms on sending IPC message. "
+                                + "Could not aquire send semaphore in time!",
+                            System.currentTimeMillis() - start);
+                System.err.println(errMsg);
+                throw new TimeoutException(errMsg);
             }
         }
         catch(InterruptedException ex) {
