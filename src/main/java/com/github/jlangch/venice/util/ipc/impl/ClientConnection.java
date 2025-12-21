@@ -227,7 +227,7 @@ public class ClientConnection implements Closeable {
                     while(isOpen()) {
                     	// if a response is ready consume immediately
                         Message response = (Message)receiveQueue.poll();
-                        if (response != null && response.getId().equals(msg.getId())) {
+                        if (msg.hasSameId(response)) {
                             return response; // the response matches the request
                         }
 
@@ -244,7 +244,7 @@ public class ClientConnection implements Closeable {
                             if (response == null) {
                                 continue;
                             }
-                            else if (response.getId().equals(msg.getId())) {
+                            else if (msg.hasSameId(response)) {
                                 return response; // the response matches the request
                             }
                             else {

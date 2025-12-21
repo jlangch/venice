@@ -181,4 +181,10 @@ public interface IMessage {
      * @return <code>true</code> if this message is a binary message, else <code>false</code>
      */
     boolean isBinaryMessage();
+
+    /**
+     * @param other a message
+     * @return <code>true</code> if this message has the same ID as another message else <code>false</code>
+     */
+    boolean hasSameId(IMessage other);
 }

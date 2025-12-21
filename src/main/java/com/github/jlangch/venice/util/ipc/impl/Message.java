@@ -381,6 +381,12 @@ public class Message implements IMessage {
     }
 
     @Override
+    public boolean hasSameId(final IMessage other) {
+    	return other != null && Objects.equals(id, other.getId());
+    }
+
+
+    @Override
     public String toString() {
        final StringBuilder sb = new StringBuilder();
 
