@@ -109,6 +109,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     public void close() {
         stop.set(true);
+        publisherThread.interrupt();
     }
 
     @Override
@@ -118,19 +119,29 @@ public class ServerConnection implements IPublisher, Runnable {
 
             statistics.incrementConnectionCount();
 
+            // start publisher thread
+            publisherThread = new Thread(() -> publisher());
+            publisherThread.setDaemon(true);
+            publisherThread.start();
+
             while(!isStop()) {
-                if (mode == State.Request_Response) {
-                    // process a request/response message
-                    mode = processRequestResponse();
-               }
-                else if (mode == State.Publish) {
-                    // process publish messages if there are any waiting
-                    mode = processPublication();
-                }
-                else {
-                    break; // should no get here
-                }
+                mode = processRequestResponse();
             }
+
+//            while(!isStop()) {
+//                if (mode == State.Request_Response) {
+//                    // process a request/response message
+//                    mode = processRequestResponse();
+//               }
+//                else if (mode == State.Publish) {
+//                    // process publish messages if there are any waiting
+//                    //mode = processPublication();
+//                    Thread.sleep(1000);
+//                }
+//                else {
+//                    break; // should no get here
+//                }
+//            }
         }
         catch(Exception ex) {
             // when the client closed the connection
@@ -200,6 +211,30 @@ public class ServerConnection implements IPublisher, Runnable {
                 sendSemaphore.release();
             }
         }
+    }
+
+    private void publisher() {
+        logger.info("conn-" + connectionId, "Asychronous publisher started");
+
+        while(!isStop()) {
+            try {
+                final Message msg = publishQueue.poll(1, TimeUnit.SECONDS);
+
+                if (isStop()) break;
+
+                if (msg != null) {
+                    statistics.incrementPublishCount();
+                    final Message pubMsg = msg.withType(MessageType.REQUEST, true);
+
+                   sendResponse(pubMsg);
+               }
+            }
+            catch(InterruptedException ex) {
+               break;
+            }
+        }
+
+        logger.info("conn-" + connectionId, "Asychronous publisher stopped");
     }
 
 
@@ -297,13 +332,13 @@ public class ServerConnection implements IPublisher, Runnable {
                         break;
                 }
             }
-            else if (mode == State.Publish) {
-                auditResponseError(
-                        request,
-                        String.format(
-                          "Cannot send message response back to clients in subscription mode! Request: %s",
-                          request.getType()));
-            }
+//            else if (mode == State.Publish) {
+//                auditResponseError(
+//                        request,
+//                        String.format(
+//                          "Cannot send message response back to clients in subscription mode! Request: %s",
+//                          request.getType()));
+//            }
             else {
                // do nothing
             }
@@ -317,19 +352,19 @@ public class ServerConnection implements IPublisher, Runnable {
     // Process publications
     // ------------------------------------------------------------------------
 
-    private State processPublication() throws InterruptedException {
-        // check the publish queue
-        final Message msg = publishQueue.poll(5, TimeUnit.SECONDS);
-
-        if (msg != null) {
-            statistics.incrementPublishCount();
-            final Message pubMsg = msg.withType(MessageType.REQUEST, true);
-
-            sendResponse(pubMsg);
-        }
-
-        return State.Publish;
-    }
+//    private State processPublication() throws InterruptedException {
+//        // check the publish queue
+//        final Message msg = publishQueue.poll(5, TimeUnit.SECONDS);
+//
+//        if (msg != null) {
+//            statistics.incrementPublishCount();
+//            final Message pubMsg = msg.withType(MessageType.REQUEST, true);
+//
+//            sendResponse(pubMsg);
+//        }
+//
+//        return State.Publish;
+//    }
 
     private Tuple2<State,Message> handleRequestMessage(
             final State currState,
@@ -349,13 +384,13 @@ public class ServerConnection implements IPublisher, Runnable {
                 case SUBSCRIBE:
                     // the client wants to subscribe to a topic
                     return new Tuple2<State,Message>(
-                            State.Publish,
+                            State.Request_Response,
                             handleSubscribe(request));
 
                 case UNSUBSCRIBE:
                     // the client wants to unsubscribe from topic
                     return new Tuple2<State,Message>(
-                            State.Publish,
+                            State.Request_Response,
                             handleUnsubscribe(request));
 
                 case PUBLISH:
@@ -1106,7 +1141,7 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
 
-    private static enum State { Request_Response, Publish, Terminated };
+    private static enum State { Request_Response, Terminated };
 
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
@@ -1129,6 +1164,8 @@ public class ServerConnection implements IPublisher, Runnable {
     private final AtomicBoolean stop = new AtomicBoolean(false);
 
     private final Semaphore sendSemaphore = new Semaphore(1);
+
+    private volatile Thread publisherThread;
 
     // compression
     private final Compressor compressor;
