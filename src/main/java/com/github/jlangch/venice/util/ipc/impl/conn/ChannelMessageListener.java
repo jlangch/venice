@@ -150,14 +150,11 @@ public class ChannelMessageListener implements Runnable {
                 final String errMsg = String.format(
                         "Timeout after %dms on receiving IPC message response.",
                         System.currentTimeMillis() - start);
-                System.err.println(errMsg);
                 throw new TimeoutException(errMsg);
             }
         }
 
-        final String errMsg = "EOF while receiving IPC message response.";
-        System.err.println(errMsg);
-        throw new EofException(errMsg);
+        throw new EofException("EOF while receiving IPC message response.");
     }
 
 

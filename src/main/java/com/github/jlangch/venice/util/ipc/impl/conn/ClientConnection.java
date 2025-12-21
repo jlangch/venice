@@ -227,7 +227,6 @@ public class ClientConnection implements Closeable {
                             "Timeout after %dms on sending IPC message. "
                                 + "Could not aquire send semaphore in time!",
                             System.currentTimeMillis() - start);
-                System.err.println(errMsg);
                 throw new TimeoutException(errMsg);
             }
         }

@@ -793,13 +793,14 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleClientConfigRequest(final Message request) {
+        logger.info("conn-" + connectionId, "Handling client config request!");
         return createJsonResponseMessage(
                     request,
                     ResponseStatus.OK,
                     new JsonBuilder()
                             .add("max-msg-size", maxMessageSize.get())
                             .add("compress-cutoff-size", compressor.cutoffSize())
-                            .add("encrypt",      enforceEncryption)
+                            .add("encrypt", enforceEncryption)
                             .toJson(false));
     }
 
