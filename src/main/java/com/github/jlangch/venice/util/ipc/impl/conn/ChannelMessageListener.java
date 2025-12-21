@@ -74,6 +74,30 @@ public class ChannelMessageListener implements Runnable {
         return discardedMessageSubscriptionCount.get();
     }
 
+
+    public void addSubscriptionHandler(
+            final Set<String> topics,
+            final Consumer<IMessage> handler
+    ) {
+        Objects.requireNonNull(topics);
+
+        if (handler != null) {
+            topics.forEach(t -> subscriptionHandlers.put(t, handler));
+        }
+        else {
+            removeSubscriptionHandler(topics);
+        }
+    }
+
+    public void removeSubscriptionHandler(
+            final Set<String> topics
+    ) {
+        Objects.requireNonNull(topics);
+
+        topics.forEach(t -> subscriptionHandlers.remove(t));
+    }
+
+
     public Message readResponse(
             final Message request,
             final long timeoutMillis,
@@ -84,10 +108,18 @@ public class ChannelMessageListener implements Runnable {
 
         // poll the response from the receive queue
         while(connectionOpen.get()) {
-            // if a response is ready consume immediately
-            Message response = poll();
-            if (response != null && request.hasSameId(response)) {
-                return response; // the response matches the request
+            // if a response is ready consume it immediately without timeouts
+            while(true) {
+                final Message response = poll();
+                if (response == null) {
+                    break;  // no response message ready
+                }
+                else if (request.hasSameId(response)) {
+                    return response; // the response matches the request
+                }
+                else {
+                    continue;
+                }
             }
 
             if (timeoutMillis <= 0) {
@@ -103,7 +135,7 @@ public class ChannelMessageListener implements Runnable {
             final long timeout = Math.min(80, limit - System.currentTimeMillis());
 
             if (timeout >= 0) {
-                response = poll(timeout);
+                final Message response = poll(timeout);
                 if (response == null) {
                     continue;
                 }
@@ -135,29 +167,6 @@ public class ChannelMessageListener implements Runnable {
 
     public Message poll(final long timeout) throws InterruptedException {
         return queue.poll(timeout, TimeUnit.MILLISECONDS);
-    }
-
-
-    public void addSubscriptionHandler(
-            final Set<String> topics,
-            final Consumer<IMessage> handler
-    ) {
-        Objects.requireNonNull(topics);
-
-        if (handler != null) {
-            topics.forEach(t -> subscriptionHandlers.put(t, handler));
-        }
-        else {
-            removeSubscriptionHandler(topics);
-        }
-    }
-
-    public void removeSubscriptionHandler(
-            final Set<String> topics
-    ) {
-        Objects.requireNonNull(topics);
-
-        topics.forEach(t -> subscriptionHandlers.remove(t));
     }
 
 
