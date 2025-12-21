@@ -102,7 +102,7 @@ public class TcpServerTest {
     }
 
     @Test
-    public void test_client_abort() throws Exception {
+    public void test_client_abort() {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
@@ -128,14 +128,15 @@ public class TcpServerTest {
         }
         catch(Exception ex) {
             // OK
+            assertTrue(true);
         }
         finally {
-            server.close();
+            try { server.close(); } catch(Exception ex) {}
         }
     }
 
     @Test
-    public void test_echo_server_server_abort() throws Exception {
+    public void test_echo_server_server_abort() {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
@@ -151,7 +152,8 @@ public class TcpServerTest {
             IMessage response = client.sendMessage(request);
             assertNotNull(response);
 
-            server.close();
+            try { server.close(); } catch(Exception ex) {}
+
             IO.sleep(500);
             assertFalse(server.isRunning());
 
@@ -167,7 +169,7 @@ public class TcpServerTest {
             assertTrue(true);
         }
         finally {
-            client.close();
+            try { client.close(); } catch(Exception ex) {}
         }
     }
 

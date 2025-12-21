@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -292,6 +293,8 @@ public class TcpRequestResponseTest {
         try {
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
 
+            final AtomicLong errors = new AtomicLong();
+
             final List<Future<?>> futures = new ArrayList<>();
             for(int cc=0; cc<clients; cc++) {
                 final int clientNr = cc;
@@ -321,6 +324,9 @@ public class TcpRequestResponseTest {
                             // synchronized (server) { System.out.println(msg); }
                         }
                     }
+                    catch(Exception ex) {
+                        errors.incrementAndGet();
+                    }
                     finally {
                         try { client.close(); } catch (Exception ignore) {}
                     }
@@ -329,6 +335,8 @@ public class TcpRequestResponseTest {
 
             // wait for all clients to be finished
             futures.forEach(f ->  { try { f.get(); } catch (Exception ignore) {}});
+
+            assertEquals(0, errors.get());
         }
         finally {
             server.close();
