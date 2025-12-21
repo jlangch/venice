@@ -174,7 +174,7 @@ public class Protocol {
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new VncException("Failed to read data from channel, channel was closed!", ex);
+                throw new EofException("Failed to read data from channel, channel was closed!", ex);
             }
             else {
                 throw new VncException("Failed to read data from channel!", ex);

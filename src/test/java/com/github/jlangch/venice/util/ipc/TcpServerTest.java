@@ -32,7 +32,6 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -146,31 +145,35 @@ public class TcpServerTest {
 
         client.open();
 
-        try {
-            final IMessage request = MessageFactory.hello();
+        final IMessage request = MessageFactory.hello();
 
+        // Phase 1: send a message => OK
+        try {
             IMessage response = client.sendMessage(request);
             assertNotNull(response);
+        }
+        catch(Exception ex) {
+            fail("No exception expected yet");
+        }
 
-            try { server.close(); } catch(Exception ex) {}
+        // Phase 2: close server
+        try { server.close(); } catch(Exception ex) {}
+        IO.sleep(500);
+        assertFalse(server.isRunning());
 
-            IO.sleep(500);
-            assertFalse(server.isRunning());
-
+        // Phase 3: send a message => FAIL
+        try {
             // this will cause a EofException or a VncException "broken pipe"
-            response = client.sendMessage(request);
+            client.sendMessage(request);
 
             fail("should not reach here");
         }
-        catch(EofException ex) {
+        catch(Exception ex) {
             assertTrue(true);
         }
-        catch(VncException ex) {
-            assertTrue(true);
-        }
-        finally {
-            try { client.close(); } catch(Exception ex) {}
-        }
+
+        // finally close the client
+        try { client.close(); } catch(Exception ex) {}
     }
 
     @Test

@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
@@ -217,6 +218,15 @@ public class ClientConnection implements Closeable {
                         // check response in 80ms steps, to react faster if client or server has closed!!
                         final long timeout = Math.min(80, limit - System.currentTimeMillis());
 
+                        if (receiveQueueEOF.get()) {
+                            // server channel EOF
+                            final String errMsg = String.format(
+                                    "Timeout after %dms on receiving IPC message response. Server channel EOF!",
+                                    System.currentTimeMillis() - start);
+                            System.err.println(errMsg);
+                            throw new TimeoutException(errMsg);
+                        }
+
                         if (timeout >= 0) {
                             final Message response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
                             if (response == null) {
@@ -326,6 +336,10 @@ public class ClientConnection implements Closeable {
                         messageReceiveCount.incrementAndGet();
                     }
                 }
+            }
+            catch(EofException ignore) {
+                // channel was closed
+               receiveQueueEOF.set(true);
             }
             catch(Exception ignore) {
             }
@@ -531,6 +545,7 @@ public class ClientConnection implements Closeable {
     private final AtomicLong discardedMessageSubscriptionCount = new AtomicLong(0L);
 
     private final LinkedBlockingQueue<IMessage> receiveQueue = new LinkedBlockingQueue<>(100);
+    private final AtomicBoolean receiveQueueEOF = new AtomicBoolean(false);
 
     // thread pool
     private final ManagedCachedThreadPoolExecutor mngdExecutor;
