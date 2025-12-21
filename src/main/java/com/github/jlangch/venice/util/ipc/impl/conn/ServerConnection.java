@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -121,7 +122,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 if (mode == State.Request_Response) {
                     // process a request/response message
                     mode = processRequestResponse();
-                }
+               }
                 else if (mode == State.Publish) {
                     // process publish messages if there are any waiting
                     mode = processPublication();
@@ -180,6 +181,28 @@ public class ServerConnection implements IPublisher, Runnable {
         return stop.get();
     }
 
+
+    // ------------------------------------------------------------------------
+    // Sending replies back
+    // ------------------------------------------------------------------------
+
+    private void sendDiffieHellmanResponse(final Message response) throws InterruptedException {
+        // Note: no compression, no encryption!
+        Protocol.sendMessage(ch, response, Compressor.off(), Encryptor.off());
+    }
+
+    private void sendResponse(final Message response) throws InterruptedException {
+        if (sendSemaphore.tryAcquire(3, TimeUnit.SECONDS)) {
+            try {
+                Protocol.sendMessage(ch, response, compressor, encryptor.get());
+            }
+            finally {
+                sendSemaphore.release();
+            }
+        }
+    }
+
+
     // ------------------------------------------------------------------------
     // Process requests
     // ------------------------------------------------------------------------
@@ -216,7 +239,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                                 "The message (%d bytes) is too large! The limit is at %d bytes.",
                                                 request.getData().length,
                                                 maxMessageSize));
-               Protocol.sendMessage(ch, response, compressor, encryptor.get());
+               sendResponse(response);
             }
             return mode;
         }
@@ -226,7 +249,7 @@ public class ServerConnection implements IPublisher, Runnable {
             // process a server status request
             final Message response = handleTcpServerRequest(request);
             if (!request.isOneway()) {
-                Protocol.sendMessage(ch, response, compressor, encryptor.get());
+                sendResponse(response);
             }
             return mode;
         }
@@ -265,12 +288,12 @@ public class ServerConnection implements IPublisher, Runnable {
                 switch(response.getResponseStatus()) {
                     case DIFFIE_HELLMAN_ACK:
                     case DIFFIE_HELLMAN_NAK:
-                        // Diffie Hellman responses with compressing and encrypting!
-                        Protocol.sendMessage(ch, response, Compressor.off(), Encryptor.off());
+                        // Diffie Hellman responses without compressing and encrypting!
+                        sendDiffieHellmanResponse(response);
                         break;
 
                     default:
-                        Protocol.sendMessage(ch, response, compressor,  encryptor.get());
+                        sendResponse(response);
                         break;
                 }
             }
@@ -300,11 +323,9 @@ public class ServerConnection implements IPublisher, Runnable {
 
         if (msg != null) {
             statistics.incrementPublishCount();
-            Protocol.sendMessage(
-                    ch,
-                    msg.withType(MessageType.REQUEST, true),
-                    compressor,
-                    encryptor.get());
+            final Message pubMsg = msg.withType(MessageType.REQUEST, true);
+
+            sendResponse(pubMsg);
         }
 
         return State.Publish;
@@ -1106,6 +1127,8 @@ public class ServerConnection implements IPublisher, Runnable {
     private final Supplier<VncMap> serverThreadPoolStatistics;
 
     private final AtomicBoolean stop = new AtomicBoolean(false);
+
+    private final Semaphore sendSemaphore = new Semaphore(1);
 
     // compression
     private final Compressor compressor;
