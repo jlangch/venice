@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.EofException;
+import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
@@ -71,6 +72,56 @@ public class ChannelMessageListener implements Runnable {
 
     public long getDiscardedMessageSubscriptionCount() {
         return discardedMessageSubscriptionCount.get();
+    }
+
+    public Message readResponse(
+            final Message request,
+            final long timeoutMillis,
+            final AtomicBoolean connectionOpen
+    ) throws InterruptedException {
+        final long start = System.currentTimeMillis();
+        final long limit = start + timeoutMillis;
+
+        // poll the response from the receive queue
+        while(connectionOpen.get()) {
+            // if a response is ready consume immediately
+            Message response = poll();
+            if (request.hasSameId(response)) {
+                return response; // the response matches the request
+            }
+
+            // check server status
+            if (!channel.isOpen() || isEOF()) {
+               break;
+            }
+
+            // check response in 80ms steps, to react faster if client or server has closed!!
+            final long timeout = Math.min(80, limit - System.currentTimeMillis());
+
+            if (timeout >= 0) {
+                response = poll(timeout);
+                if (response == null) {
+                    continue;
+                }
+                else if (request.hasSameId(response)) {
+                    return response; // the response matches the request
+                }
+                else {
+                    continue;  // discard out-of-order response
+                }
+            }
+            else {
+                final String errMsg = String.format(
+                        "Timeout after %dms on receiving IPC message response.",
+                        System.currentTimeMillis() - start);
+                System.err.println(errMsg);
+                throw new TimeoutException(errMsg);
+            }
+        }
+
+        final String errMsg = "EOF while receiving IPC message response.";
+        System.err.println(errMsg);
+        throw new EofException(errMsg);
     }
 
 
