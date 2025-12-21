@@ -274,21 +274,25 @@ public class TcpRequestResponseEncryptedTest {
 
         try {
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+            es.setMaximumPoolSize(clients);
 
             final AtomicLong errors = new AtomicLong();
 
             final List<Future<?>> futures = new ArrayList<>();
 
-            for(int cc=0; cc<clients; cc++) {
+            for(int cc=1; cc<=clients; cc++) {
                 final int clientNr = cc;
 
+                // run each client test as future
                 futures.add(es.submit(() -> {
                     final TcpClient client = new TcpClient(33333);
+
+                    System.out.println("Started Client " + clientNr);
                     try {
                         client.setEncryption(true);
                         client.open();
 
-                        for(int msgIdx=0; msgIdx<messagesPerClient; msgIdx++) {
+                        for(int msgIdx=1; msgIdx<=messagesPerClient; msgIdx++) {
                             final String topic = "hello";
                             final String mimetype = "text/plain";
                             final String charset = "UTF-8";
@@ -309,13 +313,14 @@ public class TcpRequestResponseEncryptedTest {
                             catch(Exception ex) {
                                 System.err.println(String.format(
                                         "Message err: client %d, msg %d/%d: %s",
-                                        clientNr+1, msgIdx+1, messagesPerClient, ex.getMessage()));
+                                        clientNr, msgIdx, messagesPerClient, ex.getMessage()));
                                 errors.incrementAndGet();
+                                break;  // to reduce the error count
                             }
                         }
                     }
                     catch(Exception ex) {
-                        System.err.println("Client #" + clientNr + ": " + ex.getMessage());
+                        System.err.println("Client " + clientNr + ": " + ex.getMessage());
                         errors.incrementAndGet();
                     }
                     finally {
