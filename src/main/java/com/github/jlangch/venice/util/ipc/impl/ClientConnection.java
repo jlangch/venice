@@ -210,6 +210,8 @@ public class ClientConnection implements Closeable {
                         return null;
                     }
 
+                    final long sendDone = System.currentTimeMillis();
+
                     // poll the response from the receive queue
                     while(isOpen() && channel.isOpen()) {
                         // check response in 80ms steps, to react faster if client or server has closed!!
@@ -231,8 +233,9 @@ public class ClientConnection implements Closeable {
                         }
                         else {
                             final String errMsg = String.format(
-                                    "Timeout after %dms on receiving IPC message response.",
-                                    System.currentTimeMillis() - start);
+                                    "Timeout after %dms (send took %dms) on receiving IPC message response.",
+                                    System.currentTimeMillis() - start,
+                                    sendDone - start);
                             System.err.println(errMsg);
                             throw new TimeoutException(errMsg);
                         }
