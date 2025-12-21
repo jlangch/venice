@@ -192,13 +192,18 @@ public class ClientConnection implements Closeable {
         Objects.requireNonNull(msg);
 
         if (!isOpen()) {
-            throw new IpcException(
-                    "This client conection is not open! Cannot send the message!");
+            throw new IpcException("Client connection is closed! Cannot send the message!");
         }
 
-        if (!channel.isOpen() || receiveQueueEOF.get() || receiveQueueERR.get()) {
-            throw new IpcException(
-                    "EOF on server connection! Cannot send the message!");
+        if (!channel.isOpen()) {
+            throw new IpcException("Server connection is closed! Cannot send the message!");
+        }
+
+        if (receiveQueueEOF.get()) {
+            throw new IpcException(String.format(
+                        "EOF on server connection (err: %b, irq: %b)! Cannot send the message!",
+                        receiveQueueERR.get(),
+                        receiveQueueIRQ.get()));
         }
 
         final long start = System.currentTimeMillis();
@@ -219,7 +224,7 @@ public class ClientConnection implements Closeable {
                     final long sendDone = System.currentTimeMillis();
 
                     // poll the response from the receive queue
-                    while(isOpen() && channel.isOpen() && !receiveQueueEOF.get() && !receiveQueueERR.get()) {
+                    while(isOpen() && channel.isOpen() && !receiveQueueEOF.get()) {
                         // check response in 80ms steps, to react faster if client or server has closed!!
                         final long timeout = Math.min(80, limit - System.currentTimeMillis());
 
@@ -303,14 +308,17 @@ public class ClientConnection implements Closeable {
     private void backgroundChannelMessageListener() {
         receiveQueueEOF.set(false);
         receiveQueueERR.set(false);
+        receiveQueueIRQ.set(false);
 
         while(true) {
-            if (Thread.interrupted() || !isOpen()) break;
+            if (Thread.interrupted()) {
+                receiveQueueIRQ.set(true);
+                break;
+            }
+            if (!isOpen()) break;
 
             try {
                 final Message msg = Protocol.receiveMessage(channel, compressor, encryptor);
-
-                if (Thread.interrupted() || !isOpen()) break;
 
                 if (msg != null) {
                     if (msg.isSubscriptionReply()) {
@@ -550,6 +558,7 @@ public class ClientConnection implements Closeable {
     private final LinkedBlockingQueue<IMessage> receiveQueue = new LinkedBlockingQueue<>(100);
     private final AtomicBoolean receiveQueueEOF = new AtomicBoolean(false);
     private final AtomicBoolean receiveQueueERR = new AtomicBoolean(false);
+    private final AtomicBoolean receiveQueueIRQ = new AtomicBoolean(false);
 
     // thread pool
     private final ManagedCachedThreadPoolExecutor mngdExecutor;
