@@ -312,14 +312,22 @@ public class TcpRequestResponseTest {
 
                             final IMessage request = MessageFactory.text(null, topic, mimetype, charset, msg);
 
-                            final IMessage response = client.sendMessage(request);
+                            try {
+                                final IMessage response = client.sendMessage(request);
 
-                            assertNotNull(response);
-                            assertEquals(ResponseStatus.OK,  response.getResponseStatus());
-                            assertEquals(topic,              response.getTopic());
-                            assertEquals(mimetype,           response.getMimetype());
-                            assertEquals(charset,            response.getCharset());
-                            assertEquals(msg,                response.getText());
+                                assertNotNull(response);
+                                assertEquals(ResponseStatus.OK,  response.getResponseStatus());
+                                assertEquals(topic,              response.getTopic());
+                                assertEquals(mimetype,           response.getMimetype());
+                                assertEquals(charset,            response.getCharset());
+                                assertEquals(msg,                response.getText());
+                            }
+                            catch(Exception ex) {
+                                System.err.println(String.format(
+                                        "Message err: client %d, msg %d/%d: %s",
+                                        clientNr+1, msgIdx+1, messagesPerClient, ex.getMessage()));
+                                errors.incrementAndGet();
+                            }
                         }
                     }
                     catch(Exception ex) {

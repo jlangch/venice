@@ -234,6 +234,7 @@ public class ClientConnection implements Closeable {
                             }
                             else {
                                 // discard out-of-order response
+                                System.err.println("ERR: out-of-order response!");
                                 continue;
                             }
                         }
