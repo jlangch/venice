@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Added an optional logger for the IPC server
+- Made IPC publish/subscribe completely asynchronous in the client and the server
 
 ### Updated dependencies:
 
