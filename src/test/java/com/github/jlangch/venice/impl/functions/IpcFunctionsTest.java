@@ -273,11 +273,8 @@ public class IpcFunctionsTest {
                 "             client-2 (ipc/clone client-1)                                      \n" +
                 "             client-3 (ipc/clone client-1)]                                     \n" +
                 "    (ipc/send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))     \n" +
-                "    (println \"Client 1 done.\")                                                \n" +
                 "    (ipc/send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))     \n" +
-                "    (println \"Client 2 done.\")                                                \n" +
                 "    (ipc/send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
-                "    (println \"Client 3 done.\")                                                \n" +
                 "    (sleep 100))                                                                \n" +
                 "                                                                                \n" +
                 "  (deref counter))";
