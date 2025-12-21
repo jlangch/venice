@@ -278,6 +278,7 @@ public class TcpRequestResponseEncryptedTest {
             final AtomicLong errors = new AtomicLong();
 
             final List<Future<?>> futures = new ArrayList<>();
+
             for(int cc=0; cc<clients; cc++) {
                 final int clientNr = cc;
 
@@ -303,11 +304,10 @@ public class TcpRequestResponseEncryptedTest {
                             assertEquals(mimetype,           response.getMimetype());
                             assertEquals(charset,            response.getCharset());
                             assertEquals(msg,                response.getText());
-
-                            // synchronized (server) { System.out.println(msg); }
                         }
                     }
                     catch(Exception ex) {
+                        System.err.println("Client #" + clientNr + ": " + ex.getMessage());
                         errors.incrementAndGet();
                     }
                     finally {

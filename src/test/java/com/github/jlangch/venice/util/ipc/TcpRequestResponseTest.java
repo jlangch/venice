@@ -320,11 +320,10 @@ public class TcpRequestResponseTest {
                             assertEquals(mimetype,           response.getMimetype());
                             assertEquals(charset,            response.getCharset());
                             assertEquals(msg,                response.getText());
-
-                            // synchronized (server) { System.out.println(msg); }
                         }
                     }
                     catch(Exception ex) {
+                        System.err.println("Client #" + clientNr + ": " + ex.getMessage());
                         errors.incrementAndGet();
                     }
                     finally {

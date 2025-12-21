@@ -193,7 +193,12 @@ public class ClientConnection implements Closeable {
 
         if (!isOpen()) {
             throw new IpcException(
-                    "This TcpClient conection is not open! Cannot send the message!");
+                    "This client conection is not open! Cannot send the message!");
+        }
+
+        if (!channel.isOpen() || receiveQueueEOF.get() || receiveQueueERR.get()) {
+            throw new IpcException(
+                    "EOF on server connection! Cannot send the message!");
         }
 
         final long start = System.currentTimeMillis();
@@ -214,18 +219,9 @@ public class ClientConnection implements Closeable {
                     final long sendDone = System.currentTimeMillis();
 
                     // poll the response from the receive queue
-                    while(isOpen() && channel.isOpen()) {
+                    while(isOpen() && channel.isOpen() && !receiveQueueEOF.get() && !receiveQueueERR.get()) {
                         // check response in 80ms steps, to react faster if client or server has closed!!
                         final long timeout = Math.min(80, limit - System.currentTimeMillis());
-
-                        if (receiveQueueEOF.get()) {
-                            // server channel EOF
-                            final String errMsg = String.format(
-                                    "Timeout after %dms on receiving IPC message response. Server channel EOF!",
-                                    System.currentTimeMillis() - start);
-                            System.err.println(errMsg);
-                            throw new TimeoutException(errMsg);
-                        }
 
                         if (timeout >= 0) {
                             final Message response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
@@ -251,12 +247,9 @@ public class ClientConnection implements Closeable {
                         }
                     }
 
-                    final String errMsg = String.format(
-                            "Timeout after %dms on receiving IPC message response. "
-                                + "Client or server closed!",
-                            System.currentTimeMillis() - start);
+                    final String errMsg = "EOF while receiving IPC message response.";
                     System.err.println(errMsg);
-                    throw new TimeoutException(errMsg);
+                    throw new EofException(errMsg);
                 }
                 finally {
                     sendSemaphore.release();
@@ -339,10 +332,14 @@ public class ClientConnection implements Closeable {
             }
             catch(EofException ignore) {
                 // channel was closed
-               receiveQueueEOF.set(true);
+                receiveQueueEOF.set(true);
+                break;
             }
             catch(Exception ignore) {
-            }
+                // channel error
+                receiveQueueERR.set(true);
+                break;
+           }
         }
     }
 
@@ -546,6 +543,7 @@ public class ClientConnection implements Closeable {
 
     private final LinkedBlockingQueue<IMessage> receiveQueue = new LinkedBlockingQueue<>(100);
     private final AtomicBoolean receiveQueueEOF = new AtomicBoolean(false);
+    private final AtomicBoolean receiveQueueERR = new AtomicBoolean(false);
 
     // thread pool
     private final ManagedCachedThreadPoolExecutor mngdExecutor;
