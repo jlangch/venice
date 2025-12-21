@@ -24,7 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 
-import com.github.jlangch.venice.util.ipc.impl.ClientConnection;
+import com.github.jlangch.venice.util.ipc.impl.conn.ClientConnection;
 
 
 public class IO {

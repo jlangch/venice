@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl;
+package com.github.jlangch.venice.util.ipc.impl.conn;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -54,6 +54,8 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
+import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
@@ -225,7 +227,7 @@ public class ClientConnection implements Closeable {
 
                     // poll the response from the receive queue
                     while(isOpen()) {
-                    	// if a response is ready consume immediately
+                        // if a response is ready consume immediately
                         Message response = (Message)receiveQueue.poll();
                         if (msg.hasSameId(response)) {
                             return response; // the response matches the request

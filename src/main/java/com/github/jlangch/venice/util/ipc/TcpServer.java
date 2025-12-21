@@ -45,9 +45,9 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
-import com.github.jlangch.venice.util.ipc.impl.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Subscriptions;
+import com.github.jlangch.venice.util.ipc.impl.conn.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
