@@ -120,10 +120,10 @@ public class ClientConnection implements Closeable {
             encryptor = Encryptor.off();
         }
 
-        // [5] Start the message listener worker
+        // [5] Start the channel message listener
         mngdExecutor
            .getExecutor()
-           .submit(() -> backgroundMessageListener());
+           .submit(() -> backgroundChannelMessageListener());
 
         opened.set(true);
     }
@@ -210,13 +210,14 @@ public class ClientConnection implements Closeable {
                     }
 
                     // poll the response from the receive queue
-                    while(true) {
-                        final long timeout = limit - System.currentTimeMillis();
+                    while(isOpen() && channel.isOpen()) {
+                        // check response in 100ms steps, to react faster if client or server has closed!
+                        final long timeout = Math.min(100, limit - System.currentTimeMillis());
 
                         if (timeout >= 0) {
                             final Message response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
                             if (response == null) {
-                                throw new TimeoutException("Timeout while trying to send an IPC message.");
+                                continue;
                             }
                             else if (response.getId().equals(msg.getId())) {
                                 return response;
@@ -227,16 +228,19 @@ public class ClientConnection implements Closeable {
                             }
                         }
                         else {
-                            break; // timeout
+                            throw new TimeoutException("Timeout on receiving IPC message response.");
                         }
                     }
+
+                    throw new TimeoutException("Timeout on receiving IPC message response. Client or server closed!");
                 }
                 finally {
                     sendSemaphore.release();
                 }
             }
-
-            throw new TimeoutException("Timeout while trying to send an IPC message.");
+            else {
+                throw new TimeoutException("Timeout on sending IPC message. Could not aquire send semaphore!");
+            }
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
@@ -273,11 +277,16 @@ public class ClientConnection implements Closeable {
     }
 
 
-    private void backgroundMessageListener() {
-        while(!Thread.interrupted() && isOpen()) {
+    private void backgroundChannelMessageListener() {
+        while(true) {
+            if (Thread.interrupted() || !isOpen()) break;
+
             try {
                 final Message msg = Protocol.receiveMessage(channel, compressor, encryptor);
-                if (msg != null && !Thread.interrupted() && isOpen()) {
+
+                if (Thread.interrupted() || !isOpen()) break;
+
+                if (msg != null) {
                     if (msg.isSubscriptionReply()) {
                         final Consumer<IMessage> handler = getSubscriptionHandler(msg);
                         if (handler != null) {
@@ -341,7 +350,9 @@ public class ClientConnection implements Closeable {
                 }
             }
             else {
-               throw new TimeoutException("Timeout while trying to send an IPC message.");
+                throw new TimeoutException(
+                        "Timeout while trying to send an IPC message. "
+                        + "Could not aquire send semaphore!");
             }
         }
         catch(InterruptedException ex) {

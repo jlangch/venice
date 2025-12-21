@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -97,13 +98,19 @@ public class ServerConnection implements IPublisher, Runnable {
         this.dhKeys = DiffieHellmanKeys.create();
     }
 
+
+    public void close() {
+        stop.set(true);
+    }
+
     @Override
     public void run() {
         try {
             logger.info("conn-" + connectionId, "Listening on connection from " + IO.getRemoteAddress(ch));
 
             statistics.incrementConnectionCount();
-            while(mode != State.Terminated && server.isRunning() && ch.isOpen()) {
+
+            while(!isStop()) {
                 if (mode == State.Request_Response) {
                     // process a request/response message
                     mode = processRequestResponse();
@@ -128,7 +135,7 @@ public class ServerConnection implements IPublisher, Runnable {
             subscriptions.removeSubscriptions(this);
             IO.safeClose(ch);
 
-            logger.info("conn-" + connectionId, "Closed connection");
+            logger.info("conn-" + connectionId, "Closed server connection");
         }
     }
 
@@ -154,6 +161,17 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
+
+    private boolean isStop() {
+        // update stop status
+        stop.set(stop.get()
+                 || mode == State.Terminated
+                 || !server.isRunning()
+                 || !ch.isOpen()
+                 || Thread.interrupted());
+
+        return stop.get();
+    }
 
     // ------------------------------------------------------------------------
     // Process requests
@@ -371,7 +389,7 @@ public class ServerConnection implements IPublisher, Runnable {
             }
         }
         catch(Exception ex) {
-        	// send an error response
+            // send an error response
             auditResponseError(request, "Failed to handle request!", ex);
 
             // TODO: how much information from the exception shall we pass back
@@ -1079,6 +1097,8 @@ public class ServerConnection implements IPublisher, Runnable {
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
+
+    private final AtomicBoolean stop = new AtomicBoolean(false);
 
     // compression
     private final Compressor compressor;
