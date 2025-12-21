@@ -224,23 +224,31 @@ public class ClientConnection implements Closeable {
                     final long sendDone = System.currentTimeMillis();
 
                     // poll the response from the receive queue
-                    while(isOpen() && channel.isOpen() && !receiveQueueEOF.get()) {
+                    while(isOpen()) {
+                    	// if a response is ready consume immediately
+                        Message response = (Message)receiveQueue.poll();
+                        if (response != null && response.getId().equals(msg.getId())) {
+                            return response; // the response matches the request
+                        }
+
+                        // check server status
+                        if (!channel.isOpen() || receiveQueueEOF.get()) {
+                           break;
+                        }
+
                         // check response in 80ms steps, to react faster if client or server has closed!!
                         final long timeout = Math.min(80, limit - System.currentTimeMillis());
 
                         if (timeout >= 0) {
-                            final Message response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
+                            response = (Message)receiveQueue.poll(timeout, TimeUnit.MILLISECONDS);
                             if (response == null) {
                                 continue;
                             }
                             else if (response.getId().equals(msg.getId())) {
-                                // the response matches the request
-                                return response;
+                                return response; // the response matches the request
                             }
                             else {
-                                // discard out-of-order response
-                                System.err.println("ERR: out-of-order response!");
-                                continue;
+                                continue;  // discard out-of-order response
                             }
                         }
                         else {
