@@ -105,6 +105,11 @@ public class TcpClient implements Cloneable, Closeable {
      *                level communication between this client and the server.
      */
     public void setEncryption(final boolean encrypt) {
+        if (opened.get()) {
+            throw new VncException(
+                   "The encryption mode cannot be changed once the client has been opened!");
+        }
+
         this.encrypt.set(encrypt);
     }
 
@@ -551,7 +556,7 @@ public class TcpClient implements Cloneable, Closeable {
         final IMessage response = send(m);
         if (response.getResponseStatus() != ResponseStatus.OK) {
             throw new VncException(
-                    "Failed to create queue " + queueName + "! Reason: " + response.getText());
+                    "Failed to create queue '" + queueName + "'! Reason: " + response.getText());
         }
     }
 
@@ -611,13 +616,13 @@ public class TcpClient implements Cloneable, Closeable {
 
         final Message m = new Message(
                                 null,
-                                MessageType.CREATE_TEMP_QUEUE,
+                                MessageType.REMOVE_QUEUE,
                                 ResponseStatus.NULL,
                                 false,
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("queue/create-temporary"),
+                                Topics.of("queue/remove"),
                                 "application/json",
                                 "UTF-8",
                                 toBytes(payload, "UTF-8"));
@@ -625,7 +630,7 @@ public class TcpClient implements Cloneable, Closeable {
         final IMessage response = send(m);
         if (response.getResponseStatus() != ResponseStatus.OK) {
             throw new VncException(
-                    "Failed to remove queue " + queueName + "! Reason: " + response.getText());
+                    "Failed to remove queue '" + queueName + "'! Reason: " + response.getText());
         }
     }
 
@@ -890,6 +895,8 @@ public class TcpClient implements Cloneable, Closeable {
         }
 
         validateMessageSize(msg, c);
+
+        // final long msgQueueTimeout = ((Message)msg).getTimeout();
 
         if (isClientLocalMessage(msg)) {
             return new ConstantFuture<IMessage>(handleClientLocalMessage(msg));
