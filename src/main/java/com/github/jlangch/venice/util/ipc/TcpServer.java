@@ -213,18 +213,21 @@ public class TcpServer implements Closeable {
      *
      * <p>Defaults to <code>true</code>
      *
-     * @param allow if <code>true</code> clients are permitted to add/remove
+     * <p>Note: Temporary queues are not subject to this permission! They
+     *          can be created any time by clients as needed.
+     *
+     * @param permit if <code>true</code> clients are permitted to add/remove
      *              queues
      * @return this server
      */
-    public TcpServer setPermitClientQueueMgmt(final boolean allow) {
+    public TcpServer setPermitClientQueueMgmt(final boolean permit) {
         if (started.get()) {
             throw new VncException(
                    "Cannot change the permission for clients to manage queues "
                    + "once the server has been started!");
         }
 
-        this.permitClientQueueMgmt.set(allow);
+        this.permitClientQueueMgmt.set(permit);
         return this;
     }
 

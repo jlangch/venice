@@ -102,6 +102,9 @@ public class IPCFunctions {
                                                         " The cutoff size can be specified as a number like `1000`" +
                                                         " or a number with a unit like `:1KB` or `:2MB`.¶" +
                                                         " Defaults to -1 (no compression)|\n" +
+                        "| :permit-client-queue-mgmt n  | Permit clients to manage (add/remove) queues. Does not affect " +
+                                                        " temporary queues.¶" +
+                                                        " Defaults to `true`.|\n" +
                         "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
                                                         " with this server.¶" +
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
@@ -173,6 +176,7 @@ public class IPCFunctions {
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                final VncVal permitQueueMgmtVal = options.get(new VncKeyword("permit-client-queue-mgmt"), VncBoolean.True);
                 final VncVal serverLogDirVal = options.get(new VncKeyword("server-log-dir"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
@@ -186,6 +190,7 @@ public class IPCFunctions {
                 final long maxQueues = convertUnitValueToLong(maxMaxQueuesVal);
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+                final boolean permitQueueMgmt = Coerce.toVncBoolean(permitQueueMgmtVal).getValue();
 
                 final File serverLogDir = serverLogDirVal == Nil
                                             ? null
@@ -239,6 +244,8 @@ public class IPCFunctions {
                 // -- Configure the server ------------------------------------
 
                 final TcpServer server = new TcpServer(port);
+
+                server.setPermitClientQueueMgmt(permitQueueMgmt);
 
                 if (maxConn > 0) {
                     server.setMaxParallelConnections(maxConn);
