@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
@@ -68,7 +69,7 @@ public class TcpTempQueueTest {
 
             final IMessage request = MessageFactory.text(
                                         null,
-                                        "tcp-server/status",
+                                        Messages.TOPIC_SERVER_STATUS,
                                         "appliaction/json",
                                         "UTF-8",
                                         "");

@@ -59,7 +59,7 @@ import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
-import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
@@ -1523,7 +1523,7 @@ public class IPCFunctions {
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
                                                 null,
-                                                "tcp-server/status",
+                                                Messages.TOPIC_SERVER_STATUS,
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""));
@@ -1580,7 +1580,7 @@ public class IPCFunctions {
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
                                                 null,
-                                                "tcp-server/thread-pool-statistics",
+                                                Messages.TOPIC_SERVER_THREAD_POOL_STATS,
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""));
@@ -1724,7 +1724,7 @@ public class IPCFunctions {
                                             ? null
                                             : Coerce.toVncString(requestId).getValue(),
                                             expiresAtVal == null || expiresAtVal == Nil
-                                            ? Message.EXPIRES_NEVER
+                                            ? Messages.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAtVal).getValue(),
                                         durable,
                                         topic.getValue(),
@@ -1842,7 +1842,7 @@ public class IPCFunctions {
                                             ? null
                                             : Coerce.toVncString(requestId).getValue(),
                                         expiresAt == null || expiresAt == Nil
-                                            ? Message.EXPIRES_NEVER
+                                            ? Messages.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
                                             durable,
                                         topic.getValue(),
@@ -1977,7 +1977,7 @@ public class IPCFunctions {
                                             ? null
                                             : Coerce.toVncString(requestId).getValue(),
                                         expiresAt == null || expiresAt == Nil
-                                            ? Message.EXPIRES_NEVER
+                                            ? Messages.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
                                         durable,
                                         topic.getValue(),
@@ -2092,7 +2092,7 @@ public class IPCFunctions {
                                             ? null
                                             : Coerce.toVncString(requestId).getValue(),
                                         expiresAt == null || expiresAt == Nil
-                                            ? Message.EXPIRES_NEVER
+                                            ? Messages.EXPIRES_NEVER
                                             : Coerce.toVncLong(expiresAt).getValue(),
                                         durable,
                                         topic.getValue(),

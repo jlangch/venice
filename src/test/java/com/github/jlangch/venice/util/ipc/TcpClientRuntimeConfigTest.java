@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
@@ -45,7 +45,7 @@ public class TcpClientRuntimeConfigTest {
         try {
             assertEquals(false, client.isEncrypted());
             assertEquals(-1, client.getCompressCutoffSize());
-            assertEquals(Message.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
         }
         catch(Exception ex) {
             // OK
@@ -72,7 +72,7 @@ public class TcpClientRuntimeConfigTest {
         try {
             assertEquals(false, client.isEncrypted());
             assertEquals(-1, client.getCompressCutoffSize());
-            assertEquals(Message.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
         }
         catch(Exception ex) {
             // OK
@@ -99,7 +99,7 @@ public class TcpClientRuntimeConfigTest {
         try {
             assertEquals(true, client.isEncrypted());
             assertEquals(-1, client.getCompressCutoffSize());
-            assertEquals(Message.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
         }
         catch(Exception ex) {
             // OK

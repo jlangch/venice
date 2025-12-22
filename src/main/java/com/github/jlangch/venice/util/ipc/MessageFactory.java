@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
@@ -67,7 +68,7 @@ public abstract class MessageFactory {
                 false,  // not oneway
                 false,  // not durable
                 false,  // no subscription reply
-                Message.EXPIRES_NEVER,
+                Messages.EXPIRES_NEVER,
                 Topics.of(topic),
                 mimetype,
                 charset,
@@ -188,7 +189,7 @@ public abstract class MessageFactory {
                 false,  // not oneway
                 false,  // not durable
                 false,  // no subscription reply
-                Message.EXPIRES_NEVER,
+                Messages.EXPIRES_NEVER,
                 Topics.of(topic),
                 "application/json",
                 charset,
@@ -304,7 +305,7 @@ public abstract class MessageFactory {
                 false,  // not oneway
                 false,  // not durable
                 false,  // no subscription reply
-                Message.EXPIRES_NEVER,
+                Messages.EXPIRES_NEVER,
                 Topics.of(topic),
                 mimetype,
                 null,

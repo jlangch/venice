@@ -51,6 +51,7 @@ import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
@@ -90,7 +91,7 @@ public class ClientConnection implements Closeable {
         try {
             final VncMap config = getClientConfiguration(channel);
 
-            maxMessageSize = getLong(config, "max-msg-size", Message.MESSAGE_LIMIT_MAX);
+            maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
             compressor = new Compressor(getLong(config, "compress-cutoff-size", -1));
             encrypt = useEncryption                              // client side encrypt
                       || getBoolean(config, "encrypt", false);   // server side encrypt
@@ -359,7 +360,7 @@ public class ClientConnection implements Closeable {
                 false,
                 false,
                 false,
-                Message.EXPIRES_NEVER,
+                Messages.EXPIRES_NEVER,
                 Topics.of("dh"),
                 "text/plain",
                 "UTF-8",
@@ -378,8 +379,8 @@ public class ClientConnection implements Closeable {
                 null,
                 null,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                Message.NO_TIMEOUT,
+                Messages.EXPIRES_NEVER,
+                Messages.NO_TIMEOUT,
                 Topics.of("client-config"),
                 "text/plain",
                 "UTF-8",

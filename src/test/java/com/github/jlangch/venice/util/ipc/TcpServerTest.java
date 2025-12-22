@@ -33,7 +33,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
@@ -193,11 +193,11 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text(null, "tcp-server/status", "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text(null, Messages.TOPIC_SERVER_STATUS, "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals("tcp-server/status", response2.getTopic());
+            assertEquals(Messages.TOPIC_SERVER_STATUS, response2.getTopic());
 
             // System.out.println(response2.getText());
         }
@@ -224,11 +224,11 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text(null, "tcp-server/thread-pool-statistics", "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text(null, Messages.TOPIC_SERVER_THREAD_POOL_STATS, "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals("tcp-server/thread-pool-statistics", response2.getTopic());
+            assertEquals(Messages.TOPIC_SERVER_THREAD_POOL_STATS, response2.getTopic());
 
             // System.out.println(response2.getText());
         }
@@ -241,11 +241,11 @@ public class TcpServerTest {
     @Test
     public void test_server_max_size() throws Exception {
         try (TcpServer server = new TcpServer(33333)) {
-            assertEquals(Message.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
 
             // below minimum
             server.setMaxMessageSize(100L);
-            assertEquals(Message.MESSAGE_LIMIT_MIN, server.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_MIN, server.getMaxMessageSize());
 
             // in range
             server.setMaxMessageSize(100L * 1024L);
@@ -253,7 +253,7 @@ public class TcpServerTest {
 
             // above maximum
             server.setMaxMessageSize(800L * 1024L * 1024L);
-            assertEquals(Message.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
         }
     }
 

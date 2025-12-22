@@ -45,6 +45,7 @@ import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
@@ -386,9 +387,25 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message handleSend(final Message request) {
-        if (request.getTopic().startsWith("tcp-server/")) {
-            // Handle server info requests
-            return handleTcpServerRequest(request);
+        if (request.getTopic().startsWith(Messages.TOPIC_SERVER_PREFIX)) {
+            if (Messages.TOPIC_SERVER_STATUS.equals(request.getTopic())) {
+                return getTcpServerStatus(request);
+            }
+            else if (Messages.TOPIC_SERVER_THREAD_POOL_STATS.equals(request.getTopic())) {
+                return getTcpServerThreadPoolStatistics(request);
+            }
+            else if (Messages.TOPIC_SERVER_ERROR.equals(request.getTopic())) {
+                return getTcpServerNextError(request);
+            }
+            else {
+                return createBadRequestTextMessageResponse(
+                        request,
+                        "Unknown server request topic. \n"
+                          + "Valid topics are:\n"
+                          + "  • " + Messages.TOPIC_SERVER_STATUS + "\n"
+                          + "  • " + Messages.TOPIC_SERVER_THREAD_POOL_STATS + "\n"
+                          + "  • " + Messages.TOPIC_SERVER_ERROR);
+            }
         }
         else {
             final IMessage response = handler.apply(request);
@@ -534,27 +551,6 @@ public class ServerConnection implements IPublisher, Runnable {
                     request,
                     ResponseStatus.QUEUE_ACCESS_INTERRUPTED,
                     "Poll rejected! Queue access interrupted.");
-        }
-    }
-
-    private Message handleTcpServerRequest(final Message request) {
-        if ("tcp-server/status".equals(request.getTopic())) {
-            return getTcpServerStatus(request);
-        }
-        else if ("tcp-server/thread-pool-statistics".equals(request.getTopic())) {
-            return getTcpServerThreadPoolStatistics(request);
-        }
-        else if ("tcp-server/error".equals(request.getTopic())) {
-            return getTcpServerNextError(request);
-        }
-        else {
-            return createBadRequestTextMessageResponse(
-                    request,
-                    "Unknown tcp server request topic. \n"
-                          + "Valid topics are:\n"
-                          + "  • tcp-server/status\n"
-                          + "  • tcp-server/thread-pool-statistics\n"
-                          + "  • tcp-server/error");
         }
     }
 
@@ -885,7 +881,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 true,   // oneway
                 false,  // transient
                 false,  // not a subscription msg
-                Message.EXPIRES_NEVER,
+                Messages.EXPIRES_NEVER,
                 request.getTopics(),
                 "application/json",
                 "UTF-8",
@@ -907,7 +903,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 true,   // oneway
                 false,  // transient
                 false,  // not a subscription msg
-                Message.EXPIRES_NEVER,
+                Messages.EXPIRES_NEVER,
                 topics,
                 "text/plain",
                 "UTF-8",
@@ -924,11 +920,10 @@ public class ServerConnection implements IPublisher, Runnable {
                    ResponseStatus.OK,
                    new JsonBuilder()
                            .add("running", server.isRunning())
-                           .add("mode", mode.name())
-                           // config
+                            // config
+                           .add("encryption", encryptor.get().isActive())
                            .add("message-size-max", maxMessageSize.get())
                            .add("compression-cutoff-size", server.getCompressCutoffSize())
-                           .add("encryption", encryptor.get().isActive())
                            .add("write-ahead-log-dir", wal.isEnabled()
                                                             ? wal.getWalDir().getAbsolutePath()
                                                             : "-" )
@@ -941,7 +936,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                                 : "-")
                            .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
                            .add("publish-queue-capacity", publishQueueCapacity)
-                           // statistics
+                            // statistics
                            .add("connection_count", statistics.getConnectionCount())
                            .add("message-count", statistics.getMessageCount())
                            .add("publish-count", statistics.getPublishCount())
@@ -970,7 +965,7 @@ public class ServerConnection implements IPublisher, Runnable {
             if (err == null) {
                 return createJsonResponseMessage(
                         request,
-                        ResponseStatus.OK,
+                        ResponseStatus.QUEUE_EMPTY,
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
                                 .toJson(false));
@@ -994,7 +989,7 @@ public class ServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createJsonResponseMessage(
                     request,
-                    ResponseStatus.OK,
+                    ResponseStatus.HANDLER_ERROR,
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
                             .toJson(false));
@@ -1060,11 +1055,11 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
 
-    private static enum State { Request_Response, Terminated };
+    private static enum State { Active, Terminated };
 
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
-    private volatile State mode = State.Request_Response;
+    private volatile State mode = State.Active;
     private volatile Thread publisherThread;
 
     private final TcpServer server;

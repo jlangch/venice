@@ -43,6 +43,7 @@ import java.util.function.Function;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
@@ -161,8 +162,8 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setMaxMessageSize(final long maxSize) {
         maxMessageSize.set(Math.max(
-                            Message.MESSAGE_LIMIT_MIN,
-                            Math.min(Message.MESSAGE_LIMIT_MAX, maxSize)));
+                            Messages.MESSAGE_LIMIT_MIN,
+                            Math.min(Messages.MESSAGE_LIMIT_MAX, maxSize)));
         return this;
     }
 
@@ -461,7 +462,7 @@ public class TcpServer implements Closeable {
                             true,   // oneway
                             false,  // transient
                             false,  // not subscribed
-                            Message.EXPIRES_NEVER,
+                            Messages.EXPIRES_NEVER,
                             ((Message)req).getTopics(),
                             "text/plain",
                             "UTF-8",
@@ -621,7 +622,7 @@ public class TcpServer implements Closeable {
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
-    private final AtomicLong maxMessageSize = new AtomicLong(Message.MESSAGE_LIMIT_MAX);
+    private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
     private final AtomicLong connectionId = new AtomicLong(0);

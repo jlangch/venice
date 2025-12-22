@@ -79,9 +79,9 @@ public class Message implements IMessage {
         this.queueName = null;
         this.replyToQueueName = null;
         this.timestamp = Instant.now().toEpochMilli();
-        this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
+        this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
         this.topics = topics;
-        this.timeout = DEFAULT_TIMEOUT;
+        this.timeout = Messages.DEFAULT_TIMEOUT;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -120,9 +120,9 @@ public class Message implements IMessage {
         this.queueName = null;
         this.replyToQueueName = null;
         this.timestamp = Instant.now().toEpochMilli();
-        this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
+        this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
         this.topics = topics;
-        this.timeout = DEFAULT_TIMEOUT;
+        this.timeout = Messages.DEFAULT_TIMEOUT;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -165,8 +165,8 @@ public class Message implements IMessage {
         this.queueName = StringUtil.trimToNull(queueName);
         this.replyToQueueName = replyToQueueName;
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
-        this.expiresAt = expiresAt < 0 ? EXPIRES_NEVER : expiresAt;
-        this.timeout = timeout < 0 ? NO_TIMEOUT : timeout;
+        this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
+        this.timeout = timeout < 0 ? Messages.NO_TIMEOUT : timeout;
         this.topics = topics;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -584,9 +584,9 @@ public class Message implements IMessage {
     }
 
     public static void validateMimetype(final String mimetype) {
-        if (mimetype.length() > MIMETYPE_MAX_LEN) {
+        if (mimetype.length() > Messages.MIMETYPE_MAX_LEN) {
             throw new IllegalArgumentException(
-                    "A mimetype is limited to " + MIMETYPE_MAX_LEN + "characters!");
+                    "A mimetype is limited to " + Messages.MIMETYPE_MAX_LEN + "characters!");
         }
     }
 
@@ -601,9 +601,9 @@ public class Message implements IMessage {
                     + "not be empty or blank!");
         }
 
-        if (charset.length() > CHARSET_MAX_LEN) {
+        if (charset.length() > Messages.CHARSET_MAX_LEN) {
             throw new IllegalArgumentException(
-                    "A charset is limited to " + CHARSET_MAX_LEN + "characters!");
+                    "A charset is limited to " + Messages.CHARSET_MAX_LEN + "characters!");
         }
     }
 
@@ -616,25 +616,12 @@ public class Message implements IMessage {
             throw new IllegalArgumentException("A queue name can be empty or blank!");
         }
 
-        if (name.length() > QUEUENAME_MAX_LEN) {
+        if (name.length() > Messages.QUEUENAME_MAX_LEN) {
             throw new IllegalArgumentException(
-                    "A queue name is limited to " + QUEUENAME_MAX_LEN + "characters!");
+                    "A queue name is limited to " + Messages.QUEUENAME_MAX_LEN + "characters!");
         }
     }
 
-
-
-    public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
-    public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
-
-    public static final long EXPIRES_NEVER = -1L;
-    public static final long NO_TIMEOUT = -1L;
-    public static final long DEFAULT_TIMEOUT = 300L;  // 300ms
-    public static final long ZERO_TIMEOUT = 0L;  // 0ms
-
-    public static final long QUEUENAME_MAX_LEN = 100;
-    public static final long MIMETYPE_MAX_LEN = 100;
-    public static final long CHARSET_MAX_LEN = 50;
 
 
     private final UUID id;

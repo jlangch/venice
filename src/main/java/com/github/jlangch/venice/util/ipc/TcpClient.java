@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.conn.ClientConnection;
 import com.github.jlangch.venice.util.ipc.impl.util.ConstantFuture;
@@ -739,6 +740,20 @@ public class TcpClient implements Cloneable, Closeable {
         return tmp;
     }
 
+    /**
+     * Return the next server error related to this client
+     *
+     * @return a map with the error or <code>null</code> if no error is available
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String,Object> getNextServerError() {
+        final VncMap data = getNextServerErrorRaw();
+
+        return data == null
+                ? null
+                : (Map<String,Object>)data.convertToJavaObject();
+    }
+
 
     private VncMap getQueueStatusRaw(final String queueName) {
         if (StringUtil.isBlank(queueName)) {
@@ -781,7 +796,7 @@ public class TcpClient implements Cloneable, Closeable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("tcp-server/status"),
+                                Topics.of(Messages.TOPIC_SERVER_STATUS),
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
@@ -805,7 +820,7 @@ public class TcpClient implements Cloneable, Closeable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("tcp-server/thread-pool-statistics"),
+                                Topics.of(Messages.TOPIC_SERVER_THREAD_POOL_STATS),
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
@@ -817,6 +832,33 @@ public class TcpClient implements Cloneable, Closeable {
         else {
             throw new VncException(
                     "Failed get server thread pool statistics! Reason: " + response.getText());
+        }
+    }
+
+    private VncMap getNextServerErrorRaw() {
+        final Message m = new Message(
+                                null,
+                                MessageType.REQUEST,
+                                ResponseStatus.NULL,
+                                false,
+                                false,
+                                false,
+                                1_000L,
+                                Topics.of(Messages.TOPIC_SERVER_ERROR),
+                                "text/plain",
+                                "UTF-8",
+                                new byte[0]);
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() == ResponseStatus.OK) {
+           return (VncMap)response.getVeniceData();
+        }
+        else if (response.getResponseStatus() == ResponseStatus.QUEUE_EMPTY) {
+            return null;
+         }
+        else {
+            throw new VncException(
+                    "Failed get server error! Reason: " + response.getText());
         }
     }
 
@@ -857,7 +899,7 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     private Message handleClientLocalMessage(final IMessage request) {
-        if ("client/thread-pool-statistics".equals(request.getTopic())) {
+        if (Messages.TOPIC_CLIENT_THREAD_POOL_STATS.equals(request.getTopic())) {
             // answer locally
             return getClientThreadPoolStatistics();
         }
@@ -866,7 +908,7 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     private boolean isClientLocalMessage(final IMessage request) {
-        return "client/thread-pool-statistics".equals(request.getTopic());
+        return Messages.TOPIC_CLIENT_THREAD_POOL_STATS.equals(request.getTopic());
     }
 
     private Message getClientThreadPoolStatistics() {
@@ -879,8 +921,8 @@ public class TcpClient implements Cloneable, Closeable {
                 false,
                 false,
                 false,
-                Message.EXPIRES_NEVER,
-                Topics.of("client/thread-pool-statistics"),
+                Messages.EXPIRES_NEVER,
+                Topics.of(Messages.TOPIC_CLIENT_THREAD_POOL_STATS),
                 "application/json",
                 "UTF-8",
                 toBytes(Json.writeJson(statistics, false), "UTF-8"));
@@ -918,8 +960,8 @@ public class TcpClient implements Cloneable, Closeable {
                 null,
                 null,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                Message.DEFAULT_TIMEOUT,
+                Messages.EXPIRES_NEVER,
+                Messages.DEFAULT_TIMEOUT,
                 Topics.of(topics),
                 "text/plain",
                 "UTF-8",
@@ -941,8 +983,8 @@ public class TcpClient implements Cloneable, Closeable {
                 null,
                 null,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                Message.DEFAULT_TIMEOUT,
+                Messages.EXPIRES_NEVER,
+                Messages.DEFAULT_TIMEOUT,
                 Topics.of(topics),
                 "text/plain",
                 "UTF-8",
@@ -966,8 +1008,8 @@ public class TcpClient implements Cloneable, Closeable {
                 queueName,
                 replyToQueueName,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                queueOfferTimeout < 0 ? Message.NO_TIMEOUT : queueOfferTimeout,
+                Messages.EXPIRES_NEVER,
+                queueOfferTimeout < 0 ? Messages.NO_TIMEOUT : queueOfferTimeout,
                 msg.getTopics(),
                 msg.getMimetype(),
                 msg.getCharset(),
@@ -989,8 +1031,8 @@ public class TcpClient implements Cloneable, Closeable {
                 queueName,
                 null,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                queuePollTimeout < 0 ? Message.NO_TIMEOUT : queuePollTimeout,
+                Messages.EXPIRES_NEVER,
+                queuePollTimeout < 0 ? Messages.NO_TIMEOUT : queuePollTimeout,
                 Topics.of("queue/poll"),
                 "application/octet-stream",
                 null,

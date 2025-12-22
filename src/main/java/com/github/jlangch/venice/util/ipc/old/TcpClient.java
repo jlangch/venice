@@ -57,6 +57,7 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
@@ -214,7 +215,7 @@ public class TcpClient implements Cloneable, Closeable {
 
                 // handle config values
                 final VncMap config = (VncMap)((Message)response).getVeniceData();
-                maxMessageSize.set(getLong(config, "max-msg-size", Message.MESSAGE_LIMIT_MAX));
+                maxMessageSize.set(getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX));
                 compressor.set(new Compressor(getLong(config, "compress-cutoff-size", -1)));
                 encrypt.set(
                     encrypt.get()                                // client side encrypt
@@ -1024,7 +1025,7 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     private Message handleClientLocalMessage(final IMessage request) {
-        if ("client/thread-pool-statistics".equals(request.getTopic())) {
+        if (Messages.TOPIC_CLIENT_THREAD_POOL_STATS.equals(request.getTopic())) {
             // answer locally
             return getClientThreadPoolStatistics();
         }
@@ -1033,7 +1034,7 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     private boolean isClientLocalMessage(final IMessage request) {
-        return "client/thread-pool-statistics".equals(request.getTopic());
+        return Messages.TOPIC_CLIENT_THREAD_POOL_STATS.equals(request.getTopic());
     }
 
     private Message getClientThreadPoolStatistics() {
@@ -1046,8 +1047,8 @@ public class TcpClient implements Cloneable, Closeable {
                 false,
                 false,
                 false,
-                Message.EXPIRES_NEVER,
-                Topics.of("client/thread-pool-statistics"),
+                Messages.EXPIRES_NEVER,
+                Topics.of(Messages.TOPIC_CLIENT_THREAD_POOL_STATS),
                 "application/json",
                 "UTF-8",
                 toBytes(Json.writeJson(statistics, false), "UTF-8"));
@@ -1099,7 +1100,7 @@ public class TcpClient implements Cloneable, Closeable {
                 false,
                 false,
                 false,
-                Message.EXPIRES_NEVER,
+                Messages.EXPIRES_NEVER,
                 Topics.of("dh"),
                 "text/plain",
                 "UTF-8",
@@ -1121,8 +1122,8 @@ public class TcpClient implements Cloneable, Closeable {
                 null,
                 null,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                Message.DEFAULT_TIMEOUT,
+                Messages.EXPIRES_NEVER,
+                Messages.DEFAULT_TIMEOUT,
                 Topics.of(topics),
                 "text/plain",
                 "UTF-8",
@@ -1146,8 +1147,8 @@ public class TcpClient implements Cloneable, Closeable {
                 queueName,
                 replyToQueueName,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                queueOfferTimeout < 0 ? Message.NO_TIMEOUT : queueOfferTimeout,
+                Messages.EXPIRES_NEVER,
+                queueOfferTimeout < 0 ? Messages.NO_TIMEOUT : queueOfferTimeout,
                 msg.getTopics(),
                 msg.getMimetype(),
                 msg.getCharset(),
@@ -1169,8 +1170,8 @@ public class TcpClient implements Cloneable, Closeable {
                 queueName,
                 null,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                queuePollTimeout < 0 ? Message.NO_TIMEOUT : queuePollTimeout,
+                Messages.EXPIRES_NEVER,
+                queuePollTimeout < 0 ? Messages.NO_TIMEOUT : queuePollTimeout,
                 Topics.of("queue/poll"),
                 "application/octet-stream",
                 null,
@@ -1189,9 +1190,9 @@ public class TcpClient implements Cloneable, Closeable {
                 null,
                 null,
                 System.currentTimeMillis(),
-                Message.EXPIRES_NEVER,
-                Message.NO_TIMEOUT,
-                Topics.of("client-config"),
+                Messages.EXPIRES_NEVER,
+                Messages.NO_TIMEOUT,
+                Topics.of(Messages.TOPIC_SERVER_CLIENT_CONFIG),
                 "text/plain",
                 "UTF-8",
                 new byte[0]);
@@ -1263,7 +1264,7 @@ public class TcpClient implements Cloneable, Closeable {
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<SocketChannel> channel = new AtomicReference<>();
     private final AtomicBoolean subscription = new AtomicBoolean(false);
-    private final AtomicLong maxMessageSize = new AtomicLong(Message.MESSAGE_LIMIT_MAX);
+    private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_MAX);
     private final AtomicLong messageSentCount = new AtomicLong(0L);
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
 
