@@ -512,6 +512,7 @@ public class IpcFunctionsTest {
           assertTrue(true);
         }
         catch(VncException ex) {
+            System.err.println(ex.getMessage());
             fail("Unexpected exception");
         }
     }
@@ -531,6 +532,7 @@ public class IpcFunctionsTest {
           assertTrue(true);
         }
         catch(VncException ex) {
+            System.err.println(ex.getMessage());
             fail("Unexpected exception");
         }
     }
@@ -550,6 +552,7 @@ public class IpcFunctionsTest {
           fail("Expected exception");
         }
         catch(VncException ex) {
+            System.err.println(ex.getMessage());
             assertTrue(true);
         }
     }
