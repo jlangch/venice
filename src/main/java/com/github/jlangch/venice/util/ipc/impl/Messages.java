@@ -24,24 +24,29 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 public abstract class Messages {
 
+    // Message limit
     public static final long MESSAGE_LIMIT_MIN = 2 * 1024;
     public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;
 
+    // Message timeout
     public static final long EXPIRES_NEVER = -1L;
     public static final long NO_TIMEOUT = -1L;
     public static final long DEFAULT_TIMEOUT = 300L;  // 300ms
     public static final long ZERO_TIMEOUT = 0L;  // 0ms
 
+    // Queues
     public static final long QUEUENAME_MAX_LEN = 100;
     public static final long MIMETYPE_MAX_LEN = 100;
     public static final long CHARSET_MAX_LEN = 50;
 
+    // Server requests
     public static final String TOPIC_SERVER_PREFIX = "ipc-server/";
     public static final String TOPIC_SERVER_STATUS = "ipc-server/status";
     public static final String TOPIC_SERVER_THREAD_POOL_STATS = "ipc-server/thread-pool-statistics";
     public static final String TOPIC_SERVER_ERROR = "ipc-server/error";
     public static final String TOPIC_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
 
+    // Client requests
     public static final String TOPIC_CLIENT_THREAD_POOL_STATS = "ipc-client/thread-pool-statistics";
 
 }
