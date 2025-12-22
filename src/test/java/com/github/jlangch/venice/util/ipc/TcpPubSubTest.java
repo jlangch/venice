@@ -176,6 +176,8 @@ public class TcpPubSubTest {
                 clientPub.publish(request);
             }
 
+            IO.sleep(100);
+
             clientSub.unsubscribe("test");
 
             for(int ii=0; ii<3; ii++) {
