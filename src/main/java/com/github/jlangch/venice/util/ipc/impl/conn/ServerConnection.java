@@ -266,17 +266,7 @@ public class ServerConnection implements IPublisher, Runnable {
             return;
         }
 
-        // [3] Handle server info requests
-        if (request.getTopic().startsWith("tcp-server/")) {
-            // process a server status request
-            final Message response = handleTcpServerRequest(request);
-            if (!request.isOneway()) {
-                sendResponse(response);
-            }
-            return;
-        }
-
-        // [4] Handle all other requests
+        // [3] Handle request
         final Message response = handleRequestMessage(request);
 
         if (!server.isRunning()) {
@@ -284,7 +274,7 @@ public class ServerConnection implements IPublisher, Runnable {
             return;
         }
 
-        // [5] Send response
+        // [4] Send response
         if (request.isOneway()) {
             // oneway request -> do not send any response message back
             switch(response.getResponseStatus()) {
@@ -396,19 +386,25 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message handleSend(final Message request) {
-        final IMessage response = handler.apply(request);
-
-        if (response == null) {
-            // create an empty text response
-            return createTextMessageResponse(
-                        request,
-                        ResponseStatus.OK,
-                        "");
+        if (request.getTopic().startsWith("tcp-server/")) {
+            // Handle server info requests
+            return handleTcpServerRequest(request);
         }
         else {
-            return ((Message)response)
-                        .withType(MessageType.RESPONSE, true)
-                        .withResponseStatus(request.getId(), ResponseStatus.OK);
+            final IMessage response = handler.apply(request);
+
+            if (response == null) {
+                // create an empty text response
+                return createTextMessageResponse(
+                            request,
+                            ResponseStatus.OK,
+                            "");
+            }
+            else {
+                return ((Message)response)
+                            .withType(MessageType.RESPONSE, true)
+                            .withResponseStatus(request.getId(), ResponseStatus.OK);
+            }
         }
     }
 

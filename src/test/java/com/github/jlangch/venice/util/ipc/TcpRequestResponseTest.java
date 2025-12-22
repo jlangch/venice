@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -394,6 +395,50 @@ public class TcpRequestResponseTest {
             assertEquals("text/plain",       response.getMimetype());
             assertEquals("UTF-8",            response.getCharset());
             assertEquals("3",                response.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_server_status() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.start(TcpServer.echoHandler());
+
+        IO.sleep(300);
+
+        client.open();
+
+        try {
+            final Map<String,Object> status = client.getServerStatus();
+
+            assertNotNull(status);
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_server_thread_pool_statistics() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.start(TcpServer.echoHandler());
+
+        IO.sleep(300);
+
+        client.open();
+
+        try {
+            final Map<String,Object> stats = client.getServerThreadPoolStatistics();
+
+            assertNotNull(stats);
         }
         finally {
             client.close();

@@ -677,19 +677,19 @@ public class TcpClient implements Cloneable, Closeable {
     public Map<String,Object> getQueueStatus(final String queueName) {
         final VncMap data = getQueueStatusRaw(queueName);
 
-       @SuppressWarnings("unchecked")
-       final Map<Object,Object> tmp = (Map<Object,Object>)data.convertToJavaObject();
+        @SuppressWarnings("unchecked")
+        final Map<Object,Object> tmp = (Map<Object,Object>)data.convertToJavaObject();
 
-       final Map<String,Object> map = new LinkedHashMap<>();
-       map.put("name",      tmp.get("name"));
-       map.put("exists",    tmp.get("exists"));
-       map.put("type",      tmp.get("type"));
-       map.put("temporary", tmp.get("temporary"));
-       map.put("durable",   tmp.get("durable"));
-       map.put("capacity",  tmp.get("capacity"));
-       map.put("size",      tmp.get("size"));
+        final Map<String,Object> map = new LinkedHashMap<>();
+        map.put("name",      tmp.get("name"));
+        map.put("exists",    tmp.get("exists"));
+        map.put("type",      tmp.get("type"));
+        map.put("temporary", tmp.get("temporary"));
+        map.put("durable",   tmp.get("durable"));
+        map.put("capacity",  tmp.get("capacity"));
+        map.put("size",      tmp.get("size"));
 
-       return map;
+        return map;
     }
 
     /**
@@ -699,17 +699,46 @@ public class TcpClient implements Cloneable, Closeable {
      * @return a map with the status fields
      */
     public VncMap getQueueStatusAsVncMap(final String queueName) {
-       final VncMap data = getQueueStatusRaw(queueName);
+        final VncMap data = getQueueStatusRaw(queueName);
 
-       return VncOrderedMap.of(
-               new VncKeyword("name")      , data.get(new VncKeyword("name")),
-               new VncKeyword("exists")    , data.get(new VncKeyword("exists")),
-               new VncKeyword("type")      , data.get(new VncKeyword("type")),
-               new VncKeyword("temporary") , data.get(new VncKeyword("temporary")),
-               new VncKeyword("durable")   , data.get(new VncKeyword("durable")),
-               new VncKeyword("capacity")  , data.get(new VncKeyword("capacity")),
-               new VncKeyword("size")      , data.get(new VncKeyword("size")));
+        return VncOrderedMap.of(
+                new VncKeyword("name")      , data.get(new VncKeyword("name")),
+                new VncKeyword("exists")    , data.get(new VncKeyword("exists")),
+                new VncKeyword("type")      , data.get(new VncKeyword("type")),
+                new VncKeyword("temporary") , data.get(new VncKeyword("temporary")),
+                new VncKeyword("durable")   , data.get(new VncKeyword("durable")),
+                new VncKeyword("capacity")  , data.get(new VncKeyword("capacity")),
+                new VncKeyword("size")      , data.get(new VncKeyword("size")));
     }
+
+    /**
+     * Return the server's status.
+     *
+     * @return a map with the status fields
+     */
+    public Map<String,Object> getServerStatus() {
+        final VncMap data = getServerStatusRaw();
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> tmp = (Map<String,Object>)data.convertToJavaObject();
+
+        return tmp;
+    }
+
+    /**
+     * Return the server's thread pool statistics.
+     *
+     * @return a map with the statistics
+     */
+    public Map<String,Object> getServerThreadPoolStatistics() {
+        final VncMap data = getServerThreadPoolStatisticsRaw();
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> tmp = (Map<String,Object>)data.convertToJavaObject();
+
+        return tmp;
+    }
+
 
     private VncMap getQueueStatusRaw(final String queueName) {
         if (StringUtil.isBlank(queueName)) {
@@ -740,6 +769,54 @@ public class TcpClient implements Cloneable, Closeable {
         else {
             throw new VncException(
                     "Failed to check if queue " + queueName + " exists! Reason: " + response.getText());
+        }
+    }
+
+    private VncMap getServerStatusRaw() {
+        final Message m = new Message(
+                                null,
+                                MessageType.REQUEST,
+                                ResponseStatus.NULL,
+                                false,
+                                false,
+                                false,
+                                1_000L,
+                                Topics.of("tcp-server/status"),
+                                "text/plain",
+                                "UTF-8",
+                                new byte[0]);
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() == ResponseStatus.OK) {
+           return (VncMap)response.getVeniceData();
+        }
+        else {
+            throw new VncException(
+                    "Failed get server status! Reason: " + response.getText());
+        }
+    }
+
+    private VncMap getServerThreadPoolStatisticsRaw() {
+        final Message m = new Message(
+                                null,
+                                MessageType.REQUEST,
+                                ResponseStatus.NULL,
+                                false,
+                                false,
+                                false,
+                                1_000L,
+                                Topics.of("tcp-server/thread-pool-statistics"),
+                                "text/plain",
+                                "UTF-8",
+                                new byte[0]);
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() == ResponseStatus.OK) {
+           return (VncMap)response.getVeniceData();
+        }
+        else {
+            throw new VncException(
+                    "Failed get server thread pool statistics! Reason: " + response.getText());
         }
     }
 

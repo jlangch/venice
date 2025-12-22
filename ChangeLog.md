@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 
 - Added an optional logger for the IPC server
 - Made IPC publish/subscribe completely asynchronous in the client and the server
+- IPC encryption can now be enforced by the server for all client connections
 
 ### Updated dependencies:
 
