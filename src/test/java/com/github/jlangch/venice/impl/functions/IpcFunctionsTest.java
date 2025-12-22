@@ -498,6 +498,63 @@ public class IpcFunctionsTest {
     }
 
     @Test
+    public void test_queue_remove_permission_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [server (ipc/server 33333)       \n" +
+                "           client (ipc/client 33333)]      \n" +
+                "  (ipc/create-queue server :orders 100)    \n" +
+                "  (ipc/remove-queue client :orders))   ";
+
+        try {
+          venice.eval(script);
+          assertTrue(true);
+        }
+        catch(VncException ex) {
+            fail("Unexpected exception");
+        }
+    }
+
+    @Test
+    public void test_queue_remove_permission_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt true)  \n" +
+                "           client (ipc/client 33333)]      \n" +
+                "  (ipc/create-queue server :orders 100)    \n" +
+                "  (ipc/remove-queue client :orders))   ";
+
+        try {
+          venice.eval(script);
+          assertTrue(true);
+        }
+        catch(VncException ex) {
+            fail("Unexpected exception");
+        }
+    }
+
+    @Test
+    public void test_queue_remove_permission_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [server (ipc/server 33333:permit-client-queue-mgmt false)  \n" +
+                "           client (ipc/client 33333)]      \n" +
+                "  (ipc/create-queue server :orders 100)    \n" +
+                "  (ipc/remove-queue client :orders))   ";
+
+        try {
+          venice.eval(script);
+          fail("Expected exception");
+        }
+        catch(VncException ex) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
     public void test_map2json_a() {
         final Venice venice = new Venice();
 
