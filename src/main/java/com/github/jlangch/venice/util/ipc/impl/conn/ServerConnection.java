@@ -78,6 +78,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
             final Map<String, IpcQueue<Message>> p2pQueues,
+            final boolean enforceEncryption,
             final Compressor compressor,
             final ServerStatistics statistics,
             final Supplier<VncMap> serverThreadPoolStatistics
@@ -92,6 +93,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.wal = wal;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
+        this.enforceEncryption = enforceEncryption;
         this.compressor = compressor;
         this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
@@ -1091,7 +1093,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final Compressor compressor;
 
     // encryption
-    private final boolean enforceEncryption = false;
+    private final boolean enforceEncryption;
     private final DiffieHellmanKeys dhKeys;
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
 

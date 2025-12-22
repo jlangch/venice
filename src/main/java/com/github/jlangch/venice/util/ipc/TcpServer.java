@@ -374,6 +374,7 @@ public class TcpServer implements Closeable {
                                                                    subscriptions,
                                                                    publishQueueCapacity,
                                                                    p2pQueues,
+                                                                   isEncrypted(),
                                                                    compressor.get(),
                                                                    statistics,
                                                                    () -> mngdExecutor.info());
