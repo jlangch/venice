@@ -102,7 +102,7 @@ public class IPCFunctions {
                                                         " The cutoff size can be specified as a number like `1000`" +
                                                         " or a number with a unit like `:1KB` or `:2MB`.¶" +
                                                         " Defaults to -1 (no compression)|\n" +
-                        "| :permit-client-queue-mgmt n  | Permit clients to manage (add/remove) queues. Does not affect " +
+                        "| :permit-client-queue-mgmt b  | Permit clients to manage (add/remove) queues. Does not affect " +
                                                         " temporary queues.¶" +
                                                         " Defaults to `true`.|\n" +
                         "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
