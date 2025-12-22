@@ -123,6 +123,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 
 * [Cryptography](doc/readme/cryptography.md)
 * [Inter-Process-Communication](doc/readme/ipc.md)
+* [Docker](doc/readme/docker.md)
 * [Kira Templates](doc/readme/ext-kira.md)
 * [Parsifal Parser Combinator](doc/readme/ext-parsifal.md)
 * [HTTP Client (Java 8+)](doc/readme/http-client-j8.md)
