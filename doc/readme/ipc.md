@@ -593,10 +593,6 @@ between a client and its associated server is encrypted.
 The data is AES-256-GCM encrypted using a secret that is created and 
 exchanged using the Diffie-Hellman key exchange algorithm.
 
-> [!NOTE]
-> If multiple clients are involved in message passing turn on 
-> encryption for all clients!
-
 
 ```clojure
 (do
@@ -608,8 +604,8 @@ exchanged using the Diffie-Hellman key exchange algorithm.
     m)
 
   ;; transparently encrypt messages
-  (try-with [server (ipc/server 33333 echo-handler)
-             client (ipc/client "localhost" 33333 :encrypt true)]
+  (try-with [server (ipc/server 33333 echo-handler :encrypt true)
+             client (ipc/client "localhost" 33333)]
     ;; send a plain text message: requestId="1", topic="test", payload="hello"
     (->> (ipc/plain-text-message "1" "test" "hello")
          (ipc/send client)
@@ -757,7 +753,7 @@ for bounded or circular queues
     (ipc/queue-status client "queue/1")))
 ```
 
-for temporary queue
+for temporary queues
 
 ```clojure
 (do
