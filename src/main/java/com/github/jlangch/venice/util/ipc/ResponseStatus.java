@@ -29,6 +29,7 @@ public enum ResponseStatus {
     SERVER_ERROR(1),
     HANDLER_ERROR(2),
     BAD_REQUEST(3),
+    NO_PERMISSION(4),
 
     QUEUE_NOT_FOUND(10),
     QUEUE_EMPTY(11),

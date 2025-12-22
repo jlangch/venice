@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -73,8 +72,9 @@ public class ServerConnection implements IPublisher, Runnable {
             final long connectionId,
             final ServerLogger logger,
             final Function<IMessage,IMessage> handler,
-            final AtomicLong maxMessageSize,
-            final AtomicLong maxQueues,
+            final long maxMessageSize,
+            final long maxQueues,
+            final boolean permitClientQueueMgmt,
             final WalQueueManager wal,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
@@ -91,6 +91,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.handler = handler;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
+        this.permitClientQueueMgmt = permitClientQueueMgmt;
         this.wal = wal;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
@@ -247,7 +248,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
 
         // [2] Handle max message payload size
-        if (request.getData().length > maxMessageSize.get()) {
+        if (request.getData().length > maxMessageSize) {
             if (request.isOneway()) {
                 // oneway request -> cannot send and error message back
                 auditResponseError(
@@ -255,7 +256,7 @@ public class ServerConnection implements IPublisher, Runnable {
                     "Request too large! Cannot send error response back for oneway request!");
             }
             else {
-               final Message response = createBadRequestTextMessageResponse(
+               final Message response = createBadRequestResponse(
                                             request,
                                             String.format(
                                                 "The message (%d bytes) is too large! The limit is at %d bytes.",
@@ -361,7 +362,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 default:
                     // Invalid request type
-                    return createBadRequestTextMessageResponse(
+                    return createBadRequestResponse(
                                     request,
                                     "Invalid request type: " + request.getType());
             }
@@ -372,7 +373,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
             // TODO: how much information from the exception shall we pass back
             //       to the client
-            return createTextMessageResponse(
+            return createTextResponse(
                         request,
                         ResponseStatus.HANDLER_ERROR,
                         "Failed to handle request of type " + request.getType() + "!\n"
@@ -398,7 +399,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 return getTcpServerNextError(request);
             }
             else {
-                return createBadRequestTextMessageResponse(
+                return createBadRequestResponse(
                         request,
                         "Unknown server request topic. \n"
                           + "Valid topics are:\n"
@@ -412,7 +413,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
             if (response == null) {
                 // create an empty text response
-                return createTextMessageResponse(
+                return createTextResponse(
                             request,
                             ResponseStatus.OK,
                             "");
@@ -434,7 +435,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 String.format("Subscribed to topics: %s.", Topics.encode(request.getTopics())));
 
         // acknowledge the subscription
-        return createOkTextMessageResponse(request, "Subscribed to the topics.");
+        return createOkTextResponse(request, "Subscribed to the topics.");
     }
 
     private Message handleUnsubscribe(final Message request) {
@@ -446,7 +447,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 String.format("Unsubscribed from topics: %s.", Topics.encode(request.getTopics())));
 
         // acknowledge the unsubscription
-        return createOkTextMessageResponse(request, "Unsubscribed from the topics.");
+        return createOkTextResponse(request, "Unsubscribed from the topics.");
     }
 
     private Message handlePublish(final Message request) {
@@ -454,7 +455,7 @@ public class ServerConnection implements IPublisher, Runnable {
         subscriptions.publish(request);
 
         // acknowledge the publish
-        return createOkTextMessageResponse(request, "Message has been enqued to publish.");
+        return createOkTextResponse(request, "Message has been enqued to publish.");
     }
 
     private Message handleOffer(final Message request) {
@@ -474,7 +475,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                             && queue.isDurable()  // queue is durable
                                             && wal.isEnabled();   // server supports write-ahead-log
 
-                    return createTextMessageResponse(
+                    return createTextResponse(
                             request,
                             ResponseStatus.OK,
                             String.format(
@@ -483,14 +484,14 @@ public class ServerConnection implements IPublisher, Runnable {
                                 durable));
                 }
                 else {
-                    return createTextMessageResponse(
+                    return createTextResponse(
                             request,
                             ResponseStatus.QUEUE_FULL,
                             "Offer rejected! The queue is full.");
                 }
             }
             else {
-                return createTextMessageResponse(
+                return createTextResponse(
                         request,
                         ResponseStatus.QUEUE_NOT_FOUND,
                         "Offer rejected! The queue does not exist.");
@@ -498,7 +499,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         catch(InterruptedException ex) {
             // interrupted while waiting for queue
-            return createTextMessageResponse(
+            return createTextResponse(
                     request,
                     ResponseStatus.QUEUE_ACCESS_INTERRUPTED,
                     "Offer rejected! Queue access interrupted.");
@@ -516,7 +517,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                             ? queue.poll()
                                             : queue.poll(timeout, TimeUnit.MILLISECONDS);
                     if (msg == null) {
-                        return createTextMessageResponse(
+                        return createTextResponse(
                                 request,
                                 ResponseStatus.QUEUE_EMPTY,
                                 "Poll rejected! The queue is empty.");
@@ -539,7 +540,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 }
             }
             else {
-                return createTextMessageResponse(
+                return createTextResponse(
                         request,
                         ResponseStatus.QUEUE_NOT_FOUND,
                         "Poll rejected! The queue does not exist.");
@@ -547,7 +548,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         catch(InterruptedException ex) {
             // interrupted while waiting for queue
-            return createTextMessageResponse(
+            return createTextResponse(
                     request,
                     ResponseStatus.QUEUE_ACCESS_INTERRUPTED,
                     "Poll rejected! Queue access interrupted.");
@@ -556,14 +557,20 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleCreateQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
-        final long maxQ =  maxQueues.get();
+        if (!permitClientQueueMgmt) {
+            return createNoPermissionResponse(
+                    request,
+                    "Clients are not permitted to create queues!");
+        }
+
+        final long maxQ =  maxQueues;
         if (countStandardQueues() >= maxQ) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Too many queues! Reached the limit of %d queues.",
@@ -578,7 +585,7 @@ public class ServerConnection implements IPublisher, Runnable {
         final boolean durable = Coerce.toVncBoolean(payload.get(new VncString("durable"))).getValue();
 
         if (durable && !wal.isEnabled()) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
         }
@@ -587,7 +594,7 @@ public class ServerConnection implements IPublisher, Runnable {
             QueueValidator.validate(queueName);
         }
         catch(Exception ex) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                             "Request %s: Invalid queue name: %s",
@@ -595,7 +602,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
 
         if (StringUtil.isBlank(queueName) || capacity < 1) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                        "Request %s: A queue name must not be blank and the "
@@ -626,14 +633,14 @@ public class ServerConnection implements IPublisher, Runnable {
                         });
             }
             catch(Exception ex) {
-                return createBadRequestTextMessageResponse(
+                return createBadRequestResponse(
                         request,
                         String.format(
                             "Request %s: Failed to ceate queue: %s. Reason: %s",
                             request.getType(), queueName, ex.getMessage()));
             }
 
-            return createOkTextMessageResponse(
+            return createOkTextResponse(
                     request,
                     String.format("Request %s: Queue %s created.", request.getType(), queueName));
         }
@@ -641,14 +648,14 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleCreateTemporaryQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
-        final long maxQ = maxQueues.get();
+        final long maxQ = maxQueues;
         if (tmpQueues.size() >= maxQ) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Too many temporary queues! "
@@ -661,7 +668,7 @@ public class ServerConnection implements IPublisher, Runnable {
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
 
         if (capacity < 1) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                        "Request %s: A queue capacity must not be lower than 1",
@@ -674,7 +681,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 QueueValidator.validate(queueName);
             }
             catch(Exception ex) {
-                return createBadRequestTextMessageResponse(
+                return createBadRequestResponse(
                         request,
                         String.format(
                             "Request %s: Invalid queue name: %s",
@@ -699,17 +706,23 @@ public class ServerConnection implements IPublisher, Runnable {
                    return q;
                });
 
-            return createOkTextMessageResponse(request, queueName);
+            return createOkTextResponse(request, queueName);
         }
     }
 
     private Message handleRemoveQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Expected a JSON payload",
                         request.getType()));
+        }
+
+        if (!permitClientQueueMgmt) {
+            return createNoPermissionResponse(
+                    request,
+                    "Clients are not permitted to remove queues!");
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -719,7 +732,7 @@ public class ServerConnection implements IPublisher, Runnable {
             QueueValidator.validate(queueName);
         }
         catch(Exception ex) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Invalid queue name: %s",
@@ -736,7 +749,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
         logger.info("conn-" + connectionId, String.format("Removed queue %s.", queueName));
 
-        return createOkTextMessageResponse(
+        return createOkTextResponse(
                 request,
                 String.format(
                     "Request %s: Queue %s removed.",
@@ -745,7 +758,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleStatusQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Expected a JSON payload",
@@ -759,7 +772,7 @@ public class ServerConnection implements IPublisher, Runnable {
             QueueValidator.validate(queueName);
         }
         catch(Exception ex) {
-            return createBadRequestTextMessageResponse(
+            return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Invalid queue name: %s",
@@ -778,7 +791,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                         .add("size",      q == null ? 0L : (long)q.size())
                                         .toJson(false);
 
-        return createJsonResponseMessage(
+        return createJsonResponse(
                     request,
                     ResponseStatus.OK,
                     response);
@@ -786,11 +799,11 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleClientConfigRequest(final Message request) {
         logger.info("conn-" + connectionId, "Handling client config request!");
-        return createJsonResponseMessage(
+        return createJsonResponse(
                     request,
                     ResponseStatus.OK,
                     new JsonBuilder()
-                            .add("max-msg-size", maxMessageSize.get())
+                            .add("max-msg-size", maxMessageSize)
                             .add("compress-cutoff-size", compressor.cutoffSize())
                             .add("encrypt", enforceEncryption)
                             .toJson(false));
@@ -799,7 +812,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message handleDiffieHellmanKeyExchange(final Message request) {
         if (encryptor.get().isActive()) {
             logger.warn("conn-" + connectionId, "Diffie-Hellman key already exchanged!");
-            return createPlainTextResponseMessage(
+            return createPlainTextResponse(
                        request.getId(),
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        null,
@@ -817,7 +830,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 logger.info("conn-" + connectionId, "Activated message encryption!");
 
                 // send the server's public key back
-                return createPlainTextResponseMessage(
+                return createPlainTextResponse(
                            request.getId(),
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
                            null,
@@ -827,7 +840,7 @@ public class ServerConnection implements IPublisher, Runnable {
             catch(Exception ex) {
                 logger.warn("conn-" + connectionId, "Diffie-Hellman key exchange error!", ex);
 
-                return createPlainTextResponseMessage(
+                return createPlainTextResponse(
                            request.getId(),
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            null,
@@ -841,26 +854,33 @@ public class ServerConnection implements IPublisher, Runnable {
     // Create response messages
     // ------------------------------------------------------------------------
 
-    private Message createBadRequestTextMessageResponse(
+    private Message createBadRequestResponse(
             final Message request,
             final String errorMsg
     ) {
-        return createTextMessageResponse(request, ResponseStatus.BAD_REQUEST, errorMsg);
+        return createTextResponse(request, ResponseStatus.BAD_REQUEST, errorMsg);
     }
 
-    private Message createOkTextMessageResponse(
+    private Message createNoPermissionResponse(
+            final Message request,
+            final String errorMsg
+    ) {
+        return createTextResponse(request, ResponseStatus.NO_PERMISSION, errorMsg);
+    }
+
+    private Message createOkTextResponse(
             final Message request,
             final String message
     ) {
-       return createTextMessageResponse(request, ResponseStatus.OK, message);
+       return createTextResponse(request, ResponseStatus.OK, message);
     }
 
-    private Message createTextMessageResponse(
+    private Message createTextResponse(
             final Message request,
             final ResponseStatus responseStatus,
             final String message
     ) {
-        return createPlainTextResponseMessage(
+        return createPlainTextResponse(
                     request.getId(),
                     responseStatus,
                     request.getRequestId(),
@@ -868,7 +888,7 @@ public class ServerConnection implements IPublisher, Runnable {
                     message);
     }
 
-    private static Message createJsonResponseMessage(
+    private static Message createJsonResponse(
             final Message request,
             final ResponseStatus status,
             final String json
@@ -888,7 +908,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 toBytes(json, "UTF-8"));
     }
 
-    private static Message createPlainTextResponseMessage(
+    private static Message createPlainTextResponse(
             final UUID id,
             final ResponseStatus status,
             final String requestID,
@@ -915,14 +935,16 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message getTcpServerStatus(final Message request) {
-        return createJsonResponseMessage(
+        return createJsonResponse(
                    request,
                    ResponseStatus.OK,
                    new JsonBuilder()
                            .add("running", server.isRunning())
                             // config
                            .add("encryption", encryptor.get().isActive())
-                           .add("message-size-max", maxMessageSize.get())
+                           .add("max-queues", maxQueues)
+                           .add("message-size-max", maxMessageSize)
+                           .add("permit-client-queue-mgmt", permitClientQueueMgmt)
                            .add("compression-cutoff-size", server.getCompressCutoffSize())
                            .add("write-ahead-log-dir", wal.isEnabled()
                                                             ? wal.getWalDir().getAbsolutePath()
@@ -953,7 +975,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message getTcpServerThreadPoolStatistics(final Message request) {
         final VncMap statistics = serverThreadPoolStatistics.get();
 
-        return createJsonResponseMessage(
+        return createJsonResponse(
                 request,
                 ResponseStatus.OK,
                 Json.writeJson(statistics, true));
@@ -963,7 +985,7 @@ public class ServerConnection implements IPublisher, Runnable {
         try {
             final Error err = errorBuffer.poll();
             if (err == null) {
-                return createJsonResponseMessage(
+                return createJsonResponse(
                         request,
                         ResponseStatus.QUEUE_EMPTY,
                         new JsonBuilder()
@@ -975,7 +997,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 final Exception ex = err.getException();
                 final String exMsg = ex == null ? null :  ex.getMessage();
 
-                return createJsonResponseMessage(
+                return createJsonResponse(
                         request,
                         ResponseStatus.OK,
                         new JsonBuilder()
@@ -987,7 +1009,7 @@ public class ServerConnection implements IPublisher, Runnable {
             }
         }
         catch(Exception ex) {
-            return createJsonResponseMessage(
+            return createJsonResponse(
                     request,
                     ResponseStatus.HANDLER_ERROR,
                     new JsonBuilder()
@@ -1068,8 +1090,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final ServerLogger logger;
 
     private final Function<IMessage,IMessage> handler;
-    private final AtomicLong maxMessageSize;
-    private final AtomicLong maxQueues;
     private final WalQueueManager wal;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
@@ -1079,6 +1099,11 @@ public class ServerConnection implements IPublisher, Runnable {
     private final AtomicBoolean stop = new AtomicBoolean(false);
 
     private final Semaphore sendSemaphore = new Semaphore(1);
+
+    // configuration
+    private final long maxMessageSize;
+    private final long maxQueues;
+    private final boolean permitClientQueueMgmt;
 
     // compression
     private final Compressor compressor;

@@ -108,7 +108,7 @@ public class TcpServer implements Closeable {
     public TcpServer setEncryption(final boolean encrypt) {
         if (started.get()) {
             throw new VncException(
-                   "The encryption mode cannot be set anymore "
+                   "The encryption mode cannot be changed anymore "
                    + "once the server has been started!");
         }
         this.encrypt.set(encrypt);
@@ -138,7 +138,7 @@ public class TcpServer implements Closeable {
     public TcpServer setCompressCutoffSize(final long cutoffSize) {
         if (started.get()) {
             throw new VncException(
-                   "The compression cutoff size cannot be set anymore "
+                   "The compression cutoff size cannot be changed anymore "
                    + "once the server has been started!");
         }
         compressor.set(new Compressor(cutoffSize));
@@ -161,6 +161,11 @@ public class TcpServer implements Closeable {
      * @return this server
      */
     public TcpServer setMaxMessageSize(final long maxSize) {
+        if (started.get()) {
+            throw new VncException(
+                   "The maximum message size cannot be changed anymore "
+                   + "once the server has been started!");
+        }
         maxMessageSize.set(Math.max(
                             Messages.MESSAGE_LIMIT_MIN,
                             Math.min(Messages.MESSAGE_LIMIT_MAX, maxSize)));
@@ -184,6 +189,12 @@ public class TcpServer implements Closeable {
      * @return this server
      */
     public TcpServer setMaxQueues(final long maxQueues) {
+        if (started.get()) {
+            throw new VncException(
+                   "The maximum queue count cannot be changed anymore "
+                   + "once the server has been started!");
+        }
+
         this.maxQueues.set(Math.max(QUEUES_MIN, Math.min(QUEUES_MAX, maxQueues)));
         return this;
     }
@@ -194,6 +205,37 @@ public class TcpServer implements Closeable {
     public long getMaxQueues() {
         return maxQueues.get();
     }
+
+
+
+    /**
+     * Give the clients permission to manage (add/remove) queues.
+     *
+     * <p>Defaults to <code>true</code>
+     *
+     * @param allow if <code>true</code> clients are permitted to add/remove
+     *              queues
+     * @return this server
+     */
+    public TcpServer setPermitClientQueueMgmt(final boolean allow) {
+        if (started.get()) {
+            throw new VncException(
+                   "Cannot change the permission for clients to manage queues "
+                   + "once the server has been started!");
+        }
+
+        this.permitClientQueueMgmt.set(allow);
+        return this;
+    }
+
+    /**
+     * @return return <code>true</code> if clients are permitted to add/remove
+     *         queues else <code>false</code>
+     */
+    public boolean isPermitClientQueueMgmt() {
+        return permitClientQueueMgmt.get();
+    }
+
 
     /**
      * Enable  Write-Ahead-Logs
@@ -369,8 +411,9 @@ public class TcpServer implements Closeable {
                                                                    connId,
                                                                    logger,
                                                                    handler,
-                                                                   maxMessageSize,
-                                                                   maxQueues,
+                                                                   maxMessageSize.get(),
+                                                                   maxQueues.get(),
+                                                                   permitClientQueueMgmt.get(),
                                                                    wal,
                                                                    subscriptions,
                                                                    publishQueueCapacity,
@@ -633,6 +676,7 @@ public class TcpServer implements Closeable {
     private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_MAX);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
+    private final AtomicBoolean permitClientQueueMgmt = new AtomicBoolean(true);
 
     // logger
     private final ServerLogger logger = new ServerLogger();
