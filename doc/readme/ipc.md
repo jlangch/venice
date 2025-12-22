@@ -95,7 +95,7 @@ pluggable handler function computes the response from the request.
     ;; send a plain text message: requestId="1", topic="test", payload="hello"
     (let [msg       (ipc/plain-text-message "1" "test" "hello")
           response  (ipc/send-async client msg)]  ;; returns a future
-      (->> (deref response 1_000 :timeout)  ;; deref the repsonse future with 1s timeout
+      (->> (deref response 1_000 :timeout)  ;; deref the response future with 1s timeout
            (ipc/message->json true)
            (println "RESPONSE:")))))
 ```
