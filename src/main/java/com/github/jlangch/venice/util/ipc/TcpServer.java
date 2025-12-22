@@ -614,7 +614,7 @@ public class TcpServer implements Closeable {
 
 
 
-    public static final long QUEUES_MIN = 201;
+    public static final long QUEUES_MIN =  1;
     public static final long QUEUES_MAX = 20;
 
     private final int port;
@@ -622,15 +622,17 @@ public class TcpServer implements Closeable {
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
-    private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_MAX);
-    private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
-    private final AtomicBoolean encrypt = new AtomicBoolean(false);
     private final AtomicLong connectionId = new AtomicLong(0);
     private final WalQueueManager wal = new WalQueueManager();
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
     private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
+
+    // configuration
+    private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_MAX);
+    private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
+    private final AtomicBoolean encrypt = new AtomicBoolean(false);
 
     // logger
     private final ServerLogger logger = new ServerLogger();
