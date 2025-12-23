@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
@@ -107,7 +106,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setEncryption(final boolean encrypt) {
         if (started.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "The encryption mode cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -137,7 +136,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setCompressCutoffSize(final long cutoffSize) {
         if (started.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "The compression cutoff size cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -162,7 +161,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setMaxMessageSize(final long maxSize) {
         if (started.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "The maximum message size cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -190,7 +189,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setMaxQueues(final long maxQueues) {
         if (started.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "The maximum queue count cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -222,7 +221,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setPermitClientQueueMgmt(final boolean permit) {
         if (started.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "Cannot change the permission for clients to manage queues "
                    + "once the server has been started!");
         }
@@ -256,12 +255,12 @@ public class TcpServer implements Closeable {
         Objects.requireNonNull(walDir);
 
         if (!walDir.isDirectory()) {
-            throw new VncException(
+            throw new IpcException(
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
         if (started.get()) {
-            throw new VncException(
+            throw new IpcException(
                     "Cannot enable the Write-Ahead-Log if the server has already been started!");
         }
 
@@ -288,7 +287,7 @@ public class TcpServer implements Closeable {
         Objects.requireNonNull(logDir);
 
         if (!logDir.isDirectory()) {
-            throw new VncException(
+            throw new IpcException(
                     "The server log directory '" + logDir.getAbsolutePath() + "' does not exist!");
         }
 
@@ -331,7 +330,7 @@ public class TcpServer implements Closeable {
           return wal.loadWalQueueMessages(queueName);
        }
        catch(Exception ex) {
-           throw new VncException(
+           throw new IpcException(
                "Failed to load messages for WAL queue " + queueName,
                ex);
        }
@@ -443,14 +442,14 @@ public class TcpServer implements Closeable {
                 safeClose(ch);
                 started.set(false);
                 server.set(null);
-                throw new VncException(msg, ex);
+                throw new IpcException(msg, ex);
             }
         }
         else {
             final String msg = "The server on port " + port + " has already been started!";
             logger.error("server", msg);
 
-            throw new VncException(msg);
+            throw new IpcException(msg);
         }
     }
 
@@ -538,7 +537,7 @@ public class TcpServer implements Closeable {
         }
 
         if (durable && !wal.isEnabled()) {
-            throw new VncException(
+            throw new IpcException(
                     "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
         }
 
@@ -641,7 +640,7 @@ public class TcpServer implements Closeable {
             safeClose(srv);
             started.set(false);
             server.set(null);
-            throw new VncException(msg, ex);
+            throw new IpcException(msg, ex);
         }
         catch(Exception ex) {
             final String msg = "Failed to start server on port " + port + "!";
@@ -650,7 +649,7 @@ public class TcpServer implements Closeable {
             safeClose(srv);
             started.set(false);
             server.set(null);
-            throw new VncException(msg, ex);
+            throw new IpcException(msg, ex);
         }
     }
 

@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -106,7 +105,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public void setEncryption(final boolean encrypt) {
         if (opened.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "The encryption mode cannot be changed once the client has been opened!");
         }
 
@@ -119,7 +118,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public boolean isEncrypted() {
         if (!opened.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
@@ -132,7 +131,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public boolean isPermitClientQueueMgmt() {
         if (!opened.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
@@ -144,7 +143,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public long getCompressCutoffSize() {
         if (!opened.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "Wait until the client has been opened to get the compression cutoff size!");
         }
 
@@ -156,7 +155,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public long getMaxMessageSize() {
         if (!opened.get()) {
-            throw new VncException(
+            throw new IpcException(
                    "Wait until the client has been opened to get the max message size!");
         }
 
@@ -198,13 +197,13 @@ public class TcpClient implements Cloneable, Closeable {
                 IO.safeClose(c);
                 opened.set(false);
                 conn.set(null);
-                throw new VncException(
+                throw new IpcException(
                         "Failed to open TcpClient for server " + host + "/" + port + "!",
                         ex);
             }
         }
         else {
-            throw new VncException("This TcpClient is already open!");
+            throw new IpcException("This TcpClient is already open!");
         }
     }
 
@@ -318,12 +317,12 @@ public class TcpClient implements Cloneable, Closeable {
         Objects.requireNonNull(handler);
 
         if (topics.isEmpty()) {
-            throw new VncException("A subscription topic set must not be empty!");
+            throw new IpcException("A subscription topic set must not be empty!");
         }
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
+            throw new IpcException("This TcpClient is not open!");
         }
 
         c.addSubscriptionHandler(topics, handler);
@@ -354,12 +353,12 @@ public class TcpClient implements Cloneable, Closeable {
         Objects.requireNonNull(topics);
 
         if (topics.isEmpty()) {
-            throw new VncException("A subscription topic set must not be empty!");
+            throw new IpcException("A subscription topic set must not be empty!");
         }
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
+            throw new IpcException("This TcpClient is not open!");
         }
 
         c.removeSubscriptionHandler(topics);
@@ -568,7 +567,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         final IMessage response = send(m);
         if (response.getResponseStatus() != ResponseStatus.OK) {
-            throw new VncException(
+            throw new IpcException(
                     "Failed to create queue '" + queueName + "'! Reason: " + response.getText());
         }
     }
@@ -608,7 +607,7 @@ public class TcpClient implements Cloneable, Closeable {
             return response.getText();
         }
         else {
-            throw new VncException(
+            throw new IpcException(
                     "Failed to create temporary queue! Reason: " + response.getText());
         }
     }
@@ -642,7 +641,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         final IMessage response = send(m);
         if (response.getResponseStatus() != ResponseStatus.OK) {
-            throw new VncException(
+            throw new IpcException(
                     "Failed to remove queue '" + queueName + "'! Reason: " + response.getText());
         }
     }
@@ -682,7 +681,7 @@ public class TcpClient implements Cloneable, Closeable {
            return VncBoolean.isTrue(exists);
         }
         else {
-            throw new VncException(
+            throw new IpcException(
                     "Failed to check if queue " + queueName + " exists! Reason: " + response.getText());
         }
     }
@@ -800,7 +799,7 @@ public class TcpClient implements Cloneable, Closeable {
            return (VncMap)response.getVeniceData();
         }
         else {
-            throw new VncException(
+            throw new IpcException(
                     "Failed to check if queue " + queueName + " exists! Reason: " + response.getText());
         }
     }
@@ -824,7 +823,7 @@ public class TcpClient implements Cloneable, Closeable {
            return (VncMap)response.getVeniceData();
         }
         else {
-            throw new VncException(
+            throw new IpcException(
                     "Failed get server status! Reason: " + response.getText());
         }
     }
@@ -848,7 +847,7 @@ public class TcpClient implements Cloneable, Closeable {
            return (VncMap)response.getVeniceData();
         }
         else {
-            throw new VncException(
+            throw new IpcException(
                     "Failed get server thread pool statistics! Reason: " + response.getText());
         }
     }
@@ -875,7 +874,7 @@ public class TcpClient implements Cloneable, Closeable {
             return null;
          }
         else {
-            throw new VncException(
+            throw new IpcException(
                     "Failed get server error! Reason: " + response.getText());
         }
     }
@@ -886,7 +885,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
+            throw new IpcException("This TcpClient is not open!");
         }
 
         validateMessageSize(msg, c);
@@ -904,7 +903,7 @@ public class TcpClient implements Cloneable, Closeable {
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new VncException("This TcpClient is not open!");
+            throw new IpcException("This TcpClient is not open!");
         }
 
         validateMessageSize(msg, c);
@@ -956,7 +955,7 @@ public class TcpClient implements Cloneable, Closeable {
         Objects.requireNonNull(conn);
 
         if (msg.getData().length > conn.getMaxMessageSize()) {
-            throw new VncException(
+            throw new IpcException(
                     String.format(
                             "The message (%dB) is too large! The limit is at %dB",
                             msg.getData().length,

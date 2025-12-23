@@ -27,7 +27,6 @@ import java.nio.channels.ByteChannel;
 import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
@@ -129,12 +128,12 @@ public class Protocol {
             final long timeout = header.getLong();
 
             if (magic1 != 'v' || magic2 != 'n') {
-                throw new VncException(
+                throw new IpcException(
                         "Received unknown message (bad magic bytes)!");
             }
 
             if (version != PROTOCOL_VERSION) {
-                throw new VncException(
+                throw new IpcException(
                         "Received message with unsupported protocol version " + version + "!");
             }
 
@@ -184,7 +183,7 @@ public class Protocol {
                 throw new EofException("Failed to read data from channel, channel was closed!", ex);
             }
             else {
-                throw new VncException("Failed to read data from channel!", ex);
+                throw new IpcException("Failed to read data from channel!", ex);
             }
         }
     }
@@ -194,7 +193,7 @@ public class Protocol {
     private static boolean toBool(final int n) {
         if (n == 0) return false;
         else if (n == 1) return true;
-        else throw new VncException("Illegal IPC message boolean value");
+        else throw new IpcException("Illegal IPC message boolean value");
     }
 
     private static short toShort(final boolean b) {
