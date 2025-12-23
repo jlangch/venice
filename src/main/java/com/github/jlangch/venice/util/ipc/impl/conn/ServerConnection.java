@@ -130,17 +130,15 @@ public class ServerConnection implements IPublisher, Runnable {
             }
         }
         catch(Exception ex) {
+            // fail fast -> close channel
+
             // when the client closed the connection
             //   - server gets a java.io.IOException: Broken pipe
             //   - quit this connection and close the channel
+            logger.error("conn-" + connectionId, "Failed to process message response!", ex);
         }
         finally {
-            removeAllChannelTemporaryQueues();
-            statistics.decrementConnectionCount();
-            subscriptions.removeSubscriptions(this);
-            IO.safeClose(ch);
-
-            logger.info("conn-" + connectionId, "Closed server connection");
+            closeChannel();
         }
     }
 
@@ -811,31 +809,39 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleDiffieHellmanKeyExchange(final Message request) {
-        if (encryptor.get().isActive()) {
+        if (clientPublicKey.get() != null) {
             logger.warn("conn-" + connectionId, "Diffie-Hellman key already exchanged!");
             return createPlainTextResponse(
                        request.getId(),
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
                        null,
-                       Topics.of("dh"),
+                       Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
                        "Error: Diffie-Hellman key already exchanged!");
         }
         else {
             try {
                 logger.info("conn-" + connectionId, "Diffie-Hellman key exchange initiated!");
 
-                final String clientPublicKey = request.getText();
-                encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(clientPublicKey)));
+                final String publicKey = request.getText();
+                clientPublicKey.set(publicKey);
 
                 logger.info("conn-" + connectionId, "Diffie-Hellman key exchange completed!");
-                logger.info("conn-" + connectionId, "Activated message encryption!");
+
+                encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(publicKey)));
+
+                if (enforceEncryption) {
+                    logger.info("conn-" + connectionId, "Setup message encryptor! Encryption is mandatory.");
+                }
+                else {
+                    logger.info("conn-" + connectionId, "Setup message encryptor! Encryption is optional.");
+                }
 
                 // send the server's public key back
                 return createPlainTextResponse(
                            request.getId(),
                            ResponseStatus.DIFFIE_HELLMAN_ACK,
                            null,
-                           Topics.of("dh"),
+                           Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
                            dhKeys.getPublicKeyBase64());
             }
             catch(Exception ex) {
@@ -845,7 +851,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            request.getId(),
                            ResponseStatus.DIFFIE_HELLMAN_NAK,
                            null,
-                           Topics.of("dh"),
+                           Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
                            "Failed to exchange Diffie-Hellman key! Reason: " + ex.getMessage());
             }
         }
@@ -1071,6 +1077,18 @@ public class ServerConnection implements IPublisher, Runnable {
                 .count();
     }
 
+    private void closeChannel() {
+        try { removeAllChannelTemporaryQueues(); } catch(Exception ignore) {}
+
+        statistics.decrementConnectionCount();
+
+        try { subscriptions.removeSubscriptions(this); } catch(Exception ignore) {}
+
+        IO.safeClose(ch);
+
+        logger.info("conn-" + connectionId, "Closed server connection");
+    }
+
 
 
     private static byte[] toBytes(final String s, final String charset) {
@@ -1113,6 +1131,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final boolean enforceEncryption;
     private final DiffieHellmanKeys dhKeys;
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
+    private final AtomicReference<String> clientPublicKey = new AtomicReference<>(null);
 
     // queues
     private final IpcQueue<Error> errorBuffer;

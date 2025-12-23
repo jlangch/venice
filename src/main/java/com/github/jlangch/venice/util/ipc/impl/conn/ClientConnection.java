@@ -82,53 +82,58 @@ public class ClientConnection implements Closeable {
                     ex);
         }
 
-        dhKeys = DiffieHellmanKeys.create();
-
         // [2] Start the executor after the connection has been established
         mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
 
-        // [3] Request the client configuration from the server
         try {
-            final VncMap config = getClientConfiguration(channel);
+            dhKeys = DiffieHellmanKeys.create();
 
-            maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
-            compressor = new Compressor(getLong(config, "compress-cutoff-size", -1));
-            permitClientQueueMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
-            encrypt = useEncryption                              // client side encrypt
-                      || getBoolean(config, "encrypt", false);   // server side encrypt
+            // [3] Request the client configuration from the server
+            try {
+                final VncMap config = getClientConfiguration(channel, Encryptor.off());
+
+                maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
+                compressor = new Compressor(getLong(config, "compress-cutoff-size", -1));
+                permitClientQueueMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
+                encrypt = useEncryption                              // client side encrypt
+                          || getBoolean(config, "encrypt", false);   // server side encrypt
+            }
+            catch(Exception ex) {
+                throw new IpcException("Failed to get client config from server!", ex);
+            }
+
+            // [4] Establish encryption through Diffie-Hellman key exchange
+            if (encrypt) {
+                try {
+                    final String serverPublicKey = diffieHellmanKeyExchange(channel);
+                    encryptor = Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey));
+                }
+                catch(Exception ex) {
+                    throw new IpcException(
+                            "Failed to open TcpClient for server " + serverAddress +
+                            "! Diffie-Hellman key exchange error!",
+                            ex);
+                }
+            }
+            else {
+                encryptor = Encryptor.off();
+            }
+
+            // [5] Start the channel message listener
+            listener = new ChannelMessageListener(channel, compressor, encryptor);
+
+            mngdExecutor
+               .getExecutor()
+               .submit(listener);
+
+            opened.set(true);
         }
         catch(Exception ex) {
             mngdExecutor.shutdownNow();
             IO.safeClose(channel);
-            throw new IpcException("Failed to get client config from server!", ex);
-        }
 
-        // [4] Establish encryption through Diffie-Hellman key exchange
-        if (encrypt) {
-            try {
-                final String serverPublicKey = diffieHellmanKeyExchange(channel);
-                encryptor = Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey));
-            }
-            catch(Exception ex) {
-                mngdExecutor.shutdownNow();
-                IO.safeClose(channel);
-                throw new IpcException(
-                        "Failed to open TcpClient for server " + serverAddress +
-                        "! Diffie-Hellman key exchange error!",
-                        ex);
-            }
+            throw ex;
         }
-        else {
-            encryptor = Encryptor.off();
-        }
-
-        // [5] Start the channel message listener
-        listener = new ChannelMessageListener(channel, compressor, encryptor);
-        mngdExecutor
-           .getExecutor()
-           .submit(listener);
-
-        opened.set(true);
     }
 
 
@@ -320,12 +325,12 @@ public class ClientConnection implements Closeable {
         }
     }
 
-    private VncMap getClientConfiguration(final SocketChannel ch) {
+    private VncMap getClientConfiguration(final SocketChannel ch, final Encryptor encryptor) {
         final IMessage response = sendDirect(
                                     createConfigRequestMessage(),
                                     ch,
                                     Compressor.off(),
-                                    Encryptor.off(),
+                                    encryptor,
                                     2_000);
         if (response.getResponseStatus() != ResponseStatus.OK) {
             throw new IpcException(
@@ -366,7 +371,7 @@ public class ClientConnection implements Closeable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of("dh"),
+                Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
                 "text/plain",
                 "UTF-8",
                 toBytes(clientPublicKey, "UTF-8"));

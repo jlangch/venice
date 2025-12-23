@@ -46,6 +46,8 @@ public abstract class Messages {
     public static final String TOPIC_SERVER_ERROR = "ipc-server/error";
     public static final String TOPIC_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
 
+    public static final String TOPIC_DIFFIE_HELLMANN = "dh";
+
     // Client requests
     public static final String TOPIC_CLIENT_THREAD_POOL_STATS = "ipc-client/thread-pool-statistics";
 

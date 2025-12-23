@@ -32,7 +32,7 @@ import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
 public class Encryptor {
 
     private Encryptor(final IEncryptor ecryptor) {
-        this.ecryptor = ecryptor;
+        this.encryptor = ecryptor;
     }
 
 
@@ -64,7 +64,7 @@ public class Encryptor {
         Objects.requireNonNull(data);
         if (encrypt) {
             try {
-                return ecryptor.encrypt(data, aad);
+                return encryptor.encrypt(data, aad);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to encrypt message payload data", ex);
@@ -87,7 +87,7 @@ public class Encryptor {
         Objects.requireNonNull(data);
         if (decrypt) {
             try {
-                return ecryptor.decrypt(data, aad);
+                return encryptor.decrypt(data, aad);
             }
             catch(Exception ex) {
                 throw new VncException("Failed to decrypt message payload data", ex);
@@ -99,9 +99,13 @@ public class Encryptor {
     }
 
     public boolean isActive() {
-        return ecryptor != null;
+        return encryptor != null;
     }
 
+    @Override
+    public String toString() {
+        return isActive() ? encryptor.getClass().getSimpleName() : "OFF";
+    }
 
-    private final IEncryptor ecryptor;
+    private final IEncryptor encryptor;
 }

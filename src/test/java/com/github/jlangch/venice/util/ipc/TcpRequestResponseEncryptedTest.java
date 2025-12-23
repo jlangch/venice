@@ -106,6 +106,69 @@ public class TcpRequestResponseEncryptedTest {
         }
     }
 
+    @Test
+    public void test_echo_server_text_enforced_encryption() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.setEncryption(true);
+        server.start(TcpServer.echoHandler());
+
+        IO.sleep(300);
+
+        client.open();
+
+        try {
+            final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
+
+            final IMessage response = client.sendMessage(request);
+
+            assertNotNull(response);
+            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
+            assertEquals(request.getTimestamp(), response.getTimestamp());
+            assertEquals(request.getTopic(),     response.getTopic());
+            assertEquals(request.getMimetype(),  response.getMimetype());
+            assertEquals(request.getCharset(),   response.getCharset());
+            assertEquals(request.getText(),      response.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
+
+    @Test
+    public void test_echo_server_binary_enforced_encryption() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.setEncryption(true);
+        server.start(TcpServer.echoHandler());
+
+        IO.sleep(300);
+
+        client.open();
+
+        try {
+            final byte[] data = new byte[] {0,1,2,3};
+
+            final IMessage request = MessageFactory.binary(null, "hello", "application/octet", data);
+
+            final IMessage response = client.sendMessage(request);
+
+            assertNotNull(response);
+            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
+            assertEquals(request.getTimestamp(), response.getTimestamp());
+            assertEquals("hello",                response.getTopic());
+            assertEquals("application/octet",    response.getMimetype());
+            assertEquals(null,                   response.getCharset());
+            assertArrayEquals(data,              response.getData());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
 
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {

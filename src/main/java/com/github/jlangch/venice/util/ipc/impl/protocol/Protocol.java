@@ -28,6 +28,7 @@ import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
@@ -137,6 +138,12 @@ public class Protocol {
                         "Received message with unsupported protocol version " + version + "!");
             }
 
+            if (!isEncryptedData && encryptor.isActive()) {
+                // prevent malicious clients
+                throw new IpcException(
+                        "Received an unencrypted message but encryption is mandatory!");
+            }
+
             // [2] payload meta data (maybe encrypted)
             final ByteBuffer payloadMetaFrame = ByteChannelIO.readFrame(ch);
             final byte[] headerAAD = header.array(); // GCM AAD: added authenticated data
@@ -153,11 +160,6 @@ public class Protocol {
                                         payloadFrame.array(),
                                         isEncryptedData),
                                     isCompressedData);
-
-            if (!isEncryptedData && encryptor.isActive()) {
-                throw new VncException(
-                        "Received an unencrypted message but encryption is mandatory!");
-            }
 
             return new Message(
                     payloadMeta.getId(),
