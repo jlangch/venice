@@ -575,7 +575,7 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
   
   ;; transparently compress/decompress messages with a size > 1KB
   (try-with [server (ipc/server 33333 echo-handler :compress-cutoff-size :1KB)
-             client (ipc/client "localhost" 33333 :compress-cutoff-size :1KB)]
+             client (ipc/client "localhost" 33333)]
     ;; send a plain text message: requestId="1", topic="test", payload="hello"
     (->> (ipc/plain-text-message "1" "test" "hello")
          (ipc/send client)
