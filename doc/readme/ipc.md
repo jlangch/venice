@@ -338,7 +338,8 @@ the server.
 
 Publish a message to a topic. All clients that have subscribed to a topic will receive
 the messages on the topic. After subscribing to a topic the client turns into subscription
-mode and listens for messages. To unsubscribe just close the IPC client.
+mode and listens for messages. To unsubscribe call `(ipc/unsubscribe client topic)` or just 
+close the IPC client.
 
 
 **Synchronous publish**
