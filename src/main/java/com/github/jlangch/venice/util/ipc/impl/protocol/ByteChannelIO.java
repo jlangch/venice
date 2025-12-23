@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 
 
@@ -55,15 +55,15 @@ public class ByteChannelIO {
                 return data;
             }
         }
-        catch(VncException ex) {
+        catch(IpcException ex) {
             throw ex;
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new VncException("Failed to read data from channel, channel was closed!", ex);
+                throw new IpcException("Failed to read data from channel, channel was closed!", ex);
             }
             else {
-                throw new VncException("Failed to read data from channel!", ex);
+                throw new IpcException("Failed to read data from channel!", ex);
             }
         }
     }
@@ -85,15 +85,15 @@ public class ByteChannelIO {
                 writeFully(ch, data);
             }
         }
-        catch(VncException ex) {
+        catch(IpcException ex) {
             throw ex;
         }
         catch(Exception ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new VncException("Failed to write data to channel, channel was closed!", ex);
+                throw new IpcException("Failed to write data to channel, channel was closed!", ex);
             }
             else {
-                throw new VncException("Failed to write data to channel!", ex);
+                throw new IpcException("Failed to write data to channel!", ex);
             }
         }
     }
@@ -109,15 +109,15 @@ public class ByteChannelIO {
                 }
             }
         }
-        catch(VncException ex) {
+        catch(IpcException | EofException ex) {
             throw ex;
         }
         catch(Exception ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new VncException("Failed to read data from channel, channel was closed!", ex);
+                throw new IpcException("Failed to read data from channel, channel was closed!", ex);
             }
             else {
-                throw new VncException("Failed to read data from channel!", ex);
+                throw new IpcException("Failed to read data from channel!", ex);
             }
         }
     }
@@ -131,10 +131,10 @@ public class ByteChannelIO {
         }
         catch(Exception ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new VncException("Failed to write data to channel, channel was closed!", ex);
+                throw new IpcException("Failed to write data to channel, channel was closed!", ex);
             }
             else {
-                throw new VncException("Failed to write data to channel!", ex);
+                throw new IpcException("Failed to write data to channel!", ex);
             }
         }
     }

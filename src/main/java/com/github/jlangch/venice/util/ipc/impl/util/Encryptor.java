@@ -23,10 +23,10 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 
 import java.util.Objects;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.crypt.Encryptor_AES256_GCM;
 import com.github.jlangch.venice.util.crypt.IEncryptor;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
+import com.github.jlangch.venice.util.ipc.IpcException;
 
 
 public class Encryptor {
@@ -43,7 +43,7 @@ public class Encryptor {
             return new Encryptor(Encryptor_AES256_GCM.create(secret.getSecretBase64()));
         }
         catch(Exception ex) {
-            throw new VncException("Failed to createencryptor", ex);
+            throw new IpcException("Failed to create encryptor", ex);
         }
     }
 
@@ -67,7 +67,7 @@ public class Encryptor {
                 return encryptor.encrypt(data, aad);
             }
             catch(Exception ex) {
-                throw new VncException("Failed to encrypt message payload data", ex);
+                throw new IpcException("Failed to encrypt message payload data", ex);
             }
         }
         else {
@@ -90,7 +90,7 @@ public class Encryptor {
                 return encryptor.decrypt(data, aad);
             }
             catch(Exception ex) {
-                throw new VncException("Failed to decrypt message payload data", ex);
+                throw new IpcException("Failed to decrypt message payload data", ex);
             }
         }
         else {

@@ -129,6 +129,33 @@ public class TcpRequestResponseTest {
         }
     }
 
+    @Test
+    public void test_echo_server_handler_return_null() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        server.start(m -> null);
+
+        IO.sleep(300);
+
+        client.open();
+
+        try {
+            final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
+
+            final IMessage response = client.sendMessage(request);
+
+            assertNotNull(response);
+            assertEquals(ResponseStatus.OK,   response.getResponseStatus());
+            assertEquals(request.getId(),     response.getId());
+            assertEquals(request.getTopic(),  response.getTopic());
+            assertEquals("",                  response.getText());
+        }
+        finally {
+            client.close();
+            server.close();
+        }
+    }
 
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {

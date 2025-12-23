@@ -32,10 +32,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
@@ -359,13 +359,13 @@ public class Message implements IMessage {
                 return Json.readJson(new String(data, Charset.forName(charset)), true);
             }
             else {
-                throw new VncException(
+                throw new IpcException(
                         "A message with mimetype \"" + getMimetype()
                         + "\" can not be converted to Venice data!");
             }
         }
         else {
-            throw new VncException(
+            throw new IpcException(
                     "A binary message can not be converted to Venice data!");
         }
     }

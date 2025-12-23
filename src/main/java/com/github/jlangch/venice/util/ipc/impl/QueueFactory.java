@@ -23,7 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 import java.io.File;
 
-import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
@@ -44,7 +44,7 @@ public class QueueFactory {
     ) {
         if (durable) {
             if (!wal.isEnabled()) {
-                throw new VncException(
+                throw new IpcException(
                         "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
             }
 
@@ -61,7 +61,7 @@ public class QueueFactory {
                 return new DurableBoundedQueue(queueName, capacity, log, logger);
             }
             catch(Exception ex) {
-                throw new VncException("Failed to ceate WAL based queue: " + queueName, ex);
+                throw new IpcException("Failed to ceate WAL based queue: " + queueName, ex);
             }
         }
         else {

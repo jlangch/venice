@@ -237,7 +237,9 @@ public class IPCFunctions {
                     handlerWrapper = threadBridge.bridgeFunction((IMessage m) -> {
                                           final VncVal request = new VncJavaObject(m);
                                           final VncVal response = handler.applyOf(request);
-                                          return Coerce.toVncJavaObject(response, IMessage.class);
+                                          return response == null || response == Nil
+                                                  ? null
+                                                  : Coerce.toVncJavaObject(response, IMessage.class);
                                      });
                 }
 

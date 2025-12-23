@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.WriteAheadLogException;
@@ -59,7 +58,7 @@ public class WalQueueManager {
             final boolean compactAtStart
     ) {
         if (!walDir.isDirectory()) {
-            throw new VncException(
+            throw new WriteAheadLogException(
                     "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
         }
 
@@ -92,7 +91,7 @@ public class WalQueueManager {
     public Map<String, IpcQueue<Message>> preloadQueues()
     throws WriteAheadLogException, InterruptedException {
         if (!isEnabled()) {
-            throw new VncException("Write-Ahead-Log is not active");
+            throw new WriteAheadLogException("Write-Ahead-Log is not active");
         }
 
         final Map<String, IpcQueue<Message>> queues = new HashMap<>();
@@ -118,7 +117,7 @@ public class WalQueueManager {
         Objects.requireNonNull(queueName);
 
         if (!isEnabled()) {
-            throw new VncException("Write-Ahead-Log is not active");
+            throw new WriteAheadLogException("Write-Ahead-Log is not active");
         }
 
         final File logFile = new File(walDir, toFileName(queueName));
@@ -126,7 +125,7 @@ public class WalQueueManager {
             return loadWalQueueMessages(logFile);
         }
         else {
-            throw new VncException(
+            throw new WriteAheadLogException(
                     "The Write-Ahead-Log for the queue '" + queueName + "' does not exist!");
         }
     }
@@ -145,7 +144,7 @@ public class WalQueueManager {
 
     public List<File> listLogFiles() {
         if (!isEnabled()) {
-            throw new VncException("Write-Ahead-Log is not active");
+            throw new WriteAheadLogException("Write-Ahead-Log is not active");
         }
 
         return Arrays
@@ -156,7 +155,7 @@ public class WalQueueManager {
 
     public List<String> listQueueNames() {
         if (!isEnabled()) {
-            throw new VncException("Write-Ahead-Log is not active");
+            throw new WriteAheadLogException("Write-Ahead-Log is not active");
         }
 
         return listLogFiles()
@@ -167,7 +166,7 @@ public class WalQueueManager {
 
     public int countLogFiles() {
         if (!isEnabled()) {
-            throw new VncException("Write-Ahead-Log is not active");
+            throw new WriteAheadLogException("Write-Ahead-Log is not active");
         }
 
         return listQueueNames().size();
@@ -188,7 +187,7 @@ public class WalQueueManager {
         Objects.requireNonNull(logFile);
 
         if (!isEnabled()) {
-            throw new VncException("Write-Ahead-Log is not active");
+            throw new WriteAheadLogException("Write-Ahead-Log is not active");
         }
 
         if (logFile.isFile()) {

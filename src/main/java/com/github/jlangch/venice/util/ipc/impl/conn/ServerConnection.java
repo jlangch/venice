@@ -407,6 +407,7 @@ public class ServerConnection implements IPublisher, Runnable {
             }
         }
         else {
+            // note: exceptions are handled upstream
             final IMessage response = handler.apply(request);
 
             if (response == null) {

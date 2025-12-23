@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.json.VncJsonReader;
@@ -29,6 +28,7 @@ import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 import com.github.jlangch.venice.nanojson.JsonReader;
 import com.github.jlangch.venice.nanojson.JsonWriter;
+import com.github.jlangch.venice.util.ipc.IpcException;
 
 
 public class Json {
@@ -47,7 +47,7 @@ public class Json {
                         false).read();
         }
         catch(Exception ex) {
-            throw new VncException("Failed to parse JSON data to Venice data!", ex);
+            throw new IpcException("Failed to parse JSON data to Venice data!", ex);
         }
     }
 

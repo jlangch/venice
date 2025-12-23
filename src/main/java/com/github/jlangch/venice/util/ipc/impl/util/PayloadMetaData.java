@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
@@ -285,7 +285,7 @@ public class PayloadMetaData {
                     UUID.fromString(lines.get(11)));  // id
         }
         else {
-            throw new VncException(String.format(
+            throw new IpcException(String.format(
                     "Failed to decode the payload meta data. Got only %d properties instead of 8!",
                     lines.size()));
         }
@@ -307,7 +307,7 @@ public class PayloadMetaData {
     private static MessageType toMessageType(final String code) {
         MessageType t = MessageType.fromCode(Integer.parseInt(code));
         if (t == null) {
-            throw new VncException("Illegal IPC message MessageType value");
+            throw new IpcException("Illegal IPC message MessageType value");
         }
         else {
             return t;
@@ -317,7 +317,7 @@ public class PayloadMetaData {
     private static ResponseStatus toResponseStatus(final String code) {
         ResponseStatus s = ResponseStatus.fromCode(Integer.parseInt(code));
         if (s == null) {
-            throw new VncException("Illegal IPC message ResponseStatus value");
+            throw new IpcException("Illegal IPC message ResponseStatus value");
         }
         else {
             return s;

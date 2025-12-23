@@ -26,7 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.channels.ByteChannel;
 import java.util.UUID;
 
-import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.ipc.WriteAheadLogException;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.protocol.ByteArrayStreamChannel;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
@@ -64,7 +64,7 @@ public class MessageWalEntry {
             return new WalEntry(WalEntryType.DATA, uuid, message.getExpiresAt(), payload);
         }
         catch(Exception ex) {
-            throw new VncException("Failed to serialize Message to WalEntry", ex);
+            throw new WriteAheadLogException("Failed to serialize Message to WalEntry", ex);
         }
     }
 
@@ -78,7 +78,7 @@ public class MessageWalEntry {
             return new MessageWalEntry(message);
         }
         catch(Exception ex) {
-            throw new VncException("Failed to deserialize WalEntry to Message", ex);
+            throw new WriteAheadLogException("Failed to deserialize WalEntry to Message", ex);
         }
     }
 

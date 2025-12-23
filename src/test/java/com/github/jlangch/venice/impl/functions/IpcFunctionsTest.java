@@ -347,8 +347,7 @@ public class IpcFunctionsTest {
                 "                                                                              \n" +
                 "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
                 "                                :compress-cutoff-size -1)                     \n" +
-                "             client (ipc/client \"localhost\" 33333                           \n" +
-                "                                :compress-cutoff-size -1)]                    \n" +
+                "             client (ipc/client \"localhost\" 33333 )]                        \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
                 "         (ipc/send client)                                                    \n" +
                 "         (ipc/message->map)                                                   \n" +
@@ -367,8 +366,7 @@ public class IpcFunctionsTest {
                 "                                                                              \n" +
                 "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
                 "                                :compress-cutoff-size 0)                      \n" +
-                "             client (ipc/client \"localhost\" 33333                           \n" +
-                "                                :compress-cutoff-size 0)]                     \n" +
+                "             client (ipc/client \"localhost\" 33333)]                         \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
                 "         (ipc/send client)                                                    \n" +
                 "         (ipc/message->map)                                                   \n" +
@@ -387,14 +385,64 @@ public class IpcFunctionsTest {
                 "                                                                              \n" +
                 "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
                 "                                :compress-cutoff-size :2KB)                   \n" +
-                "             client (ipc/client \"localhost\" 33333                           \n" +
-                "                                :compress-cutoff-size :2KB)]                  \n" +
+                "             client (ipc/client \"localhost\" 33333)]                         \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
                 "         (ipc/send client)                                                    \n" +
                 "         (ipc/message->map)                                                   \n" +
                 "         (:text ))))                                                          ";
 
         assertEquals(StringUtil.repeat("hello", 1_000), venice.eval(script));
+    }
+
+    @Test
+    public void test_send_receive_handler_error() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                           \n" +
+                "  (defn handler [m] (throw (ex :VncException \"rejected\")))                  \n" +
+                "                                                                              \n" +
+                "  (try-with [server (ipc/server 33333 handler)                                \n" +
+                "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                                    \n" +
+                "         (ipc/response-err?))))                                               ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_send_receive_handler_return_illegal_value() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                           \n" +
+                "  (defn handler [m] 1)  ;; should actually return nil or an IMessage          \n" +
+                "                                                                              \n" +
+                "  (try-with [server (ipc/server 33333 handler)                                \n" +
+                "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                                    \n" +
+                "         (ipc/response-err?))))                                                ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_send_receive_handler_return_nil() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                           \n" +
+                "  (defn handler [m] nil)                                                      \n" +
+                "                                                                              \n" +
+                "  (try-with [server (ipc/server 33333 handler)                                \n" +
+                "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
+                "         (ipc/send client)                                                    \n" +
+                "         (ipc/response-ok?))))                                                ";
+
+        assertTrue((Boolean)venice.eval(script));
     }
 
     @Test
@@ -484,7 +532,7 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(try-with [server (ipc/server 33333:permit-client-queue-mgmt false)  \n" +
+                "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt false) \n" +
                 "           client (ipc/client 33333)]      \n" +
                 "  (ipc/create-queue client :orders 100))   ";
 
@@ -540,7 +588,7 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(try-with [server (ipc/server 33333:permit-client-queue-mgmt false)  \n" +
+                "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt false) \n" +
                 "           client (ipc/client 33333)]      \n" +
                 "  (ipc/create-queue server :orders 100)    \n" +
                 "  (ipc/remove-queue client :orders))   ";
@@ -561,7 +609,7 @@ public class IpcFunctionsTest {
         final String script =
                 "(do                                             \n" +
                 "  (->> (ipc/text-message \"1\"                  \n" +
-                "                         \"test\"              \n" +
+                "                         \"test\"               \n" +
                 "                         \"text/plain\"         \n" +
                 "                         :UTF-8                 \n" +
                 "                         \"hello\")             \n" +
@@ -577,7 +625,7 @@ public class IpcFunctionsTest {
         final String script =
                 "(do                                             \n" +
                 "  (->> (ipc/text-message \"1\"                  \n" +
-                "                         \"test\"              \n" +
+                "                         \"test\"               \n" +
                 "                         \"text/plain\"         \n" +
                 "                         :UTF-8                 \n" +
                 "                         \"hello\")             \n" +
