@@ -106,7 +106,8 @@ public class ClientConnection implements Closeable {
         // [4] Establish encryption through Diffie-Hellman key exchange
         if (encrypt) {
             try {
-                encryptor = diffieHellmanKeyExchange(channel);
+                final String serverPublicKey = diffieHellmanKeyExchange(channel);
+                encryptor = Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey));
             }
             catch(Exception ex) {
                 mngdExecutor.shutdownNow();
@@ -335,16 +336,15 @@ public class ClientConnection implements Closeable {
         return (VncMap)((Message)response).getVeniceData();
     }
 
-    private Encryptor diffieHellmanKeyExchange(final SocketChannel ch) {
+    private String diffieHellmanKeyExchange(final SocketChannel ch) {
         final Message m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
 
         // exchange the client's and the server's public key
         final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), 2_000);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
-            // successfully exchanged keys
-            final String serverPublicKey = response.getText();
-            return Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey));
+            // successfully exchanged keys, return the server's public key
+             return response.getText();
         }
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
