@@ -154,6 +154,11 @@ public class Protocol {
                                         isEncryptedData),
                                     isCompressedData);
 
+            if (!isEncryptedData && encryptor.isActive()) {
+                throw new VncException(
+                        "Received an unencrypted message but encryption is mandatory!");
+            }
+
             return new Message(
                     payloadMeta.getId(),
                     payloadMeta.getRequestId(),

@@ -805,6 +805,7 @@ public class ServerConnection implements IPublisher, Runnable {
                     new JsonBuilder()
                             .add("max-msg-size", maxMessageSize)
                             .add("compress-cutoff-size", compressor.cutoffSize())
+                            .add("permit-client-queue-mgmt", permitClientQueueMgmt)
                             .add("encrypt", enforceEncryption)
                             .toJson(false));
     }

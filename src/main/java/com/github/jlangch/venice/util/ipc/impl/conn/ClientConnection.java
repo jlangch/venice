@@ -93,6 +93,7 @@ public class ClientConnection implements Closeable {
 
             maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
             compressor = new Compressor(getLong(config, "compress-cutoff-size", -1));
+            permitClientQueueMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
             encrypt = useEncryption                              // client side encrypt
                       || getBoolean(config, "encrypt", false);   // server side encrypt
         }
@@ -144,6 +145,10 @@ public class ClientConnection implements Closeable {
 
     public boolean isEncrypted() {
         return encrypt;
+    }
+
+    public boolean isPermitClientQueueMgmt() {
+        return permitClientQueueMgmt;
     }
 
     public long getCompressCutoffSize() {
@@ -441,6 +446,7 @@ public class ClientConnection implements Closeable {
     private final Semaphore sendSemaphore = new Semaphore(1);
 
     private final long maxMessageSize;
+    private final boolean permitClientQueueMgmt;
 
     // compression
     private final Compressor compressor;

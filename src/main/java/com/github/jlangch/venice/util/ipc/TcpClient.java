@@ -127,6 +127,19 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     /**
+     * @return return <code>true</code> if clients are permitted to add/remove
+     *         queues else <code>false</code>
+     */
+    public boolean isPermitClientQueueMgmt() {
+        if (!opened.get()) {
+            throw new VncException(
+                   "Wait until the client has been opened to get the encryption mode!");
+        }
+
+        return conn.get().isPermitClientQueueMgmt();
+    }
+
+    /**
      * @return return the client's payload message compression cutoff size
      */
     public long getCompressCutoffSize() {
