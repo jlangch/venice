@@ -125,6 +125,7 @@ public class ServerConnection implements IPublisher, Runnable {
             publisherThread.setDaemon(true);
             publisherThread.start();
 
+            // enter message request processing loop
             while(!isStop()) {
                 processRequestResponse();
             }

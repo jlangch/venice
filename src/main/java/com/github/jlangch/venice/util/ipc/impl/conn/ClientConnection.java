@@ -78,25 +78,39 @@ public class ClientConnection implements Closeable {
         }
         catch(Exception ex) {
             throw new IpcException(
-                    "Failed to open TcpClient connection to server " + serverAddress + "!",
+                    "Failed to open connection to the server " + serverAddress + "!",
                     ex);
         }
 
         // [2] Start the executor after the connection has been established
-        mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
+        try {
+            mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
+        }
+        catch(Exception ex) {
+            IO.safeClose(channel);
+            throw new IpcException("Failed to start client connection!", ex);
+        }
 
         try {
             dhKeys = DiffieHellmanKeys.create();
 
             // [3] Request the client configuration from the server
             try {
+                // config
                 final VncMap config = getClientConfiguration(channel, Encryptor.off());
+                final long srv_cutoffSize     = getLong(config, "compress-cutoff-size", -1);
+                final long srv_maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
+                final boolean srv_encryption  = getBoolean(config, "encrypt", false);
+                final boolean srv_permitQMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
 
-                maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
-                compressor = new Compressor(getLong(config, "compress-cutoff-size", -1));
-                permitClientQueueMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
-                encrypt = useEncryption                              // client side encrypt
-                          || getBoolean(config, "encrypt", false);   // server side encrypt
+                maxMessageSize = srv_maxMessageSize;
+                permitClientQueueMgmt = srv_permitQMgmt;
+                compressor = new Compressor(srv_cutoffSize);
+                encrypt = useEncryption || srv_encryption;
+
+                // Note: The server is enforcing the encryption if activated.
+                //       The client cannot disregard it. Trying to do so results
+                //       in an aborted connection!
             }
             catch(Exception ex) {
                 throw new IpcException("Failed to get client config from server!", ex);
@@ -109,10 +123,7 @@ public class ClientConnection implements Closeable {
                     encryptor = Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey));
                 }
                 catch(Exception ex) {
-                    throw new IpcException(
-                            "Failed to open TcpClient for server " + serverAddress +
-                            "! Diffie-Hellman key exchange error!",
-                            ex);
+                    throw new IpcException("Failed on Diffie-Hellman key exchange!", ex);
                 }
             }
             else {
@@ -121,11 +132,11 @@ public class ClientConnection implements Closeable {
 
             // [5] Start the channel message listener
             listener = new ChannelMessageListener(channel, compressor, encryptor);
-
             mngdExecutor
                .getExecutor()
                .submit(listener);
 
+            // [6] Ready for the music
             opened.set(true);
         }
         catch(Exception ex) {
