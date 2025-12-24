@@ -472,4 +472,85 @@ public class TcpRequestResponseTest {
             server.close();
         }
     }
+
+    @Test
+    public void test_multithreaded_client() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client = new TcpClient(33333);
+
+        // increase connections to support the test client count
+        server.setMaxParallelConnections(50);
+
+        final int threads = 10;
+        final int messagesPerClient = 50;
+
+        server.start(TcpServer.echoHandler());
+
+        IO.sleep(300);
+
+        client.open();
+
+        final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+        es.setMaximumPoolSize(threads);
+
+        try {
+            final AtomicLong errors = new AtomicLong();
+            final AtomicLong success = new AtomicLong();
+
+            final List<Future<?>> futures = new ArrayList<>();
+            for(int th=1; th<=threads; th++) {
+                final int threadNr = th;
+
+                // run each client test as future
+                futures.add(es.submit(() -> {
+                    try {
+                        for(int msgIdx=1; msgIdx<=messagesPerClient; msgIdx++) {
+                            final String topic = "hello";
+                            final String mimetype = "text/plain";
+                            final String charset = "UTF-8";
+                            final String msg = "Hello " + threadNr + " / " + msgIdx;
+
+                            final IMessage request = MessageFactory.text(null, topic, mimetype, charset, msg);
+
+                            try {
+                                final IMessage response = client.sendMessage(request);
+
+                                assertNotNull(response);
+                                assertEquals(ResponseStatus.OK,  response.getResponseStatus());
+                                assertEquals(topic,              response.getTopic());
+                                assertEquals(mimetype,           response.getMimetype());
+                                assertEquals(charset,            response.getCharset());
+                                assertEquals(msg,                response.getText());
+
+                                success.incrementAndGet();
+                            }
+                            catch(Exception ex) {
+                                System.err.println(String.format(
+                                        "Message err: client %d, msg %d/%d: %s",
+                                        threadNr, msgIdx, messagesPerClient, ex.getMessage()));
+                                errors.incrementAndGet();
+                                break;  // to reduce the error count
+                            }
+                        }
+                    }
+                    catch(Exception ex) {
+                        System.err.println("Client " + threadNr + ": " + ex.getMessage());
+                        errors.incrementAndGet();
+                    }
+                }));
+            }
+
+            // wait for all clients to be finished
+            futures.forEach(f ->  { try { f.get(); } catch (Exception ignore) {}});
+
+            assertEquals(0, errors.get());
+            assertEquals(threads * messagesPerClient, success.get());
+        }
+        finally {
+            es.shutdownNow();
+
+            client.close();
+            server.close();
+        }
+    }
 }
