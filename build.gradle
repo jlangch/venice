@@ -697,6 +697,24 @@ task updateReleaseVersion {
      }
 }
 
+task updateCopyright {
+    doLast {
+        def yearFrom = 2017
+        def yearTo = 2026
+        println "Updating copyright to «Copyright ${yearFrom}-${yearTo} Venice» ..."
+                ant.replaceregexp(
+                match:   "Copyright [0-9]{4}-[0-9]{4} Venice",
+                replace: "Copyright ${yearFrom}-${yearTo} Venice",
+                flags:   'g'
+        ) {
+            fileset(dir: '.',   includes: 'build.gradle')
+            fileset(dir: 'src', includes: '**/*.java')
+            fileset(dir: 'src', includes: '**/*.venice')
+        }
+        println "Updating copyright done."
+    }
+}
+
 task updateReadMeCheatsheetRef {
     doLast {
         def id = getCheckedOutGitCommitHash().take(7)
