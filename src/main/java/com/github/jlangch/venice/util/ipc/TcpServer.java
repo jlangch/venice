@@ -58,6 +58,10 @@ import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 // https://github.com/baswerc/niossl
 // https://github.com/marianobarrios/tls-channel
 
+
+/**
+ * IPC Server
+ */
 public class TcpServer implements Closeable {
 
     /**
@@ -494,6 +498,13 @@ public class TcpServer implements Closeable {
      */
     public static Function<IMessage,IMessage> echoHandler() {
         return req -> req;
+    }
+
+    /**
+     * @return an echo handler that sleeps n milliseconds before echoing the request
+     */
+    public static Function<IMessage,IMessage> echoHandler(final long sleepMillis) {
+        return req -> { IO.sleep(sleepMillis); return req; };
     }
 
     /**

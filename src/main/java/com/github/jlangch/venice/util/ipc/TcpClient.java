@@ -53,6 +53,11 @@ import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 
 
+/**
+ * IPC Client
+ *
+ * <p>This class is thread-safe!
+ */
 public class TcpClient implements Cloneable, Closeable {
 
     /**

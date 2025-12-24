@@ -311,7 +311,7 @@ public class IPCFunctions {
                                                    " The data is AES-256-GCM encrypted using a secret that is" +
                                                    " created and exchanged using the Diffie-Hellman key exchange " +
                                                    " algorithm.|\n\n" +
-                        "**The client is NOT thread safe!** \n\n" +
+                        "**The client is thread-safe!** \n\n" +
                         "**The client must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
