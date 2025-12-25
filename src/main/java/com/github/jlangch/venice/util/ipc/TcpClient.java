@@ -195,7 +195,7 @@ public class TcpClient implements Cloneable, Closeable {
         if (opened.compareAndSet(false, true)) {
             ClientConnection c = null;
             try {
-                c = new ClientConnection(host, port, encrypt.get());
+                c = new ClientConnection(host, port, encrypt.get(), ackMode.get());
                 conn.set(c);
             }
             catch(Exception ex) {
@@ -1079,6 +1079,7 @@ public class TcpClient implements Cloneable, Closeable {
     private final String endpointId;
 
     private final AtomicBoolean opened = new AtomicBoolean(false);
-    private final AtomicReference<ClientConnection> conn = new AtomicReference<>();
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
+    private final AtomicReference<AcknowledgeMode> ackMode = new AtomicReference<>(AcknowledgeMode.NO_ACKNOWLEDGE);
+    private final AtomicReference<ClientConnection> conn = new AtomicReference<>();
 }

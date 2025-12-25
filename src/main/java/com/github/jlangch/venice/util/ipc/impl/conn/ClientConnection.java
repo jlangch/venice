@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
+import com.github.jlangch.venice.util.ipc.AcknowledgeMode;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -57,6 +58,7 @@ import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
+import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 
 
 public class ClientConnection implements Closeable {
@@ -64,10 +66,12 @@ public class ClientConnection implements Closeable {
     public ClientConnection(
             final String host,
             final int port,
-            final boolean useEncryption
+            final boolean useEncryption,
+            final AcknowledgeMode ackMode
     ) {
         this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
         this.port = port;
+        this.ackMode = ackMode;
 
         final String serverAddress = this.host + "/" + this.port;
 
@@ -338,7 +342,7 @@ public class ClientConnection implements Closeable {
 
     private VncMap getClientConfiguration(final SocketChannel ch, final Encryptor encryptor) {
         final IMessage response = sendDirect(
-                                    createConfigRequestMessage(),
+                                    createConfigRequestMessage(ackMode),
                                     ch,
                                     Compressor.off(),
                                     encryptor,
@@ -388,7 +392,11 @@ public class ClientConnection implements Closeable {
                 toBytes(clientPublicKey, "UTF-8"));
     }
 
-    private static Message createConfigRequestMessage() {
+    private static Message createConfigRequestMessage(final AcknowledgeMode ackMode) {
+        final String payload = new JsonBuilder()
+                                    .add("ackMode", ackMode.name())
+                                    .toJson(false);
+
         return new Message(
                 null,
                 null,
@@ -403,9 +411,9 @@ public class ClientConnection implements Closeable {
                 Messages.EXPIRES_NEVER,
                 Messages.NO_TIMEOUT,
                 Topics.of("client-config"),
-                "text/plain",
+                "application/json",
                 "UTF-8",
-                new byte[0]);
+                toBytes(payload, "UTF-8"));
     }
 
     private static Message deref(Future<Message> future, final long timeout) {
@@ -454,6 +462,7 @@ public class ClientConnection implements Closeable {
 
     private final String host;
     private final int port;
+    private final AcknowledgeMode ackMode;
 
     private final SocketChannel channel;
 

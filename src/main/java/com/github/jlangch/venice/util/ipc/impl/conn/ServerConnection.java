@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
+import com.github.jlangch.venice.util.ipc.AcknowledgeMode;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -804,7 +805,17 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleClientConfigRequest(final Message request) {
-        logger.info("conn-" + connectionId, "Handling client config request!");
+        if (!"application/json".equals(request.getMimetype())) {
+            return createBadRequestResponse(
+                    request,
+                    String.format("Request %s: Expected a JSON payload", request.getType()));
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String sAckMode = Coerce.toVncString(payload.get(new VncString("ackMode"))).getValue();
+        msgAcknowledgeMode = AcknowledgeMode.valueOf(sAckMode);
+
+        logger.info("conn-" + connectionId, "Handling client config request! AcknowledgeMode: " + sAckMode);
         return createJsonResponse(
                     request,
                     ResponseStatus.OK,
@@ -1110,6 +1121,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private volatile State mode = State.Active;
     private volatile Thread publisherThread;
+    private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
 
     private final TcpServer server;
     private final SocketChannel ch;
