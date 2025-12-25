@@ -532,6 +532,8 @@ public class TcpClient implements Cloneable, Closeable {
      * <p>A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
      * Up to 80 characters are allowed.
      *
+     * <p>Queue creation by clients is allowed only when explicitly configured on the server.
+     *
      * @param queueName a queue name
      * @param capacity the queue capacity
      * @param bounded if true create a bounded queue else create a circular queue
@@ -620,6 +622,8 @@ public class TcpClient implements Cloneable, Closeable {
     /**
      * Remove a queue.
      *
+     * <p>Queue removal by clients is allowed only when explicitly configured on the server.
+     *
      * @param queueName a queue name
      */
     public void removeQueue(final String queueName) {
@@ -693,6 +697,8 @@ public class TcpClient implements Cloneable, Closeable {
 
     /**
      * Return a queue's status.
+     *
+     * <p>Queue status checks by clients is allowed only when explicitly configured on the server.
      *
      * @param queueName a queue name
      * @return a map with the status fields

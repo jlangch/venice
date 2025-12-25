@@ -501,6 +501,7 @@ public class TcpServer implements Closeable {
     }
 
     /**
+     * @param sleepMillis the handler's sleep time
      * @return an echo handler that sleeps n milliseconds before echoing the request
      */
     public static Function<IMessage,IMessage> echoHandler(final long sleepMillis) {

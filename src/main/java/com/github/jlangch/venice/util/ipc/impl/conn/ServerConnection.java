@@ -765,6 +765,12 @@ public class ServerConnection implements IPublisher, Runnable {
                         request.getType()));
         }
 
+        if (!permitClientQueueMgmt) {
+            return createNoPermissionResponse(
+                    request,
+                    "Clients are not permitted to request queue status!");
+        }
+
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
 
