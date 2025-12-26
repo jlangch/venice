@@ -19,12 +19,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util;
+package com.github.jlangch.venice.util;
 
 
 public abstract class UTF8 {
 
     // See:  https://www.compart.com/de/unicode/
+    //
+    //       https://www.unicode.org/charts/
+    //       https://www.unicode.org/charts/PDF/U2500.pdf
+    //       https://www.unicode.org/charts/PDF/U25A0.pdf
 
     // White Spaces
     //
@@ -115,6 +119,9 @@ public abstract class UTF8 {
 
     public static char UPPER_ONE_EIGHTH_BLOCK     = '\u2594';  // ▔
     public static char RIGHT_ONE_EIGHTH_BLOCK     = '\u2595';  // ▕
+
+    public static char BLACK_VERTICAL_RECTANGLE   = '\u25AE';  // ▮
+    public static char WHITE_VERTICAL_RECTANGLE   = '\u25AF';  // ▯
 
 
     // Table

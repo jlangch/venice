@@ -27,10 +27,10 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.reader.LineReader;
-import com.github.jlangch.venice.impl.util.UTF8;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
+import com.github.jlangch.venice.util.UTF8;
 
 
 public class TableBlockParser {
