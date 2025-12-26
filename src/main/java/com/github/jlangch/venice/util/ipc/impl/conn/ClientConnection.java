@@ -101,7 +101,7 @@ public class ClientConnection implements Closeable {
             // [3] Request the client configuration from the server
             try {
                 // config
-                final VncMap config = getClientConfiguration(channel, Encryptor.off());
+                final VncMap config = getClientConfiguration(channel, ackMode);
                 final long srv_cutoffSize     = getLong(config, "compress-cutoff-size", -1);
                 final long srv_maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
                 final boolean srv_encryption  = getBoolean(config, "encrypt", false);
@@ -123,7 +123,7 @@ public class ClientConnection implements Closeable {
             // [4] Establish encryption through Diffie-Hellman key exchange
             if (encrypt) {
                 try {
-                    final String serverPublicKey = diffieHellmanKeyExchange(channel);
+                    final String serverPublicKey = diffieHellmanKeyExchange(channel, dhKeys);
                     encryptor = Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey));
                 }
                 catch(Exception ex) {
@@ -158,6 +158,10 @@ public class ClientConnection implements Closeable {
 
     public int getPort() {
         return port;
+    }
+
+    public AcknowledgeMode getAcknowledgeMode() {
+        return ackMode;
     }
 
     public boolean isOpen() {
@@ -340,12 +344,15 @@ public class ClientConnection implements Closeable {
         }
     }
 
-    private VncMap getClientConfiguration(final SocketChannel ch, final Encryptor encryptor) {
+    private VncMap getClientConfiguration(
+            final SocketChannel ch,
+            final AcknowledgeMode ackMode
+    ) {
         final IMessage response = sendDirect(
                                     createConfigRequestMessage(ackMode),
                                     ch,
                                     Compressor.off(),
-                                    encryptor,
+                                    Encryptor.off(),
                                     2_000);
         if (response.getResponseStatus() != ResponseStatus.OK) {
             throw new IpcException(
@@ -356,7 +363,10 @@ public class ClientConnection implements Closeable {
         return (VncMap)((Message)response).getVeniceData();
     }
 
-    private String diffieHellmanKeyExchange(final SocketChannel ch) {
+    private String diffieHellmanKeyExchange(
+            final SocketChannel ch,
+            final DiffieHellmanKeys dhKeys
+    ) {
         final Message m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
 
         // exchange the client's and the server's public key

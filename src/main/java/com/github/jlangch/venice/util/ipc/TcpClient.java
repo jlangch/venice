@@ -189,6 +189,13 @@ public class TcpClient implements Cloneable, Closeable {
     }
 
     /**
+     * @return the acknowledge mode of this client
+     */
+    public AcknowledgeMode getAcknowledgeMode() {
+        return ackMode.get();
+    }
+
+    /**
      * Opens the client
      */
     public void open() {

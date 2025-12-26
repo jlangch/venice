@@ -137,7 +137,10 @@ public class ServerConnection implements IPublisher, Runnable {
             // when the client closed the connection
             //   - server gets a java.io.IOException: Broken pipe
             //   - quit this connection and close the channel
-            logger.error("conn-" + connectionId, "Failed to process message response!", ex);
+            logger.error(
+                    "conn-" + connectionId, "Error on connection from "
+                        +  IO.getRemoteAddress(ch) + "!",
+                    ex);
         }
         finally {
             closeChannel();
@@ -815,7 +818,7 @@ public class ServerConnection implements IPublisher, Runnable {
         final String sAckMode = Coerce.toVncString(payload.get(new VncString("ackMode"))).getValue();
         msgAcknowledgeMode = AcknowledgeMode.valueOf(sAckMode);
 
-        logger.info("conn-" + connectionId, "Handling client config request! AcknowledgeMode: " + sAckMode);
+        logger.info("conn-" + connectionId, "Handling client config request! AcknowledgeMode: " + msgAcknowledgeMode);
         return createJsonResponse(
                     request,
                     ResponseStatus.OK,
@@ -1105,7 +1108,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
         IO.safeClose(ch);
 
-        logger.info("conn-" + connectionId, "Closed server connection");
+        logger.info("conn-" + connectionId, "Closed connection");
     }
 
 
