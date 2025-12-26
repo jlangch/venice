@@ -670,8 +670,8 @@ Create through 'server'
 (let [wal-dir (io/file (io/temp-dir "wal-"))]
   (try-with [server (ipc/server 33333
                                 :write-ahead-log-dir wal-dir
-                                :write-ahead-log-compress true
-                                :write-ahead-log-compact true)
+                                :write-ahead-log-compress true  ;; compress WAL entries
+                                :write-ahead-log-compact true)  ;; compact WAL at startup
              client (ipc/client 33333)]
     (ipc/create-queue server "queue/1" 100 :bounded true)
     (ipc/offer client "queue/1" 300 
@@ -686,8 +686,8 @@ Create through 'client':
 (let [wal-dir (io/file (io/temp-dir "wal-"))]
   (try-with [server (ipc/server 33333
                                 :write-ahead-log-dir wal-dir
-                                :write-ahead-log-compress true
-                                :write-ahead-log-compact true)
+                                :write-ahead-log-compress true  ;; compress WAL entries
+                                :write-ahead-log-compact true)  ;; compact WAL at startup
              client (ipc/client 33333)]
     (ipc/create-queue client "queue/1" 100 :bounded true)
     (ipc/offer client "queue/1" 300 
