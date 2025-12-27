@@ -22,9 +22,7 @@
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +43,7 @@ import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType;
 
 
-public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
+public class DurableBoundedQueue implements IpcQueue<Message>, AutoCloseable {
 
     public DurableBoundedQueue(
             final String queueName,
@@ -438,7 +436,7 @@ public class DurableBoundedQueue implements IpcQueue<Message>, Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (closed) return;
 
         try {

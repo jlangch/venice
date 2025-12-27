@@ -20,8 +20,6 @@
  * limitations under the License.
  */
 package com.github.jlangch.venice.util.ipc.old;
-import java.io.Closeable;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -67,7 +65,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 
 
-public class TcpClient implements Cloneable, Closeable {
+public class TcpClient implements Cloneable, AutoCloseable {
 
     /**
      * Create a new TcpClient connecting to a TcpServer on the local host
@@ -260,7 +258,7 @@ public class TcpClient implements Cloneable, Closeable {
      * Closes the client
      */
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (opened.compareAndSet(true, false)) {
             try {
                 mngdExecutor.shutdownNow();
@@ -872,7 +870,7 @@ public class TcpClient implements Cloneable, Closeable {
             client.open();
             return client.send(msg);
         }
-        catch(IOException ex) {
+        catch(Exception ex) {
             // ignore client close exception
             return null;
         }
@@ -886,7 +884,7 @@ public class TcpClient implements Cloneable, Closeable {
             client.open();
             return client.sendAsync(msg);
         }
-        catch(IOException ex) {
+        catch(Exception ex) {
             // ignore client close exception
             return new FutureNull();
         }

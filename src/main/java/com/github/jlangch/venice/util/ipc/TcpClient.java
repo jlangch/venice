@@ -23,8 +23,6 @@ package com.github.jlangch.venice.util.ipc;
 
 
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,7 +56,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
  *
  * <p>This class is thread-safe!
  */
-public class TcpClient implements Cloneable, Closeable {
+public class TcpClient implements Cloneable, AutoCloseable {
 
     /**
      * Create a new TcpClient connecting to a TcpServer on the local host
@@ -110,7 +108,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public void setEncryption(final boolean encrypt) {
         if (opened.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "The encryption mode cannot be changed once the client has been opened!");
         }
 
@@ -123,7 +121,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public boolean isEncrypted() {
         if (!opened.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
@@ -136,7 +134,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public boolean isPermitClientQueueMgmt() {
         if (!opened.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
@@ -148,7 +146,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public long getCompressCutoffSize() {
         if (!opened.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "Wait until the client has been opened to get the compression cutoff size!");
         }
 
@@ -160,7 +158,7 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public long getMaxMessageSize() {
         if (!opened.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "Wait until the client has been opened to get the max message size!");
         }
 
@@ -231,7 +229,7 @@ public class TcpClient implements Cloneable, Closeable {
      * Closes the client
      */
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (opened.compareAndSet(true, false)) {
             IO.sleep(100);
 
@@ -258,6 +256,10 @@ public class TcpClient implements Cloneable, Closeable {
     public IMessage sendMessage(final IMessage msg) {
         Objects.requireNonNull(msg);
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
         return send(m);
     }
@@ -274,6 +276,10 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public void sendMessageOneway(final IMessage msg) {
         Objects.requireNonNull(msg);
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
 
         final Message m = ((Message)msg).withType(MessageType.REQUEST, true);
         send(m);
@@ -295,6 +301,10 @@ public class TcpClient implements Cloneable, Closeable {
     public Future<IMessage> sendMessageAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
         return sendAsync(m);
     }
@@ -311,6 +321,10 @@ public class TcpClient implements Cloneable, Closeable {
     public IMessage subscribe(final String topic, final Consumer<IMessage> handler) {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(handler);
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
 
         return subscribe(CollectionUtil.toSet(topic), handler);
     }
@@ -330,6 +344,10 @@ public class TcpClient implements Cloneable, Closeable {
 
         if (topics.isEmpty()) {
             throw new IpcException("A subscription topic set must not be empty!");
+        }
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
         }
 
         final ClientConnection c = conn.get();
@@ -352,6 +370,10 @@ public class TcpClient implements Cloneable, Closeable {
     public IMessage unsubscribe(final String topic) {
         Objects.requireNonNull(topic);
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         return unsubscribe(CollectionUtil.toSet(topic));
     }
 
@@ -366,6 +388,10 @@ public class TcpClient implements Cloneable, Closeable {
 
         if (topics.isEmpty()) {
             throw new IpcException("A subscription topic set must not be empty!");
+        }
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
         }
 
         final ClientConnection c = conn.get();
@@ -392,6 +418,10 @@ public class TcpClient implements Cloneable, Closeable {
     public IMessage publish(final IMessage msg) {
         Objects.requireNonNull(msg);
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
         return send(m);
     }
@@ -409,6 +439,10 @@ public class TcpClient implements Cloneable, Closeable {
      */
     public Future<IMessage> publishAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
 
         final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
         return sendAsync(m);
@@ -439,6 +473,10 @@ public class TcpClient implements Cloneable, Closeable {
     ) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(queueName);
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
 
         final Message m = createQueueOfferRequestMessage(
                                 (Message)msg,
@@ -474,6 +512,10 @@ public class TcpClient implements Cloneable, Closeable {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(queueName);
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final Message m = createQueueOfferRequestMessage(
                             (Message)msg,
                             queueName,
@@ -504,6 +546,10 @@ public class TcpClient implements Cloneable, Closeable {
     ) {
         Objects.requireNonNull(queueName);
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final Message m = createQueuePollRequestMessage(queueName, queuePollTimeout);
 
         return send(m);
@@ -527,6 +573,10 @@ public class TcpClient implements Cloneable, Closeable {
             final long queuePollTimeout
     ) {
         Objects.requireNonNull(queueName);
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
 
         final Message m = createQueuePollRequestMessage(queueName, queuePollTimeout);
 
@@ -557,6 +607,10 @@ public class TcpClient implements Cloneable, Closeable {
         }
         if (capacity < 1) {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
+        }
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
         }
 
         final String payload = new JsonBuilder()
@@ -599,6 +653,10 @@ public class TcpClient implements Cloneable, Closeable {
             throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final String payload = new JsonBuilder()
                                     .add("capacity", capacity)
                                     .toJson(false);
@@ -638,6 +696,10 @@ public class TcpClient implements Cloneable, Closeable {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
 
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final String payload = new JsonBuilder()
                                     .add("name", queueName)
                                     .toJson(false);
@@ -671,6 +733,10 @@ public class TcpClient implements Cloneable, Closeable {
     public boolean existsQueue(final String queueName) {
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
+        }
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
         }
 
         final String payload = new JsonBuilder()
@@ -711,6 +777,10 @@ public class TcpClient implements Cloneable, Closeable {
      * @return a map with the status fields
      */
     public Map<String,Object> getQueueStatus(final String queueName) {
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final VncMap data = getQueueStatusRaw(queueName);
 
         @SuppressWarnings("unchecked")
@@ -735,6 +805,10 @@ public class TcpClient implements Cloneable, Closeable {
      * @return a map with the status fields
      */
     public VncMap getQueueStatusAsVncMap(final String queueName) {
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final VncMap data = getQueueStatusRaw(queueName);
 
         return VncOrderedMap.of(
@@ -753,6 +827,10 @@ public class TcpClient implements Cloneable, Closeable {
      * @return a map with the status fields
      */
     public Map<String,Object> getServerStatus() {
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final VncMap data = getServerStatusRaw();
 
         @SuppressWarnings("unchecked")
@@ -767,6 +845,10 @@ public class TcpClient implements Cloneable, Closeable {
      * @return a map with the statistics
      */
     public Map<String,Object> getServerThreadPoolStatistics() {
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final VncMap data = getServerThreadPoolStatisticsRaw();
 
         @SuppressWarnings("unchecked")
@@ -782,6 +864,10 @@ public class TcpClient implements Cloneable, Closeable {
      */
     @SuppressWarnings("unchecked")
     public Map<String,Object> getNextServerError() {
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
         final VncMap data = getNextServerErrorRaw();
 
         return data == null

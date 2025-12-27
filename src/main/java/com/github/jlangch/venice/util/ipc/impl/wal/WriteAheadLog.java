@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
-import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +71,7 @@ import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType;
  * HEADER_SIZE = 4 + 8 + 4 + 16 + 8 + 4 + 4 + 4 = 52 bytes.
  * </pre>
  */
-public final class WriteAheadLog implements Closeable {
+public final class WriteAheadLog implements AutoCloseable {
 
     public WriteAheadLog(
             final File file,
@@ -636,7 +635,7 @@ public final class WriteAheadLog implements Closeable {
 
 
     @Override
-    public synchronized void close() throws IOException {
+    public synchronized void close() {
         try {
             raf.close();
             logger.info(file, "WAL closed");

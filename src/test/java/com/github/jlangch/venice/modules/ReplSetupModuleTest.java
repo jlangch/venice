@@ -45,7 +45,7 @@ import com.github.jlangch.venice.impl.util.junit.EnableOnWindows;
 public class ReplSetupModuleTest {
 
     // The Venice version to download from Maven, for staged REPL setup tests
-    private static final String VERSION = "1.12.64";
+    private static final String VERSION = "1.12.69";
 
 
     @Test

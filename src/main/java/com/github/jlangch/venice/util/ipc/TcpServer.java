@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
@@ -62,7 +61,7 @@ import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 /**
  * IPC Server
  */
-public class TcpServer implements Closeable {
+public class TcpServer implements AutoCloseable {
 
     /**
      * Create a new TcpServer on the specified port.
@@ -110,7 +109,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setEncryption(final boolean encrypt) {
         if (started.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "The encryption mode cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -140,7 +139,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setCompressCutoffSize(final long cutoffSize) {
         if (started.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "The compression cutoff size cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -165,7 +164,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setMaxMessageSize(final long maxSize) {
         if (started.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "The maximum message size cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -193,7 +192,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setMaxQueues(final long maxQueues) {
         if (started.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "The maximum queue count cannot be changed anymore "
                    + "once the server has been started!");
         }
@@ -225,7 +224,7 @@ public class TcpServer implements Closeable {
      */
     public TcpServer setPermitClientQueueMgmt(final boolean permit) {
         if (started.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                    "Cannot change the permission for clients to manage queues "
                    + "once the server has been started!");
         }
@@ -264,7 +263,7 @@ public class TcpServer implements Closeable {
         }
 
         if (started.get()) {
-            throw new IpcException(
+            throw new IllegalStateException(
                     "Cannot enable the Write-Ahead-Log if the server has already been started!");
         }
 
@@ -293,6 +292,11 @@ public class TcpServer implements Closeable {
         if (!logDir.isDirectory()) {
             throw new IpcException(
                     "The server log directory '" + logDir.getAbsolutePath() + "' does not exist!");
+        }
+
+        if (started.get()) {
+            throw new IllegalStateException(
+                    "Cannot enable the logger if the server has already been started!");
         }
 
         logger.enable(logDir);
@@ -330,14 +334,14 @@ public class TcpServer implements Closeable {
      * @return the compacted messages from the queue.
      */
     public List<IMessage> loadWalQueueMessages(final String queueName) {
-       try {
-          return wal.loadWalQueueMessages(queueName);
-       }
-       catch(Exception ex) {
-           throw new IpcException(
-               "Failed to load messages for WAL queue " + queueName,
-               ex);
-       }
+        try {
+           return wal.loadWalQueueMessages(queueName);
+        }
+        catch(Exception ex) {
+            throw new IpcException(
+                "Failed to load messages for WAL queue " + queueName,
+                ex);
+        }
     }
 
     /**
@@ -461,7 +465,7 @@ public class TcpServer implements Closeable {
      * Close this TcpServer
      */
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (started.compareAndSet(true, false)) {
             logger.info("server", "Server closing...");
 

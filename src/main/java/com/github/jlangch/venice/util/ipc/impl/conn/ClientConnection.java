@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -61,7 +59,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 
 
-public class ClientConnection implements Closeable {
+public class ClientConnection implements AutoCloseable {
 
     public ClientConnection(
             final String host,
@@ -284,7 +282,7 @@ public class ClientConnection implements Closeable {
      * Closes the connection
      */
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (opened.compareAndSet(true, false)) {
 
             // wait max 500ms for tasks to be completed
