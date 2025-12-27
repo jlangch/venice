@@ -21,25 +21,44 @@
  */
 package com.github.jlangch.venice.util.dh;
 
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class DiffieHellmanSharedSecret {
+public class DiffieHellmanSharedSecret implements AutoCloseable {
 
     public DiffieHellmanSharedSecret(final byte[] secret) {
+        Objects.requireNonNull(secret);
+
         this.secret = secret;
-        this.secretBase64 = Base64.getEncoder().encodeToString(secret);
     }
 
     public byte[] getSecret() {
+        if (closed.get()) {
+            throw new IllegalStateException("Secret already closed.");
+        }
+
         return secret;
     }
 
     public String getSecretBase64() {
-        return secretBase64;
+        if (closed.get()) {
+            throw new IllegalStateException("Secret already closed.");
+        }
+
+        return Base64.getEncoder().encodeToString(secret);
+    }
+
+    @Override
+    public void close() {
+        Arrays.fill(secret, (byte) 0);
+        closed.set(true);
     }
 
 
+    private final AtomicBoolean closed = new AtomicBoolean(false);
+
     private final byte[] secret;
-    private final String secretBase64;
 }
