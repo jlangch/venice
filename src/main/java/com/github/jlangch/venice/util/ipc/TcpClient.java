@@ -60,8 +60,6 @@ public class TcpClient implements Cloneable, AutoCloseable {
      * Create a new client connecting to a server on the local host
      * and port
      *
-     * <p>The client is NOT thread safe!
-     *
      * <p>The client must be closed after use!
      *
      * @param port a port
@@ -73,8 +71,6 @@ public class TcpClient implements Cloneable, AutoCloseable {
     /**
      * Create a new client connecting to a server on the specified host
      * and port
-     *
-     * <p>The client is NOT thread safe!
      *
      * <p>The client must be closed after use!
      *
@@ -95,11 +91,23 @@ public class TcpClient implements Cloneable, AutoCloseable {
         return client;
     }
 
-    /**
-     * Set the encryption mode
+   /**
+     * Set the encryption mode for this client-server connection.
      *
      * <p>The encryption is basically controlled by the server the client is attached to.
-     * It can be overridden by the client but it can never be weakened by the client.
+     *
+     * <p>If the server requests encryption it cannot be weakened by the client.
+     *
+     * <pre>
+     * ┌────────────────┬────────────────┬──────────────────────────┐
+     * │ server encrypt │ client encrypt │ client-server connection │
+     * ├────────────────┼────────────────┼──────────────────────────┤
+     * │      false     │     false      │      not encrypted       │
+     * │      false     │     true       │        encrypted         │
+     * │      true      │     false      │        encrypted         │
+     * │      true      │     true       │        encrypted         │
+     * └────────────────┴────────────────┴──────────────────────────┘
+     * </pre>
      *
      * @param encrypt if <code>true</code> encrypt the payload data at transport
      *                level communication between this client and the server.
