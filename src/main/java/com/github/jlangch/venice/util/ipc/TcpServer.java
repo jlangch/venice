@@ -64,7 +64,7 @@ import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 public class TcpServer implements AutoCloseable {
 
     /**
-     * Create a new TcpServer on the specified port.
+     * Create a new server on the specified port.
      *
      * <p>The server must be closed after use!
      *
@@ -75,7 +75,7 @@ public class TcpServer implements AutoCloseable {
     }
 
     /**
-     * Create a new TcpServer on the specified port and connection accept timeout
+     * Create a new server on the specified port and connection accept timeout
      *
      * @param port a port
      * @param timeout a connection accept timeout
@@ -345,7 +345,7 @@ public class TcpServer implements AutoCloseable {
     }
 
     /**
-     * Start the TcpServer without handler for incoming messages.
+     * Start the server without handler for incoming messages.
      *
      * <p>A handler is required for send/receive message passing only.
      */
@@ -354,7 +354,7 @@ public class TcpServer implements AutoCloseable {
     }
 
     /**
-     * Start the TcpServer
+     * Start the server
      *
      * @param handler to handle the incoming messages. The handler may return a
      *        <code>null</code> message
@@ -462,7 +462,7 @@ public class TcpServer implements AutoCloseable {
     }
 
     /**
-     * Close this TcpServer
+     * Close this server
      */
     @Override
     public void close() {
@@ -703,5 +703,5 @@ public class TcpServer implements AutoCloseable {
     private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
-            new ManagedCachedThreadPoolExecutor("venice-tcpserver-pool", 20);
+            new ManagedCachedThreadPoolExecutor("venice-ipcserver-pool", 20);
 }

@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-
-
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -59,7 +57,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 public class TcpClient implements Cloneable, AutoCloseable {
 
     /**
-     * Create a new TcpClient connecting to a TcpServer on the local host
+     * Create a new client connecting to a server on the local host
      * and port
      *
      * <p>The client is NOT thread safe!
@@ -73,7 +71,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
     }
 
     /**
-     * Create a new TcpClient connecting to a TcpServer on the specified host
+     * Create a new client connecting to a server on the specified host
      * and port
      *
      * <p>The client is NOT thread safe!
@@ -208,12 +206,12 @@ public class TcpClient implements Cloneable, AutoCloseable {
                 opened.set(false);
                 conn.set(null);
                 throw new IpcException(
-                        "Failed to open TcpClient for server " + host + "/" + port + "!",
+                        "Failed to open client for server " + host + "/" + port + "!",
                         ex);
             }
         }
         else {
-            throw new IpcException("This TcpClient is already open!");
+            throw new IpcException("This client is already open!");
         }
     }
 
@@ -352,7 +350,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new IpcException("This TcpClient is not open!");
+            throw new IpcException("This client is not open!");
         }
 
         c.addSubscriptionHandler(topics, handler);
@@ -396,7 +394,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new IpcException("This TcpClient is not open!");
+            throw new IpcException("This client is not open!");
         }
 
         c.removeSubscriptionHandler(topics);
@@ -989,7 +987,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new IpcException("This TcpClient is not open!");
+            throw new IpcException("This client is not open!");
         }
 
         validateMessageSize(msg, c);
@@ -1007,7 +1005,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
 
         final ClientConnection c = conn.get();
         if (c == null || !c.isOpen()) {
-            throw new IpcException("This TcpClient is not open!");
+            throw new IpcException("This client is not open!");
         }
 
         validateMessageSize(msg, c);

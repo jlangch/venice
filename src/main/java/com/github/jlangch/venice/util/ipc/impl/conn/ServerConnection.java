@@ -122,7 +122,7 @@ public class ServerConnection implements IPublisher, Runnable {
             statistics.incrementConnectionCount();
 
             // start publisher thread
-            publisherThread = new Thread(() -> publisher(), "venice-tcpserver-publisher");
+            publisherThread = new Thread(() -> publisher(), "venice-ipcserver-publisher");
             publisherThread.setDaemon(true);
             publisherThread.start();
 

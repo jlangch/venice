@@ -86,7 +86,7 @@ public class ClientConnection implements AutoCloseable {
 
         // [2] Start the executor after the connection has been established
         try {
-            mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-tcpclient-pool", 10);
+            mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-ipcclient-pool", 10);
         }
         catch(Exception ex) {
             IO.safeClose(channel);
@@ -270,7 +270,7 @@ public class ClientConnection implements AutoCloseable {
 
         if (!isOpen()) {
             throw new IpcException(
-                    "This TcpClient conection is not open! Cannot send the message!");
+                    "This client conection is not open! Cannot send the message!");
         }
 
         return mngdExecutor
