@@ -702,7 +702,7 @@ task updateCopyright {
         def yearFrom = 2017
         def yearTo = 2026
         println "Updating copyright to «Copyright ${yearFrom}-${yearTo} Venice» ..."
-                ant.replaceregexp(
+        ant.replaceregexp(
                 match:   "Copyright [0-9]{4}-[0-9]{4} Venice",
                 replace: "Copyright ${yearFrom}-${yearTo} Venice",
                 flags:   'g'
