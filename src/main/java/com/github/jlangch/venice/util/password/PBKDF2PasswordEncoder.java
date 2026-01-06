@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.password;
 
+import java.security.SecureRandom;
+
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -49,12 +51,12 @@ public class PBKDF2PasswordEncoder {
             throw new IllegalArgumentException("A 'password' must not be blank");
         }
 
-        return encodeWithSalt(password, saltSource.createSalt());
+        return encodeWithSalt(password, createSalt());
     }
 
 
     /**
-     * <p>Verifies if two passwords are identical.
+     * <p>Verifies if a clear text password is identical to a hashed password
      *
      * @param clearTextPwd  A clear text password
      * @param hashedPwd  A hashed salted password
@@ -126,7 +128,14 @@ public class PBKDF2PasswordEncoder {
         }
     }
 
-    public String toString(final byte[] data) {
+    private String createSalt() {
+        synchronized(random) {
+            final int salt = random.nextInt(10000000);
+            return StringUtils.leftPad(String.valueOf(salt), 7, '0');
+        }
+    }
+
+    private String toString(final byte[] data) {
         final StringBuilder sb = new StringBuilder();
 
         for(int ii=0; ii<data.length; ii++) {
@@ -139,6 +148,7 @@ public class PBKDF2PasswordEncoder {
     }
 
 
-    private final SaltSource saltSource = new SaltSource();
+    private static final SecureRandom random = new SecureRandom();
+
     public static final String SALT_DELIMITER = ":";
 }
