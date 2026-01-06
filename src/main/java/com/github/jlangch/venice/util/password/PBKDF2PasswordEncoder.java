@@ -54,12 +54,12 @@ public class PBKDF2PasswordEncoder {
 
 
     /**
-     * <p>Verifies if two passwords are identical.</p>
-     *      *
+     * <p>Verifies if two passwords are identical.
+     *
      * @param clearTextPwd  A clear text password
      * @param hashedPwd  A hashed salted password
      *
-     * @return <tt>true</tt> if the two passwords are identical otherwise <tt>false</tt>
+     * @return <code>true</code> if the two passwords are identical otherwise <code>false</code>
      */
     public boolean verify(final String clearTextPwd, final String hashedPwd) {
         try {
