@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl.conn;
 
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -44,6 +45,7 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.impl.Authenticator;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
@@ -71,7 +73,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final TcpServer server,
             final SocketChannel ch,
             final long connectionId,
-            final boolean authentication,
+            final Authenticator authenticator,
             final ServerLogger logger,
             final Function<IMessage,IMessage> handler,
             final long maxMessageSize,
@@ -89,7 +91,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.server = server;
         this.ch = ch;
         this.connectionId = connectionId;
-        this.authentication = authentication;
+        this.authenticator = authenticator;
         this.logger = logger;
         this.handler = handler;
         this.maxMessageSize = maxMessageSize;
@@ -364,6 +366,9 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 case DIFFIE_HELLMAN_KEY_REQUEST:
                     return handleDiffieHellmanKeyExchange(request);
+
+                case AUTHENTICATION:
+                    return handleAuthentication(request);
 
                 default:
                     // Invalid request type
@@ -829,7 +834,7 @@ public class ServerConnection implements IPublisher, Runnable {
                             .add("compress-cutoff-size", compressor.cutoffSize())
                             .add("permit-client-queue-mgmt", permitClientQueueMgmt)
                             .add("encrypt", enforceEncryption)
-                            .add("authentication", authentication)
+                            .add("authentication", authenticator.isActive())
                             .toJson(false));
     }
 
@@ -881,6 +886,25 @@ public class ServerConnection implements IPublisher, Runnable {
             }
         }
     }
+
+
+    private Message handleAuthentication(final Message request) {
+        if (!"text/plain".equals(request.getMimetype())) {
+            return createBadRequestResponse(
+                    request,
+                    String.format("Request %s: Expected a text payload", request.getType()));
+        }
+
+        final List<String> payload = StringUtil.splitIntoLines(request.getText());
+        if (payload.size() == 2) {
+            if (authenticator.isAuthenticated(payload.get(0), payload.get(1))) {
+                return createTextResponse(request, ResponseStatus.OK, "");
+            }
+        }
+
+        return createTextResponse(request, ResponseStatus.NO_PERMISSION, "");
+    }
+
 
     // ------------------------------------------------------------------------
     // Create response messages
@@ -1140,7 +1164,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
-    private final boolean authentication;
+    private final Authenticator authenticator;
 
     private final AtomicBoolean stop = new AtomicBoolean(false);
 

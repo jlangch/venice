@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.util.ipc.impl.Authenticator;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
@@ -419,7 +420,7 @@ public class TcpServer implements AutoCloseable {
                                                                    this,
                                                                    channel,
                                                                    connId,
-                                                                   authentication,
+                                                                   authenticator.get(),
                                                                    logger,
                                                                    handler,
                                                                    maxMessageSize.get(),
@@ -682,9 +683,9 @@ public class TcpServer implements AutoCloseable {
     private final int port;
     private final int timeout;
     private final String endpointId;
-    private final boolean authentication = false;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
+    private final AtomicReference<Authenticator> authenticator = new AtomicReference<>(new Authenticator(false));
     private final AtomicLong connectionId = new AtomicLong(0);
     private final WalQueueManager wal = new WalQueueManager();
     private final int publishQueueCapacity = 50;
