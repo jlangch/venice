@@ -203,10 +203,27 @@ public class TcpClient implements Cloneable, AutoCloseable {
      * Opens the client
      */
     public void open() {
+        open(null, null);
+    }
+
+    /**
+     * Opens the client with the specified user identity.
+     *
+     * @param userName authentication user name
+     * @param password authentication password
+     */
+    public void open(final String userName, final String password) {
+        if (userName != null && password == null) {
+            throw new IpcException("Authentication requires a user name and a password!");
+        }
+        if (userName == null && password != null) {
+            throw new IpcException("Authentication requires a user name and a password!");
+        }
+
         if (opened.compareAndSet(false, true)) {
             ClientConnection c = null;
             try {
-                c = new ClientConnection(host, port, encrypt.get(), ackMode.get());
+                c = new ClientConnection(host, port, encrypt.get(), ackMode.get(), userName, password);
                 conn.set(c);
             }
             catch(Exception ex) {

@@ -44,10 +44,12 @@ public enum MessageType {
 
     DIFFIE_HELLMAN_KEY_REQUEST(50),
 
+    AUTHENTICATION(60),
+
 
     // responses
 
-    RESPONSE(60),
+    RESPONSE(70),
 
 
     // null, message type not yet determined

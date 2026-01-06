@@ -71,6 +71,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final TcpServer server,
             final SocketChannel ch,
             final long connectionId,
+            final boolean authentication,
             final ServerLogger logger,
             final Function<IMessage,IMessage> handler,
             final long maxMessageSize,
@@ -88,6 +89,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.server = server;
         this.ch = ch;
         this.connectionId = connectionId;
+        this.authentication = authentication;
         this.logger = logger;
         this.handler = handler;
         this.maxMessageSize = maxMessageSize;
@@ -827,6 +829,7 @@ public class ServerConnection implements IPublisher, Runnable {
                             .add("compress-cutoff-size", compressor.cutoffSize())
                             .add("permit-client-queue-mgmt", permitClientQueueMgmt)
                             .add("encrypt", enforceEncryption)
+                            .add("authentication", authentication)
                             .toJson(false));
     }
 
@@ -1137,6 +1140,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
     private final Supplier<VncMap> serverThreadPoolStatistics;
+    private final boolean authentication;
 
     private final AtomicBoolean stop = new AtomicBoolean(false);
 

@@ -419,6 +419,7 @@ public class TcpServer implements AutoCloseable {
                                                                    this,
                                                                    channel,
                                                                    connId,
+                                                                   authentication,
                                                                    logger,
                                                                    handler,
                                                                    maxMessageSize.get(),
@@ -681,6 +682,7 @@ public class TcpServer implements AutoCloseable {
     private final int port;
     private final int timeout;
     private final String endpointId;
+    private final boolean authentication = false;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong connectionId = new AtomicLong(0);

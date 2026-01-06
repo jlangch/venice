@@ -65,7 +65,9 @@ public class ClientConnection implements AutoCloseable {
             final String host,
             final int port,
             final boolean useEncryption,
-            final AcknowledgeMode ackMode
+            final AcknowledgeMode ackMode,
+            final String userName,
+            final String password
     ) {
         this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
         this.port = port;
@@ -104,11 +106,13 @@ public class ClientConnection implements AutoCloseable {
                 final long srv_maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
                 final boolean srv_encryption  = getBoolean(config, "encrypt", false);
                 final boolean srv_permitQMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
+                final boolean srv_authentication = getBoolean(config, "authentication", false);
 
                 maxMessageSize = srv_maxMessageSize;
                 permitClientQueueMgmt = srv_permitQMgmt;
                 compressor = new Compressor(srv_cutoffSize);
                 encrypt = useEncryption || srv_encryption;
+                authentication = srv_authentication;
 
                 // Note: The server is enforcing the encryption if activated.
                 //       The client cannot disregard it. Trying to do so results
@@ -132,13 +136,28 @@ public class ClientConnection implements AutoCloseable {
                 encryptor = Encryptor.off();
             }
 
-            // [5] Start the channel message listener
+            // [5] Authentication
+            if (authentication) {
+                if (userName == null || password == null) {
+                   throw new IpcException(
+                           "The IPC server requires authentication! Please pass "
+                           + "a user name and a password for opening an IPC client!");
+                }
+
+                // authenticate
+                final boolean ok = authenticate(channel, userName, password);
+                if (!ok) {
+                    throw new IpcException("Authentication failure! Bad user credentials!");
+                }
+            }
+
+            // [6] Start the channel message listener
             listener = new ChannelMessageListener(channel, compressor, encryptor);
             mngdExecutor
                .getExecutor()
                .submit(listener);
 
-            // [6] Ready for the music
+            // [7] Ready for the music
             opened.set(true);
         }
         catch(Exception ex) {
@@ -384,6 +403,20 @@ public class ClientConnection implements AutoCloseable {
         }
     }
 
+    private boolean authenticate(
+            final SocketChannel ch,
+            final String userName,
+            final String password
+    ) {
+        final IMessage response = sendDirect(
+                                    createAuthenticationMessage(userName, password),
+                                    ch,
+                                    Compressor.off(),
+                                    encryptor,
+                                    2_000);
+        return response.getResponseStatus() == ResponseStatus.OK;
+    }
+
 
     private static Message createDiffieHellmanRequestMessage(final String clientPublicKey) {
         return new Message(
@@ -422,6 +455,24 @@ public class ClientConnection implements AutoCloseable {
                 "application/json",
                 "UTF-8",
                 toBytes(payload, "UTF-8"));
+    }
+
+    private static Message createAuthenticationMessage(
+            final String userName,
+            final String password
+    ) {
+        return new Message(
+                null,
+                MessageType.AUTHENTICATION,
+                ResponseStatus.NULL,
+                false,
+                false,
+                false,
+                Messages.EXPIRES_NEVER,
+                Topics.of(Messages.AUTHENTICATION),
+                "text/plain",
+                "UTF-8",
+                toBytes(userName + "\n" + password, "UTF-8"));
     }
 
     private static Message deref(Future<Message> future, final long timeout) {
@@ -480,6 +531,7 @@ public class ClientConnection implements AutoCloseable {
 
     private final long maxMessageSize;
     private final boolean permitClientQueueMgmt;
+    private final boolean authentication;
 
     // compression
     private final Compressor compressor;
