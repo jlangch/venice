@@ -126,6 +126,24 @@ public class TcpServer implements AutoCloseable {
     }
 
     /**
+     * Set an authenticator
+     *
+     * @param authenticator a client authenticator.
+     * @return this server
+     */
+    public TcpServer setAuthenticator(final Authenticator authenticator) {
+        Objects.requireNonNull(authenticator);
+
+        if (started.get()) {
+            throw new IllegalStateException(
+                   "The authenticator cannot be changed anymore "
+                   + "once the server has been started!");
+        }
+        this.authenticator.set(authenticator);
+        return this;
+    }
+
+    /**
      * Set the compression cutoff size for payload messages.
      *
      * <p>With a negative cutoff size payload messages will not be compressed.
@@ -419,7 +437,7 @@ public class TcpServer implements AutoCloseable {
                                                                    this,
                                                                    channel,
                                                                    connId,
-                                                                   authenticator,
+                                                                   authenticator.get(),
                                                                    logger,
                                                                    handler,
                                                                    maxMessageSize.get(),
@@ -685,7 +703,7 @@ public class TcpServer implements AutoCloseable {
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong connectionId = new AtomicLong(0);
-    private final Authenticator authenticator = new Authenticator(false);
+    private final AtomicReference<Authenticator> authenticator = new AtomicReference<>(new Authenticator(false));
     private final WalQueueManager wal = new WalQueueManager();
     private final int publishQueueCapacity = 50;
     private final ServerStatistics statistics = new ServerStatistics();

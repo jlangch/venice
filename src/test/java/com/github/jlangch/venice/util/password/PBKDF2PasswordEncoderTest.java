@@ -39,4 +39,14 @@ public class PBKDF2PasswordEncoderTest {
         assertTrue(encoder.verify("hello", encoder.encode("hello")));
         assertFalse(encoder.verify("hello", encoder.encode("hello") + "-"));
     }
+
+    @Test
+    public void test_utf8() {
+        final PBKDF2PasswordEncoder encoder = new PBKDF2PasswordEncoder();
+
+        assertNotEquals("hello", encoder.encode("hello"));
+
+        assertTrue(encoder.verify("hello-α", encoder.encode("hello-α")));
+        assertFalse(encoder.verify("hello", encoder.encode("hello") + "-"));
+    }
 }

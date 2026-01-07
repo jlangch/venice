@@ -48,7 +48,7 @@ public class AuthenticatorTest {
 
         a.activate(false);
         assertFalse(a.isActive());
-   }
+    }
 
     @Test
     public void test_credentials() {
@@ -86,11 +86,33 @@ public class AuthenticatorTest {
         a.addCredentials("u1", "123");
         a.addCredentials("u2", "456");
 
+        assertTrue(a.isActive());
+
         assertTrue(a.isAuthenticated("u1", "123"));
         assertTrue(a.isAuthenticated("u2", "456"));
 
         assertFalse(a.isAuthenticated("u1", "124"));
         assertFalse(a.isAuthenticated("x1", "123"));
+
+        assertFalse(a.isAuthenticated("u1", null));
+        assertFalse(a.isAuthenticated(null, "124"));
+        assertFalse(a.isAuthenticated(null, null));
+    }
+
+    @Test
+    public void test_authenticated_on_utf8() {
+        final Authenticator a = new Authenticator(true);
+
+        a.addCredentials("u-α", "123-α");
+        a.addCredentials("u-β", "456-β");
+
+        assertTrue(a.isActive());
+
+        assertTrue(a.isAuthenticated("u-α", "123-α"));
+        assertTrue(a.isAuthenticated("u-β", "456-β"));
+
+        assertFalse(a.isAuthenticated("u-α", "123-γ"));
+        assertFalse(a.isAuthenticated("x1", "123-γ"));
 
         assertFalse(a.isAuthenticated("u1", null));
         assertFalse(a.isAuthenticated(null, "124"));
@@ -107,6 +129,8 @@ public class AuthenticatorTest {
         assertTrue(a.isAuthenticated("u1", "123"));
         assertTrue(a.isAuthenticated("u2", "456"));
 
+        assertFalse(a.isActive());
+
         // always ok!
         assertTrue(a.isAuthenticated("u1", "124"));
         assertTrue(a.isAuthenticated("x1", "123"));
@@ -118,7 +142,7 @@ public class AuthenticatorTest {
     }
 
     @Test
-    public void test_authenticated_load_save() throws Exception {
+    public void test_authenticated_load_save_1() throws Exception {
         final File file = Files.createTempFile("test", ".cred").normalize().toFile();
         file.deleteOnExit();
 
@@ -132,14 +156,37 @@ public class AuthenticatorTest {
         final Authenticator b = new Authenticator(false);
         b.load(new FileInputStream(file));
 
+        assertTrue(b.isActive());  // automatically active after loading credentials
         assertEquals(2, b.size());
 
         assertTrue(b.isAuthenticated("u1", "123"));
         assertTrue(b.isAuthenticated("u2", "456"));
-     }
+    }
 
     @Test
-    public void test_authenticated_load_save_utf8() throws Exception {
+    public void test_authenticated_load_save_2() throws Exception {
+        final File file = Files.createTempFile("test", ".cred").normalize().toFile();
+        file.deleteOnExit();
+
+        final Authenticator a = new Authenticator(false);
+
+        a.addCredentials("u1", "123");
+        a.addCredentials("u2", "456");
+
+        a.save(file);
+
+        final Authenticator b = new Authenticator(false);
+        b.load(file);
+
+        assertTrue(b.isActive());  // automatically active after loading credentials
+        assertEquals(2, b.size());
+
+        assertTrue(b.isAuthenticated("u1", "123"));
+        assertTrue(b.isAuthenticated("u2", "456"));
+    }
+
+    @Test
+    public void test_authenticated_load_save_1_utf8() throws Exception {
         final File file = Files.createTempFile("test", ".cred").normalize().toFile();
         file.deleteOnExit();
 
@@ -153,10 +200,33 @@ public class AuthenticatorTest {
         final Authenticator b = new Authenticator(false);
         b.load(new FileInputStream(file));
 
+        assertTrue(b.isActive());  // automatically active after loading credentials
         assertEquals(2, b.size());
 
         assertTrue(b.isAuthenticated("u-α", "123-α"));
         assertTrue(b.isAuthenticated("u-β", "456-β"));
-     }
+    }
+
+    @Test
+    public void test_authenticated_load_save_2_utf8() throws Exception {
+        final File file = Files.createTempFile("test", ".cred").normalize().toFile();
+        file.deleteOnExit();
+
+        final Authenticator a = new Authenticator(false);
+
+        a.addCredentials("u-α", "123-α");
+        a.addCredentials("u-β", "456-β");
+
+        a.save(file);
+
+        final Authenticator b = new Authenticator(false);
+        b.load(file);
+
+        assertTrue(b.isActive());  // automatically active after loading credentials
+        assertEquals(2, b.size());
+
+        assertTrue(b.isAuthenticated("u-α", "123-α"));
+        assertTrue(b.isAuthenticated("u-β", "456-β"));
+    }
 
 }

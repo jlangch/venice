@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -91,10 +94,15 @@ public class Authenticator {
     public void load(final InputStream is) {
         Objects.requireNonNull(is);
 
-        try {
+        try (InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"))) {
+            clearCredentials();
+
             final Properties p = new Properties();
-            p.load(new InputStreamReader(is, Charset.forName("UTF-8")));
-            p.forEach((k,v)-> addCredentials((String)k, (String)v));
+            p.load(isr);
+            p.forEach((k,v)-> authorizations.put((String)k, (String)v));
+
+            // automatically active after loading credentials
+            activate(true);
         }
         catch(IOException ex) {
             throw new IpcException("Failed to load authenticator data", ex);
@@ -104,12 +112,33 @@ public class Authenticator {
     public void save(final OutputStream os) {
         Objects.requireNonNull(os);
 
-        try {
+        try (OutputStreamWriter osr = new OutputStreamWriter(os, Charset.forName("UTF-8"))) {
             final Properties p = new Properties();
             authorizations.forEach((k,v) -> p.setProperty(k, v));
-            p.store(
-                new OutputStreamWriter(os, Charset.forName("UTF-8")),
-                "IPC user credentials");
+            p.store(osr, "IPC user credentials");
+            osr.flush();
+        }
+        catch(IOException ex) {
+            throw new IpcException("Failed to save authenticator data", ex);
+        }
+    }
+
+    public void load(final File f) {
+        Objects.requireNonNull(f);
+
+        try (InputStream is = new FileInputStream(f)) {
+            load(is);
+        }
+        catch(IOException ex) {
+            throw new IpcException("Failed to load authenticator data", ex);
+        }
+    }
+
+    public void save(final File f) {
+        Objects.requireNonNull(f);
+
+        try (OutputStream is = new FileOutputStream(f)) {
+            save(is);
         }
         catch(IOException ex) {
             throw new IpcException("Failed to save authenticator data", ex);
@@ -119,6 +148,7 @@ public class Authenticator {
 
 
     private volatile boolean active;
+
     private final PBKDF2PasswordEncoder pwEncoder = new PBKDF2PasswordEncoder();
     private final ConcurrentHashMap<String, String> authorizations = new ConcurrentHashMap<>();
 }
