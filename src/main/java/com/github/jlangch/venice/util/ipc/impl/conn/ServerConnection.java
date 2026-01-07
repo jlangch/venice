@@ -41,11 +41,11 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.ipc.AcknowledgeMode;
+import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpServer;
-import com.github.jlangch.venice.util.ipc.impl.Authenticator;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
@@ -319,6 +319,24 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleRequestMessage(final Message request) {
+        // Authentication
+        if (authenticator.isActive()) {
+            switch(request.getType()) {
+                case CLIENT_CONFIG:
+                case DIFFIE_HELLMAN_KEY_REQUEST:
+                case AUTHENTICATION:
+                    break;
+                default:
+                    if (!authenticated) {
+                        return createTextResponse(
+                                request,
+                                ResponseStatus.NO_PERMISSION,
+                                "Authentication is required!");
+                    }
+                    break;
+            }
+        }
+
         try {
             switch(request.getType()) {
                 case REQUEST:
@@ -897,7 +915,8 @@ public class ServerConnection implements IPublisher, Runnable {
 
         final List<String> payload = StringUtil.splitIntoLines(request.getText());
         if (payload.size() == 2) {
-            if (authenticator.isAuthenticated(payload.get(0), payload.get(1))) {
+            authenticated = authenticator.isAuthenticated(payload.get(0), payload.get(1));
+            if (authenticated) {
                 return createTextResponse(request, ResponseStatus.OK, "");
             }
         }
@@ -1150,6 +1169,7 @@ public class ServerConnection implements IPublisher, Runnable {
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
     private volatile State mode = State.Active;
+    private volatile boolean authenticated = false;
     private volatile Thread publisherThread;
     private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
 

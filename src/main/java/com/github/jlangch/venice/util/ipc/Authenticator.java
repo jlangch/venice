@@ -19,44 +19,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl;
+package com.github.jlangch.venice.util.ipc;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.password.PBKDF2PasswordEncoder;
 
 
 public class Authenticator {
 
-    public Authenticator(final boolean active) {
-        this.active = active;
+    public Authenticator(final boolean activate) {
+        this.active = activate;
     }
 
+    public void activate(final boolean activate) {
+        this.active = activate;
+    }
 
     public boolean isActive() {
         return active;
+    }
+
+    public int size() {
+        return authorizations.size();
     }
 
     public void addCredentials(
             final String userName,
             final String password
     ) {
-        if (userName == null || password == null) {
-            throw new IpcException("Invalid user authorization credentials!");
-        }
+        Objects.requireNonNull(userName);
+        Objects.requireNonNull(password);
+
         authorizations.put(userName, pwEncoder.encode(password));
     }
 
-    public void removeCredentials(
-            final String userName
-    ) {
+    public void removeCredentials(final String userName) {
+        Objects.requireNonNull(userName);
+
         authorizations.remove(userName);
     }
 
-    public void clearCredentials(
-            final String userName
-    ) {
+    public void clearCredentials() {
         authorizations.clear();
     }
 
@@ -64,6 +76,10 @@ public class Authenticator {
             final String userName,
             final String password
     ) {
+        if (!active) {
+           return true;
+        }
+
         if (userName == null || password == null) {
             return false;
         }
@@ -72,8 +88,37 @@ public class Authenticator {
         return pwHash != null && pwEncoder.verify(password, pwHash);
     }
 
+    public void load(final InputStream is) {
+        Objects.requireNonNull(is);
 
-    private final boolean active;
+        try {
+            final Properties p = new Properties();
+            p.load(new InputStreamReader(is, Charset.forName("UTF-8")));
+            p.forEach((k,v)-> addCredentials((String)k, (String)v));
+        }
+        catch(IOException ex) {
+            throw new IpcException("Failed to load authenticator data", ex);
+        }
+    }
+
+    public void save(final OutputStream os) {
+        Objects.requireNonNull(os);
+
+        try {
+            final Properties p = new Properties();
+            authorizations.forEach((k,v) -> p.setProperty(k, v));
+            p.store(
+                new OutputStreamWriter(os, Charset.forName("UTF-8")),
+                "IPC user credentials");
+        }
+        catch(IOException ex) {
+            throw new IpcException("Failed to save authenticator data", ex);
+        }
+    }
+
+
+
+    private volatile boolean active;
     private final PBKDF2PasswordEncoder pwEncoder = new PBKDF2PasswordEncoder();
     private final ConcurrentHashMap<String, String> authorizations = new ConcurrentHashMap<>();
 }
