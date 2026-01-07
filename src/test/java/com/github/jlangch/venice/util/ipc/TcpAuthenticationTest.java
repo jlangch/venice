@@ -123,7 +123,7 @@ public class TcpAuthenticationTest {
 
 
         try {
-            client.open();  // open without authentication
+            client.open();  // open without authentication => error
 
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 

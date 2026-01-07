@@ -128,6 +128,9 @@ public class TcpServer implements AutoCloseable {
     /**
      * Set an authenticator
      *
+     * <p>Note: For security reasons enforce encryption to safely send the
+     * user credentials from a client to the server!
+     *
      * @param authenticator a client authenticator.
      * @return this server
      */
