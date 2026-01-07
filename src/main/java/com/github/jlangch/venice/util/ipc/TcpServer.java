@@ -388,22 +388,22 @@ public class TcpServer implements AutoCloseable {
 
                 ch.configureBlocking(true);
 
-                logger.info("server", "Server started on port " + port);
-                logger.info("server", "Socket Timeout: " + timeout);
-                logger.info("server", "Endpoint ID: " + endpointId);
-                logger.info("server", "Encryption: " + isEncrypted());
-                logger.info("server", "Max Parallel Connections: " + mngdExecutor.getMaximumThreadPoolSize());
-                logger.info("server", "Max Queues: " + getMaxQueues());
-                logger.info("server", "Max Msg Size: " + getMaxMessageSize());
-                logger.info("server", "Compress Cutoff Size: " + getCompressCutoffSize());
-                logger.info("server", "Log-File: " + logger.getLogFile());
-                logger.info("server", "Write-Ahead-Log: " + isWriteAheadLog());
-                logger.info("server", "Write-Ahead-Log-Dir: " + wal.getWalDir());
+                logger.info("server", "start", "Server started on port " + port);
+                logger.info("server", "start", "Socket Timeout: " + timeout);
+                logger.info("server", "start", "Endpoint ID: " + endpointId);
+                logger.info("server", "start", "Encryption: " + isEncrypted());
+                logger.info("server", "start", "Max Parallel Connections: " + mngdExecutor.getMaximumThreadPoolSize());
+                logger.info("server", "start", "Max Queues: " + getMaxQueues());
+                logger.info("server", "start", "Max Msg Size: " + getMaxMessageSize());
+                logger.info("server", "start", "Compress Cutoff Size: " + getCompressCutoffSize());
+                logger.info("server", "start", "Log-File: " + logger.getLogFile());
+                logger.info("server", "start", "Write-Ahead-Log: " + isWriteAheadLog());
+                logger.info("server", "start", "Write-Ahead-Log-Dir: " + wal.getWalDir());
 
                 if (wal.isEnabled()) {
                     final int queueCount = wal.countLogFiles();
                     if (queueCount > 0) {
-                        logger.info("server", "Loading " + queueCount + " queue(s) from WAL...");
+                        logger.info("server", "start", "Loading " + queueCount + " queue(s) from WAL...");
                     }
 
                     // Preload the queues from the Write-Ahead-Log
@@ -429,7 +429,7 @@ public class TcpServer implements AutoCloseable {
 
                             final long connId = connectionId.incrementAndGet();
                             logger.info(
-                                "server",
+                                "server", "start",
                                 "Server accepted new connection (" + connId + ") from "
                                 + IO.getRemoteAddress(channel));
 
@@ -460,11 +460,11 @@ public class TcpServer implements AutoCloseable {
                     }
                 });
 
-                logger.info("server", "Server is operational and ready to accept connections.");
+                logger.info("server", "start", "Server is operational and ready to accept connections.");
             }
             catch(Exception ex) {
                 final String msg = "Closed server on port " + port + "!";
-                logger.error("server", msg, ex);
+                logger.error("server", "start", msg, ex);
 
                 safeClose(ch);
                 started.set(false);
@@ -474,7 +474,7 @@ public class TcpServer implements AutoCloseable {
         }
         else {
             final String msg = "The server on port " + port + " has already been started!";
-            logger.error("server", msg);
+            logger.error("server", "start", msg);
 
             throw new IpcException(msg);
         }
@@ -486,7 +486,7 @@ public class TcpServer implements AutoCloseable {
     @Override
     public void close() {
         if (started.compareAndSet(true, false)) {
-            logger.info("server", "Server closing...");
+            logger.info("server", "close", "Server closing...");
 
             // do not shutdown the thread-pools too early
             IO.sleep(300);
@@ -501,7 +501,7 @@ public class TcpServer implements AutoCloseable {
             IO.sleep(100);
 
             logger.info(
-                "server",
+                "server", "close",
                 terminated
                     ? "Server closed."
                     : "Server closed. Some connections are delaying shutdown confirmation.");
@@ -586,7 +586,7 @@ public class TcpServer implements AutoCloseable {
                                                     bounded,
                                                     durable);
                    logger.info(
-                      "server",
+                      "server", "queue",
                       String.format(
                           "Created queue %s. Capacity=%d, bounded=%b, durable=%b",
                           queueName,
@@ -620,7 +620,7 @@ public class TcpServer implements AutoCloseable {
 
         p2pQueues.remove(queueName);
 
-        logger.info("server", String.format("Removed queue %s.", queueName));
+        logger.info("server", "queue", String.format("Removed queue %s.", queueName));
     }
 
     /**
@@ -646,13 +646,13 @@ public class TcpServer implements AutoCloseable {
                     }
                 }
                 catch(Exception ex) {
-                    logger.warn("server", "Error while closing queue WALs.", ex);
+                    logger.warn("server", "close", "Error while closing queue WALs.", ex);
                 }
 
                 ch.close();
             }
             catch(Exception ex) {
-                logger.warn("server", "Error while closing server.", ex);
+                logger.warn("server", "close", "Error while closing server.", ex);
             }
         }
     }
@@ -670,7 +670,7 @@ public class TcpServer implements AutoCloseable {
         }
         catch(BindException ex) {
             final String msg = "Already running! Failed to start server on port " + port + "!";
-            logger.error("server", msg, ex);
+            logger.error("server", "start", msg, ex);
 
             safeClose(srv);
             started.set(false);
@@ -679,7 +679,7 @@ public class TcpServer implements AutoCloseable {
         }
         catch(Exception ex) {
             final String msg = "Failed to start server on port " + port + "!";
-            logger.error("server", msg, ex);
+            logger.error("server", "start", msg, ex);
 
             safeClose(srv);
             started.set(false);

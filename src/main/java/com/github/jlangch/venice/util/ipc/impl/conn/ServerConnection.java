@@ -121,7 +121,7 @@ public class ServerConnection implements IPublisher, Runnable {
     @Override
     public void run() {
         try {
-            logger.info("conn-" + connectionId, "Listening on connection from " + IO.getRemoteAddress(ch));
+            logInfo("Listening on connection from " + IO.getRemoteAddress(ch));
 
             statistics.incrementConnectionCount();
 
@@ -141,8 +141,7 @@ public class ServerConnection implements IPublisher, Runnable {
             // when the client closed the connection
             //   - server gets a java.io.IOException: Broken pipe
             //   - quit this connection and close the channel
-            logger.error(
-                    "conn-" + connectionId, "Error on connection from "
+            logError("Error on connection from "
                         +  IO.getRemoteAddress(ch) + "!",
                     ex);
         }
@@ -207,7 +206,7 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private void publisher() {
-        logger.info("conn-" + connectionId, "Asychronous publisher started");
+        logInfo("Asychronous publisher started");
 
         while(!isStop()) {
             try {
@@ -227,7 +226,7 @@ public class ServerConnection implements IPublisher, Runnable {
             }
         }
 
-        logger.info("conn-" + connectionId, "Asychronous publisher stopped");
+        logInfo("Asychronous publisher stopped");
     }
 
 
@@ -459,9 +458,7 @@ public class ServerConnection implements IPublisher, Runnable {
         // register subscription
         subscriptions.addSubscriptions(request.getTopicsSet(), this);
 
-        logger.info(
-                "conn-" + connectionId,
-                String.format("Subscribed to topics: %s.", Topics.encode(request.getTopics())));
+        logInfo(String.format("Subscribed to topics: %s.", Topics.encode(request.getTopics())));
 
         // acknowledge the subscription
         return createOkTextResponse(request, "Subscribed to the topics.");
@@ -471,9 +468,7 @@ public class ServerConnection implements IPublisher, Runnable {
         // unregister subscription
         subscriptions.removeSubscriptions(request.getTopicsSet(), this);
 
-        logger.info(
-                "conn-" + connectionId,
-                String.format("Unsubscribed from topics: %s.", Topics.encode(request.getTopics())));
+        logInfo(String.format("Unsubscribed from topics: %s.", Topics.encode(request.getTopics())));
 
         // acknowledge the unsubscription
         return createOkTextResponse(request, "Unsubscribed from the topics.");
@@ -649,9 +644,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                                                 capacity,
                                                                 bounded,
                                                                 durable);
-                               logger.info(
-                                  "conn-" + connectionId,
-                                  String.format(
+                                logInfo(String.format(
                                       "Created queue %s. Capacity=%d, bounded=%b, durable=%b",
                                       queueName,
                                       capacity,
@@ -725,9 +718,7 @@ public class ServerConnection implements IPublisher, Runnable {
                    final IpcQueue<Message> q = new BoundedQueue<Message>(queueName, capacity, true);
                    tmpQueues.put(queueName, 0);
 
-                   logger.info(
-                           "conn-" + connectionId,
-                           String.format(
+                   logInfo(String.format(
                                "Created temporary queue %s. Capacity=%d",
                                queueName,
                                capacity));
@@ -776,7 +767,7 @@ public class ServerConnection implements IPublisher, Runnable {
         p2pQueues.remove(queueName);
         tmpQueues.remove(queueName);
 
-        logger.info("conn-" + connectionId, String.format("Removed queue %s.", queueName));
+        logInfo(String.format("Removed queue %s.", queueName));
 
         return createOkTextResponse(
                 request,
@@ -843,7 +834,7 @@ public class ServerConnection implements IPublisher, Runnable {
         final String sAckMode = Coerce.toVncString(payload.get(new VncString("ackMode"))).getValue();
         msgAcknowledgeMode = AcknowledgeMode.valueOf(sAckMode);
 
-        logger.info("conn-" + connectionId, "Handling client config request! AcknowledgeMode: " + msgAcknowledgeMode);
+        logInfo("Handling client config request! AcknowledgeMode: " + msgAcknowledgeMode);
         return createJsonResponse(
                     request,
                     ResponseStatus.OK,
@@ -858,7 +849,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleDiffieHellmanKeyExchange(final Message request) {
         if (clientPublicKey.get() != null) {
-            logger.warn("conn-" + connectionId, "Diffie-Hellman key already exchanged!");
+            logWarn("Diffie-Hellman key already exchanged!");
             return createPlainTextResponse(
                        request.getId(),
                        ResponseStatus.DIFFIE_HELLMAN_NAK,
@@ -868,20 +859,20 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         else {
             try {
-                logger.info("conn-" + connectionId, "Diffie-Hellman key exchange initiated!");
+                logInfo("Diffie-Hellman key exchange initiated!");
 
                 final String publicKey = request.getText();
                 clientPublicKey.set(publicKey);
 
-                logger.info("conn-" + connectionId, "Diffie-Hellman key exchange completed!");
+                logInfo("Diffie-Hellman key exchange completed!");
 
                 encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(publicKey)));
 
                 if (enforceEncryption) {
-                    logger.info("conn-" + connectionId, "Setup message encryptor! Encryption is mandatory.");
+                    logInfo("Setup message encryptor! Encryption is mandatory.");
                 }
                 else {
-                    logger.info("conn-" + connectionId, "Setup message encryptor! Encryption is optional.");
+                    logInfo("Setup message encryptor! Encryption is optional.");
                 }
 
                 // send the server's public key back
@@ -893,7 +884,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            dhKeys.getPublicKeyBase64());
             }
             catch(Exception ex) {
-                logger.warn("conn-" + connectionId, "Diffie-Hellman key exchange error!", ex);
+                logError("Diffie-Hellman key exchange error!", ex);
 
                 return createPlainTextResponse(
                            request.getId(),
@@ -917,10 +908,13 @@ public class ServerConnection implements IPublisher, Runnable {
         if (payload.size() == 2) {
             authenticated = authenticator.isAuthenticated(payload.get(0), payload.get(1));
             if (authenticated) {
+                principal = payload.get(0);
+                logInfo("Authenticated user '" + payload.get(0) + "'");
                 return createTextResponse(request, ResponseStatus.OK, "");
             }
         }
 
+        logError("Authentication failure '" + payload.get(0) + "'");
         return createTextResponse(request, ResponseStatus.NO_PERMISSION, "");
     }
 
@@ -1132,7 +1126,7 @@ public class ServerConnection implements IPublisher, Runnable {
             names.forEach(n -> p2pQueues.remove(n));
             tmpQueues.clear();
 
-            logger.info("conn-" + connectionId, "Removed all temporary queues of the connnection");
+            logInfo("Removed all temporary queues of the connnection");
         }
         catch(Exception ignore) { }
     }
@@ -1154,7 +1148,23 @@ public class ServerConnection implements IPublisher, Runnable {
 
         IO.safeClose(ch);
 
-        logger.info("conn-" + connectionId, "Closed connection");
+        logInfo("Closed connection");
+    }
+
+    private void logInfo(final String message) {
+        logger.info(principal, "conn-" + connectionId, message);
+    }
+
+    private void logWarn(final String message) {
+        logger.warn(principal, "conn-" + connectionId, message);
+    }
+
+    private void logError(final String message) {
+        logger.error(principal, "conn-" + connectionId, message);
+    }
+
+    private void logError(final String message, final Exception ex) {
+        logger.error(principal, "conn-" + connectionId, message, ex);
     }
 
 
@@ -1169,6 +1179,7 @@ public class ServerConnection implements IPublisher, Runnable {
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
     private volatile State mode = State.Active;
+    private volatile String principal = "anon";
     private volatile boolean authenticated = false;
     private volatile Thread publisherThread;
     private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;

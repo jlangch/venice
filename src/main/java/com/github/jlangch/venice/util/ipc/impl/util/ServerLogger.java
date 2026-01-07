@@ -58,34 +58,35 @@ public final class ServerLogger {
     }
 
 
-    public void info(final String context, final String message) {
+    public void info(final String principal, final String context, final String message) {
         Objects.requireNonNull(message);
-        log("INFO", context, message, null);
+        log("INFO", principal, context, message, null);
     }
 
-    public void warn(final String context, final String message) {
+    public void warn(final String principal, final String context, final String message) {
         Objects.requireNonNull(message);
-        log("WARN", context, message, null);
+        log("WARN", principal, context, message, null);
     }
 
-    public void warn(final String context, final String message, final Exception ex) {
+    public void warn(final String principal, final String context, final String message, final Exception ex) {
         Objects.requireNonNull(message);
-        log("WARN", context, message, ex);
+        log("WARN", principal, context, message, ex);
     }
 
-    public void error(final String context, final String message) {
+    public void error(final String principal, final String context, final String message) {
         Objects.requireNonNull(message);
-        log("ERROR", context, message, null);
+        log("ERROR", principal, context, message, null);
     }
 
-    public void error(final String context, final String message, final Exception ex) {
+    public void error(final String principal, final String context, final String message, final Exception ex) {
         Objects.requireNonNull(message);
-        log("ERROR", context, message, ex);
+        log("ERROR", principal, context, message, ex);
     }
 
 
     private synchronized void log(
             final String level,
+            final String principal,
             final String context,
             final String message,
             final Exception ex
@@ -97,9 +98,10 @@ public final class ServerLogger {
         final String msg = ex == null ? message : message + ". Cause: " + ex.getMessage();
 
         final String logMsg = String.format(
-                                "%s|%s|%s|%s%n",
+                                "%s|%s|%s|%s|%s%n",
                                 LocalDateTime.now().format(dtf),
                                 level,
+                                principal,
                                 StringUtil.trimToEmpty(context),
                                 msg);
         try {
