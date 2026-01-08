@@ -412,6 +412,8 @@ authorized users/applications can access the messaging infrastructure.
 > [!NOTE]
 > For security reasons encryption needs to be enabled on the server to securely send the
 > user credentials from a client to the server!
+>
+> Passwords are stored as salted PBKDF2 hashes on the server!
 
 ```clojure
 (do

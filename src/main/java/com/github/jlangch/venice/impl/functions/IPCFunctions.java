@@ -1656,7 +1656,11 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists("(ipc/authenticator & keyvals)")
-                    .doc("Creates a new authenticator.")
+                    .doc(
+                        "Creates a new authenticator the manages the credential on behalf of " +
+                        "the server.\n\n" +
+                        "The authenticator stores passwords as salted PBKDF2 hashes! It does not keep " +
+                        "the clear text passwords.")
                     .examples(
                         "(ipc/authenticator)",
                         "(ipc/authenticator \"user-1\" \"password-1\")",
@@ -1737,7 +1741,9 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists("(ipc/store-authenticator authenticator dest)")
-                    .doc("Stores an authenticator to a file or an output stream.")
+                    .doc(
+                        "Stores an authenticator to a file or an output stream.\n\n" +
+                        "Passwords are stored as salted PBKDF2 hashes!")
                     .examples(
                         "(let [a (ipc/authenticator)]                             \n" +
                         "  (ipc/add-credentials a \"user-1\" \"password-1\")      \n" +

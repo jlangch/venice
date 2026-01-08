@@ -37,6 +37,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.github.jlangch.venice.util.password.PBKDF2PasswordEncoder;
 
 
+/**
+ * The authenticator stores passwords as salted PBKDF2 hashes! It does not keep
+ * the clear text passwords.
+ */
 public class Authenticator {
 
     public Authenticator(final boolean activate) {
