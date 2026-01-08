@@ -27,8 +27,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -47,7 +45,7 @@ public class PBKDF2PasswordEncoder {
      * @return The encoded password
      */
     public String encode(final String password) {
-        if (StringUtils.isBlank(password)) {
+        if (StringUtil.isBlank(password)) {
             throw new IllegalArgumentException("A 'password' must not be blank");
         }
 
@@ -131,7 +129,7 @@ public class PBKDF2PasswordEncoder {
     private String createSalt() {
         synchronized(random) {
             final int salt = random.nextInt(10000000);
-            return StringUtils.leftPad(String.valueOf(salt), 7, '0');
+            return StringUtil.padLeft(String.valueOf(salt), 7, '0');
         }
     }
 

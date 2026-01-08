@@ -137,7 +137,24 @@ public class IPCFunctions {
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
                         "         (ipc/send client)                                    \n" +
                         "         (ipc/message->map)                                   \n" +
-                        "         (println \"RESPONSE: \"))))                          ")
+                        "         (println \"RESPONSE: \"))))                          ",
+                        "(do                                                             \n" +
+                        "  (defn echo-handler [m]                                        \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))               \n" +
+                        "    m)                                                          \n" +
+                        "                                                                \n" +
+                        "  (let [a (ipc/authenticator)]                                  \n" +
+                        "    (ipc/add-credentials a \"tom\" \"3,kio\")                   \n" +
+                        "    (try-with [server (ipc/server 33333 echo-handler            \n" +
+                        "                                  :encrypt true                 \n" +
+                        "                                  :authenticator a)             \n" +
+                        "               client (ipc/client \"localhost\" 33333           \n" +
+                        "                                  :user-name \"tom\"            \n" +
+                        "                                  :password \"3,kio\")]         \n" +
+                        "      (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
+                        "           (ipc/send client)                                    \n" +
+                        "           (ipc/message->map)                                   \n" +
+                        "           (println \"RESPONSE: \")))))                         ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
@@ -1658,7 +1675,7 @@ public class IPCFunctions {
                 }
                 else {
                     final Authenticator authenticator = new Authenticator(true);
-                    for(int ii=0; ii<args.size()/2; ii++) {
+                    for(int ii=0; ii<args.size(); ii=ii+2) {
                         authenticator.addCredentials(
                             Coerce.toVncString(args.nth(ii)).toString(),
                             Coerce.toVncString(args.nth(ii+1)).toString());

@@ -566,20 +566,32 @@ public class StringUtil {
     }
 
     public static String padLeft(final String s, final int len) {
+        return padLeft(s, len, ' ');
+    }
+
+    public static String padLeft(final String s, final int len, final char padChar) {
         final int padLen = len - s.length();
-        return padLen > 0 ? repeat(' ', padLen) + s : s;
+        return padLen > 0 ? repeat(padChar, padLen) + s : s;
     }
 
     public static String padRight(final String s, final int len) {
+        return padRight(s, len, ' ');
+    }
+
+    public static String padRight(final String s, final int len, final char padChar) {
         final int padLen = len - s.length();
-        return padLen > 0 ? s + repeat(' ', padLen) : s;
+        return padLen > 0 ? s + repeat(padChar, padLen) : s;
     }
 
     public static String padCenter(final String s, final int len) {
+        return padCenter(s, len, ' ');
+    }
+
+    public static String padCenter(final String s, final int len, final char padChar) {
         final int padLen = len - s.length();
         final int padRight = padLen / 2;
         final int padLeft = padLen - padRight;
-        return padLen > 0 ? repeat(' ', padLeft) + s  + repeat(' ', padRight) : s;
+        return padLen > 0 ? repeat(padChar, padLeft) + s  + repeat(padChar, padRight) : s;
     }
 
     public static String toEscapedUnicode(final char ch) {
