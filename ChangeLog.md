@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.70] - 2025-12-xx
+## [1.12.71] - 2026-01-xx
 
 ### Enhancements
 
@@ -14,6 +14,19 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant message api (in work)
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.70] - 2026-01-08
+
+### Enhancements
+
+- Added authentication support to IPC client/server
+
+### Bugs
+
+- Fixed a 'try-width' auto closing resources edge case when a binding expression fails
+
 
 
 

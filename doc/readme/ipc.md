@@ -434,9 +434,9 @@ authorized users/applications can access the messaging infrastructure.
            (println "RESPONSE: ")))))
 ```
 
-### Server authenticators can be stored/loaded from a file
+**Server authenticators can be stored/loaded from a file**
 
-Create an authenticator and store it to a file
+Create an authenticator and store it to a file for later use:
 
 ```clojure
 (let [ac (ipc/authenticator)]
@@ -445,7 +445,7 @@ Create an authenticator and store it to a file
   (ipc/store-authenticator ac (io/file "./ipc.cred")))
 ```
 
-Load the authenticator from a file
+Load the authenticator from a file:
 
 ```clojure
 (do

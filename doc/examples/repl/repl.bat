@@ -4,7 +4,7 @@ REM # -------------------------------------------------------------------------
 REM # --home
 REM #    |
 REM #    +-- libs
-REM #    |    +-- venice-1.12.69.jar
+REM #    |    +-- venice-1.12.70.jar
 REM #    |    +-- jansi-1.18.jar
 REM #    |
 REM #    +-- repl.json
