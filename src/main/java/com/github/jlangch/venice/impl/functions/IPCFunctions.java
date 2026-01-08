@@ -112,7 +112,7 @@ public class IPCFunctions {
                                                         " with this server.¶" +
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
                                                         " created and exchanged using the Diffie-Hellman key exchange " +
-                                                        " algorithm.|\n\n" +
+                                                        " algorithm.|\n" +
                         "| :server-log-dir f            | If the server-log-dir is specified writes a server log to this " +
                                                         " directory.¶" +
                                                         " Defaults to `nil`.|\n" +
@@ -122,8 +122,7 @@ public class IPCFunctions {
                                                         " Defaults to `false`.|\n" +
                         "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
                         "                                 Defaults to `false`.|\n" +
-                        "| :authenticator a             | An authenticator.¶" +
-                        "                                 Defaults to `nil`.|\n\n" +
+                        "| :authenticator a             | An authenticator. Defaults to `nil`.|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(

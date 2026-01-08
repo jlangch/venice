@@ -11,6 +11,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
     * [Offer and Poll](#offer-and-poll)
     * [Offer and Poll with durable Queues](#offer-and-poll-with-durable-queues)
     * [Publish and Subscribe](#publish-and-subscribe)
+* [Authentication](#authentication)
 * [Messages](#messages)
 * [Compressing Messages](#compressing-messages)
 * [Encrypting Messages](#encrypting-messages)
@@ -397,6 +398,69 @@ close the IPC client.
            (println "PUBLISHED:" <>)))
 
     (sleep 300)))
+```
+
+ 
+ 
+
+## Authentication
+
+Authentication secures IPC connections by requiring a username and password when a 
+client creates a connection. This process verifies the client's identity, ensuring only 
+authorized users/applications can access the messaging infrastructure.
+
+> [!NOTE]
+> For security reasons encryption needs to be enabled on the server to securely send the
+> user credentials from a client to the server!
+
+```clojure
+(do
+  (defn echo-handler [m]
+    (println "REQUEST:  " (ipc/message->map m))
+    m)
+
+  (let [a (ipc/authenticator)]                ;; create an authenticator
+    (ipc/add-credentials a "tom" "3,kio")     ;; add test credentials
+    
+    (try-with [server (ipc/server 33333 echo-handler
+                                  :encrypt true         ;; enable encryption
+                                  :authenticator a)     ;; pass the authenticator to the server
+               client (ipc/client "localhost" 33333
+                                  :user-name "tom"
+                                  :password "3,kio")]   ;; client connection with the credentials
+      (->> (ipc/plain-text-message "1" "test" "hello")
+           (ipc/send client)
+           (ipc/message->map)
+           (println "RESPONSE: ")))))
+```
+
+### Server authenticators can be stored/loaded from a file
+
+Create an authenticator and store it to a file
+
+```clojure
+(do
+  (let [a (ipc/authenticator)]
+    (ipc/add-credentials a \"user-1\" \"password-1\")
+    (ipc/add-credentials a \"user-2\" \"password-2\")
+    (ipc/store-authenticator a (io/file \"./ipc.cred\"))))
+```
+
+Load the authenticator from a file
+
+```clojure
+(do
+  (let [authenticator (ipc/load-authenticator (io/file \"./ipc.cred\"))]
+    (try-with [server (ipc/server 33333
+                                  :encrypt true
+                                  :authenticator authenticator)
+               client (ipc/client "localhost" 33333
+                                  :user-name "tom"
+                                  :password "3,kio")]
+      (->> (ipc/plain-text-message "1" "test" "hello")
+           (ipc/send client)
+           (ipc/message->map)
+           (println "RESPONSE: ")))))
 ```
 
  
