@@ -150,6 +150,9 @@ public class ClientConnection implements AutoCloseable {
                     throw new IpcException("Authentication failure! Bad user credentials!");
                 }
             }
+            else if (userName != null || password != null){
+                throw new IpcException("Authentication is not enabled! User credentials are not required!");
+            }
 
             // [6] Start the channel message listener
             listener = new ChannelMessageListener(channel, compressor, encryptor);

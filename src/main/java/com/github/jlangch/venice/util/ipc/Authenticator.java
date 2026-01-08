@@ -62,6 +62,14 @@ public class Authenticator {
         Objects.requireNonNull(userName);
         Objects.requireNonNull(password);
 
+        if (userName.length() > MAX_LEN) {
+            throw new IpcException("A user name is limited to " + MAX_LEN + " characters");
+        }
+
+        if (password.length() > MAX_LEN) {
+            throw new IpcException("A password is limited to " + MAX_LEN + " characters");
+        }
+
         authorizations.put(userName, pwEncoder.encode(password));
     }
 
@@ -146,6 +154,7 @@ public class Authenticator {
     }
 
 
+    private final static int MAX_LEN = 100;
 
     private volatile boolean active;
 
