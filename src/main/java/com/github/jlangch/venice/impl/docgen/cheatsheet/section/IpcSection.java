@@ -67,6 +67,13 @@ public class IpcSection implements ISectionBuilder {
         offer.addItem(diBuilder.getDocItem("ipc/poll", false));
         offer.addItem(diBuilder.getDocItem("ipc/poll-async", false));
 
+        final DocSection auth = new DocSection("Authenticator", "ipc.auth");
+        all.addSection(auth);
+        auth.addItem(diBuilder.getDocItem("ipc/authenticator", false));
+        auth.addItem(diBuilder.getDocItem("ipc/load-authenticator", false));
+        auth.addItem(diBuilder.getDocItem("ipc/store-authenticator", false));
+        auth.addItem(diBuilder.getDocItem("ipc/add-credentials", false));
+
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);
         msg.addItem(diBuilder.getDocItem("ipc/text-message", false));

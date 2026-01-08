@@ -798,6 +798,27 @@ public class Coerce {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T toVncJavaObjectOrNull(final VncVal val, final Class<T> type) {
+        if (val == null) {
+            return null;
+        }
+        else if (val == Constants.Nil) {
+            return null;
+        }
+        else if (Types.isVncJavaObject(val, type)) {
+            return (T)((VncJavaObject)val).getDelegate();
+        }
+        else {
+            try (WithCallStack cs = new WithCallStack(callframe(val))) {
+                throw new VncException(String.format(
+                        "Cannot coerce value of type %s to java-object of type %s.",
+                        Types.getType(val),
+                        type.getName()));
+            }
+        }
+    }
+
     public static VncProtocol toVncProtocol(final VncVal val) {
         if (val == null) {
             throw new VncException("Cannot coerce a null value to protocol.");

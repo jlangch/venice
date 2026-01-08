@@ -42,11 +42,11 @@ public class TcpAuthenticationTest {
         authenticator.addCredentials("usr-2", "test-2");
         server.setAuthenticator(authenticator);
 
+        server.setEncryption(true);
+
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
-
-        client.setEncryption(true);
 
         client.open("usr-1", "test-1");
 
@@ -79,12 +79,11 @@ public class TcpAuthenticationTest {
         authenticator.addCredentials("usr-2", "test-2");
         server.setAuthenticator(authenticator);
 
+        server.setEncryption(true);
+
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
-
-        client.setEncryption(true);
-
 
         try {
             client.open("usr-1", "bad-password");
@@ -115,12 +114,11 @@ public class TcpAuthenticationTest {
         authenticator.addCredentials("usr-2", "test-2");
         server.setAuthenticator(authenticator);
 
+        server.setEncryption(true);
+
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
-
-        client.setEncryption(true);
-
 
         try {
             client.open();  // open without authentication => error

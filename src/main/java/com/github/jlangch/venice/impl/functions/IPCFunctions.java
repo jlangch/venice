@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,6 +56,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
@@ -118,7 +121,9 @@ public class IPCFunctions {
                         "| :write-ahead-log-compress b  | If `true` compresses the write-ahead-log records.¶" +
                                                         " Defaults to `false`.|\n" +
                         "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
-                        "                                 Defaults to `false`.|\n\n" +
+                        "                                 Defaults to `false`.|\n" +
+                        "| :authenticator a             | An authenticator.¶" +
+                        "                                 Defaults to `nil`.|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
@@ -137,6 +142,7 @@ public class IPCFunctions {
                         "ipc/client",
                         "ipc/close",
                         "ipc/running?",
+                        "ipc/authenticator",
                         "ipc/send",
                         "ipc/send-oneway",
                         "ipc/publish",
@@ -181,6 +187,7 @@ public class IPCFunctions {
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
                 final VncVal walCompactAtStartVal = options.get(new VncKeyword("write-ahead-log-compact"));
+                final VncVal authenticatorVal = options.get(new VncKeyword("authenticator"));
 
                 final int maxConn = maxConnVal == Nil
                                         ? 0
@@ -218,6 +225,8 @@ public class IPCFunctions {
 
                 final boolean walCompress = walCompressVal != Nil && Coerce.toVncBoolean(walCompressVal).getValue();
                 final boolean walCompactAtStart = walCompactAtStartVal != Nil && Coerce.toVncBoolean(walCompactAtStartVal).getValue();
+
+                final Authenticator authenticator = Coerce.toVncJavaObjectOrNull(authenticatorVal, Authenticator.class);
 
                 // -- Setup the handler function ------------------------------
 
@@ -275,6 +284,10 @@ public class IPCFunctions {
                     server.enableWriteAheadLog(walDir, walCompress, walCompactAtStart);
                 }
 
+                if (authenticator != null) {
+                    server.setAuthenticator(authenticator);
+                }
+
                 // -- Start the server ----------------------------------------
 
                 if (handlerWrapper == null) {
@@ -310,7 +323,9 @@ public class IPCFunctions {
                                                    " between this client and its associated server.¶" +
                                                    " The data is AES-256-GCM encrypted using a secret that is" +
                                                    " created and exchanged using the Diffie-Hellman key exchange " +
-                                                   " algorithm.|\n\n" +
+                                                   " algorithm.|\n" +
+                       "| :user-name s            | A user-name if the server requires authentication|\n" +
+                       "| :password s             | A password if the server requires authentication|\n" +
                         "**The client is thread-safe!** \n\n" +
                         "**The client must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
@@ -381,14 +396,18 @@ public class IPCFunctions {
 
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
                     final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                    final VncVal userVal = options.get(new VncKeyword("user-name"));
+                    final VncVal pwdVal = options.get(new VncKeyword("password"));
 
                     final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+                    final String user = userVal == Nil ? null : Coerce.toVncString(userVal).getValue();
+                    final String pwd = pwdVal == Nil ? null : Coerce.toVncString(pwdVal).getValue();
 
                     final TcpClient client = new TcpClient(host, port);
 
                     client.setEncryption(encrypt);
 
-                    client.open();
+                    client.open(user, pwd);
 
                     return new VncJavaObject(client);
                 }
@@ -1605,6 +1624,167 @@ public class IPCFunctions {
                 else {
                     throw new VncException ("Failed to get server thread pool statistics");
                 }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    // ------------------------------------------------------------------------
+    // Authenticator
+    // ------------------------------------------------------------------------
+
+    public static VncFunction ipc_authenticator =
+        new VncFunction(
+                "ipc/authenticator",
+                VncFunction
+                    .meta()
+                    .arglists("(ipc/authenticator & keyvals)")
+                    .doc("Creates a new authenticator.")
+                    .examples(
+                        "(ipc/authenticator)",
+                        "(ipc/authenticator \"user-1\" \"password-1\")",
+                        "(ipc/authenticator \"user-1\" \"password-1\" \"user-2\" \"password-2\")")
+                    .seeAlso(
+                        "ipc/load-authenticator",
+                        "ipc/store-authenticator",
+                        "ipc/add-credentials")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                if (args.size() %2 == 1) {
+                    throw new VncException("ipc/authenticator: requires an even number arguments.");
+                }
+                else {
+                    final Authenticator authenticator = new Authenticator(true);
+                    for(int ii=0; ii<args.size()/2; ii++) {
+                        authenticator.addCredentials(
+                            Coerce.toVncString(args.nth(ii)).toString(),
+                            Coerce.toVncString(args.nth(ii+1)).toString());
+                    }
+                    return new VncJavaObject(authenticator);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_load_authenticator =
+        new VncFunction(
+                "ipc/load-authenticator",
+                VncFunction
+                    .meta()
+                    .arglists("(ipc/load-authenticator source)")
+                    .doc("Loads an authenticator from a file or an input stream.")
+                    .examples(
+                        "(let [a (ipc/authenticator)]                                  \n" +
+                        "  (ipc/add-credentials a \"user-1\" \"password-1\")           \n" +
+                        "  (ipc/add-credentials a \"user-2\" \"password-2\")           \n" +
+                        "  (ipc/store-authenticator a (io/file \"./ipc.cred\"))        \n" +
+                        "  (let [b (ipc/load-authenticator (io/file \"./ipc.cred\"))]  \n" +
+                        "     ;; ...                                                   \n" +
+                        "     ))                                                       ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/store-authenticator",
+                        "ipc/add-credentials")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal source = args.first();
+
+                final Authenticator authenticator = new Authenticator(true);
+                if (Types.isVncJavaObject(source, InputStream.class)) {
+                    authenticator.load(Coerce.toVncJavaObject(source, InputStream.class));
+                }
+                else if (Types.isVncJavaObject(source, File.class)) {
+                    authenticator.load(Coerce.toVncJavaObject(source, File.class));
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'ipc/load-authenticator' does not allow %s as source",
+                            Types.getType(source)));
+                }
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_store_authenticator =
+        new VncFunction(
+                "ipc/store-authenticator",
+                VncFunction
+                    .meta()
+                    .arglists("(ipc/store-authenticator authenticator dest)")
+                    .doc("Stores an authenticator to a file or an output stream.")
+                    .examples(
+                        "(let [a (ipc/authenticator)]                             \n" +
+                        "  (ipc/add-credentials a \"user-1\" \"password-1\")      \n" +
+                        "  (ipc/add-credentials a \"user-2\" \"password-2\")      \n" +
+                        "  (ipc/store-authenticator a (io/file \"./ipc.cred\")))  ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/load-authenticator",
+                        "ipc/add-credentials")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
+                final VncVal dest = args.second();
+
+                if (Types.isVncJavaObject(dest, OutputStream.class)) {
+                    authenticator.save(Coerce.toVncJavaObject(dest, OutputStream.class));
+                }
+                else if (Types.isVncJavaObject(dest, File.class)) {
+                    authenticator.save(Coerce.toVncJavaObject(dest, File.class));
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'ipc/store-authenticator' does not allow %s as dest",
+                            Types.getType(dest)));
+                }
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_add_credentials =
+        new VncFunction(
+                "ipc/add-credentials",
+                VncFunction
+                    .meta()
+                    .arglists("(ipc/add-credentials authenticator user-name password)")
+                    .doc("Adds user credentials to an authenticator.")
+                    .examples(
+                        "(let [a (ipc/authenticator)]                             \n" +
+                        "  (ipc/add-credentials a \"user-1\" \"password-1\")      \n" +
+                        "  (ipc/add-credentials a \"user-2\" \"password-2\"))     ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/load-authenticator",
+                        "ipc/store-authenticator")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
+                final String userName = Coerce.toVncString(args.second()).toString();
+                final String password = Coerce.toVncString(args.third()).toString();
+
+                authenticator.addCredentials(userName, password);
+
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -3073,6 +3253,11 @@ public class IPCFunctions {
                     .add(ipc_offer_async)
                     .add(ipc_poll)
                     .add(ipc_poll_async)
+
+                    .add(ipc_authenticator)
+                    .add(ipc_load_authenticator)
+                    .add(ipc_store_authenticator)
+                    .add(ipc_add_credentials)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)

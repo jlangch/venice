@@ -128,7 +128,7 @@ public class TcpServer implements AutoCloseable {
     /**
      * Set an authenticator
      *
-     * <p>Note: For security reasons enforce encryption to safely send the
+     * <p>Note: For security reasons enforce encryption to securely send the
      * user credentials from a client to the server!
      *
      * @param authenticator a client authenticator.
@@ -382,6 +382,12 @@ public class TcpServer implements AutoCloseable {
      */
     public void start(final Function<IMessage,IMessage> handler) {
         Objects.requireNonNull(handler);
+
+        if (authenticator.get().isActive() && !encrypt.get()) {
+            throw new IpcException(
+                    "Please enable encryption with an active authenticator to securely "
+                    + "transfer the credentials freom a client to the server!");
+        }
 
         if (started.compareAndSet(false, true)) {
             final ServerSocketChannel ch = startServer();

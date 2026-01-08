@@ -214,10 +214,10 @@ public class TcpClient implements Cloneable, AutoCloseable {
      */
     public void open(final String userName, final String password) {
         if (userName != null && password == null) {
-            throw new IpcException("Authentication requires a user name and a password!");
+            throw new IpcException("Authentication requires both a user name and a password!");
         }
         if (userName == null && password != null) {
-            throw new IpcException("Authentication requires a user name and a password!");
+            throw new IpcException("Authentication requires both a user name and a password!");
         }
 
         if (opened.compareAndSet(false, true)) {
