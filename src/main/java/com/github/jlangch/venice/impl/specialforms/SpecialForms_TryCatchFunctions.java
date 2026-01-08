@@ -234,24 +234,32 @@ public class SpecialForms_TryCatchFunctions {
                 final VncSequence bindings = Coerce.toVncSequence(args.first());
                 final List<Var> boundResources = new ArrayList<>();
 
-                for(int i=0; i<bindings.size(); i+=2) {
-                    final VncVal sym = bindings.nth(i);
-                    final VncVal val = ctx.getEvaluator().evaluate(bindings.nth(i+1), localEnv, false);
+                // [1] Evaluate the bindings
+                try {
+                    for(int i=0; i<bindings.size(); i+=2) {
+                        final VncVal sym = bindings.nth(i);
+                        final VncVal val = ctx.getEvaluator().evaluate(bindings.nth(i+1), localEnv, false);
 
-                    if (Types.isVncSymbol(sym)) {
-                        final Var binding = new Var((VncSymbol)sym, val, Var.Scope.Local);
-                        localEnv.setLocal(binding);
-                        boundResources.add(binding);
-                    }
-                    else {
-                        throw new VncException(
-                                String.format(
-                                        "Invalid 'try-with' destructuring symbol "
-                                        + "value type %s. Expected symbol.",
-                                        Types.getType(sym)));
+                        if (Types.isVncSymbol(sym)) {
+                            final Var binding = new Var((VncSymbol)sym, val, Var.Scope.Local);
+                            localEnv.setLocal(binding);
+                            boundResources.add(binding);
+                        }
+                        else {
+                            throw new VncException(
+                                    String.format(
+                                            "Invalid 'try-with' destructuring symbol "
+                                            + "value type %s. Expected symbol.",
+                                            Types.getType(sym)));
+                        }
                     }
                 }
-
+                catch(RuntimeException ex) {
+                    // close the resources in reverse order
+                    Collections.reverse(boundResources);
+                    closeResources(boundResources);
+                    throw ex;
+                }
 
                 // Follow the Java rules on propagating an exception up the callstack
                 //    1. exception from finally block
@@ -262,8 +270,9 @@ public class SpecialForms_TryCatchFunctions {
                 RuntimeException primaryEx = null;
                 RuntimeException autoCloseEx = null;
 
-                 try {
-                     retVal = handleTryCatchFinally(
+                // [2] run the body expression
+                try {
+                    retVal = handleTryCatchFinally(
                                 "try-with",
                                 args.rest(),
                                 ctx,
@@ -275,33 +284,11 @@ public class SpecialForms_TryCatchFunctions {
                     primaryEx = ex;
                 }
 
+                // [3] AutoClose the resources
                 try {
-                    final List<VncException> exceptions = new ArrayList<>();
-
-                    // close resources in reverse order, do best effort and close all resources
-                    // regardless of exceptions. throw the first exception after having closed
-                    // all resources
+                    // close the resources in reverse order
                     Collections.reverse(boundResources);
-                    boundResources.stream().forEach(b -> {
-                        final VncVal resource = b.getVal();
-
-                        final Object r = Types.isVncJavaObject(resource)
-                                            ? ((VncJavaObject)resource).getDelegate()
-                                            : resource;
-
-                        if (r instanceof AutoCloseable) {
-                            try {
-                                ((AutoCloseable)r).close();
-                            }
-                            catch(Exception ex) {
-                                exceptions.add(
-                                        new VncException(
-                                            String.format(
-                                                    "'try-with' failed to close resource %s.",
-                                                    b.getName())));
-                            }
-                        }
-                    });
+                    final List<VncException> exceptions = closeResources(boundResources);
 
                     // throw the first auto-close exception, we came across
                     if (!exceptions.isEmpty()) {
@@ -313,6 +300,7 @@ public class SpecialForms_TryCatchFunctions {
                 }
 
 
+                // [4] Throw the caught exception or return the body expression value
                 if (primaryEx != null) {
                     throw primaryEx;
                 }
@@ -334,6 +322,36 @@ public class SpecialForms_TryCatchFunctions {
     ///////////////////////////////////////////////////////////////////////////
     // helpers
     ///////////////////////////////////////////////////////////////////////////
+
+    private static List<VncException> closeResources(final List<Var> resources) {
+        final List<VncException> exceptions = new ArrayList<>();
+
+        // close resources, do best effort and close all resources regardless of
+        // exceptions. throw the first exception after having closed all resources
+
+        resources.stream().forEach(b -> {
+            final VncVal resource = b.getVal();
+
+            final Object r = Types.isVncJavaObject(resource)
+                                ? ((VncJavaObject)resource).getDelegate()
+                                : resource;
+
+            if (r instanceof AutoCloseable) {
+                try {
+                    ((AutoCloseable)r).close();
+                }
+                catch(Exception ex) {
+                    exceptions.add(
+                            new VncException(
+                                String.format(
+                                        "'try-with' failed to close resource %s.",
+                                        b.getName())));
+                }
+            }
+        });
+
+        return exceptions;
+    }
 
     private static VncVal handleTryCatchFinally(
             final String specialForm,
