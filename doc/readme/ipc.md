@@ -439,21 +439,20 @@ authorized users/applications can access the messaging infrastructure.
 Create an authenticator and store it to a file
 
 ```clojure
-(do
-  (let [a (ipc/authenticator)]
-    (ipc/add-credentials a \"user-1\" \"password-1\")
-    (ipc/add-credentials a \"user-2\" \"password-2\")
-    (ipc/store-authenticator a (io/file \"./ipc.cred\"))))
+(let [ac (ipc/authenticator)]
+  (ipc/add-credentials ac "user-1" "password-1")
+  (ipc/add-credentials ac "user-2" "password-2")
+  (ipc/store-authenticator ac (io/file "./ipc.cred")))
 ```
 
 Load the authenticator from a file
 
 ```clojure
 (do
-  (let [authenticator (ipc/load-authenticator (io/file \"./ipc.cred\"))]
+  (let [ac (ipc/load-authenticator (io/file "./ipc.cred"))]
     (try-with [server (ipc/server 33333
                                   :encrypt true
-                                  :authenticator authenticator)
+                                  :authenticator ac)
                client (ipc/client "localhost" 33333
                                   :user-name "tom"
                                   :password "3,kio")]
