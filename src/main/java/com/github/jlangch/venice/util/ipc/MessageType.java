@@ -45,6 +45,7 @@ public enum MessageType {
     DIFFIE_HELLMAN_KEY_REQUEST(50),
 
     AUTHENTICATION(60),
+    HEARTBEAT(61),
 
 
     // responses

@@ -106,10 +106,12 @@ public class ClientConnection implements AutoCloseable {
                 final long srv_maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
                 final boolean srv_encryption  = getBoolean(config, "encrypt", false);
                 final boolean srv_permitQMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
+                final long srv_hearbeatInterval = getLong(config, "heartbeat-interval", 0);
                 final boolean srv_authentication = getBoolean(config, "authentication", false);
 
                 maxMessageSize = srv_maxMessageSize;
                 permitClientQueueMgmt = srv_permitQMgmt;
+                hearbeatInterval = srv_hearbeatInterval;
                 compressor = new Compressor(srv_cutoffSize);
                 encrypt = useEncryption || srv_encryption;
                 authentication = srv_authentication;
@@ -420,6 +422,17 @@ public class ClientConnection implements AutoCloseable {
         return response.getResponseStatus() == ResponseStatus.OK;
     }
 
+    private boolean sendHeartBeat(
+            final SocketChannel ch
+    ) {
+        final IMessage response = sendDirect(
+                                    createHeartBeatMessage(),
+                                    ch,
+                                    Compressor.off(),
+                                    encryptor,
+                                    2_000);
+        return response.getResponseStatus() == ResponseStatus.OK;
+    }
 
     private static Message createDiffieHellmanRequestMessage(final String clientPublicKey) {
         return new Message(
@@ -478,6 +491,21 @@ public class ClientConnection implements AutoCloseable {
                 toBytes(userName + "\n" + password, "UTF-8"));
     }
 
+    private static Message createHeartBeatMessage() {
+        return new Message(
+                null,
+                MessageType.HEARTBEAT,
+                ResponseStatus.NULL,
+                false,
+                false,
+                false,
+                Messages.EXPIRES_NEVER,
+                Topics.of(Messages.AUTHENTICATION),
+                "text/plain",
+                "UTF-8",
+                new byte[] {});
+    }
+
     private static Message deref(Future<Message> future, final long timeout) {
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
@@ -534,6 +562,7 @@ public class ClientConnection implements AutoCloseable {
 
     private final long maxMessageSize;
     private final boolean permitClientQueueMgmt;
+    private final long hearbeatInterval;
     private final boolean authentication;
 
     // compression

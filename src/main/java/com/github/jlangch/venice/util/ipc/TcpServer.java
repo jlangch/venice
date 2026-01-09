@@ -230,7 +230,6 @@ public class TcpServer implements AutoCloseable {
     }
 
 
-
     /**
      * Give the clients permission to manage (add/remove) queues.
      *
@@ -260,6 +259,34 @@ public class TcpServer implements AutoCloseable {
      */
     public boolean isPermitClientQueueMgmt() {
         return permitClientQueueMgmt.get();
+    }
+
+
+    /**
+     * Set a heartbeat interval in seconds. A value equal or lower to zero  will
+     * turnoff the hearbeat.
+     *
+     * <p>Defaults to <code>0</code> (hearbeat turned off)
+     *
+     * @param intervalSeconds the heartbeat interval in seconds
+     * @return this server
+     */
+    public TcpServer setHearbeatInterval(final int intervalSeconds) {
+        if (started.get()) {
+            throw new IllegalStateException(
+                   "Cannot change the heartbeat interval once the server has been started!");
+        }
+
+        this.heartbeatInterval.set(Math.max(0, intervalSeconds));
+        return this;
+    }
+
+    /**
+     * @return return <code>true</code> if clients are permitted to add/remove
+     *         queues else <code>false</code>
+     */
+    public long setHearbeatInterval() {
+        return heartbeatInterval.get();
     }
 
 
@@ -452,6 +479,7 @@ public class TcpServer implements AutoCloseable {
                                                                    maxMessageSize.get(),
                                                                    maxQueues.get(),
                                                                    permitClientQueueMgmt.get(),
+                                                                   heartbeatInterval.get(),
                                                                    wal,
                                                                    subscriptions,
                                                                    publishQueueCapacity,
@@ -463,7 +491,9 @@ public class TcpServer implements AutoCloseable {
 
                             executor.execute(conn);
                         }
-                        catch (IOException ignored) {
+                        catch (IOException ex) {
+                            logger.warn("server", "conn", "Connection accept/start terminated with an exception.", ex);
+
                             return; // finish listener
                         }
                     }
@@ -724,6 +754,8 @@ public class TcpServer implements AutoCloseable {
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
     private final AtomicBoolean permitClientQueueMgmt = new AtomicBoolean(true);
+    private final AtomicLong heartbeatInterval = new AtomicLong(0);
+
 
     // logger
     private final ServerLogger logger = new ServerLogger();

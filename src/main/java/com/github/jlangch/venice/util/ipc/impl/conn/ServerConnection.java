@@ -79,6 +79,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final long maxMessageSize,
             final long maxQueues,
             final boolean permitClientQueueMgmt,
+            final long heartbeatInterval,
             final WalQueueManager wal,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
@@ -97,6 +98,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
         this.permitClientQueueMgmt = permitClientQueueMgmt;
+        this.heartbeatInterval = heartbeatInterval;
         this.wal = wal;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
@@ -386,6 +388,9 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 case AUTHENTICATION:
                     return handleAuthentication(request);
+
+                case HEARTBEAT:
+                    return handleHeartBeat(request);
 
                 default:
                     // Invalid request type
@@ -843,6 +848,7 @@ public class ServerConnection implements IPublisher, Runnable {
                             .add("compress-cutoff-size", compressor.cutoffSize())
                             .add("permit-client-queue-mgmt", permitClientQueueMgmt)
                             .add("encrypt", enforceEncryption)
+                            .add("heartbeat-interval", heartbeatInterval)
                             .add("authentication", authenticator.isActive())
                             .toJson(false));
     }
@@ -896,7 +902,6 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
-
     private Message handleAuthentication(final Message request) {
         if (!"text/plain".equals(request.getMimetype())) {
             return createBadRequestResponse(
@@ -916,6 +921,10 @@ public class ServerConnection implements IPublisher, Runnable {
 
         logError("Authentication failure '" + payload.get(0) + "'");
         return createTextResponse(request, ResponseStatus.NO_PERMISSION, "");
+    }
+
+    private Message handleHeartBeat(final Message request) {
+        return createTextResponse(request, ResponseStatus.OK, "");
     }
 
 
@@ -1205,6 +1214,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final long maxMessageSize;
     private final long maxQueues;
     private final boolean permitClientQueueMgmt;
+    private final long heartbeatInterval;
 
     // compression
     private final Compressor compressor;
