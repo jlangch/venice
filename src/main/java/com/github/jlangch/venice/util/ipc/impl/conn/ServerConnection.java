@@ -390,7 +390,7 @@ public class ServerConnection implements IPublisher, Runnable {
                     return handleAuthentication(request);
 
                 case HEARTBEAT:
-                    return handleHeartBeat(request);
+                    return handleHeartbeat(request);
 
                 default:
                     // Invalid request type
@@ -923,7 +923,9 @@ public class ServerConnection implements IPublisher, Runnable {
         return createTextResponse(request, ResponseStatus.NO_PERMISSION, "");
     }
 
-    private Message handleHeartBeat(final Message request) {
+    private Message handleHeartbeat(final Message request) {
+        lastHeartbeat = System.currentTimeMillis();
+        logInfo("Heartbeat");
         return createTextResponse(request, ResponseStatus.OK, "");
     }
 
@@ -1030,6 +1032,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("write-ahead-log-count", wal.isEnabled()
                                                             ? wal.countLogFiles()
                                                             : 0 )
+                           .add("hearbeat-interval", heartbeatInterval)
                            .add("logger-enabled", logger.isEnabled())
                            .add("logger-file", logger.getLogFile() != null
                                                 ? logger.getLogFile().getAbsolutePath()
@@ -1192,6 +1195,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private volatile boolean authenticated = false;
     private volatile Thread publisherThread;
     private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
+    private volatile long lastHeartbeat;
 
     private final TcpServer server;
     private final SocketChannel ch;

@@ -285,7 +285,7 @@ public class TcpServer implements AutoCloseable {
      * @return return <code>true</code> if clients are permitted to add/remove
      *         queues else <code>false</code>
      */
-    public long setHearbeatInterval() {
+    public long getHearbeatInterval() {
         return heartbeatInterval.get();
     }
 
@@ -433,6 +433,7 @@ public class TcpServer implements AutoCloseable {
                 logger.info("server", "start", "Max Msg Size: " + getMaxMessageSize());
                 logger.info("server", "start", "Compress Cutoff Size: " + getCompressCutoffSize());
                 logger.info("server", "start", "Log-File: " + logger.getLogFile());
+                logger.info("server", "start", "Heartbeat: " + heartbeatInterval + "s");
                 logger.info("server", "start", "Write-Ahead-Log: " + isWriteAheadLog());
                 logger.info("server", "start", "Write-Ahead-Log-Dir: " + wal.getWalDir());
 

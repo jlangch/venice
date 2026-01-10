@@ -111,9 +111,9 @@ public class IPCFunctions {
                         "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
                                                         " with this server.¶" +
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
-                                                        " created and exchanged using the Diffie-Hellman key exchange " +
+                                                        " created and exchanged using the Diffie-Hellman key exchange" +
                                                         " algorithm.|\n" +
-                        "| :server-log-dir f            | If the server-log-dir is specified writes a server log to this " +
+                        "| :server-log-dir f            | If the server-log-dir is specified writes a server log to this" +
                                                         " directory.¶" +
                                                         " Defaults to `nil`.|\n" +
                         "| :write-ahead-log-dir f       | Provide a write-ahead-log directory to support durable queues.¶" +
@@ -122,7 +122,9 @@ public class IPCFunctions {
                                                         " Defaults to `false`.|\n" +
                         "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
                         "                                 Defaults to `false`.|\n" +
-                        "| :authenticator a             | An authenticator. Defaults to `nil`.|\n\n" +
+                        "| :authenticator a             | An authenticator. Defaults to `nil`.|\n" +
+                        "| :heartbeat-interval n        | Connection heartbeat interval in seconds. Must be greater" +
+                                                        " than 0.¶Defaults to `nil`.|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
@@ -204,6 +206,7 @@ public class IPCFunctions {
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
                 final VncVal walCompactAtStartVal = options.get(new VncKeyword("write-ahead-log-compact"));
                 final VncVal authenticatorVal = options.get(new VncKeyword("authenticator"));
+                final VncVal heartbeatIntervalVal = options.get(new VncKeyword("heartbeat-interval"), new VncLong(0));
 
                 final int maxConn = maxConnVal == Nil
                                         ? 0
@@ -214,6 +217,7 @@ public class IPCFunctions {
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                 final boolean permitQueueMgmt = Coerce.toVncBoolean(permitQueueMgmtVal).getValue();
+                final long heartbeatInterval =Coerce.toVncLong(heartbeatIntervalVal).getValue();
 
                 final File serverLogDir = serverLogDirVal == Nil
                                             ? null
@@ -302,6 +306,10 @@ public class IPCFunctions {
 
                 if (authenticator != null) {
                     server.setAuthenticator(authenticator);
+                }
+
+                if (heartbeatInterval > 0) {
+                    server.setHearbeatInterval((int)heartbeatInterval);
                 }
 
                 // -- Start the server ----------------------------------------

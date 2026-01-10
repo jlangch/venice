@@ -26,12 +26,15 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.TimeoutException;
@@ -106,12 +109,12 @@ public class ClientConnection implements AutoCloseable {
                 final long srv_maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
                 final boolean srv_encryption  = getBoolean(config, "encrypt", false);
                 final boolean srv_permitQMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
-                final long srv_hearbeatInterval = getLong(config, "heartbeat-interval", 0);
+                final long srv_heartbeatInterval = getLong(config, "heartbeat-interval", 0);
                 final boolean srv_authentication = getBoolean(config, "authentication", false);
 
                 maxMessageSize = srv_maxMessageSize;
                 permitClientQueueMgmt = srv_permitQMgmt;
-                hearbeatInterval = srv_hearbeatInterval;
+                heartbeatInterval = srv_heartbeatInterval;
                 compressor = new Compressor(srv_cutoffSize);
                 encrypt = useEncryption || srv_encryption;
                 authentication = srv_authentication;
@@ -164,8 +167,18 @@ public class ClientConnection implements AutoCloseable {
 
             // [7] Ready for the music
             opened.set(true);
+
+            // [8] Start heartbeat timer
+            if (heartbeatInterval > 0) {
+                heartbeatTimer.set(new Timer("Heartbeat"));
+                heartbeatTimer.get().scheduleAtFixedRate(
+                    new HeartbeatTask(() -> sendHeartbeat()),
+                    HEARTBEAT_START_DELAY,
+                    heartbeatInterval * 1000L);
+            }
         }
         catch(Exception ex) {
+            stopHeartbeatTimer();
             mngdExecutor.shutdownNow();
             IO.safeClose(channel);
 
@@ -308,6 +321,7 @@ public class ClientConnection implements AutoCloseable {
     @Override
     public void close() {
         if (opened.compareAndSet(true, false)) {
+            stopHeartbeatTimer();
 
             // wait max 500ms for tasks to be completed
             mngdExecutor.shutdown();
@@ -422,16 +436,21 @@ public class ClientConnection implements AutoCloseable {
         return response.getResponseStatus() == ResponseStatus.OK;
     }
 
-    private boolean sendHeartBeat(
-            final SocketChannel ch
-    ) {
-        final IMessage response = sendDirect(
-                                    createHeartBeatMessage(),
-                                    ch,
-                                    Compressor.off(),
-                                    encryptor,
-                                    2_000);
-        return response.getResponseStatus() == ResponseStatus.OK;
+    private boolean sendHeartbeat() {
+        try {
+            final IMessage response = send(createHeartbeatMessage(), 3_000);
+            return response.getResponseStatus() == ResponseStatus.OK;
+        }
+        catch(Exception ex) {
+            return false;
+        }
+    }
+
+    private void stopHeartbeatTimer() {
+        final Timer t = heartbeatTimer.get();
+        if (t != null) {
+            t.cancel();
+        }
     }
 
     private static Message createDiffieHellmanRequestMessage(final String clientPublicKey) {
@@ -491,7 +510,7 @@ public class ClientConnection implements AutoCloseable {
                 toBytes(userName + "\n" + password, "UTF-8"));
     }
 
-    private static Message createHeartBeatMessage() {
+    private static Message createHeartbeatMessage() {
         return new Message(
                 null,
                 MessageType.HEARTBEAT,
@@ -500,10 +519,10 @@ public class ClientConnection implements AutoCloseable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of(Messages.AUTHENTICATION),
+                Topics.of(Messages.HEARTBEAT),
                 "text/plain",
                 "UTF-8",
-                new byte[] {});
+                toBytes("", "UTF-8"));
     }
 
     private static Message deref(Future<Message> future, final long timeout) {
@@ -549,6 +568,21 @@ public class ClientConnection implements AutoCloseable {
                      VncBoolean.of(defaulValue)));
     }
 
+    private static class HeartbeatTask extends TimerTask {
+        public HeartbeatTask(final Runnable task) {
+            this.task = task;
+        }
+
+        @Override
+        public void run() {
+            task.run();
+        }
+
+        private final Runnable task;
+    }
+
+
+    private static final long HEARTBEAT_START_DELAY = 3_000;
 
     private final String host;
     private final int port;
@@ -558,11 +592,13 @@ public class ClientConnection implements AutoCloseable {
 
     private final AtomicBoolean opened = new AtomicBoolean(false);
 
+    private final AtomicReference<Timer> heartbeatTimer = new  AtomicReference<>();
+
     private final Semaphore sendSemaphore = new Semaphore(1);
 
     private final long maxMessageSize;
     private final boolean permitClientQueueMgmt;
-    private final long hearbeatInterval;
+    private final long heartbeatInterval;
     private final boolean authentication;
 
     // compression
