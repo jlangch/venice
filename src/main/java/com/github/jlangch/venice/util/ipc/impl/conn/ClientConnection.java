@@ -91,7 +91,7 @@ public class ClientConnection implements AutoCloseable {
 
         // [2] Start the executor after the connection has been established
         try {
-            mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-ipcclient-pool", 10);
+            mngdExecutor = new ManagedCachedThreadPoolExecutor("venice-ipc-client-pool", 10);
         }
         catch(Exception ex) {
             IO.safeClose(channel);
@@ -178,6 +178,8 @@ public class ClientConnection implements AutoCloseable {
             }
         }
         catch(Exception ex) {
+            opened.set(false);
+
             stopHeartbeatTimer();
             mngdExecutor.shutdownNow();
             IO.safeClose(channel);
@@ -436,13 +438,17 @@ public class ClientConnection implements AutoCloseable {
         return response.getResponseStatus() == ResponseStatus.OK;
     }
 
-    private boolean sendHeartbeat() {
-        try {
-            final IMessage response = send(createHeartbeatMessage(), 3_000);
-            return response.getResponseStatus() == ResponseStatus.OK;
-        }
-        catch(Exception ex) {
-            return false;
+    private void sendHeartbeat() {
+        if (isOpen()) {
+            try {
+                final IMessage response = send(createHeartbeatMessage(), 5_000);
+                if (response.getResponseStatus() != ResponseStatus.OK) {
+                    throw new RuntimeException("Failed Hearbeat");
+                }
+            }
+            catch(Exception ex) {
+                close();
+            }
         }
     }
 
