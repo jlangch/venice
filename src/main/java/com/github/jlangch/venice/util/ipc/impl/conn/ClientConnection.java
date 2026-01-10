@@ -170,9 +170,9 @@ public class ClientConnection implements AutoCloseable {
 
             // [8] Start heartbeat timer
             if (heartbeatInterval > 0) {
-                heartbeatTimer.set(new Timer("Heartbeat"));
+                heartbeatTimer.set(new Timer("venice-ipc-heartbeat"));
                 heartbeatTimer.get().scheduleAtFixedRate(
-                    new HeartbeatTask(() -> sendHeartbeat()),
+                    wrapTask(() -> sendHeartbeat()),
                     HEARTBEAT_START_DELAY,
                     heartbeatInterval * 1000L);
             }
@@ -341,6 +341,11 @@ public class ClientConnection implements AutoCloseable {
             final Encryptor encryptor,
             final long timeoutMillis
     ) {
+        if (opened.get()) {
+            throw new IpcException(
+                    "ClientConnection::sendDirect must only be called during initialization!");
+        }
+
         return deref(
                 mngdExecutor
                         .getExecutor()
@@ -354,6 +359,11 @@ public class ClientConnection implements AutoCloseable {
             final Compressor compressor,
             final Encryptor encryptor
     ) {
+        if (opened.get()) {
+            throw new IpcException(
+                    "ClientConnection::sendDirect must only be called during initialization!");
+        }
+
         try {
             // sending the request message and receiving the response
             // must be atomic otherwise request and response can be mixed
@@ -391,7 +401,7 @@ public class ClientConnection implements AutoCloseable {
                                     ch,
                                     Compressor.off(),
                                     Encryptor.off(),
-                                    2_000);
+                                    CLIENT_CONFIG_TIMEOUT);
         if (response.getResponseStatus() != ResponseStatus.OK) {
             throw new IpcException(
                     "Failed to get client config from server. Server answered with "
@@ -408,7 +418,7 @@ public class ClientConnection implements AutoCloseable {
         final Message m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
 
         // exchange the client's and the server's public key
-        final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), 2_000);
+        final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), DIFFIE_HELLMAN_TIMEOUT);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys, return the server's public key
@@ -434,14 +444,14 @@ public class ClientConnection implements AutoCloseable {
                                     ch,
                                     Compressor.off(),
                                     encryptor,
-                                    2_000);
+                                    AUTHENTICATE_TIMEOUT);
         return response.getResponseStatus() == ResponseStatus.OK;
     }
 
     private void sendHeartbeat() {
         if (isOpen()) {
             try {
-                final IMessage response = send(createHeartbeatMessage(), 5_000);
+                final IMessage response = send(createHeartbeatMessage(), HEARTBEAT_TIMEOUT);
                 if (response.getResponseStatus() != ResponseStatus.OK) {
                     throw new RuntimeException("Failed Hearbeat");
                 }
@@ -574,21 +584,21 @@ public class ClientConnection implements AutoCloseable {
                      VncBoolean.of(defaulValue)));
     }
 
-    private static class HeartbeatTask extends TimerTask {
-        public HeartbeatTask(final Runnable task) {
-            this.task = task;
-        }
-
-        @Override
-        public void run() {
-            task.run();
-        }
-
-        private final Runnable task;
+    private static TimerTask wrapTask(final Runnable r) {
+        return new TimerTask() {
+            @Override
+            public void run() {
+               r.run();
+            }
+         };
     }
 
 
     private static final long HEARTBEAT_START_DELAY = 3_000;
+    private static final long HEARTBEAT_TIMEOUT = 5_000;
+    private static final long CLIENT_CONFIG_TIMEOUT = 2_000;
+    private static final long AUTHENTICATE_TIMEOUT = 2_000;
+    private static final long DIFFIE_HELLMAN_TIMEOUT = 2_000;
 
     private final String host;
     private final int port;
