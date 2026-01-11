@@ -96,7 +96,8 @@ public class TcpServer implements AutoCloseable {
      * @return this server
      */
     public TcpServer setMaxParallelConnections(final int count) {
-        mngdExecutor.setMaximumThreadPoolSize(Math.max(1, count));
+        // need one extra thread for the connection manager
+        mngdExecutor.setMaximumThreadPoolSize(Math.max(2, count + 1));
         return this;
     }
 
@@ -428,7 +429,7 @@ public class TcpServer implements AutoCloseable {
                 logger.info("server", "start", "Socket Timeout: " + timeout);
                 logger.info("server", "start", "Endpoint ID: " + endpointId);
                 logger.info("server", "start", "Encryption: " + isEncrypted());
-                logger.info("server", "start", "Max Parallel Connections: " + mngdExecutor.getMaximumThreadPoolSize());
+                logger.info("server", "start", "Max Parallel Connections: " + (mngdExecutor.getMaximumThreadPoolSize() - 1));
                 logger.info("server", "start", "Max Queues: " + getMaxQueues());
                 logger.info("server", "start", "Max Msg Size: " + getMaxMessageSize());
                 logger.info("server", "start", "Compress Cutoff Size: " + getCompressCutoffSize());
@@ -465,10 +466,6 @@ public class TcpServer implements AutoCloseable {
                             channel.configureBlocking(true);
 
                             final long connId = connectionId.incrementAndGet();
-                            logger.info(
-                                "server", "start",
-                                "Server accepted new connection (" + connId + ") from "
-                                + IO.getRemoteAddress(channel));
 
                             final ServerConnection conn = new ServerConnection(
                                                                    this,
@@ -490,11 +487,28 @@ public class TcpServer implements AutoCloseable {
                                                                    statistics,
                                                                    () -> mngdExecutor.info());
 
-                            executor.execute(conn);
+                            final int maxThreadPoolSize = mngdExecutor.getMaximumThreadPoolSize();
+                            final int threadPoolSize = mngdExecutor.getThreadPoolSize();
+
+                            if (threadPoolSize < maxThreadPoolSize) {
+                                logger.info(
+                                        "server", "start",
+                                        String.format(
+                                            "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
+                                            connId,
+                                            IO.getRemoteAddress(channel),
+                                            threadPoolSize,
+                                            maxThreadPoolSize));
+
+                                executor.execute(conn);
+                            }
+                            else {
+                                logger.error("server", "start", "No free thread pool slot! Connection rejected!");
+                                try { conn.close(); } catch(Exception ignore) {}
+                            }
                         }
                         catch (IOException ex) {
                             logger.warn("server", "conn", "Connection accept/start terminated with an exception.", ex);
-
                             return; // finish listener
                         }
                     }
@@ -734,6 +748,8 @@ public class TcpServer implements AutoCloseable {
 
 
 
+    private static final int MAX_POOL_THREADS = 21; // need one extra thread for the connection manager
+
     public static final long QUEUES_MIN =  1;
     public static final long QUEUES_MAX = 20;
 
@@ -765,5 +781,5 @@ public class TcpServer implements AutoCloseable {
     private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
-            new ManagedCachedThreadPoolExecutor("venice-ipcserver-pool", 20);
+            new ManagedCachedThreadPoolExecutor("venice-ipcserver-pool", MAX_POOL_THREADS);
 }

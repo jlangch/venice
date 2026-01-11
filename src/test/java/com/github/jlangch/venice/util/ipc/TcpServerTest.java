@@ -181,13 +181,13 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        server.start(TcpServer.echoHandler());
-
-        IO.sleep(300);
-
-        client.open();
-
         try {
+            server.start(TcpServer.echoHandler());
+
+            IO.sleep(300);
+
+            client.open();
+
             final IMessage request1 = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
             final IMessage response1 = client.sendMessage(request1);
@@ -212,13 +212,13 @@ public class TcpServerTest {
         final TcpServer server = new TcpServer(33333);
         final TcpClient client = new TcpClient(33333);
 
-        server.start(TcpServer.echoHandler());
-
-        IO.sleep(300);
-
-        client.open();
-
         try {
+            server.start(TcpServer.echoHandler());
+
+            IO.sleep(300);
+
+            client.open();
+
             final IMessage request1 = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
             final IMessage response1 = client.sendMessage(request1);
@@ -239,7 +239,7 @@ public class TcpServerTest {
     }
 
     @Test
-    public void test_server_max_size() throws Exception {
+    public void test_server_max_msg_size() throws Exception {
         try (TcpServer server = new TcpServer(33333)) {
             assertEquals(Messages.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
 
@@ -275,6 +275,41 @@ public class TcpServerTest {
 
             assertFalse(server.existsQueue("queue/1"));
             assertFalse(server.existsQueue("queue/2"));
+        }
+    }
+
+    @Test
+    public void test_server_max_conn() throws Exception {
+        final TcpServer server = new TcpServer(33333);
+        final TcpClient client1 = new TcpClient(33333);
+        final TcpClient client2 = new TcpClient(33333);
+        final TcpClient client3 = new TcpClient(33333);
+
+        try {
+            server.setMaxParallelConnections(2);
+
+            server.start(TcpServer.echoHandler());
+
+            IO.sleep(300);
+
+            client1.open();
+            client2.open();
+
+            assertTrue(true);
+
+            try {
+                client3.open();  // fail -> too many connections
+                fail("should not reach here");
+            }
+            catch(IpcException ex) {
+                assertTrue(true);
+            }
+        }
+        finally {
+            client1.close();
+            client2.close();
+            client3.close();
+            server.close();
         }
     }
 }

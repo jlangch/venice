@@ -594,10 +594,10 @@ public class ClientConnection implements AutoCloseable {
     }
 
 
-    private static final long HEARTBEAT_START_DELAY = 3_000;
-    private static final long HEARTBEAT_TIMEOUT = 5_000;
-    private static final long CLIENT_CONFIG_TIMEOUT = 2_000;
-    private static final long AUTHENTICATE_TIMEOUT = 2_000;
+    private static final long HEARTBEAT_START_DELAY  = 3_000;
+    private static final long HEARTBEAT_TIMEOUT      = 5_000;
+    private static final long CLIENT_CONFIG_TIMEOUT  = 2_000;
+    private static final long AUTHENTICATE_TIMEOUT   = 2_000;
     private static final long DIFFIE_HELLMAN_TIMEOUT = 2_000;
 
     private final String host;
