@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed a 'try-width' auto closing resources edge case when a binding expression fails
+- Fixed a 'try-with' auto closing resources edge case when a binding expression fails
 
 
 
