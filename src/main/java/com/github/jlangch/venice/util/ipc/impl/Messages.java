@@ -47,8 +47,9 @@ public abstract class Messages {
     public static final String TOPIC_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
 
     public static final String TOPIC_DIFFIE_HELLMANN = "dh";
-    public static final String AUTHENTICATION = "authentication";
-    public static final String HEARTBEAT = "heartbeat";
+    public static final String TOPIC_AUTHENTICATION = "authentication";
+    public static final String TOPIC_HEARTBEAT = "heartbeat";
+    public static final String TOPIC_TEST = "heartbeat";
 
 
     // Client requests

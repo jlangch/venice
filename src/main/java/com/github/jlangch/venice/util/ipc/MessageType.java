@@ -46,6 +46,7 @@ public enum MessageType {
 
     AUTHENTICATION(60),
     HEARTBEAT(61),
+    TEST(62),
 
 
     // responses

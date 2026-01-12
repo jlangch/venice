@@ -118,7 +118,14 @@ public class ServerConnection implements IPublisher, Runnable {
     public void close() {
         stop.set(true);
         publisherThread.interrupt();
+
+        IO.safeClose(ch);  // will trigger closeChannel()
     }
+
+    public long millisSinceLastHeartbeat() {
+        return lastHeartbeat == 0L ? 0L : System.currentTimeMillis() - lastHeartbeat;
+    }
+
 
     @Override
     public void run() {
@@ -391,6 +398,9 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 case HEARTBEAT:
                     return handleHeartbeat(request);
+
+                case TEST:
+                    return handleTest(request);
 
                 default:
                     // Invalid request type
@@ -929,6 +939,10 @@ public class ServerConnection implements IPublisher, Runnable {
         return createTextResponse(request, ResponseStatus.OK, "");
     }
 
+    private Message handleTest(final Message request) {
+        return createTextResponse(request, ResponseStatus.OK, "");
+    }
+
 
     // ------------------------------------------------------------------------
     // Create response messages
@@ -1195,7 +1209,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private volatile boolean authenticated = false;
     private volatile Thread publisherThread;
     private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
-    private volatile long lastHeartbeat;
+    private volatile long lastHeartbeat = 0L;
 
     private final TcpServer server;
     private final SocketChannel ch;

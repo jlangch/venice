@@ -520,7 +520,7 @@ public class ClientConnection implements AutoCloseable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of(Messages.AUTHENTICATION),
+                Topics.of(Messages.TOPIC_AUTHENTICATION),
                 "text/plain",
                 "UTF-8",
                 toBytes(userName + "\n" + password, "UTF-8"));
@@ -535,7 +535,7 @@ public class ClientConnection implements AutoCloseable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of(Messages.HEARTBEAT),
+                Topics.of(Messages.TOPIC_HEARTBEAT),
                 "text/plain",
                 "UTF-8",
                 toBytes("", "UTF-8"));

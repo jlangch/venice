@@ -607,6 +607,35 @@ public class TcpClient implements Cloneable, AutoCloseable {
     }
 
     /**
+     * Send a test message
+     *
+     * @param payload a test payload
+     * @return the response message
+     */
+    public IMessage test(final byte[] payload) {
+        Objects.requireNonNull(payload);
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
+        final Message m = new Message(
+                                null,
+                                MessageType.TEST,
+                                ResponseStatus.NULL,
+                                false,
+                                false,
+                                false,
+                                Messages.EXPIRES_NEVER,
+                                Topics.of(Messages.TOPIC_TEST),
+                                "application/octet-stream",
+                                null,
+                                payload);
+
+        return send(m);
+    }
+
+    /**
      * Create a new queue.
      *
      * <p>A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.

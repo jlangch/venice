@@ -1056,6 +1056,21 @@ application/json
  
  
 
+## Benchmark
+
+**Hardware:** MacBook Air M2, 24GB
+
+IPC client and server colocated, compression and encryption turned off
+
+Benchmark:
+
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB       | 5 MB         |
+| Throughput msgs  | 14970 msg/s | 13793 msg/s | 6435 msg/s   | 804 msg/s    |
+| Throughput bytes | 73.10 MB/s  | 673.49 MB/s | 3141.95 MB/s | 3925.97 MB/s |
+
+ 
+ 
+
 ## Timeouts, Retries, and Idempotency in Distributed Systems
 
 Distributed systems are difficult because of three unavoidable truths:
