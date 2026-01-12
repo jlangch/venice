@@ -1070,6 +1070,8 @@ Benchmark:
 | Throughput msgs  | 14970 msg/s | 13793 msg/s | 6435 msg/s   | 804 msg/s    | 38 msg/s     | 11 msg/s     |
 | Throughput bytes | 73.10 MB/s  | 673.49 MB/s | 3141.95 MB/s | 3925.97 MB/s | 1901.14 MB/s | 2219.14 MB/s |
 
+**Test scenario:** *The client sends messages with a defined payload size, and the server responds with a simple acknowledge message. Throughput measurements consider only the client-sent messages.*
+
  
  
 

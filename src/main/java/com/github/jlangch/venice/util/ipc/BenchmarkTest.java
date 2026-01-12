@@ -25,7 +25,7 @@ package com.github.jlangch.venice.util.ipc;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
-public class PerfTest {
+public class BenchmarkTest {
 
     public static void main(String[] args) {
         try(TcpServer server = new TcpServer(33333);
