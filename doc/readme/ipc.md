@@ -17,6 +17,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
 * [Encrypting Messages](#encrypting-messages)
 * [Managing Queues](#managing-queues)
 * [Message Utils](#message-utils)
+* [Benchmark](#benchmark)
 * [Timeouts, Retries, and Idempotency in Distributed Systems](#timeouts-retries-and-idempotency-in-distributed-systems)
 
  
@@ -1064,9 +1065,10 @@ IPC client and server colocated, compression and encryption turned off
 
 Benchmark:
 
-| Payload bytes    | 5 KB        | 50 KB       | 500 KB       | 5 MB         |
-| Throughput msgs  | 14970 msg/s | 13793 msg/s | 6435 msg/s   | 804 msg/s    |
-| Throughput bytes | 73.10 MB/s  | 673.49 MB/s | 3141.95 MB/s | 3925.97 MB/s |
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB       | 5 MB         | 50 MB        | 200 MB       |
+| :--              | :--         | :--         | :--          | :--          | :--          | :--          |
+| Throughput msgs  | 14970 msg/s | 13793 msg/s | 6435 msg/s   | 804 msg/s    | 38 msg/s     | 11 msg/s     |
+| Throughput bytes | 73.10 MB/s  | 673.49 MB/s | 3141.95 MB/s | 3925.97 MB/s | 1901.14 MB/s | 2219.14 MB/s |
 
  
  

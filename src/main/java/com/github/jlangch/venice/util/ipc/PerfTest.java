@@ -38,7 +38,7 @@ public class PerfTest {
 
             client.open();
 
-            final int rounds = 4;
+            final int rounds = 1000;
             final int payloadSize = 5 * MB;
 
             final Stats stats = run(client, rounds, payloadSize, 5);

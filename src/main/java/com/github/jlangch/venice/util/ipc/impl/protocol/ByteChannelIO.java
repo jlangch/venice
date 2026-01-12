@@ -41,8 +41,8 @@ public class ByteChannelIO {
             len.flip();
             final int n = len.getInt();
 
-            if (n < 0 || n > (1 << 24)) {
-                throw new IOException("Bad length: " + n);
+            if (n < 0 || n > FRAME_LEN_MAX) {
+                throw new IOException("Bad frame length: " + n + ". Max frame length is " + FRAME_LEN_MAX);
             }
 
             if (n == 0) {
@@ -139,4 +139,6 @@ public class ByteChannelIO {
         }
     }
 
+
+    public static int FRAME_LEN_MAX = 500 * 1024 * 1024;  // 500MB
 }
