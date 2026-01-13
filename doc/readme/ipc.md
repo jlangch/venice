@@ -615,6 +615,22 @@ Text message payloads are defined by
      (println))
 ```
 
+
+### Message Size Limit
+
+By default messages are limited to 20 MB size (not encrypted, not compressed).
+
+The message size limit can be configured on the server in the range of 2KB ... 200MB.
+
+```clojure
+(ipc/server 33333 :max-message-size :100MB)
+```
+
+```clojure
+(ipc/server 33333 :max-message-size :200KB)
+```
+
+
  
  
 

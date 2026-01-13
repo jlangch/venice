@@ -771,7 +771,7 @@ public class TcpServer implements AutoCloseable {
     private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
 
     // configuration
-    private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_MAX);
+    private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_DEFAULT);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final AtomicBoolean encrypt = new AtomicBoolean(false);
     private final AtomicBoolean permitClientQueueMgmt = new AtomicBoolean(true);

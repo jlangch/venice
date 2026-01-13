@@ -93,9 +93,10 @@ public class IPCFunctions {
                         "| :max-connections n           | The number of the max connections the server can handle" +
                                                         " in parallel.¶Defaults to 20.|\n" +
                         "| :max-message-size n          | The max size of the message payload.¶" +
-                                                        " Defaults to `200MB`.¶" +
+                                                        " Defaults to `50MB`.¶" +
                                                         " The max size can be specified as a number like `20000`" +
-                                                        " or a number with a unit like `:20KB` or `:20MB`|\n" +
+                                                        " or a number with a unit like `:20KB` or `:20MB`. The value" +
+                                                        " must be in the range 2KB ... 200MB|\n" +
                         "| :max-queues n                | The number of the max queues the server can handle.¶" +
                                                         " Defaults to 20.|\n" +
                         "| :compress-cutoff-size n      | The compression cutoff size for payload messages.¶" +

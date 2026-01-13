@@ -45,7 +45,7 @@ public class TcpClientRuntimeConfigTest {
         try {
             assertEquals(false, client.isEncrypted());
             assertEquals(-1, client.getCompressCutoffSize());
-            assertEquals(Messages.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_DEFAULT, client.getMaxMessageSize());
         }
         catch(Exception ex) {
             // OK
@@ -72,7 +72,7 @@ public class TcpClientRuntimeConfigTest {
         try {
             assertEquals(false, client.isEncrypted());
             assertEquals(-1, client.getCompressCutoffSize());
-            assertEquals(Messages.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_DEFAULT, client.getMaxMessageSize());
         }
         catch(Exception ex) {
             // OK
@@ -99,7 +99,7 @@ public class TcpClientRuntimeConfigTest {
         try {
             assertEquals(true, client.isEncrypted());
             assertEquals(-1, client.getCompressCutoffSize());
-            assertEquals(Messages.MESSAGE_LIMIT_MAX, client.getMaxMessageSize());
+            assertEquals(Messages.MESSAGE_LIMIT_DEFAULT, client.getMaxMessageSize());
         }
         catch(Exception ex) {
             // OK

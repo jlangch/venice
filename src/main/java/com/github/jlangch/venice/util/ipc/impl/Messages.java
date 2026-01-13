@@ -25,8 +25,9 @@ package com.github.jlangch.venice.util.ipc.impl;
 public abstract class Messages {
 
     // Message limit
-    public static final long MESSAGE_LIMIT_MIN = 2 * 1024;            //   2 KB
-    public static final long MESSAGE_LIMIT_MAX = 200 * 1024 * 1024;   // 200 MB
+    public static final long MESSAGE_LIMIT_MIN     = 2 * 1024;            //   2 KB
+    public static final long MESSAGE_LIMIT_MAX     = 200 * 1024 * 1024;   // 200 MB
+    public static final long MESSAGE_LIMIT_DEFAULT = 20 * 1024 * 1024;    //  20 MB
 
     // Message timeout
     public static final long EXPIRES_NEVER = -1L;

@@ -242,7 +242,8 @@ public class TcpServerTest {
     @Test
     public void test_server_max_msg_size() throws Exception {
         try (TcpServer server = new TcpServer(33333)) {
-            assertEquals(Messages.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
+            // check default
+            assertEquals(Messages.MESSAGE_LIMIT_DEFAULT, server.getMaxMessageSize());
 
             // below minimum
             server.setMaxMessageSize(100L);
