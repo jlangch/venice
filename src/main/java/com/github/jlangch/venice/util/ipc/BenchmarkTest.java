@@ -38,7 +38,7 @@ public class BenchmarkTest {
 
             client.open();
 
-            final int rounds = 1000;
+            final int rounds = 3000;
             final int payloadSize = 5 * MB;
 
             final Stats stats = run(client, rounds, payloadSize, 5);
