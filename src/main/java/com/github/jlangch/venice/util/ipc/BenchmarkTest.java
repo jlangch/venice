@@ -28,6 +28,18 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 public class BenchmarkTest {
 
     public static void main(String[] args) {
+        final int rounds = 3000;
+        final int payloadSize = 5 * MB;
+        final int maxDurationSeconds = 5;
+
+        run(rounds, payloadSize, maxDurationSeconds);
+    }
+
+    public static void run(
+            final int rounds,
+            final int payloadSize,
+            final int maxDurationSeconds
+    ) {
         try(TcpServer server = new TcpServer(33333);
             TcpClient client = new TcpClient(33333)
         ) {
@@ -38,10 +50,7 @@ public class BenchmarkTest {
 
             client.open();
 
-            final int rounds = 3000;
-            final int payloadSize = 5 * MB;
-
-            final Stats stats = run(client, rounds, payloadSize, 5);
+            final Stats stats = run(client, rounds, payloadSize, maxDurationSeconds);
 
             final double elapsedSec = stats.elapsedMillis / 1000.0;
             final long transferred = (long)stats.messages * (long)payloadSize;
@@ -49,15 +58,15 @@ public class BenchmarkTest {
             System.out.println(String.format("Messages:         %d", stats.messages));
             System.out.println(String.format("Payload size:     %d KB", payloadSize / KB));
             System.out.println("------------------------------");
-            System.out.println(String.format("Duration:         %.2fs", elapsedSec));
-            System.out.println(String.format("Total bytes:      %.2f MB", (double)transferred/ (double)MB));
+            System.out.println(String.format("Duration:         %.1fs", elapsedSec));
+            System.out.println(String.format("Total bytes:      %.1f MB", (double)transferred/ (double)MB));
 
             System.out.println(String.format(
                     "Throughput msgs:  %d msg/s",
                     (int)(stats.messages / elapsedSec + 0.5)));
 
             System.out.println(String.format(
-                    "Throughput bytes: %.2f MB/s",
+                    "Throughput bytes: %.0f MB/s",
                     ((double)transferred / (double)MB) / elapsedSec));
         }
     }
