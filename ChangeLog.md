@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Added heartbeat support to IPC client/server
+
 
 
 ## [1.12.70] - 2026-01-08
@@ -75,7 +77,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-### [1.12.65] - 2025-11-26
+## [1.12.65] - 2025-11-26
 
 ### Enhancements
 

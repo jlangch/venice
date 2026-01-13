@@ -56,7 +56,7 @@ public class MessageWalEntry {
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
              final ByteChannel ch = new ByteArrayStreamChannel(out)
         ) {
-            Protocol.sendMessage(ch, message, Compressor.off(), Encryptor.off());
+            Protocol.sendMessage(ch, message, Compressor.off(), Encryptor.off(), -1);
 
             final UUID uuid = message.getId();
             final byte[] payload = out.toByteArray();

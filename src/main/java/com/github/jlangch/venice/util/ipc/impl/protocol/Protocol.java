@@ -44,12 +44,29 @@ public class Protocol {
             final ByteChannel ch,
             final Message message,
             final Compressor compressor,
-            final Encryptor encryptor
+            final Encryptor encryptor,
+            final long messageSizeLimit
     ) {
         Objects.requireNonNull(ch);
         Objects.requireNonNull(message);
         Objects.requireNonNull(compressor);
         Objects.requireNonNull(encryptor);
+
+        // Check message size limit
+        final byte[] payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message));
+        final byte[] payloadMsgData = message.getData();
+        final int totalMsgSize = 34 + payloadMetaData.length + payloadMsgData.length;
+        if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
+            throw new IpcException(String.format(
+                    "The message size exceeds the configured limit!"
+                    + "\nLimit:                %d"
+                    + "\nMessage total:        %d"
+                    + "\nMessage header:       %d"
+                    + "\nMessage payload meta: %d"
+                    + "\nMessage payload:      %d",
+                    messageSizeLimit, totalMsgSize, 34, payloadMetaData.length, payloadMsgData.length));
+
+        }
 
         final boolean isCompressData = compressor.needsCompression(message.getData());
 
@@ -78,10 +95,7 @@ public class Protocol {
 
         // [2] payload meta data (optionally encrypt)
         final byte[] headerAAD = header.array(); ; // GCM AAD: added authenticated data
-        final byte[] metaData = encryptor.encrypt(
-                                    PayloadMetaData.encode(
-                                        new PayloadMetaData(message)),
-                                    headerAAD);
+        final byte[] metaData = encryptor.encrypt(payloadMetaData, headerAAD);
         final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
         meta.put(metaData);
         meta.flip();
@@ -89,9 +103,7 @@ public class Protocol {
 
         // [3] payload data (optionally compress and encrypt)
         byte[] payloadData = encryptor.encrypt(
-                                compressor.compress(
-                                    message.getData(),
-                                    isCompressData));
+                                compressor.compress(payloadMsgData, isCompressData));
         final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
         payload.put(payloadData);
         payload.flip();

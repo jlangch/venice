@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -251,9 +252,10 @@ public class TcpServerTest {
             server.setMaxMessageSize(100L * 1024L);
             assertEquals(100L * 1024L, server.getMaxMessageSize());
 
-            // above maximum
-            server.setMaxMessageSize(800L * 1024L * 1024L);
-            assertEquals(Messages.MESSAGE_LIMIT_MAX, server.getMaxMessageSize());
+            // 800MB is above maximum
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> server.setMaxMessageSize(800L * 1024L * 1024L));
         }
     }
 

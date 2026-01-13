@@ -272,7 +272,7 @@ public class ClientConnection implements AutoCloseable {
             // interfere with this message send
             if (sendSemaphore.tryAcquire(timeoutMillis, TimeUnit.MILLISECONDS)) {
                 try {
-                    Protocol.sendMessage(channel, (Message)msg, compressor, encryptor);
+                    Protocol.sendMessage(channel, (Message)msg, compressor, encryptor, maxMessageSize);
                     messageSentCount.incrementAndGet();
 
                     if (msg.isOneway()) {
@@ -370,7 +370,7 @@ public class ClientConnection implements AutoCloseable {
             // in multi-threaded environments
             if (sendSemaphore.tryAcquire(10L, TimeUnit.SECONDS)) {
                 try {
-                    Protocol.sendMessage(ch, msg, compressor, encryptor);
+                    Protocol.sendMessage(ch, msg, compressor, encryptor, -1);
 
                     final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
 

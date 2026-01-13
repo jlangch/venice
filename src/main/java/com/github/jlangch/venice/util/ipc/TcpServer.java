@@ -179,7 +179,7 @@ public class TcpServer implements AutoCloseable {
     /**
      * Set the maximum message size.
      *
-     * <p>Defaults to 200 MB
+     * <p>Defaults to 200 MB (the max possible message size)
      *
      * @param maxSize the max message size in bytes
      * @return this server
@@ -190,9 +190,13 @@ public class TcpServer implements AutoCloseable {
                    "The maximum message size cannot be changed anymore "
                    + "once the server has been started!");
         }
-        maxMessageSize.set(Math.max(
-                            Messages.MESSAGE_LIMIT_MIN,
-                            Math.min(Messages.MESSAGE_LIMIT_MAX, maxSize)));
+
+        if (maxSize > Messages.MESSAGE_LIMIT_MAX) {
+            throw new IllegalArgumentException(
+                    "The maximum message size is limited to " + Messages.MESSAGE_LIMIT_MAX + " bytes!");
+        }
+
+        maxMessageSize.set(Math.max(Messages.MESSAGE_LIMIT_MIN, maxSize));
         return this;
     }
 

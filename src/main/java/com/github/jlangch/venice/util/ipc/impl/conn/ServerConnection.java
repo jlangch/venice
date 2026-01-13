@@ -200,13 +200,13 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private void sendDiffieHellmanResponse(final Message response) throws InterruptedException {
         // Note: no compression, no encryption!
-        Protocol.sendMessage(ch, response, Compressor.off(), Encryptor.off());
+        Protocol.sendMessage(ch, response, Compressor.off(), Encryptor.off(), -1);
     }
 
     private void sendResponse(final Message response) throws InterruptedException {
         if (sendSemaphore.tryAcquire(3, TimeUnit.SECONDS)) {
             try {
-                Protocol.sendMessage(ch, response, compressor, encryptor.get());
+                Protocol.sendMessage(ch, response, compressor, encryptor.get(), maxMessageSize);
             }
             finally {
                 sendSemaphore.release();
