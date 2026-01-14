@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
-import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -80,8 +79,8 @@ public class ClientConnection implements AutoCloseable {
 
         // [1] Open the connection to the server
         try {
-            channel = SocketChannel.open(
-                        new InetSocketAddress(this.host, this.port));
+            channel = SocketChannelFactory.createSocketChannel(this.host, this.port);
+            channel.configureBlocking(true);
         }
         catch(Exception ex) {
             throw new IpcException(

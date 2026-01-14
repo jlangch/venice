@@ -60,7 +60,7 @@ public class RegexFunctions {
                         .meta()
                         .arglists("(regex/pattern s)")
                         .doc(
-                            "Returns an instance of `java.util.regex.Pattern`.\n\n"  +
+                            "Returns an instance of `java.util.regex.Pattern`.\n\n" +
                             "Patterns are immutable and are safe for use by multiple " +
                             "concurrent threads! \n\n" +
                             "Alternatively regex pattern literals can be used to " +
@@ -69,8 +69,8 @@ public class RegexFunctions {
                             "\"\\\\d\" ;; regex string to match one digit          \n" +
                             "```                                                   \n" +
                             "Notice that you have to escape the backslash to get a " +
-                            "literal backslash in the string. However, regex       " +
-                            "pattern literals are smart. They don't need to double escape: \n\n" +
+                            "literal backslash in the string. However, regex pattern " +
+                            "literals are smart. They don't need to double escape: \n\n" +
                             "```                                                   \n" +
                             "#\"\\d\" ;; regex pattern literal to match one digit  \n" +
                             "```                                                   \n" +

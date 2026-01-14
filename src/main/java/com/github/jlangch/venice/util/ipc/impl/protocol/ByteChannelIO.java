@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.protocol;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 
@@ -42,7 +41,7 @@ public class ByteChannelIO {
             final int n = len.getInt();
 
             if (n < 0 || n > FRAME_LEN_MAX) {
-                throw new IOException("Bad frame length: " + n + ". Max frame length is " + FRAME_LEN_MAX);
+                throw new IpcException("Bad frame length: " + n + ". Max frame length is " + FRAME_LEN_MAX);
             }
 
             if (n == 0) {
@@ -58,13 +57,8 @@ public class ByteChannelIO {
         catch(IpcException ex) {
             throw ex;
         }
-        catch(IOException ex) {
-            if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new IpcException("Failed to read data from channel, channel was closed!", ex);
-            }
-            else {
-                throw new IpcException("Failed to read data from channel!", ex);
-            }
+        catch(Exception ex) {
+            throw new IpcException("Failed to read data from channel!", ex);
         }
     }
 
@@ -89,12 +83,7 @@ public class ByteChannelIO {
             throw ex;
         }
         catch(Exception ex) {
-            if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new IpcException("Failed to write data to channel, channel was closed!", ex);
-            }
-            else {
-                throw new IpcException("Failed to write data to channel!", ex);
-            }
+           throw new IpcException("Failed to write data to channel!", ex);
         }
     }
 

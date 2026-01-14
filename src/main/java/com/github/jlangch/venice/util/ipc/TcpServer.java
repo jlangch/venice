@@ -24,7 +24,6 @@ package com.github.jlangch.venice.util.ipc;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
-import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -46,6 +45,7 @@ import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.conn.ServerConnection;
+import com.github.jlangch.venice.util.ipc.impl.conn.SocketChannelFactory;
 import com.github.jlangch.venice.util.ipc.impl.conn.Subscriptions;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
@@ -71,18 +71,7 @@ public class TcpServer implements AutoCloseable {
      * @param port a port
      */
     public TcpServer(final int port) {
-        this(port, 0);
-    }
-
-    /**
-     * Create a new server on the specified port and connection accept timeout
-     *
-     * @param port a port
-     * @param timeout a connection accept timeout
-     */
-    public TcpServer(final int port, final int timeout) {
         this.port = port;
-        this.timeout = Math.max(0, timeout);
         this.endpointId = UUID.randomUUID().toString();
     }
 
@@ -425,12 +414,11 @@ public class TcpServer implements AutoCloseable {
             final ServerSocketChannel ch = startServer();
 
             try {
-                final ExecutorService executor = mngdExecutor.getExecutor();
-
                 ch.configureBlocking(true);
 
+                final ExecutorService executor = mngdExecutor.getExecutor();
+
                 logger.info("server", "start", "Server started on port " + port);
-                logger.info("server", "start", "Socket Timeout: " + timeout);
                 logger.info("server", "start", "Endpoint ID: " + endpointId);
                 logger.info("server", "start", "Encryption: " + isEncrypted());
                 logger.info("server", "start", "Max Parallel Connections: " + (mngdExecutor.getMaximumThreadPoolSize() - 1));
@@ -718,11 +706,8 @@ public class TcpServer implements AutoCloseable {
     private ServerSocketChannel startServer() {
         ServerSocketChannel srv = null;
         try {
-            srv = ServerSocketChannel.open();
-            srv.bind(new InetSocketAddress("127.0.0.1", port));
-            if (timeout > 0) {
-                srv.socket().setSoTimeout(timeout);
-            }
+            srv = SocketChannelFactory.createServerSocketChannel(port);
+
             server.set(srv);
             return srv;
         }
@@ -758,7 +743,6 @@ public class TcpServer implements AutoCloseable {
     public static final long QUEUES_MAX = 20;
 
     private final int port;
-    private final int timeout;
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
