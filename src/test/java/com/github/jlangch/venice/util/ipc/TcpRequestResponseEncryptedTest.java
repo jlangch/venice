@@ -43,8 +43,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_text() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -75,8 +75,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_binary() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -108,8 +108,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_text_enforced_encryption() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.setEncryption(true);
         server.start(TcpServer.echoHandler());
@@ -139,8 +139,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_binary_enforced_encryption() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.setEncryption(true);
         server.start(TcpServer.echoHandler());
@@ -172,8 +172,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -212,8 +212,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_multiple_messages() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -254,8 +254,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_multiple_messages_oneway() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -286,8 +286,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_multiple_messages_mixed() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -323,7 +323,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_clients() throws Exception {
 
-        final TcpServer server = new TcpServer(33333);
+        final TcpServer server = TcpServer.of(33333);
 
         // increase connections to support the test client count
         server.setMaxParallelConnections(50);
@@ -348,7 +348,7 @@ public class TcpRequestResponseEncryptedTest {
 
                 // run each client test as future
                 futures.add(es.submit(() -> {
-                    final TcpClient client = new TcpClient(33333);
+                    final TcpClient client = TcpClient.of(33333);
 
                     try {
                         client.setEncryption(true);
@@ -403,8 +403,8 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_remote_code_execution() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         final Venice venice = new Venice();
 

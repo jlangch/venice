@@ -88,7 +88,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File log = new File(walDir, "wal.log");
 
-        try(TcpServer server = new TcpServer(33333)) {
+        try(TcpServer server = TcpServer.of(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
             server.start();
 
@@ -121,7 +121,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(TcpServer server = new TcpServer(33333)) {
+        try(TcpServer server = TcpServer.of(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
             server.start();
 
@@ -156,7 +156,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(TcpServer server = new TcpServer(33333)) {
+        try(TcpServer server = TcpServer.of(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
             server.start();
 
@@ -174,7 +174,7 @@ public class WalQueueManagerTest {
 
         Thread.sleep(100);
 
-        try(TcpServer server = new TcpServer(33333)) {
+        try(TcpServer server = TcpServer.of(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
             server.start();
 
@@ -207,7 +207,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(TcpServer server = new TcpServer(33333)) {
+        try(TcpServer server = TcpServer.of(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
             server.start();
 
@@ -225,7 +225,7 @@ public class WalQueueManagerTest {
 
         Thread.sleep(100);
 
-        try(TcpServer server = new TcpServer(33333)) {
+        try(TcpServer server = TcpServer.of(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
             server.start();
 

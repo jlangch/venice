@@ -33,8 +33,8 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_defaults() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start();
 
@@ -58,8 +58,8 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_1() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start();
 
@@ -85,8 +85,8 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_2() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start();
 
@@ -112,8 +112,8 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_1() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.setEncryption(false);
         server.setMaxMessageSize(3000);
@@ -142,8 +142,8 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_2() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.setEncryption(true);
         server.setMaxMessageSize(3000);
@@ -172,8 +172,8 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_3() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.setEncryption(true);
         server.setMaxMessageSize(3000);
@@ -204,8 +204,8 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_4() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.setEncryption(true);
         server.setMaxMessageSize(3000);

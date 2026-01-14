@@ -42,7 +42,7 @@ public class TcpServerTest {
 
     @Test
     public void test_start_stop() throws Exception {
-        final TcpServer server = new TcpServer(33333);
+        final TcpServer server = TcpServer.of(33333);
 
         final Function<IMessage,IMessage> handler = req -> null;
 
@@ -59,8 +59,8 @@ public class TcpServerTest {
 
     @Test
     public void test_start_stop_err() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpServer server2 = new TcpServer(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpServer server2 = TcpServer.of(33333);
 
         final Function<IMessage,IMessage> handler = req -> null;
 
@@ -90,7 +90,7 @@ public class TcpServerTest {
     @Test
     public void test_client_without_server() throws Exception {
         try {
-            final TcpClient client = new TcpClient(33333);
+            final TcpClient client = TcpClient.of(33333);
             client.open();
 
             fail("Expected exception");
@@ -103,8 +103,8 @@ public class TcpServerTest {
 
     @Test
     public void test_client_abort() {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         final Function<IMessage,IMessage> echoHandler = req -> { IO.sleep(1000); return req; };
 
@@ -137,8 +137,8 @@ public class TcpServerTest {
 
     @Test
     public void test_echo_server_server_abort() {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -179,8 +179,8 @@ public class TcpServerTest {
 
     @Test
     public void test_server_status() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         try {
             server.start(TcpServer.echoHandler());
@@ -210,8 +210,8 @@ public class TcpServerTest {
 
     @Test
     public void test_server_threadpool_stats() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         try {
             server.start(TcpServer.echoHandler());
@@ -241,7 +241,7 @@ public class TcpServerTest {
 
     @Test
     public void test_server_max_msg_size() throws Exception {
-        try (TcpServer server = new TcpServer(33333)) {
+        try (TcpServer server = TcpServer.of(33333)) {
             // check default
             assertEquals(Messages.MESSAGE_LIMIT_DEFAULT, server.getMaxMessageSize());
 
@@ -262,7 +262,7 @@ public class TcpServerTest {
 
     @Test
     public void test_queues() throws Exception {
-        try (TcpServer server = new TcpServer(33333)) {
+        try (TcpServer server = TcpServer.of(33333)) {
             server.createQueue("queue/1", 10, true, false);
             server.createQueue("queue/2", 10, true, false);
 
@@ -283,10 +283,10 @@ public class TcpServerTest {
 
     @Test
     public void test_server_max_conn() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client1 = new TcpClient(33333);
-        final TcpClient client2 = new TcpClient(33333);
-        final TcpClient client3 = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client1 = TcpClient.of(33333);
+        final TcpClient client2 = TcpClient.of(33333);
+        final TcpClient client3 = TcpClient.of(33333);
 
         try {
             server.setMaxParallelConnections(2);

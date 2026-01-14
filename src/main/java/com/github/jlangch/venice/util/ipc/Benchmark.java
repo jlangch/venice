@@ -25,7 +25,7 @@ package com.github.jlangch.venice.util.ipc;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
-public class BenchmarkTest {
+public class Benchmark {
 
     public static void main(String[] args) {
         final int rounds = 3000;
@@ -40,8 +40,8 @@ public class BenchmarkTest {
             final int payloadSize,
             final int maxDurationSeconds
     ) {
-        try(TcpServer server = new TcpServer(33333);
-            TcpClient client = new TcpClient(33333)
+        try(TcpServer server = TcpServer.of(33333);
+            TcpClient client = TcpClient.of(33333)
         ) {
             server.setMaxMessageSize(200 * MB);
             server.start();

@@ -36,9 +36,9 @@ public class TcpPubSubEncryptedTest {
 
     @Test
     public void test_pub_sub_1() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient clientSub = new TcpClient(33333);
-        final TcpClient clientPub = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient clientSub = TcpClient.of(33333);
+        final TcpClient clientPub = TcpClient.of(33333);
 
         server.start();
 
@@ -81,11 +81,11 @@ public class TcpPubSubEncryptedTest {
 
     @Test
     public void test_pub_sub_2() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient clientPub = new TcpClient(33333);
-        final TcpClient clientSub1 = new TcpClient(33333);
-        final TcpClient clientSub2 = new TcpClient(33333);
-        final TcpClient clientSub3 = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient clientPub = TcpClient.of(33333);
+        final TcpClient clientSub1 = TcpClient.of(33333);
+        final TcpClient clientSub2 = TcpClient.of(33333);
+        final TcpClient clientSub3 = TcpClient.of(33333);
 
         server.start();
 

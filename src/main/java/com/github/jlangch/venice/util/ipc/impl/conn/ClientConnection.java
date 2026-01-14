@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
+import java.net.URI;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -44,7 +45,6 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.ipc.AcknowledgeMode;
 import com.github.jlangch.venice.util.ipc.IMessage;
@@ -64,27 +64,23 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 public class ClientConnection implements AutoCloseable {
 
     public ClientConnection(
-            final String host,
-            final int port,
+            final URI connURI,
             final boolean useEncryption,
             final AcknowledgeMode ackMode,
             final String userName,
             final String password
     ) {
-        this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
-        this.port = port;
         this.ackMode = ackMode;
 
-        final String serverAddress = this.host + "/" + this.port;
 
         // [1] Open the connection to the server
         try {
-            channel = SocketChannelFactory.createSocketChannel(this.host, this.port);
+            channel = SocketChannelFactory.createSocketChannel(connURI);
             channel.configureBlocking(true);
         }
         catch(Exception ex) {
             throw new IpcException(
-                    "Failed to open connection to the server " + serverAddress + "!",
+                    "Failed to open connection to the server " + connURI + "!",
                     ex);
         }
 
@@ -187,14 +183,6 @@ public class ClientConnection implements AutoCloseable {
         }
     }
 
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
-    }
 
     public AcknowledgeMode getAcknowledgeMode() {
         return ackMode;
@@ -599,8 +587,6 @@ public class ClientConnection implements AutoCloseable {
     private static final long AUTHENTICATE_TIMEOUT   = 2_000;
     private static final long DIFFIE_HELLMAN_TIMEOUT = 2_000;
 
-    private final String host;
-    private final int port;
     private final AcknowledgeMode ackMode;
 
     private final SocketChannel channel;

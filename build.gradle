@@ -217,6 +217,7 @@ ext {
     zip4j_Version = '2.11.5'
     aviron_Version = '1.9.1'
     cronScheduler_Version = '0.1'
+    junixsocket_Version = '2.10.1'
 }
 
 
@@ -912,6 +913,10 @@ dependencies {
     compileOnly "org.bouncycastle:bcpkix-jdk18on:${bouncyCastle_Version}"
     compileOnly "org.bouncycastle:bctls-jdk18on:${bouncyCastle_Version}" 
 
+    // JUnixSockets
+    compileOnly "com.kohlschutter.junixsocket:junixsocket-common:${junixsocket_Version}"
+    compileOnly "com.kohlschutter.junixsocket:junixsocket-native-common:${junixsocket_Version}"
+    
     // runtime dependencies (repackaged)
     implementation "io.vavr:vavr:${vavr_Version}"
     implementation "org.jline:jline:${jline_Version}"

@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -63,16 +65,52 @@ import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
  */
 public class TcpServer implements AutoCloseable {
 
+    private TcpServer(final URI connURI) {
+        this.connURI = connURI;
+        this.endpointId = UUID.randomUUID().toString();
+    }
+
     /**
-     * Create a new server on the specified port.
+     * Create a new server for the specified TCP/IP port.
      *
      * <p>The server must be closed after use!
      *
      * @param port a port
+     * @return the TcpServer
      */
-    public TcpServer(final int port) {
-        this.port = port;
-        this.endpointId = UUID.randomUUID().toString();
+    public static TcpServer of(final int port) {
+        try {
+            final URI uri = new URI(String.format("af-inet://127.0.0.1:%d", port));
+            return new TcpServer(uri);
+        }
+        catch(URISyntaxException ex) {
+            throw new IpcException("Invalid TcpServer connection URI", ex);
+        }
+    }
+
+    /**
+     * Create a new server for the specified connection URI.
+     *
+     * <p>The server must be closed after use!
+     *
+     * <p>Supported socket types:
+     * <ul>
+     *    <li>AF_INET sockets (TCP/IP sockets)</li>
+     *    <li>AF_UNIX sockets (Unix sockets, requires junixsocket libraries)</li>
+     * </ul>
+     *
+     * <p>AF_INET
+     * af-inet://localhost:3333
+     *
+     * <p>AF_UNIX
+     * af-unix:///path/to/your/socket.sock
+     *
+     * @param connUri a connection URI
+     * @return the TcpServer
+     */
+    public static TcpServer of(final URI connUri) {
+        Objects.requireNonNull(connUri);
+        return new TcpServer(connUri);
     }
 
 
@@ -418,7 +456,7 @@ public class TcpServer implements AutoCloseable {
 
                 final ExecutorService executor = mngdExecutor.getExecutor();
 
-                logger.info("server", "start", "Server started on port " + port);
+                logger.info("server", "start", "Server started on " + connURI);
                 logger.info("server", "start", "Endpoint ID: " + endpointId);
                 logger.info("server", "start", "Encryption: " + isEncrypted());
                 logger.info("server", "start", "Max Parallel Connections: " + (mngdExecutor.getMaximumThreadPoolSize() - 1));
@@ -509,7 +547,7 @@ public class TcpServer implements AutoCloseable {
                 logger.info("server", "start", "Server is operational and ready to accept connections.");
             }
             catch(Exception ex) {
-                final String msg = "Closed server on port " + port + "!";
+                final String msg = "Closed server on " + connURI + "!";
                 logger.error("server", "start", msg, ex);
 
                 safeClose(ch);
@@ -519,7 +557,7 @@ public class TcpServer implements AutoCloseable {
             }
         }
         else {
-            final String msg = "The server on port " + port + " has already been started!";
+            final String msg = "The server on " + connURI + " has already been started!";
             logger.error("server", "start", msg);
 
             throw new IpcException(msg);
@@ -706,13 +744,13 @@ public class TcpServer implements AutoCloseable {
     private ServerSocketChannel startServer() {
         ServerSocketChannel srv = null;
         try {
-            srv = SocketChannelFactory.createServerSocketChannel(port);
+            srv = SocketChannelFactory.createServerSocketChannel(connURI);
 
             server.set(srv);
             return srv;
         }
         catch(BindException ex) {
-            final String msg = "Already running! Failed to start server on port " + port + "!";
+            final String msg = "Already running! Failed to start server on " + connURI + "!";
             logger.error("server", "start", msg, ex);
 
             safeClose(srv);
@@ -721,7 +759,7 @@ public class TcpServer implements AutoCloseable {
             throw new IpcException(msg, ex);
         }
         catch(Exception ex) {
-            final String msg = "Failed to start server on port " + port + "!";
+            final String msg = "Failed to start server on " + connURI + "!";
             logger.error("server", "start", msg, ex);
 
             safeClose(srv);
@@ -742,7 +780,7 @@ public class TcpServer implements AutoCloseable {
     public static final long QUEUES_MIN =  1;
     public static final long QUEUES_MAX = 20;
 
-    private final int port;
+    private final URI connURI;
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();

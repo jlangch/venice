@@ -26,6 +26,8 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Map;
@@ -183,14 +185,12 @@ public class IPCFunctions {
 
                 // -- Parse arguments -----------------------------------------
 
-                final VncVal portVal = args.first();
                 final VncVal handlerVal = args.second();
 
                 // note: keywords are functions of type IVncFunction but not of type VncFunction!
                 final boolean hasHandler = Types.isVncFunction(handlerVal);
 
-                // arguments: port and handler
-                final int port = Coerce.toVncLong(portVal).getIntValue();
+                // arguments: handler
                 final VncFunction handler = hasHandler ? Coerce.toVncFunction(handlerVal) : null;
 
                 // options
@@ -273,9 +273,9 @@ public class IPCFunctions {
                                      });
                 }
 
-                // -- Configure the server ------------------------------------
+                // -- Create and configure the server ------------------------------------
 
-                final TcpServer server = new TcpServer(port);
+                final TcpServer server = createTcpServer(args.first());
 
                 server.setPermitClientQueueMgmt(permitQueueMgmt);
 
@@ -349,8 +349,8 @@ public class IPCFunctions {
                                                    " The data is AES-256-GCM encrypted using a secret that is" +
                                                    " created and exchanged using the Diffie-Hellman key exchange " +
                                                    " algorithm.|\n" +
-                       "| :user-name s            | A user-name if the server requires authentication|\n" +
-                       "| :password s             | A password if the server requires authentication|\n" +
+                        "| :user-name s            | A user-name if the server requires authentication|\n" +
+                        "| :password s             | A password if the server requires authentication|\n" +
                         "**The client is thread-safe!** \n\n" +
                         "**The client must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
@@ -394,21 +394,19 @@ public class IPCFunctions {
                 ArityExceptions.assertMinArity(this, args, 1);
 
                 if ( args.size() == 1) {
-                    // [port]
-                    final int port = Coerce.toVncLong(args.first()).getIntValue();
-
-                    final TcpClient client = new TcpClient(port);
+                    // [port] or [conn-uri]
+                    final TcpClient client = createTcpClient(args.first());
                     client.open();
                     return new VncJavaObject(client);
                 }
-                else if ( args.size() == 2) {
+                else if (args.size() == 2) {
                     // [host port]
                     final String host = Types.isVncKeyword(args.first())
                                           ? Coerce.toVncKeyword(args.first()).getSimpleName()
                                           : Coerce.toVncString(args.first()).getValue();
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
-                    final TcpClient client = new TcpClient(host, port);
+                    final TcpClient client = TcpClient.of(host, port);
                     client.open();
                     return new VncJavaObject(client);
                 }
@@ -428,7 +426,7 @@ public class IPCFunctions {
                     final String user = userVal == Nil ? null : Coerce.toVncString(userVal).getValue();
                     final String pwd = pwdVal == Nil ? null : Coerce.toVncString(pwdVal).getValue();
 
-                    final TcpClient client = new TcpClient(host, port);
+                    final TcpClient client = TcpClient.of(host, port);
 
                     client.setEncryption(encrypt);
 
@@ -3193,6 +3191,50 @@ public class IPCFunctions {
     // ------------------------------------------------------------------------
     // Utils
     // ------------------------------------------------------------------------
+
+    private static TcpServer createTcpServer(final VncVal portOrConnURI) {
+        if (Types.isVncLong(portOrConnURI)) {
+            final int port = Coerce.toVncLong(portOrConnURI).getIntValue();
+
+            return TcpServer.of(port);
+        }
+        else if (Types.isVncString(portOrConnURI)) {
+            final String connURI = Coerce.toVncString(portOrConnURI).getValue();
+
+            try {
+                return TcpServer.of(new URI(connURI));
+            }
+            catch(URISyntaxException ex) {
+                throw new VncException("Invalid ipc/server connection URI: " + connURI);
+            }
+        }
+        else {
+            throw new VncException(
+                    "Function 'ipc/server' expects either a port or a connection URI!");
+        }
+    }
+
+
+    private static TcpClient createTcpClient(final VncVal portOrConnURI) {
+        if (Types.isVncLong(portOrConnURI)) {
+            final int port = Coerce.toVncLong(portOrConnURI).getIntValue();
+            return TcpClient.of(port);
+        }
+        else if (Types.isVncString(portOrConnURI)) {
+            final String connURI = Coerce.toVncString(portOrConnURI).getValue();
+
+            try {
+                return TcpClient.of(new URI(connURI));
+            }
+            catch(URISyntaxException ex) {
+                throw new VncException("Invalid ipc/client connection URI: " + connURI);
+            }
+        }
+        else {
+            throw new VncException(
+                    "Function 'ipc/client' expects either a port a host/port or a connection URI!");
+        }
+    }
 
     private static long convertUnitValueToLong(final VncVal val) {
         if (val == Nil) {

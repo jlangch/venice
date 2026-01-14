@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,6 +58,12 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
  */
 public class TcpClient implements Cloneable, AutoCloseable {
 
+
+    private TcpClient(final URI connURI) {
+        this.connURI = connURI;
+        this.endpointId = UUID.randomUUID().toString();
+    }
+
     /**
      * Create a new client connecting to a server on the local host
      * and port
@@ -63,9 +71,10 @@ public class TcpClient implements Cloneable, AutoCloseable {
      * <p>The client must be closed after use!
      *
      * @param port a port
+     * @return the TcpClient
      */
-    public TcpClient(final int port) {
-        this(null, port);
+    public static TcpClient of(final int port) {
+        return of(null, port);
     }
 
     /**
@@ -76,17 +85,50 @@ public class TcpClient implements Cloneable, AutoCloseable {
      *
      * @param host a host
      * @param port a port
+     * @return the TcpClient
      */
-    public TcpClient(final String host, final int port) {
-        this.host = StringUtil.isBlank(host) ? "127.0.0.1" : host;
-        this.port = port;
-        this.endpointId = UUID.randomUUID().toString();
+    public static TcpClient of(final String host, final int port) {
+        try {
+            final URI uri = new URI(String.format(
+                                        "af-inet://%s:%d",
+                                        StringUtil.isBlank(host) ? "127.0.0.1" : host,
+                                        port));
+            return new TcpClient(uri);
+        }
+        catch(URISyntaxException ex) {
+            throw new IpcException("Invalid TcpClient connection URI", ex);
+        }
+    }
+
+    /**
+     * Create a new client for the specified connection URI.
+     *
+     * <p>The client must be closed after use!
+     *
+     * <p>Supported socket types:
+     * <ul>
+     *    <li>AF_INET sockets (TCP/IP sockets)</li>
+     *    <li>AF_UNIX sockets (Unix sockets, requires junixsocket libraries)</li>
+     * </ul>
+     *
+     * <p>AF_INET
+     * af-inet://localhost:3333
+     *
+     * <p>AF_UNIX
+     * af-unix:///path/to/your/socket.sock
+     *
+     * @param connUri a connection URI
+     * @return the TcpClient
+     */
+    public static TcpClient of(final URI connUri) {
+        Objects.requireNonNull(connUri);
+        return new TcpClient(connUri);
     }
 
 
     @Override
     public Object clone() {
-        final TcpClient client = new TcpClient(host, port);
+        final TcpClient client = new TcpClient(connURI);
         client.setEncryption(encrypt.get());
         return client;
     }
@@ -223,7 +265,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
         if (opened.compareAndSet(false, true)) {
             ClientConnection c = null;
             try {
-                c = new ClientConnection(host, port, encrypt.get(), ackMode.get(), userName, password);
+                c = new ClientConnection(connURI, encrypt.get(), ackMode.get(), userName, password);
                 conn.set(c);
             }
             catch(Exception ex) {
@@ -231,7 +273,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
                 opened.set(false);
                 conn.set(null);
                 throw new IpcException(
-                        "Failed to open client for server " + host + "/" + port + "!",
+                        "Failed to open client for server " + connURI + "!",
                         ex);
             }
         }
@@ -1219,8 +1261,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
     }
 
 
-    private final String host;
-    private final int port;
+    private final URI connURI;
     private final String endpointId;
 
     private final AtomicBoolean opened = new AtomicBoolean(false);

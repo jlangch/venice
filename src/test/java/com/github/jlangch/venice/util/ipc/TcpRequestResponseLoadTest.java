@@ -35,8 +35,8 @@ public class TcpRequestResponseLoadTest {
     @Test
     @EnableOnMac
     public void test_load1() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -73,9 +73,9 @@ public class TcpRequestResponseLoadTest {
     @Test
     @EnableOnMac
     public void test_load2() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client1 = new TcpClient(33333);
-        final TcpClient client2 = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client1 = TcpClient.of(33333);
+        final TcpClient client2 = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
@@ -119,8 +119,8 @@ public class TcpRequestResponseLoadTest {
     @Test
     @EnableOnMac
     public void test_load_oneway() throws Exception {
-        final TcpServer server = new TcpServer(33333);
-        final TcpClient client = new TcpClient(33333);
+        final TcpServer server = TcpServer.of(33333);
+        final TcpClient client = TcpClient.of(33333);
 
         server.start(TcpServer.echoHandler());
 
