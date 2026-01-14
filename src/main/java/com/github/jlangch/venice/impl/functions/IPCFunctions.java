@@ -155,6 +155,18 @@ public class IPCFunctions {
                         "    (println \"REQUEST:  \" (ipc/message->map m))               \n" +
                         "    m)                                                          \n" +
                         "                                                                \n" +
+                        "  (try-with [server (ipc/server \"af-inet://localhost:33333\"   \n" +
+                        "                                echo-handler)                   \n" +
+                        "             client (ipc/client \"af-inet://localhost:33333\")] \n" +
+                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")      \n" +
+                        "         (ipc/send client)                                      \n" +
+                        "         (ipc/message->map)                                     \n" +
+                        "         (println \"RESPONSE: \"))))                            ",
+                        "(do                                                             \n" +
+                        "  (defn echo-handler [m]                                        \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))               \n" +
+                        "    m)                                                          \n" +
+                        "                                                                \n" +
                         "  (let [a (ipc/authenticator)]                                  \n" +
                         "    (ipc/add-credentials a \"tom\" \"3,kio\")                   \n" +
                         "    (try-with [server (ipc/server 33333 echo-handler            \n" +
@@ -385,10 +397,12 @@ public class IPCFunctions {
                         "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
                         "             client-1 (ipc/client 33333)                                        \n" +
                         "             client-2 (ipc/client \"localhost\" 33333)                          \n" +
-                        "             client-3 (ipc/client :localhost 33333 :encrypt true)]              \n" +
+                        "             client-3 (ipc/client :localhost 33333)                             \n" +
+                        "             client-4 (ipc/client \"af-inet://localhost:33333\")]               \n" +
                         "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello\"))           \n" +
                         "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello\"))           \n" +
-                        "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello\"))))         ")
+                        "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello\"))           \n" +
+                        "    (send client-4 (ipc/plain-text-message \"4\" \"test\" \"hello\"))))         ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
