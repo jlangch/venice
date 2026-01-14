@@ -112,7 +112,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
      * </ul>
      *
      * <p>AF_INET
-     * af-inet://localhost:3333
+     * af-inet://localhost:33333
      *
      * <p>AF_UNIX
      * af-unix:///path/to/your/socket.sock
@@ -126,10 +126,15 @@ public class TcpClient implements Cloneable, AutoCloseable {
     }
 
 
-    @Override
-    public Object clone() {
+    public TcpClient openClone() {
         final TcpClient client = new TcpClient(connURI);
         client.setEncryption(encrypt.get());
+        if (u != null && p != null) {
+            client.open(String.valueOf(u), String.valueOf(p));
+        }
+        else {
+            client.open();
+        }
         return client;
     }
 
@@ -267,6 +272,9 @@ public class TcpClient implements Cloneable, AutoCloseable {
             try {
                 c = new ClientConnection(connURI, encrypt.get(), ackMode.get(), userName, password);
                 conn.set(c);
+
+                this.u = userName == null ? null : userName.toCharArray();
+                this.p = password == null ? null : password.toCharArray();
             }
             catch(Exception ex) {
                 IO.safeClose(c);
@@ -1260,6 +1268,8 @@ public class TcpClient implements Cloneable, AutoCloseable {
         return s.getBytes(Charset.forName(charset));
     }
 
+    private volatile char[] u = null;
+    private volatile char[] p = null;
 
     private final URI connURI;
     private final String endpointId;

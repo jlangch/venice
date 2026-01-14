@@ -100,7 +100,7 @@ public class TcpServer implements AutoCloseable {
      * </ul>
      *
      * <p>AF_INET
-     * af-inet://localhost:3333
+     * af-inet://localhost:33333
      *
      * <p>AF_UNIX
      * af-unix:///path/to/your/socket.sock

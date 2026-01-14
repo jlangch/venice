@@ -259,6 +259,67 @@ public class IpcFunctionsTest {
     }
 
     @Test
+    public void test_client_arg_variants() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                             \n" +
+                "  (def counter (atom 0))                                                        \n" +
+                "                                                                                \n" +
+                "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
+                "                                                                                \n" +
+                "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
+                "             client-1 (ipc/client 33333)                                        \n" +
+                "             client-2 (ipc/client \"localhost\" 33333)                          \n" +
+                "             client-3 (ipc/client :localhost 33333)                             \n" +
+                "             client-4 (ipc/client \"af-inet://localhost:33333\")]               \n" +
+                "    (ipc/send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))     \n" +
+                "    (ipc/send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))     \n" +
+                "    (ipc/send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
+                "    (ipc/send client-4 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
+                "    (sleep 100))                                                                \n" +
+                "                                                                                \n" +
+                "  (deref counter))";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
+    public void test_client_arg_variants_with_options() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                               \n" +
+                "  (def counter (atom 0))                                                          \n" +
+                "                                                                                  \n" +
+                "  (defn echo-handler [m] (swap! counter inc) m)                                   \n" +
+                "                                                                                  \n" +
+                "  (let [ac (ipc/authenticator)]                                                   \n" +
+                "    (ipc/add-credentials ac \"joe\" \"123\")                                      \n" +
+                "                                                                                  \n" +
+                "    (try-with [server   (ipc/server 33333 echo-handler                            \n" +
+                "                                    :authenticator ac                             \n" +
+                "                                    :encrypt true)                                \n" +
+                "               client-1 (ipc/client 33333                                         \n" +
+                "                                    :user-name \"joe\" :password \"123\")         \n" +
+                "               client-2 (ipc/client \"localhost\" 33333                           \n" +
+                "                                    :user-name \"joe\" :password \"123\")         \n" +
+                "               client-3 (ipc/client :localhost 33333                              \n" +
+                "                                    :user-name \"joe\" :password \"123\")         \n" +
+                "               client-4 (ipc/client \"af-inet://localhost:33333\"                 \n" +
+                "                                    :user-name \"joe\" :password \"123\")]        \n" +
+                "      (ipc/send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))     \n" +
+                "      (ipc/send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))     \n" +
+                "      (ipc/send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
+                "      (ipc/send client-4 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
+                "      (sleep 100)))                                                               \n" +
+                "                                                                                  \n" +
+                "  (deref counter))";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
     public void test_client_clone() {
         final Venice venice = new Venice();
 
@@ -266,22 +327,65 @@ public class IpcFunctionsTest {
                 "(do                                                                             \n" +
                 "  (def counter (atom 0))                                                        \n" +
                 "                                                                                \n" +
-                "  (defn echo-handler [m]                                                        \n" +
-                "    (swap! counter inc)                                                         \n" +
-                "    m)                                                                          \n" +
+                "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
                 "                                                                                \n" +
-                "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
-                "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
-                "             client-2 (ipc/clone client-1)                                      \n" +
-                "             client-3 (ipc/clone client-1)]                                     \n" +
-                "    (ipc/send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))     \n" +
-                "    (ipc/send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))     \n" +
-                "    (ipc/send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
+                "  (try-with [server    (ipc/server 33333 echo-handler)                          \n" +
+                "             client-1  (ipc/client 33333)                                       \n" +
+                "             client-2  (ipc/client \"localhost\" 33333)                         \n" +
+                "             client-3  (ipc/client :localhost 33333)                            \n" +
+                "             client-4  (ipc/client \"af-inet://localhost:33333\")               \n" +
+                "             client-1c (ipc/clone client-1)                                     \n" +
+                "             client-2c (ipc/clone client-2)                                     \n" +
+                "             client-3c (ipc/clone client-3)                                     \n" +
+                "             client-4c (ipc/clone client-4)]                                    \n" +
+                "    (ipc/send client-1c (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))    \n" +
+                "    (ipc/send client-2c (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))    \n" +
+                "    (ipc/send client-3c (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))    \n" +
+                "    (ipc/send client-4c (ipc/plain-text-message \"4\" \"test\" \"hello 4\"))    \n" +
                 "    (sleep 100))                                                                \n" +
                 "                                                                                \n" +
                 "  (deref counter))";
 
-        assertEquals(3L, venice.eval(script));
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
+    public void test_client_clone_with_options() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                             \n" +
+                "  (def counter (atom 0))                                                        \n" +
+                "                                                                                \n" +
+                "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
+                "                                                                                \n" +
+                "  (let [ac (ipc/authenticator)]                                                 \n" +
+                "    (ipc/add-credentials ac \"joe\" \"123\")                                    \n" +
+                "                                                                                \n" +
+                "    (try-with [server   (ipc/server 33333 echo-handler                          \n" +
+                "                                    :authenticator ac                           \n" +
+                "                                    :encrypt true)                              \n" +
+                "               client-1 (ipc/client 33333                                       \n" +
+                "                                    :user-name \"joe\" :password \"123\")       \n" +
+                "               client-2 (ipc/client \"localhost\" 33333                         \n" +
+                "                                    :user-name \"joe\" :password \"123\")       \n" +
+                "               client-3 (ipc/client :localhost 33333                            \n" +
+                "                                    :user-name \"joe\" :password \"123\")       \n" +
+                "               client-4 (ipc/client \"af-inet://localhost:33333\"               \n" +
+                "                                    :user-name \"joe\" :password \"123\")       \n" +
+                "               client-1c (ipc/clone client-1)                                   \n" +
+                "               client-2c (ipc/clone client-2)                                   \n" +
+                "               client-3c (ipc/clone client-3)                                   \n" +
+                "               client-4c (ipc/clone client-4)]                                  \n" +
+                "    (ipc/send client-1c (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))    \n" +
+                "    (ipc/send client-2c (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))    \n" +
+                "    (ipc/send client-3c (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))    \n" +
+                "    (ipc/send client-4c (ipc/plain-text-message \"4\" \"test\" \"hello 4\"))    \n" +
+                "    (sleep 100)))                                                               \n" +
+                "                                                                                \n" +
+                "  (deref counter))";
+
+        assertEquals(4L, venice.eval(script));
     }
 
     @Test

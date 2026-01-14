@@ -77,19 +77,27 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/server port & options)",
-                        "(ipc/server port handler & options)")
+                        "(ipc/server port handler & options)",
+                        "(ipc/server conn-uri & options)",
+                        "(ipc/server conn-uri handler & options)")
                     .doc(
-                        "Create a new server on the specified port.\n\n" +
+                        "Create a new server on the specified port or connection URI.\n\n" +
                         "*Arguments:* \n\n" +
                         "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
-                        "| port p    | The TCP/IP port |\n" +
-                        "| handler h | A single argument handler function.¶" +
-                                     " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
-                                     " The handler receives the request messsage and returns a response" +
-                                     " message. In case of a one-way request message the server discards" +
-                                     " the handler's response if it is not `nil`.¶" +
-                                     " A handler is only required for send/receive message passing style. It "+
-                                     " is not required for offer/poll and publish/subscribe!|\n\n" +
+                        "| port p     | A TCP/IP port. E.g.: 33333 |\n" +
+                        "| conn-uri u | A connection URI¶" +
+                                      " \u00A0 • TCP/IP sockets¶" +
+                                      " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
+                                      " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
+                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`¶" +
+                                      "|\n" +
+                        "| handler h  | A single argument handler function.¶" +
+                                      " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
+                                      " The handler receives the request messsage and returns a response" +
+                                      " message. In case of a one-way request message the server discards" +
+                                      " the handler's response if it is not `nil`.¶" +
+                                      " A handler is only required for send/receive message passing style. It "+
+                                      " is not required for offer/poll and publish/subscribe!|\n\n" +
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
                         "| :max-connections n           | The number of the max connections the server can handle" +
@@ -336,13 +344,22 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/client port)",
-                        "(ipc/client host port & options)")
+                        "(ipc/client port & options)",
+                        "(ipc/client host port & options)",
+                        "(ipc/client conn-uri)",
+                        "(ipc/client conn-uri & options)")
                     .doc(
                         "Create a new client connecting to a server on the specified " +
                         "host and port.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| port p | The server's TCP/IP port |\n" +
-                        "| host h | The server's TCP/IP host |\n\n" +
+                        "| port p     | The server's TCP/IP port |\n" +
+                        "| host h     | The server's TCP/IP host |\n" +
+                        "| conn-uri u | A connection URI¶" +
+                                      " \u00A0 • TCP/IP sockets¶" +
+                                      " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
+                                      " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
+                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`¶" +
+                                      "|\n\n" +
                         "*Options:* \n\n" +
                         "| :encrypt b              | If `true` encrypt the payload data of all messages exchanged" +
                                                    " between this client and its associated server.¶" +
@@ -393,7 +410,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                if ( args.size() == 1) {
+                if (args.size() == 1) {
                     // [port] or [conn-uri]
                     final TcpClient client = createTcpClient(args.first());
                     client.open();
@@ -411,13 +428,34 @@ public class IPCFunctions {
                     return new VncJavaObject(client);
                 }
                 else {
-                    // [host port & options]
-                    final String host = Types.isVncKeyword(args.first())
-                                          ? Coerce.toVncKeyword(args.first()).getSimpleName()
-                                          : Coerce.toVncString(args.first()).getValue();
-                    final int port = Coerce.toVncLong(args.second()).getIntValue();
+                    // [host port & options] or [port & options] or [conn-uri & options]
+                    final boolean host_and_port = Types.isVncString(args.first()) && Types.isVncLong(args.second())
+                                                || Types.isVncKeyword(args.first()) && Types.isVncLong(args.second());
 
-                    final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+                    final boolean port_or_uri = Types.isVncLong(args.first()) || Types.isVncString(args.first());
+
+                    final TcpClient client;
+                    final VncHashMap options;
+
+                    if (host_and_port) {
+                        options = VncHashMap.ofAll(args.slice(2));
+
+                        final String host = Types.isVncKeyword(args.first())
+                                                ? Coerce.toVncKeyword(args.first()).getSimpleName()
+                                                : Coerce.toVncString(args.first()).getValue();
+                        final int port = Coerce.toVncLong(args.second()).getIntValue();
+                        client = TcpClient.of(host, port);
+                    }
+                    else if (port_or_uri){
+                        options = VncHashMap.ofAll(args.slice(1));
+                        client = createTcpClient(args.first());
+                    }
+                    else {
+                        throw new VncException(
+                                "'ipc/client' called with invalid host/port or connection URI arguments!");
+                    }
+
+                    // Options
                     final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                     final VncVal userVal = options.get(new VncKeyword("user-name"));
                     final VncVal pwdVal = options.get(new VncKeyword("password"));
@@ -426,10 +464,7 @@ public class IPCFunctions {
                     final String user = userVal == Nil ? null : Coerce.toVncString(userVal).getValue();
                     final String pwd = pwdVal == Nil ? null : Coerce.toVncString(pwdVal).getValue();
 
-                    final TcpClient client = TcpClient.of(host, port);
-
                     client.setEncryption(encrypt);
-
                     client.open(user, pwd);
 
                     return new VncJavaObject(client);
@@ -479,8 +514,7 @@ public class IPCFunctions {
 
                 final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
 
-                final TcpClient cloned = (TcpClient)client.clone();
-                cloned.open();
+                final TcpClient cloned = client.openClone();
 
                 return new VncJavaObject(cloned);
             }
