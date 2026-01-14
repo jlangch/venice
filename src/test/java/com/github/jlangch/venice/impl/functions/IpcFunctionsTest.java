@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 
 
 public class IpcFunctionsTest {
@@ -386,6 +387,30 @@ public class IpcFunctionsTest {
                 "  (deref counter))";
 
         assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMac
+    public void test_domain_sockets() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                             \n" +
+                "  (def counter (atom 0))                                                        \n" +
+                "                                                                                \n" +
+                "  (def conn-uri \"af-unix:///Users/juerg/Desktop/venice/tmp/test.sock\")        \n" +
+                "                                                                                \n" +
+                "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
+                "                                                                                \n" +
+                "  (try-with [server (ipc/server conn-uri echo-handler)                          \n" +
+                "             client (ipc/client conn-uri)]                                      \n" +
+                "    (ipc/send client (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))       \n" +
+                "    (ipc/send client (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))       \n" +
+                "    (sleep 100))                                                                \n" +
+                "                                                                                \n" +
+                "  (deref counter))";
+
+        assertEquals(2L, venice.eval(script));
     }
 
     @Test

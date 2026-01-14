@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -73,24 +74,29 @@ public class SocketChannelFactory {
             final File socketFile = new File(conn.getPath());
 
             try {
-                // final SocketChannel ch = org.newsclub.net.unix.AFSocketChannel.open();
+                // final SocketChannel ch = org.newsclub.net.unix.AFUNIXSocketChannel.open();
                 // ch.connect(org.newsclub.net.unix.AFUNIXSocketAddress.of(socketFile));
+                // return ch;
 
-                final Class<?> clazz1 = Class.forName("org.newsclub.net.unix.AFSocketChannel");
+                final Class<?> clazz1 = Class.forName("org.newsclub.net.unix.AFUNIXSocketChannel");
                 final Method openMethod = clazz1.getMethod("open");
-                final Method connectMethod = clazz1.getMethod("connect");
 
                 final Class<?> clazz2 = Class.forName("org.newsclub.net.unix.AFUNIXSocketAddress");
-                final Method ofMethod = clazz2.getMethod("of");
+                final Method ofMethod = clazz2.getMethod("of", File.class);
+
+                final Class<?> clazz3 = Class.forName("org.newsclub.net.unix.AFSocketChannel");
+                final Method connectMethod = clazz3.getMethod("connect", SocketAddress.class);
 
                 final Object ch = openMethod.invoke(null);
-                final Object socketAddr = ofMethod.invoke(socketFile);
-                connectMethod.invoke(socketAddr);
+
+                final Object socketAddr = ofMethod.invoke(null, socketFile);
+
+                connectMethod.invoke(ch, socketAddr);
 
                 return (SocketChannel)ch;
             }
             catch(Exception ex) {
-                throw new IpcException("Failed to create SocketChannel for connection URI " + conn);
+                throw new IpcException("Failed to create SocketChannel for connection URI " + conn, ex);
             }
         }
         else {
@@ -133,24 +139,29 @@ public class SocketChannelFactory {
             final File socketFile = new File(conn.getPath());
 
             try {
-                // final ServerSocketChannel ch = org.newsclub.net.unix.AFServerSocketChannel.open();
+                // final ServerSocketChannel ch = org.newsclub.net.unix.AFUNIXServerSocketChannel.open();
                 // ch.bind(org.newsclub.net.unix.AFUNIXSocketAddress.of(socketFile));
+                // return ch;
 
-                final Class<?> clazz1 = Class.forName("org.newsclub.net.unix.AFServerSocketChannel");
+                final Class<?> clazz1 = Class.forName("org.newsclub.net.unix.AFUNIXServerSocketChannel");
                 final Method openMethod = clazz1.getMethod("open");
-                final Method bindMethod = clazz1.getMethod("bind");
 
                 final Class<?> clazz2 = Class.forName("org.newsclub.net.unix.AFUNIXSocketAddress");
-                final Method ofMethod = clazz2.getMethod("of");
+                final Method ofMethod = clazz2.getMethod("of", File.class);
+
+                final Class<?> clazz3 = Class.forName("org.newsclub.net.unix.AFServerSocketChannel");
+                final Method bindMethod = clazz3.getMethod("bind", SocketAddress.class, int.class);
 
                 final Object ch = openMethod.invoke(null);
-                final Object socketAddr = ofMethod.invoke(socketFile);
-                bindMethod.invoke(socketAddr);
+
+                final Object socketAddr = ofMethod.invoke(null, socketFile);
+
+                bindMethod.invoke(ch, socketAddr, 0);
 
                 return (ServerSocketChannel)ch;
             }
             catch(Exception ex) {
-                throw new IpcException("Failed to create ServerSocketChannel for connection URI " + conn);
+                throw new IpcException("Failed to create ServerSocketChannel for connection URI " + conn, ex);
             }
         }
         else {
