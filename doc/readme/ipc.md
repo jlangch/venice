@@ -443,8 +443,8 @@ Create an authenticator and store it to a file for later use:
 
 ```clojure
 (let [ac (ipc/authenticator)]
-  (ipc/add-credentials ac "user-1" "password-1")
-  (ipc/add-credentials ac "user-2" "password-2")
+  (ipc/add-credentials ac "tf" "3-kio")
+  (ipc/add-credentials ac "ap" "zu*67")
   (ipc/store-authenticator ac (io/file "./ipc.cred")))
 ```
 
@@ -457,8 +457,8 @@ Load the authenticator from a file:
                                   :encrypt true
                                   :authenticator ac)
                client (ipc/client "localhost" 33333
-                                  :user-name "tom"
-                                  :password "3,kio")]
+                                  :user-name "tf"
+                                  :password "3-kio")]
       (->> (ipc/plain-text-message "1" "test" "hello")
            (ipc/send client)
            (ipc/message->map)

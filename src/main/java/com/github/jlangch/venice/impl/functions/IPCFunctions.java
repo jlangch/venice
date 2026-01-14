@@ -168,13 +168,13 @@ public class IPCFunctions {
                         "    m)                                                          \n" +
                         "                                                                \n" +
                         "  (let [a (ipc/authenticator)]                                  \n" +
-                        "    (ipc/add-credentials a \"tom\" \"3,kio\")                   \n" +
+                        "    (ipc/add-credentials a \"tom\" \"3-kio\")                   \n" +
                         "    (try-with [server (ipc/server 33333 echo-handler            \n" +
                         "                                  :encrypt true                 \n" +
                         "                                  :authenticator a)             \n" +
                         "               client (ipc/client \"localhost\" 33333           \n" +
                         "                                  :user-name \"tom\"            \n" +
-                        "                                  :password \"3,kio\")]         \n" +
+                        "                                  :password \"3-kio\")]         \n" +
                         "      (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
                         "           (ipc/send client)                                    \n" +
                         "           (ipc/message->map)                                   \n" +

@@ -96,7 +96,7 @@ public class TcpServer implements AutoCloseable {
      * <p>Supported socket types:
      * <ul>
      *    <li>AF_INET sockets (TCP/IP sockets)</li>
-     *    <li>AF_UNIX sockets (Unix sockets, requires junixsocket libraries)</li>
+     *    <li>AF_UNIX domain sockets (Unix sockets, requires junixsocket libraries)</li>
      * </ul>
      *
      * <p>AF_INET
