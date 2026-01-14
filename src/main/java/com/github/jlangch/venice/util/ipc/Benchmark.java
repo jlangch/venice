@@ -22,26 +22,32 @@
 package com.github.jlangch.venice.util.ipc;
 
 
+import java.net.URI;
+
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
 public class Benchmark {
 
-    public static void main(String[] args) {
-        final int rounds = 3000;
-        final int payloadSize = 5 * MB;
+    public static void main(String[] args) throws Exception {
+        final int rounds = 300000;
+        final int payloadSize = 5 * KB;
         final int maxDurationSeconds = 5;
 
-        run(rounds, payloadSize, maxDurationSeconds);
+        final URI connURI_1 = new URI("af-inet://localhost:33333");
+        final URI connURI_2 = new URI("af-unix:///Users/juerg/Desktop/venice/tmp/test.sock");
+
+        run(connURI_2, rounds, payloadSize, maxDurationSeconds);
     }
 
     public static void run(
+            final URI connURI,
             final int rounds,
             final int payloadSize,
             final int maxDurationSeconds
     ) {
-        try(TcpServer server = TcpServer.of(33333);
-            TcpClient client = TcpClient.of(33333)
+        try(TcpServer server = TcpServer.of(connURI);
+            TcpClient client = TcpClient.of(connURI)
         ) {
             server.setMaxMessageSize(200 * MB);
             server.start();

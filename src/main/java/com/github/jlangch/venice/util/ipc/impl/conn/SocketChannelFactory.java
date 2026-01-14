@@ -74,6 +74,13 @@ public class SocketChannelFactory {
             final File socketFile = new File(conn.getPath());
 
             try {
+                // Java 16+
+                //
+                // SocketChannel sc = SocketChannel.open();
+                // sc.connect(new UnixDomainSocketAddress(Paths.get("/tmp/uds_socket")));
+
+                // JUnixSocket
+                //
                 // final SocketChannel ch = org.newsclub.net.unix.AFUNIXSocketChannel.open();
                 // ch.connect(org.newsclub.net.unix.AFUNIXSocketAddress.of(socketFile));
                 // return ch;
@@ -96,7 +103,9 @@ public class SocketChannelFactory {
                 return (SocketChannel)ch;
             }
             catch(Exception ex) {
-                throw new IpcException("Failed to create SocketChannel for connection URI " + conn, ex);
+                throw new IpcException(
+                        "Failed to create SocketChannel for connection URI " + conn,
+                        ex);
             }
         }
         else {
@@ -139,6 +148,13 @@ public class SocketChannelFactory {
             final File socketFile = new File(conn.getPath());
 
             try {
+                // Java 16+
+                //
+                // ServerSocketChannel ssc = ServerSocketChannel.open();
+                // ssc.bind(new UnixDomainSocketAddress(Paths.get("/tmp/uds_socket")));
+
+                // JUnixSocket
+                //
                 // final ServerSocketChannel ch = org.newsclub.net.unix.AFUNIXServerSocketChannel.open();
                 // ch.bind(org.newsclub.net.unix.AFUNIXSocketAddress.of(socketFile));
                 // return ch;
@@ -161,7 +177,9 @@ public class SocketChannelFactory {
                 return (ServerSocketChannel)ch;
             }
             catch(Exception ex) {
-                throw new IpcException("Failed to create ServerSocketChannel for connection URI " + conn, ex);
+                throw new IpcException(
+                        "Failed to create ServerSocketChannel for connection URI " + conn,
+                        ex);
             }
         }
         else {
