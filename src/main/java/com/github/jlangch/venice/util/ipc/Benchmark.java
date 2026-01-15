@@ -64,7 +64,7 @@ public class Benchmark {
         final URI connURI_1 = new URI("af-inet://localhost:33333");
         final URI connURI_2 = new URI("af-unix:///Users/juerg/Desktop/venice/tmp/test.sock");
 
-        run(connURI_2, rounds, payloadSize, maxDurationSeconds);
+        run(connURI_1, rounds, payloadSize, maxDurationSeconds);
     }
 
     public static void run(
