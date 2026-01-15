@@ -81,6 +81,9 @@ public class ClientConnection implements AutoCloseable {
             if (sndBufSize > 0) channel.socket().setSendBufferSize(sndBufSize);
             if (rcvBufSize > 0) channel.socket().setReceiveBufferSize(rcvBufSize);
             channel.configureBlocking(true);
+
+            // TCP_NODELAY is absolutely mandatory on Linux to get high throughput
+            // with small messages
             channel.setOption(StandardSocketOptions.TCP_NODELAY, true);
         }
         catch(Exception ex) {

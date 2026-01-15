@@ -205,6 +205,7 @@ public class IPCFunctions {
                         "ipc/message->json",
                         "ipc/create-queue",
                         "ipc/remove-queue",
+                        "ipc/benchmark",
                         "ipc/server-status",
                         "ipc/server-thread-pool-statistics")
                     .build()
@@ -440,7 +441,8 @@ public class IPCFunctions {
                         "ipc/plain-text-message",
                         "ipc/binary-message",
                         "ipc/message->map",
-                        "ipc/message->json")
+                        "ipc/message->json",
+                        "ipc/benchmark")
                     .build()
         ) {
             @Override
@@ -738,7 +740,7 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/benchmark conn-uri msg-count duration & options)")
                     .doc(
-                        "Create a new server on the specified port or connection URI.\n\n" +
+                        "Runs a benchmark.\n\n" +
                         "*Arguments:* \n\n" +
                         "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
                         "| conn-uri u  | A connection URI¶" +
@@ -760,7 +762,19 @@ public class IPCFunctions {
                         "| :socket-rcv-buf-size n       | The server socket's receive buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
-                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n")
+                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n\n" +
+                        "If the print option is active the output will look like:\n\n" +
+                        "```                           \n" +
+                        "Messages:         79370       \n" +
+                        "Payload size:     50 KB       \n" +
+                        "Encryption:       off         \n" +
+                        "------------------------------\n" +
+                        "Duration:         5.0 s       \n" +
+                        "Total bytes:      3875.5 MB   \n" +
+                        "Throughput msgs:  15871 msg/s \n" +
+                        "Throughput bytes: 775 MB/s    \n" +
+                        "```                           \n" +
+                        "With deactivated print option a map with detailed statistics values will be returned.")
                     .examples(
                         "(ipc/benchmark \"af-inet://localhost:33333\"  \n" +
                         "               :5KB                           \n" +
