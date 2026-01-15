@@ -726,18 +726,20 @@ public class IPCFunctions {
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
-                        "(do                                              \n" +
-                        "  (ipc/benchmark \"af-inet://localhost:33333\"   \n" +
-                        "                 :5KB                            \n" +
-                        "                 100_000                         \n" +
-                        "                 10)                             ",
-                        "(do                                              \n" +
-                        "  (ipc/benchmark \"af-inet://localhost:33333\"   \n" +
-                        "                 :5KB                            \n" +
-                        "                 100_000                         \n" +
-                        "                 10                              \n" +
-                        "                 :socket-snd-buf-size :128KB     \n" +
-                        "                 :socket-rcv-buf-size :128KB )   ")
+                        "(->> (ipc/benchmark \"af-inet://localhost:33333\"   \n" +
+                        "                    :5KB                            \n" +
+                        "                    100_000                         \n" +
+                        "                    10)                             \n" +
+                        "     (:summary)                                     \n" +
+                        "     (println))                                    ",
+                        "(->> (ipc/benchmark \"af-unix:///Users/foo/Desktop/venice/tmp/test.sock\"   \n" +
+                        "                    :5KB                                                    \n" +
+                        "                    100_000                                                 \n" +
+                        "                    10                                                      \n" +
+                        "                    :socket-snd-buf-size :128KB                             \n" +
+                        "                    :socket-rcv-buf-size :128KB)                            \n" +
+                        "     (:summary)                                                             \n" +
+                        "     (println))                                                             ")
                      .seeAlso(
                         "ipc/server",
                         "ipc/client")
@@ -745,7 +747,7 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertMinArity(this, args, 3);
+                ArityExceptions.assertMinArity(this, args, 4);
 
                 // -- Parse arguments -----------------------------------------
                 final String connURI = Coerce.toVncString(args.first()).getValue();
@@ -754,7 +756,7 @@ public class IPCFunctions {
                 final long duration  = Coerce.toVncLong(args.fourth()).getValue();
 
                 // options
-                final VncHashMap options = VncHashMap.ofAll(args.slice(3));
+                final VncHashMap options = VncHashMap.ofAll(args.slice(4));
 
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
@@ -778,6 +780,8 @@ public class IPCFunctions {
                     }
                     server.setEncryption(encrypt);
                     server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+
+                    server.start();
 
                     IO.sleep(300);
 
@@ -805,17 +809,17 @@ public class IPCFunctions {
                     // Statistics
 
                     final long elapsedMillis = System.currentTimeMillis() - start;
-                    final double elapsedSec = (elapsedMillis + 500L) / 1000L;
-                    final long transferred = count * System.currentTimeMillis();
+                    final double elapsedSec = elapsedMillis / 1000.0;
+                    final long transferred = count * msgSize;
 
                     final StringBuilder summary = new StringBuilder();
-                    summary.append(String.format("Messages:         %d", count));
-                    summary.append(String.format("Payload size:     %d KB", msgSize / KB));
-                    summary.append("------------------------------");
-                    summary.append(String.format("Duration:         %.1fs", elapsedSec));
-                    summary.append(String.format("Total bytes:      %.1f MB", (double)transferred/ (double)MB));
-                    summary.append(String.format("Throughput msgs:  %.0f msg/s", count / elapsedSec));
-                    summary.append(String.format("Throughput bytes: %.0f MB/s", ((double)transferred / (double)MB) / elapsedSec));
+                    summary.append(String.format("Messages:         %d\n", count));
+                    summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
+                    summary.append("------------------------------\n");
+                    summary.append(String.format("Duration:         %.1fs\n", elapsedSec));
+                    summary.append(String.format("Total bytes:      %.1f MB\n", (double)transferred/ (double)MB));
+                    summary.append(String.format("Throughput msgs:  %.0f msg/s\n", count / elapsedSec));
+                    summary.append(String.format("Throughput bytes: %.0f MB/s\n", (double)transferred / (double)MB / elapsedSec));
 
                     return VncHashMap.of(
                             new VncKeyword("params"), VncHashMap.of(
