@@ -734,7 +734,7 @@ public class IPCFunctions {
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
                         "| :print b                     | if `true` print the result to stdout. Defaults to `false`|\n" +
-                        "| :encrypt b                   | If `true` encrypt the payload data. Defaults to `false`|\n" +
+                        "| :encrypt b                   | If `true` encrypt the messages. Defaults to `false`|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
@@ -746,13 +746,13 @@ public class IPCFunctions {
                     .examples(
                         "(ipc/benchmark \"af-inet://localhost:33333\"  \n" +
                         "               :5KB                           \n" +
-                        "               100_000                        \n" +
-                        "               10                             \n" +
+                        "               300_000                        \n" +
+                        "               5                              \n" +
                         "               :print true)                   ",
                         "(ipc/benchmark \"af-unix:///Users/foo/Desktop/venice/tmp/test.sock\"   \n" +
                         "               :5KB                                                    \n" +
-                        "               100_000                                                 \n" +
-                        "               10                                                      \n" +
+                        "               300_000                                                 \n" +
+                        "               5                                                       \n" +
                         "               :socket-snd-buf-size :128KB                             \n" +
                         "               :socket-rcv-buf-size :128KB)                            \n" +
                         "               :print true)                                            ")
@@ -793,6 +793,7 @@ public class IPCFunctions {
                     server.setMaxMessageSize(Messages.MESSAGE_LIMIT_MAX);
                     server.setEncryption(encrypt);
                     server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+                    server.setMaxParallelConnections(2);
                     server.start();
 
                     IO.sleep(300);
@@ -825,9 +826,19 @@ public class IPCFunctions {
 
                     // Statistics
 
-                    final double elapsedSec  = elapsed / 1000.0;
-                    final long transferredBytes   = count * msgSize;
-                    final double transferredMB   = (double)transferredBytes/ (double)MB;
+                    final double elapsedSec     = elapsed / 1000.0;
+                    final long transferredBytes = count * msgSize;
+                    final double transferredMB  = (double)transferredBytes / (double)MB;
+                    final double throughputMsgs = count / elapsedSec;
+                    final double throughputMB   = transferredMB / elapsedSec;
+
+                    final String sThroughputMsgs = throughputMsgs < 10.0
+                                                    ? String.format("%.1f", throughputMsgs)
+                                                    : String.format("%.0f", throughputMsgs);
+
+                    final String sThroughputMB = throughputMB < 100.0
+                                                    ? String.format("%.1f", throughputMB)
+                                                    : String.format("%.0f", throughputMB);
 
                     final StringBuilder summary = new StringBuilder();
                     summary.append(String.format("Messages:         %d\n", count));
@@ -836,8 +847,8 @@ public class IPCFunctions {
                     summary.append("------------------------------\n");
                     summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
                     summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
-                    summary.append(String.format("Throughput msgs:  %.0f msg/s\n", count / elapsedSec));
-                    summary.append(String.format("Throughput bytes: %.0f MB/s\n", transferredMB / elapsedSec));
+                    summary.append(String.format("Throughput msgs:  %s msg/s\n", sThroughputMsgs));
+                    summary.append(String.format("Throughput bytes: %s MB/s\n", sThroughputMB));
 
                     if (print) {
                         System.out.println(summary.toString());
@@ -858,8 +869,8 @@ public class IPCFunctions {
                                 new VncKeyword("message-size"),     new VncLong(msgSize),
                                 new VncKeyword("duration-millis"),  new VncLong(elapsed),
                                 new VncKeyword("total-bytes-sent"), new VncLong(transferredBytes),
-                                new VncKeyword("throughput-msgs"),  new VncDouble(count / elapsedSec),
-                                new VncKeyword("throughput-bytes"), new VncDouble(transferredMB / elapsedSec),
+                                new VncKeyword("throughput-msgs"),  new VncDouble(throughputMsgs),
+                                new VncKeyword("throughput-MB"),    new VncDouble(throughputMB),
                                 new VncKeyword("summary"),          new VncString(summary.toString()));
                     }
                 }
