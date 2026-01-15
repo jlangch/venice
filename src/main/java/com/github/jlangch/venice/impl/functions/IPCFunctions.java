@@ -107,7 +107,7 @@ public class IPCFunctions {
                                                         " Defaults to `50MB`.¶" +
                                                         " The max size can be specified as a number like `20000`" +
                                                         " or a number with a unit like `:20KB` or `:20MB`. The value" +
-                                                        " must be in the range 2KB ... 200MB|\n" +
+                                                        " must be in the range 2KB ... 250MB|\n" +
                         "| :max-queues n                | The number of the max queues the server can handle.¶" +
                                                         " Defaults to 20.|\n" +
                         "| :compress-cutoff-size n      | The compression cutoff size for payload messages.¶" +
@@ -678,9 +678,39 @@ public class IPCFunctions {
 
 
     // ------------------------------------------------------------------------
-    // Send / Receive
+    // Benchmark
     // ------------------------------------------------------------------------
 
+    // Benchmark: MacBook Air M2, 24GB, MacOS 26
+    //
+    // AF_INET tcp/ip sockets
+    //
+    // +------------------------------------------------------------------------------------------------+
+    // | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
+    // +------------------------------------------------------------------------------------------------+
+    // | Throughput msgs  | 15942 msg/s | 14740 msg/s | 6788 msg/s | 1075 msg/s | 95 msg/s  | 22 msg/s  |
+    // | Throughput bytes | 78 MB/s     | 720 MB/s    | 3314 MB/s  | 5373 MB/s  | 4728 MB/s | 4359 MB/s |
+    // +------------------------------------------------------------------------------------------------+
+    //
+    //
+    // AF_UNIX Unix domain sockets: default socket snd/rcv buffer size
+    //
+    // +-----------------------------------------------------------------------------------------------+
+    // | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+    // +-----------------------------------------------------------------------------------------------+
+    // | Throughput msgs  | 31055 msg/s | 14723 msg/s | 3577 msg/s | 6 msg/s   | - msg/s   | - msg/s   |
+    // | Throughput bytes | 152 MB/s    | 719 MB/s    | 1747 MB/s  | 31 MB/s   | - MB/s    | - MB/s    |
+    // +-----------------------------------------------------------------------------------------------+
+    //
+    //
+    // AF_UNIX Unix domain sockets: 1MB socket snd/rcv buffer size
+    //
+    // +-----------------------------------------------------------------------------------------------+
+    // | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+    // +-----------------------------------------------------------------------------------------------+
+    // | Throughput msgs  | 30287 msg/s | 25722 msg/s | 9983 msg/s | 373 msg/s | 6 msg/s   | 0.4 msg/s |
+    // | Throughput bytes | 148 MB/s    | 1256 MB/s   | 4874 MB/s  | 1863 MB/s | 285 MB/s  | 78 MB/s   |
+    // +-----------------------------------------------------------------------------------------------+
 
     public static VncFunction ipc_benchmark =
         new VncFunction(
@@ -704,7 +734,6 @@ public class IPCFunctions {
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
                         "| :print b                     | if `true` print the result to stdout. Defaults to `false`|\n" +
-                        "| :compress b                  | If `true` compress the payload data. Defaults to `false`|\n" +
                         "| :encrypt b                   | If `true` encrypt the payload data. Defaults to `false`|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
@@ -745,17 +774,15 @@ public class IPCFunctions {
                 // options
                 final VncHashMap options = VncHashMap.ofAll(args.slice(4));
 
-                final VncVal printVal = options.get(new VncKeyword("print"), VncBoolean.False);
-                final VncVal compressVal = options.get(new VncKeyword("compress"), VncBoolean.False);
-                final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                final VncVal printVal      = options.get(new VncKeyword("print"), VncBoolean.False);
+                final VncVal encryptVal    = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                 final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
                 final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
 
-                final boolean print = Coerce.toVncBoolean(printVal).getValue();
-                final boolean compress = Coerce.toVncBoolean(compressVal).getValue();
+                final boolean print   = Coerce.toVncBoolean(printVal).getValue();
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
-                final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
-                final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
+                final int sndBufSize  = (int)convertUnitValueToLong(sndBufSizeVal);
+                final int rcvBufSize  = (int)convertUnitValueToLong(rcvBufSizeVal);
 
 
                 // -- Create and configure the server ------------------------------------
@@ -763,10 +790,7 @@ public class IPCFunctions {
                 try(TcpServer server = TcpServer.of(new URI(connURI));
                     TcpClient client = TcpClient.of(new URI(connURI))
                 ) {
-                    server.setMaxMessageSize(200 * MB);
-                    if (compress) {
-                        server.setCompressCutoffSize(1);
-                    }
+                    server.setMaxMessageSize(Messages.MESSAGE_LIMIT_MAX);
                     server.setEncryption(encrypt);
                     server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
                     server.start();
@@ -809,7 +833,6 @@ public class IPCFunctions {
                     summary.append(String.format("Messages:         %d\n", count));
                     summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
                     summary.append(String.format("Encryption:       %s\n", encrypt? "on" : "off"));
-                    summary.append(String.format("Compression:      %s\n", compress? "on" : "off"));
                     summary.append("------------------------------\n");
                     summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
                     summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
@@ -827,7 +850,6 @@ public class IPCFunctions {
                                                             new VncKeyword("msg-size"),            new VncLong(msgSize),
                                                             new VncKeyword("msg-count"),           new VncLong(msgCount),
                                                             new VncKeyword("duration"),            new VncLong(duration),
-                                                            new VncKeyword("compress"),            VncBoolean.of(compress),
                                                             new VncKeyword("encrypt"),             VncBoolean.of(encrypt),
                                                             new VncKeyword("socket-snd-buf-size"), new VncLong(sndBufSize),
                                                             new VncKeyword("socket-rcv-buf-size"), new VncLong(rcvBufSize)),

@@ -26,7 +26,7 @@ public abstract class Messages {
 
     // Message limit
     public static final long MESSAGE_LIMIT_MIN     = 2 * 1024;            //   2 KB
-    public static final long MESSAGE_LIMIT_MAX     = 200 * 1024 * 1024;   // 200 MB
+    public static final long MESSAGE_LIMIT_MAX     = 250 * 1024 * 1024;   // 250 MB
     public static final long MESSAGE_LIMIT_DEFAULT = 20 * 1024 * 1024;    //  20 MB
 
     // Message timeout

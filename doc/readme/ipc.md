@@ -620,7 +620,7 @@ Text message payloads are defined by
 
 By default messages are limited to 20 MB size (not encrypted, not compressed).
 
-The message size limit can be configured on the server in the range of 2KB ... 200MB.
+The message size limit can be configured on the server in the range of 2KB ... 250MB.
 
 ```clojure
 (ipc/server 33333 :max-message-size :100MB)
@@ -1079,21 +1079,30 @@ application/json
 
  
 
-AF_INET tcp/ip sockets 
+AF_INET tcp/ip sockets
 
-| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
-| :--              | :--         | :--         | :--        | :--       | :--       | :--       |
-| Throughput msgs  | 14970 msg/s | 13793 msg/s | 6435 msg/s | 804 msg/s | 46 msg/s  | 11 msg/s  |
-| Throughput bytes | 73 MB/s     | 674 MB/s    | 3142 MB/s  | 3926 MB/s | 2291 MB/s | 2219 MB/s |
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--        | :--        | :--       | :--       |
+| Throughput msgs  | 15942 msg/s | 14740 msg/s | 6788 msg/s | 1075 msg/s | 95 msg/s  | 22 msg/s  |
+| Throughput bytes | 78 MB/s     | 720 MB/s    | 3314 MB/s  | 5373 MB/s  | 4728 MB/s | 4359 MB/s |
 
  
 
-AF_UNIX unix domain sockets
+AF_UNIX Unix domain sockets: default socket snd/rcv buffer size
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--       | :--       | :--       |
-| Throughput msgs  | 29034 msg/s | 14479 msg/s | 3540 msg/s | 6 msg/s   | - msg/s   | - msg/s   |
-| Throughput bytes | 142 MB/s    | 707 MB/s    | 1728 MB/s  | 27 MB/s   | - MB/s    | - MB/s    |
+| Throughput msgs  | 31055 msg/s | 14723 msg/s | 3577 msg/s | 6 msg/s   | - msg/s   | - msg/s   |
+| Throughput bytes | 152 MB/s    | 719 MB/s    | 1747 MB/s  | 31 MB/s   | - MB/s    | - MB/s    |
+
+ 
+
+AF_UNIX Unix domain sockets: 1MB socket snd/rcv buffer size
+
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--        | :--       | :--       | :--       |
+| Throughput msgs  | 30287 msg/s | 25722 msg/s | 9983 msg/s | 373 msg/s | 6 msg/s   | 0.4 msg/s |
+| Throughput bytes | 148 MB/s    | 1256 MB/s   | 4874 MB/s  | 1863 MB/s | 285 MB/s  | 78 MB/s   |
 
  
 
