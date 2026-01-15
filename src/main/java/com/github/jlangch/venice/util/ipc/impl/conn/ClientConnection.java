@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
+import java.net.StandardSocketOptions;
 import java.net.URI;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -80,6 +81,7 @@ public class ClientConnection implements AutoCloseable {
             if (sndBufSize > 0) channel.socket().setSendBufferSize(sndBufSize);
             if (rcvBufSize > 0) channel.socket().setReceiveBufferSize(rcvBufSize);
             channel.configureBlocking(true);
+            channel.setOption(StandardSocketOptions.TCP_NODELAY, true);
         }
         catch(Exception ex) {
             throw new IpcException(

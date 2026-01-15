@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
+import java.net.StandardSocketOptions;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.ServerSocketChannel;
@@ -511,6 +512,7 @@ public class TcpServer implements AutoCloseable {
                             if (sndBufSize > 0) channel.socket().setSendBufferSize(sndBufSize);
                             if (rcvBufSize > 0) channel.socket().setReceiveBufferSize(rcvBufSize);
                             channel.configureBlocking(true);
+                            channel.setOption(StandardSocketOptions.TCP_NODELAY, true);
 
                             final long connId = connectionId.incrementAndGet();
 
