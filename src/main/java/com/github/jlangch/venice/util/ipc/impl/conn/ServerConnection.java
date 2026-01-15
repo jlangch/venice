@@ -1029,6 +1029,12 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message getTcpServerStatus(final Message request) {
+        int sndBufSize = -1;
+        int rcvBufSize = -1;
+
+        try { sndBufSize = ch.socket().getSendBufferSize(); } catch (Exception ignore) { }
+        try { rcvBufSize = ch.socket().getReceiveBufferSize(); } catch (Exception ignore) { }
+
         return createJsonResponse(
                    request,
                    ResponseStatus.OK,
@@ -1064,6 +1070,8 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("queue-count", p2pQueues.size())
                            .add("temp-queue-count", p2pQueues.values().stream().filter(q -> q.isTemporary()).count())
                            .add("temp-queue-this-client-count", tmpQueues.size())
+                           .add("socket-snd-buf-size", sndBufSize)
+                           .add("socket-rcv-buf-size", rcvBufSize)
                            .toJson(false));
     }
 

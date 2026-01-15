@@ -128,7 +128,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
 
     public TcpClient openClone() {
         final TcpClient client = new TcpClient(connURI);
-        client.setEncryption(encrypt.get());
+        client.setEncryption(encrypt);
         if (u != null && p != null) {
             client.open(String.valueOf(u), String.valueOf(p));
         }
@@ -165,7 +165,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
                    "The encryption mode cannot be changed once the client has been opened!");
         }
 
-        this.encrypt.set(encrypt);
+        this.encrypt = encrypt;
     }
 
     /**
@@ -179,6 +179,22 @@ public class TcpClient implements Cloneable, AutoCloseable {
         }
 
         return conn.get().isEncrypted();
+    }
+
+    /**
+     * Set the socket's send and receive buffer size. -1 keeps the default.
+     *
+     * @param sndBufSize a send buffer size
+     * @param rcvBufSize a receive buffer size
+     */
+    public void setSndRcvBufferSize(final int sndBufSize, final int rcvBufSize) {
+        if (opened.get()) {
+            throw new IllegalStateException(
+                   "The buffer size cannot be changed once the client has been opened!");
+        }
+
+        this.sndBufSize = sndBufSize;
+        this.rcvBufSize = rcvBufSize;
     }
 
     /**
@@ -243,7 +259,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
      * @return the acknowledge mode of this client
      */
     public AcknowledgeMode getAcknowledgeMode() {
-        return ackMode.get();
+        return ackMode;
     }
 
     /**
@@ -270,7 +286,10 @@ public class TcpClient implements Cloneable, AutoCloseable {
         if (opened.compareAndSet(false, true)) {
             ClientConnection c = null;
             try {
-                c = new ClientConnection(connURI, encrypt.get(), ackMode.get(), userName, password);
+                c = new ClientConnection(
+                            connURI, encrypt, ackMode,
+                            sndBufSize, rcvBufSize,
+                            userName, password);
                 conn.set(c);
 
                 this.u = userName == null ? null : userName.toCharArray();
@@ -1271,11 +1290,15 @@ public class TcpClient implements Cloneable, AutoCloseable {
     private volatile char[] u = null;
     private volatile char[] p = null;
 
+
     private final URI connURI;
     private final String endpointId;
 
+    private volatile int sndBufSize = -1;
+    private volatile int rcvBufSize = -1;
+    private volatile boolean encrypt = false;
+    private volatile AcknowledgeMode ackMode = AcknowledgeMode.NO_ACKNOWLEDGE;
+
     private final AtomicBoolean opened = new AtomicBoolean(false);
-    private final AtomicBoolean encrypt = new AtomicBoolean(false);
-    private final AtomicReference<AcknowledgeMode> ackMode = new AtomicReference<>(AcknowledgeMode.NO_ACKNOWLEDGE);
     private final AtomicReference<ClientConnection> conn = new AtomicReference<>();
 }

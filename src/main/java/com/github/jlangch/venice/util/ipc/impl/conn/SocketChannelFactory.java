@@ -94,13 +94,16 @@ public class SocketChannelFactory {
                 final Class<?> clazz3 = Class.forName("org.newsclub.net.unix.AFSocketChannel");
                 final Method connectMethod = clazz3.getMethod("connect", SocketAddress.class);
 
-                final Object ch = openMethod.invoke(null);
+                final SocketChannel ch = (SocketChannel)openMethod.invoke(null);
 
-                final Object socketAddr = ofMethod.invoke(null, socketFile);
+                final SocketAddress socketAddr = (SocketAddress)ofMethod.invoke(null, socketFile);
 
                 connectMethod.invoke(ch, socketAddr);
 
-                return (SocketChannel)ch;
+                ch.socket().setSendBufferSize(64 * KB);
+                ch.socket().setReceiveBufferSize(64 * KB);
+
+                return ch;
             }
             catch(Exception ex) {
                 throw new IpcException(
@@ -168,13 +171,15 @@ public class SocketChannelFactory {
                 final Class<?> clazz3 = Class.forName("org.newsclub.net.unix.AFServerSocketChannel");
                 final Method bindMethod = clazz3.getMethod("bind", SocketAddress.class, int.class);
 
-                final Object ch = openMethod.invoke(null);
+                final ServerSocketChannel ch = (ServerSocketChannel)openMethod.invoke(null);
 
-                final Object socketAddr = ofMethod.invoke(null, socketFile);
+                final SocketAddress socketAddr = (SocketAddress)ofMethod.invoke(null, socketFile);
 
                 bindMethod.invoke(ch, socketAddr, 0);
 
-                return (ServerSocketChannel)ch;
+                ch.socket().setReceiveBufferSize(64 * KB);
+
+                return ch;
             }
             catch(Exception ex) {
                 throw new IpcException(
@@ -216,4 +221,5 @@ public class SocketChannelFactory {
     }
 
 
+    private static int KB = 1024;
 }

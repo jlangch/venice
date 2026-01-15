@@ -321,6 +321,21 @@ public class TcpServer implements AutoCloseable {
         return heartbeatInterval.get();
     }
 
+    /**
+     * Set the socket's send and receive buffer size. -1 keeps the default.
+     *
+     * @param sndBufSize a send buffer size
+     * @param rcvBufSize a receive buffer size
+     */
+    public void setSndRcvBufferSize(final int sndBufSize, final int rcvBufSize) {
+        if (started.get()) {
+            throw new IllegalStateException(
+                   "Cannot change the buffer size once the server has been started!");
+        }
+
+        this.sndBufSize = sndBufSize;
+        this.rcvBufSize = rcvBufSize;
+    }
 
     /**
      * Enable  Write-Ahead-Logs
@@ -493,6 +508,8 @@ public class TcpServer implements AutoCloseable {
                         try {
                             // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
+                            if (sndBufSize > 0) channel.socket().setSendBufferSize(sndBufSize);
+                            if (rcvBufSize > 0) channel.socket().setReceiveBufferSize(rcvBufSize);
                             channel.configureBlocking(true);
 
                             final long connId = connectionId.incrementAndGet();
@@ -745,7 +762,6 @@ public class TcpServer implements AutoCloseable {
         ServerSocketChannel srv = null;
         try {
             srv = SocketChannelFactory.createServerSocketChannel(connURI);
-
             server.set(srv);
             return srv;
         }
@@ -793,6 +809,8 @@ public class TcpServer implements AutoCloseable {
     private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
 
     // configuration
+    private volatile int sndBufSize = -1;
+    private volatile int rcvBufSize = -1;
     private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_DEFAULT);
     private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
     private final AtomicBoolean encrypt = new AtomicBoolean(false);

@@ -67,15 +67,18 @@ public class ClientConnection implements AutoCloseable {
             final URI connURI,
             final boolean useEncryption,
             final AcknowledgeMode ackMode,
+            final int sndBufSize,
+            final int rcvBufSize,
             final String userName,
             final String password
     ) {
         this.ackMode = ackMode;
 
-
         // [1] Open the connection to the server
         try {
             channel = SocketChannelFactory.createSocketChannel(connURI);
+            if (sndBufSize > 0) channel.socket().setSendBufferSize(sndBufSize);
+            if (rcvBufSize > 0) channel.socket().setReceiveBufferSize(rcvBufSize);
             channel.configureBlocking(true);
         }
         catch(Exception ex) {

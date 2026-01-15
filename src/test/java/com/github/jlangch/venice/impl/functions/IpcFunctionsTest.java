@@ -402,8 +402,12 @@ public class IpcFunctionsTest {
                 "                                                                                \n" +
                 "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
                 "                                                                                \n" +
-                "  (try-with [server (ipc/server conn-uri echo-handler)                          \n" +
-                "             client (ipc/client conn-uri)]                                      \n" +
+                "  (try-with [server (ipc/server conn-uri echo-handler                           \n" +
+                "                                :socket-snd-buf-size :64KB                      \n" +
+                "                                :socket-rcv-buf-size :64KB)                     \n" +
+                "             client (ipc/client conn-uri                                        \n" +
+                "                                :socket-snd-buf-size :64KB                      \n" +
+                "                                :socket-rcv-buf-size :64KB)]                    \n" +
                 "    (ipc/send client (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))       \n" +
                 "    (ipc/send client (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))       \n" +
                 "    (sleep 100))                                                                \n" +

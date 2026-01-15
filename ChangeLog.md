@@ -16,6 +16,9 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run steps api (...)
 
 - Added heartbeat support to IPC client/server
+- Added the option to configure the send and receive buffer sizes for IPC
+  client and server sockets
+- Added support for IPC Unix domain sockets
 
 
 

@@ -134,8 +134,17 @@ public class IPCFunctions {
                         "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
                         "                                 Defaults to `false`.|\n" +
                         "| :authenticator a             | An authenticator. Defaults to `nil`.|\n" +
+                        "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
+                                                        " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                        " The size can be specified as a number like `64536`" +
+                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n" +
+                        "| :socket-rcv-buf-size n       | The server socket's receive buffer size.¶" +
+                                                        " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                        " The size can be specified as a number like `64536`" +
+                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n" +
                         "| :heartbeat-interval n        | Connection heartbeat interval in seconds. Must be greater" +
-                                                        " than 0.¶Defaults to `nil`.|\n\n" +
+                                                        " than 0.¶" +
+                                                        " Defaults to `nil`.|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
@@ -228,6 +237,8 @@ public class IPCFunctions {
                 final VncVal walCompactAtStartVal = options.get(new VncKeyword("write-ahead-log-compact"));
                 final VncVal authenticatorVal = options.get(new VncKeyword("authenticator"));
                 final VncVal heartbeatIntervalVal = options.get(new VncKeyword("heartbeat-interval"), new VncLong(0));
+                final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
+                final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
 
                 final int maxConn = maxConnVal == Nil
                                         ? 0
@@ -238,7 +249,9 @@ public class IPCFunctions {
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                 final boolean permitQueueMgmt = Coerce.toVncBoolean(permitQueueMgmtVal).getValue();
-                final long heartbeatInterval =Coerce.toVncLong(heartbeatIntervalVal).getValue();
+                final long heartbeatInterval = Coerce.toVncLong(heartbeatIntervalVal).getValue();
+                final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
+                final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
 
                 final File serverLogDir = serverLogDirVal == Nil
                                             ? null
@@ -333,6 +346,8 @@ public class IPCFunctions {
                     server.setHearbeatInterval((int)heartbeatInterval);
                 }
 
+                server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+
                 // -- Start the server ----------------------------------------
 
                 if (handlerWrapper == null) {
@@ -380,6 +395,14 @@ public class IPCFunctions {
                                                    " algorithm.|\n" +
                         "| :user-name s            | A user-name if the server requires authentication|\n" +
                         "| :password s             | A password if the server requires authentication|\n" +
+                        "| :socket-snd-buf-size n  | The client socket's send buffer size.¶" +
+                                                   " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                   " The size can be specified as a number like `64536`" +
+                                                   " or a number with a unit like `:64KB` or `:1MB`.|\n" +
+                        "| :socket-rcv-buf-size n  | The client socket's receive buffer size.¶" +
+                                                   " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                   " The size can be specified as a number like `64536`" +
+                                                   " or a number with a unit like `:64KB` or `:1MB`.|\n\n" +
                         "**The client is thread-safe!** \n\n" +
                         "**The client must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
@@ -473,12 +496,18 @@ public class IPCFunctions {
                     final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                     final VncVal userVal = options.get(new VncKeyword("user-name"));
                     final VncVal pwdVal = options.get(new VncKeyword("password"));
+                    final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
+                    final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
 
                     final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                     final String user = userVal == Nil ? null : Coerce.toVncString(userVal).getValue();
                     final String pwd = pwdVal == Nil ? null : Coerce.toVncString(pwdVal).getValue();
+                    final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
+                    final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
 
                     client.setEncryption(encrypt);
+                    client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+
                     client.open(user, pwd);
 
                     return new VncJavaObject(client);

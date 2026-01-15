@@ -44,7 +44,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
  * </pre>
  *
  * <pre>
- * AF_UNIX
+ * AF_UNIX default snd/rcv buffer size
  *
  * +-----------------------------------------------------------------------------------------------+
  * | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
@@ -53,18 +53,29 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
  * | Throughput bytes | 142 MB/s    | 707 MB/s    | 1728 MB/s  | 27 MB/s   | - MB/s    | - MB/s    |
  * +-----------------------------------------------------------------------------------------------+
  * </pre>
+ *
+ * <pre>
+ * AF_UNIX 64KB snd/rcv buffer size
+ *
+ * +-----------------------------------------------------------------------------------------------+
+ * | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+ * +-----------------------------------------------------------------------------------------------+
+ * | Throughput msgs  | 29034 msg/s | 24180 msg/s | 6564 msg/s | 51 msg/s  | - msg/s   | - msg/s   |
+ * | Throughput bytes | 142 MB/s    | 1181 MB/s   | 3205 MB/s  | 249 MB/s  | - MB/s    | - MB/s    |
+ * +-----------------------------------------------------------------------------------------------+
+ * </pre>
  */
 public class Benchmark {
 
     public static void main(String[] args) throws Exception {
         final int rounds = 300000;
-        final int payloadSize = 5 * KB;
-        final int maxDurationSeconds = 5;
+        final int payloadSize = 50000 * KB;
+        final int maxDurationSeconds = 10;
 
         final URI connURI_1 = new URI("af-inet://localhost:33333");
         final URI connURI_2 = new URI("af-unix:///Users/juerg/Desktop/venice/tmp/test.sock");
 
-        run(connURI_1, rounds, payloadSize, maxDurationSeconds);
+        run(connURI_2, rounds, payloadSize, maxDurationSeconds);
     }
 
     public static void run(
