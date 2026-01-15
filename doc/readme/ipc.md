@@ -1075,18 +1075,33 @@ application/json
 
 ## Benchmark
 
-**Hardware:** MacBook Air M2, 24GB
+**Benchmark:** MacBook Air M2, 24GB, MacOS 26
 
-IPC client and server colocated, compression and encryption turned off
+ 
 
-Benchmark:
+AF_INET tcp/ip sockets 
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--       | :--       | :--       |
 | Throughput msgs  | 14970 msg/s | 13793 msg/s | 6435 msg/s | 804 msg/s | 46 msg/s  | 11 msg/s  |
 | Throughput bytes | 73 MB/s     | 674 MB/s    | 3142 MB/s  | 3926 MB/s | 2291 MB/s | 2219 MB/s |
 
-**Test scenario:** *The client sends messages with a defined payload size, and the server responds with a simple acknowledge message. Throughput measurements consider only the client-sent messages.*
+ 
+
+AF_UNIX unix domain sockets
+
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--        | :--       | :--       | :--       |
+| Throughput msgs  | 29034 msg/s | 14479 msg/s | 3540 msg/s | 6 msg/s   | - msg/s   | - msg/s   |
+| Throughput bytes | 142 MB/s    | 707 MB/s    | 1728 MB/s  | 27 MB/s   | - MB/s    | - MB/s    |
+
+ 
+
+**Test scenario:** 
+
+*IPC client and server colocated, compression and encryption turned off*
+
+*The client sends messages with a defined payload size, and the server responds with a simple acknowledge message. Throughput measurements consider only the client-sent messages.*
 
  
  
