@@ -786,7 +786,7 @@ public class IPCFunctions {
                         "               300_000                                                 \n" +
                         "               5                                                       \n" +
                         "               :socket-snd-buf-size :128KB                             \n" +
-                        "               :socket-rcv-buf-size :128KB)                            \n" +
+                        "               :socket-rcv-buf-size :128KB                             \n" +
                         "               :print true)                                            ")
                      .seeAlso(
                         "ipc/server",
