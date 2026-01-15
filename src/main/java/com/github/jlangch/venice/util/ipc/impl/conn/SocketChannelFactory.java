@@ -100,9 +100,6 @@ public class SocketChannelFactory {
 
                 connectMethod.invoke(ch, socketAddr);
 
-                ch.socket().setSendBufferSize(64 * KB);
-                ch.socket().setReceiveBufferSize(64 * KB);
-
                 return ch;
             }
             catch(Exception ex) {
@@ -177,8 +174,6 @@ public class SocketChannelFactory {
 
                 bindMethod.invoke(ch, socketAddr, 0);
 
-                ch.socket().setReceiveBufferSize(64 * KB);
-
                 return ch;
             }
             catch(Exception ex) {
@@ -220,6 +215,4 @@ public class SocketChannelFactory {
         }
     }
 
-
-    private static int KB = 1024;
 }

@@ -42,6 +42,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -65,6 +66,7 @@ import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
+import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
@@ -89,8 +91,7 @@ public class IPCFunctions {
                                       " \u00A0 • TCP/IP sockets¶" +
                                       " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
                                       " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
-                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`¶" +
-                                      "|\n" +
+                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
                         "| handler h  | A single argument handler function.¶" +
                                       " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
                                       " The handler receives the request messsage and returns a response" +
@@ -385,8 +386,7 @@ public class IPCFunctions {
                                       " \u00A0 • TCP/IP sockets¶" +
                                       " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
                                       " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
-                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`¶" +
-                                      "|\n\n" +
+                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n\n" +
                         "*Options:* \n\n" +
                         "| :encrypt b              | If `true` encrypt the payload data of all messages exchanged" +
                                                    " between this client and its associated server.¶" +
@@ -670,6 +670,174 @@ public class IPCFunctions {
                 else {
                     throw new VncException(
                            "Function 'ipc/close' expects either a TcpServer or a TcpClient!");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    // ------------------------------------------------------------------------
+    // Send / Receive
+    // ------------------------------------------------------------------------
+
+
+    public static VncFunction ipc_benchmark =
+        new VncFunction(
+                "ipc/benchmark",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/benchmark conn-uri msg-count duration & options)")
+                    .doc(
+                        "Create a new server on the specified port or connection URI.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
+                        "| conn-uri u  | A connection URI¶" +
+                                       " \u00A0 • TCP/IP sockets¶" +
+                                       " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
+                                       " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
+                                       " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
+                        "| msg-size n  | The message size.|\n" +
+                        "| msg-count n | The number of messages to send.|\n" +
+                        "| duration n  | The duration in seconds.|\n\n" +
+                        "*Options:* \n\n" +
+                        "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
+                        "| :compress-cutoff-size n      | The compression cutoff size for payload messages.¶" +
+                                                        " With a negative cutoff size payload messages will not be" +
+                                                        " compressed. If the payload message size is greater than the cutoff" +
+                                                        " size it will be compressed.¶"  +
+                                                        " The cutoff size can be specified as a number like `1000`" +
+                                                        " or a number with a unit like `:1KB` or `:2MB`.¶" +
+                                                        " Defaults to -1 (no compression)|\n" +
+                        "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
+                                                        " with this server.¶" +
+                                                        " The data is AES-256-GCM encrypted using a secret that is" +
+                                                        " created and exchanged using the Diffie-Hellman key exchange" +
+                                                        " algorithm.|\n" +
+                        "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
+                                                        " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                        " The size can be specified as a number like `64536`" +
+                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n" +
+                        "| :socket-rcv-buf-size n       | The server socket's receive buffer size.¶" +
+                                                        " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                        " The size can be specified as a number like `64536`" +
+                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n\n" +
+                        "**The server must be closed after use!**\n\n" +
+                        "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
+                    .examples(
+                        "(do                                              \n" +
+                        "  (ipc/benchmark \"af-inet://localhost:33333\"   \n" +
+                        "                 :5KB                            \n" +
+                        "                 100_000                         \n" +
+                        "                 10)                             ",
+                        "(do                                              \n" +
+                        "  (ipc/benchmark \"af-inet://localhost:33333\"   \n" +
+                        "                 :5KB                            \n" +
+                        "                 100_000                         \n" +
+                        "                 10                              \n" +
+                        "                 :socket-snd-buf-size :128KB     \n" +
+                        "                 :socket-rcv-buf-size :128KB )   ")
+                     .seeAlso(
+                        "ipc/server",
+                        "ipc/client")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 3);
+
+                // -- Parse arguments -----------------------------------------
+                final String connURI = Coerce.toVncString(args.first()).getValue();
+                final long msgSize   = convertUnitValueToLong((args.second()));
+                final long msgCount  = Coerce.toVncLong(args.third()).getValue();
+                final long duration  = Coerce.toVncLong(args.fourth()).getValue();
+
+                // options
+                final VncHashMap options = VncHashMap.ofAll(args.slice(3));
+
+                final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
+                final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
+                final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
+
+                final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
+                final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+                final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
+                final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
+
+
+                // -- Create and configure the server ------------------------------------
+
+                try(TcpServer server = TcpServer.of(new URI(connURI));
+                    TcpClient client = TcpClient.of(new URI(connURI))
+                ) {
+                    server.setMaxMessageSize(200 * MB);
+                    if (compressCutoffSize >= 0) {
+                        server.setCompressCutoffSize(compressCutoffSize);
+                    }
+                    server.setEncryption(encrypt);
+                    server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+
+                    IO.sleep(300);
+
+                    client.open();
+
+                    // Test
+                    final byte[] payload = new byte[(int)msgSize];
+
+                    final long start = System.currentTimeMillis();
+                    final long end = start + 1000L * duration;
+
+                    int count = 0;
+
+                    for(int ii=0; ii<msgCount; ii++) {
+                        final IMessage m = client.test(payload);
+                        if (ResponseStatus.OK != m.getResponseStatus()) {
+                           throw new RuntimeException("Bad response");
+                        }
+                        count++;
+                        if (System.currentTimeMillis() > end) {
+                            break;
+                        }
+                    }
+
+                    // Statistics
+
+                    final long elapsedMillis = System.currentTimeMillis() - start;
+                    final double elapsedSec = (elapsedMillis + 500L) / 1000L;
+                    final long transferred = count * System.currentTimeMillis();
+
+                    final StringBuilder summary = new StringBuilder();
+                    summary.append(String.format("Messages:         %d", count));
+                    summary.append(String.format("Payload size:     %d KB", msgSize / KB));
+                    summary.append("------------------------------");
+                    summary.append(String.format("Duration:         %.1fs", elapsedSec));
+                    summary.append(String.format("Total bytes:      %.1f MB", (double)transferred/ (double)MB));
+                    summary.append(String.format("Throughput msgs:  %.0f msg/s", count / elapsedSec));
+                    summary.append(String.format("Throughput bytes: %.0f MB/s", ((double)transferred / (double)MB) / elapsedSec));
+
+                    return VncHashMap.of(
+                            new VncKeyword("params"), VncHashMap.of(
+                                                        new VncKeyword("conn-uri"),            new VncString(connURI),
+                                                        new VncKeyword("msg-size"),             new VncLong(msgSize),
+                                                        new VncKeyword("msg-count"),            new VncLong(msgCount),
+                                                        new VncKeyword("duration"),             new VncLong(duration),
+                                                        new VncKeyword("compress-cutoff-size"), new VncLong(compressCutoffSize),
+                                                        new VncKeyword("encrypt"),              VncBoolean.of(encrypt),
+                                                        new VncKeyword("socket-snd-buf-size"),  new VncLong(sndBufSize),
+                                                        new VncKeyword("socket-rcv-buf-size"),  new VncLong(rcvBufSize)),
+
+                            new VncKeyword("message-count"),    new VncLong(count),
+                            new VncKeyword("message-size"),     new VncLong(msgSize),
+                            new VncKeyword("duration-millis"),  new VncLong(elapsedMillis),
+                            new VncKeyword("total-bytes-sent"), new VncLong(transferred),
+                            new VncKeyword("throughput-msgs"),  new VncDouble(count / elapsedSec),
+                            new VncKeyword("throughput-bytes"), new VncDouble(((double)transferred / (double)MB) / elapsedSec),
+                            new VncKeyword("summary"),          new VncString(summary.toString()));
+                }
+                catch(Exception ex) {
+                    throw new VncException("Benchmark failed!", ex);
                 }
             }
 
@@ -3377,6 +3545,8 @@ public class IPCFunctions {
     }
 
 
+    private static int KB = 1024;
+    private static int MB = KB * KB;
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -3389,6 +3559,8 @@ public class IPCFunctions {
                     .add(ipc_clone)
                     .add(ipc_close)
                     .add(ipc_runnningQ)
+
+                    .add(ipc_benchmark)
 
                     .add(ipc_send)
                     .add(ipc_send_async)
