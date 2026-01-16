@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.71] - 2026-01-xx
+## [1.12.72] - 2026-01-xx
 
 ### Enhancements
 
@@ -15,10 +15,17 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+
+
+## [1.12.71] - 2026-01-16
+
+### Enhancements
+
 - Added heartbeat support to IPC client/server
-- Added the option to configure the send and receive buffer sizes for IPC
-  client and server sockets
 - Added support for IPC Unix domain sockets
+- Added the option to configure send and receive buffer sizes for IPC
+  client and server sockets
+- Activated TCP_NODELAY on IPC client/server sockets
 
 
 
