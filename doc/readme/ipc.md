@@ -1078,11 +1078,11 @@ application/json
 
 ### MacOS
 
-**Benchmark:** MacBook Air M2 MacOS 26
+MacBook Air M2 MacOS 26
 
  
 
-AF_INET tcp/ip sockets
+**AF_INET** tcp/ip sockets
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--        | :--       | :--       |
@@ -1091,7 +1091,7 @@ AF_INET tcp/ip sockets
 
  
 
-AF_UNIX Unix domain sockets: default socket snd/rcv buffer size
+**AF_UNIX** Unix domain sockets: default socket snd/rcv buffer size
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--       | :--       | :--       |
@@ -1100,7 +1100,7 @@ AF_UNIX Unix domain sockets: default socket snd/rcv buffer size
 
  
 
-AF_UNIX Unix domain sockets: 1MB socket snd/rcv buffer size
+**AF_UNIX** Unix domain sockets: 1MB socket snd/rcv buffer size
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--       | :--       | :--       |
@@ -1111,11 +1111,11 @@ AF_UNIX Unix domain sockets: 1MB socket snd/rcv buffer size
 
 ### AlmaLinux 9
 
-**Benchmark:** VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core
+VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core
 
  
 
-AF_INET tcp/ip sockets
+**AF_INET** tcp/ip sockets
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--        | :--       | :--       |
@@ -1130,6 +1130,23 @@ AF_INET tcp/ip sockets
 *IPC client and server colocated, compression and encryption turned off*
 
 *The client sends messages with a defined payload size, and the server responds with a simple acknowledge message. Throughput measurements consider only the client-sent messages.*
+
+
+```clojure
+;; tcp/ip socket
+(ipc/benchmark "af-inet://localhost:33333"
+               :5KB
+               300_000
+               5
+               :print true)
+
+;; Unix domain socket
+(ipc/benchmark "af-unix:///path/to/test.sock"
+               :5KB
+               300_000
+               5
+               :print true)
+```
 
  
  
