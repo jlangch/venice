@@ -131,7 +131,9 @@ public class Topics {
 
     public static Topics decode(final String topics) {
         Objects.requireNonNull(topics);
-       return Topics.of(topics.split(" *, *"));
+        return topics.contains(",")
+                ? Topics.of(topics.split(" *, *"))
+                : Topics.of(topics);
     }
 
 

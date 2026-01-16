@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.impl.Topics;
@@ -124,6 +125,30 @@ public class PayloadMetaDataTest {
 
         data = new PayloadMetaData(null, null, null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id);
         assertEquals(data, decode(encode(data)));
-   }
+    }
+
+    @Test
+    @Disabled
+    public void test_encode_decode_time() {
+        final UUID id = UUID.randomUUID();
+
+        int count = 100_000;
+
+        // warmup
+        for(int ii=0; ii<1_000; ii++) {
+            PayloadMetaData data = new PayloadMetaData(String.valueOf(count), "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+            assertEquals(data, decode(encode(data)));
+        }
+
+        final long start = System.currentTimeMillis();
+
+        for(int ii=0; ii<count; ii++) {
+           PayloadMetaData data = new PayloadMetaData(String.valueOf(count), "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+           assertEquals(data, decode(encode(data)));
+        }
+
+        final long elapsed = System.currentTimeMillis() - start;
+        System.out.println("" + elapsed * 1_000_000L / count + "ns");
+    }
 
 }

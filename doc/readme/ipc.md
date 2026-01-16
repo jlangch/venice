@@ -1075,7 +1075,10 @@ application/json
 
 ## Benchmark
 
-**Benchmark:** MacBook Air M2, 24GB, MacOS 26
+
+### MacOS
+
+**Benchmark:** MacBook Air M2 MacOS 26
 
  
 
@@ -1083,8 +1086,8 @@ AF_INET tcp/ip sockets
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--        | :--       | :--       |
-| Throughput msgs  | 15942 msg/s | 14740 msg/s | 6788 msg/s | 1075 msg/s | 95 msg/s  | 22 msg/s  |
-| Throughput bytes | 78 MB/s     | 720 MB/s    | 3314 MB/s  | 5373 MB/s  | 4728 MB/s | 4359 MB/s |
+| Throughput msgs  | 21154 msg/s | 15868 msg/s | 6873 msg/s | 1082 msg/s | 95 msg/s  | 22 msg/s  |
+| Throughput bytes | 103 MB/s    | 775 MB/s    | 3356 MB/s  | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
 
  
 
@@ -1105,6 +1108,22 @@ AF_UNIX Unix domain sockets: 1MB socket snd/rcv buffer size
 | Throughput bytes | 148 MB/s    | 1256 MB/s   | 4874 MB/s  | 1863 MB/s | 285 MB/s  | 78 MB/s   |
 
  
+
+### AlmaLinux 9
+
+**Benchmark:** VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core
+
+ 
+
+AF_INET tcp/ip sockets
+
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--        | :--        | :--       | :--       |
+| Throughput msgs  | 11776 msg/s | 8515 msg/s  | 2068 msg/s | 202 msg/s  | 19 msg/s  | 3.7 msg/s |
+| Throughput bytes | 57.5 MB/s   | 416 MB/s    | 1010 MB/s  | 1009 MB/s  | 929 MB/s  | 737 MB/s  |
+
+ 
+
 
 **Test scenario:** 
 

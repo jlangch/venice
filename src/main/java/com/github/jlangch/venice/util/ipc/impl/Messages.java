@@ -50,7 +50,7 @@ public abstract class Messages {
     public static final String TOPIC_DIFFIE_HELLMANN = "dh";
     public static final String TOPIC_AUTHENTICATION = "authentication";
     public static final String TOPIC_HEARTBEAT = "heartbeat";
-    public static final String TOPIC_TEST = "heartbeat";
+    public static final String TOPIC_TEST = "T";
 
 
     // Client requests
