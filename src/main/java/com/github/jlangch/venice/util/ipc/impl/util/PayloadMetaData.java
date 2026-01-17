@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
@@ -351,11 +352,21 @@ public class PayloadMetaData {
     }
 
     private static MessageType decodeMessageType(final int e) {
-        return MessageType.fromCode(e);
+        if (e >= 0 && e < types.length) {
+            return types[e];
+        }
+        else {
+            throw new IpcException("Illegal IPC message MessageType value: " + e);
+        }
     }
 
     private static ResponseStatus decodeResponseStatus(final int e) {
-        return ResponseStatus.fromCode(e);
+        if (e >= 0 && e < status.length) {
+            return status[e];
+        }
+        else {
+            throw new IpcException("Illegal IPC message ResponseStatus value: " + e);
+        }
     }
 
     private static Topics decodeTopics(final byte[] b) {
@@ -373,6 +384,20 @@ public class PayloadMetaData {
         final byte[] buf = new byte[len];
         b.get(buf, 0, len);
         return buf;
+    }
+
+
+
+    private final static MessageType[] types = new MessageType[100];
+    private final static ResponseStatus[] status = new ResponseStatus[100];
+
+    static {
+        for(MessageType m : MessageType.values()) {
+            if (m.getValue() < 100) types[m.getValue()] = m;
+        }
+        for(ResponseStatus s : ResponseStatus.values()) {
+           if (s.getValue() < 100) status[s.getValue()] = s;
+        }
     }
 
 
