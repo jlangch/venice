@@ -21,16 +21,13 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
-import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
@@ -246,83 +243,137 @@ public class PayloadMetaData {
     public static byte[] encode(final PayloadMetaData data) {
         Objects.requireNonNull(data);
 
-        final String s = (data.oneway ? "1" : "0")           + '\n' +
-                         (data.durable ? "1" : "0")          + '\n' +
-                         (data.subscriptionReply ? "1" : "0")+ '\n' +
-                         trimToEmpty(data.requestId)         + '\n' +
-                         toCode(data.type)                   + '\n' +
-                         toCode(data.responseStatus)         + '\n' +
-                         trimToEmpty(data.queueName)         + '\n' +
-                         trimToEmpty(data.replyToQueueName)  + '\n' +
-                         Topics.encode(data.topics)          + '\n' +
-                         trimToEmpty(data.mimetype)          + '\n' +
-                         trimToEmpty(data.charset)           + '\n' +
-                         data.id.toString();
+        final byte   _oneway                 = encodeBoolean(data.oneway);
+        final byte   _durable                = encodeBoolean(data.durable);
+        final byte   _subscriptionReply      = encodeBoolean(data.subscriptionReply);
+        final byte[] _requestId              = encodeString(data.requestId);
+        final int    _type                   = encodeMessageType(data.type);
+        final int    _responseStatus         = encodeResponseStatus(data.responseStatus);
+        final byte[] _queueName              = encodeString(data.queueName);
+        final byte[] _replyToQueueName       = encodeString(data.replyToQueueName);
+        final byte[] _topics                 = encodeTopics(data.topics);
+        final byte[] _mimetype               = encodeString(data.mimetype);
+        final byte[] _charset                = encodeString(data.charset);
+        final long   _idLeastSignificantBits = data.id.getLeastSignificantBits();
+        final long   _idMostSignificantBits  = data.id.getMostSignificantBits();
 
-        return s.getBytes(StandardCharsets.UTF_8);
+        final int bytes = 1 + 1 + 1 +
+                          4 + _requestId.length +
+                          4 + 4 +
+                          4 + _queueName.length +
+                          4 + _replyToQueueName.length +
+                          4 + _topics.length +
+                          4 + _mimetype.length +
+                          4 + _charset.length +
+                          8 + 8;
+
+        final ByteBuffer buf = ByteBuffer.allocate(bytes);
+
+        buf.put(_oneway);
+        buf.put(_durable);
+        buf.put(_subscriptionReply);
+        putString(buf, _requestId);
+        buf.putInt(_type);
+        buf.putInt(_responseStatus);
+        putString(buf, _queueName);
+        putString(buf, _replyToQueueName);
+        putString(buf, _topics);
+        putString(buf, _mimetype);
+        putString(buf, _charset);
+        buf.putLong(_idMostSignificantBits);
+        buf.putLong(_idLeastSignificantBits);
+
+        return buf.array();
     }
 
     public static PayloadMetaData decode(final byte[] data) {
         Objects.requireNonNull(data);
 
-        final String s = new String(data, StandardCharsets.UTF_8);
+        final ByteBuffer buf = ByteBuffer.wrap(data);
 
-        final List<String> lines = StringUtil.splitIntoLines(s);
+        final byte   _oneway                 = buf.get();
+        final byte   _durable                = buf.get();
+        final byte   _subscriptionReply      = buf.get();
+        final byte[] _requestId              = getString(buf);
+        final int    _type                   = buf.getInt();
+        final int    _responseStatus         = buf.getInt();
+        final byte[] _queueName              = getString(buf);
+        final byte[] _replyToQueueName       = getString(buf);
+        final byte[] _topics                 = getString(buf);
+        final byte[] _mimetype               = getString(buf);
+        final byte[] _charset                = getString(buf);
+        final long   _idMostSignificantBits  = buf.getLong();
+        final long   _idLeastSignificantBits = buf.getLong();
 
-        if (lines.size() == 12) {
-            return new PayloadMetaData(
-                    toBool(lines.get(0)),             // oneway
-                    toBool(lines.get(1)),             // durable
-                    toBool(lines.get(2)),             // subscriptionReply
-                    trimToNull(lines.get(3)),         // requestId
-                    toMessageType(lines.get(4)),      // message type
-                    toResponseStatus(lines.get(5)),   // response status
-                    trimToNull(lines.get(6)),         // queueName
-                    trimToNull(lines.get(7)),         // replyToQueueName
-                    Topics.decode(lines.get(8)),      // topics
-                    lines.get(9),                     // mimetype
-                    trimToNull(lines.get(10)),        // charset
-                    UUID.fromString(lines.get(11)));  // id
-        }
-        else {
-            throw new IpcException(String.format(
-                    "Failed to decode the payload meta data. Got only %d properties instead of 8!",
-                    lines.size()));
-        }
+        return new PayloadMetaData(
+                decodeBoolean(_oneway),
+                decodeBoolean(_durable),
+                decodeBoolean(_subscriptionReply),
+                decodeString(_requestId),
+                decodeMessageType(_type),
+                decodeResponseStatus(_responseStatus),
+                decodeString(_queueName),
+                decodeString(_replyToQueueName),
+                decodeTopics(_topics),
+                decodeString(_mimetype),
+                decodeString(_charset),
+                new UUID(_idMostSignificantBits, _idLeastSignificantBits));
+    }
+
+    private static byte encodeBoolean(final boolean b) {
+        return b ? (byte)1 : (byte)0;
+    }
+
+    private static byte[] encodeString(final String s) {
+        return s == null || s.isEmpty() ? new byte[0] : s.getBytes(UTF_8);
+    }
+
+    private static int encodeMessageType(final MessageType e) {
+        return e.getValue();
+    }
+
+    private static int encodeResponseStatus(final ResponseStatus e) {
+        return e.getValue();
+    }
+
+    private static byte[] encodeTopics(final Topics t) {
+        final String s = Topics.encode(t);
+        return s == null || s.isEmpty() ? new byte[0] : s.getBytes(UTF_8);
     }
 
 
-    private static boolean toBool(final String s) {
-        return s.equals("1");
+    private static boolean decodeBoolean(final byte b) {
+        return b == (byte)1;
     }
 
-    private static String toCode(final MessageType e) {
-        return String.valueOf(e.getValue());
+    private static String decodeString(final byte[] b) {
+        return trimToNull(new String(b, UTF_8));
     }
 
-    private static String toCode(final ResponseStatus e) {
-        return String.valueOf(e.getValue());
+    private static MessageType decodeMessageType(final int e) {
+        return MessageType.fromCode(e);
     }
 
-    private static MessageType toMessageType(final String code) {
-        MessageType t = MessageType.fromCode(Integer.parseInt(code));
-        if (t == null) {
-            throw new IpcException("Illegal IPC message MessageType value");
-        }
-        else {
-            return t;
-        }
+    private static ResponseStatus decodeResponseStatus(final int e) {
+        return ResponseStatus.fromCode(e);
     }
 
-    private static ResponseStatus toResponseStatus(final String code) {
-        ResponseStatus s = ResponseStatus.fromCode(Integer.parseInt(code));
-        if (s == null) {
-            throw new IpcException("Illegal IPC message ResponseStatus value");
-        }
-        else {
-            return s;
-        }
-   }
+    private static Topics decodeTopics(final byte[] b) {
+        final String s = new String(b, UTF_8);
+        return Topics.decode(s);
+    }
+
+    private static void putString(final ByteBuffer b, final byte[] sBuf) {
+        b.putInt(sBuf.length);
+        b.put(sBuf);
+    }
+
+    private static byte[] getString(final ByteBuffer b) {
+        final int len = b.getInt();
+        final byte[] buf = new byte[len];
+        b.get(buf, 0, len);
+        return buf;
+    }
 
 
     private final boolean oneway;
