@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.72] - 2026-01-xx
+## [1.12.73] - 2026-01-xx
 
 ### Enhancements
 
@@ -14,6 +14,12 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant message api (in work)
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.72] - 2026-01-18
+
+### Enhancements
 
 - Improved IPC message metadata. Made it smaller and optimized the encoding/decoding
 
