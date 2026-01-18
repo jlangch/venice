@@ -741,6 +741,8 @@ public class IPCFunctions {
                         "(ipc/benchmark conn-uri msg-count duration & options)")
                     .doc(
                         "Runs a benchmark.\n\n" +
+                        "Stops the benchmark when either the message count or the duration limit " +
+                        "is reached.\n\n" +
                         "*Arguments:* \n\n" +
                         "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
                         "| conn-uri u  | A connection URI¶" +
@@ -748,12 +750,16 @@ public class IPCFunctions {
                                        " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
                                        " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
                                        " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
-                        "| msg-size n  | The message size.|\n" +
-                        "| msg-count n | The number of messages to send.|\n" +
+                        "| msg-size n  | The message size.¶" +
+                                       " The size can be specified as a number like `16384`" +
+                                       " or a number with a unit like `:16KB` or `:1MB`.|\n" +
+                        "| msg-count n | The number of messages to send.¶" +
+                                       " Stops the benchmark when either the message count or the " +
+                                       " duration limit is reached.|\n" +
                         "| duration n  | The duration in seconds.|\n\n" +
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
-                        "| :print b                     | if `true` print the result to stdout. Defaults to `false`|\n" +
+                        "| :print b                     | If `true` print the result to stdout. Defaults to `false`|\n" +
                         "| :oneway b                    | If `true` send oneway messages. Defaults to `false`|\n" +
                         "| :encrypt b                   | If `true` encrypt the messages. Defaults to `false`|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
@@ -763,8 +769,12 @@ public class IPCFunctions {
                         "| :socket-rcv-buf-size n       | The server socket's receive buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
-                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n\n" +
-                        "If the print option is active the output will look like:\n\n" +
+                                                        " or a number with a unit like `:64KB` or `:1MB`.|\n" +
+                        "| :ramp-up-msg-count n         | The number of ramp-up messages to send. Defaults to 0.¶" +
+                                                        " Stops the ramp-up  when either the message count or the " +
+                                                        " duration limit is reached.|\n" +
+                        "| ramp-up-duration n           | The ramp-up duration in seconds. Defaults to 0s.|\n\n" +
+                        "Prints this statistics if the *print* option is enabled:\n\n" +
                         "```                           \n" +
                         "Messages:         79370       \n" +
                         "Payload size:     50 KB       \n" +
@@ -774,14 +784,21 @@ public class IPCFunctions {
                         "Total bytes:      3875.5 MB   \n" +
                         "Throughput msgs:  15871 msg/s \n" +
                         "Throughput bytes: 775 MB/s    \n" +
-                        "```                           \n" +
-                        "With deactivated print option a map with detailed statistics values will be returned.")
+                        "```                           \n\n" +
+                        "With deactivated *print* option a map with detailed statistics values will be returned.")
                     .examples(
                         "(ipc/benchmark \"af-inet://localhost:33333\"  \n" +
                         "               :5KB                           \n" +
                         "               300_000                        \n" +
                         "               5                              \n" +
                         "               :print true)                   ",
+                        "(ipc/benchmark \"af-inet://localhost:33333\"  \n" +
+                        "               :5KB                           \n" +
+                        "               300_000                        \n" +
+                        "               5                              \n" +
+                        "               :print true                    \n" +
+                        "               :ramp-up-msg-count 10_000      \n" +
+                        "               :ramp-up-duration 1)           ",
                         "(ipc/benchmark \"af-unix:///Users/foo/Desktop/venice/tmp/test.sock\"   \n" +
                         "               :5KB                                                    \n" +
                         "               300_000                                                 \n" +
@@ -807,17 +824,21 @@ public class IPCFunctions {
                 // options
                 final VncHashMap options = VncHashMap.ofAll(args.slice(4));
 
-                final VncVal printVal      = options.get(new VncKeyword("print"), VncBoolean.False);
-                final VncVal encryptVal    = options.get(new VncKeyword("encrypt"), VncBoolean.False);
-                final VncVal onewayVal     = options.get(new VncKeyword("onway"), VncBoolean.False);
-                final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
-                final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
+                final VncVal printVal          = options.get(new VncKeyword("print"), VncBoolean.False);
+                final VncVal encryptVal        = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                final VncVal onewayVal         = options.get(new VncKeyword("onway"), VncBoolean.False);
+                final VncVal sndBufSizeVal     = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
+                final VncVal rcvBufSizeVal     = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
+                final VncVal rampUpMsgCountVal = options.get(new VncKeyword("ramp-up-msg-count"), new VncLong(0));
+                final VncVal rampUpDurationVal = options.get(new VncKeyword("ramp-up-duration"), new VncLong(0));
 
-                final boolean print   = Coerce.toVncBoolean(printVal).getValue();
-                final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
-                final boolean oneway  = Coerce.toVncBoolean(onewayVal).getValue();
-                final int sndBufSize  = (int)convertUnitValueToLong(sndBufSizeVal);
-                final int rcvBufSize  = (int)convertUnitValueToLong(rcvBufSizeVal);
+                final boolean print      = Coerce.toVncBoolean(printVal).getValue();
+                final boolean encrypt    = Coerce.toVncBoolean(encryptVal).getValue();
+                final boolean oneway     = Coerce.toVncBoolean(onewayVal).getValue();
+                final int sndBufSize     = (int)convertUnitValueToLong(sndBufSizeVal);
+                final int rcvBufSize     = (int)convertUnitValueToLong(rcvBufSizeVal);
+                final int rampUpMsgCount = Coerce.toVncLong(rampUpMsgCountVal).toJavaInteger();
+                final int rampUpDuration = Coerce.toVncLong(rampUpDurationVal).toJavaInteger();
 
 
                 // -- Create and configure the server ------------------------------------
@@ -839,6 +860,31 @@ public class IPCFunctions {
                     // Test
                     final byte[] payload = new byte[(int)msgSize];
 
+                    // Ramp-Up phase
+                    if (rampUpMsgCount > 0 && rampUpDuration > 0) {
+                           if (print) System.out.println("Ramp up...");
+
+                           final long end = System.currentTimeMillis() + rampUpDuration * 1000L;
+                           int count = 0;
+
+                           while(true) {
+                               final IMessage m = client.test(payload, oneway);
+                               if (ResponseStatus.OK != m.getResponseStatus()) {
+                                  throw new RuntimeException("Bad response");
+                               }
+                               count++;
+                               if (System.currentTimeMillis() > end || count >= rampUpMsgCount) {
+                                   break;
+                               }
+                           }
+
+                           if (print) {
+                               System.out.println("Ramp up done.");
+                               System.out.println("Benchmark...\n\n");
+                           }
+                    }
+
+                    // Benchmark
                     final long start = System.currentTimeMillis();
                     final long end = start + duration * 1000L;
 

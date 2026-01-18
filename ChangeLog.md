@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Improved IPC message metadata. Made it smaller and optimized the encoding/decoding
+
 
 
 ## [1.12.71] - 2026-01-16
