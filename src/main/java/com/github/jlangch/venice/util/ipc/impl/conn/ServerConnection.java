@@ -940,7 +940,9 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleTest(final Message request) {
-        return createTextResponse(request, ResponseStatus.OK, "");
+        return request.isOneway()
+                ? null
+                : createTextResponse(request, ResponseStatus.OK, "");
     }
 
 

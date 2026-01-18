@@ -45,6 +45,7 @@ import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.conn.ClientConnection;
+import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.ConstantFuture;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
@@ -679,9 +680,10 @@ public class TcpClient implements Cloneable, AutoCloseable {
      * Send a test message
      *
      * @param payload a test payload
+     * @param oneway if true send oneway messages
      * @return the response message
      */
-    public IMessage test(final byte[] payload) {
+    public IMessage test(final byte[] payload, final boolean oneway) {
         Objects.requireNonNull(payload);
 
         if (!opened.get()) {
@@ -692,7 +694,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
                                 null,
                                 MessageType.TEST,
                                 ResponseStatus.NULL,
-                                false,
+                                oneway,
                                 false,
                                 false,
                                 Messages.EXPIRES_NEVER,
@@ -995,6 +997,28 @@ public class TcpClient implements Cloneable, AutoCloseable {
                 ? null
                 : (Map<String,Object>)data.convertToJavaObject();
     }
+
+    /**
+     * Calculate the effective message size
+     *
+     * <p>Returns a map with the break down message size:
+     *
+     * <ul>
+     *   <li>header: the header size</li>
+     *   <li>payload-meta: the payload meta data size</li>
+     *   <li>payload: the payload size</li>
+     *   <li>total: the total size</li>
+     * </ul>
+     *
+     * @param message a message
+     * @return the message size info
+     */
+    public static Map<String,Integer> msgSize(final IMessage message) {
+        Objects.requireNonNull(message);
+
+        return Protocol.messageSize((Message)message);
+    }
+
 
 
     private VncMap getQueueStatusRaw(final String queueName) {

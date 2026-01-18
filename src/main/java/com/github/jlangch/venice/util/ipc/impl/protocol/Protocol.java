@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc.impl.protocol;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import com.github.jlangch.venice.EofException;
@@ -200,7 +202,20 @@ public class Protocol {
         }
     }
 
+    public static Map<String,Integer> messageSize(final Message message) {
+        Objects.requireNonNull(message);
 
+        final int header = 34;
+        final int payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message)).length;
+        final int payloadMsgData = message.getData().length;
+
+        final Map<String,Integer> info = new HashMap<>();
+        info.put("header",       header);
+        info.put("payload-meta", payloadMetaData);
+        info.put("payload-data", payloadMsgData);
+        info.put("total",        header + payloadMetaData + payloadMsgData);
+        return info;
+    }
 
     private static boolean toBool(final int n) {
         if (n == 0) return false;

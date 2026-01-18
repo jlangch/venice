@@ -754,6 +754,7 @@ public class IPCFunctions {
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
                         "| :print b                     | if `true` print the result to stdout. Defaults to `false`|\n" +
+                        "| :oneway b                    | If `true` send oneway messages. Defaults to `false`|\n" +
                         "| :encrypt b                   | If `true` encrypt the messages. Defaults to `false`|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
@@ -808,11 +809,13 @@ public class IPCFunctions {
 
                 final VncVal printVal      = options.get(new VncKeyword("print"), VncBoolean.False);
                 final VncVal encryptVal    = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                final VncVal onewayVal     = options.get(new VncKeyword("onway"), VncBoolean.False);
                 final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
                 final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
 
                 final boolean print   = Coerce.toVncBoolean(printVal).getValue();
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+                final boolean oneway  = Coerce.toVncBoolean(onewayVal).getValue();
                 final int sndBufSize  = (int)convertUnitValueToLong(sndBufSizeVal);
                 final int rcvBufSize  = (int)convertUnitValueToLong(rcvBufSizeVal);
 
@@ -843,7 +846,7 @@ public class IPCFunctions {
                     long elapsed = 0;
 
                     while(true) {
-                        final IMessage m = client.test(payload);
+                        final IMessage m = client.test(payload, oneway);
                         if (ResponseStatus.OK != m.getResponseStatus()) {
                            throw new RuntimeException("Bad response");
                         }
@@ -3010,6 +3013,43 @@ public class IPCFunctions {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+    public static VncFunction ipc_message_size =
+        new VncFunction(
+                "ipc/message-size",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/message-size message)")
+                    .doc(
+                        "Calculates the effective message size")
+                    .examples(
+                        "(->> (ipc/plain-text-message \"1\" \"test\" \"hello\") \n" +
+                        "     (ipc/message-size))                               ")
+                    .seeAlso(
+                        "ipc/text-message",
+                        "ipc/plain-text-message",
+                        "ipc/venice-message",
+                        "ipc/binary-message",
+                        "ipc/message->map")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final IMessage request = Coerce.toVncJavaObject(args.first(), IMessage.class);
+
+                final Map<String, Integer> info = TcpClient.msgSize(request);
+
+                return VncOrderedMap.of(
+                        new VncKeyword("header"),       new VncLong(info.get("header")),
+                        new VncKeyword("payload-meta"), new VncLong(info.get("payload-meta")),
+                        new VncKeyword("payload-data"), new VncLong(info.get("payload-data")),
+                        new VncKeyword("total"),        new VncLong(info.get("total")));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction ipc_onewayQ =
         new VncFunction(
@@ -3659,6 +3699,7 @@ public class IPCFunctions {
                     .add(ipc_message_field)
                     .add(ipc_message_to_map)
                     .add(ipc_message_to_json)
+                    .add(ipc_message_size)
                     .add(ipc_onewayQ)
                     .add(ipc_response_okQ)
                     .add(ipc_response_errQ)
