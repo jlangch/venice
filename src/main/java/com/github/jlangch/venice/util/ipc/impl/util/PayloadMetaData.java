@@ -248,8 +248,8 @@ public class PayloadMetaData {
         final byte   _durable                = encodeBoolean(data.durable);
         final byte   _subscriptionReply      = encodeBoolean(data.subscriptionReply);
         final byte[] _requestId              = encodeString(data.requestId);
-        final int    _type                   = encodeMessageType(data.type);
-        final int    _responseStatus         = encodeResponseStatus(data.responseStatus);
+        final short   _type                  = encodeMessageType(data.type);
+        final short   _responseStatus        = encodeResponseStatus(data.responseStatus);
         final byte[] _queueName              = encodeString(data.queueName);
         final byte[] _replyToQueueName       = encodeString(data.replyToQueueName);
         final byte[] _topics                 = encodeTopics(data.topics);
@@ -259,13 +259,13 @@ public class PayloadMetaData {
         final long   _idMostSignificantBits  = data.id.getMostSignificantBits();
 
         final int bytes = 1 + 1 + 1 +
-                          4 + _requestId.length +
-                          4 + 4 +
-                          4 + _queueName.length +
-                          4 + _replyToQueueName.length +
-                          4 + _topics.length +
-                          4 + _mimetype.length +
-                          4 + _charset.length +
+                          2 + _requestId.length +
+                          2 + 2 +
+                          2 + _queueName.length +
+                          2 + _replyToQueueName.length +
+                          2 + _topics.length +
+                          2 + _mimetype.length +
+                          2 + _charset.length +
                           8 + 8;
 
         final ByteBuffer buf = ByteBuffer.allocate(bytes);
@@ -274,8 +274,8 @@ public class PayloadMetaData {
         buf.put(_durable);
         buf.put(_subscriptionReply);
         putString(buf, _requestId);
-        buf.putInt(_type);
-        buf.putInt(_responseStatus);
+        buf.putShort(_type);
+        buf.putShort(_responseStatus);
         putString(buf, _queueName);
         putString(buf, _replyToQueueName);
         putString(buf, _topics);
@@ -296,8 +296,8 @@ public class PayloadMetaData {
         final byte   _durable                = buf.get();
         final byte   _subscriptionReply      = buf.get();
         final byte[] _requestId              = getString(buf);
-        final int    _type                   = buf.getInt();
-        final int    _responseStatus         = buf.getInt();
+        final short  _type                   = buf.getShort();
+        final short  _responseStatus         = buf.getShort();
         final byte[] _queueName              = getString(buf);
         final byte[] _replyToQueueName       = getString(buf);
         final byte[] _topics                 = getString(buf);
@@ -329,12 +329,12 @@ public class PayloadMetaData {
         return s == null || s.isEmpty() ? new byte[0] : s.getBytes(UTF_8);
     }
 
-    private static int encodeMessageType(final MessageType e) {
-        return e.getValue();
+    private static short encodeMessageType(final MessageType e) {
+        return (short)e.getValue();
     }
 
-    private static int encodeResponseStatus(final ResponseStatus e) {
-        return e.getValue();
+    private static short encodeResponseStatus(final ResponseStatus e) {
+        return (short)e.getValue();
     }
 
     private static byte[] encodeTopics(final Topics t) {
@@ -351,7 +351,7 @@ public class PayloadMetaData {
         return trimToNull(new String(b, UTF_8));
     }
 
-    private static MessageType decodeMessageType(final int e) {
+    private static MessageType decodeMessageType(final short e) {
         if (e >= 0 && e < types.length) {
             return types[e];
         }
@@ -360,7 +360,7 @@ public class PayloadMetaData {
         }
     }
 
-    private static ResponseStatus decodeResponseStatus(final int e) {
+    private static ResponseStatus decodeResponseStatus(final short e) {
         if (e >= 0 && e < status.length) {
             return status[e];
         }
@@ -375,12 +375,12 @@ public class PayloadMetaData {
     }
 
     private static void putString(final ByteBuffer b, final byte[] sBuf) {
-        b.putInt(sBuf.length);
+        b.putShort((short)sBuf.length);
         b.put(sBuf);
     }
 
     private static byte[] getString(final ByteBuffer b) {
-        final int len = b.getInt();
+        final int len = b.getShort();
         final byte[] buf = new byte[len];
         b.get(buf, 0, len);
         return buf;

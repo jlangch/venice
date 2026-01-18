@@ -65,7 +65,7 @@ public class Protocol {
                     + "\nMessage total:        %d"
                     + "\nMessage header:       %d"
                     + "\nMessage payload meta: %d"
-                    + "\nMessage payload:      %d",
+                    + "\nMessage payload data: %d",
                     messageSizeLimit, totalMsgSize, 34, payloadMetaData.length, payloadMsgData.length));
 
         }
