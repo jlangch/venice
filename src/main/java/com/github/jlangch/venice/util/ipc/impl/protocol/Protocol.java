@@ -57,7 +57,7 @@ public class Protocol {
         // Check message size limit
         final byte[] payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message));
         final byte[] payloadMsgData = message.getData();
-        final int totalMsgSize = 34 + payloadMetaData.length + payloadMsgData.length;
+        final int totalMsgSize = HEADER_SIZE + payloadMetaData.length + payloadMsgData.length;
         if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
             throw new IpcException(String.format(
                     "The message size exceeds the configured limit!"
@@ -66,7 +66,7 @@ public class Protocol {
                     + "\nMessage header:       %d"
                     + "\nMessage payload meta: %d"
                     + "\nMessage payload data: %d",
-                    messageSizeLimit, totalMsgSize, 34, payloadMetaData.length, payloadMsgData.length));
+                    messageSizeLimit, totalMsgSize, HEADER_SIZE, payloadMetaData.length, payloadMsgData.length));
 
         }
 
@@ -76,16 +76,16 @@ public class Protocol {
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
-        final ByteBuffer header = ByteBuffer.allocate(34);
+        final ByteBuffer header = ByteBuffer.allocate(HEADER_SIZE);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
         // 4 bytes (integer) protocol version
         header.putInt(PROTOCOL_VERSION);
-        // 2 bytes (short) compressed data flag
-        header.putShort(toShort(isCompressData));
-        // 2 bytes (short) encrypted data flag
-        header.putShort(toShort(encryptor.isActive()));
+        // 1 byte compressed data flag
+        header.put(toByte(isCompressData));
+        // 1 byte encrypted data flag
+        header.put(toByte(encryptor.isActive()));
         // 8 bytes (long) timestamp
         header.putLong(message.getTimestamp());
         // 8 bytes (long) expiresAt
@@ -123,7 +123,7 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(34);
+            final ByteBuffer header = ByteBuffer.allocate(HEADER_SIZE);
             final int bytesRead = ch.read(header);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
@@ -135,8 +135,8 @@ public class Protocol {
             final byte magic1 = header.get();
             final byte magic2 = header.get();
             final int version = header.getInt();
-            final boolean isCompressedData = toBool(header.getShort());
-            final boolean isEncryptedData = toBool(header.getShort());
+            final boolean isCompressedData = toBool(header.get());
+            final boolean isEncryptedData = toBool(header.get());
             final long timestamp = header.getLong();
             final long expiresAt = header.getLong();
             final long timeout = header.getLong();
@@ -205,28 +205,29 @@ public class Protocol {
     public static Map<String,Integer> messageSize(final Message message) {
         Objects.requireNonNull(message);
 
-        final int header = 34;
         final int payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message)).length;
         final int payloadMsgData = message.getData().length;
 
         final Map<String,Integer> info = new HashMap<>();
-        info.put("header",       header);
+        info.put("header",       HEADER_SIZE);
         info.put("payload-meta", payloadMetaData);
         info.put("payload-data", payloadMsgData);
-        info.put("total",        header + payloadMetaData + payloadMsgData);
+        info.put("total",        HEADER_SIZE + payloadMetaData + payloadMsgData);
         return info;
     }
 
-    private static boolean toBool(final int n) {
+    private static boolean toBool(final byte n) {
         if (n == 0) return false;
         else if (n == 1) return true;
         else throw new IpcException("Illegal IPC message boolean value");
     }
 
-    private static short toShort(final boolean b) {
-        return b ? (short)1 : (short)0;
+    private static byte toByte(final boolean b) {
+        return b ? (byte)1 : (byte)0;
     }
 
 
     private final static int PROTOCOL_VERSION = 1;
+
+    private final static int HEADER_SIZE = 32;
 }
