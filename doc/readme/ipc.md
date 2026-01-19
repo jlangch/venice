@@ -1139,7 +1139,7 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
                300000                       ;; 300'000 messages or ...
                5                            ;; 5s duration
                :print true                  ;; print results
-               :ramp-up-msg-count 10_000    ;; ramp-up phase 20'000 messages
+               :ramp-up-msg-count 10000     ;; ramp-up phase 10'000 messages
                :ramp-up-duration 1)         ;; ramp-up phase 1s
 
 ;; Unix domain socket
@@ -1150,7 +1150,7 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
                :print true                  ;; print results
                :socket-snd-buf-size :256KB  ;; socket send buffer size
                :socket-rcv-buf-size :256KB  ;; socket receiver buffer size
-               :ramp-up-msg-count 10_000    ;; ramp-up phase 20'000 messages
+               :ramp-up-msg-count 10000     ;; ramp-up phase 10'000 messages
                :ramp-up-duration 1)         ;; ramp-up phase 1s
 ```
 
