@@ -37,6 +37,54 @@ import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
+// Benchmark: MacBook Air M2, 24GB, MacOS 26
+// --------------------------------------------------------------------------------------------------
+//
+// AF_INET tcp/ip sockets
+//
+// +-------------------------------------------------------------------------------------------------+
+// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+// +-------------------------------------------------------------------------------------------------+
+// | Throughput msgs  | 22624 msg/s | 16178 msg/s | 6901 msg/s  | 1082 msg/s | 95 msg/s  | 22 msg/s  |
+// | Throughput bytes | 110 MB/s    | 790 MB/s    | 3370 MB/s   | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
+// +-------------------------------------------------------------------------------------------------+
+//
+//
+// AF_UNIX Unix domain sockets: default socket snd/rcv buffer size
+//
+// +------------------------------------------------------------------------------------------------+
+// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
+// +------------------------------------------------------------------------------------------------+
+// | Throughput msgs  | 33597 msg/s | 18618 msg/s | 3577 msg/s  | 6 msg/s   | - msg/s   | - msg/s   |
+// | Throughput bytes | 164 MB/s    | 909 MB/s    | 1747 MB/s   | 31 MB/s   | - MB/s    | - MB/s    |
+// +------------------------------------------------------------------------------------------------+
+//
+//
+// AF_UNIX Unix domain sockets: 1MB socket snd/rcv buffer size
+//
+// +------------------------------------------------------------------------------------------------+
+// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
+// +------------------------------------------------------------------------------------------------+
+// | Throughput msgs  | 34014 msg/s | 28196 msg/s | 10192 msg/s | 373 msg/s | 6 msg/s   | 0.4 msg/s |
+// | Throughput bytes | 166 MB/s    | 1377 MB/s   | 4977 MB/s   | 1863 MB/s | 285 MB/s  | 78 MB/s   |
+// +------------------------------------------------------------------------------------------------+
+//
+//
+//
+// Benchmark: VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core,
+//            12GB, AlmaLinux 9
+// --------------------------------------------------------------------------------------------------
+//
+// AF_INET tcp/ip sockets
+//
+// +-----------------------------------------------------------------------------------------------+
+// | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+// +-----------------------------------------------------------------------------------------------+
+// | Throughput msgs  | 11776 msg/s | 8515 msg/s  | 2068 msg/s | 202 msg/s | 19 msg/s  | 3.7 msg/s |
+// | Throughput bytes | 57.5 MB/s   | 416 MB/s    | 1010 MB/s  | 1009 MB/s | 929 MB/s  | 737 MB/s  |
+// +-----------------------------------------------------------------------------------------------+
+//
+//
 public class Benchmark {
 
     public Benchmark(
@@ -68,14 +116,12 @@ public class Benchmark {
 
     public VncHashMap run() {
         return hostAddr.isLoopbackAddress()
-                ? runLocal()
-                : runRemote();
+                ? benchmarkWithLocalServer()
+                : benchmarkSingleConnection();
     }
 
-    private VncHashMap runLocal() {
-        try(TcpServer server = TcpServer.of(connURI);
-            TcpClient client = TcpClient.of(connURI)
-        ) {
+    private VncHashMap benchmarkWithLocalServer() {
+        try(TcpServer server = TcpServer.of(connURI);) {
             server.setMaxMessageSize(Messages.MESSAGE_LIMIT_MAX);
             server.setEncryption(encrypt);
             server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
@@ -84,42 +130,14 @@ public class Benchmark {
 
             IO.sleep(300);
 
-            client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
-            client.open();
-
-            // Payload data
-            final byte[] payload = createRandomPayload();
-
-            // Ramp-Up phase
-            if (rampUpDuration > 0) {
-                   if (print) System.out.println("Ramp up...");
-
-                   rampUp(client, payload);
-
-                   if (print) {
-                       System.out.println("Ramp up done.");
-                       System.out.println("Benchmark...\n\n");
-                   }
-            }
-
-            // Benchmark
-            final VncHashMap result = benchmark(client, payload);
-
-            if (print) {
-                System.out.println(result.get(new VncKeyword("summary")).toString());
-                return null;
-            }
-            else {
-                return result;
-            }
+            return benchmarkSingleConnection();
         }
         catch(Exception ex) {
             throw new VncException("Benchmark failed!", ex);
         }
     }
 
-
-    private VncHashMap runRemote() {
+    private VncHashMap benchmarkSingleConnection() {
         try(TcpClient client = TcpClient.of(connURI)) {
             client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
             client.open();
@@ -135,7 +153,7 @@ public class Benchmark {
 
                    if (print) {
                        System.out.println("Ramp up done.");
-                       System.out.println("Benchmark...\n\n");
+                       System.out.println("Benchmark...");
                    }
             }
 
@@ -143,6 +161,7 @@ public class Benchmark {
             final VncHashMap result = benchmark(client, payload);
 
             if (print) {
+                System.out.println();
                 System.out.println(result.get(new VncKeyword("summary")).toString());
                 return null;
             }
@@ -176,44 +195,16 @@ public class Benchmark {
             }
         }
 
-        // Statistics
+        return computeStatistics(client, count, msgSize,  elapsed);
+    }
 
-        final double elapsedSec     = elapsed / 1000.0;
-        final long transferredBytes = count * msgSize;
-        final double transferredMB  = transferredBytes / (double)MB;
-        final double throughputMsgs = count / elapsedSec;
-        final double throughputMB   = transferredMB / elapsedSec;
-        final boolean compress      = client.isCompressing();
+    private void rampUp(final byte[] payload) {
+        try(TcpClient client = TcpClient.of(connURI)) {
+            client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+            client.open();
 
-        final String sThroughputMsgs = throughputMsgs < 10.0
-                                        ? String.format("%.1f", throughputMsgs)
-                                        : String.format("%.0f", throughputMsgs);
-
-        final String sThroughputMB = throughputMB < 100.0
-                                        ? String.format("%.1f", throughputMB)
-                                        : String.format("%.0f", throughputMB);
-
-        final StringBuilder summary = new StringBuilder();
-        summary.append(String.format("Messages:         %d\n", count));
-        summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
-        summary.append(String.format("Encryption:       %s\n", encrypt ? "on" : "off"));
-        summary.append(String.format("Compression:      %s\n", compress ? "on" : "off"));
-        summary.append("------------------------------\n");
-        summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
-        summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
-        summary.append(String.format("Throughput msgs:  %s msg/s\n", sThroughputMsgs));
-        summary.append(String.format("Throughput bytes: %s MB/s\n", sThroughputMB));
-
-        return VncHashMap.of(
-                new VncKeyword("message-count"),    new VncLong(count),
-                new VncKeyword("message-size"),     new VncLong(msgSize),
-                new VncKeyword("duration-millis"),  new VncLong(elapsed),
-                new VncKeyword("total-bytes-sent"), new VncLong(transferredBytes),
-                new VncKeyword("throughput-msgs"),  new VncDouble(throughputMsgs),
-                new VncKeyword("throughput-MB"),    new VncDouble(throughputMB),
-                new VncKeyword("encrypt"),          VncBoolean.of(encrypt),
-                new VncKeyword("compress"),         VncBoolean.of(compress),
-                new VncKeyword("summary"),          new VncString(summary.toString()));
+            rampUp(client, payload);
+        }
     }
 
     private void rampUp(final TcpClient client, final byte[] payload) {
@@ -235,6 +226,50 @@ public class Benchmark {
         final Random random = new Random();
         random.nextBytes(payload);
         return payload;
+    }
+
+    private VncHashMap computeStatistics(
+            final TcpClient client,
+            final long msgCount,
+            final long payloadSize,
+            final long elapsedMillis
+    ) {
+        final double elapsedSec     = elapsedMillis / 1000.0;
+        final long transferredBytes = msgCount * msgSize;
+        final double transferredMB  = transferredBytes / (double)MB;
+        final double throughputMsgs = msgCount / elapsedSec;
+        final double throughputMB   = transferredMB / elapsedSec;
+        final boolean compress      = client.isCompressing();
+
+        final String sThroughputMsgs = throughputMsgs < 10.0
+                                        ? String.format("%.1f", throughputMsgs)
+                                        : String.format("%.0f", throughputMsgs);
+
+        final String sThroughputMB = throughputMB < 100.0
+                                        ? String.format("%.1f", throughputMB)
+                                        : String.format("%.0f", throughputMB);
+
+        final StringBuilder summary = new StringBuilder();
+        summary.append(String.format("Messages:         %d\n", msgCount));
+        summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
+        summary.append(String.format("Encryption:       %s\n", encrypt ? "on" : "off"));
+        summary.append(String.format("Compression:      %s\n", compress ? "on" : "off"));
+        summary.append("------------------------------\n");
+        summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
+        summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
+        summary.append(String.format("Throughput msgs:  %s msg/s\n", sThroughputMsgs));
+        summary.append(String.format("Throughput bytes: %s MB/s\n", sThroughputMB));
+
+        return VncHashMap.of(
+                new VncKeyword("message-count"),    new VncLong(msgCount),
+                new VncKeyword("message-size"),     new VncLong(msgSize),
+                new VncKeyword("duration-millis"),  new VncLong(elapsedMillis),
+                new VncKeyword("total-bytes-sent"), new VncLong(transferredBytes),
+                new VncKeyword("throughput-msgs"),  new VncDouble(throughputMsgs),
+                new VncKeyword("throughput-MB"),    new VncDouble(throughputMB),
+                new VncKeyword("encrypt"),          VncBoolean.of(encrypt),
+                new VncKeyword("compress"),         VncBoolean.of(compress),
+                new VncKeyword("summary"),          new VncString(summary.toString()));
     }
 
     private URI parseConnectionURI(final String uri) {

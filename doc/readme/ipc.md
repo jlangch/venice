@@ -1082,30 +1082,30 @@ MacBook Air M2, MacOS 26
 
  
 
-**AF_INET** tcp/ip sockets
+**AF_INET** tcp/ip sockets, single connection, single thread
 
-| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
-| :--              | :--         | :--         | :--        | :--        | :--       | :--       |
-| Throughput msgs  | 21154 msg/s | 15868 msg/s | 6873 msg/s | 1082 msg/s | 95 msg/s  | 22 msg/s  |
-| Throughput bytes | 103 MB/s    | 775 MB/s    | 3356 MB/s  | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
-
- 
-
-**AF_UNIX** Unix domain sockets: default socket snd/rcv buffer size
-
-| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
-| :--              | :--         | :--         | :--        | :--       | :--       | :--       |
-| Throughput msgs  | 31055 msg/s | 14723 msg/s | 3577 msg/s | 6 msg/s   | - msg/s   | - msg/s   |
-| Throughput bytes | 152 MB/s    | 719 MB/s    | 1747 MB/s  | 31 MB/s   | - MB/s    | - MB/s    |
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--         | :--        | :--       | :--       |
+| Throughput msgs  | 22624 msg/s | 16178 msg/s | 6901 msg/s  | 1082 msg/s | 95 msg/s  | 22 msg/s  |
+| Throughput bytes | 110 MB/s    | 790 MB/s    | 3370 MB/s   | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
 
  
 
-**AF_UNIX** Unix domain sockets: 1MB socket snd/rcv buffer size
+**AF_UNIX** Unix domain sockets: default socket snd/rcv buffer size, single connection, single thread
 
-| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
-| :--              | :--         | :--         | :--        | :--       | :--       | :--       |
-| Throughput msgs  | 30287 msg/s | 25722 msg/s | 9983 msg/s | 373 msg/s | 6 msg/s   | 0.4 msg/s |
-| Throughput bytes | 148 MB/s    | 1256 MB/s   | 4874 MB/s  | 1863 MB/s | 285 MB/s  | 78 MB/s   |
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--         | :--        | :--       | :--       |
+| Throughput msgs  | 33597 msg/s | 18618 msg/s | 3577 msg/s  | 6 msg/s    | - msg/s   | - msg/s   |
+| Throughput bytes | 164 MB/s    | 909 MB/s    | 1747 MB/s   | 31 MB/s    | - MB/s    | - MB/s    |
+
+ 
+
+**AF_UNIX** Unix domain sockets: 1MB socket snd/rcv buffer size, single connection, single thread
+
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--         | :--        | :--       | :--       |
+| Throughput msgs  | 34014 msg/s | 28196 msg/s | 10192 msg/s | 373 msg/s  | 6 msg/s   | 0.4 msg/s |
+| Throughput bytes | 166 MB/s    | 1377 MB/s   | 4977 MB/s   | 1863 MB/s  | 285 MB/s  | 78 MB/s   |
 
  
 
@@ -1115,7 +1115,7 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
 
  
 
-**AF_INET** tcp/ip sockets
+**AF_INET** tcp/ip sockets, single connection, single thread
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--        | :--       | :--       |
