@@ -42,28 +42,24 @@ public class Benchmark {
     public Benchmark(
             final String sConnURI,
             final long msgSize,
-            final long msgCount,
             final long duration,
-
+            final long connections,
             final boolean print,
             final boolean encrypt,
             final boolean oneway,
             final int sndBufSize,
             final int rcvBufSize,
-            final int rampUpMsgCount,
             final int rampUpDuration
     ) {
-        this.sConnURI = sConnURI;
         this.msgSize = msgSize;
-        this.msgCount = msgCount;
         this.duration = duration;
+        this.connections = connections;
 
         this.print = print;
         this.encrypt = encrypt;
         this.oneway = oneway;
         this.sndBufSize = sndBufSize;
         this.rcvBufSize = rcvBufSize;
-        this.rampUpMsgCount = rampUpMsgCount;
         this.rampUpDuration = rampUpDuration;
 
         this.connURI = parseConnectionURI(sConnURI);
@@ -91,13 +87,11 @@ public class Benchmark {
             client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
             client.open();
 
-            // Payload data (random)
-            final byte[] payload = new byte[(int)msgSize];
-            final Random random = new Random();
-            random.nextBytes(payload);
+            // Payload data
+            final byte[] payload = createRandomPayload();
 
             // Ramp-Up phase
-            if (rampUpMsgCount > 0 && rampUpDuration > 0) {
+            if (rampUpDuration > 0) {
                    if (print) System.out.println("Ramp up...");
 
                    rampUp(client, payload);
@@ -130,11 +124,11 @@ public class Benchmark {
             client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
             client.open();
 
-            // Test
-            final byte[] payload = new byte[(int)msgSize];
+            // Payload data
+            final byte[] payload = createRandomPayload();
 
             // Ramp-Up phase
-            if (rampUpMsgCount > 0 && rampUpDuration > 0) {
+            if (rampUpDuration > 0) {
                    if (print) System.out.println("Ramp up...");
 
                    rampUp(client, payload);
@@ -176,7 +170,7 @@ public class Benchmark {
             count++;
 
             final long now = System.currentTimeMillis();
-            if (now > end || count >= msgCount) {
+            if (now > end) {
                 elapsed = now - start;
                 break;
             }
@@ -211,16 +205,6 @@ public class Benchmark {
         summary.append(String.format("Throughput bytes: %s MB/s\n", sThroughputMB));
 
         return VncHashMap.of(
-                new VncKeyword("params"), VncHashMap.of(
-                                            new VncKeyword("connection-uri"),      new VncString(sConnURI),
-                                            new VncKeyword("msg-size"),            new VncLong(msgSize),
-                                            new VncKeyword("msg-count"),           new VncLong(msgCount),
-                                            new VncKeyword("duration"),            new VncLong(duration),
-                                            new VncKeyword("socket-snd-buf-size"), new VncLong(sndBufSize),
-                                            new VncKeyword("socket-rcv-buf-size"), new VncLong(rcvBufSize),
-                                            new VncKeyword("ramp-up-msg-count"),   new VncLong(rampUpMsgCount),
-                                            new VncKeyword("ramp-up-duration"),    new VncLong(rampUpDuration)),
-
                 new VncKeyword("message-count"),    new VncLong(count),
                 new VncKeyword("message-size"),     new VncLong(msgSize),
                 new VncKeyword("duration-millis"),  new VncLong(elapsed),
@@ -234,18 +218,23 @@ public class Benchmark {
 
     private void rampUp(final TcpClient client, final byte[] payload) {
         final long end = System.currentTimeMillis() + rampUpDuration * 1000L;
-        int count = 0;
 
         while(true) {
             final IMessage m = client.test(payload, oneway);
             if (ResponseStatus.OK != m.getResponseStatus()) {
                throw new RuntimeException("Bad response");
             }
-            count++;
-            if (System.currentTimeMillis() > end || count >= rampUpMsgCount) {
+            if (System.currentTimeMillis() > end) {
                 break;
             }
         }
+    }
+
+    private byte[] createRandomPayload() {
+        final byte[] payload = new byte[(int)msgSize];
+        final Random random = new Random();
+        random.nextBytes(payload);
+        return payload;
     }
 
     private URI parseConnectionURI(final String uri) {
@@ -273,17 +262,15 @@ public class Benchmark {
     private static int MB = KB * KB;
 
 
-    private final String sConnURI;
     private final long msgSize;
-    private final long msgCount;
     private final long duration;
+    private final long connections;
 
     private final boolean print;
     private final boolean encrypt;
     private final boolean oneway;
     private final int sndBufSize;
     private final int rcvBufSize;
-    private final int rampUpMsgCount;
     private final int rampUpDuration;
 
     private final URI connURI;

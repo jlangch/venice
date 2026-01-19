@@ -738,11 +738,9 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/benchmark conn-uri msg-count duration & options)")
+                        "(ipc/benchmark conn-uri msg-size duration & options)")
                     .doc(
                         "Runs a benchmark.\n\n" +
-                        "Stops the benchmark when either the message count or the duration limit " +
-                        "is reached.\n\n" +
                         "*Arguments:* \n\n" +
                         "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
                         "| conn-uri u  | A connection URI¶" +
@@ -753,15 +751,13 @@ public class IPCFunctions {
                         "| msg-size n  | The message payload size (payload is random data).¶" +
                                        " The size can be specified as a number like `16384`" +
                                        " or a number with a unit like `:16KB` or `:1MB`.|\n" +
-                        "| msg-count n | The number of messages to send.¶" +
-                                       " Stops the benchmark when either the message count or the " +
-                                       " duration limit is reached.|\n" +
                         "| duration n  | The duration in seconds.|\n\n" +
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
                         "| :print b                     | If `true` print the result to stdout. Defaults to `false`|\n" +
                         "| :oneway b                    | If `true` send oneway messages. Defaults to `false`|\n" +
                         "| :encrypt b                   | If `true` encrypt the messages. Defaults to `false`|\n" +
+                        "| :connections n               | The number of parallel connctions. Defaults to 1|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
@@ -770,9 +766,6 @@ public class IPCFunctions {
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
                                                         " or a number with a unit like `:64KB` or `:1MB`.|\n" +
-                        "| :ramp-up-msg-count n         | The number of ramp-up messages to send. Defaults to 0.¶" +
-                                                        " Stops the ramp-up  when either the message count or the " +
-                                                        " duration limit is reached.|\n" +
                         "| :ramp-up-duration n          | The ramp-up duration in seconds. Defaults to 0s.|\n\n" +
                         "Prints this statistics if the *print* option is enabled:\n\n" +
                         "```                           \n" +
@@ -789,19 +782,15 @@ public class IPCFunctions {
                     .examples(
                         "(ipc/benchmark \"af-inet://localhost:33333\"  \n" +
                         "               :5KB                           \n" +
-                        "               300_000                        \n" +
                         "               5                              \n" +
                         "               :print true)                   ",
                         "(ipc/benchmark \"af-inet://localhost:33333\"  \n" +
                         "               :5KB                           \n" +
-                        "               300_000                        \n" +
                         "               5                              \n" +
                         "               :print true                    \n" +
-                        "               :ramp-up-msg-count 10_000      \n" +
                         "               :ramp-up-duration 1)           ",
                         "(ipc/benchmark \"af-unix:///Users/foo/Desktop/venice/tmp/test.sock\"   \n" +
                         "               :5KB                                                    \n" +
-                        "               300_000                                                 \n" +
                         "               5                                                       \n" +
                         "               :socket-snd-buf-size :128KB                             \n" +
                         "               :socket-rcv-buf-size :128KB                             \n" +
@@ -813,49 +802,60 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertMinArity(this, args, 4);
+                ArityExceptions.assertMinArity(this, args, 3);
 
                 try {
                     // -- Parse arguments -----------------------------------------
                     final String sConnURI = Coerce.toVncString(args.first()).getValue();
                     final long msgSize   = convertUnitValueToLong((args.second()));
-                    final long msgCount  = Coerce.toVncLong(args.third()).getValue();
-                    final long duration  = Coerce.toVncLong(args.fourth()).getValue();
+                    final long duration  = Coerce.toVncLong(args.third()).getValue();
 
                     // options
-                    final VncHashMap options = VncHashMap.ofAll(args.slice(4));
+                    final VncHashMap options = VncHashMap.ofAll(args.slice(3));
 
                     final VncVal printVal          = options.get(new VncKeyword("print"), VncBoolean.False);
                     final VncVal encryptVal        = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                     final VncVal onewayVal         = options.get(new VncKeyword("onway"), VncBoolean.False);
+                    final VncVal connectionsVal    = options.get(new VncKeyword("connections"), new VncLong(1));
                     final VncVal sndBufSizeVal     = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
                     final VncVal rcvBufSizeVal     = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
-                    final VncVal rampUpMsgCountVal = options.get(new VncKeyword("ramp-up-msg-count"), new VncLong(0));
                     final VncVal rampUpDurationVal = options.get(new VncKeyword("ramp-up-duration"), new VncLong(0));
 
                     final boolean print      = Coerce.toVncBoolean(printVal).getValue();
                     final boolean encrypt    = Coerce.toVncBoolean(encryptVal).getValue();
                     final boolean oneway     = Coerce.toVncBoolean(onewayVal).getValue();
+                    final long connections   = Coerce.toVncLong(connectionsVal).getValue();
                     final int sndBufSize     = (int)convertUnitValueToLong(sndBufSizeVal);
                     final int rcvBufSize     = (int)convertUnitValueToLong(rcvBufSizeVal);
-                    final int rampUpMsgCount = Coerce.toVncLong(rampUpMsgCountVal).toJavaInteger();
                     final int rampUpDuration = Coerce.toVncLong(rampUpDurationVal).toJavaInteger();
 
                     final Benchmark benchmark =   new Benchmark(
                                                         sConnURI,
                                                         msgSize,
-                                                        msgCount,
                                                         duration,
+                                                        connections,
                                                         print,
                                                         encrypt,
                                                         oneway,
                                                         sndBufSize,
                                                         rcvBufSize,
-                                                        rampUpMsgCount,
                                                         rampUpDuration);
 
                     final VncHashMap result = benchmark.run();
-                    return result == null ? Nil : result;
+                    if (result == null) {
+                        return Nil;
+                    }
+                    else {
+                        return result.assoc(
+                                new VncKeyword("params"),
+                                VncHashMap.of(
+                                            new VncKeyword("connection-uri"),      new VncString(sConnURI),
+                                            new VncKeyword("msg-size"),            new VncLong(msgSize),
+                                            new VncKeyword("duration"),            new VncLong(duration),
+                                            new VncKeyword("socket-snd-buf-size"), new VncLong(sndBufSize),
+                                            new VncKeyword("socket-rcv-buf-size"), new VncLong(rcvBufSize),
+                                            new VncKeyword("ramp-up-duration"),    new VncLong(rampUpDuration)));
+                    }
                 }
                 catch(Exception ex) {
                     throw new IpcException("Benchmark failed!", ex);
