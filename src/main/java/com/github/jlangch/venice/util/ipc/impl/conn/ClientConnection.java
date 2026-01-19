@@ -204,6 +204,10 @@ public class ClientConnection implements AutoCloseable {
         return encrypt;
     }
 
+    public boolean isCompressing() {
+        return compressor.isActive();
+    }
+
     public boolean isPermitClientQueueMgmt() {
         return permitClientQueueMgmt;
     }

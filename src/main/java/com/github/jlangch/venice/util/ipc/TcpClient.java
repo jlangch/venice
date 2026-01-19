@@ -183,6 +183,19 @@ public class TcpClient implements Cloneable, AutoCloseable {
     }
 
     /**
+     * @return <code>true</code> if this client has transport level compression
+     *         enabled else <code>false</code>
+     */
+    public boolean isCompressing() {
+        if (!opened.get()) {
+            throw new IllegalStateException(
+                   "Wait until the client has been opened to get the encryption mode!");
+        }
+
+        return conn.get().isCompressing();
+    }
+
+    /**
      * Set the socket's send and receive buffer size. -1 keeps the default.
      *
      * @param sndBufSize a send buffer size

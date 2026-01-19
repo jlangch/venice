@@ -750,7 +750,7 @@ public class IPCFunctions {
                                        " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
                                        " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
                                        " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
-                        "| msg-size n  | The message size.¶" +
+                        "| msg-size n  | The message payload size (payload is random data).¶" +
                                        " The size can be specified as a number like `16384`" +
                                        " or a number with a unit like `:16KB` or `:1MB`.|\n" +
                         "| msg-count n | The number of messages to send.¶" +

@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.Objects;
+import java.util.Random;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -66,10 +67,16 @@ public class Benchmark {
         this.rampUpDuration = rampUpDuration;
 
         this.connURI = parseConnectionURI(sConnURI);
-        this.serverAddr = getConnectionURIHost(connURI);
+        this.hostAddr = getConnectionURIHost(connURI);
     }
 
     public VncHashMap run() {
+        return hostAddr.isLoopbackAddress()
+                ? runLocal()
+                : runRemote();
+    }
+
+    private VncHashMap runLocal() {
         try(TcpServer server = TcpServer.of(connURI);
             TcpClient client = TcpClient.of(connURI)
         ) {
@@ -81,6 +88,45 @@ public class Benchmark {
 
             IO.sleep(300);
 
+            client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+            client.open();
+
+            // Payload data (random)
+            final byte[] payload = new byte[(int)msgSize];
+            final Random random = new Random();
+            random.nextBytes(payload);
+
+            // Ramp-Up phase
+            if (rampUpMsgCount > 0 && rampUpDuration > 0) {
+                   if (print) System.out.println("Ramp up...");
+
+                   rampUp(client, payload);
+
+                   if (print) {
+                       System.out.println("Ramp up done.");
+                       System.out.println("Benchmark...\n\n");
+                   }
+            }
+
+            // Benchmark
+            final VncHashMap result = benchmark(client, payload);
+
+            if (print) {
+                System.out.println(result.get(new VncKeyword("summary")).toString());
+                return null;
+            }
+            else {
+                return result;
+            }
+        }
+        catch(Exception ex) {
+            throw new VncException("Benchmark failed!", ex);
+        }
+    }
+
+
+    private VncHashMap runRemote() {
+        try(TcpClient client = TcpClient.of(connURI)) {
             client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
             client.open();
 
@@ -115,7 +161,6 @@ public class Benchmark {
         }
     }
 
-
     private VncHashMap benchmark(final TcpClient client, final byte[] payload) {
         final long start = System.currentTimeMillis();
         final long end = start + duration * 1000L;
@@ -144,6 +189,7 @@ public class Benchmark {
         final double transferredMB  = transferredBytes / (double)MB;
         final double throughputMsgs = count / elapsedSec;
         final double throughputMB   = transferredMB / elapsedSec;
+        final boolean compress      = client.isCompressing();
 
         final String sThroughputMsgs = throughputMsgs < 10.0
                                         ? String.format("%.1f", throughputMsgs)
@@ -156,7 +202,8 @@ public class Benchmark {
         final StringBuilder summary = new StringBuilder();
         summary.append(String.format("Messages:         %d\n", count));
         summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
-        summary.append(String.format("Encryption:       %s\n", encrypt? "on" : "off"));
+        summary.append(String.format("Encryption:       %s\n", encrypt ? "on" : "off"));
+        summary.append(String.format("Compression:      %s\n", compress ? "on" : "off"));
         summary.append("------------------------------\n");
         summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
         summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
@@ -165,11 +212,10 @@ public class Benchmark {
 
         return VncHashMap.of(
                 new VncKeyword("params"), VncHashMap.of(
-                                            new VncKeyword("conn-uri"),            new VncString(sConnURI),
+                                            new VncKeyword("connection-uri"),      new VncString(sConnURI),
                                             new VncKeyword("msg-size"),            new VncLong(msgSize),
                                             new VncKeyword("msg-count"),           new VncLong(msgCount),
                                             new VncKeyword("duration"),            new VncLong(duration),
-                                            new VncKeyword("encrypt"),             VncBoolean.of(encrypt),
                                             new VncKeyword("socket-snd-buf-size"), new VncLong(sndBufSize),
                                             new VncKeyword("socket-rcv-buf-size"), new VncLong(rcvBufSize),
                                             new VncKeyword("ramp-up-msg-count"),   new VncLong(rampUpMsgCount),
@@ -181,6 +227,8 @@ public class Benchmark {
                 new VncKeyword("total-bytes-sent"), new VncLong(transferredBytes),
                 new VncKeyword("throughput-msgs"),  new VncDouble(throughputMsgs),
                 new VncKeyword("throughput-MB"),    new VncDouble(throughputMB),
+                new VncKeyword("encrypt"),          VncBoolean.of(encrypt),
+                new VncKeyword("compress"),         VncBoolean.of(compress),
                 new VncKeyword("summary"),          new VncString(summary.toString()));
     }
 
@@ -239,6 +287,6 @@ public class Benchmark {
     private final int rampUpDuration;
 
     private final URI connURI;
-    final InetAddress serverAddr;
+    private final InetAddress hostAddr;
 }
 
