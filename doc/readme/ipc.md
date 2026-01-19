@@ -1078,7 +1078,7 @@ application/json
 
 ### MacOS
 
-MacBook Air M2 MacOS 26
+MacBook Air M2, MacOS 26
 
  
 
@@ -1136,7 +1136,7 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
 ;; tcp/ip socket
 (ipc/benchmark "af-inet://localhost:33333"
                :5KB                         ;; 5KB payload size
-               300_000                      ;; 300'000 messages
+               300000                       ;; 300'000 messages or ...
                5                            ;; 5s duration
                :print true                  ;; print results
                :ramp-up-msg-count 10_000    ;; ramp-up phase 20'000 messages
@@ -1145,7 +1145,7 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
 ;; Unix domain socket
 (ipc/benchmark "af-unix:///path/to/test.sock"
                :5KB                         ;; 5KB payload size
-               300_000                      ;; 300'000 messages
+               300000                       ;; 300'000 messages or ...
                5                            ;; 5s duration
                :print true                  ;; print results
                :socket-snd-buf-size :256KB  ;; socket send buffer size
