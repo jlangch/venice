@@ -42,7 +42,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
-import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -60,13 +59,14 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.util.ipc.Authenticator;
+import com.github.jlangch.venice.util.ipc.Benchmark;
 import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.TcpClient;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
-import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
@@ -815,148 +815,50 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 4);
 
-                // -- Parse arguments -----------------------------------------
-                final String connURI = Coerce.toVncString(args.first()).getValue();
-                final long msgSize   = convertUnitValueToLong((args.second()));
-                final long msgCount  = Coerce.toVncLong(args.third()).getValue();
-                final long duration  = Coerce.toVncLong(args.fourth()).getValue();
+                try {
+                    // -- Parse arguments -----------------------------------------
+                    final String sConnURI = Coerce.toVncString(args.first()).getValue();
+                    final long msgSize   = convertUnitValueToLong((args.second()));
+                    final long msgCount  = Coerce.toVncLong(args.third()).getValue();
+                    final long duration  = Coerce.toVncLong(args.fourth()).getValue();
 
-                // options
-                final VncHashMap options = VncHashMap.ofAll(args.slice(4));
+                    // options
+                    final VncHashMap options = VncHashMap.ofAll(args.slice(4));
 
-                final VncVal printVal          = options.get(new VncKeyword("print"), VncBoolean.False);
-                final VncVal encryptVal        = options.get(new VncKeyword("encrypt"), VncBoolean.False);
-                final VncVal onewayVal         = options.get(new VncKeyword("onway"), VncBoolean.False);
-                final VncVal sndBufSizeVal     = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
-                final VncVal rcvBufSizeVal     = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
-                final VncVal rampUpMsgCountVal = options.get(new VncKeyword("ramp-up-msg-count"), new VncLong(0));
-                final VncVal rampUpDurationVal = options.get(new VncKeyword("ramp-up-duration"), new VncLong(0));
+                    final VncVal printVal          = options.get(new VncKeyword("print"), VncBoolean.False);
+                    final VncVal encryptVal        = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                    final VncVal onewayVal         = options.get(new VncKeyword("onway"), VncBoolean.False);
+                    final VncVal sndBufSizeVal     = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
+                    final VncVal rcvBufSizeVal     = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
+                    final VncVal rampUpMsgCountVal = options.get(new VncKeyword("ramp-up-msg-count"), new VncLong(0));
+                    final VncVal rampUpDurationVal = options.get(new VncKeyword("ramp-up-duration"), new VncLong(0));
 
-                final boolean print      = Coerce.toVncBoolean(printVal).getValue();
-                final boolean encrypt    = Coerce.toVncBoolean(encryptVal).getValue();
-                final boolean oneway     = Coerce.toVncBoolean(onewayVal).getValue();
-                final int sndBufSize     = (int)convertUnitValueToLong(sndBufSizeVal);
-                final int rcvBufSize     = (int)convertUnitValueToLong(rcvBufSizeVal);
-                final int rampUpMsgCount = Coerce.toVncLong(rampUpMsgCountVal).toJavaInteger();
-                final int rampUpDuration = Coerce.toVncLong(rampUpDurationVal).toJavaInteger();
+                    final boolean print      = Coerce.toVncBoolean(printVal).getValue();
+                    final boolean encrypt    = Coerce.toVncBoolean(encryptVal).getValue();
+                    final boolean oneway     = Coerce.toVncBoolean(onewayVal).getValue();
+                    final int sndBufSize     = (int)convertUnitValueToLong(sndBufSizeVal);
+                    final int rcvBufSize     = (int)convertUnitValueToLong(rcvBufSizeVal);
+                    final int rampUpMsgCount = Coerce.toVncLong(rampUpMsgCountVal).toJavaInteger();
+                    final int rampUpDuration = Coerce.toVncLong(rampUpDurationVal).toJavaInteger();
 
+                    final Benchmark benchmark =   new Benchmark(
+                                                        sConnURI,
+                                                        msgSize,
+                                                        msgCount,
+                                                        duration,
+                                                        print,
+                                                        encrypt,
+                                                        oneway,
+                                                        sndBufSize,
+                                                        rcvBufSize,
+                                                        rampUpMsgCount,
+                                                        rampUpDuration);
 
-                // -- Create and configure the server ------------------------------------
-
-                try(TcpServer server = TcpServer.of(new URI(connURI));
-                    TcpClient client = TcpClient.of(new URI(connURI))
-                ) {
-                    server.setMaxMessageSize(Messages.MESSAGE_LIMIT_MAX);
-                    server.setEncryption(encrypt);
-                    server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
-                    server.setMaxParallelConnections(2);
-                    server.start();
-
-                    IO.sleep(300);
-
-                    client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
-                    client.open();
-
-                    // Test
-                    final byte[] payload = new byte[(int)msgSize];
-
-                    // Ramp-Up phase
-                    if (rampUpMsgCount > 0 && rampUpDuration > 0) {
-                           if (print) System.out.println("Ramp up...");
-
-                           final long end = System.currentTimeMillis() + rampUpDuration * 1000L;
-                           int count = 0;
-
-                           while(true) {
-                               final IMessage m = client.test(payload, oneway);
-                               if (ResponseStatus.OK != m.getResponseStatus()) {
-                                  throw new RuntimeException("Bad response");
-                               }
-                               count++;
-                               if (System.currentTimeMillis() > end || count >= rampUpMsgCount) {
-                                   break;
-                               }
-                           }
-
-                           if (print) {
-                               System.out.println("Ramp up done.");
-                               System.out.println("Benchmark...\n\n");
-                           }
-                    }
-
-                    // Benchmark
-                    final long start = System.currentTimeMillis();
-                    final long end = start + duration * 1000L;
-
-                    int count = 0;
-                    long elapsed = 0;
-
-                    while(true) {
-                        final IMessage m = client.test(payload, oneway);
-                        if (ResponseStatus.OK != m.getResponseStatus()) {
-                           throw new RuntimeException("Bad response");
-                        }
-                        count++;
-
-                        final long now = System.currentTimeMillis();
-                        if (now > end || count >= msgCount) {
-                            elapsed = now - start;
-                            break;
-                        }
-                    }
-
-                    // Statistics
-
-                    final double elapsedSec     = elapsed / 1000.0;
-                    final long transferredBytes = count * msgSize;
-                    final double transferredMB  = (double)transferredBytes / (double)MB;
-                    final double throughputMsgs = count / elapsedSec;
-                    final double throughputMB   = transferredMB / elapsedSec;
-
-                    final String sThroughputMsgs = throughputMsgs < 10.0
-                                                    ? String.format("%.1f", throughputMsgs)
-                                                    : String.format("%.0f", throughputMsgs);
-
-                    final String sThroughputMB = throughputMB < 100.0
-                                                    ? String.format("%.1f", throughputMB)
-                                                    : String.format("%.0f", throughputMB);
-
-                    final StringBuilder summary = new StringBuilder();
-                    summary.append(String.format("Messages:         %d\n", count));
-                    summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
-                    summary.append(String.format("Encryption:       %s\n", encrypt? "on" : "off"));
-                    summary.append("------------------------------\n");
-                    summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
-                    summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
-                    summary.append(String.format("Throughput msgs:  %s msg/s\n", sThroughputMsgs));
-                    summary.append(String.format("Throughput bytes: %s MB/s\n", sThroughputMB));
-
-                    if (print) {
-                        System.out.println(summary.toString());
-                        return Nil;
-                    }
-                    else {
-                        return VncHashMap.of(
-                                new VncKeyword("params"), VncHashMap.of(
-                                                            new VncKeyword("conn-uri"),            new VncString(connURI),
-                                                            new VncKeyword("msg-size"),            new VncLong(msgSize),
-                                                            new VncKeyword("msg-count"),           new VncLong(msgCount),
-                                                            new VncKeyword("duration"),            new VncLong(duration),
-                                                            new VncKeyword("encrypt"),             VncBoolean.of(encrypt),
-                                                            new VncKeyword("socket-snd-buf-size"), new VncLong(sndBufSize),
-                                                            new VncKeyword("socket-rcv-buf-size"), new VncLong(rcvBufSize)),
-
-                                new VncKeyword("message-count"),    new VncLong(count),
-                                new VncKeyword("message-size"),     new VncLong(msgSize),
-                                new VncKeyword("duration-millis"),  new VncLong(elapsed),
-                                new VncKeyword("total-bytes-sent"), new VncLong(transferredBytes),
-                                new VncKeyword("throughput-msgs"),  new VncDouble(throughputMsgs),
-                                new VncKeyword("throughput-MB"),    new VncDouble(throughputMB),
-                                new VncKeyword("summary"),          new VncString(summary.toString()));
-                    }
+                    final VncHashMap result = benchmark.run();
+                    return result == null ? Nil : result;
                 }
                 catch(Exception ex) {
-                    throw new VncException("Benchmark failed!", ex);
+                    throw new IpcException("Benchmark failed!", ex);
                 }
             }
 
@@ -3700,9 +3602,6 @@ public class IPCFunctions {
         private final Future<IMessage> delegate;
     }
 
-
-    private static int KB = 1024;
-    private static int MB = KB * KB;
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
