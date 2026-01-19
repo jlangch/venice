@@ -131,25 +131,29 @@ public class Protocol {
 
             header.flip();
 
-            // parse header
+            // [1a] parse header (magic bytes)
             final byte magic1 = header.get();
             final byte magic2 = header.get();
-            final int version = header.getInt();
-            final boolean isCompressedData = toBool(header.get());
-            final boolean isEncryptedData = toBool(header.get());
-            final long timestamp = header.getLong();
-            final long expiresAt = header.getLong();
-            final long timeout = header.getLong();
 
             if (magic1 != 'v' || magic2 != 'n') {
                 throw new IpcException(
                         "Received unknown message (bad magic bytes)!");
             }
 
+            // [1b] parse header (version field)
+            final int version = header.getInt();
+
             if (version != PROTOCOL_VERSION) {
                 throw new IpcException(
                         "Received message with unsupported protocol version " + version + "!");
             }
+
+            // [1c] parse header (data fields)
+            final boolean isCompressedData = toBool(header.get());
+            final boolean isEncryptedData = toBool(header.get());
+            final long timestamp = header.getLong();
+            final long expiresAt = header.getLong();
+            final long timeout = header.getLong();
 
             if (!isEncryptedData && encryptor.isActive()) {
                 // prevent malicious clients
@@ -205,13 +209,17 @@ public class Protocol {
     public static Map<String,Integer> messageSize(final Message message) {
         Objects.requireNonNull(message);
 
+        final Compressor compressor = new Compressor(0);
+
         final int payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message)).length;
         final int payloadMsgData = message.getData().length;
+        final int payloadMsgDataCompressed = compressor.compress(message.getData(), true).length;
 
         final Map<String,Integer> info = new HashMap<>();
         info.put("header",       HEADER_SIZE);
         info.put("payload-meta", payloadMetaData);
         info.put("payload-data", payloadMsgData);
+        info.put("payload-data-compressed", payloadMsgDataCompressed);
         info.put("total",        HEADER_SIZE + payloadMetaData + payloadMsgData);
         return info;
     }

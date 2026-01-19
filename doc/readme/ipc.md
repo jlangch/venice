@@ -1135,17 +1135,23 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
 ```clojure
 ;; tcp/ip socket
 (ipc/benchmark "af-inet://localhost:33333"
-               :5KB
-               300_000
-               5
-               :print true)
+               :5KB                         ;; 5KB payload size
+               300_000                      ;; 300'000 messages
+               5                            ;; 5s duration
+               :print true                  ;; print results
+               :ramp-up-msg-count 10_000    ;; ramp-up phase 20'000 messages
+               :ramp-up-duration 1)         ;; ramp-up phase 1s
 
 ;; Unix domain socket
 (ipc/benchmark "af-unix:///path/to/test.sock"
-               :5KB
-               300_000
-               5
-               :print true)
+               :5KB                         ;; 5KB payload size
+               300_000                      ;; 300'000 messages
+               5                            ;; 5s duration
+               :print true                  ;; print results
+               :socket-snd-buf-size :256KB  ;; socket send buffer size
+               :socket-rcv-buf-size :256KB  ;; socket receiver buffer size
+               :ramp-up-msg-count 10_000    ;; ramp-up phase 20'000 messages
+               :ramp-up-duration 1)         ;; ramp-up phase 1s
 ```
 
  

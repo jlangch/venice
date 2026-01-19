@@ -773,7 +773,7 @@ public class IPCFunctions {
                         "| :ramp-up-msg-count n         | The number of ramp-up messages to send. Defaults to 0.¶" +
                                                         " Stops the ramp-up  when either the message count or the " +
                                                         " duration limit is reached.|\n" +
-                        "| ramp-up-duration n           | The ramp-up duration in seconds. Defaults to 0s.|\n\n" +
+                        "| :ramp-up-duration n          | The ramp-up duration in seconds. Defaults to 0s.|\n\n" +
                         "Prints this statistics if the *print* option is enabled:\n\n" +
                         "```                           \n" +
                         "Messages:         79370       \n" +
