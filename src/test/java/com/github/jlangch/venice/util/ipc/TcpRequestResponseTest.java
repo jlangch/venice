@@ -305,11 +305,12 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_multiple_clients() throws Exception {
-
-        final Server server = Server.of(33333);
-
-        // increase connections to support the test client count
-        server.setMaxParallelConnections(50);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            // increase connections to support the test client count
+                                            .maxParallelConnections(50)
+                                            .build());
 
         final int clients = 10;
         final int messagesPerClient = 25;
@@ -475,11 +476,14 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_multithreaded_client() throws Exception {
-        final Server server = Server.of(33333);
-        final Client client = Client.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            // increase connections to support the test client count
+                                            .maxParallelConnections(50)
+                                            .build());
 
-        // increase connections to support the test client count
-        server.setMaxParallelConnections(50);
+        final Client client = Client.of(33333);
 
         final int threads = 10;
         final int messagesPerClient = 50;

@@ -26,8 +26,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,14 +58,15 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.Benchmark;
+import com.github.jlangch.venice.util.ipc.Client;
 import com.github.jlangch.venice.util.ipc.ClientConfig;
 import com.github.jlangch.venice.util.ipc.ClientConfig.Builder;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
-import com.github.jlangch.venice.util.ipc.Client;
 import com.github.jlangch.venice.util.ipc.Server;
+import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
@@ -312,45 +311,37 @@ public class IPCFunctions {
 
                 // -- Create and configure the server ------------------------------------
 
-                final Server server = createTcpServer(args.first());
-
-                server.setPermitClientQueueMgmt(permitQueueMgmt);
-
-                if (maxConn > 0) {
-                    server.setMaxParallelConnections(maxConn);
-                }
-
+                // -- Configure the server ------------------------------------
+                ServerConfig.Builder builder = ServerConfig.builder();
+                setConfigConnection(args.first(), builder);
+                builder.permitClientQueueMgmt(permitQueueMgmt);
                 if (maxMsgSize > 0) {
-                    server.setMaxMessageSize(maxMsgSize);
+                    builder.maxMessageSize(maxMsgSize);
                 }
-
+                if (maxConn > 0) {
+                    builder.maxParallelConnections(maxConn);
+                }
                 if (maxQueues > 0) {
-                    server.setMaxQueues(maxQueues);
+                    builder.maxQueues((int)maxQueues);
                 }
-
                 if (compressCutoffSize >= 0) {
-                    server.setCompressCutoffSize(compressCutoffSize);
+                    builder.compressCutoffSize((int)compressCutoffSize);
                 }
-
-                server.setEncryption(encrypt);
-
+                builder.encrypt(encrypt);
                 if (serverLogDir != null) {
-                    server.enableLogger(serverLogDir);
+                    builder.enableLogger(serverLogDir);
                 }
-
                 if (walDir != null) {
-                    server.enableWriteAheadLog(walDir, walCompress, walCompactAtStart);
+                    builder.enableWriteAheadLog(walDir, walCompress, walCompactAtStart);
                 }
-
-                if (authenticator != null) {
-                    server.setAuthenticator(authenticator);
-                }
-
+                builder.authenticator(authenticator);
                 if (heartbeatInterval > 0) {
-                    server.setHearbeatInterval((int)heartbeatInterval);
+                    builder.hearbeatIntervalSeconds((int)heartbeatInterval);
                 }
+                builder.sendBufferSize(sndBufSize);
+                builder.receiveBufferSize(rcvBufSize);
 
-                server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+                Server server = Server.of(builder.build());
 
                 // -- Start the server ----------------------------------------
 
@@ -3456,21 +3447,18 @@ public class IPCFunctions {
     // Utils
     // ------------------------------------------------------------------------
 
-    private static Server createTcpServer(final VncVal portOrConnURI) {
+
+    private static void setConfigConnection(
+            final VncVal portOrConnURI,
+            final ServerConfig.Builder builder
+    ) {
         if (Types.isVncLong(portOrConnURI)) {
             final int port = Coerce.toVncLong(portOrConnURI).getIntValue();
-
-            return Server.of(port);
+            builder.conn(port);
         }
         else if (Types.isVncString(portOrConnURI)) {
             final String connURI = Coerce.toVncString(portOrConnURI).getValue();
-
-            try {
-                return Server.of(new URI(connURI));
-            }
-            catch(URISyntaxException ex) {
-                throw new VncException("Invalid ipc/server connection URI: " + connURI);
-            }
+            builder.connURI(connURI);
         }
         else {
             throw new VncException(
@@ -3478,10 +3466,9 @@ public class IPCFunctions {
         }
     }
 
-
     private static void setConfigConnection(
                 final VncVal portOrConnURI,
-                final Builder builder
+                final ClientConfig.Builder builder
     ) {
         if (Types.isVncLong(portOrConnURI)) {
             final int port = Coerce.toVncLong(portOrConnURI).getIntValue();

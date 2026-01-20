@@ -95,7 +95,7 @@ public class Client implements Cloneable, AutoCloseable {
     /**
      * @return the this client's configuration
      */
-    public ClientConfig getClientConfig() {
+    public ClientConfig getConfig() {
         return config;
     }
 

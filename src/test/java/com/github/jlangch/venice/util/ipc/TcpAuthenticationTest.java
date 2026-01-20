@@ -34,15 +34,18 @@ public class TcpAuthenticationTest {
 
     @Test
     public void test_auth_ok() throws Exception {
-        final Server server = Server.of(33333);
-        final Client client = Client.of(33333);
-
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("usr-1", "test-1");
         authenticator.addCredentials("usr-2", "test-2");
-        server.setAuthenticator(authenticator);
 
-        server.setEncryption(true);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .authenticator(authenticator)
+                                            .build());
+
+        final Client client = Client.of(33333);
 
         server.start(Server.echoHandler());
 
@@ -71,15 +74,18 @@ public class TcpAuthenticationTest {
 
     @Test
     public void test_auth_failure_1() throws Exception {
-        final Server server = Server.of(33333);
-        final Client client = Client.of(33333);
-
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("usr-1", "test-1");
         authenticator.addCredentials("usr-2", "test-2");
-        server.setAuthenticator(authenticator);
 
-        server.setEncryption(true);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .authenticator(authenticator)
+                                            .build());
+
+        final Client client = Client.of(33333);
 
         server.start(Server.echoHandler());
 
@@ -106,15 +112,18 @@ public class TcpAuthenticationTest {
 
     @Test
     public void test_auth_failure_2() throws Exception {
-        final Server server = Server.of(33333);
-        final Client client = Client.of(33333);
-
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("usr-1", "test-1");
         authenticator.addCredentials("usr-2", "test-2");
-        server.setAuthenticator(authenticator);
 
-        server.setEncryption(true);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .authenticator(authenticator)
+                                            .build());
+
+        final Client client = Client.of(33333);
 
         server.start(Server.echoHandler());
 

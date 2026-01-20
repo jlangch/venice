@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.Server;
+import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
@@ -88,8 +89,12 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File log = new File(walDir, "wal.log");
 
-        try(Server server = Server.of(33333)) {
-            server.enableWriteAheadLog(walDir, false, false);
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
+                                        .conn(33333)
+                                        .enableWriteAheadLog(walDir, false, false)
+                                        .build())
+        ) {
             server.start();
 
             server.createQueue("queue/test", 100, true, true);
@@ -121,8 +126,12 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(Server server = Server.of(33333)) {
-            server.enableWriteAheadLog(walDir, true, true);
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
+                                        .conn(33333)
+                                        .enableWriteAheadLog(walDir, true, true)
+                                        .build())
+        ) {
             server.start();
 
             server.createQueue("queue/test", 100, true, true);
@@ -156,8 +165,12 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(Server server = Server.of(33333)) {
-            server.enableWriteAheadLog(walDir, false, false);
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
+                                        .conn(33333)
+                                        .enableWriteAheadLog(walDir, false, false)
+                                        .build())
+        ) {
             server.start();
 
             server.createQueue("queue/test", 100, true, true);
@@ -174,8 +187,12 @@ public class WalQueueManagerTest {
 
         Thread.sleep(100);
 
-        try(Server server = Server.of(33333)) {
-            server.enableWriteAheadLog(walDir, false, false);
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
+                                        .conn(33333)
+                                        .enableWriteAheadLog(walDir, false, false)
+                                        .build())
+        ) {
             server.start();
 
             server.createQueue("queue/test", 100, true, true);
@@ -207,8 +224,12 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(Server server = Server.of(33333)) {
-            server.enableWriteAheadLog(walDir, true, true);
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
+                                        .conn(33333)
+                                        .enableWriteAheadLog(walDir, true, true)
+                                        .build())
+        ) {
             server.start();
 
             server.createQueue("queue/test", 100, true, true);
@@ -225,8 +246,12 @@ public class WalQueueManagerTest {
 
         Thread.sleep(100);
 
-        try(Server server = Server.of(33333)) {
-            server.enableWriteAheadLog(walDir, true, true);
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
+                                        .conn(33333)
+                                        .enableWriteAheadLog(walDir, true, true)
+                                        .build())
+        ) {
             server.start();
 
             server.createQueue("queue/test", 100, true, true);

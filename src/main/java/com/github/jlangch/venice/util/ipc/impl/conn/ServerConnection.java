@@ -1047,7 +1047,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("max-queues", maxQueues)
                            .add("message-size-max", maxMessageSize)
                            .add("permit-client-queue-mgmt", permitClientQueueMgmt)
-                           .add("compression-cutoff-size", server.getCompressCutoffSize())
+                           .add("compression-cutoff-size", compressor.cutoffSize())
                            .add("write-ahead-log-dir", wal.isEnabled()
                                                             ? wal.getWalDir().getAbsolutePath()
                                                             : "-" )

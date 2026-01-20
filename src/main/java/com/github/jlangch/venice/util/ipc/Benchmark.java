@@ -140,11 +140,15 @@ public class Benchmark {
     }
 
     private VncHashMap benchmarkWithLocalServer() {
-        try(Server server = Server.of(connURI);) {
-            server.setMaxMessageSize(Messages.MESSAGE_LIMIT_MAX);
-            server.setEncryption(encrypt);
-            server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
-            server.setMaxParallelConnections(connections+3);
+        try(Server server = Server.of(ServerConfig.builder()
+                                        .connURI(connURI)
+                                        .maxMessageSize(Messages.MESSAGE_LIMIT_MAX)
+                                        .encrypt(encrypt)
+                                        .sendBufferSize(sndBufSize)
+                                        .receiveBufferSize(rcvBufSize)
+                                        .maxParallelConnections(connections + 1)
+                                        .build())
+        ) {
             server.start();
 
             IO.sleep(300);

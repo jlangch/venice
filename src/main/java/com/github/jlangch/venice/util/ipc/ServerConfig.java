@@ -238,7 +238,7 @@ public class ServerConfig {
          * @param cutoffSize the compress cutoff size in bytes
          * @return this builder
          */
-        public Builder setCompressCutoffSize(final int cutoffSize) {
+        public Builder compressCutoffSize(final int cutoffSize) {
             this.compressCutoffSize = cutoffSize < 0 ? -1 : cutoffSize;
             return this;
         }
@@ -271,7 +271,7 @@ public class ServerConfig {
          * @param maxQueues the max number of queues.
          * @return this server
          */
-        public Builder setMaxQueues(final int maxQueues) {
+        public Builder maxQueues(final int maxQueues) {
             if (maxQueues < Server.QUEUES_MIN || maxQueues > Server.QUEUES_MAX) {
                 throw new IllegalArgumentException(
                         "The maximum message size is limited to "
@@ -328,7 +328,9 @@ public class ServerConfig {
          * @return this builder
          */
         public Builder authenticator(final Authenticator authenticator) {
-            this.authenticator = authenticator;
+            if (authenticator != null) {
+                this.authenticator = authenticator;
+            }
             return this;
         }
 
@@ -358,7 +360,7 @@ public class ServerConfig {
          * @param seconds the heartbeat interval in seconds
          * @return this server
          */
-        public Builder setHearbeatIntervalSeconds(final int seconds) {
+        public Builder hearbeatIntervalSeconds(final int seconds) {
             this.heartbeatIntervalSeconds = Math.max(0, seconds);
             return this;
         }
@@ -441,8 +443,8 @@ public class ServerConfig {
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
         private int maxConnections = MAX_CONNECTIONS;
-        private Authenticator authenticator;
-        private boolean permitClientQueueMgmt;
+        private Authenticator authenticator = new Authenticator(false);
+        private boolean permitClientQueueMgmt = true;
         private int heartbeatIntervalSeconds;
         private File walDir;
         private boolean walCompress;

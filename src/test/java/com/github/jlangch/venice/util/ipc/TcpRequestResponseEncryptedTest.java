@@ -113,10 +113,14 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_text_enforced_encryption() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
+
         final Client client = Client.of(33333);
 
-        server.setEncryption(true);
         server.start(Server.echoHandler());
 
         IO.sleep(300);
@@ -144,10 +148,14 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_binary_enforced_encryption() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
+
         final Client client = Client.of(33333);
 
-        server.setEncryption(true);
         server.start(Server.echoHandler());
 
         IO.sleep(300);
@@ -339,11 +347,12 @@ public class TcpRequestResponseEncryptedTest {
 
     @Test
     public void test_echo_server_multiple_clients() throws Exception {
-
-        final Server server = Server.of(33333);
-
-        // increase connections to support the test client count
-        server.setMaxParallelConnections(50);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            // increase connections to support the test client count
+                                            .maxParallelConnections(50)
+                                            .build());
 
         final int clients = 10;
         final int messagesPerClient = 25;

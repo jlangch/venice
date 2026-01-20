@@ -21,12 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.StandardSocketOptions;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -66,306 +63,28 @@ import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
  */
 public class Server implements AutoCloseable {
 
-    private Server(final URI connURI) {
-        this.connURI = connURI;
+    private Server(final ServerConfig config) {
+        Objects.requireNonNull(config);
+        this.config = config;
         this.endpointId = UUID.randomUUID().toString();
     }
 
-    /**
-     * Create a new server for the specified TCP/IP port.
-     *
-     * <p>The server must be closed after use!
-     *
-     * @param port a port
-     * @return the TcpServer
-     */
+
+    public static Server of(final ServerConfig config) {
+        Objects.requireNonNull(config);
+        return new Server(config);
+    }
+
     public static Server of(final int port) {
-        try {
-            final URI uri = new URI(String.format("af-inet://127.0.0.1:%d", port));
-            return new Server(uri);
-        }
-        catch(URISyntaxException ex) {
-            throw new IpcException("Invalid TcpServer connection URI", ex);
-        }
-    }
-
-    /**
-     * Create a new server for the specified connection URI.
-     *
-     * <p>The server must be closed after use!
-     *
-     * <p>Supported socket types:
-     * <ul>
-     *    <li>AF_INET sockets (TCP/IP sockets)</li>
-     *    <li>AF_UNIX domain sockets (Unix sockets, requires junixsocket libraries)</li>
-     * </ul>
-     *
-     * <p>AF_INET
-     * af-inet://localhost:33333
-     *
-     * <p>AF_UNIX
-     * af-unix:///path/to/your/socket.sock
-     *
-     * @param connUri a connection URI
-     * @return the TcpServer
-     */
-    public static Server of(final URI connUri) {
-        Objects.requireNonNull(connUri);
-        return new Server(connUri);
+        return new Server(ServerConfig.of(port));
     }
 
 
     /**
-     * Set the executors maximum of parallel connections.
-     *
-     * <p>Defaults to 20
-     *
-     * @param count the max parallel connection count
-     * @return this server
+     * @return the this server's configuration
      */
-    public Server setMaxParallelConnections(final int count) {
-        // need one extra thread for the connection manager
-        mngdExecutor.setMaximumThreadPoolSize(Math.max(2, count + 1));
-        return this;
-    }
-
-    /**
-     * Set the encryption mode
-     *
-     * @param encrypt if <code>true</code> encrypt the payload data at transport
-     *                level communication between this client and the server.
-     * @return this server
-     */
-    public Server setEncryption(final boolean encrypt) {
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "The encryption mode cannot be changed anymore "
-                   + "once the server has been started!");
-        }
-        this.encrypt.set(encrypt);
-        return this;
-    }
-
-    /**
-     * @return <code>true</code> if this server has transport level encryption
-     *         enabled else <code>false</code>
-     */
-    public boolean isEncrypted() {
-        return encrypt.get();
-    }
-
-    /**
-     * Set an authenticator
-     *
-     * <p>Note: For security reasons enforce encryption to securely send the
-     * user credentials from a client to the server!
-     *
-     * @param authenticator a client authenticator.
-     * @return this server
-     */
-    public Server setAuthenticator(final Authenticator authenticator) {
-        Objects.requireNonNull(authenticator);
-
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "The authenticator cannot be changed anymore "
-                   + "once the server has been started!");
-        }
-        this.authenticator.set(authenticator);
-        return this;
-    }
-
-    /**
-     * Set the compression cutoff size for payload messages.
-     *
-     * <p>With a negative cutoff size payload messages will not be compressed.
-     * If the payload message size is greater than the cutoff size it will be
-     * compressed.
-     *
-     * <p>Defaults to -1 (no compression)
-     *
-     * @param cutoffSize the compress cutoff size in bytes
-     * @return this server
-     */
-    public Server setCompressCutoffSize(final long cutoffSize) {
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "The compression cutoff size cannot be changed anymore "
-                   + "once the server has been started!");
-        }
-        compressor.set(new Compressor(cutoffSize));
-        return this;
-    }
-
-    /**
-     * @return return the server's payload message compression cutoff size
-     */
-    public long getCompressCutoffSize() {
-        return compressor.get().cutoffSize();
-    }
-
-    /**
-     * Set the maximum message size.
-     *
-     * <p>Defaults to 200 MB (the max possible message size)
-     *
-     * @param maxSize the max message size in bytes
-     * @return this server
-     */
-    public Server setMaxMessageSize(final long maxSize) {
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "The maximum message size cannot be changed anymore "
-                   + "once the server has been started!");
-        }
-
-        if (maxSize > Messages.MESSAGE_LIMIT_MAX) {
-            throw new IllegalArgumentException(
-                    "The maximum message size is limited to " + Messages.MESSAGE_LIMIT_MAX + " bytes!");
-        }
-
-        maxMessageSize.set(Math.max(Messages.MESSAGE_LIMIT_MIN, maxSize));
-        return this;
-    }
-
-    /**
-     * @return return the server's max message size
-     */
-    public long getMaxMessageSize() {
-        return maxMessageSize.get();
-    }
-
-
-    /**
-     * Set the max number of queues.
-     *
-     * <p>Defaults to 20
-     *
-     * @param maxQueues the max number of queues.
-     * @return this server
-     */
-    public Server setMaxQueues(final long maxQueues) {
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "The maximum queue count cannot be changed anymore "
-                   + "once the server has been started!");
-        }
-
-        this.maxQueues.set(Math.max(QUEUES_MIN, Math.min(QUEUES_MAX, maxQueues)));
-        return this;
-    }
-
-    /**
-     * @return return the max number of queues.
-     */
-    public long getMaxQueues() {
-        return maxQueues.get();
-    }
-
-
-    /**
-     * Give the clients permission to manage (add/remove) queues.
-     *
-     * <p>Defaults to <code>true</code>
-     *
-     * <p>Note: Temporary queues are not subject to this permission! They
-     *          can be created any time by clients as needed.
-     *
-     * @param permit if <code>true</code> clients are permitted to add/remove
-     *              queues
-     * @return this server
-     */
-    public Server setPermitClientQueueMgmt(final boolean permit) {
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "Cannot change the permission for clients to manage queues "
-                   + "once the server has been started!");
-        }
-
-        this.permitClientQueueMgmt.set(permit);
-        return this;
-    }
-
-    /**
-     * @return return <code>true</code> if clients are permitted to add/remove
-     *         queues else <code>false</code>
-     */
-    public boolean isPermitClientQueueMgmt() {
-        return permitClientQueueMgmt.get();
-    }
-
-
-    /**
-     * Set a heartbeat interval in seconds. A value equal or lower to zero  will
-     * turnoff the hearbeat.
-     *
-     * <p>Defaults to <code>0</code> (hearbeat turned off)
-     *
-     * @param intervalSeconds the heartbeat interval in seconds
-     * @return this server
-     */
-    public Server setHearbeatInterval(final int intervalSeconds) {
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "Cannot change the heartbeat interval once the server has been started!");
-        }
-
-        this.heartbeatInterval.set(Math.max(0, intervalSeconds));
-        return this;
-    }
-
-    /**
-     * @return return <code>true</code> if clients are permitted to add/remove
-     *         queues else <code>false</code>
-     */
-    public long getHearbeatInterval() {
-        return heartbeatInterval.get();
-    }
-
-    /**
-     * Set the socket's send and receive buffer size. -1 keeps the default.
-     *
-     * @param sndBufSize a send buffer size
-     * @param rcvBufSize a receive buffer size
-     */
-    public void setSndRcvBufferSize(final int sndBufSize, final int rcvBufSize) {
-        if (started.get()) {
-            throw new IllegalStateException(
-                   "Cannot change the buffer size once the server has been started!");
-        }
-
-        this.sndBufSize = sndBufSize;
-        this.rcvBufSize = rcvBufSize;
-    }
-
-    /**
-     * Enable  Write-Ahead-Logs
-     *
-     * @param walDir the Write-Ahead-Logs directory
-     * @param compress enable/disable Write-Ahead-Log entry compression
-     * @param compactAtStart if true compact the Write-Ahead-Log at startup
-     * @return this server
-     */
-    public Server enableWriteAheadLog(
-            final File walDir,
-            final boolean compress,
-            final boolean compactAtStart
-     ) {
-        Objects.requireNonNull(walDir);
-
-        if (!walDir.isDirectory()) {
-            throw new IpcException(
-                    "The WAL directory '" + walDir.getAbsolutePath() + "' does not exist!");
-        }
-
-        if (started.get()) {
-            throw new IllegalStateException(
-                    "Cannot enable the Write-Ahead-Log if the server has already been started!");
-        }
-
-        this.wal.activate(walDir, compress, compactAtStart);
-
-        return this;
+    public ServerConfig getConfig() {
+        return config;
     }
 
     /**
@@ -373,31 +92,6 @@ public class Server implements AutoCloseable {
      */
     public boolean isWriteAheadLog() {
         return wal.isEnabled();
-    }
-
-
-    /**
-     * Enable the server logger within the specified log directory
-     *
-     * @param logDir a log directory
-     * @return this server
-     */
-    public Server enableLogger(final File logDir) {
-        Objects.requireNonNull(logDir);
-
-        if (!logDir.isDirectory()) {
-            throw new IpcException(
-                    "The server log directory '" + logDir.getAbsolutePath() + "' does not exist!");
-        }
-
-        if (started.get()) {
-            throw new IllegalStateException(
-                    "Cannot enable the logger if the server has already been started!");
-        }
-
-        logger.enable(logDir);
-
-        return this;
     }
 
     /**
@@ -458,7 +152,17 @@ public class Server implements AutoCloseable {
     public void start(final Function<IMessage,IMessage> handler) {
         Objects.requireNonNull(handler);
 
-        if (authenticator.get().isActive() && !encrypt.get()) {
+        // cofiguration
+        mngdExecutor.setMaximumThreadPoolSize(config.getMaxConnections() + 1);
+        authenticator.set(config.getAuthenticator());
+        compressor.set(new Compressor(config.getCompressCutoffSize()));
+        if (config.getWalDir() != null) {
+            wal.activate(config.getWalDir(), config.isWalCompress(), config.isWalCompactAtStart());
+        }
+        if (config.getLogDir() != null) {
+            logger.enable(config.getLogDir());
+        }
+        if (authenticator.get().isActive() && !config.isEncrypting()) {
             throw new IpcException(
                     "Please enable encryption with an active authenticator to securely "
                     + "transfer the credentials freom a client to the server!");
@@ -472,15 +176,15 @@ public class Server implements AutoCloseable {
 
                 final ExecutorService executor = mngdExecutor.getExecutor();
 
-                logger.info("server", "start", "Server started on " + connURI);
+                logger.info("server", "start", "Server started on " + config.getConnURI());
                 logger.info("server", "start", "Endpoint ID: " + endpointId);
-                logger.info("server", "start", "Encryption: " + isEncrypted());
+                logger.info("server", "start", "Encryption: " + config.isEncrypting());
                 logger.info("server", "start", "Max Parallel Connections: " + (mngdExecutor.getMaximumThreadPoolSize() - 1));
-                logger.info("server", "start", "Max Queues: " + getMaxQueues());
-                logger.info("server", "start", "Max Msg Size: " + getMaxMessageSize());
-                logger.info("server", "start", "Compress Cutoff Size: " + getCompressCutoffSize());
+                logger.info("server", "start", "Max Queues: " + config.getMaxQueues());
+                logger.info("server", "start", "Max Msg Size: " + config.getMaxMessageSize());
+                logger.info("server", "start", "Compress Cutoff Size: " + config.getCompressCutoffSize());
                 logger.info("server", "start", "Log-File: " + logger.getLogFile());
-                logger.info("server", "start", "Heartbeat: " + heartbeatInterval + "s");
+                logger.info("server", "start", "Heartbeat: " + config.getHeartbeatIntervalSeconds() + "s");
                 logger.info("server", "start", "Write-Ahead-Log: " + isWriteAheadLog());
                 logger.info("server", "start", "Write-Ahead-Log-Dir: " + wal.getWalDir());
 
@@ -509,8 +213,8 @@ public class Server implements AutoCloseable {
                         try {
                             // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
-                            if (sndBufSize > 0) channel.socket().setSendBufferSize(sndBufSize);
-                            if (rcvBufSize > 0) channel.socket().setReceiveBufferSize(rcvBufSize);
+                            if (config.getSndBufSize() > 0) channel.socket().setSendBufferSize(config.getSndBufSize());
+                            if (config.getRcvBufSize() > 0) channel.socket().setReceiveBufferSize(config.getRcvBufSize());
                             channel.configureBlocking(true);
 
                             // TCP_NODELAY is absolutely mandatory on Linux to get high throughput
@@ -526,15 +230,15 @@ public class Server implements AutoCloseable {
                                                                    authenticator.get(),
                                                                    logger,
                                                                    handler,
-                                                                   maxMessageSize.get(),
-                                                                   maxQueues.get(),
-                                                                   permitClientQueueMgmt.get(),
-                                                                   heartbeatInterval.get(),
+                                                                   config.getMaxMessageSize(),
+                                                                   config.getMaxQueues(),
+                                                                   config.isPermitClientQueueMgmt(),
+                                                                   config.getHeartbeatIntervalSeconds(),
                                                                    wal,
                                                                    subscriptions,
                                                                    publishQueueCapacity,
                                                                    p2pQueues,
-                                                                   isEncrypted(),
+                                                                   config.isEncrypting(),
                                                                    compressor.get(),
                                                                    statistics,
                                                                    () -> mngdExecutor.info());
@@ -569,7 +273,7 @@ public class Server implements AutoCloseable {
                 logger.info("server", "start", "Server is operational and ready to accept connections.");
             }
             catch(Exception ex) {
-                final String msg = "Closed server on " + connURI + "!";
+                final String msg = "Closed server on " + config.getConnURI() + "!";
                 logger.error("server", "start", msg, ex);
 
                 safeClose(ch);
@@ -579,7 +283,7 @@ public class Server implements AutoCloseable {
             }
         }
         else {
-            final String msg = "The server on " + connURI + " has already been started!";
+            final String msg = "The server on " + config.getConnURI() + " has already been started!";
             logger.error("server", "start", msg);
 
             throw new IpcException(msg);
@@ -766,12 +470,12 @@ public class Server implements AutoCloseable {
     private ServerSocketChannel startServer() {
         ServerSocketChannel srv = null;
         try {
-            srv = SocketChannelFactory.createServerSocketChannel(connURI);
+            srv = SocketChannelFactory.createServerSocketChannel(config.getConnURI());
             server.set(srv);
             return srv;
         }
         catch(BindException ex) {
-            final String msg = "Already running! Failed to start server on " + connURI + "!";
+            final String msg = "Already running! Failed to start server on " + config.getConnURI() + "!";
             logger.error("server", "start", msg, ex);
 
             safeClose(srv);
@@ -780,7 +484,7 @@ public class Server implements AutoCloseable {
             throw new IpcException(msg, ex);
         }
         catch(Exception ex) {
-            final String msg = "Failed to start server on " + connURI + "!";
+            final String msg = "Failed to start server on " + config.getConnURI() + "!";
             logger.error("server", "start", msg, ex);
 
             safeClose(srv);
@@ -801,7 +505,8 @@ public class Server implements AutoCloseable {
     public static final int QUEUES_MIN =  1;
     public static final int QUEUES_MAX = 20;
 
-    private final URI connURI;
+    private final ServerConfig config;
+
     private final String endpointId;
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
@@ -812,15 +517,6 @@ public class Server implements AutoCloseable {
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
     private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
-
-    // configuration
-    private volatile int sndBufSize = -1;
-    private volatile int rcvBufSize = -1;
-    private final AtomicLong maxMessageSize = new AtomicLong(Messages.MESSAGE_LIMIT_DEFAULT);
-    private final AtomicLong maxQueues = new AtomicLong(QUEUES_MAX);
-    private final AtomicBoolean encrypt = new AtomicBoolean(false);
-    private final AtomicBoolean permitClientQueueMgmt = new AtomicBoolean(true);
-    private final AtomicLong heartbeatInterval = new AtomicLong(0);
 
 
     // logger

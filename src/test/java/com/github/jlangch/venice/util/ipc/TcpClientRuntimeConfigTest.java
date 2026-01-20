@@ -116,12 +116,15 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_1() throws Exception {
-        final Server server = Server.of(33333);
-        final Client client = Client.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(false)
+                                            .maxMessageSize(3000)
+                                            .compressCutoffSize(2000)
+                                            .build());
 
-        server.setEncryption(false);
-        server.setMaxMessageSize(3000);
-        server.setCompressCutoffSize(2000);
+        final Client client = Client.of(33333);
 
         server.start();
 
@@ -146,12 +149,15 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_2() throws Exception {
-        final Server server = Server.of(33333);
-        final Client client = Client.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .maxMessageSize(3000)
+                                            .compressCutoffSize(2000)
+                                            .build());
 
-        server.setEncryption(true);
-        server.setMaxMessageSize(3000);
-        server.setCompressCutoffSize(2000);
+        final Client client = Client.of(33333);
 
         server.start();
 
@@ -176,16 +182,19 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_3() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .maxMessageSize(3000)
+                                            .compressCutoffSize(2000)
+                                            .build());
+
         final Client client = Client.of(ClientConfig
                                             .builder()
                                             .conn(33333)
                                             .encrypt(false)   // server is dominant
                                             .build());
-
-        server.setEncryption(true);
-        server.setMaxMessageSize(3000);
-        server.setCompressCutoffSize(2000);
 
         server.start();
 
@@ -210,17 +219,19 @@ public class TcpClientRuntimeConfigTest {
 
     @Test
     public void test_client_inherit_config_4() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .maxMessageSize(3000)
+                                            .compressCutoffSize(2000)
+                                            .build());
+
         final Client client = Client.of(ClientConfig
                                             .builder()
                                             .conn(33333)
                                             .encrypt(true)
                                             .build());
-
-        server.setEncryption(true);
-        server.setMaxMessageSize(3000);
-        server.setCompressCutoffSize(2000);
-
         server.start();
 
         IO.sleep(300);

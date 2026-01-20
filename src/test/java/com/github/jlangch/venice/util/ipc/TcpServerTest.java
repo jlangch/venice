@@ -241,23 +241,42 @@ public class TcpServerTest {
 
     @Test
     public void test_server_max_msg_size() throws Exception {
-        try (Server server = Server.of(33333)) {
-            // check default
-            assertEquals(Messages.MESSAGE_LIMIT_DEFAULT, server.getMaxMessageSize());
+        // check default
+        assertEquals(
+            Messages.MESSAGE_LIMIT_DEFAULT,
+            ServerConfig
+                .builder()
+                .conn(33333)
+                .build()
+                .getMaxMessageSize());
 
-            // below minimum
-            server.setMaxMessageSize(100L);
-            assertEquals(Messages.MESSAGE_LIMIT_MIN, server.getMaxMessageSize());
-
-            // in range
-            server.setMaxMessageSize(100L * 1024L);
-            assertEquals(100L * 1024L, server.getMaxMessageSize());
-
-            // 800MB is above maximum
-            assertThrows(
+        // below minimum
+        assertThrows(
                 IllegalArgumentException.class,
-                () -> server.setMaxMessageSize(800L * 1024L * 1024L));
-        }
+                () -> ServerConfig
+                        .builder()
+                        .conn(33333)
+                        .maxMessageSize(100)
+                        .build());
+
+        // in range
+        assertEquals(
+            100L * 1024L,
+            ServerConfig
+                .builder()
+                .conn(33333)
+                .maxMessageSize(100 * 1024L)
+                .build()
+                .getMaxMessageSize());
+
+        // 800MB is above maximum
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> ServerConfig
+                    .builder()
+                    .conn(33333)
+                    .maxMessageSize(800L * 1024L * 1024L)
+                    .build());
     }
 
     @Test
@@ -283,14 +302,17 @@ public class TcpServerTest {
 
     @Test
     public void test_server_max_conn() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .maxParallelConnections(2)
+                                            .build());
+
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
         final Client client3 = Client.of(33333);
 
         try {
-            server.setMaxParallelConnections(2);
-
             server.start(Server.echoHandler());
 
             IO.sleep(300);
