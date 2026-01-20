@@ -35,15 +35,15 @@ public class TcpOfferPollEncryptedTest {
     public void test_queue() throws Exception {
         final Server server = Server.of(33333);
         final Client client1 = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
         final Client client2 = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
 
         server.createQueue("queue-1", 10, true, false);
 

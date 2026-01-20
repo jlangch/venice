@@ -38,15 +38,15 @@ public class TcpPubSubEncryptedTest {
     public void test_pub_sub_1() throws Exception {
         final Server server = Server.of(33333);
         final Client clientSub = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
         final Client clientPub = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start();
 
@@ -88,25 +88,25 @@ public class TcpPubSubEncryptedTest {
     public void test_pub_sub_2() throws Exception {
         final Server server = Server.of(33333);
         final Client clientSub1 = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
         final Client clientSub2 = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
         final Client clientSub3 = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
         final Client clientPub = Client.of(ClientConfig
-                                                    .builder()
-                                                    .conn(33333)
-                                                    .encrypt(true)
-                                                    .build());
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start();
 

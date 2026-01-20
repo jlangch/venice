@@ -79,10 +79,10 @@ public class TcpRequestResponseEncryptedTest {
     public void test_echo_server_binary() throws Exception {
         final Server server = Server.of(33333);
         final Client client = Client.of(ClientConfig
-                                                .builder()
-                                                .conn(33333)
-                                                .encrypt(true)
-                                                .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
 
         server.start(Server.echoHandler());
 
@@ -179,10 +179,10 @@ public class TcpRequestResponseEncryptedTest {
     public void test_echo_server_binary_integrity_check() throws Exception {
         final Server server = Server.of(33333);
         final Client client = Client.of(ClientConfig
-                                                .builder()
-                                                .conn(33333)
-                                                .encrypt(true)
-                                                .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
 
         server.start(Server.echoHandler());
 
@@ -222,10 +222,10 @@ public class TcpRequestResponseEncryptedTest {
     public void test_echo_server_multiple_messages() throws Exception {
         final Server server = Server.of(33333);
         final Client client = Client.of(ClientConfig
-                                                .builder()
-                                                .conn(33333)
-                                                .encrypt(true)
-                                                .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
 
         server.start(Server.echoHandler());
 
@@ -267,10 +267,10 @@ public class TcpRequestResponseEncryptedTest {
     public void test_echo_server_multiple_messages_oneway() throws Exception {
         final Server server = Server.of(33333);
         final Client client = Client.of(ClientConfig
-                                                .builder()
-                                                .conn(33333)
-                                                .encrypt(true)
-                                                .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
 
         server.start(Server.echoHandler());
 
@@ -302,10 +302,10 @@ public class TcpRequestResponseEncryptedTest {
     public void test_echo_server_multiple_messages_mixed() throws Exception {
         final Server server = Server.of(33333);
         final Client client = Client.of(ClientConfig
-                                                .builder()
-                                                .conn(33333)
-                                                .encrypt(true)
-                                                .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
 
         server.start(Server.echoHandler());
 
@@ -427,10 +427,10 @@ public class TcpRequestResponseEncryptedTest {
     public void test_remote_code_execution() throws Exception {
         final Server server = Server.of(33333);
         final Client client = Client.of(ClientConfig
-                                                .builder()
-                                                .conn(33333)
-                                                .encrypt(true)
-                                                .build());
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build());
 
         final Venice venice = new Venice();
 
