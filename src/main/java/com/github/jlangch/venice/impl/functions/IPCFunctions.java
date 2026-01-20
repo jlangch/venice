@@ -775,7 +775,7 @@ public class IPCFunctions {
                     final boolean print      = Coerce.toVncBoolean(printVal).getValue();
                     final boolean encrypt    = Coerce.toVncBoolean(encryptVal).getValue();
                     final boolean oneway     = Coerce.toVncBoolean(onewayVal).getValue();
-                    final long connections   = Coerce.toVncLong(connectionsVal).getValue();
+                    final int connections    = Coerce.toVncLong(connectionsVal).toJavaInteger();
                     final int sndBufSize     = (int)convertUnitValueToLong(sndBufSizeVal);
                     final int rcvBufSize     = (int)convertUnitValueToLong(rcvBufSizeVal);
                     final int rampUpDuration = Coerce.toVncLong(rampUpDurationVal).toJavaInteger();

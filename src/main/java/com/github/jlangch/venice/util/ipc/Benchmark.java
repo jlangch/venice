@@ -23,8 +23,15 @@ package com.github.jlangch.venice.util.ipc;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -41,6 +48,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 // --------------------------------------------------------------------------------------------------
 //
 // AF_INET tcp/ip sockets
+//         default socket snd/rcv buffer size, single connection, single thread
 //
 // +-------------------------------------------------------------------------------------------------+
 // | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
@@ -50,7 +58,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 // +-------------------------------------------------------------------------------------------------+
 //
 //
-// AF_UNIX Unix domain sockets: default socket snd/rcv buffer size
+// AF_UNIX Unix domain sockets
+//         default socket snd/rcv buffer size, single connection, single thread
 //
 // +------------------------------------------------------------------------------------------------+
 // | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
@@ -60,7 +69,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 // +------------------------------------------------------------------------------------------------+
 //
 //
-// AF_UNIX Unix domain sockets: 1MB socket snd/rcv buffer size
+// AF_UNIX Unix domain sockets
+//         1MB socket snd/rcv buffer size, single connection, single thread
 //
 // +------------------------------------------------------------------------------------------------+
 // | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
@@ -76,6 +86,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 // --------------------------------------------------------------------------------------------------
 //
 // AF_INET tcp/ip sockets
+//         default socket snd/rcv buffer size, single connection, single thread
 //
 // +-----------------------------------------------------------------------------------------------+
 // | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
@@ -91,7 +102,7 @@ public class Benchmark {
             final String sConnURI,
             final long msgSize,
             final long duration,
-            final long connections,
+            final int connections,
             final boolean print,
             final boolean encrypt,
             final boolean oneway,
@@ -101,7 +112,7 @@ public class Benchmark {
     ) {
         this.msgSize = msgSize;
         this.duration = duration;
-        this.connections = connections;
+        this.connections = Math.min(50, connections);
 
         this.print = print;
         this.encrypt = encrypt;
@@ -117,7 +128,7 @@ public class Benchmark {
     public VncHashMap run() {
         return hostAddr.isLoopbackAddress()
                 ? benchmarkWithLocalServer()
-                : benchmarkSingleConnection();
+                : benchmark();
     }
 
     private VncHashMap benchmarkWithLocalServer() {
@@ -125,25 +136,25 @@ public class Benchmark {
             server.setMaxMessageSize(Messages.MESSAGE_LIMIT_MAX);
             server.setEncryption(encrypt);
             server.setSndRcvBufferSize(sndBufSize, rcvBufSize);
-            server.setMaxParallelConnections(2);
+            server.setMaxParallelConnections(connections+3);
             server.start();
 
             IO.sleep(300);
 
-            return benchmarkSingleConnection();
+            return benchmark();
         }
         catch(Exception ex) {
             throw new VncException("Benchmark failed!", ex);
         }
     }
 
-    private VncHashMap benchmarkSingleConnection() {
+    private VncHashMap benchmark() {
+        // Payload data
+        final byte[] payload = createRandomPayload();
+
         try(TcpClient client = TcpClient.of(connURI)) {
             client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
             client.open();
-
-            // Payload data
-            final byte[] payload = createRandomPayload();
 
             // Ramp-Up phase
             if (rampUpDuration > 0) {
@@ -158,7 +169,9 @@ public class Benchmark {
             }
 
             // Benchmark
-            final VncHashMap result = benchmark(client, payload);
+            final VncHashMap result = connections > 1
+                                        ? benchmark(client, connections, payload)
+                                        : benchmark(client, payload);
 
             if (print) {
                 System.out.println();
@@ -170,7 +183,7 @@ public class Benchmark {
             }
         }
         catch(Exception ex) {
-            throw new VncException("Benchmark failed!", ex);
+            throw new IpcException("Benchmark failed!", ex);
         }
     }
 
@@ -195,15 +208,89 @@ public class Benchmark {
             }
         }
 
-        return computeStatistics(client, count, msgSize,  elapsed);
+        return computeStatistics(client, 1, count, msgSize,  elapsed);
     }
 
-    private void rampUp(final byte[] payload) {
-        try(TcpClient client = TcpClient.of(connURI)) {
-            client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
-            client.open();
+    private VncHashMap benchmark(final TcpClient clientBase, final int clientCount, final byte[] payload) {
+        System.out.println("Connections: " + clientCount);
 
-            rampUp(client, payload);
+        final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+        es.setMaximumPoolSize(clientCount);
+
+        final AtomicBoolean stop = new AtomicBoolean(false);
+        final CyclicBarrier barrier = new CyclicBarrier(clientCount + 1);
+
+        final List<Future<VncHashMap>> futures = new ArrayList<>();
+        for(int cc=1; cc<=clientCount; cc++) {
+            // start workers
+            futures.add(es.submit(() -> {
+                final TcpClient client = TcpClient.of(connURI);
+                int count = 0;
+
+                try {
+                    client.open();
+
+                    // wait for all works to be ready to start
+                    barrier.await();
+
+                    final long start = System.currentTimeMillis();
+
+                    while(!stop.get()) {
+                        final IMessage m = client.test(payload, oneway);
+                        if (ResponseStatus.OK != m.getResponseStatus()) {
+                           throw new RuntimeException("Bad response");
+                        }
+                        count++;
+                    }
+
+                    final long elapsed = System.currentTimeMillis()-start;
+
+                    return computeStatistics(
+                            clientBase,
+                            1,
+                            count,
+                            payload.length,
+                            elapsed);
+                }
+                catch(Exception ex) {
+                    return VncHashMap.EMPTY;
+                }
+                finally {
+                    try { client.close(); } catch (Exception ignore) {}
+                }
+
+            }));
+        }
+
+        try {
+            // Wait for all benchmark worker threads to be ready
+            barrier.await();
+
+            IO.sleep(duration * 1000L);
+            stop.set(true);  // stop request for workers
+
+            System.out.println("Aggregating results...");
+
+            // Wait for all workers to be finished
+            final List<VncHashMap> results = new ArrayList<>();
+            futures.forEach(f ->  { try { results.add(f.get()); } catch (Exception ignore) {}});
+
+            final long msgCount = results
+                                    .stream()
+                                    .map(e -> e.get(new VncKeyword("message-count")))
+                                    .mapToLong(e -> ((VncLong)e).getValue())
+                                    .sum();
+
+            // Aggregate statistics
+            return computeStatistics(
+                    clientBase,
+                    clientCount,
+                    msgCount,
+                    payload.length,
+                    duration * 1000L);
+        }
+        catch(Exception ex) {
+            throw new IpcException("Benchmark failed!", ex);
         }
     }
 
@@ -230,6 +317,7 @@ public class Benchmark {
 
     private VncHashMap computeStatistics(
             final TcpClient client,
+            final int connections,
             final long msgCount,
             final long payloadSize,
             final long elapsedMillis
@@ -254,6 +342,7 @@ public class Benchmark {
         summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
         summary.append(String.format("Encryption:       %s\n", encrypt ? "on" : "off"));
         summary.append(String.format("Compression:      %s\n", compress ? "on" : "off"));
+        summary.append(String.format("Connections:      %d\n", connections));
         summary.append("------------------------------\n");
         summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
         summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
@@ -269,6 +358,7 @@ public class Benchmark {
                 new VncKeyword("throughput-MB"),    new VncDouble(throughputMB),
                 new VncKeyword("encrypt"),          VncBoolean.of(encrypt),
                 new VncKeyword("compress"),         VncBoolean.of(compress),
+                new VncKeyword("connections"),      new VncLong(connections),
                 new VncKeyword("summary"),          new VncString(summary.toString()));
     }
 
@@ -299,7 +389,7 @@ public class Benchmark {
 
     private final long msgSize;
     private final long duration;
-    private final long connections;
+    private final int connections;
 
     private final boolean print;
     private final boolean encrypt;
