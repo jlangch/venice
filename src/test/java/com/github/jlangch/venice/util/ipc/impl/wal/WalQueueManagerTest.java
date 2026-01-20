@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
-import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
@@ -88,7 +88,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File log = new File(walDir, "wal.log");
 
-        try(TcpServer server = TcpServer.of(33333)) {
+        try(Server server = Server.of(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
             server.start();
 
@@ -121,7 +121,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(TcpServer server = TcpServer.of(33333)) {
+        try(Server server = Server.of(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
             server.start();
 
@@ -156,7 +156,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(TcpServer server = TcpServer.of(33333)) {
+        try(Server server = Server.of(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
             server.start();
 
@@ -174,7 +174,7 @@ public class WalQueueManagerTest {
 
         Thread.sleep(100);
 
-        try(TcpServer server = TcpServer.of(33333)) {
+        try(Server server = Server.of(33333)) {
             server.enableWriteAheadLog(walDir, false, false);
             server.start();
 
@@ -207,7 +207,7 @@ public class WalQueueManagerTest {
         final File walDir = Files.createTempDirectory("wal-").normalize().toFile();
         final File logger = new File(walDir, "wal.log");
 
-        try(TcpServer server = TcpServer.of(33333)) {
+        try(Server server = Server.of(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
             server.start();
 
@@ -225,7 +225,7 @@ public class WalQueueManagerTest {
 
         Thread.sleep(100);
 
-        try(TcpServer server = TcpServer.of(33333)) {
+        try(Server server = Server.of(33333)) {
             server.enableWriteAheadLog(walDir, true, true);
             server.start();
 

@@ -33,7 +33,7 @@ public class TcpOfferPollEncryptedTest {
 
     @Test
     public void test_queue() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client1 = Client.of(ClientConfig
                                                     .builder()
                                                     .conn(33333)

@@ -67,7 +67,7 @@ import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.Client;
-import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
@@ -312,7 +312,7 @@ public class IPCFunctions {
 
                 // -- Create and configure the server ------------------------------------
 
-                final TcpServer server = createTcpServer(args.first());
+                final Server server = createTcpServer(args.first());
 
                 server.setPermitClientQueueMgmt(permitQueueMgmt);
 
@@ -606,8 +606,8 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 final Object delegate =  Coerce.toVncJavaObject(args.first()).getDelegate();
-                if (delegate instanceof TcpServer) {
-                    return VncBoolean.of(((TcpServer)delegate).isRunning());
+                if (delegate instanceof Server) {
+                    return VncBoolean.of(((Server)delegate).isRunning());
                 }
                 else if (delegate instanceof Client) {
                     return VncBoolean.of(((Client)delegate).isRunning());
@@ -661,9 +661,9 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 final Object delegate =  Coerce.toVncJavaObject(args.first()).getDelegate();
-                if (delegate instanceof TcpServer) {
+                if (delegate instanceof Server) {
                     try {
-                        ((TcpServer)delegate).close();
+                        ((Server)delegate).close();
                     }
                     catch(Exception ex) {
                         throw new VncException("Failed to close IPC server", ex);
@@ -3159,8 +3159,8 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 3, 4, 5);
 
-                if (Types.isVncJavaObject(args.first(), TcpServer.class)) {
-                    final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
 
@@ -3334,8 +3334,8 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                if (Types.isVncJavaObject(args.first(), TcpServer.class)) {
-                    final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     server.removeQueue(name);
                     return Nil;
@@ -3385,8 +3385,8 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                if (Types.isVncJavaObject(args.first(), TcpServer.class)) {
-                    final TcpServer server = Coerce.toVncJavaObject(args.first(), TcpServer.class);
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(server.existsQueue(name));
                 }
@@ -3456,17 +3456,17 @@ public class IPCFunctions {
     // Utils
     // ------------------------------------------------------------------------
 
-    private static TcpServer createTcpServer(final VncVal portOrConnURI) {
+    private static Server createTcpServer(final VncVal portOrConnURI) {
         if (Types.isVncLong(portOrConnURI)) {
             final int port = Coerce.toVncLong(portOrConnURI).getIntValue();
 
-            return TcpServer.of(port);
+            return Server.of(port);
         }
         else if (Types.isVncString(portOrConnURI)) {
             final String connURI = Coerce.toVncString(portOrConnURI).getValue();
 
             try {
-                return TcpServer.of(new URI(connURI));
+                return Server.of(new URI(connURI));
             }
             catch(URISyntaxException ex) {
                 throw new VncException("Invalid ipc/server connection URI: " + connURI);

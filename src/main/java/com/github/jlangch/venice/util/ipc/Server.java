@@ -64,9 +64,9 @@ import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 /**
  * IPC Server
  */
-public class TcpServer implements AutoCloseable {
+public class Server implements AutoCloseable {
 
-    private TcpServer(final URI connURI) {
+    private Server(final URI connURI) {
         this.connURI = connURI;
         this.endpointId = UUID.randomUUID().toString();
     }
@@ -79,10 +79,10 @@ public class TcpServer implements AutoCloseable {
      * @param port a port
      * @return the TcpServer
      */
-    public static TcpServer of(final int port) {
+    public static Server of(final int port) {
         try {
             final URI uri = new URI(String.format("af-inet://127.0.0.1:%d", port));
-            return new TcpServer(uri);
+            return new Server(uri);
         }
         catch(URISyntaxException ex) {
             throw new IpcException("Invalid TcpServer connection URI", ex);
@@ -109,9 +109,9 @@ public class TcpServer implements AutoCloseable {
      * @param connUri a connection URI
      * @return the TcpServer
      */
-    public static TcpServer of(final URI connUri) {
+    public static Server of(final URI connUri) {
         Objects.requireNonNull(connUri);
-        return new TcpServer(connUri);
+        return new Server(connUri);
     }
 
 
@@ -123,7 +123,7 @@ public class TcpServer implements AutoCloseable {
      * @param count the max parallel connection count
      * @return this server
      */
-    public TcpServer setMaxParallelConnections(final int count) {
+    public Server setMaxParallelConnections(final int count) {
         // need one extra thread for the connection manager
         mngdExecutor.setMaximumThreadPoolSize(Math.max(2, count + 1));
         return this;
@@ -136,7 +136,7 @@ public class TcpServer implements AutoCloseable {
      *                level communication between this client and the server.
      * @return this server
      */
-    public TcpServer setEncryption(final boolean encrypt) {
+    public Server setEncryption(final boolean encrypt) {
         if (started.get()) {
             throw new IllegalStateException(
                    "The encryption mode cannot be changed anymore "
@@ -163,7 +163,7 @@ public class TcpServer implements AutoCloseable {
      * @param authenticator a client authenticator.
      * @return this server
      */
-    public TcpServer setAuthenticator(final Authenticator authenticator) {
+    public Server setAuthenticator(final Authenticator authenticator) {
         Objects.requireNonNull(authenticator);
 
         if (started.get()) {
@@ -187,7 +187,7 @@ public class TcpServer implements AutoCloseable {
      * @param cutoffSize the compress cutoff size in bytes
      * @return this server
      */
-    public TcpServer setCompressCutoffSize(final long cutoffSize) {
+    public Server setCompressCutoffSize(final long cutoffSize) {
         if (started.get()) {
             throw new IllegalStateException(
                    "The compression cutoff size cannot be changed anymore "
@@ -212,7 +212,7 @@ public class TcpServer implements AutoCloseable {
      * @param maxSize the max message size in bytes
      * @return this server
      */
-    public TcpServer setMaxMessageSize(final long maxSize) {
+    public Server setMaxMessageSize(final long maxSize) {
         if (started.get()) {
             throw new IllegalStateException(
                    "The maximum message size cannot be changed anymore "
@@ -244,7 +244,7 @@ public class TcpServer implements AutoCloseable {
      * @param maxQueues the max number of queues.
      * @return this server
      */
-    public TcpServer setMaxQueues(final long maxQueues) {
+    public Server setMaxQueues(final long maxQueues) {
         if (started.get()) {
             throw new IllegalStateException(
                    "The maximum queue count cannot be changed anymore "
@@ -275,7 +275,7 @@ public class TcpServer implements AutoCloseable {
      *              queues
      * @return this server
      */
-    public TcpServer setPermitClientQueueMgmt(final boolean permit) {
+    public Server setPermitClientQueueMgmt(final boolean permit) {
         if (started.get()) {
             throw new IllegalStateException(
                    "Cannot change the permission for clients to manage queues "
@@ -304,7 +304,7 @@ public class TcpServer implements AutoCloseable {
      * @param intervalSeconds the heartbeat interval in seconds
      * @return this server
      */
-    public TcpServer setHearbeatInterval(final int intervalSeconds) {
+    public Server setHearbeatInterval(final int intervalSeconds) {
         if (started.get()) {
             throw new IllegalStateException(
                    "Cannot change the heartbeat interval once the server has been started!");
@@ -346,7 +346,7 @@ public class TcpServer implements AutoCloseable {
      * @param compactAtStart if true compact the Write-Ahead-Log at startup
      * @return this server
      */
-    public TcpServer enableWriteAheadLog(
+    public Server enableWriteAheadLog(
             final File walDir,
             final boolean compress,
             final boolean compactAtStart
@@ -382,7 +382,7 @@ public class TcpServer implements AutoCloseable {
      * @param logDir a log directory
      * @return this server
      */
-    public TcpServer enableLogger(final File logDir) {
+    public Server enableLogger(final File logDir) {
         Objects.requireNonNull(logDir);
 
         if (!logDir.isDirectory()) {

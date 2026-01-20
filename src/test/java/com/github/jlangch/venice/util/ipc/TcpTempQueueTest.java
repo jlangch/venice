@@ -39,7 +39,7 @@ public class TcpTempQueueTest {
 
     @Test
     public void test_temp_queue_1() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 
@@ -146,7 +146,7 @@ public class TcpTempQueueTest {
 
     @Test
     public void test_temp_queue_2() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 

@@ -34,7 +34,7 @@ public class TcpAuthenticationTest {
 
     @Test
     public void test_auth_ok() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
         final Authenticator authenticator = new Authenticator(true);
@@ -44,7 +44,7 @@ public class TcpAuthenticationTest {
 
         server.setEncryption(true);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -71,7 +71,7 @@ public class TcpAuthenticationTest {
 
     @Test
     public void test_auth_failure_1() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
         final Authenticator authenticator = new Authenticator(true);
@@ -81,7 +81,7 @@ public class TcpAuthenticationTest {
 
         server.setEncryption(true);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -106,7 +106,7 @@ public class TcpAuthenticationTest {
 
     @Test
     public void test_auth_failure_2() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
         final Authenticator authenticator = new Authenticator(true);
@@ -116,7 +116,7 @@ public class TcpAuthenticationTest {
 
         server.setEncryption(true);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 

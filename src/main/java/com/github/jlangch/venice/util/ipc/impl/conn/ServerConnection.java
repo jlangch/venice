@@ -45,7 +45,7 @@ import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
-import com.github.jlangch.venice.util.ipc.TcpServer;
+import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
@@ -70,7 +70,7 @@ import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 public class ServerConnection implements IPublisher, Runnable {
 
     public ServerConnection(
-            final TcpServer server,
+            final Server server,
             final SocketChannel ch,
             final long connectionId,
             final Authenticator authenticator,
@@ -1221,7 +1221,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
     private volatile long lastHeartbeat = 0L;
 
-    private final TcpServer server;
+    private final Server server;
     private final SocketChannel ch;
     private final long connectionId;
     private final ServerLogger logger;

@@ -36,7 +36,7 @@ public class TcpPubSubTest {
 
     @Test
     public void test_pub_sub_1() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client clientSub = Client.of(33333);
         final Client clientPub = Client.of(33333);
 
@@ -78,7 +78,7 @@ public class TcpPubSubTest {
 
     @Test
     public void test_pub_sub_2() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client clientPub = Client.of(33333);
         final Client clientSub1 = Client.of(33333);
         final Client clientSub2 = Client.of(33333);
@@ -154,7 +154,7 @@ public class TcpPubSubTest {
 
     @Test
     public void test_pub_unsub_1() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client clientSub = Client.of(33333);
         final Client clientPub = Client.of(33333);
 

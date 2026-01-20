@@ -44,10 +44,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_oneway() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -69,10 +69,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_text() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -99,10 +99,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_binary() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -131,7 +131,7 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_handler_return_null() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
         server.start(m -> null);
@@ -159,10 +159,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -198,10 +198,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_multiple_messages() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -239,10 +239,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_multiple_messages_oneway() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -270,10 +270,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_echo_server_multiple_messages_mixed() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -306,7 +306,7 @@ public class TcpRequestResponseTest {
     @Test
     public void test_echo_server_multiple_clients() throws Exception {
 
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
 
         // increase connections to support the test client count
         server.setMaxParallelConnections(50);
@@ -314,7 +314,7 @@ public class TcpRequestResponseTest {
         final int clients = 10;
         final int messagesPerClient = 25;
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -384,7 +384,7 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_remote_code_execution() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
         final Venice venice = new Venice();
@@ -431,10 +431,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_server_status() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -453,10 +453,10 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_server_thread_pool_statistics() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 
@@ -475,7 +475,7 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_multithreaded_client() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
         // increase connections to support the test client count
@@ -484,7 +484,7 @@ public class TcpRequestResponseTest {
         final int threads = 10;
         final int messagesPerClient = 50;
 
-        server.start(TcpServer.echoHandler());
+        server.start(Server.echoHandler());
 
         IO.sleep(300);
 

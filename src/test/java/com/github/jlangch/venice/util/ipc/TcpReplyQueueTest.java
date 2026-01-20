@@ -33,7 +33,7 @@ public class TcpReplyQueueTest {
 
     @Test
     public void test_reply_queue() throws Exception {
-        final TcpServer server = TcpServer.of(33333);
+        final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 

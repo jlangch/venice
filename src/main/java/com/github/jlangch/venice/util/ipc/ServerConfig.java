@@ -42,7 +42,7 @@ public class ServerConfig {
             final int maxConnections,
             final Authenticator authenticator,
             final boolean permitClientQueueMgmt,
-            final int heartbeatInterval,
+            final int heartbeatIntervalSeconds,
             final File walDir,
             final boolean walCompress,
             final boolean walCompactAtStart,
@@ -58,7 +58,7 @@ public class ServerConfig {
         this.maxConnections = maxConnections;
         this.authenticator = authenticator;
         this.permitClientQueueMgmt = permitClientQueueMgmt;
-        this.heartbeatInterval = heartbeatInterval;
+        this.heartbeatIntervalSeconds = heartbeatIntervalSeconds;
         this.walDir = walDir;
         this.walCompress = walCompress;
         this.walCompactAtStart = walCompactAtStart;
@@ -107,8 +107,8 @@ public class ServerConfig {
         return permitClientQueueMgmt;
     }
 
-    public int getHeartbeatInterval() {
-        return heartbeatInterval;
+    public int getHeartbeatIntervalSeconds() {
+        return heartbeatIntervalSeconds;
     }
 
     public File getWalDir() {
@@ -272,10 +272,10 @@ public class ServerConfig {
          * @return this server
          */
         public Builder setMaxQueues(final int maxQueues) {
-            if (maxQueues < TcpServer.QUEUES_MIN || maxQueues > TcpServer.QUEUES_MAX) {
+            if (maxQueues < Server.QUEUES_MIN || maxQueues > Server.QUEUES_MAX) {
                 throw new IllegalArgumentException(
                         "The maximum message size is limited to "
-                        + TcpServer.QUEUES_MIN + " .. " + TcpServer.QUEUES_MAX
+                        + Server.QUEUES_MIN + " .. " + Server.QUEUES_MAX
                         + " bytes!");
             }
 
@@ -355,11 +355,11 @@ public class ServerConfig {
          *
          * <p>Defaults to <code>0</code> (hearbeat turned off)
          *
-         * @param intervalSeconds the heartbeat interval in seconds
+         * @param seconds the heartbeat interval in seconds
          * @return this server
          */
-        public Builder setHearbeatInterval(final int intervalSeconds) {
-            this.heartbeatInterval = Math.max(0, intervalSeconds);
+        public Builder setHearbeatIntervalSeconds(final int seconds) {
+            this.heartbeatIntervalSeconds = Math.max(0, seconds);
             return this;
         }
 
@@ -425,7 +425,7 @@ public class ServerConfig {
                     maxConnections,
                     authenticator,
                     permitClientQueueMgmt,
-                    heartbeatInterval,
+                    heartbeatIntervalSeconds,
                     walDir,
                     walCompress,
                     walCompactAtStart,
@@ -437,13 +437,13 @@ public class ServerConfig {
         private boolean encrypt = false;
         private int compressCutoffSize = -1;
         private long maxMessageSize = Messages.MESSAGE_LIMIT_DEFAULT;
-        private int maxQueues = TcpServer.QUEUES_MAX;
+        private int maxQueues = Server.QUEUES_MAX;
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
         private int maxConnections = MAX_CONNECTIONS;
         private Authenticator authenticator;
         private boolean permitClientQueueMgmt;
-        private int heartbeatInterval;
+        private int heartbeatIntervalSeconds;
         private File walDir;
         private boolean walCompress;
         private boolean walCompactAtStart;
@@ -451,7 +451,7 @@ public class ServerConfig {
     }
 
 
-    private static final int MAX_CONNECTIONS = 20;
+    public static final int MAX_CONNECTIONS = 20;
 
     private final URI connURI;
     private final boolean encrypt;
@@ -463,7 +463,7 @@ public class ServerConfig {
     private final int maxConnections;
     private final Authenticator authenticator;
     private final boolean permitClientQueueMgmt;
-    private final int heartbeatInterval;
+    private final int heartbeatIntervalSeconds;
     private final File walDir;
     private final boolean walCompress;
     private final boolean walCompactAtStart;
