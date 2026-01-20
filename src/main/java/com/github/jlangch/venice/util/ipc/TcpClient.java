@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,76 +58,30 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 public class TcpClient implements Cloneable, AutoCloseable {
 
 
-    private TcpClient(final URI connURI) {
-        this.connURI = connURI;
+    private TcpClient(final ClientConfig config) {
+        Objects.requireNonNull(config);
+        this.config = config;
         this.endpointId = UUID.randomUUID().toString();
     }
 
-    /**
-     * Create a new client connecting to a server on the local host
-     * and port
-     *
-     * <p>The client must be closed after use!
-     *
-     * @param port a port
-     * @return the TcpClient
-     */
+
+    public static TcpClient of(final ClientConfig config) {
+        Objects.requireNonNull(config);
+        return new TcpClient(config);
+    }
+
     public static TcpClient of(final int port) {
-        return of(null, port);
+        return new TcpClient(ClientConfig.of(port));
     }
 
-    /**
-     * Create a new client connecting to a server on the specified host
-     * and port
-     *
-     * <p>The client must be closed after use!
-     *
-     * @param host a host
-     * @param port a port
-     * @return the TcpClient
-     */
-    public static TcpClient of(final String host, final int port) {
-        try {
-            final URI uri = new URI(String.format(
-                                        "af-inet://%s:%d",
-                                        StringUtil.isBlank(host) ? "127.0.0.1" : host,
-                                        port));
-            return new TcpClient(uri);
-        }
-        catch(URISyntaxException ex) {
-            throw new IpcException("Invalid TcpClient connection URI", ex);
-        }
-    }
 
-    /**
-     * Create a new client for the specified connection URI.
-     *
-     * <p>The client must be closed after use!
-     *
-     * <p>Supported socket types:
-     * <ul>
-     *    <li>AF_INET sockets (TCP/IP sockets)</li>
-     *    <li>AF_UNIX domain sockets (Unix sockets, requires junixsocket libraries)</li>
-     * </ul>
-     *
-     * <p>AF_INET
-     * af-inet://localhost:33333
-     *
-     * <p>AF_UNIX
-     * af-unix:///path/to/your/socket.sock
-     *
-     * @param connUri a connection URI
-     * @return the TcpClient
-     */
-    public static TcpClient of(final URI connUri) {
-        Objects.requireNonNull(connUri);
-        return new TcpClient(connUri);
+    public TcpClient copy() {
+        final TcpClient client = new TcpClient(config);
+        return client;
     }
-
 
     public TcpClient openClone() {
-        final TcpClient client = new TcpClient(connURI);
-        client.setEncryption(encrypt);
+        final TcpClient client = new TcpClient(config);
         if (u != null && p != null) {
             client.open(String.valueOf(u), String.valueOf(p));
         }
@@ -139,34 +91,17 @@ public class TcpClient implements Cloneable, AutoCloseable {
         return client;
     }
 
-   /**
-     * Set the encryption mode for this client-server connection.
-     *
-     * <p>The encryption is basically controlled by the server the client is attached to.
-     *
-     * <p>If the server requests encryption it cannot be weakened by the client.
-     *
-     * <pre>
-     * ┌────────────────┬────────────────┬──────────────────────────┐
-     * │ server encrypt │ client encrypt │ client-server connection │
-     * ├────────────────┼────────────────┼──────────────────────────┤
-     * │      false     │     false      │      not encrypted       │
-     * │      false     │     true       │        encrypted         │
-     * │      true      │     false      │        encrypted         │
-     * │      true      │     true       │        encrypted         │
-     * └────────────────┴────────────────┴──────────────────────────┘
-     * </pre>
-     *
-     * @param encrypt if <code>true</code> encrypt the payload data at transport
-     *                level communication between this client and the server.
-     */
-    public void setEncryption(final boolean encrypt) {
-        if (opened.get()) {
-            throw new IllegalStateException(
-                   "The encryption mode cannot be changed once the client has been opened!");
-        }
 
-        this.encrypt = encrypt;
+    /**
+     * @return the this client's configuration
+     */
+    public ClientConfig getClientConfig() {
+        return config;
+    }
+
+
+    public String getEndpointId() {
+        return endpointId;
     }
 
     /**
@@ -193,22 +128,6 @@ public class TcpClient implements Cloneable, AutoCloseable {
         }
 
         return conn.get().isCompressing();
-    }
-
-    /**
-     * Set the socket's send and receive buffer size. -1 keeps the default.
-     *
-     * @param sndBufSize a send buffer size
-     * @param rcvBufSize a receive buffer size
-     */
-    public void setSndRcvBufferSize(final int sndBufSize, final int rcvBufSize) {
-        if (opened.get()) {
-            throw new IllegalStateException(
-                   "The buffer size cannot be changed once the client has been opened!");
-        }
-
-        this.sndBufSize = sndBufSize;
-        this.rcvBufSize = rcvBufSize;
     }
 
     /**
@@ -263,24 +182,12 @@ public class TcpClient implements Cloneable, AutoCloseable {
     }
 
     /**
-     * @return the endpoint ID of this client
-     */
-    public String getEndpointId() {
-        return endpointId;
-    }
-
-    /**
-     * @return the acknowledge mode of this client
-     */
-    public AcknowledgeMode getAcknowledgeMode() {
-        return ackMode;
-    }
-
-    /**
      * Opens the client
+     *
+     * @return this client
      */
-    public void open() {
-        open(null, null);
+    public TcpClient open() {
+        return open(null, null);
     }
 
     /**
@@ -288,8 +195,9 @@ public class TcpClient implements Cloneable, AutoCloseable {
      *
      * @param userName authentication user name
      * @param password authentication password
+     * @return this client
      */
-    public void open(final String userName, final String password) {
+    public TcpClient open(final String userName, final String password) {
         if (userName != null && password == null) {
             throw new IpcException("Authentication requires both a user name and a password!");
         }
@@ -300,21 +208,20 @@ public class TcpClient implements Cloneable, AutoCloseable {
         if (opened.compareAndSet(false, true)) {
             ClientConnection c = null;
             try {
-                c = new ClientConnection(
-                            connURI, encrypt, ackMode,
-                            sndBufSize, rcvBufSize,
-                            userName, password);
+                c = new ClientConnection(config, userName, password);
                 conn.set(c);
 
                 this.u = userName == null ? null : userName.toCharArray();
                 this.p = password == null ? null : password.toCharArray();
+
+                return this;
             }
             catch(Exception ex) {
                 IO.safeClose(c);
                 opened.set(false);
                 conn.set(null);
                 throw new IpcException(
-                        "Failed to open client for server " + connURI + "!",
+                        "Failed to open client for server " + config.getConnURI() + "!",
                         ex);
             }
         }
@@ -463,7 +370,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
 
         c.addSubscriptionHandler(topics, handler);
 
-        final Message m = createSubscribeRequestMessage(topics, endpointId);
+        final Message m = createSubscribeRequestMessage(topics, getEndpointId());
         return send(m);
     }
 
@@ -507,7 +414,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
 
         c.removeSubscriptionHandler(topics);
 
-        final Message m = createUnsubscribeRequestMessage(topics, endpointId);
+        final Message m = createUnsubscribeRequestMessage(topics, getEndpointId());
         return send(m);
     }
 
@@ -1327,14 +1234,9 @@ public class TcpClient implements Cloneable, AutoCloseable {
     private volatile char[] u = null;
     private volatile char[] p = null;
 
-
-    private final URI connURI;
     private final String endpointId;
 
-    private volatile int sndBufSize = -1;
-    private volatile int rcvBufSize = -1;
-    private volatile boolean encrypt = false;
-    private volatile AcknowledgeMode ackMode = AcknowledgeMode.NO_ACKNOWLEDGE;
+    private final ClientConfig config;
 
     private final AtomicBoolean opened = new AtomicBoolean(false);
     private final AtomicReference<ClientConnection> conn = new AtomicReference<>();

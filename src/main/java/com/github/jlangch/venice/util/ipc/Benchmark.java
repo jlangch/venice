@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
@@ -50,12 +51,19 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 // AF_INET tcp/ip sockets
 //         default socket snd/rcv buffer size, single connection, single thread
 //
-// +-------------------------------------------------------------------------------------------------+
-// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
-// +-------------------------------------------------------------------------------------------------+
-// | Throughput msgs  | 22624 msg/s | 16178 msg/s | 6901 msg/s  | 1082 msg/s | 95 msg/s  | 22 msg/s  |
-// | Throughput bytes | 110 MB/s    | 790 MB/s    | 3370 MB/s   | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
-// +-------------------------------------------------------------------------------------------------+
+//+-------------------------------------------------------------------------------------------------+
+//| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+//+-------------------------------------------------------------------------------------------------+
+//| Throughput msgs  | 22624 msg/s | 16178 msg/s | 6901 msg/s  | 1082 msg/s | 95 msg/s  | 22 msg/s  |
+//| Throughput bytes | 110 MB/s    | 790 MB/s    | 3370 MB/s   | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
+//+-------------------------------------------------------------------------------------------------+
+//
+//+-------------------------------------------------------------------------------------------------------+
+//| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 5 conn      | 10 conn     |
+//+-------------------------------------------------------------------------------------------------------+
+//| Throughput msgs   | 22624 msg/s | 42244 msg/s | 54505 msg/s | 51247 msg/s | 48045 msg/s | 47926 msg/s |
+//| Throughput bytes  | 110 MB/s    | 206 MB/s    | 266 MB/s    | 250 MB/s    | 235 MB/s    | 234 MB/s    |
+//+-------------------------------------------------------------------------------------------------------+
 //
 //
 // AF_UNIX Unix domain sockets
@@ -152,8 +160,14 @@ public class Benchmark {
         // Payload data
         final byte[] payload = createRandomPayload();
 
-        try(TcpClient client = TcpClient.of(connURI)) {
-            client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+        final ClientConfig config = ClientConfig
+                                        .builder()
+                                        .connURI(connURI)
+                                        .sendBufferSize(sndBufSize)
+                                        .receiveBufferSize(rcvBufSize)
+                                        .build();
+
+        try(TcpClient client = TcpClient.of(config)) {
             client.open();
 
             // Ramp-Up phase
@@ -218,20 +232,20 @@ public class Benchmark {
         es.setMaximumPoolSize(clientCount);
 
         final AtomicBoolean stop = new AtomicBoolean(false);
-        final CyclicBarrier barrier = new CyclicBarrier(clientCount + 1);
+        final CyclicBarrier startBarrier = new CyclicBarrier(clientCount + 1);
 
         final List<Future<VncHashMap>> futures = new ArrayList<>();
         for(int cc=1; cc<=clientCount; cc++) {
             // start workers
             futures.add(es.submit(() -> {
-                final TcpClient client = TcpClient.of(connURI);
+                final TcpClient client = clientBase.copy();
                 int count = 0;
 
                 try {
                     client.open();
 
                     // wait for all works to be ready to start
-                    barrier.await();
+                    startBarrier.await();
 
                     final long start = System.currentTimeMillis();
 
@@ -264,9 +278,10 @@ public class Benchmark {
 
         try {
             // Wait for all benchmark worker threads to be ready
-            barrier.await();
+            startBarrier.await();
 
-            IO.sleep(duration * 1000L);
+            IO.sleep(duration * 1000L);  // test window
+
             stop.set(true);  // stop request for workers
 
             System.out.println("Aggregating results...");
@@ -337,17 +352,19 @@ public class Benchmark {
                                         ? String.format("%.1f", throughputMB)
                                         : String.format("%.0f", throughputMB);
 
-        final StringBuilder summary = new StringBuilder();
-        summary.append(String.format("Messages:         %d\n", msgCount));
-        summary.append(String.format("Payload size:     %d KB\n", msgSize / KB));
-        summary.append(String.format("Encryption:       %s\n", encrypt ? "on" : "off"));
-        summary.append(String.format("Compression:      %s\n", compress ? "on" : "off"));
-        summary.append(String.format("Connections:      %d\n", connections));
-        summary.append("------------------------------\n");
-        summary.append(String.format("Duration:         %.1f s\n", elapsedSec));
-        summary.append(String.format("Total bytes:      %.1f MB\n", transferredMB));
-        summary.append(String.format("Throughput msgs:  %s msg/s\n", sThroughputMsgs));
-        summary.append(String.format("Throughput bytes: %s MB/s\n", sThroughputMB));
+        final String summary = String.join(
+                "\n",
+                CollectionUtil.toList(
+                    String.format("Messages:         %d", msgCount),
+                    String.format("Payload size:     %d KB", msgSize / KB),
+                    String.format("Encryption:       %s", encrypt ? "on" : "off"),
+                    String.format("Compression:      %s", compress ? "on" : "off"),
+                    String.format("Connections:      %d", connections),
+                    "------------------------------",
+                    String.format("Duration:         %.1f s", elapsedSec),
+                    String.format("Total bytes:      %.1f MB", transferredMB),
+                    String.format("Throughput msgs:  %s msg/s", sThroughputMsgs),
+                    String.format("Throughput bytes: %s MB/s", sThroughputMB)));
 
         return VncHashMap.of(
                 new VncKeyword("message-count"),    new VncLong(msgCount),
@@ -359,7 +376,7 @@ public class Benchmark {
                 new VncKeyword("encrypt"),          VncBoolean.of(encrypt),
                 new VncKeyword("compress"),         VncBoolean.of(compress),
                 new VncKeyword("connections"),      new VncLong(connections),
-                new VncKeyword("summary"),          new VncString(summary.toString()));
+                new VncKeyword("summary"),          new VncString(summary));
     }
 
     private URI parseConnectionURI(final String uri) {

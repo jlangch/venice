@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
 import java.net.StandardSocketOptions;
-import java.net.URI;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -48,6 +47,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.ipc.AcknowledgeMode;
+import com.github.jlangch.venice.util.ipc.ClientConfig;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -65,21 +65,15 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 public class ClientConnection implements AutoCloseable {
 
     public ClientConnection(
-            final URI connURI,
-            final boolean useEncryption,
-            final AcknowledgeMode ackMode,
-            final int sndBufSize,
-            final int rcvBufSize,
+            final ClientConfig config,
             final String userName,
             final String password
     ) {
-        this.ackMode = ackMode;
-
         // [1] Open the connection to the server
         try {
-            channel = SocketChannelFactory.createSocketChannel(connURI);
-            if (sndBufSize > 0) channel.socket().setSendBufferSize(sndBufSize);
-            if (rcvBufSize > 0) channel.socket().setReceiveBufferSize(rcvBufSize);
+            channel = SocketChannelFactory.createSocketChannel(config.getConnURI());
+            if (config.getSndBufSize() > 0) channel.socket().setSendBufferSize(config.getSndBufSize());
+            if (config.getRcvBufSize() > 0) channel.socket().setReceiveBufferSize(config.getRcvBufSize());
             channel.configureBlocking(true);
 
             // TCP_NODELAY is absolutely mandatory on Linux to get high throughput
@@ -88,7 +82,7 @@ public class ClientConnection implements AutoCloseable {
         }
         catch(Exception ex) {
             throw new IpcException(
-                    "Failed to open connection to the server " + connURI + "!",
+                    "Failed to open connection to the server " + config.getConnURI() + "!",
                     ex);
         }
 
@@ -107,19 +101,19 @@ public class ClientConnection implements AutoCloseable {
             // [3] Request the client configuration from the server
             try {
                 // config
-                final VncMap config = getClientConfiguration(channel, ackMode);
-                final long srv_cutoffSize     = getLong(config, "compress-cutoff-size", -1);
-                final long srv_maxMessageSize = getLong(config, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
-                final boolean srv_encryption  = getBoolean(config, "encrypt", false);
-                final boolean srv_permitQMgmt = getBoolean(config, "permit-client-queue-mgmt", false);
-                final long srv_heartbeatInterval = getLong(config, "heartbeat-interval", 0);
-                final boolean srv_authentication = getBoolean(config, "authentication", false);
+                final VncMap cfg = getClientConfiguration(channel, config.getAckMode());
+                final long srv_cutoffSize     = getLong(cfg, "compress-cutoff-size", -1);
+                final long srv_maxMessageSize = getLong(cfg, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
+                final boolean srv_encryption  = getBoolean(cfg, "encrypt", false);
+                final boolean srv_permitQMgmt = getBoolean(cfg, "permit-client-queue-mgmt", false);
+                final long srv_heartbeatInterval = getLong(cfg, "heartbeat-interval", 0);
+                final boolean srv_authentication = getBoolean(cfg, "authentication", false);
 
                 maxMessageSize = srv_maxMessageSize;
                 permitClientQueueMgmt = srv_permitQMgmt;
                 heartbeatInterval = srv_heartbeatInterval;
                 compressor = new Compressor(srv_cutoffSize);
-                encrypt = useEncryption || srv_encryption;
+                encrypt = config.isEncrypt() || srv_encryption;
                 authentication = srv_authentication;
 
                 // Note: The server is enforcing the encryption if activated.
@@ -189,11 +183,6 @@ public class ClientConnection implements AutoCloseable {
 
             throw ex;
         }
-    }
-
-
-    public AcknowledgeMode getAcknowledgeMode() {
-        return ackMode;
     }
 
     public boolean isOpen() {
@@ -598,8 +587,6 @@ public class ClientConnection implements AutoCloseable {
     private static final long CLIENT_CONFIG_TIMEOUT  = 2_000;
     private static final long AUTHENTICATE_TIMEOUT   = 2_000;
     private static final long DIFFIE_HELLMAN_TIMEOUT = 2_000;
-
-    private final AcknowledgeMode ackMode;
 
     private final SocketChannel channel;
 

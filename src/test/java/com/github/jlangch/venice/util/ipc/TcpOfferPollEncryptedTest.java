@@ -34,17 +34,22 @@ public class TcpOfferPollEncryptedTest {
     @Test
     public void test_queue() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client1 = TcpClient.of(33333);
-        final TcpClient client2 = TcpClient.of(33333);
+        final TcpClient client1 = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
+        final TcpClient client2 = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
 
         server.createQueue("queue-1", 10, true, false);
 
         server.start();
 
         IO.sleep(300);
-
-        client1.setEncryption(true);
-        client2.setEncryption(true);
 
         client1.open();
         client2.open();

@@ -60,6 +60,8 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.Benchmark;
+import com.github.jlangch.venice.util.ipc.ClientConfig;
+import com.github.jlangch.venice.util.ipc.ClientConfig.Builder;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
@@ -449,11 +451,16 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
+                final Builder clientConfig = ClientConfig.builder();
+
                 if (args.size() == 1) {
                     // [port] or [conn-uri]
-                    final TcpClient client = createTcpClient(args.first());
-                    client.open();
-                    return new VncJavaObject(client);
+                    setConfigConnection(args.first(), clientConfig);
+                    return new VncJavaObject(
+                                        TcpClient
+                                              .of(clientConfig.build())
+                                              .open());
+
                 }
                 else if (args.size() == 2) {
                     // [host port]
@@ -462,9 +469,11 @@ public class IPCFunctions {
                                           : Coerce.toVncString(args.first()).getValue();
                     final int port = Coerce.toVncLong(args.second()).getIntValue();
 
-                    final TcpClient client = TcpClient.of(host, port);
-                    client.open();
-                    return new VncJavaObject(client);
+                    clientConfig.conn(host, port);
+                    return new VncJavaObject(
+                                          TcpClient
+                                                .of(clientConfig.build())
+                                                .open());
                 }
                 else {
                     // [host port & options] or [port & options] or [conn-uri & options]
@@ -473,7 +482,6 @@ public class IPCFunctions {
 
                     final boolean port_or_uri = Types.isVncLong(args.first()) || Types.isVncString(args.first());
 
-                    final TcpClient client;
                     final VncHashMap options;
 
                     if (host_and_port) {
@@ -483,11 +491,11 @@ public class IPCFunctions {
                                                 ? Coerce.toVncKeyword(args.first()).getSimpleName()
                                                 : Coerce.toVncString(args.first()).getValue();
                         final int port = Coerce.toVncLong(args.second()).getIntValue();
-                        client = TcpClient.of(host, port);
+                        clientConfig.conn(host, port);
                     }
                     else if (port_or_uri){
                         options = VncHashMap.ofAll(args.slice(1));
-                        client = createTcpClient(args.first());
+                        setConfigConnection(args.first(), clientConfig);
                     }
                     else {
                         throw new VncException(
@@ -507,12 +515,14 @@ public class IPCFunctions {
                     final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
                     final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
 
-                    client.setEncryption(encrypt);
-                    client.setSndRcvBufferSize(sndBufSize, rcvBufSize);
+                    clientConfig.sendBufferSize(sndBufSize);
+                    clientConfig.receiveBufferSize(rcvBufSize);
+                    clientConfig.encrypt(encrypt);
 
-                    client.open(user, pwd);
-
-                    return new VncJavaObject(client);
+                    return new VncJavaObject(
+                                    TcpClient
+                                          .of(clientConfig.build())
+                                          .open(user, pwd));
                 }
             }
 
@@ -3469,20 +3479,17 @@ public class IPCFunctions {
     }
 
 
-    private static TcpClient createTcpClient(final VncVal portOrConnURI) {
+    private static void setConfigConnection(
+                final VncVal portOrConnURI,
+                final Builder builder
+    ) {
         if (Types.isVncLong(portOrConnURI)) {
             final int port = Coerce.toVncLong(portOrConnURI).getIntValue();
-            return TcpClient.of(port);
+            builder.conn(port);
         }
         else if (Types.isVncString(portOrConnURI)) {
             final String connURI = Coerce.toVncString(portOrConnURI).getValue();
-
-            try {
-                return TcpClient.of(new URI(connURI));
-            }
-            catch(URISyntaxException ex) {
-                throw new VncException("Invalid ipc/client connection URI: " + connURI);
-            }
+            builder.connURI(connURI);
         }
         else {
             throw new VncException(

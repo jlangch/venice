@@ -37,15 +37,20 @@ public class TcpPubSubEncryptedTest {
     @Test
     public void test_pub_sub_1() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient clientSub = TcpClient.of(33333);
-        final TcpClient clientPub = TcpClient.of(33333);
+        final TcpClient clientSub = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
+        final TcpClient clientPub = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
 
         server.start();
 
         IO.sleep(300);
-
-        clientSub.setEncryption(true);
-        clientPub.setEncryption(true);
 
         clientSub.open();
         clientPub.open();
@@ -82,19 +87,30 @@ public class TcpPubSubEncryptedTest {
     @Test
     public void test_pub_sub_2() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient clientPub = TcpClient.of(33333);
-        final TcpClient clientSub1 = TcpClient.of(33333);
-        final TcpClient clientSub2 = TcpClient.of(33333);
-        final TcpClient clientSub3 = TcpClient.of(33333);
+        final TcpClient clientSub1 = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
+        final TcpClient clientSub2 = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
+        final TcpClient clientSub3 = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
+        final TcpClient clientPub = TcpClient.of(ClientConfig
+                                                    .builder()
+                                                    .conn(33333)
+                                                    .encrypt(true)
+                                                    .build());
 
         server.start();
 
         IO.sleep(300);
-
-        clientPub.setEncryption(true);
-        clientSub1.setEncryption(true);
-        clientSub2.setEncryption(true);
-        clientSub3.setEncryption(true);
 
         clientSub1.open();
         clientSub2.open();

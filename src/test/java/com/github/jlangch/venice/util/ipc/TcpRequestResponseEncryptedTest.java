@@ -44,13 +44,15 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_text() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final TcpClient client = TcpClient.of(ClientConfig
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
-
-        client.setEncryption(true);
 
         client.open();
 
@@ -76,13 +78,16 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_binary() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final TcpClient client = TcpClient.of(ClientConfig
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
 
-        client.setEncryption(true);
         client.open();
 
         try {
@@ -173,13 +178,16 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final TcpClient client = TcpClient.of(ClientConfig
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
 
-        client.setEncryption(true);
         client.open();
 
         try {
@@ -213,13 +221,16 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final TcpClient client = TcpClient.of(ClientConfig
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
 
-        client.setEncryption(true);
         client.open();
 
         try {
@@ -255,13 +266,16 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages_oneway() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final TcpClient client = TcpClient.of(ClientConfig
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
 
-        client.setEncryption(true);
         client.open();
 
         try {
@@ -287,13 +301,16 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages_mixed() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final TcpClient client = TcpClient.of(ClientConfig
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         server.start(TcpServer.echoHandler());
 
         IO.sleep(300);
 
-        client.setEncryption(true);
         client.open();
 
         try {
@@ -335,6 +352,12 @@ public class TcpRequestResponseEncryptedTest {
 
         IO.sleep(300);
 
+        final ClientConfig clientCfg = ClientConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .encrypt(true)
+                                            .build();
+
         try {
             final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
             es.setMaximumPoolSize(clients);
@@ -348,10 +371,9 @@ public class TcpRequestResponseEncryptedTest {
 
                 // run each client test as future
                 futures.add(es.submit(() -> {
-                    final TcpClient client = TcpClient.of(33333);
+                    final TcpClient client = TcpClient.of(clientCfg);
 
                     try {
-                        client.setEncryption(true);
                         client.open();
 
                         for(int msgIdx=1; msgIdx<=messagesPerClient; msgIdx++) {
@@ -404,7 +426,11 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_remote_code_execution() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final TcpClient client = TcpClient.of(ClientConfig
+                                                .builder()
+                                                .conn(33333)
+                                                .encrypt(true)
+                                                .build());
 
         final Venice venice = new Venice();
 
@@ -423,7 +449,6 @@ public class TcpRequestResponseEncryptedTest {
 
         IO.sleep(300);
 
-        client.setEncryption(true);
         client.open();
 
         try {
