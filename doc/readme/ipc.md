@@ -722,6 +722,11 @@ Create through 'server'
 
 Create through 'client':
 
+> [!NOTE]
+> By default the server allows clients to manage queues!
+>
+> This can be denied on production systems by a configuration on the server!
+
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
