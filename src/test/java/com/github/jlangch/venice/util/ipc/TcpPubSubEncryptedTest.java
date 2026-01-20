@@ -37,12 +37,12 @@ public class TcpPubSubEncryptedTest {
     @Test
     public void test_pub_sub_1() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient clientSub = TcpClient.of(ClientConfig
+        final Client clientSub = Client.of(ClientConfig
                                                     .builder()
                                                     .conn(33333)
                                                     .encrypt(true)
                                                     .build());
-        final TcpClient clientPub = TcpClient.of(ClientConfig
+        final Client clientPub = Client.of(ClientConfig
                                                     .builder()
                                                     .conn(33333)
                                                     .encrypt(true)
@@ -87,22 +87,22 @@ public class TcpPubSubEncryptedTest {
     @Test
     public void test_pub_sub_2() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient clientSub1 = TcpClient.of(ClientConfig
+        final Client clientSub1 = Client.of(ClientConfig
                                                     .builder()
                                                     .conn(33333)
                                                     .encrypt(true)
                                                     .build());
-        final TcpClient clientSub2 = TcpClient.of(ClientConfig
+        final Client clientSub2 = Client.of(ClientConfig
                                                     .builder()
                                                     .conn(33333)
                                                     .encrypt(true)
                                                     .build());
-        final TcpClient clientSub3 = TcpClient.of(ClientConfig
+        final Client clientSub3 = Client.of(ClientConfig
                                                     .builder()
                                                     .conn(33333)
                                                     .encrypt(true)
                                                     .build());
-        final TcpClient clientPub = TcpClient.of(ClientConfig
+        final Client clientPub = Client.of(ClientConfig
                                                     .builder()
                                                     .conn(33333)
                                                     .encrypt(true)

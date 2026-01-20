@@ -66,7 +66,7 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
-import com.github.jlangch.venice.util.ipc.TcpClient;
+import com.github.jlangch.venice.util.ipc.Client;
 import com.github.jlangch.venice.util.ipc.TcpServer;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
@@ -457,7 +457,7 @@ public class IPCFunctions {
                     // [port] or [conn-uri]
                     setConfigConnection(args.first(), clientConfig);
                     return new VncJavaObject(
-                                    TcpClient
+                                    Client
                                           .of(clientConfig.build())
                                           .open());
 
@@ -471,7 +471,7 @@ public class IPCFunctions {
 
                     clientConfig.conn(host, port);
                     return new VncJavaObject(
-                                  TcpClient
+                                  Client
                                         .of(clientConfig.build())
                                         .open());
                 }
@@ -520,7 +520,7 @@ public class IPCFunctions {
                     clientConfig.encrypt(encrypt);
 
                     return new VncJavaObject(
-                                    TcpClient
+                                    Client
                                           .of(clientConfig.build())
                                           .open(user, pwd));
                 }
@@ -567,9 +567,9 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
 
-                final TcpClient cloned = client.openClone();
+                final Client cloned = client.openClone();
 
                 return new VncJavaObject(cloned);
             }
@@ -609,8 +609,8 @@ public class IPCFunctions {
                 if (delegate instanceof TcpServer) {
                     return VncBoolean.of(((TcpServer)delegate).isRunning());
                 }
-                else if (delegate instanceof TcpClient) {
-                    return VncBoolean.of(((TcpClient)delegate).isRunning());
+                else if (delegate instanceof Client) {
+                    return VncBoolean.of(((Client)delegate).isRunning());
                 }
                 else {
                     throw new VncException(
@@ -670,9 +670,9 @@ public class IPCFunctions {
                     }
                     return Nil;
                 }
-                else if (delegate instanceof TcpClient) {
+                else if (delegate instanceof Client) {
                     try {
-                        ((TcpClient)delegate).close();
+                        ((Client)delegate).close();
                     }
                     catch(Exception ex) {
                         throw new VncException("Failed to close IPC client", ex);
@@ -920,7 +920,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                 final IMessage request = Coerce.toVncJavaObject(args.nth(1), IMessage.class);
 
                 final IMessage response = client.sendMessage(request);
@@ -1021,7 +1021,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                 final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
 
                 return new VncJavaObject(
@@ -1076,7 +1076,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                 final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
 
                 client.sendMessageOneway(request);
@@ -1147,7 +1147,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 3);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                 final VncVal topicVal = args.nth(1);
                 final VncFunction handler = Coerce.toVncFunction(args.nth(2));
 
@@ -1251,7 +1251,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                 final VncVal topicVal = args.nth(1);
 
                 final HashSet<String> topics = new HashSet<>();
@@ -1341,7 +1341,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                 final IMessage request =  Coerce.toVncJavaObject(args.nth(1), IMessage.class);
 
                 final IMessage response = client.publish(request);
@@ -1410,7 +1410,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                 final IMessage request =  Coerce.toVncJavaObject(args.nth(1), IMessage.class);
 
                 return new VncJavaObject(
@@ -1494,7 +1494,7 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 4, 5);
 
                 if (args.size() == 4) {
-                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                     final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
                     final String replyToQueueName = null;
                     final long timeout = Coerce.toVncLong(args.nth(2)).toJavaLong();
@@ -1503,7 +1503,7 @@ public class IPCFunctions {
                     return new VncJavaObject(client.offer(request, queueName, replyToQueueName, timeout));
                 }
                 else {
-                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                     final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
                     final String replyToQueueName = args.nth(2) == Nil ? null : StringUtil.trimToNull(Coerce.toVncString(args.nth(2)).getValue());
                     final long timeout = Coerce.toVncLong(args.nth(3)).toJavaLong();
@@ -1585,7 +1585,7 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 4, 5);
 
                 if (args.size() == 4) {
-                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                     final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
                     final String replyToQueueName = null;
                     final long timeout = Coerce.toVncLong(args.nth(2)).toJavaLong();
@@ -1596,7 +1596,7 @@ public class IPCFunctions {
                                 client.offerAsync(request, queueName, replyToQueueName, timeout)));
                 }
                 else {
-                    final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                    final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                     final String queueName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
                     final String replyToQueueName = args.nth(2) == Nil ? null : StringUtil.trimToNull(Coerce.toVncString(args.nth(2)).getValue());
                     final long timeout = Coerce.toVncLong(args.nth(3)).toJavaLong();
@@ -1675,7 +1675,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 3);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
                 final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
 
@@ -1750,7 +1750,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 3);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
                 final long timeout = Coerce.toVncLong(args.third()).toJavaLong();
 
@@ -1796,7 +1796,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
@@ -1853,7 +1853,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.nth(0), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
 
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
@@ -2948,7 +2948,7 @@ public class IPCFunctions {
 
                 final IMessage request = Coerce.toVncJavaObject(args.first(), IMessage.class);
 
-                final Map<String, Integer> info = TcpClient.msgSize(request);
+                final Map<String, Integer> info = Client.msgSize(request);
 
                 return VncOrderedMap.of(
                         new VncKeyword("header"),       new VncLong(info.get("header")),
@@ -3191,8 +3191,8 @@ public class IPCFunctions {
                     }
                     return Nil;
                 }
-                else  if (Types.isVncJavaObject(args.first(), TcpClient.class)) {
-                    final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                    final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
 
@@ -3294,7 +3294,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                 final int capacity = (int)Coerce.toVncLong(args.second()).toJavaLong();
 
                 return new VncString(client.createTemporaryQueue(capacity));
@@ -3340,8 +3340,8 @@ public class IPCFunctions {
                     server.removeQueue(name);
                     return Nil;
                 }
-                else  if (Types.isVncJavaObject(args.first(), TcpClient.class)) {
-                    final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                    final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     client.removeQueue(name);
                     return Nil;
@@ -3390,8 +3390,8 @@ public class IPCFunctions {
                     final String name = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(server.existsQueue(name));
                 }
-                else  if (Types.isVncJavaObject(args.first(), TcpClient.class)) {
-                    final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                    final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(client.existsQueue(name));
                 }
@@ -3443,7 +3443,7 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final TcpClient client = Coerce.toVncJavaObject(args.first(), TcpClient.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
                 return client.getQueueStatusAsVncMap(name);
             }

@@ -55,33 +55,33 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
  *
  * <p>This class is thread-safe!
  */
-public class TcpClient implements Cloneable, AutoCloseable {
+public class Client implements Cloneable, AutoCloseable {
 
 
-    private TcpClient(final ClientConfig config) {
+    private Client(final ClientConfig config) {
         Objects.requireNonNull(config);
         this.config = config;
         this.endpointId = UUID.randomUUID().toString();
     }
 
 
-    public static TcpClient of(final ClientConfig config) {
+    public static Client of(final ClientConfig config) {
         Objects.requireNonNull(config);
-        return new TcpClient(config);
+        return new Client(config);
     }
 
-    public static TcpClient of(final int port) {
-        return new TcpClient(ClientConfig.of(port));
+    public static Client of(final int port) {
+        return new Client(ClientConfig.of(port));
     }
 
 
-    public TcpClient copy() {
-        final TcpClient client = new TcpClient(config);
+    public Client copy() {
+        final Client client = new Client(config);
         return client;
     }
 
-    public TcpClient openClone() {
-        final TcpClient client = new TcpClient(config);
+    public Client openClone() {
+        final Client client = new Client(config);
         if (u != null && p != null) {
             client.open(String.valueOf(u), String.valueOf(p));
         }
@@ -186,7 +186,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
      *
      * @return this client
      */
-    public TcpClient open() {
+    public Client open() {
         return open(null, null);
     }
 
@@ -197,7 +197,7 @@ public class TcpClient implements Cloneable, AutoCloseable {
      * @param password authentication password
      * @return this client
      */
-    public TcpClient open(final String userName, final String password) {
+    public Client open(final String userName, final String password) {
         if (userName != null && password == null) {
             throw new IpcException("Authentication requires both a user name and a password!");
         }

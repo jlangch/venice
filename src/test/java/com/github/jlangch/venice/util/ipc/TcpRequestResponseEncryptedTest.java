@@ -44,7 +44,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_text() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(ClientConfig
+        final Client client = Client.of(ClientConfig
                                                 .builder()
                                                 .conn(33333)
                                                 .encrypt(true)
@@ -78,7 +78,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_binary() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(ClientConfig
+        final Client client = Client.of(ClientConfig
                                                 .builder()
                                                 .conn(33333)
                                                 .encrypt(true)
@@ -114,7 +114,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_text_enforced_encryption() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final Client client = Client.of(33333);
 
         server.setEncryption(true);
         server.start(TcpServer.echoHandler());
@@ -145,7 +145,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_binary_enforced_encryption() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final Client client = Client.of(33333);
 
         server.setEncryption(true);
         server.start(TcpServer.echoHandler());
@@ -178,7 +178,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_binary_integrity_check() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(ClientConfig
+        final Client client = Client.of(ClientConfig
                                                 .builder()
                                                 .conn(33333)
                                                 .encrypt(true)
@@ -221,7 +221,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(ClientConfig
+        final Client client = Client.of(ClientConfig
                                                 .builder()
                                                 .conn(33333)
                                                 .encrypt(true)
@@ -266,7 +266,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages_oneway() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(ClientConfig
+        final Client client = Client.of(ClientConfig
                                                 .builder()
                                                 .conn(33333)
                                                 .encrypt(true)
@@ -301,7 +301,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_echo_server_multiple_messages_mixed() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(ClientConfig
+        final Client client = Client.of(ClientConfig
                                                 .builder()
                                                 .conn(33333)
                                                 .encrypt(true)
@@ -371,7 +371,7 @@ public class TcpRequestResponseEncryptedTest {
 
                 // run each client test as future
                 futures.add(es.submit(() -> {
-                    final TcpClient client = TcpClient.of(clientCfg);
+                    final Client client = Client.of(clientCfg);
 
                     try {
                         client.open();
@@ -426,7 +426,7 @@ public class TcpRequestResponseEncryptedTest {
     @Test
     public void test_remote_code_execution() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(ClientConfig
+        final Client client = Client.of(ClientConfig
                                                 .builder()
                                                 .conn(33333)
                                                 .encrypt(true)

@@ -34,8 +34,8 @@ public class TcpReplyQueueTest {
     @Test
     public void test_reply_queue() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client1 = TcpClient.of(33333);
-        final TcpClient client2 = TcpClient.of(33333);
+        final Client client1 = Client.of(33333);
+        final Client client2 = Client.of(33333);
 
         server.createQueue("queue/1", 10, true, false);
 

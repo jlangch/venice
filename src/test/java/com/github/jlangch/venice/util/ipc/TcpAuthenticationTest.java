@@ -35,7 +35,7 @@ public class TcpAuthenticationTest {
     @Test
     public void test_auth_ok() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final Client client = Client.of(33333);
 
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("usr-1", "test-1");
@@ -72,7 +72,7 @@ public class TcpAuthenticationTest {
     @Test
     public void test_auth_failure_1() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final Client client = Client.of(33333);
 
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("usr-1", "test-1");
@@ -107,7 +107,7 @@ public class TcpAuthenticationTest {
     @Test
     public void test_auth_failure_2() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client = TcpClient.of(33333);
+        final Client client = Client.of(33333);
 
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("usr-1", "test-1");

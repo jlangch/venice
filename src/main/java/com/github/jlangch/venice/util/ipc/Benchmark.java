@@ -167,7 +167,7 @@ public class Benchmark {
                                         .receiveBufferSize(rcvBufSize)
                                         .build();
 
-        try(TcpClient client = TcpClient.of(config)) {
+        try(Client client = Client.of(config)) {
             client.open();
 
             // Ramp-Up phase
@@ -201,7 +201,7 @@ public class Benchmark {
         }
     }
 
-    private VncHashMap benchmark(final TcpClient client, final byte[] payload) {
+    private VncHashMap benchmark(final Client client, final byte[] payload) {
         final long start = System.currentTimeMillis();
         final long end = start + duration * 1000L;
 
@@ -225,7 +225,7 @@ public class Benchmark {
         return computeStatistics(client, 1, count, msgSize,  elapsed);
     }
 
-    private VncHashMap benchmark(final TcpClient clientBase, final int clientCount, final byte[] payload) {
+    private VncHashMap benchmark(final Client clientBase, final int clientCount, final byte[] payload) {
         System.out.println("Connections: " + clientCount);
 
         final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
@@ -238,7 +238,7 @@ public class Benchmark {
         for(int cc=1; cc<=clientCount; cc++) {
             // start workers
             futures.add(es.submit(() -> {
-                final TcpClient client = clientBase.copy();
+                final Client client = clientBase.copy();
                 int count = 0;
 
                 try {
@@ -309,7 +309,7 @@ public class Benchmark {
         }
     }
 
-    private void rampUp(final TcpClient client, final byte[] payload) {
+    private void rampUp(final Client client, final byte[] payload) {
         final long end = System.currentTimeMillis() + rampUpDuration * 1000L;
 
         while(true) {
@@ -331,7 +331,7 @@ public class Benchmark {
     }
 
     private VncHashMap computeStatistics(
-            final TcpClient client,
+            final Client client,
             final int connections,
             final long msgCount,
             final long payloadSize,

@@ -40,8 +40,8 @@ public class TcpTempQueueTest {
     @Test
     public void test_temp_queue_1() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client1 = TcpClient.of(33333);
-        final TcpClient client2 = TcpClient.of(33333);
+        final Client client1 = Client.of(33333);
+        final Client client2 = Client.of(33333);
 
         server.createQueue("queue/1", 10, true, false);
         server.createQueue("queue/2", 10, true, false);
@@ -147,8 +147,8 @@ public class TcpTempQueueTest {
     @Test
     public void test_temp_queue_2() throws Exception {
         final TcpServer server = TcpServer.of(33333);
-        final TcpClient client1 = TcpClient.of(33333);
-        final TcpClient client2 = TcpClient.of(33333);
+        final Client client1 = Client.of(33333);
+        final Client client2 = Client.of(33333);
 
         server.start();
 
