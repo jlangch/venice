@@ -113,7 +113,7 @@ public class ClientConnection implements AutoCloseable {
                 permitClientQueueMgmt = srv_permitQMgmt;
                 heartbeatInterval = srv_heartbeatInterval;
                 compressor = new Compressor(srv_cutoffSize);
-                encrypt = config.isEncrypt() || srv_encryption;
+                encrypt = config.isEncrypting() || srv_encryption;
                 authentication = srv_authentication;
 
                 // Note: The server is enforcing the encryption if activated.

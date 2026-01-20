@@ -457,9 +457,9 @@ public class IPCFunctions {
                     // [port] or [conn-uri]
                     setConfigConnection(args.first(), clientConfig);
                     return new VncJavaObject(
-                                        TcpClient
-                                              .of(clientConfig.build())
-                                              .open());
+                                    TcpClient
+                                          .of(clientConfig.build())
+                                          .open());
 
                 }
                 else if (args.size() == 2) {
@@ -471,9 +471,9 @@ public class IPCFunctions {
 
                     clientConfig.conn(host, port);
                     return new VncJavaObject(
-                                          TcpClient
-                                                .of(clientConfig.build())
-                                                .open());
+                                  TcpClient
+                                        .of(clientConfig.build())
+                                        .open());
                 }
                 else {
                     // [host port & options] or [port & options] or [conn-uri & options]

@@ -50,7 +50,7 @@ public class ClientConfig {
         return connURI;
     }
 
-    public boolean isEncrypt() {
+    public boolean isEncrypting() {
         return encrypt;
     }
 
@@ -131,7 +131,7 @@ public class ClientConfig {
          * <p>AF_UNIX
          * af-unix:///path/to/your/socket.sock
          *
-         * @param connUri a connection URI
+         * @param connURI a connection URI
          * @return this builder
          */
         public Builder connURI(final String connURI) {
@@ -161,7 +161,7 @@ public class ClientConfig {
          * <p>AF_UNIX
          * af-unix:///path/to/your/socket.sock
          *
-         * @param connUri a connection URI
+         * @param connURI a connection URI
          * @return this builder
          */
         public Builder connURI(final URI connURI) {
