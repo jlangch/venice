@@ -798,8 +798,8 @@ public class TcpServer implements AutoCloseable {
 
     private static final int MAX_POOL_THREADS = 21; // need one extra thread for the connection manager
 
-    public static final long QUEUES_MIN =  1;
-    public static final long QUEUES_MAX = 20;
+    public static final int QUEUES_MIN =  1;
+    public static final int QUEUES_MAX = 20;
 
     private final URI connURI;
     private final String endpointId;
