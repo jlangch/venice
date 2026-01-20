@@ -1082,7 +1082,9 @@ MacBook Air M2, MacOS 26
 
  
 
-**AF_INET** tcp/ip sockets, single connection, single thread
+**AF_INET** tcp/ip sockets
+
+*Java 8, single connection, single thread*
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--        | :--       | :--       |
@@ -1091,7 +1093,9 @@ MacBook Air M2, MacOS 26
 
  
 
-**AF_UNIX** Unix domain sockets: default socket snd/rcv buffer size, single connection, single thread
+**AF_UNIX** Unix domain sockets
+
+*Java 8, default socket snd/rcv buffer size, single connection, single thread*
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--        | :--       | :--       |
@@ -1100,7 +1104,9 @@ MacBook Air M2, MacOS 26
 
  
 
-**AF_UNIX** Unix domain sockets: 1MB socket snd/rcv buffer size, single connection, single thread
+**AF_UNIX** Unix domain sockets
+
+*Java 8, 1MB socket snd/rcv buffer size, single connection, single thread*
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--        | :--       | :--       |
@@ -1115,7 +1121,9 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
 
  
 
-**AF_INET** tcp/ip sockets, single connection, single thread
+**AF_INET** tcp/ip sockets
+
+*Java 8, single connection, single thread*
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--        | :--       | :--       |
