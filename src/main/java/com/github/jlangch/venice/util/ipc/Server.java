@@ -65,8 +65,13 @@ public class Server implements AutoCloseable {
 
     private Server(final ServerConfig config) {
         Objects.requireNonNull(config);
+
         this.config = config;
         this.endpointId = UUID.randomUUID().toString();
+
+        authenticator = config.getAuthenticator();
+        compressor = new Compressor(config.getCompressCutoffSize());
+        logger.enable(config.getLogDir());
     }
 
 
@@ -154,13 +159,10 @@ public class Server implements AutoCloseable {
 
         // configuration
         mngdExecutor.setMaximumThreadPoolSize(config.getMaxConnections() + 1);
-        authenticator.set(config.getAuthenticator());
-        compressor.set(new Compressor(config.getCompressCutoffSize()));
-        logger.enable(config.getLogDir());
         if (config.getWalDir() != null) {
             wal.activate(config.getWalDir(), config.isWalCompress(), config.isWalCompactAtStart());
         }
-        if (authenticator.get().isActive() && !config.isEncrypting()) {
+        if (authenticator.isActive() && !config.isEncrypting()) {
             throw new IpcException(
                     "Please enable encryption with an active authenticator to securely "
                     + "transfer the credentials freom a client to the server!");
@@ -225,7 +227,7 @@ public class Server implements AutoCloseable {
                                                                    this,
                                                                    channel,
                                                                    connId,
-                                                                   authenticator.get(),
+                                                                   authenticator,
                                                                    logger,
                                                                    handler,
                                                                    config.getMaxMessageSize(),
@@ -237,7 +239,7 @@ public class Server implements AutoCloseable {
                                                                    publishQueueCapacity,
                                                                    p2pQueues,
                                                                    config.isEncrypting(),
-                                                                   compressor.get(),
+                                                                   compressor,
                                                                    statistics,
                                                                    () -> mngdExecutor.info());
 
@@ -506,25 +508,21 @@ public class Server implements AutoCloseable {
     private static final int MAX_POOL_THREADS_DEFAULT = MAX_CONNECTIONS_DEFAULT + 1;
 
 
-    private final ServerConfig config;
-
     private final String endpointId;
+    private final ServerConfig config;
+    private final Authenticator authenticator;
+    private final Compressor compressor;
+
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicReference<ServerSocketChannel> server = new AtomicReference<>();
     private final AtomicLong connectionId = new AtomicLong(0);
-    private final AtomicReference<Authenticator> authenticator = new AtomicReference<>(new Authenticator(false));
-    private final WalQueueManager wal = new WalQueueManager();
+
     private final int publishQueueCapacity = 50;
+    private final WalQueueManager wal = new WalQueueManager();
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
     private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
-
-
-    // logger
     private final ServerLogger logger = new ServerLogger();
-
-    // compression
-    private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor(

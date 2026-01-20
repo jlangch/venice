@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -114,7 +113,7 @@ public class Client implements Cloneable, AutoCloseable {
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
-        return conn.get().isEncrypted();
+        return conn.isEncrypted();
     }
 
     /**
@@ -127,7 +126,7 @@ public class Client implements Cloneable, AutoCloseable {
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
-        return conn.get().isCompressing();
+        return conn.isCompressing();
     }
 
     /**
@@ -140,7 +139,7 @@ public class Client implements Cloneable, AutoCloseable {
                    "Wait until the client has been opened to get the encryption mode!");
         }
 
-        return conn.get().isPermitClientQueueMgmt();
+        return conn.isPermitClientQueueMgmt();
     }
 
     /**
@@ -152,7 +151,7 @@ public class Client implements Cloneable, AutoCloseable {
                    "Wait until the client has been opened to get the compression cutoff size!");
         }
 
-        return conn.get().getCompressCutoffSize();
+        return conn.getCompressCutoffSize();
     }
 
     /**
@@ -164,21 +163,21 @@ public class Client implements Cloneable, AutoCloseable {
                    "Wait until the client has been opened to get the max message size!");
         }
 
-        return conn.get().getMaxMessageSize();
+        return conn.getMaxMessageSize();
     }
 
     /**
      * @return return the client's message send count
      */
     public long getMessageSendCount() {
-       return opened.get() ? conn.get().getMessageSendCount() : 0L;
+       return opened.get() ? conn.getMessageSendCount() : 0L;
     }
 
     /**
      * @return return the client's message receive count
      */
     public long getMessageReceiveCount() {
-       return opened.get() ? conn.get().getMessageReceiveCount() : 0L;
+       return opened.get() ? conn.getMessageReceiveCount() : 0L;
     }
 
     /**
@@ -208,8 +207,7 @@ public class Client implements Cloneable, AutoCloseable {
         if (opened.compareAndSet(false, true)) {
             ClientConnection c = null;
             try {
-                c = new ClientConnection(config, userName, password);
-                conn.set(c);
+                conn = new ClientConnection(config, userName, password);
 
                 this.u = userName == null ? null : userName.toCharArray();
                 this.p = password == null ? null : password.toCharArray();
@@ -219,7 +217,7 @@ public class Client implements Cloneable, AutoCloseable {
             catch(Exception ex) {
                 IO.safeClose(c);
                 opened.set(false);
-                conn.set(null);
+                conn = null;
                 throw new IpcException(
                         "Failed to open client for server " + config.getConnURI() + "!",
                         ex);
@@ -234,8 +232,7 @@ public class Client implements Cloneable, AutoCloseable {
      * @return <code>true</code> if the client is running else <code>false</code>
      */
     public boolean isRunning() {
-       final ClientConnection c = conn.get();
-       return c != null && c.isOpen();
+       return conn != null && conn.isOpen();
     }
 
     /**
@@ -246,8 +243,8 @@ public class Client implements Cloneable, AutoCloseable {
         if (opened.compareAndSet(true, false)) {
             IO.sleep(100);
 
-            IO.safeClose(conn.get());
-            conn.set(null);
+            IO.safeClose(conn);
+            conn = null;
         }
     }
 
@@ -363,12 +360,11 @@ public class Client implements Cloneable, AutoCloseable {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final ClientConnection c = conn.get();
-        if (c == null || !c.isOpen()) {
+        if (conn == null || !conn.isOpen()) {
             throw new IpcException("This client is not open!");
         }
 
-        c.addSubscriptionHandler(topics, handler);
+        conn.addSubscriptionHandler(topics, handler);
 
         final Message m = createSubscribeRequestMessage(topics, getEndpointId());
         return send(m);
@@ -407,12 +403,11 @@ public class Client implements Cloneable, AutoCloseable {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final ClientConnection c = conn.get();
-        if (c == null || !c.isOpen()) {
+        if (conn == null || !conn.isOpen()) {
             throw new IpcException("This client is not open!");
         }
 
-        c.removeSubscriptionHandler(topics);
+        conn.removeSubscriptionHandler(topics);
 
         final Message m = createUnsubscribeRequestMessage(topics, getEndpointId());
         return send(m);
@@ -1052,7 +1047,7 @@ public class Client implements Cloneable, AutoCloseable {
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        final ClientConnection c = conn.get();
+        final ClientConnection c = conn;
         if (c == null || !c.isOpen()) {
             throw new IpcException("This client is not open!");
         }
@@ -1070,7 +1065,7 @@ public class Client implements Cloneable, AutoCloseable {
         Objects.requireNonNull(msg);
 
 
-        final ClientConnection c = conn.get();
+        final ClientConnection c = conn;
         if (c == null || !c.isOpen()) {
             throw new IpcException("This client is not open!");
         }
@@ -1100,7 +1095,7 @@ public class Client implements Cloneable, AutoCloseable {
     }
 
     private Message getClientThreadPoolStatistics() {
-        final VncMap statistics = conn.get().getThreadPoolStatistics();
+        final VncMap statistics = conn.getThreadPoolStatistics();
 
         return new Message(
                 null,
@@ -1239,5 +1234,5 @@ public class Client implements Cloneable, AutoCloseable {
     private final ClientConfig config;
 
     private final AtomicBoolean opened = new AtomicBoolean(false);
-    private final AtomicReference<ClientConnection> conn = new AtomicReference<>();
+    private volatile ClientConnection conn = null;
 }
