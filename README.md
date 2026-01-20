@@ -117,7 +117,7 @@ Venice requires Java 8 or newer.
 **Modules**
 
 * [Cryptography](doc/readme/cryptography.md)
-* [Inter-Process-Communication](doc/readme/ipc.md)
+* [Inter-Process-Communication (Messaging)](doc/readme/ipc.md)
 * [Docker](doc/readme/docker.md)
 * [Kira Templates](doc/readme/ext-kira.md)
 * [Parsifal Parser Combinator](doc/readme/ext-parsifal.md)

@@ -1,4 +1,4 @@
-# Inter-Process-Communication
+# Inter-Process-Communication (Messaging)
 
 
 Venice Inter-Process-Communication (IPC) is a Venice API that allows applications to send and receive messages. It enables asynchronous and loosely coupled communication, making it ideal for distributed applications. 
@@ -722,11 +722,6 @@ Create through 'server'
 
 Create through 'client':
 
-> [!NOTE]
-> By default the server allows clients to manage queues!
->
-> This can be denied on production systems by a configuration on the server!
-
 ```clojure
 (do
   (try-with [server (ipc/server 33333)
@@ -739,6 +734,20 @@ Create through 'client':
 
     (ipc/offer client "queue/2" 300 
                (ipc/plain-text-message "2" "test" "hello"))))
+```
+
+> [!NOTE]
+> By default the server allows clients to manage queues!
+>
+> This can be denied on production systems by a configuration on the server!
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333 :permit-client-queue-mgmt false)
+             client (ipc/client 33333)]
+    
+    ;; causes an exception now
+    (ipc/create-queue client "queue/1" 100 :bounded)))
 ```
 
 #### Create Bounded Durable Queues
