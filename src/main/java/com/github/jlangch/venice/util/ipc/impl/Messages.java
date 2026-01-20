@@ -24,16 +24,19 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 public abstract class Messages {
 
+    private static int KB = 1024;
+    private static int MB = KB * KB;
+
     // Message limit
-    public static final long MESSAGE_LIMIT_MIN     = 2 * 1024;            //   2 KB
-    public static final long MESSAGE_LIMIT_MAX     = 250 * 1024 * 1024;   // 250 MB
-    public static final long MESSAGE_LIMIT_DEFAULT = 20 * 1024 * 1024;    //  20 MB
+    public static final long MESSAGE_LIMIT_MIN     =   2 * KB;   //   2 KB
+    public static final long MESSAGE_LIMIT_MAX     = 250 * MB;   // 250 MB
+    public static final long MESSAGE_LIMIT_DEFAULT =  20 * MB;   //  20 MB
 
     // Message timeout
-    public static final long EXPIRES_NEVER = -1L;
-    public static final long NO_TIMEOUT = -1L;
+    public static final long EXPIRES_NEVER   = -1L;
+    public static final long NO_TIMEOUT      = -1L;
     public static final long DEFAULT_TIMEOUT = 300L;  // 300ms
-    public static final long ZERO_TIMEOUT = 0L;  // 0ms
+    public static final long ZERO_TIMEOUT    = 0L;    //   0ms
 
     // Queues
     public static final long QUEUENAME_MAX_LEN = 100;
@@ -48,9 +51,9 @@ public abstract class Messages {
     public static final String TOPIC_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
 
     public static final String TOPIC_DIFFIE_HELLMANN = "dh";
-    public static final String TOPIC_AUTHENTICATION = "authentication";
-    public static final String TOPIC_HEARTBEAT = "heartbeat";
-    public static final String TOPIC_TEST = "T";
+    public static final String TOPIC_AUTHENTICATION  = "authentication";
+    public static final String TOPIC_HEARTBEAT       = "heartbeat";
+    public static final String TOPIC_TEST            = "T";
 
 
     // Client requests

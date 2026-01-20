@@ -152,15 +152,13 @@ public class Server implements AutoCloseable {
     public void start(final Function<IMessage,IMessage> handler) {
         Objects.requireNonNull(handler);
 
-        // cofiguration
+        // configuration
         mngdExecutor.setMaximumThreadPoolSize(config.getMaxConnections() + 1);
         authenticator.set(config.getAuthenticator());
         compressor.set(new Compressor(config.getCompressCutoffSize()));
+        logger.enable(config.getLogDir());
         if (config.getWalDir() != null) {
             wal.activate(config.getWalDir(), config.isWalCompress(), config.isWalCompactAtStart());
-        }
-        if (config.getLogDir() != null) {
-            logger.enable(config.getLogDir());
         }
         if (authenticator.get().isActive() && !config.isEncrypting()) {
             throw new IpcException(
@@ -499,11 +497,14 @@ public class Server implements AutoCloseable {
     }
 
 
-
-    private static final int MAX_POOL_THREADS = 21; // need one extra thread for the connection manager
-
     public static final int QUEUES_MIN =  1;
     public static final int QUEUES_MAX = 20;
+
+    public static final int MAX_CONNECTIONS_DEFAULT = 20;
+
+    // need one extra thread for the connection manager
+    private static final int MAX_POOL_THREADS_DEFAULT = MAX_CONNECTIONS_DEFAULT + 1;
+
 
     private final ServerConfig config;
 
@@ -526,5 +527,7 @@ public class Server implements AutoCloseable {
     private final AtomicReference<Compressor> compressor = new AtomicReference<>(Compressor.off());
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =
-            new ManagedCachedThreadPoolExecutor("venice-ipcserver-pool", MAX_POOL_THREADS);
+            new ManagedCachedThreadPoolExecutor(
+                    "venice-ipcserver-pool",
+                    MAX_POOL_THREADS_DEFAULT);
 }

@@ -442,7 +442,7 @@ public class ServerConfig {
         private int maxQueues = Server.QUEUES_MAX;
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
-        private int maxConnections = MAX_CONNECTIONS;
+        private int maxConnections = Server.MAX_CONNECTIONS_DEFAULT;
         private Authenticator authenticator = new Authenticator(false);
         private boolean permitClientQueueMgmt = true;
         private int heartbeatIntervalSeconds;
@@ -452,8 +452,6 @@ public class ServerConfig {
         private File logDir;
     }
 
-
-    public static final int MAX_CONNECTIONS = 20;
 
     private final URI connURI;
     private final boolean encrypt;
