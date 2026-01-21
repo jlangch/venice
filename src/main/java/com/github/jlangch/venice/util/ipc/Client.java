@@ -613,7 +613,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 Messages.EXPIRES_NEVER,
-                                Topics.of(Messages.TOPIC_TEST),
+                                TOPICS_TEST,
                                 "application/octet-stream",
                                 null,
                                 payload);
@@ -1225,6 +1225,9 @@ public class Client implements Cloneable, AutoCloseable {
     private static byte[] toBytes(final String s, final String charset) {
         return s.getBytes(Charset.forName(charset));
     }
+
+
+    private static final Topics TOPICS_TEST = Topics.of(Messages.TOPIC_TEST);
 
     private volatile char[] u = null;
     private volatile char[] p = null;

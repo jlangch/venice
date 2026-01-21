@@ -153,7 +153,7 @@ public class Protocol {
 
         // [2] payload meta data (optionally encrypt)
         if (encryptor.isActive()) {
-            final byte[] headerAAD = header.array(); ; // GCM AAD: added authenticated data
+            final byte[] headerAAD = header.array();  // GCM AAD: added authenticated data
             final byte[] metaData = encryptor.encrypt(payloadMetaData, headerAAD);
             ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(metaData));
         }

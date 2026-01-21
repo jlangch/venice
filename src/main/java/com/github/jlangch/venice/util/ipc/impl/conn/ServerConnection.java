@@ -1023,7 +1023,9 @@ public class ServerConnection implements IPublisher, Runnable {
                 topics,
                 "text/plain",
                 "UTF-8",
-                toBytes(text, "UTF-8"));
+                text == null || text.isEmpty()
+                    ? new byte[0]
+                    : toBytes(text, "UTF-8"));
     }
 
     // ------------------------------------------------------------------------
