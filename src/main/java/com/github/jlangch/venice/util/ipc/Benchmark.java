@@ -45,52 +45,52 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 // --------------------------------------------------------------------------------------------------
 //
 // AF_INET tcp/ip sockets
-//         default socket snd/rcv buffer size, single connection, single thread
+//       default socket snd/rcv buffer size, single connection, single thread
 //
-//+-------------------------------------------------------------------------------------------------+
-//| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
-//+-------------------------------------------------------------------------------------------------+
-//| Throughput msgs  | 22624 msg/s | 16178 msg/s | 6901 msg/s  | 1082 msg/s | 95 msg/s  | 22 msg/s  |
-//| Throughput bytes | 110 MB/s    | 790 MB/s    | 3370 MB/s   | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
-//+-------------------------------------------------------------------------------------------------+
+// +-------------------------------------------------------------------------------------------------+
+// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+// +-------------------------------------------------------------------------------------------------+
+// | Throughput msgs  | 22624 msg/s | 17591 msg/s | 8678 msg/s  | 1506 msg/s | 122 msg/s | 29 msg/s  |
+// | Throughput bytes | 110 MB/s    | 859 MB/s    | 4237 MB/s   | 7500 MB/s  | 6104 MB/s | 5754 MB/s |
+// +-------------------------------------------------------------------------------------------------+
 //
-//+-------------------------------------------------------------------------------------------------------+
-//| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 5 conn      | 10 conn     |
-//+-------------------------------------------------------------------------------------------------------+
-//| Throughput msgs   | 22624 msg/s | 42244 msg/s | 54505 msg/s | 51247 msg/s | 48045 msg/s | 47926 msg/s |
-//| Throughput bytes  | 110 MB/s    | 206 MB/s    | 266 MB/s    | 250 MB/s    | 235 MB/s    | 234 MB/s    |
-//+-------------------------------------------------------------------------------------------------------+
+// +-------------------------------------------------------------------------------------------------------+
+// | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 5 conn      | 10 conn     |
+// +-------------------------------------------------------------------------------------------------------+
+// | Throughput msgs   | 22624 msg/s | 42244 msg/s | 54505 msg/s | 52071 msg/s | 48858 msg/s | 48786 msg/s |
+// | Throughput bytes  | 110 MB/s    | 206 MB/s    | 266 MB/s    | 254 MB/s    | 239 MB/s    | 23 MB/s    |
+// +-------------------------------------------------------------------------------------------------------+
 //
 //
 // AF_UNIX Unix domain sockets
-//         default socket snd/rcv buffer size, single connection, single thread
+//       default socket snd/rcv buffer size, single connection, single thread
 //
 // +------------------------------------------------------------------------------------------------+
 // | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
 // +------------------------------------------------------------------------------------------------+
-// | Throughput msgs  | 33597 msg/s | 18618 msg/s | 3577 msg/s  | 6 msg/s   | - msg/s   | - msg/s   |
-// | Throughput bytes | 164 MB/s    | 909 MB/s    | 1747 MB/s   | 31 MB/s   | - MB/s    | - MB/s    |
+// | Throughput msgs  | 35188 msg/s | 18618 msg/s | 3681 msg/s  | 6 msg/s   | - msg/s   | - msg/s   |
+// | Throughput bytes | 172 MB/s    | 909 MB/s    | 1798 MB/s   | 31 MB/s   | - MB/s    | - MB/s    |
 // +------------------------------------------------------------------------------------------------+
 //
 //
 // AF_UNIX Unix domain sockets
-//         1MB socket snd/rcv buffer size, single connection, single thread
+//       1MB socket snd/rcv buffer size, single connection, single thread
 //
 // +------------------------------------------------------------------------------------------------+
 // | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
 // +------------------------------------------------------------------------------------------------+
-// | Throughput msgs  | 34014 msg/s | 28196 msg/s | 10192 msg/s | 373 msg/s | 6 msg/s   | 0.4 msg/s |
-// | Throughput bytes | 166 MB/s    | 1377 MB/s   | 4977 MB/s   | 1863 MB/s | 285 MB/s  | 78 MB/s   |
+// | Throughput msgs  | 35466 msg/s | 31321 msg/s | 12335 msg/s | 409 msg/s | 6 msg/s   | 0.4 msg/s |
+// | Throughput bytes | 173 MB/s    | 1529 MB/s   | 6023 MB/s   | 2028 MB/s | 300 MB/s  | 78 MB/s   |
 // +------------------------------------------------------------------------------------------------+
 //
 //
 //
 // Benchmark: VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core,
-//            12GB, AlmaLinux 9
+//          12GB, AlmaLinux 9
 // --------------------------------------------------------------------------------------------------
 //
 // AF_INET tcp/ip sockets
-//         default socket snd/rcv buffer size, single connection, single thread
+//       default socket snd/rcv buffer size, single connection, single thread
 //
 // +-----------------------------------------------------------------------------------------------+
 // | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
