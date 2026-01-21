@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.util;
+package com.github.jlangch.venice.util.ipc.impl.protocol;
 
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -79,33 +79,6 @@ public class PayloadMetaData {
         this.requestId = requestId;
         this.type = type;
         this.responseStatus = responseStatus;
-        this.queueName = queueName;
-        this.replyToQueueName = replyToQueueName;
-        this.topics = topics;
-        this.mimetype = mimetype;
-        this.charset = charset;
-        this.id = id;
-    }
-
-    public PayloadMetaData(
-            final String requestId,
-            final String queueName,
-            final String replyToQueueName,
-            final Topics topics,
-            final String mimetype,
-            final String charset,
-            final UUID id
-    ) {
-        Objects.requireNonNull(topics);
-        Objects.requireNonNull(mimetype);
-        Objects.requireNonNull(id);
-
-        this.oneway = false;
-        this.durable = false;
-        this.subscriptionReply = false;
-        this.requestId = requestId;
-        this.type = MessageType.NULL;
-        this.responseStatus = ResponseStatus.NULL;
         this.queueName = queueName;
         this.replyToQueueName = replyToQueueName;
         this.topics = topics;

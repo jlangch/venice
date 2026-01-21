@@ -35,7 +35,6 @@ import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
-import com.github.jlangch.venice.util.ipc.impl.util.PayloadMetaData;
 
 
 public class Protocol {
