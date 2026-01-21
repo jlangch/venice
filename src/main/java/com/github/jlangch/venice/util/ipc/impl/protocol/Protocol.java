@@ -105,20 +105,19 @@ public class Protocol {
         ByteChannelIO.writeFully(ch, header);
 
         // [2] payload meta data (optionally encrypt)
-        final byte[] headerAAD = header.array(); ; // GCM AAD: added authenticated data
-        final byte[] metaData = encryptor.encrypt(payloadMetaData, headerAAD);
-        final ByteBuffer meta = ByteBuffer.allocate(metaData.length);
-        meta.put(metaData);
-        meta.flip();
-        ByteChannelIO.writeFrame(ch, meta);
+        if (encryptor.isActive()) {
+            final byte[] headerAAD = header.array(); ; // GCM AAD: added authenticated data
+            final byte[] metaData = encryptor.encrypt(payloadMetaData, headerAAD);
+            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(metaData));
+        }
+        else {
+            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadMetaData));
+        }
 
         // [3] payload data (optionally compress and encrypt)
         byte[] payloadData = encryptor.encrypt(
                                 compressor.compress(payloadMsgData, isCompressData));
-        final ByteBuffer payload = ByteBuffer.allocate(payloadData.length);
-        payload.put(payloadData);
-        payload.flip();
-        ByteChannelIO.writeFrame(ch, payload);
+        ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadData));
     }
 
     public Message receiveMessage(
