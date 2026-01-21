@@ -37,6 +37,28 @@ import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 
 
+// +-----------------------------------+
+// |             Header                |
+// |                                   |
+// |   32 bytes                        |
+// |   7 fields                        |
+// |   ✗ encrypted                     |
+// |   ✗ compressed                    |
+// +-----------------------------------+
+// |         Payload Meta Data         |
+// |                                   |
+// |   40-200 bytes                    |
+// |   12 fields                       |
+// |   ✓ encrypted                     |
+// |   ✗ compressed                    |
+// +-----------------------------------+
+// |           Payload Data            |
+// |                                   |
+// |   n bytes (binary)                |
+// |   ✓ encrypted                     |
+// |   ✓ compressed                    |
+// +-----------------------------------+
+
 public class Protocol {
 
     public Protocol(final boolean cacheBuffers) {
@@ -180,11 +202,11 @@ public class Protocol {
 
             // [3] payload data (maybe compressed and encrypted)
             final ByteBuffer payloadFrame = ByteChannelIO.readFrame(ch);
-            byte[] payloadData = compressor.decompress(
-                                    encryptor.decrypt(
-                                        payloadFrame.array(),
-                                        isEncryptedData),
-                                    isCompressedData);
+            final byte[] payloadData = compressor.decompress(
+                                            encryptor.decrypt(
+                                                payloadFrame.array(),
+                                                isEncryptedData),
+                                            isCompressedData);
 
             return new Message(
                     payloadMeta.getId(),
