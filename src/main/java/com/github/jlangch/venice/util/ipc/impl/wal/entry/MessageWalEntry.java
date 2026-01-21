@@ -56,7 +56,7 @@ public class MessageWalEntry {
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
              final ByteChannel ch = new ByteArrayStreamChannel(out)
         ) {
-            Protocol.sendMessage(ch, message, Compressor.off(), Encryptor.off(), -1);
+            new Protocol(false).sendMessage(ch, message, Compressor.off(), Encryptor.off(), -1);
 
             final UUID uuid = message.getId();
             final byte[] payload = out.toByteArray();
@@ -74,7 +74,7 @@ public class MessageWalEntry {
         try (final ByteArrayInputStream in = new ByteArrayInputStream(payload);
              final ByteChannel ch = new ByteArrayStreamChannel(in)
         ) {
-            final Message message = Protocol.receiveMessage(ch, Compressor.off(), Encryptor.off());
+            final Message message = new Protocol(false).receiveMessage(ch, Compressor.off(), Encryptor.off());
             return new MessageWalEntry(message);
         }
         catch(Exception ex) {

@@ -260,7 +260,7 @@ public class ClientConnection implements AutoCloseable {
             // interfere with this message send
             if (sendSemaphore.tryAcquire(timeoutMillis, TimeUnit.MILLISECONDS)) {
                 try {
-                    Protocol.sendMessage(channel, (Message)msg, compressor, encryptor, maxMessageSize);
+                    protocol.sendMessage(channel, (Message)msg, compressor, encryptor, maxMessageSize);
                     messageSentCount.incrementAndGet();
 
                     if (msg.isOneway()) {
@@ -358,9 +358,9 @@ public class ClientConnection implements AutoCloseable {
             // in multi-threaded environments
             if (sendSemaphore.tryAcquire(10L, TimeUnit.SECONDS)) {
                 try {
-                    Protocol.sendMessage(ch, msg, compressor, encryptor, -1);
+                    protocol.sendMessage(ch, msg, compressor, encryptor, -1);
 
-                    final Message response = Protocol.receiveMessage(ch, compressor, encryptor);
+                    final Message response = protocol.receiveMessage(ch, compressor, encryptor);
 
                     return response;
                 }
@@ -595,6 +595,8 @@ public class ClientConnection implements AutoCloseable {
     private final AtomicReference<Timer> heartbeatTimer = new  AtomicReference<>();
 
     private final Semaphore sendSemaphore = new Semaphore(1);
+
+    private final Protocol protocol = new Protocol(true);
 
     private final long maxMessageSize;
     private final boolean permitClientQueueMgmt;

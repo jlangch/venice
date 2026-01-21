@@ -1090,9 +1090,9 @@ application/json
 ## Benchmark
 
 
-### MacOS
+### MacOS 26
 
-MacBook Air M2, MacOS 26
+MacBook Air M2
 
  
 
@@ -1158,22 +1158,18 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per co
 ;; tcp/ip socket
 (ipc/benchmark "af-inet://localhost:33333"
                :5KB                         ;; 5KB payload size
-               300000                       ;; 300'000 messages or ...
                5                            ;; 5s duration
                :print true                  ;; print results
-               :ramp-up-msg-count 10000     ;; ramp-up phase 10'000 messages or ...
-               :ramp-up-duration 1)         ;; ramp-up phase 1s
+               :ramp-up 1)                  ;; ramp-up phase 1s
 
 ;; Unix domain socket
 (ipc/benchmark "af-unix:///path/to/test.sock"
                :5KB                         ;; 5KB payload size
-               300000                       ;; 300'000 messages or ...
                5                            ;; 5s duration
                :print true                  ;; print results
                :socket-snd-buf-size :256KB  ;; socket send buffer size
                :socket-rcv-buf-size :256KB  ;; socket receiver buffer size
-               :ramp-up-msg-count 10000     ;; ramp-up phase 10'000 messages or ...
-               :ramp-up-duration 1)         ;; ramp-up phase 1s
+               :ramp-up 1)                  ;; ramp-up phase 1s
 ```
 
  

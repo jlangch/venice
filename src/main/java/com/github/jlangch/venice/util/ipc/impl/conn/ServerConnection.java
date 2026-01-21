@@ -200,13 +200,13 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private void sendDiffieHellmanResponse(final Message response) throws InterruptedException {
         // Note: no compression, no encryption!
-        Protocol.sendMessage(ch, response, Compressor.off(), Encryptor.off(), -1);
+        protocol.sendMessage(ch, response, Compressor.off(), Encryptor.off(), -1);
     }
 
     private void sendResponse(final Message response) throws InterruptedException {
         if (sendSemaphore.tryAcquire(3, TimeUnit.SECONDS)) {
             try {
-                Protocol.sendMessage(ch, response, compressor, encryptor.get(), maxMessageSize);
+                protocol.sendMessage(ch, response, compressor, encryptor.get(), maxMessageSize);
             }
             finally {
                 sendSemaphore.release();
@@ -245,7 +245,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private void processRequestResponse() throws InterruptedException {
         // [1] receive message
-        final Message request = Protocol.receiveMessage(ch, compressor, encryptor.get());
+        final Message request = protocol.receiveMessage(ch, compressor, encryptor.get());
         if (request == null) {
             mode = State.Terminated; // client closed connection
             return;
@@ -1237,6 +1237,8 @@ public class ServerConnection implements IPublisher, Runnable {
     private final AtomicBoolean stop = new AtomicBoolean(false);
 
     private final Semaphore sendSemaphore = new Semaphore(1);
+
+    private final Protocol protocol = new Protocol(true);
 
     // configuration
     private final long maxMessageSize;

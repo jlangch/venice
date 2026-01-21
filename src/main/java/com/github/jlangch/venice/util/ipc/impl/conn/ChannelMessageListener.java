@@ -180,7 +180,7 @@ public class ChannelMessageListener implements Runnable {
             }
 
             try {
-                final Message msg = Protocol.receiveMessage(channel, compressor, encryptor);
+                final Message msg = protocol.receiveMessage(channel, compressor, encryptor);
 
                 if (msg != null) {
                     if (msg.isSubscriptionReply()) {
@@ -231,6 +231,8 @@ public class ChannelMessageListener implements Runnable {
     private final AtomicBoolean eof = new AtomicBoolean(false);
     private final AtomicBoolean err = new AtomicBoolean(false);
     private final AtomicBoolean irq = new AtomicBoolean(false);
+
+    private final Protocol protocol = new Protocol(true);
 
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
     private final AtomicLong discardedMessageSubscriptionCount = new AtomicLong(0L);

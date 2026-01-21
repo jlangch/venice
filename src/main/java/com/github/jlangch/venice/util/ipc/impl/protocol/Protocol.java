@@ -27,6 +27,7 @@ import java.nio.channels.ByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.util.ipc.IpcException;
@@ -39,10 +40,19 @@ import com.github.jlangch.venice.util.ipc.impl.util.PayloadMetaData;
 
 public class Protocol {
 
-    public Protocol() {
+    public Protocol(final boolean cacheBuffers) {
+        this.cacheBuffers = cacheBuffers;
+        this.cache = cacheBuffers
+                        ? new ConcurrentHashMap<Integer,ByteBuffer>()
+                        : null;
     }
 
-    public static void sendMessage(
+
+    // ------------------------------------------------------------------------
+    // Message send/receive
+    // ------------------------------------------------------------------------
+
+    public void sendMessage(
             final ByteChannel ch,
             final Message message,
             final Compressor compressor,
@@ -112,7 +122,7 @@ public class Protocol {
         ByteChannelIO.writeFrame(ch, payload);
     }
 
-    public static Message receiveMessage(
+    public Message receiveMessage(
             final ByteChannel ch,
             final Compressor compressor,
             final Encryptor encryptor
@@ -206,7 +216,7 @@ public class Protocol {
         }
     }
 
-    public static Map<String,Integer> messageSize(final Message message) {
+    public Map<String,Integer> messageSize(final Message message) {
         Objects.requireNonNull(message);
 
         final Compressor compressor = new Compressor(0);
@@ -224,6 +234,12 @@ public class Protocol {
         return info;
     }
 
+
+
+    // ------------------------------------------------------------------------
+    // Utils
+    // ------------------------------------------------------------------------
+
     private static boolean toBool(final byte n) {
         if (n == 0) return false;
         else if (n == 1) return true;
@@ -238,4 +254,8 @@ public class Protocol {
     private final static int PROTOCOL_VERSION = 1;
 
     private final static int HEADER_SIZE = 32;
+
+
+    private final boolean cacheBuffers;
+    private final ConcurrentHashMap<Integer,ByteBuffer> cache;
 }

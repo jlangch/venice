@@ -24,7 +24,9 @@ package com.github.jlangch.venice.util.ipc;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CyclicBarrier;
@@ -34,12 +36,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.VncBoolean;
-import com.github.jlangch.venice.impl.types.VncDouble;
-import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -133,13 +129,13 @@ public class Benchmark {
         this.hostAddr = getConnectionURIHost(connURI);
     }
 
-    public VncHashMap run() {
+    public Map<String,Object> run() {
         return hostAddr.isLoopbackAddress()
                 ? benchmarkWithLocalServer()
                 : benchmark();
     }
 
-    private VncHashMap benchmarkWithLocalServer() {
+    private Map<String,Object> benchmarkWithLocalServer() {
         try(Server server = Server.of(ServerConfig.builder()
                                         .connURI(connURI)
                                         .maxMessageSize(Messages.MESSAGE_LIMIT_MAX)
@@ -160,7 +156,7 @@ public class Benchmark {
         }
     }
 
-    private VncHashMap benchmark() {
+    private Map<String,Object> benchmark() {
         // Payload data
         final byte[] payload = createRandomPayload();
 
@@ -187,13 +183,13 @@ public class Benchmark {
             }
 
             // Benchmark
-            final VncHashMap result = connections > 1
+            final Map<String,Object> result = connections > 1
                                         ? benchmark(client, connections, payload)
                                         : benchmark(client, payload);
 
             if (print) {
                 System.out.println();
-                System.out.println(result.get(new VncKeyword("summary")).toString());
+                System.out.println(result.get("summary"));
                 return null;
             }
             else {
@@ -205,7 +201,7 @@ public class Benchmark {
         }
     }
 
-    private VncHashMap benchmark(final Client client, final byte[] payload) {
+    private Map<String,Object> benchmark(final Client client, final byte[] payload) {
         final long start = System.currentTimeMillis();
         final long end = start + duration * 1000L;
 
@@ -229,7 +225,7 @@ public class Benchmark {
         return computeStatistics(client, 1, count, msgSize,  elapsed);
     }
 
-    private VncHashMap benchmark(final Client clientBase, final int clientCount, final byte[] payload) {
+    private Map<String,Object> benchmark(final Client clientBase, final int clientCount, final byte[] payload) {
         System.out.println("Connections: " + clientCount);
 
         final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool();
@@ -238,7 +234,8 @@ public class Benchmark {
         final AtomicBoolean stop = new AtomicBoolean(false);
         final CyclicBarrier startBarrier = new CyclicBarrier(clientCount + 1);
 
-        final List<Future<VncHashMap>> futures = new ArrayList<>();
+        final List<Future<Map<String,Object>>> futures = new ArrayList<>();
+
         for(int cc=1; cc<=clientCount; cc++) {
             // start workers
             futures.add(es.submit(() -> {
@@ -271,7 +268,7 @@ public class Benchmark {
                             elapsed);
                 }
                 catch(Exception ex) {
-                    return VncHashMap.EMPTY;
+                    return new HashMap<>();
                 }
                 finally {
                     try { client.close(); } catch (Exception ignore) {}
@@ -291,13 +288,13 @@ public class Benchmark {
             System.out.println("Aggregating results...");
 
             // Wait for all workers to be finished
-            final List<VncHashMap> results = new ArrayList<>();
+            final List<Map<String,Object>> results = new ArrayList<>();
             futures.forEach(f ->  { try { results.add(f.get()); } catch (Exception ignore) {}});
 
             final long msgCount = results
                                     .stream()
-                                    .map(e -> e.get(new VncKeyword("message-count")))
-                                    .mapToLong(e -> ((VncLong)e).getValue())
+                                    .map(e -> e.get("message-count"))
+                                    .mapToLong(e -> ((Long)e).longValue())
                                     .sum();
 
             // Aggregate statistics
@@ -334,7 +331,7 @@ public class Benchmark {
         return payload;
     }
 
-    private VncHashMap computeStatistics(
+    private Map<String,Object> computeStatistics(
             final Client client,
             final int connections,
             final long msgCount,
@@ -370,17 +367,18 @@ public class Benchmark {
                     String.format("Throughput msgs:  %s msg/s", sThroughputMsgs),
                     String.format("Throughput bytes: %s MB/s", sThroughputMB)));
 
-        return VncHashMap.of(
-                new VncKeyword("message-count"),    new VncLong(msgCount),
-                new VncKeyword("message-size"),     new VncLong(msgSize),
-                new VncKeyword("duration-millis"),  new VncLong(elapsedMillis),
-                new VncKeyword("total-bytes-sent"), new VncLong(transferredBytes),
-                new VncKeyword("throughput-msgs"),  new VncDouble(throughputMsgs),
-                new VncKeyword("throughput-MB"),    new VncDouble(throughputMB),
-                new VncKeyword("encrypt"),          VncBoolean.of(encrypt),
-                new VncKeyword("compress"),         VncBoolean.of(compress),
-                new VncKeyword("connections"),      new VncLong(connections),
-                new VncKeyword("summary"),          new VncString(summary));
+        final HashMap<String,Object> info = new HashMap<>();
+        info.put("message-count",    msgCount);
+        info.put("message-size",     msgSize);
+        info.put("duration-millis",  elapsedMillis);
+        info.put("total-bytes-sent", transferredBytes);
+        info.put("throughput-msgs",  throughputMsgs);
+        info.put("throughput-MB",    throughputMB);
+        info.put("encrypt",          encrypt);
+        info.put("compress",         compress);
+        info.put("connections",      connections);
+        info.put("summary",          summary);
+        return info;
     }
 
     private URI parseConnectionURI(final String uri) {

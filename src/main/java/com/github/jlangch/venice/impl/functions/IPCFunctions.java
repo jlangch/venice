@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -37,6 +38,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -718,7 +720,7 @@ public class IPCFunctions {
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
                                                         " or a number with a unit like `:64KB` or `:1MB`.|\n" +
-                        "| :ramp-up-duration n          | The ramp-up duration in seconds. Defaults to 0s.|\n\n" +
+                        "| :ramp-up n                   | The ramp-up duration in seconds. Defaults to 0s.|\n\n" +
                         "Prints this statistics if the *print* option is enabled:\n\n" +
                         "```                           \n" +
                         "Messages:         79370       \n" +
@@ -740,7 +742,7 @@ public class IPCFunctions {
                         "               :5KB                           \n" +
                         "               5                              \n" +
                         "               :print true                    \n" +
-                        "               :ramp-up-duration 1)           ",
+                        "               :ramp-up 1)                    ",
                         "(ipc/benchmark \"af-unix:///Users/foo/Desktop/venice/tmp/test.sock\"   \n" +
                         "               :5KB                                                    \n" +
                         "               5                                                       \n" +
@@ -765,21 +767,21 @@ public class IPCFunctions {
                     // options
                     final VncHashMap options = VncHashMap.ofAll(args.slice(3));
 
-                    final VncVal printVal          = options.get(new VncKeyword("print"), VncBoolean.False);
-                    final VncVal encryptVal        = options.get(new VncKeyword("encrypt"), VncBoolean.False);
-                    final VncVal onewayVal         = options.get(new VncKeyword("onway"), VncBoolean.False);
-                    final VncVal connectionsVal    = options.get(new VncKeyword("connections"), new VncLong(1));
-                    final VncVal sndBufSizeVal     = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
-                    final VncVal rcvBufSizeVal     = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
-                    final VncVal rampUpDurationVal = options.get(new VncKeyword("ramp-up-duration"), new VncLong(0));
+                    final VncVal printVal       = options.get(new VncKeyword("print"), VncBoolean.False);
+                    final VncVal encryptVal     = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                    final VncVal onewayVal      = options.get(new VncKeyword("onway"), VncBoolean.False);
+                    final VncVal connectionsVal = options.get(new VncKeyword("connections"), new VncLong(1));
+                    final VncVal sndBufSizeVal  = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
+                    final VncVal rcvBufSizeVal  = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
+                    final VncVal rampUpVal      = options.get(new VncKeyword("ramp-up"), new VncLong(0));
 
-                    final boolean print      = Coerce.toVncBoolean(printVal).getValue();
-                    final boolean encrypt    = Coerce.toVncBoolean(encryptVal).getValue();
-                    final boolean oneway     = Coerce.toVncBoolean(onewayVal).getValue();
-                    final int connections    = Coerce.toVncLong(connectionsVal).toJavaInteger();
-                    final int sndBufSize     = (int)convertUnitValueToLong(sndBufSizeVal);
-                    final int rcvBufSize     = (int)convertUnitValueToLong(rcvBufSizeVal);
-                    final int rampUpDuration = Coerce.toVncLong(rampUpDurationVal).toJavaInteger();
+                    final boolean print   = Coerce.toVncBoolean(printVal).getValue();
+                    final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+                    final boolean oneway  = Coerce.toVncBoolean(onewayVal).getValue();
+                    final int connections = Coerce.toVncLong(connectionsVal).toJavaInteger();
+                    final int sndBufSize  = (int)convertUnitValueToLong(sndBufSizeVal);
+                    final int rcvBufSize  = (int)convertUnitValueToLong(rcvBufSizeVal);
+                    final int rampUp      = Coerce.toVncLong(rampUpVal).toJavaInteger();
 
                     final Benchmark benchmark =   new Benchmark(
                                                         sConnURI,
@@ -791,22 +793,24 @@ public class IPCFunctions {
                                                         oneway,
                                                         sndBufSize,
                                                         rcvBufSize,
-                                                        rampUpDuration);
+                                                        rampUp);
 
-                    final VncHashMap result = benchmark.run();
+                    final Map<String,Object> result = benchmark.run();
                     if (result == null) {
                         return Nil;
                     }
                     else {
-                        return result.assoc(
-                                new VncKeyword("params"),
-                                VncHashMap.of(
-                                            new VncKeyword("connection-uri"),      new VncString(sConnURI),
-                                            new VncKeyword("msg-size"),            new VncLong(msgSize),
-                                            new VncKeyword("duration"),            new VncLong(duration),
-                                            new VncKeyword("socket-snd-buf-size"), new VncLong(sndBufSize),
-                                            new VncKeyword("socket-rcv-buf-size"), new VncLong(rcvBufSize),
-                                            new VncKeyword("ramp-up-duration"),    new VncLong(rampUpDuration)));
+                        final HashMap<String,Object> params = new HashMap<>();
+                        params.put("connection-uri",      sConnURI);
+                        params.put("msg-size",            msgSize);
+                        params.put("duration",            duration);
+                        params.put("socket-snd-buf-size", sndBufSize);
+                        params.put("socket-rcv-buf-size", rcvBufSize);
+                        params.put("ramp-up",             rampUp);
+
+                        result.put("params", params);
+
+                        return JavaInteropUtil.convertToVncVal(result, true);
                     }
                 }
                 catch(Exception ex) {
