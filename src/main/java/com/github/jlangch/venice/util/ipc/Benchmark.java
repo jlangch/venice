@@ -55,10 +55,10 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 // +-------------------------------------------------------------------------------------------------+
 //
 // +-------------------------------------------------------------------------------------------------------+
-// | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 5 conn      | 10 conn     |
+// | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn     | 100 conn    |
 // +-------------------------------------------------------------------------------------------------------+
-// | Throughput msgs   | 22624 msg/s | 42244 msg/s | 54505 msg/s | 52071 msg/s | 48858 msg/s | 48786 msg/s |
-// | Throughput bytes  | 110 MB/s    | 206 MB/s    | 266 MB/s    | 254 MB/s    | 239 MB/s    | 238 MB/s    |
+// | Throughput msgs   | 22624 msg/s | 42244 msg/s | 54505 msg/s | 52071 msg/s | 48858 msg/s | 50327 msg/s |
+// | Throughput bytes  | 110 MB/s    | 206 MB/s    | 266 MB/s    | 254 MB/s    | 239 MB/s    | 246 MB/s    |
 // +-------------------------------------------------------------------------------------------------------+
 //
 //
@@ -116,7 +116,7 @@ public class Benchmark {
     ) {
         this.msgSize = msgSize;
         this.duration = duration;
-        this.connections = Math.min(50, connections);
+        this.connections = Math.min(100, connections);
 
         this.print = print;
         this.encrypt = encrypt;
