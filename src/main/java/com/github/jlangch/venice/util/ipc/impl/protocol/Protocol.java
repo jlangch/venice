@@ -37,27 +37,49 @@ import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 
 
-// +-----------------------------------+
+// +===================================+
 // |             Header                |
+// +-----------------------------------+
 // |                                   |
 // |   32 bytes                        |
-// |   7 fields                        |
 // |   ✗ encrypted                     |
 // |   ✗ compressed                    |
-// +-----------------------------------+
+// |   Fields:                  bytes  |
+// |     • magic chars              2  |
+// |     • protocol version         4  |
+// |     • compressed               1  |
+// |     • encrypted                1  |
+// |     • timestamp                8  |
+// |     • expiresAt                8  |
+// |     • timeout                  8  |
+// +===================================+
 // |         Payload Meta Data         |
+// +-----------------------------------+
 // |                                   |
 // |   40-200 bytes                    |
-// |   12 fields                       |
 // |   ✓ encrypted                     |
 // |   ✗ compressed                    |
-// +-----------------------------------+
+// |   Fields:                  bytes  |
+// |     • oneway                   1  |
+// |     • durable                  1  |
+// |     • subscription reply       1  |
+// |     • request id           2 + n  |
+// |     • message type             2  |
+// |     • response status          2  |
+// |     • queue name           2 + n  |
+// |     • replyTo queue name   2 + n  |
+// |     • topics               2 + n  |
+// |     • mimetype             2 + n  |
+// |     • charset              2 + n  |
+// |     • id                      16  |
+// +===================================+
 // |           Payload Data            |
+// +-----------------------------------+
 // |                                   |
 // |   n bytes (binary)                |
 // |   ✓ encrypted                     |
 // |   ✓ compressed                    |
-// +-----------------------------------+
+// +===================================+
 
 public class Protocol {
 
