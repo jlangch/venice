@@ -67,7 +67,7 @@ public class ByteChannelIO {
             final ByteBuffer data
     ) {
         try {
-            if (data == null) {
+            if (data == null || data.remaining() == 0) {
                 final ByteBuffer len = ByteBuffer.allocate(4).putInt(0);
                 len.flip();
                 writeFully(ch, len);

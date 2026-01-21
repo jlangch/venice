@@ -125,9 +125,15 @@ public abstract class UTF8 {
 
 
     // Table
-    public static String TABLE               = "┌───┬───┐"
+    public static String TABLE_1             = "┌───┬───┐"
                                              + "│   │   │"
                                              + "├───┼───┤"
                                              + "│   │   │"
                                              + "└───┴───┘";
+    // Table
+    public static String TABLE_2             = "┏━━━┳━━━┓"
+                                             + "┃   ┃   ┃"
+                                             + "┣━━━╋━━━┫"
+                                             + "┃   ┃   ┃"
+                                             + "┗━━━┻━━━┛";
 }

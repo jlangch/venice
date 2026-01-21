@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Optimized IPC memory and throughput
+
 
 
 ## [1.12.72] - 2026-01-18

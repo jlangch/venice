@@ -107,10 +107,13 @@ public class Protocol {
         Objects.requireNonNull(compressor);
         Objects.requireNonNull(encryptor);
 
-        // Check message size limit
+        final byte[] headerData = new byte[HEADER_SIZE];
         final byte[] payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message));
         final byte[] payloadMsgData = message.getData();
+
         final int totalMsgSize = HEADER_SIZE + payloadMetaData.length + payloadMsgData.length;
+
+        // Check message size limit
         if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
             throw new IpcException(String.format(
                     "The message size exceeds the configured limit!"
@@ -129,7 +132,7 @@ public class Protocol {
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
-        final ByteBuffer header = ByteBuffer.allocate(HEADER_SIZE);
+        final ByteBuffer header = ByteBuffer.wrap(headerData);
         // 2 bytes magic chars
         header.put((byte)'v');
         header.put((byte)'n');
