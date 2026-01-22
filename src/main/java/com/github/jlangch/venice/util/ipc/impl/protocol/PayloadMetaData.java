@@ -42,12 +42,12 @@ public class PayloadMetaData {
             msg.isOneway(),
             msg.isDurable(),
             msg.isSubscriptionReply(),
-            msg.getRequestId(),
             msg.getType(),
             msg.getTimestamp(),
             msg.getExpiresAt(),
             msg.getTimeout(),
             msg.getResponseStatus(),
+            msg.getRequestId(),
             msg.getQueueName(),
             msg.getReplyToQueueName(),
             msg.getTopics(),
@@ -60,12 +60,12 @@ public class PayloadMetaData {
             final boolean oneway,
             final boolean durable,
             final boolean subscriptionReply,
-            final String requestId,
             final MessageType type,
             final long timestamp,
             final long expiresAt,
             final long timeout,
             final ResponseStatus responseStatus,
+            final String requestId,
             final String queueName,
             final String replyToQueueName,
             final Topics topics,
@@ -82,12 +82,12 @@ public class PayloadMetaData {
         this.oneway = oneway;
         this.durable = durable;
         this.subscriptionReply = subscriptionReply;
-        this.requestId = requestId;
         this.type = type;
         this.timestamp = timestamp;
         this.expiresAt = expiresAt;
         this.timeout = timeout;
         this.responseStatus = responseStatus;
+        this.requestId = requestId;
         this.queueName = queueName;
         this.replyToQueueName = replyToQueueName;
         this.topics = topics;
@@ -251,9 +251,9 @@ public class PayloadMetaData {
         final byte   _oneway                 = encodeBoolean(data.oneway);
         final byte   _durable                = encodeBoolean(data.durable);
         final byte   _subscriptionReply      = encodeBoolean(data.subscriptionReply);
-        final byte[] _requestId              = encodeString(data.requestId);
         final short  _type                   = encodeMessageType(data.type);
         final short  _responseStatus         = encodeResponseStatus(data.responseStatus);
+        final byte[] _requestId              = encodeString(data.requestId);
         final byte[] _queueName              = encodeString(data.queueName);
         final byte[] _replyToQueueName       = encodeString(data.replyToQueueName);
         final byte[] _topics                 = encodeTopics(data.topics);
@@ -263,10 +263,10 @@ public class PayloadMetaData {
         final long   _idMostSignificantBits  = data.id.getMostSignificantBits();
 
         final int bytes = 1 + 1 + 1 +
-                          2 + _requestId.length +
                           2 +
                           8 + 8 + 8 +
                           2 +
+                          2 + _requestId.length +
                           2 + _queueName.length +
                           2 + _replyToQueueName.length +
                           2 + _topics.length +
@@ -279,12 +279,12 @@ public class PayloadMetaData {
         buf.put(_oneway);
         buf.put(_durable);
         buf.put(_subscriptionReply);
-        putString(buf, _requestId);
         buf.putShort(_type);
         buf.putLong(data.timestamp);
         buf.putLong(data.expiresAt);
         buf.putLong(data.timeout);
         buf.putShort(_responseStatus);
+        putString(buf, _requestId);
         putString(buf, _queueName);
         putString(buf, _replyToQueueName);
         putString(buf, _topics);
@@ -304,12 +304,12 @@ public class PayloadMetaData {
         final byte   _oneway                 = buf.get();
         final byte   _durable                = buf.get();
         final byte   _subscriptionReply      = buf.get();
-        final byte[] _requestId              = getString(buf);
         final short  _type                   = buf.getShort();
         final long   _timestamp              = buf.getLong();
         final long   _expiresAt              = buf.getLong();
         final long   _timeout                = buf.getLong();
         final short  _responseStatus         = buf.getShort();
+        final byte[] _requestId              = getString(buf);
         final byte[] _queueName              = getString(buf);
         final byte[] _replyToQueueName       = getString(buf);
         final byte[] _topics                 = getString(buf);
@@ -322,12 +322,12 @@ public class PayloadMetaData {
                 decodeBoolean(_oneway),
                 decodeBoolean(_durable),
                 decodeBoolean(_subscriptionReply),
-                decodeString(_requestId),
                 decodeMessageType(_type),
                 _timestamp,
                 _expiresAt,
                 _timeout,
                 decodeResponseStatus(_responseStatus),
+                decodeString(_requestId),
                 decodeString(_queueName),
                 decodeString(_replyToQueueName),
                 decodeTopics(_topics),
@@ -419,12 +419,12 @@ public class PayloadMetaData {
     private final boolean oneway;
     private final boolean durable;
     private final boolean subscriptionReply;
-    private final String requestId;
     private final MessageType type;
     private final long timestamp;
     private final long expiresAt;
     private final long timeout;
     private final ResponseStatus responseStatus;
+    private final String requestId;
     private final String queueName;
     private final String replyToQueueName;
     private final Topics topics;

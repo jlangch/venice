@@ -63,12 +63,12 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |     • oneway                   1  |
  * |     • durable                  1  |
  * |     • subscription reply       1  |
- * |     • request id           2 + n  |
  * |     • message type             2  |
  * |     • timestamp                8  |
  * |     • expiresAt                8  |
  * |     • timeout                  8  |
  * |     • response status          2  |
+ * |     • request id           2 + n  |
  * |     • queue name           2 + n  |
  * |     • replyTo queue name   2 + n  |
  * |     • topics               2 + n  |
@@ -115,11 +115,11 @@ public class Protocol {
         Objects.requireNonNull(compressor);
         Objects.requireNonNull(encryptor);
 
-        final byte[] headerData = new byte[HEADER_SIZE];
+        final byte[] headerData = new byte[Header.SIZE];
         final byte[] payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message));
         final byte[] payloadMsgData = message.getData();
 
-        final int totalMsgSize = HEADER_SIZE + payloadMetaData.length + payloadMsgData.length;
+        final int totalMsgSize = Header.SIZE + payloadMetaData.length + payloadMsgData.length;
 
         // Check message size limit
         if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
@@ -130,7 +130,7 @@ public class Protocol {
                     + "\nMessage header:       %d"
                     + "\nMessage payload meta: %d"
                     + "\nMessage payload data: %d",
-                    messageSizeLimit, totalMsgSize, HEADER_SIZE, payloadMetaData.length, payloadMsgData.length));
+                    messageSizeLimit, totalMsgSize, Header.SIZE, payloadMetaData.length, payloadMsgData.length));
 
         }
 
@@ -140,19 +140,14 @@ public class Protocol {
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
-        final ByteBuffer header = ByteBuffer.wrap(headerData);
-
-        header.put((byte)'v');                      // 2 bytes magic chars
-        header.put((byte)'n');
-        header.putInt(PROTOCOL_VERSION);            // 4 bytes (integer) protocol version
-        header.put(toByte(isCompressData));         // 1 byte compressed data flag
-        header.put(toByte(encryptor.isActive()));   // 1 byte encrypted data flag
-        header.flip();
-        ByteChannelIO.writeFully(ch, header);
+        final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
+        Header.write(new Header(PROTOCOL_VERSION, isCompressData, encryptor.isActive()), headerBuf);
+        headerBuf.flip();
+        ByteChannelIO.writeFully(ch, headerBuf);
 
         // [2] payload meta data (optionally encrypt)
         if (encryptor.isActive()) {
-            final byte[] headerAAD = header.array();  // GCM AAD: added authenticated data
+            final byte[] headerAAD = headerBuf.array();  // GCM AAD: added authenticated data
             final byte[] metaData = encryptor.encrypt(payloadMetaData, headerAAD);
             ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(metaData));
         }
@@ -177,36 +172,21 @@ public class Protocol {
 
         try {
             // [1] header
-            final ByteBuffer header = ByteBuffer.allocate(HEADER_SIZE);
-            final int bytesRead = ch.read(header);
+            final ByteBuffer headerBuf = ByteBuffer.allocate(Header.SIZE);
+            final int bytesRead = ch.read(headerBuf);
             if (bytesRead < 0) {
                 throw new EofException("Failed to read data from channel, channel EOF reached!");
             }
 
-            header.flip();
+            headerBuf.flip();
+            final Header header = Header.read(headerBuf);
 
-            // [1a] parse header (magic bytes)
-            final byte magic1 = header.get();
-            final byte magic2 = header.get();
-
-            if (magic1 != 'v' || magic2 != 'n') {
+            if (header.getVersion() != PROTOCOL_VERSION) {
                 throw new IpcException(
-                        "Received unknown message (bad magic bytes)!");
+                        "Received message with unsupported protocol version " + header.getVersion() + "!");
             }
 
-            // [1b] parse header (version field)
-            final int version = header.getInt();
-
-            if (version != PROTOCOL_VERSION) {
-                throw new IpcException(
-                        "Received message with unsupported protocol version " + version + "!");
-            }
-
-            // [1c] parse header (data fields)
-            final boolean isCompressedData = toBool(header.get());
-            final boolean isEncryptedData = toBool(header.get());
-
-            if (!isEncryptedData && encryptor.isActive()) {
+            if (!header.isEncrypted() && encryptor.isActive()) {
                 // prevent malicious clients
                 throw new IpcException(
                         "Received an unencrypted message but encryption is mandatory!");
@@ -214,13 +194,13 @@ public class Protocol {
 
             // [2] payload meta data (maybe encrypted)
             final ByteBuffer payloadMetaFrame = ByteChannelIO.readFrame(ch);
-            final byte[] headerAAD = header.array(); // GCM AAD: added authenticated data
+            final byte[] headerAAD = headerBuf.array(); // GCM AAD: added authenticated data
             final byte[] payloadMetaRaw = payloadMetaFrame.array();
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
                                                         payloadMetaRaw,
                                                         headerAAD,
-                                                        isEncryptedData));
+                                                        header.isEncrypted()));
 
             // [3] payload data (maybe compressed and encrypted)
             final ByteBuffer payloadFrame = ByteChannelIO.readFrame(ch);
@@ -228,8 +208,8 @@ public class Protocol {
             final byte[] payloadData = compressor.decompress(
                                             encryptor.decrypt(
                                                 payloadDataRaw,
-                                                isEncryptedData),
-                                            isCompressedData);
+                                                header.isEncrypted()),
+                                            header.isCompressed());
 
             return new Message(
                     payloadMeta.getId(),
@@ -269,32 +249,14 @@ public class Protocol {
         final int payloadMsgDataCompressed = compressor.compress(message.getData(), true).length;
 
         final Map<String,Integer> info = new HashMap<>();
-        info.put("header",       HEADER_SIZE);
+        info.put("header",       Header.SIZE);
         info.put("payload-meta", payloadMetaData);
         info.put("payload-data", payloadMsgData);
         info.put("payload-data-compressed", payloadMsgDataCompressed);
-        info.put("total",        HEADER_SIZE + payloadMetaData + payloadMsgData);
+        info.put("total",        Header.SIZE + payloadMetaData + payloadMsgData);
         return info;
     }
 
 
-
-    // ------------------------------------------------------------------------
-    // Utils
-    // ------------------------------------------------------------------------
-
-    private static boolean toBool(final byte n) {
-        if (n == 0) return false;
-        else if (n == 1) return true;
-        else throw new IpcException("Illegal IPC message boolean value");
-    }
-
-    private static byte toByte(final boolean b) {
-        return b ? (byte)1 : (byte)0;
-    }
-
-
     private final static int PROTOCOL_VERSION = 1;
-
-    private final static int HEADER_SIZE = 8;
 }
