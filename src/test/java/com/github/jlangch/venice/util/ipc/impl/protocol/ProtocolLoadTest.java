@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
@@ -37,6 +38,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 public class ProtocolLoadTest {
 
     @Test
+    @EnableOnMac
     public void test_send() throws Exception{
         final Protocol p = new Protocol(false);
 
@@ -73,6 +75,7 @@ public class ProtocolLoadTest {
 
 
     @Test
+    @EnableOnMac
     public void test_receive() throws Exception{
         final Protocol p = new Protocol(false);
 

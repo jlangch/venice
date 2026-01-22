@@ -106,32 +106,32 @@ public class ChannelMessageListener implements Runnable {
         final long start = System.currentTimeMillis();
         final long limit = start + timeoutMillis;
 
-        // poll the response from the receive queue
+        // if a response is ready from the receive queue consume it (short timeouts)
         while(connectionOpen.get()) {
-            // if a response is ready consume it immediately without timeouts
-            while(true) {
-                final Message response = poll();
-                if (response == null) {
-                    break;  // no response message ready - do not spin lock
-                }
-                else if (request.hasSameId(response)) {
-                    return response; // the response matches the request
-                }
-                else {
-                    continue;  // try for another message that is immediately ready
-                }
+            final Message response = poll(3);
+            if (response == null) {
+                break;  // no response message ready - do not spin lock
             }
-
-            if (timeoutMillis <= 0) {
-                throw new TimeoutException("Timeout on receiving IPC message response.");
+            else if (request.hasSameId(response)) {
+                return response; // the response matches the request
             }
+            else {
+                continue;  // try for another message that is immediately ready
+            }
+        }
 
+        if (timeoutMillis <= 0) {
+            throw new TimeoutException("Timeout on receiving IPC message response.");
+        }
+
+        // poll the response from the receive queue (longer timeouts)
+        while(connectionOpen.get()) {
             // check server status
             if (!channel.isOpen() || isEOF()) {
                break;
             }
 
-            // check response in 80ms steps, to react faster if client or server has closed!!
+            // check response in 80ms poll timeout steps, to react faster if client or server has closed!!
             final long timeout = Math.min(80, limit - System.currentTimeMillis());
 
             if (timeout >= 0) {
