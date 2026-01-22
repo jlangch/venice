@@ -41,10 +41,10 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  *
  * <pre>
  * +===================================+
- * |             Header                |
+ * | Header                            |
  * +-----------------------------------+
  * |                                   |
- * |   32 bytes                        |
+ * |   8 bytes                         |
  * |   ✗ encrypted                     |
  * |   ✗ compressed                    |
  * |   Fields:                  bytes  |
@@ -52,11 +52,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |     • protocol version         4  |
  * |     • compressed               1  |
  * |     • encrypted                1  |
- * |     • timestamp                8  |
- * |     • expiresAt                8  |
- * |     • timeout                  8  |
  * +===================================+
- * |         Payload Meta Data         |
+ * | Payload Meta Data                 |
  * +-----------------------------------+
  * |                                   |
  * |   40-200 bytes                    |
@@ -68,6 +65,9 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |     • subscription reply       1  |
  * |     • request id           2 + n  |
  * |     • message type             2  |
+ * |     • timestamp                8  |
+ * |     • expiresAt                8  |
+ * |     • timeout                  8  |
  * |     • response status          2  |
  * |     • queue name           2 + n  |
  * |     • replyTo queue name   2 + n  |
@@ -76,7 +76,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |     • charset              2 + n  |
  * |     • id                      16  |
  * +===================================+
- * |           Payload Data            |
+ * | Payload Data                      |
  * +-----------------------------------+
  * |                                   |
  * |   n bytes (binary)                |
@@ -141,21 +141,12 @@ public class Protocol {
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
         final ByteBuffer header = ByteBuffer.wrap(headerData);
-        // 2 bytes magic chars
-        header.put((byte)'v');
+
+        header.put((byte)'v');                      // 2 bytes magic chars
         header.put((byte)'n');
-        // 4 bytes (integer) protocol version
-        header.putInt(PROTOCOL_VERSION);
-        // 1 byte compressed data flag
-        header.put(toByte(isCompressData));
-        // 1 byte encrypted data flag
-        header.put(toByte(encryptor.isActive()));
-        // 8 bytes (long) timestamp
-        header.putLong(message.getTimestamp());
-        // 8 bytes (long) expiresAt
-        header.putLong(message.getExpiresAt());
-        // 8 bytes (long) timeout
-        header.putLong(message.getTimeout());
+        header.putInt(PROTOCOL_VERSION);            // 4 bytes (integer) protocol version
+        header.put(toByte(isCompressData));         // 1 byte compressed data flag
+        header.put(toByte(encryptor.isActive()));   // 1 byte encrypted data flag
         header.flip();
         ByteChannelIO.writeFully(ch, header);
 
@@ -214,9 +205,6 @@ public class Protocol {
             // [1c] parse header (data fields)
             final boolean isCompressedData = toBool(header.get());
             final boolean isEncryptedData = toBool(header.get());
-            final long timestamp = header.getLong();
-            final long expiresAt = header.getLong();
-            final long timeout = header.getLong();
 
             if (!isEncryptedData && encryptor.isActive()) {
                 // prevent malicious clients
@@ -253,9 +241,9 @@ public class Protocol {
                     payloadMeta.isSubscriptionReply(),
                     payloadMeta.getQueueName(),
                     payloadMeta.getReplyToQueueName(),
-                    timestamp,
-                    expiresAt,
-                    timeout,
+                    payloadMeta.getTimestamp(),
+                    payloadMeta.getExpiresAt(),
+                    payloadMeta.getTimeout(),
                     payloadMeta.getTopics(),
                     payloadMeta.getMimetype(),
                     payloadMeta.getCharset(),
@@ -308,5 +296,5 @@ public class Protocol {
 
     private final static int PROTOCOL_VERSION = 1;
 
-    private final static int HEADER_SIZE = 32;
+    private final static int HEADER_SIZE = 8;
 }

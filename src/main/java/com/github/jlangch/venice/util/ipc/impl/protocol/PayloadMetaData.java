@@ -44,6 +44,9 @@ public class PayloadMetaData {
             msg.isSubscriptionReply(),
             msg.getRequestId(),
             msg.getType(),
+            msg.getTimestamp(),
+            msg.getExpiresAt(),
+            msg.getTimeout(),
             msg.getResponseStatus(),
             msg.getQueueName(),
             msg.getReplyToQueueName(),
@@ -59,6 +62,9 @@ public class PayloadMetaData {
             final boolean subscriptionReply,
             final String requestId,
             final MessageType type,
+            final long timestamp,
+            final long expiresAt,
+            final long timeout,
             final ResponseStatus responseStatus,
             final String queueName,
             final String replyToQueueName,
@@ -78,6 +84,9 @@ public class PayloadMetaData {
         this.subscriptionReply = subscriptionReply;
         this.requestId = requestId;
         this.type = type;
+        this.timestamp = timestamp;
+        this.expiresAt = expiresAt;
+        this.timeout = timeout;
         this.responseStatus = responseStatus;
         this.queueName = queueName;
         this.replyToQueueName = replyToQueueName;
@@ -106,6 +115,18 @@ public class PayloadMetaData {
 
     public MessageType getType() {
         return type;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public long getExpiresAt() {
+        return expiresAt;
+    }
+
+    public long getTimeout() {
+        return timeout;
     }
 
     public ResponseStatus getResponseStatus() {
@@ -137,12 +158,15 @@ public class PayloadMetaData {
     }
 
 
+
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((charset == null) ? 0 : charset.hashCode());
         result = prime * result + (durable ? 1231 : 1237);
+        result = prime * result + (int) (expiresAt ^ (expiresAt >>> 32));
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
         result = prime * result + (oneway ? 1231 : 1237);
@@ -151,6 +175,8 @@ public class PayloadMetaData {
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
         result = prime * result + (subscriptionReply ? 1231 : 1237);
+        result = prime * result + (int) (timeout ^ (timeout >>> 32));
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((topics == null) ? 0 : topics.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
@@ -171,6 +197,8 @@ public class PayloadMetaData {
         } else if (!charset.equals(other.charset))
             return false;
         if (durable != other.durable)
+            return false;
+        if (expiresAt != other.expiresAt)
             return false;
         if (id == null) {
             if (other.id != null)
@@ -203,6 +231,10 @@ public class PayloadMetaData {
             return false;
         if (subscriptionReply != other.subscriptionReply)
             return false;
+        if (timeout != other.timeout)
+            return false;
+        if (timestamp != other.timestamp)
+            return false;
         if (topics == null) {
             if (other.topics != null)
                 return false;
@@ -213,7 +245,6 @@ public class PayloadMetaData {
         return true;
     }
 
-
     public static byte[] encode(final PayloadMetaData data) {
         Objects.requireNonNull(data);
 
@@ -221,8 +252,8 @@ public class PayloadMetaData {
         final byte   _durable                = encodeBoolean(data.durable);
         final byte   _subscriptionReply      = encodeBoolean(data.subscriptionReply);
         final byte[] _requestId              = encodeString(data.requestId);
-        final short   _type                  = encodeMessageType(data.type);
-        final short   _responseStatus        = encodeResponseStatus(data.responseStatus);
+        final short  _type                   = encodeMessageType(data.type);
+        final short  _responseStatus         = encodeResponseStatus(data.responseStatus);
         final byte[] _queueName              = encodeString(data.queueName);
         final byte[] _replyToQueueName       = encodeString(data.replyToQueueName);
         final byte[] _topics                 = encodeTopics(data.topics);
@@ -233,7 +264,9 @@ public class PayloadMetaData {
 
         final int bytes = 1 + 1 + 1 +
                           2 + _requestId.length +
-                          2 + 2 +
+                          2 +
+                          8 + 8 + 8 +
+                          2 +
                           2 + _queueName.length +
                           2 + _replyToQueueName.length +
                           2 + _topics.length +
@@ -248,6 +281,9 @@ public class PayloadMetaData {
         buf.put(_subscriptionReply);
         putString(buf, _requestId);
         buf.putShort(_type);
+        buf.putLong(data.timestamp);
+        buf.putLong(data.expiresAt);
+        buf.putLong(data.timeout);
         buf.putShort(_responseStatus);
         putString(buf, _queueName);
         putString(buf, _replyToQueueName);
@@ -270,6 +306,9 @@ public class PayloadMetaData {
         final byte   _subscriptionReply      = buf.get();
         final byte[] _requestId              = getString(buf);
         final short  _type                   = buf.getShort();
+        final long   _timestamp              = buf.getLong();
+        final long   _expiresAt              = buf.getLong();
+        final long   _timeout                = buf.getLong();
         final short  _responseStatus         = buf.getShort();
         final byte[] _queueName              = getString(buf);
         final byte[] _replyToQueueName       = getString(buf);
@@ -285,6 +324,9 @@ public class PayloadMetaData {
                 decodeBoolean(_subscriptionReply),
                 decodeString(_requestId),
                 decodeMessageType(_type),
+                _timestamp,
+                _expiresAt,
+                _timeout,
                 decodeResponseStatus(_responseStatus),
                 decodeString(_queueName),
                 decodeString(_replyToQueueName),
@@ -379,6 +421,9 @@ public class PayloadMetaData {
     private final boolean subscriptionReply;
     private final String requestId;
     private final MessageType type;
+    private final long timestamp;
+    private final long expiresAt;
+    private final long timeout;
     private final ResponseStatus responseStatus;
     private final String queueName;
     private final String replyToQueueName;
