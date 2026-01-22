@@ -43,22 +43,24 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * +===================================+
  * | Header                            |
  * +-----------------------------------+
- * |                                   |
  * |   8 bytes                         |
  * |   ✗ encrypted                     |
  * |   ✗ compressed                    |
+ * |                                   |
  * |   Fields:                  bytes  |
  * |     • magic chars              2  |
  * |     • protocol version         4  |
  * |     • compressed               1  |
  * |     • encrypted                1  |
+ * |                                   |
  * +===================================+
  * | Payload Meta Data                 |
  * +-----------------------------------+
- * |                                   |
  * |   40-200 bytes                    |
  * |   ✓ encrypted                     |
  * |   ✗ compressed                    |
+ * |                                   |
+ * |   Frame len:             4 bytes  |
  * |   Fields:                  bytes  |
  * |     • oneway                   1  |
  * |     • durable                  1  |
@@ -75,13 +77,16 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |     • mimetype             2 + n  |
  * |     • charset              2 + n  |
  * |     • id                      16  |
+ * |                                   |
  * +===================================+
  * | Payload Data                      |
  * +-----------------------------------+
- * |                                   |
- * |   n bytes (binary)                |
  * |   ✓ encrypted                     |
  * |   ✓ compressed                    |
+ * |                                   |
+ * |   Frame len:             4 bytes  |
+ * |   Binary Data:           n bytes  |
+ * |                                   |
  * +===================================+
  * </pre>
  *
@@ -115,13 +120,15 @@ public class Protocol {
         Objects.requireNonNull(compressor);
         Objects.requireNonNull(encryptor);
 
+        final boolean isCompressData = compressor.needsCompression(message.getData());
+
+        // Raw message data
         final byte[] headerData = new byte[Header.SIZE];
         final byte[] payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message));
         final byte[] payloadMsgData = message.getData();
 
+        // Check raw message size limit
         final int totalMsgSize = Header.SIZE + payloadMetaData.length + payloadMsgData.length;
-
-        // Check message size limit
         if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
             throw new IpcException(String.format(
                     "The message size exceeds the configured limit!"
@@ -130,11 +137,9 @@ public class Protocol {
                     + "\nMessage header:       %d"
                     + "\nMessage payload meta: %d"
                     + "\nMessage payload data: %d",
-                    messageSizeLimit, totalMsgSize, Header.SIZE, payloadMetaData.length, payloadMsgData.length));
-
+                    messageSizeLimit, totalMsgSize, Header.SIZE,
+                    payloadMetaData.length, payloadMsgData.length));
         }
-
-        final boolean isCompressData = compressor.needsCompression(message.getData());
 
         // [1] header
         //     if encryption is active the header is processed as AAD
