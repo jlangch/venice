@@ -918,7 +918,7 @@ public class Client implements Cloneable, AutoCloseable {
     public static Map<String,Integer> msgSize(final IMessage message) {
         Objects.requireNonNull(message);
 
-        return new Protocol(false).messageSize((Message)message);
+        return new Protocol().messageSize((Message)message);
     }
 
 
