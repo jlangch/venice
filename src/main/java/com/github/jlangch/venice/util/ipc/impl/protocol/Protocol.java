@@ -219,17 +219,19 @@ public class Protocol {
             // [2] payload meta data (maybe encrypted)
             final ByteBuffer payloadMetaFrame = ByteChannelIO.readFrame(ch);
             final byte[] headerAAD = header.array(); // GCM AAD: added authenticated data
+            final byte[] payloadMetaRaw = payloadMetaFrame.array();
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
-                                                        payloadMetaFrame.array(),
+                                                        payloadMetaRaw,
                                                         headerAAD,
                                                         isEncryptedData));
 
             // [3] payload data (maybe compressed and encrypted)
             final ByteBuffer payloadFrame = ByteChannelIO.readFrame(ch);
+            final byte[] payloadDataRaw = payloadFrame.array();
             final byte[] payloadData = compressor.decompress(
                                             encryptor.decrypt(
-                                                payloadFrame.array(),
+                                                payloadDataRaw,
                                                 isEncryptedData),
                                             isCompressedData);
 

@@ -41,7 +41,7 @@ public class Compressor {
 
     public byte[] compress(final byte[] data) {
         Objects.requireNonNull(data);
-        return compress(data, needsCompression(data));
+        return needsCompression(data) ? compress(data, true) : data;
     }
 
     public byte[] compress(final byte[] data, final boolean compress) {

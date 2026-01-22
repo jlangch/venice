@@ -942,7 +942,19 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message handleTest(final Message request) {
         return request.isOneway()
                 ? null
-                : createTextResponse(request, ResponseStatus.OK, "");
+                : new Message(
+                        request.getId(),
+                        request.getRequestId(),
+                        MessageType.RESPONSE,
+                        ResponseStatus.OK,
+                        true,   // oneway
+                        false,  // transient
+                        false,  // not a subscription msg
+                        Messages.EXPIRES_NEVER,
+                        request.getTopics(),
+                        request.getMimetype(), // always "application/octet-tream"
+                        null,
+                        new byte[0]);
     }
 
 

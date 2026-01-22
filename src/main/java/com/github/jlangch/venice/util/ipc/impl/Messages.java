@@ -21,8 +21,27 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import com.github.jlangch.venice.util.ipc.MessageType;
+import com.github.jlangch.venice.util.ipc.ResponseStatus;
+
 
 public abstract class Messages {
+
+    public static Message testMessage(final byte[] payload, final boolean oneway) {
+        return new Message(
+                null,
+                MessageType.TEST,
+                ResponseStatus.NULL,
+                oneway,
+                false,
+                false,
+                Messages.EXPIRES_NEVER,
+                TOPICS_TEST,
+                "application/octet-stream",
+                null,
+                payload);
+    }
+
 
     private static int KB = 1024;
     private static int MB = KB * KB;
@@ -55,6 +74,7 @@ public abstract class Messages {
     public static final String TOPIC_HEARTBEAT       = "heartbeat";
     public static final String TOPIC_TEST            = "T";
 
+    private static final Topics TOPICS_TEST = Topics.of(Messages.TOPIC_TEST);
 
     // Client requests
     public static final String TOPIC_CLIENT_THREAD_POOL_STATS = "ipc-client/thread-pool-statistics";

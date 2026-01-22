@@ -605,20 +605,7 @@ public class Client implements Cloneable, AutoCloseable {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final Message m = new Message(
-                                null,
-                                MessageType.TEST,
-                                ResponseStatus.NULL,
-                                oneway,
-                                false,
-                                false,
-                                Messages.EXPIRES_NEVER,
-                                TOPICS_TEST,
-                                "application/octet-stream",
-                                null,
-                                payload);
-
-        return send(m);
+        return send(Messages.testMessage(payload, oneway));
     }
 
     /**
@@ -1226,8 +1213,6 @@ public class Client implements Cloneable, AutoCloseable {
         return s.getBytes(Charset.forName(charset));
     }
 
-
-    private static final Topics TOPICS_TEST = Topics.of(Messages.TOPIC_TEST);
 
     private volatile char[] u = null;
     private volatile char[] p = null;

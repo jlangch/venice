@@ -53,11 +53,11 @@ public class Encryptor {
 
 
     public byte[] encrypt(final byte[] data) {
-        return encrypt(data, null, isActive());
+        return isActive() ? encrypt(data, null, true) : data;
     }
 
     public byte[] encrypt(final byte[] data, final byte[] aad) {
-        return encrypt(data, aad, isActive());
+        return isActive() ? encrypt(data, aad, true) : data;
     }
 
     public byte[] encrypt(final byte[] data, final byte[] aad, final boolean encrypt) {
@@ -76,11 +76,11 @@ public class Encryptor {
     }
 
     public byte[] decrypt(final byte[] data) {
-        return decrypt(data, null, isActive());
+        return isActive() ? decrypt(data, null, true) : data;
     }
 
     public byte[] decrypt(final byte[] data, final boolean decrypt) {
-        return decrypt(data, null, decrypt);
+        return decrypt ? decrypt(data, null, true) : data;
     }
 
     public byte[] decrypt(final byte[] data, final byte[] aad, final boolean decrypt) {

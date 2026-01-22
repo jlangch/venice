@@ -220,4 +220,32 @@ public class PayloadMetaDataTest {
         System.out.println("" + elapsed * 1_000_000L / count + "ns");
     }
 
+//    @Test
+//    public void test_perf_1() {
+//        final long start = System.currentTimeMillis();
+//
+//        for(int ii=0; ii<1_000_000; ii++) {
+//            String s = "dsfshfksahfkhsdakjfhskafhksadf";
+//            byte[] arr = s.getBytes(StandardCharsets.UTF_8);
+//            if (arr == null) fail("?");
+//        }
+//
+//        System.out.println(System.currentTimeMillis() - start);
+//    }
+//
+//    @Test
+//    public void test_perf_2() {
+//        String r = "dsfshfksahfkhsdakjfhskafhksadf";
+//        byte[] arr = r.getBytes(StandardCharsets.UTF_8);
+//
+//        final long start = System.currentTimeMillis();
+//
+//        for(int ii=0; ii<1_000_000; ii++) {
+//            String s = new String(arr, StandardCharsets.UTF_8);
+//            if (s.isEmpty()) fail("?");
+//        }
+//
+//        System.out.println(System.currentTimeMillis() - start);
+//    }
+
 }
