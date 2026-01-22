@@ -120,50 +120,80 @@ public class Protocol {
         Objects.requireNonNull(compressor);
         Objects.requireNonNull(encryptor);
 
-        final boolean isCompressData = compressor.needsCompression(message.getData());
+        final boolean compress = compressor.needsCompression(message.getData());
+        final boolean encrypt  = encryptor.isActive();
 
         // Raw message data
         final byte[] headerData = new byte[Header.SIZE];
-        final byte[] payloadMetaData = PayloadMetaData.encode(new PayloadMetaData(message));
-        final byte[] payloadMsgData = message.getData();
+        final byte[] payloadMetaDataRaw = PayloadMetaData.encode(new PayloadMetaData(message));
+        final byte[] payloadDataRaw = message.getData();
 
-        // Check raw message size limit
-        final int totalMsgSize = Header.SIZE + payloadMetaData.length + payloadMsgData.length;
-        if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
-            throw new IpcException(String.format(
-                    "The message size exceeds the configured limit!"
-                    + "\nLimit:                %d"
-                    + "\nMessage total:        %d"
-                    + "\nMessage header:       %d"
-                    + "\nMessage payload meta: %d"
-                    + "\nMessage payload data: %d",
-                    messageSizeLimit, totalMsgSize, Header.SIZE,
-                    payloadMetaData.length, payloadMsgData.length));
-        }
+        // effective payload data optionally compressed/encrypted
+        final byte[] payloadMetaDataEff;
+        final byte[] payloadDataEff;
+
+        validateRawMessageSizeLimit(
+            payloadMetaDataRaw.length,
+            payloadDataRaw.length,
+            messageSizeLimit);
+
 
         // [1] header
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
         final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
-        Header.write(new Header(PROTOCOL_VERSION, isCompressData, encryptor.isActive()), headerBuf);
+        Header.write(new Header(PROTOCOL_VERSION, compress, encrypt), headerBuf);
         headerBuf.flip();
-        ByteChannelIO.writeFully(ch, headerBuf);
 
         // [2] payload meta data (optionally encrypt)
-        if (encryptor.isActive()) {
+        if (encrypt) {
             final byte[] headerAAD = headerBuf.array();  // GCM AAD: added authenticated data
-            final byte[] metaData = encryptor.encrypt(payloadMetaData, headerAAD);
-            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(metaData));
+            payloadMetaDataEff = encryptor.encrypt(payloadMetaDataRaw, headerAAD);
         }
         else {
-            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadMetaData));
+            payloadMetaDataEff = payloadMetaDataRaw;
         }
 
         // [3] payload data (optionally compress and encrypt)
-        byte[] payloadData = encryptor.encrypt(
-                                compressor.compress(payloadMsgData, isCompressData));
-        ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadData));
+        payloadDataEff = encryptor.encrypt(
+                                compressor.compress(payloadDataRaw, compress));
+
+        // Performance optimization:
+        //
+        //   Every channel write costs an expensive context switch, this is very costly
+        //   with small messages!
+        //   => for small messages (< 16KB) aggregate all parts into a single buffer
+        //      and just do a single channel write!
+        final long messageTotalSize = headerData.length
+                                        + 4 + payloadMetaDataEff.length
+                                        + 4 + payloadDataEff.length;
+        if (messageTotalSize < 16 * KB) {
+            final byte[] buf = new byte[16 * KB];
+            int destPos = 0;
+
+            System.arraycopy(headerBuf.array(), 0, buf, destPos, headerData.length);
+            destPos += headerData.length;
+
+            System.arraycopy(toBytes(payloadMetaDataEff.length), 0, buf, destPos, 4);
+            destPos += 4;
+
+            System.arraycopy(payloadMetaDataEff, 0, buf, destPos, payloadMetaDataEff.length);
+            destPos += payloadMetaDataEff.length;
+
+            System.arraycopy(toBytes(payloadDataEff.length), 0, buf, destPos, 4);
+            destPos += 4;
+
+            System.arraycopy(payloadDataEff, 0, buf, destPos, payloadDataEff.length);
+
+            ByteChannelIO.writeFully(ch, ByteBuffer.wrap(buf, 0, (int)messageTotalSize));
+        }
+        else {
+            // Write message to channel,
+            ByteChannelIO.writeFully(ch, headerBuf);
+            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadMetaDataEff));
+            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadDataEff));
+        }
     }
 
     public Message receiveMessage(
@@ -180,22 +210,15 @@ public class Protocol {
             final ByteBuffer headerBuf = ByteBuffer.allocate(Header.SIZE);
             final int bytesRead = ch.read(headerBuf);
             if (bytesRead < 0) {
-                throw new EofException("Failed to read data from channel, channel EOF reached!");
+                throw new EofException(
+                        "Failed to read data from channel, channel EOF reached!");
             }
 
             headerBuf.flip();
             final Header header = Header.read(headerBuf);
 
-            if (header.getVersion() != PROTOCOL_VERSION) {
-                throw new IpcException(
-                        "Received message with unsupported protocol version " + header.getVersion() + "!");
-            }
-
-            if (!header.isEncrypted() && encryptor.isActive()) {
-                // prevent malicious clients
-                throw new IpcException(
-                        "Received an unencrypted message but encryption is mandatory!");
-            }
+            validateProtocolVersion(header);
+            validateEncryptionMode(header, encryptor);
 
             // [2] payload meta data (maybe encrypted)
             final ByteBuffer payloadMetaFrame = ByteChannelIO.readFrame(ch);
@@ -216,27 +239,13 @@ public class Protocol {
                                                 header.isEncrypted()),
                                             header.isCompressed());
 
-            return new Message(
-                    payloadMeta.getId(),
-                    payloadMeta.getRequestId(),
-                    payloadMeta.getType(),
-                    payloadMeta.getResponseStatus(),
-                    payloadMeta.isOneway(),
-                    payloadMeta.isDurable(),
-                    payloadMeta.isSubscriptionReply(),
-                    payloadMeta.getQueueName(),
-                    payloadMeta.getReplyToQueueName(),
-                    payloadMeta.getTimestamp(),
-                    payloadMeta.getExpiresAt(),
-                    payloadMeta.getTimeout(),
-                    payloadMeta.getTopics(),
-                    payloadMeta.getMimetype(),
-                    payloadMeta.getCharset(),
-                    payloadData);
+            return payloadMeta.toMessage(payloadData);
         }
         catch(IOException ex) {
             if (ExceptionUtil.isBrokenPipeException(ex)) {
-                throw new EofException("Failed to read data from channel, channel was closed!", ex);
+                throw new EofException(
+                        "Failed to read data from channel, channel was closed!",
+                        ex);
             }
             else {
                 throw new IpcException("Failed to read data from channel!", ex);
@@ -263,5 +272,51 @@ public class Protocol {
     }
 
 
+    private void validateRawMessageSizeLimit(
+            final int payloadMetaDataSize,
+            final int payloadDataSize,
+            final long messageSizeLimit
+    ) {
+        // Check raw message size limit
+        final int totalMsgSize = Header.SIZE + payloadMetaDataSize + payloadDataSize;
+        if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
+            throw new IpcException(String.format(
+                    "The message size exceeds the configured limit!"
+                    + "\nLimit:                %d"
+                    + "\nMessage total:        %d"
+                    + "\nMessage header:       %d"
+                    + "\nMessage payload meta: %d"
+                    + "\nMessage payload data: %d",
+                    messageSizeLimit,
+                    totalMsgSize,
+                    Header.SIZE,
+                    payloadMetaDataSize,
+                    payloadDataSize));
+        }
+    }
+
+    private void validateProtocolVersion(final Header header) {
+        if (header.getVersion() != PROTOCOL_VERSION) {
+            throw new IpcException(
+                    "Received message with unsupported protocol version "
+                    + header.getVersion() + "!");
+        }
+    }
+
+    private void validateEncryptionMode(final Header header, final Encryptor encryptor) {
+        if (!header.isEncrypted() && encryptor.isActive()) {
+            // prevent malicious clients
+            throw new IpcException(
+                    "Received an unencrypted message but encryption is mandatory!");
+        }
+    }
+
+    private byte[] toBytes(final int n) {
+        return ByteBuffer.allocate(4).putInt(n).array();
+    }
+
+
     private final static int PROTOCOL_VERSION = 1;
+
+    private final static int KB = 1024;
 }

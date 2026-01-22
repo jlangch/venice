@@ -96,6 +96,25 @@ public class PayloadMetaData {
         this.id = id;
     }
 
+    public Message toMessage(final byte[] payloadData) {
+        return new Message(
+                id,
+                requestId,
+                type,
+                responseStatus,
+                oneway,
+                durable,
+                subscriptionReply,
+                queueName,
+                replyToQueueName,
+                timestamp,
+                expiresAt,
+                timeout,
+                topics,
+                mimetype,
+                charset,
+                payloadData);
+    }
 
     public boolean isOneway() {
         return oneway;
