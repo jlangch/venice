@@ -232,7 +232,7 @@ public class ChannelMessageListener implements Runnable {
     private final AtomicBoolean err = new AtomicBoolean(false);
     private final AtomicBoolean irq = new AtomicBoolean(false);
 
-    private final Protocol protocol = new Protocol(true);
+    private final Protocol protocol = new Protocol();
 
     private final AtomicLong messageReceiveCount = new AtomicLong(0L);
     private final AtomicLong discardedMessageSubscriptionCount = new AtomicLong(0L);

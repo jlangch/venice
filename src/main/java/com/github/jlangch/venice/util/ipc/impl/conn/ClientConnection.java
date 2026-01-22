@@ -596,7 +596,7 @@ public class ClientConnection implements AutoCloseable {
 
     private final Semaphore sendSemaphore = new Semaphore(1);
 
-    private final Protocol protocol = new Protocol(true);
+    private final Protocol protocol = new Protocol();
 
     private final long maxMessageSize;
     private final boolean permitClientQueueMgmt;

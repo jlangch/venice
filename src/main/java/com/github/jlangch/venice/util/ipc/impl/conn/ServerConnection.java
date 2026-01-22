@@ -1252,7 +1252,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private final Semaphore sendSemaphore = new Semaphore(1);
 
-    private final Protocol protocol = new Protocol(true);
+    private final Protocol protocol = new Protocol();
 
     // configuration
     private final long maxMessageSize;

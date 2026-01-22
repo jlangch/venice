@@ -27,7 +27,6 @@ import java.nio.channels.ByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.util.ipc.IpcException;
@@ -96,11 +95,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  */
 public class Protocol {
 
-    public Protocol(final boolean cacheBuffers) {
-        this.cacheBuffers = cacheBuffers;
-        this.cache = cacheBuffers
-                        ? new ConcurrentHashMap<Integer,ByteBuffer>()
-                        : null;
+    public Protocol() {
     }
 
 
@@ -314,8 +309,4 @@ public class Protocol {
     private final static int PROTOCOL_VERSION = 1;
 
     private final static int HEADER_SIZE = 32;
-
-
-    private final boolean cacheBuffers;
-    private final ConcurrentHashMap<Integer,ByteBuffer> cache;
 }

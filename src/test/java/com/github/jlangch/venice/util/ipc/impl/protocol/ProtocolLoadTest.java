@@ -40,7 +40,7 @@ public class ProtocolLoadTest {
     @Test
     @EnableOnMac
     public void test_send() throws Exception{
-        final Protocol p = new Protocol(false);
+        final Protocol p = new Protocol();
 
         // A test message with 10 byte payload
         final Message m = Messages.testMessage(new byte[10], false);
@@ -77,7 +77,7 @@ public class ProtocolLoadTest {
     @Test
     @EnableOnMac
     public void test_receive() throws Exception{
-        final Protocol p = new Protocol(false);
+        final Protocol p = new Protocol();
 
         // A test message with 10 byte payload
         final Message m = Messages.testMessage(new byte[10], false);
