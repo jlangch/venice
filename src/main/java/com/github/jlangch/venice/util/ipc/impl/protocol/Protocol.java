@@ -173,25 +173,19 @@ public class Protocol {
                                         + 4 + payloadMetaDataEff.length
                                         + 4 + payloadDataEff.length;
         if (messageTotalSize < 16 * KB) {
-            // TODO: buffer pooling!
             final byte[] buf = new byte[16 * KB];
-            int destPos = 0;
 
-            System.arraycopy(headerBuf.array(), 0, buf, destPos, headerData.length);
-            destPos += headerData.length;
+            // Aggregate to a single buffer
+            final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
+            b.put(headerBuf.array());
+            b.putInt(payloadMetaDataEff.length);
+            b.put(payloadMetaDataEff);
+            b.putInt(payloadDataEff.length);
+            b.put(payloadDataEff);
+            b.flip();
 
-            System.arraycopy(toBytes(payloadMetaDataEff.length), 0, buf, destPos, 4);
-            destPos += 4;
-
-            System.arraycopy(payloadMetaDataEff, 0, buf, destPos, payloadMetaDataEff.length);
-            destPos += payloadMetaDataEff.length;
-
-            System.arraycopy(toBytes(payloadDataEff.length), 0, buf, destPos, 4);
-            destPos += 4;
-
-            System.arraycopy(payloadDataEff, 0, buf, destPos, payloadDataEff.length);
-
-            ByteChannelIO.writeFully(ch, ByteBuffer.wrap(buf, 0, (int)messageTotalSize));
+            // Write message to channel,
+            ByteChannelIO.writeFully(ch, b);
         }
         else {
             // Write message to channel,
@@ -314,10 +308,6 @@ public class Protocol {
             throw new IpcException(
                     "Received an unencrypted message but encryption is mandatory!");
         }
-    }
-
-    private byte[] toBytes(final int n) {
-        return ByteBuffer.allocate(4).putInt(n).array();
     }
 
 

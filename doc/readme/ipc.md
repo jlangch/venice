@@ -1106,6 +1106,7 @@ MacBook Air M2, Venice 1.12.74
 | Throughput bytes | 140 MB/s    | 940 MB/s    | 4302 MB/s   | 7500 MB/s  | 6104 MB/s | 5754 MB/s |
 
  
+
 *Java 8, multiple connections, 1 thread per connection*
 
 | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
@@ -1114,6 +1115,7 @@ MacBook Air M2, Venice 1.12.74
 | Throughput bytes  | 140 MB/s    | 235 MB/s    | 355 MB/s    | 425 MB/s    | 500 MB/s     | 513 MB/s     |
 
  
+
 **AF_UNIX** Unix domain sockets
 
 *Java 8, default socket snd/rcv buffer size, single connection, single thread*
