@@ -1092,7 +1092,7 @@ application/json
 
 ### MacOS 26
 
-MacBook Air M2
+MacBook Air M2, Venice 1.12.74
 
  
 
@@ -1138,7 +1138,7 @@ MacBook Air M2
 
 ### AlmaLinux 9
 
-VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core
+VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread each, Venice 1.12.74
 
  
 
