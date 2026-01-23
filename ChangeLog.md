@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
-IPC: further optimizations for small messages (<16KB), 10% faster
+- Added more IPC performance optimizations for small messages (<16KB). 
 
 
 

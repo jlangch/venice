@@ -50,8 +50,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |   Fields:                  bytes  |
  * |     • magic chars              2  |
  * |     • protocol version         4  |
- * |     • compressed               1  |
- * |     • encrypted                1  |
+ * |     • compressed¹⁾             1  |
+ * |     • encrypted¹⁾              1  |
  * |     • payload meta len         4  |
  * |     • payload data len         4  |
  * |                                   |
@@ -88,6 +88,9 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |   Binary Data:           n bytes  |
  * |                                   |
  * +===================================+
+ *
+ * ¹⁾ Used as GCM AAD: added authenticated data
+ *
  * </pre>
  *
  * Benchmarks with ByteArrayStreamChannel (MacBook Air M2, 24GB, MacOS 26):
