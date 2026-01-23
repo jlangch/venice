@@ -89,7 +89,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |                                   |
  * +===================================+
  *
- * ¹⁾ Used as GCM AAD: added authenticated data
+ * ¹⁾ Used for GCM AAD: added authenticated data
  *
  * </pre>
  *
@@ -169,7 +169,8 @@ public class Protocol {
         // Header
         final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
         Header.write(
-                new Header(PROTOCOL_VERSION, compress, encrypt, payloadMetaEff.length, payloadDataEff.length),
+                new Header(PROTOCOL_VERSION, compress, encrypt,
+                           payloadMetaEff.length, payloadDataEff.length),
                 headerBuf);
         headerBuf.flip();
 
@@ -278,11 +279,11 @@ public class Protocol {
         final int payloadMsgDataCompressed = compressor.compress(message.getData(), true).length;
 
         final Map<String,Integer> info = new HashMap<>();
-        info.put("header",       Header.SIZE + 4 + 4);  // plus 2 integers for payload frames length
+        info.put("header",       Header.SIZE);
         info.put("payload-meta", payloadMetaData);
         info.put("payload-data", payloadMsgData);
         info.put("payload-data-compressed", payloadMsgDataCompressed);
-        info.put("total",        Header.SIZE + 4 + payloadMetaData + 4 + payloadMsgData);
+        info.put("total",        Header.SIZE + payloadMetaData + payloadMsgData);
         return info;
     }
 
@@ -293,7 +294,7 @@ public class Protocol {
             final long messageSizeLimit
     ) {
         // Check raw message size limit
-        final int totalMsgSize = Header.SIZE + 4 + payloadMetaDataSize + 4 + payloadDataSize;
+        final int totalMsgSize = Header.SIZE + payloadMetaDataSize + payloadDataSize;
         if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
             throw new IpcException(String.format(
                     "The message size exceeds the configured limit!"
@@ -304,7 +305,7 @@ public class Protocol {
                     + "\nMessage payload data: %d",
                     messageSizeLimit,
                     totalMsgSize,
-                    Header.SIZE + 4 + 4,  // plus 2 integers for payload frames length
+                    Header.SIZE,
                     payloadMetaDataSize,
                     payloadDataSize));
         }
