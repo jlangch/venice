@@ -1102,19 +1102,26 @@ MacBook Air M2
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--        | :--       | :--       |
-| Throughput msgs  | 22624 msg/s | 16178 msg/s | 6901 msg/s  | 1082 msg/s | 95 msg/s  | 22 msg/s  |
-| Throughput bytes | 110 MB/s    | 790 MB/s    | 3370 MB/s   | 5411 MB/s  | 4728 MB/s | 4359 MB/s |
+| Throughput msgs  | 28627 msg/s | 19255 msg/s | 8811 msg/s  | 1506 msg/s | 122 msg/s | 29 msg/s  |
+| Throughput bytes | 140 MB/s    | 940 MB/s    | 4302 MB/s   | 7500 MB/s  | 6104 MB/s | 5754 MB/s |
 
  
+*Java 8, multiple connections, 1 thread per connection*
 
+| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
+| :--               | :--         | :--         | :--         | :--         | :--          | :--          |
+| Throughput msgs   | 28627 msg/s | 48132 msg/s | 72668 msg/s | 87134 msg/s | 102400 msg/s | 104971 msg/s |
+| Throughput bytes  | 140 MB/s    | 235 MB/s    | 355 MB/s    | 425 MB/s    | 500 MB/s     | 513 MB/s     |
+
+ 
 **AF_UNIX** Unix domain sockets
 
 *Java 8, default socket snd/rcv buffer size, single connection, single thread*
 
-| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
-| :--              | :--         | :--         | :--         | :--        | :--       | :--       |
-| Throughput msgs  | 33597 msg/s | 18618 msg/s | 3577 msg/s  | 6 msg/s    | - msg/s   | - msg/s   |
-| Throughput bytes | 164 MB/s    | 909 MB/s    | 1747 MB/s   | 31 MB/s    | - MB/s    | - MB/s    |
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--         | :--       | :--       | :--       |
+| Throughput msgs  | 40236 msg/s | 18789 msg/s | 3958 msg/s  | 7 msg/s   | - msg/s   | - msg/s   |
+| Throughput bytes | 196 MB/s    | 917 MB/s    | 1933 MB/s   | 34 MB/s   | - MB/s    | - MB/s    |
 
  
 
@@ -1124,8 +1131,8 @@ MacBook Air M2
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--        | :--       | :--       |
-| Throughput msgs  | 34014 msg/s | 28196 msg/s | 10192 msg/s | 373 msg/s  | 6 msg/s   | 0.4 msg/s |
-| Throughput bytes | 166 MB/s    | 1377 MB/s   | 4977 MB/s   | 1863 MB/s  | 285 MB/s  | 78 MB/s   |
+| Throughput msgs  | 40296 msg/s | 32889 msg/s | 12621 msg/s | 414 msg/s  | 7.3 msg/s | 0.5 msg/s |
+| Throughput bytes | 197 MB/s    | 1606 MB/s   | 6163 MB/s   | 2072 MB/s  | 365 MB/s  | 96 MB/s   |
 
  
 

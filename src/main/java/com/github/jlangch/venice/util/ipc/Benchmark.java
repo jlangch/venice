@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
@@ -39,65 +38,68 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
+import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
 
 
-// Benchmark: MacBook Air M2, 24GB, MacOS 26
-// --------------------------------------------------------------------------------------------------
+//Benchmark: MacBook Air M2, 24GB, MacOS 26
+//--------------------------------------------------------------------------------------------------
 //
-// AF_INET tcp/ip sockets
-//       default socket snd/rcv buffer size, single connection, single thread
+//AF_INET tcp/ip sockets
+//   Java 8, single connection, single thread
 //
-// +-------------------------------------------------------------------------------------------------+
-// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
-// +-------------------------------------------------------------------------------------------------+
-// | Throughput msgs  | 22946 msg/s | 18274 msg/s | 8678 msg/s  | 1506 msg/s | 122 msg/s | 29 msg/s  |
-// | Throughput bytes | 112 MB/s    | 892 MB/s    | 4237 MB/s   | 7500 MB/s  | 6104 MB/s | 5754 MB/s |
-// +-------------------------------------------------------------------------------------------------+
+//   +-------------------------------------------------------------------------------------------------+
+//   | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+//   +-------------------------------------------------------------------------------------------------+
+//   | Throughput msgs  | 28627 msg/s | 19255 msg/s | 8811 msg/s  | 1506 msg/s | 122 msg/s | 29 msg/s  |
+//   | Throughput bytes | 140 MB/s    | 940 MB/s    | 4302 MB/s   | 7500 MB/s  | 6104 MB/s | 5754 MB/s |
+//   +-------------------------------------------------------------------------------------------------+
 //
-// +-------------------------------------------------------------------------------------------------------+
-// | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn     | 100 conn    |
-// +-------------------------------------------------------------------------------------------------------+
-// | Throughput msgs   | 22946 msg/s | 42244 msg/s | 54505 msg/s | 52071 msg/s | 48858 msg/s | 50327 msg/s |
-// | Throughput bytes  | 112 MB/s    | 206 MB/s    | 266 MB/s    | 254 MB/s    | 239 MB/s    | 246 MB/s    |
-// +-------------------------------------------------------------------------------------------------------+
+//   Java 8, multiple connections, 1 thread per connection
 //
-//
-// AF_UNIX Unix domain sockets
-//       default socket snd/rcv buffer size, single connection, single thread
-//
-// +------------------------------------------------------------------------------------------------+
-// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
-// +------------------------------------------------------------------------------------------------+
-// | Throughput msgs  | 35188 msg/s | 18618 msg/s | 3681 msg/s  | 6 msg/s   | - msg/s   | - msg/s   |
-// | Throughput bytes | 172 MB/s    | 909 MB/s    | 1798 MB/s   | 31 MB/s   | - MB/s    | - MB/s    |
-// +------------------------------------------------------------------------------------------------+
+//   +---------------------------------------------------------------------------------------------------------+
+//   | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
+//   +---------------------------------------------------------------------------------------------------------+
+//   | Throughput msgs   | 28627 msg/s | 48132 msg/s | 72668 msg/s | 87134 msg/s | 102400 msg/s | 104971 msg/s |
+//   | Throughput bytes  | 140 MB/s    | 235 MB/s    | 355 MB/s    | 425 MB/s    | 500 MB/s     | 513 MB/s     |
+//   +---------------------------------------------------------------------------------------------------------+
 //
 //
-// AF_UNIX Unix domain sockets
-//       1MB socket snd/rcv buffer size, single connection, single thread
+//AF_UNIX Unix domain sockets
+//   default socket snd/rcv buffer size, single connection, single thread
 //
-// +------------------------------------------------------------------------------------------------+
-// | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
-// +------------------------------------------------------------------------------------------------+
-// | Throughput msgs  | 35466 msg/s | 31321 msg/s | 12335 msg/s | 409 msg/s | 6 msg/s   | 0.4 msg/s |
-// | Throughput bytes | 173 MB/s    | 1529 MB/s   | 6023 MB/s   | 2028 MB/s | 300 MB/s  | 78 MB/s   |
-// +------------------------------------------------------------------------------------------------+
+//   +------------------------------------------------------------------------------------------------+
+//   | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
+//   +------------------------------------------------------------------------------------------------+
+//   | Throughput msgs  | 40236 msg/s | 18789 msg/s | 3958 msg/s  | 7 msg/s   | - msg/s   | - msg/s   |
+//   | Throughput bytes | 196 MB/s    | 917 MB/s    | 1933 MB/s   | 34 MB/s   | - MB/s    | - MB/s    |
+//   +------------------------------------------------------------------------------------------------+
+//
+//
+//AF_UNIX Unix domain sockets
+//   1MB socket snd/rcv buffer size, single connection, single thread
+//
+//   +------------------------------------------------------------------------------------------------+
+//   | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
+//   +------------------------------------------------------------------------------------------------+
+//   | Throughput msgs  | 40296 msg/s | 32889 msg/s | 12621 msg/s | 414 msg/s | 7.3 msg/s | 0.5 msg/s |
+//   | Throughput bytes | 197 MB/s    | 1606 MB/s   | 6163 MB/s   | 2072 MB/s | 365 MB/s  | 96 MB/s   |
+//   +------------------------------------------------------------------------------------------------+
 //
 //
 //
-// Benchmark: VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core,
-//          12GB, AlmaLinux 9
-// --------------------------------------------------------------------------------------------------
+//Benchmark: VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core,
+//       12GB, AlmaLinux 9
+//--------------------------------------------------------------------------------------------------
 //
-// AF_INET tcp/ip sockets
-//       default socket snd/rcv buffer size, single connection, single thread
+//AF_INET tcp/ip sockets
+//   default socket snd/rcv buffer size, single connection, single thread
 //
-// +-----------------------------------------------------------------------------------------------+
-// | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
-// +-----------------------------------------------------------------------------------------------+
-// | Throughput msgs  | 11776 msg/s | 8515 msg/s  | 2068 msg/s | 202 msg/s | 19 msg/s  | 3.7 msg/s |
-// | Throughput bytes | 57.5 MB/s   | 416 MB/s    | 1010 MB/s  | 1009 MB/s | 929 MB/s  | 737 MB/s  |
-// +-----------------------------------------------------------------------------------------------+
+//   +-----------------------------------------------------------------------------------------------+
+//   | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+//   +-----------------------------------------------------------------------------------------------+
+//   | Throughput msgs  | 11776 msg/s | 8515 msg/s  | 2068 msg/s | 202 msg/s | 19 msg/s  | 3.7 msg/s |
+//   | Throughput bytes | 57.5 MB/s   | 416 MB/s    | 1010 MB/s  | 1009 MB/s | 929 MB/s  | 737 MB/s  |
+//   +-----------------------------------------------------------------------------------------------+
 //
 //
 public class Benchmark {
@@ -125,8 +127,8 @@ public class Benchmark {
         this.rcvBufSize = rcvBufSize;
         this.rampUpDuration = rampUpDuration;
 
-        this.connURI = parseConnectionURI(sConnURI);
-        this.hostAddr = getConnectionURIHost(connURI);
+        this.connURI = URIHelper.parseConnectionURI(sConnURI);
+        this.hostAddr = URIHelper.getConnectionURIHost(connURI);
     }
 
     public Map<String,Object> run() {
@@ -381,25 +383,6 @@ public class Benchmark {
         return info;
     }
 
-    private URI parseConnectionURI(final String uri) {
-        try {
-            Objects.requireNonNull(uri);
-            return new URI(uri);
-        }
-        catch(Exception ex) {
-            throw new IpcException("Invalid connection URI", ex);
-        }
-    }
-
-    private InetAddress getConnectionURIHost(final URI uri) {
-        try {
-            Objects.requireNonNull(uri);
-            return InetAddress.getByName(uri.getHost());
-        }
-        catch(Exception ex) {
-            throw new IpcException("Invalid connection URI host", ex);
-        }
-    }
 
 
     private static int KB = 1024;

@@ -135,7 +135,15 @@ public class Protocol {
         final byte[] payloadMetaDataRaw = PayloadMetaData.encode(new PayloadMetaData(message));
         final byte[] payloadDataRaw = message.getData();
 
-        // effective payload data optionally compressed/encrypted
+        // Header
+        final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
+        Header.write(new Header(PROTOCOL_VERSION, compress, encrypt), headerBuf);
+        headerBuf.flip();
+
+        // Compression (optional)
+        final byte[] payloadDataZip = compressor.compress(payloadDataRaw, compress);
+
+        // effective payload data optionally encrypted
         final byte[] payloadMetaDataEff;
         final byte[] payloadDataEff;
 
@@ -145,26 +153,15 @@ public class Protocol {
             messageSizeLimit);
 
 
-        // [1] header
+        // [1] Optionally encrypt payload meta data
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
-        final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
-        Header.write(new Header(PROTOCOL_VERSION, compress, encrypt), headerBuf);
-        headerBuf.flip();
+        final byte[] headerAAD = headerBuf.array();  // GCM AAD: added authenticated data
+        payloadMetaDataEff = encryptor.encrypt(payloadMetaDataRaw, headerAAD);
 
-        // [2] payload meta data (optionally encrypt)
-        if (encrypt) {
-            final byte[] headerAAD = headerBuf.array();  // GCM AAD: added authenticated data
-            payloadMetaDataEff = encryptor.encrypt(payloadMetaDataRaw, headerAAD);
-        }
-        else {
-            payloadMetaDataEff = payloadMetaDataRaw;
-        }
-
-        // [3] payload data (optionally compress and encrypt)
-        payloadDataEff = encryptor.encrypt(
-                                compressor.compress(payloadDataRaw, compress));
+        // [2] Optionally encrypt payload data
+       payloadDataEff = encryptor.encrypt(payloadDataZip);
 
         // Performance optimization:
         //
@@ -176,7 +173,7 @@ public class Protocol {
                                         + 4 + payloadMetaDataEff.length
                                         + 4 + payloadDataEff.length;
         if (messageTotalSize < 16 * KB) {
-            // TODO: pool buffer!
+            // TODO: buffer pooling!
             final byte[] buf = new byte[16 * KB];
             int destPos = 0;
 
