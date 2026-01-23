@@ -92,9 +92,16 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  *
  * Benchmarks with ByteArrayStreamChannel (MacBook Air M2, 24GB, MacOS 26):
  *
+ * <p>Without protocol optimizations for small messages
  * <pre>
- * IPC Protocol: Sent 500'000 messages:     0.41 us / msg
- * IPC Protocol: Received 500'000 messages: 0.51 us / msg
+ * IPC Protocol: Sent 500'000 1KB messages:     0.41 us / msg
+ * IPC Protocol: Received 500'000 1KB messages: 0.51 us / msg
+ * </pre>
+ *
+ * <p>With protocol optimizations for small messages
+ * <pre>
+ * IPC Protocol: Sent 500000 1KB messages: 0.88 us / msg
+ * IPC Protocol: Received 500000 1KB messages: 0.37 us / msg
  * </pre>
  *
  */
@@ -169,6 +176,7 @@ public class Protocol {
                                         + 4 + payloadMetaDataEff.length
                                         + 4 + payloadDataEff.length;
         if (messageTotalSize < 16 * KB) {
+            // TODO: pool buffer!
             final byte[] buf = new byte[16 * KB];
             int destPos = 0;
 

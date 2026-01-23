@@ -22,13 +22,18 @@
 package com.github.jlangch.venice.util.ipc.impl.util;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
+
+import javax.crypto.AEADBadTagException;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.dh.DiffieHellmanKeys;
 import com.github.jlangch.venice.util.dh.DiffieHellmanSharedSecret;
+import com.github.jlangch.venice.util.ipc.IpcException;
 
 
 public class EncryptorTest {
@@ -82,5 +87,103 @@ public class EncryptorTest {
             assertArrayEquals(data, clientEncryptor.decrypt(serverEncryptor.encrypt(data)));
         }
     }
+
+    @Test
+    public void test_AAD() {
+        final DiffieHellmanKeys client = DiffieHellmanKeys.create();
+        final DiffieHellmanKeys server = DiffieHellmanKeys.create();
+
+        final DiffieHellmanSharedSecret clientSecret = client.generateSharedSecret(server.getPublicKeyBase64());
+        final DiffieHellmanSharedSecret serverSecret = server.generateSharedSecret(client.getPublicKeyBase64());
+
+        // The secrets must be identical
+        assertArrayEquals(clientSecret.getSecret(), serverSecret.getSecret());
+
+
+        final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
+        final Encryptor serverEncryptor = Encryptor.aes(serverSecret);
+
+        final byte[] aad = "1234".getBytes(StandardCharsets.UTF_8);
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
+
+        assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data, aad), aad, true));
+        assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data, aad), aad, true));
+    }
+
+    @Test
+    public void test_AAD_fail() {
+        try {
+            final DiffieHellmanKeys client = DiffieHellmanKeys.create();
+            final DiffieHellmanKeys server = DiffieHellmanKeys.create();
+
+            final DiffieHellmanSharedSecret clientSecret = client.generateSharedSecret(server.getPublicKeyBase64());
+            final DiffieHellmanSharedSecret serverSecret = server.generateSharedSecret(client.getPublicKeyBase64());
+
+            // The secrets must be identical
+            assertArrayEquals(clientSecret.getSecret(), serverSecret.getSecret());
+
+
+            final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
+            final Encryptor serverEncryptor = Encryptor.aes(serverSecret);
+
+            final byte[] aad = "1234".getBytes(StandardCharsets.UTF_8);
+            final byte[] aad_bad = "1111".getBytes(StandardCharsets.UTF_8);
+            final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
+
+            assertArrayEquals(data, clientEncryptor.decrypt(clientEncryptor.encrypt(data, aad), aad_bad, true));
+            assertArrayEquals(data, serverEncryptor.decrypt(serverEncryptor.encrypt(data, aad), aad_bad, true));
+        }
+        catch(IpcException ex) {
+            assertTrue(ex.getCause().getCause() instanceof AEADBadTagException);
+        }
+    }
+
+    @Test
+    public void test_AAD_buf_size_1() {
+        final DiffieHellmanKeys client = DiffieHellmanKeys.create();
+        final DiffieHellmanKeys server = DiffieHellmanKeys.create();
+
+        final DiffieHellmanSharedSecret clientSecret = client.generateSharedSecret(server.getPublicKeyBase64());
+        final DiffieHellmanSharedSecret serverSecret = server.generateSharedSecret(client.getPublicKeyBase64());
+
+        // The secrets must be identical
+        assertArrayEquals(clientSecret.getSecret(), serverSecret.getSecret());
+
+
+        final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
+
+        final byte[] aad = "1234".getBytes(StandardCharsets.UTF_8);
+        final byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
+
+        final byte[] dataEncrypted = clientEncryptor.encrypt(data);
+        final byte[] dataEncryptedAAD= clientEncryptor.encrypt(data, aad);
+
+        assertEquals(dataEncrypted.length, dataEncryptedAAD.length);
+        assertEquals(data.length + 28, dataEncrypted.length);
+    }
+
+    @Test
+    public void test_AAD_buf_size_2() {
+        final DiffieHellmanKeys client = DiffieHellmanKeys.create();
+        final DiffieHellmanKeys server = DiffieHellmanKeys.create();
+
+        final DiffieHellmanSharedSecret clientSecret = client.generateSharedSecret(server.getPublicKeyBase64());
+        final DiffieHellmanSharedSecret serverSecret = server.generateSharedSecret(client.getPublicKeyBase64());
+
+        // The secrets must be identical
+        assertArrayEquals(clientSecret.getSecret(), serverSecret.getSecret());
+
+
+        final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
+
+        final byte[] aad = "1234".getBytes(StandardCharsets.UTF_8);
+        final byte[] data = new byte[20_000];
+
+        final byte[] dataEncrypted = clientEncryptor.encrypt(data);
+        final byte[] dataEncryptedAAD= clientEncryptor.encrypt(data, aad);
+
+        assertEquals(dataEncrypted.length, dataEncryptedAAD.length);
+        assertEquals(data.length + 28, dataEncrypted.length);
+   }
 
 }
