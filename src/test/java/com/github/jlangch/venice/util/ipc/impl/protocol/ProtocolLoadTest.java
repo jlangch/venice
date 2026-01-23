@@ -42,6 +42,8 @@ public class ProtocolLoadTest {
     public void test_send() throws Exception{
         final Protocol p = new Protocol();
 
+        final int MSG_SIZE_LIMIT = 1 * KB;
+
         // A test message with 10 byte payload
         final Message m = Messages.testMessage(new byte[10], false);
 
@@ -51,7 +53,7 @@ public class ProtocolLoadTest {
 
         // warmup
         for(int ii=0; ii<50_000; ii++) {
-            p.sendMessage(ch, m, Compressor.off(), Encryptor.off(), KB);
+            p.sendMessage(ch, m, Compressor.off(), Encryptor.off(), MSG_SIZE_LIMIT);
         }
 
         final int count = 500_000;
@@ -59,7 +61,7 @@ public class ProtocolLoadTest {
         final long start = System.currentTimeMillis();
 
         for(int ii=0; ii<count; ii++) {
-            p.sendMessage(ch, m, Compressor.off(), Encryptor.off(), KB);
+            p.sendMessage(ch, m, Compressor.off(), Encryptor.off(), MSG_SIZE_LIMIT);
         }
 
         ch.close();
@@ -79,6 +81,8 @@ public class ProtocolLoadTest {
     public void test_receive() throws Exception{
         final Protocol p = new Protocol();
 
+        final int MSG_SIZE_LIMIT = 1 * KB;
+
         // A test message with 10 byte payload
         final Message m = Messages.testMessage(new byte[10], false);
 
@@ -89,7 +93,7 @@ public class ProtocolLoadTest {
         final int count = 500_000;
 
         for(int ii=0; ii<countWarmup + count; ii++) {
-            p.sendMessage(chSnd, m, Compressor.off(), Encryptor.off(), KB);
+            p.sendMessage(chSnd, m, Compressor.off(), Encryptor.off(), MSG_SIZE_LIMIT);
         }
 
         chSnd.close();

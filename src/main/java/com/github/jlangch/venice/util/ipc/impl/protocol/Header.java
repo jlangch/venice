@@ -31,11 +31,16 @@ public class Header {
     public Header(
             final int version,
             final boolean compressed,
-            final boolean encrypted
+            final boolean encrypted,
+            final int payloadMetaSize,
+            final int payloadDataSize
+
     ) {
         this.version = version;
         this.compressed = compressed;
         this.encrypted = encrypted;
+        this.payloadMetaSize = payloadMetaSize;
+        this.payloadDataSize = payloadDataSize;
     }
 
 
@@ -45,6 +50,8 @@ public class Header {
         buf.putInt(header.version);
         buf.put(toByte(header.compressed));
         buf.put(toByte(header.encrypted));
+        buf.putInt(header.payloadMetaSize);
+        buf.putInt(header.payloadDataSize);
     }
 
     public static Header read(final ByteBuffer buf) {
@@ -61,7 +68,19 @@ public class Header {
         return new Header(
                 buf.getInt(),         // version
                 toBool(buf.get()),    // compressed
-                toBool(buf.get()));   // encrypted
+                toBool(buf.get()),    // encrypted
+                buf.getInt(),         // payloadMetaSize
+                buf.getInt());        // payloadDataSize
+    }
+
+    public static byte[] aadData(
+            final boolean compressed,
+            final boolean encrypted
+    ) {
+        final byte[] addData = new byte[2];
+        addData[0] = toByte(compressed);
+        addData[1] = toByte(encrypted);
+        return addData;
     }
 
 
@@ -78,6 +97,14 @@ public class Header {
         return encrypted;
     }
 
+    public int getPayloadMetaSize() {
+        return payloadMetaSize;
+    }
+
+    public int getPayloadDataSize() {
+        return payloadDataSize;
+    }
+
 
     private static boolean toBool(final byte n) {
         if (n == 0) return false;
@@ -90,7 +117,7 @@ public class Header {
     }
 
 
-    public static int SIZE = 8;
+    public static int SIZE = 16;
 
     private static byte MAGIC_1 = (byte)'v';
     private static byte MAGIC_2 = (byte)'n';
@@ -98,4 +125,6 @@ public class Header {
     private final int version;
     private final boolean compressed;
     private final boolean encrypted;
+    private final int payloadMetaSize;
+    private final int payloadDataSize;
 }

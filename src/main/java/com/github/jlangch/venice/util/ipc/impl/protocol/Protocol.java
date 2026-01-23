@@ -43,7 +43,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * +===================================+
  * | Header                            |
  * +-----------------------------------+
- * |   8 bytes                         |
+ * |   16 bytes                        |
  * |   ✗ encrypted                     |
  * |   ✗ compressed                    |
  * |                                   |
@@ -52,6 +52,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |     • protocol version         4  |
  * |     • compressed               1  |
  * |     • encrypted                1  |
+ * |     • payload meta len         4  |
+ * |     • payload data len         4  |
  * |                                   |
  * +===================================+
  * | Payload Meta Data                 |
@@ -60,7 +62,6 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |   ✓ encrypted                     |
  * |   ✗ compressed                    |
  * |                                   |
- * |   Frame len:             4 bytes  |
  * |   Fields:                  bytes  |
  * |     • oneway                   1  |
  * |     • durable                  1  |
@@ -84,7 +85,6 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |   ✓ encrypted                     |
  * |   ✓ compressed                    |
  * |                                   |
- * |   Frame len:             4 bytes  |
  * |   Binary Data:           n bytes  |
  * |                                   |
  * +===================================+
@@ -140,17 +140,9 @@ public class Protocol {
             payloadDataRaw.length,
             messageSizeLimit);
 
-        // Header
-        final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
-        Header.write(new Header(PROTOCOL_VERSION, compress, encrypt), headerBuf);
-        headerBuf.flip();
-
         // Compression (optional)
         final byte[] payloadDataZip = compressor.compress(payloadDataRaw, compress);
 
-        // effective payload data optionally encrypted
-        final byte[] payloadMetaEff;
-        final byte[] payloadDataEff;
 
         // Note on encryption:
         //
@@ -164,31 +156,38 @@ public class Protocol {
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
-        final byte[] headerAAD = headerBuf.array();  // GCM AAD: added authenticated data
-        payloadMetaEff = encryptor.encrypt(payloadMetaRaw, headerAAD);
+        final byte[] headerAAD = Header.aadData(compress, encrypt);  // GCM AAD: added authenticated data
+        final byte[] payloadMetaEff = encryptor.encrypt(payloadMetaRaw, headerAAD);
 
         // [2] Optionally encrypt payload data
-       payloadDataEff = encryptor.encrypt(payloadDataZip);
+        final byte[] payloadDataEff = encryptor.encrypt(payloadDataZip);
+
+
+        // Header
+        final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
+        Header.write(
+                new Header(PROTOCOL_VERSION, compress, encrypt, payloadMetaEff.length, payloadDataEff.length),
+                headerBuf);
+        headerBuf.flip();
+
 
         // Performance optimization:
         //
-        // Every channel write costs an expensive context switch, this
+        // Every channel read/write costs an expensive context switch, this
         // is very costly with small messages!
         //
         // => for small messages (< 16KB) aggregate all parts into a
         //    single buffer and just do a single channel write!
         final long messageTotalSize = headerData.length
-                                        + 4 + payloadMetaEff.length
-                                        + 4 + payloadDataEff.length;
+                                        + payloadMetaEff.length
+                                        + payloadDataEff.length;
         if (messageTotalSize < 16 * KB) {
             final byte[] buf = new byte[16 * KB];  // OS friendly buffer with 16KB
 
             // Aggregate to a single buffer
             final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
             b.put(headerBuf.array());
-            b.putInt(payloadMetaEff.length);
             b.put(payloadMetaEff);
-            b.putInt(payloadDataEff.length);
             b.put(payloadDataEff);
             b.flip();
 
@@ -196,10 +195,10 @@ public class Protocol {
             ByteChannelIO.writeFully(ch, b);
         }
         else {
-            // Write message to channel (5 writes)
+            // Write message to channel (3 writes)
             ByteChannelIO.writeFully(ch, headerBuf);
-            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadMetaEff));
-            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadDataEff));
+            ByteChannelIO.writeFully(ch, ByteBuffer.wrap(payloadMetaEff));
+            ByteChannelIO.writeFully(ch, ByteBuffer.wrap(payloadDataEff));
         }
     }
 
@@ -213,39 +212,45 @@ public class Protocol {
         Objects.requireNonNull(encryptor);
 
         try {
-            // [1] header
+            // [1] Read header from channel
             final ByteBuffer headerBuf = ByteBuffer.allocate(Header.SIZE);
             final int bytesRead = ch.read(headerBuf);
             if (bytesRead < 0) {
                 throw new EofException(
                         "Failed to read data from channel, channel EOF reached!");
             }
-
             headerBuf.flip();
             final Header header = Header.read(headerBuf);
 
             validateProtocolVersion(header);
             validateEncryptionMode(header, encryptor);
 
-            // [2] payload meta data (maybe encrypted)
-            final ByteBuffer payloadMetaFrame = ByteChannelIO.readFrame(ch);
-            final byte[] headerAAD = headerBuf.array(); // GCM AAD: added authenticated data
-            final byte[] payloadMetaRaw = payloadMetaFrame.array();
+            // [2] Read payload meta data from channel
+            final ByteBuffer payloadMetaBuf = ByteBuffer.allocate(header.getPayloadMetaSize());
+            ByteChannelIO.readFully(ch, payloadMetaBuf);
+
+            // [3] Read payload data from channel
+            final ByteBuffer payloadDataBuf = ByteBuffer.allocate(header.getPayloadDataSize());
+            ByteChannelIO.readFully(ch, payloadDataBuf);
+
+            // [4] Process payload meta data (maybe encrypted)
+            final byte[] headerAAD = Header.aadData(header.isCompressed(), header.isEncrypted());
+            final byte[] payloadMetaRaw = payloadMetaBuf.array();
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
                                                         payloadMetaRaw,
                                                         headerAAD,
                                                         header.isEncrypted()));
 
-            // [3] payload data (maybe compressed and encrypted)
-            final ByteBuffer payloadFrame = ByteChannelIO.readFrame(ch);
-            final byte[] payloadDataRaw = payloadFrame.array();
+            // [5] Process payload data (maybe compressed and encrypted)
+            final byte[] payloadDataRaw = payloadDataBuf.array();
             final byte[] payloadData = compressor.decompress(
                                             encryptor.decrypt(
                                                 payloadDataRaw,
                                                 header.isEncrypted()),
                                             header.isCompressed());
 
+            // [5] Build message
             return payloadMeta.toMessage(payloadData);
         }
         catch(IOException ex) {
