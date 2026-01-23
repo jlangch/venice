@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl.util;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -86,6 +87,29 @@ public class EncryptorTest {
             assertArrayEquals(data, serverEncryptor.decrypt(clientEncryptor.encrypt(data)));
             assertArrayEquals(data, clientEncryptor.decrypt(serverEncryptor.encrypt(data)));
         }
+    }
+
+    @Test
+    public void test_tamper() {
+        final DiffieHellmanKeys client = DiffieHellmanKeys.create();
+        final DiffieHellmanKeys server = DiffieHellmanKeys.create();
+
+        final DiffieHellmanSharedSecret clientSecret = client.generateSharedSecret(server.getPublicKeyBase64());
+        final DiffieHellmanSharedSecret serverSecret = server.generateSharedSecret(client.getPublicKeyBase64());
+
+        // The secrets must be identical
+        assertArrayEquals(clientSecret.getSecret(), serverSecret.getSecret());
+
+        final Encryptor clientEncryptor = Encryptor.aes(clientSecret);
+
+        final byte[] data = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr".getBytes(StandardCharsets.UTF_8);
+
+        final byte[] encrypted = clientEncryptor.encrypt(data);
+
+        // tamper the encrypted data
+        encrypted[10] = (byte)(encrypted[10] ^ 0x055);
+
+        assertThrows(Exception.class, () -> clientEncryptor.decrypt(encrypted));
     }
 
     @Test

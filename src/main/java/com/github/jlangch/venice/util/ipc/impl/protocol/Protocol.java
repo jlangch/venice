@@ -132,8 +132,13 @@ public class Protocol {
 
         // Raw message data
         final byte[] headerData = new byte[Header.SIZE];
-        final byte[] payloadMetaDataRaw = PayloadMetaData.encode(new PayloadMetaData(message));
+        final byte[] payloadMetaRaw = PayloadMetaData.encode(new PayloadMetaData(message));
         final byte[] payloadDataRaw = message.getData();
+
+        validateRawMessageSizeLimit(
+            payloadMetaRaw.length,
+            payloadDataRaw.length,
+            messageSizeLimit);
 
         // Header
         final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
@@ -144,53 +149,56 @@ public class Protocol {
         final byte[] payloadDataZip = compressor.compress(payloadDataRaw, compress);
 
         // effective payload data optionally encrypted
-        final byte[] payloadMetaDataEff;
+        final byte[] payloadMetaEff;
         final byte[] payloadDataEff;
 
-        validateRawMessageSizeLimit(
-            payloadMetaDataRaw.length,
-            payloadDataRaw.length,
-            messageSizeLimit);
-
+        // Note on encryption:
+        //
+        // AES-256 GCM detects tampered encrypted data and throws an exception
+        // while decrypting it!
+        //
+        // The unencrypted header is protected by GCM AAD ( added authenticated
+        // data). Tampered header data will be detected and results in an exception.
 
         // [1] Optionally encrypt payload meta data
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
         //      data, so any tampering if the header data is detected!
         final byte[] headerAAD = headerBuf.array();  // GCM AAD: added authenticated data
-        payloadMetaDataEff = encryptor.encrypt(payloadMetaDataRaw, headerAAD);
+        payloadMetaEff = encryptor.encrypt(payloadMetaRaw, headerAAD);
 
         // [2] Optionally encrypt payload data
        payloadDataEff = encryptor.encrypt(payloadDataZip);
 
         // Performance optimization:
         //
-        //   Every channel write costs an expensive context switch, this is very costly
-        //   with small messages!
-        //   => for small messages (< 16KB) aggregate all parts into a single buffer
-        //      and just do a single channel write!
+        // Every channel write costs an expensive context switch, this
+        // is very costly with small messages!
+        //
+        // => for small messages (< 16KB) aggregate all parts into a
+        //    single buffer and just do a single channel write!
         final long messageTotalSize = headerData.length
-                                        + 4 + payloadMetaDataEff.length
+                                        + 4 + payloadMetaEff.length
                                         + 4 + payloadDataEff.length;
         if (messageTotalSize < 16 * KB) {
-            final byte[] buf = new byte[16 * KB];
+            final byte[] buf = new byte[16 * KB];  // OS friendly buffer with 16KB
 
             // Aggregate to a single buffer
             final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
             b.put(headerBuf.array());
-            b.putInt(payloadMetaDataEff.length);
-            b.put(payloadMetaDataEff);
+            b.putInt(payloadMetaEff.length);
+            b.put(payloadMetaEff);
             b.putInt(payloadDataEff.length);
             b.put(payloadDataEff);
             b.flip();
 
-            // Write message to channel,
+            // Write message to channel (1 write)
             ByteChannelIO.writeFully(ch, b);
         }
         else {
-            // Write message to channel,
+            // Write message to channel (5 writes)
             ByteChannelIO.writeFully(ch, headerBuf);
-            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadMetaDataEff));
+            ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadMetaEff));
             ByteChannelIO.writeFrame(ch, ByteBuffer.wrap(payloadDataEff));
         }
     }
@@ -262,11 +270,11 @@ public class Protocol {
         final int payloadMsgDataCompressed = compressor.compress(message.getData(), true).length;
 
         final Map<String,Integer> info = new HashMap<>();
-        info.put("header",       Header.SIZE);
+        info.put("header",       Header.SIZE + 4 + 4);  // plus 2 integers for payload frames length
         info.put("payload-meta", payloadMetaData);
         info.put("payload-data", payloadMsgData);
         info.put("payload-data-compressed", payloadMsgDataCompressed);
-        info.put("total",        Header.SIZE + payloadMetaData + payloadMsgData);
+        info.put("total",        Header.SIZE + 4 + payloadMetaData + 4 + payloadMsgData);
         return info;
     }
 
@@ -277,7 +285,7 @@ public class Protocol {
             final long messageSizeLimit
     ) {
         // Check raw message size limit
-        final int totalMsgSize = Header.SIZE + payloadMetaDataSize + payloadDataSize;
+        final int totalMsgSize = Header.SIZE + 4 + payloadMetaDataSize + 4 + payloadDataSize;
         if (messageSizeLimit > 0 && totalMsgSize > messageSizeLimit) {
             throw new IpcException(String.format(
                     "The message size exceeds the configured limit!"
@@ -288,7 +296,7 @@ public class Protocol {
                     + "\nMessage payload data: %d",
                     messageSizeLimit,
                     totalMsgSize,
-                    Header.SIZE,
+                    Header.SIZE + 4 + 4,  // plus 2 integers for payload frames length
                     payloadMetaDataSize,
                     payloadDataSize));
         }
