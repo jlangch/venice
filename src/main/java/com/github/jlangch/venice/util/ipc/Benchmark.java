@@ -149,13 +149,14 @@ public class Benchmark {
         ) {
             server.start();
 
+            if (print) System.out.println("Benchmark server started!");
+
             while(true) {
                 Thread.sleep(10_000);
             }
-
         }
         catch(InterruptedException ex) {
-            throw new com.github.jlangch.venice.InterruptedException("Benchmark server interrupted!");
+            if (print) System.out.println("Benchmark server stopped!");
         }
         catch(Exception ex) {
             throw new VncException("Benchmark server failed!", ex);
