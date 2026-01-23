@@ -137,6 +137,35 @@ public class Benchmark {
                 : benchmark();
     }
 
+    public void runServer() {
+        try(Server server = Server.of(ServerConfig.builder()
+                                        .connURI(connURI)
+                                        .maxMessageSize(Messages.MESSAGE_LIMIT_MAX)
+                                        .encrypt(encrypt)
+                                        .sendBufferSize(sndBufSize)
+                                        .receiveBufferSize(rcvBufSize)
+                                        .maxParallelConnections(connections + 1)
+                                        .build())
+        ) {
+            server.start();
+
+            while(true) {
+                Thread.sleep(10_000);
+            }
+
+        }
+        catch(InterruptedException ex) {
+            throw new com.github.jlangch.venice.InterruptedException("Benchmark server interrupted!");
+        }
+        catch(Exception ex) {
+            throw new VncException("Benchmark server failed!", ex);
+        }
+    }
+
+    public Map<String,Object> runClient() {
+        return benchmark();
+    }
+
     private Map<String,Object> benchmarkWithLocalServer() {
         try(Server server = Server.of(ServerConfig.builder()
                                         .connURI(connURI)
