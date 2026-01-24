@@ -708,6 +708,8 @@ public class IPCFunctions {
                         "| duration n  | The duration in seconds.|\n\n" +
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
+                        "| :mode m                      | Operation mode `:client`, `:server`, or `:client-server`. " +
+                                                        "Defaults to `:client-server`|\n" +
                         "| :print b                     | If `true` print the result to stdout. Defaults to `false`|\n" +
                         "| :oneway b                    | If `true` send oneway messages. Defaults to `false`|\n" +
                         "| :encrypt b                   | If `true` encrypt the messages. Defaults to `false`|\n" +
@@ -767,6 +769,7 @@ public class IPCFunctions {
                     // options
                     final VncHashMap options = VncHashMap.ofAll(args.slice(3));
 
+                    final VncVal modeVal        = options.get(new VncKeyword("mode"), new VncKeyword("client-server"));
                     final VncVal printVal       = options.get(new VncKeyword("print"), VncBoolean.False);
                     final VncVal encryptVal     = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                     final VncVal onewayVal      = options.get(new VncKeyword("onway"), VncBoolean.False);
@@ -775,6 +778,7 @@ public class IPCFunctions {
                     final VncVal rcvBufSizeVal  = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
                     final VncVal rampUpVal      = options.get(new VncKeyword("ramp-up"), new VncLong(0));
 
+                    final String mode     = Coerce.toVncKeyword(modeVal).getValue();
                     final boolean print   = Coerce.toVncBoolean(printVal).getValue();
                     final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                     final boolean oneway  = Coerce.toVncBoolean(onewayVal).getValue();
@@ -782,6 +786,16 @@ public class IPCFunctions {
                     final int sndBufSize  = (int)convertUnitValueToLong(sndBufSizeVal);
                     final int rcvBufSize  = (int)convertUnitValueToLong(rcvBufSizeVal);
                     final int rampUp      = Coerce.toVncLong(rampUpVal).toJavaInteger();
+
+                    final HashMap<String,Object> params = new HashMap<>();
+                    params.put("connection-uri",      sConnURI);
+                    params.put("msg-size",            msgSize);
+                    params.put("duration",            duration);
+                    params.put("connections",         connections);
+                    params.put("socket-snd-buf-size", sndBufSize);
+                    params.put("socket-rcv-buf-size", rcvBufSize);
+                    params.put("ramp-up",             rampUp);
+                    params.put("mode",                mode);
 
                     final Benchmark benchmark =   new Benchmark(
                                                         sConnURI,
@@ -795,22 +809,33 @@ public class IPCFunctions {
                                                         rcvBufSize,
                                                         rampUp);
 
-                    final Map<String,Object> result = benchmark.run();
-                    if (result == null) {
+                    if (mode.equals("client-server")) {
+                        final Map<String,Object> result = benchmark.run();
+                        if (result == null) {
+                            return Nil;
+                        }
+                        else {
+                            result.put("params", params);
+                            return JavaInteropUtil.convertToVncVal(result, true);
+                        }
+                    }
+                    else if (mode.equals("client")) {
+                        final Map<String,Object> result = benchmark.runClient();
+                        if (result == null) {
+                            return Nil;
+                        }
+                        else {
+                            result.put("params", params);
+                            return JavaInteropUtil.convertToVncVal(result, true);
+                        }
+                    }
+                    else if (mode.equals("server")) {
+                        benchmark.runServer();
                         return Nil;
                     }
                     else {
-                        final HashMap<String,Object> params = new HashMap<>();
-                        params.put("connection-uri",      sConnURI);
-                        params.put("msg-size",            msgSize);
-                        params.put("duration",            duration);
-                        params.put("socket-snd-buf-size", sndBufSize);
-                        params.put("socket-rcv-buf-size", rcvBufSize);
-                        params.put("ramp-up",             rampUp);
-
-                        result.put("params", params);
-
-                        return JavaInteropUtil.convertToVncVal(result, true);
+                        throw new IpcException(
+                                "Invalide mode!. Please use one of :client, :server, or :client-server");
                     }
                 }
                 catch(Exception ex) {

@@ -229,17 +229,36 @@ public class Protocol {
             validateProtocolVersion(header);
             validateEncryptionMode(header, encryptor);
 
-            // [2] Read payload meta data from channel
-            final ByteBuffer payloadMetaBuf = ByteBuffer.allocate(header.getPayloadMetaSize());
-            ByteChannelIO.readFully(ch, payloadMetaBuf);
+            final byte[] payloadMetaRaw;
+            final byte[] payloadDataRaw;
 
-            // [3] Read payload data from channel
-            final ByteBuffer payloadDataBuf = ByteBuffer.allocate(header.getPayloadDataSize());
-            ByteChannelIO.readFully(ch, payloadDataBuf);
+            if ((header.getPayloadMetaSize() + header.getPayloadDataSize()) < 0 * KB) {
+                final byte[] b = new byte[16 * KB];  // OS friendly buffer with 16KB
+                final int effSize = header.getPayloadMetaSize() + header.getPayloadDataSize();
+                final ByteBuffer buf = ByteBuffer.wrap(b, 0, effSize);
+                ByteChannelIO.readFully(ch, buf);
+                buf.flip();
+
+                payloadMetaRaw = new byte[header.getPayloadMetaSize()];
+                payloadDataRaw = new byte[header.getPayloadDataSize()];
+
+                buf.get(payloadMetaRaw);
+                buf.get(payloadDataRaw);
+            }
+            else {
+                // [2] Read payload meta data from channel
+                final ByteBuffer payloadMetaBuf = ByteBuffer.allocate(header.getPayloadMetaSize());
+                ByteChannelIO.readFully(ch, payloadMetaBuf);
+                payloadMetaRaw = payloadMetaBuf.array();
+
+                // [3] Read payload data from channel
+                final ByteBuffer payloadDataBuf = ByteBuffer.allocate(header.getPayloadDataSize());
+                ByteChannelIO.readFully(ch, payloadDataBuf);
+                payloadDataRaw = payloadDataBuf.array();
+            }
 
             // [4] Process payload meta data (maybe encrypted)
             final byte[] headerAAD = Header.aadData(header.isCompressed(), header.isEncrypted());
-            final byte[] payloadMetaRaw = payloadMetaBuf.array();
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
                                                     encryptor.decrypt(
                                                         payloadMetaRaw,
@@ -247,7 +266,6 @@ public class Protocol {
                                                         header.isEncrypted()));
 
             // [5] Process payload data (maybe compressed and encrypted)
-            final byte[] payloadDataRaw = payloadDataBuf.array();
             final byte[] payloadData = compressor.decompress(
                                             encryptor.decrypt(
                                                 payloadDataRaw,
