@@ -213,6 +213,18 @@ public class Server implements AutoCloseable {
                         try {
                             // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
+
+                            if (!hasThreadPoolSlotsLeft()) {
+                                try {
+                                    logger.error(
+                                            "server", "connection",
+                                            "Rejected new connection because the limit of "
+                                                + config.getMaxConnections() + " active connections is already reached");
+                                    channel.close();
+                                }
+                                catch(Exception ignore) {}
+                            }
+
                             if (config.getSndBufSize() > 0) channel.socket().setSendBufferSize(config.getSndBufSize());
                             if (config.getRcvBufSize() > 0) channel.socket().setReceiveBufferSize(config.getRcvBufSize());
                             channel.configureBlocking(true);
@@ -492,6 +504,10 @@ public class Server implements AutoCloseable {
             server.set(null);
             throw new IpcException(msg, ex);
         }
+    }
+
+    private boolean hasThreadPoolSlotsLeft() {
+        return mngdExecutor.getActiveThreadCount() < mngdExecutor.getMaximumThreadPoolSize();
     }
 
     private static byte[] toBytes(final String s, final String charset) {
