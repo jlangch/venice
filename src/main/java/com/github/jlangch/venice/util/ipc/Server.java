@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -214,18 +215,15 @@ public class Server implements AutoCloseable {
                             // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
 
-                            if (!hasThreadPoolSlotsLeft()) {
-                                // we do not enqueue new connections to the thread pool because connections
-                                // are usually long-lived. To enqueue connections if the thread pool is full
-                                // sets them to wait a very long time for a new free thread pool slot.
-                                try {
-                                    logger.error(
-                                            "server", "connection",
-                                            "Rejected new connection because the limit of "
-                                                + config.getMaxConnections() + " active connections is already reached");
-                                    channel.close();
-                                }
-                                catch(Exception ignore) {}
+                            final int maxThreadPoolSize = mngdExecutor.getMaximumThreadPoolSize();
+                            final int threadPoolSize = mngdExecutor.getThreadPoolSize();
+
+                            if (threadPoolSize >= maxThreadPoolSize) {
+                                logger.error(
+                                        "server", "connection",
+                                        "Max parallel connection limit reached! Connection rejected! "
+                                        + "You can increase the server's max connection config value.");
+                                try { ch.close(); } catch(Exception ignore) {}
                             }
 
                             if (config.getSndBufSize() > 0) channel.socket().setSendBufferSize(config.getSndBufSize());
@@ -258,28 +256,25 @@ public class Server implements AutoCloseable {
                                                                    statistics,
                                                                    () -> mngdExecutor.info());
 
-                            final int maxThreadPoolSize = mngdExecutor.getMaximumThreadPoolSize();
-                            final int threadPoolSize = mngdExecutor.getThreadPoolSize();
-
-                            if (threadPoolSize < maxThreadPoolSize) {
-                                logger.info(
-                                        "server", "start",
-                                        String.format(
-                                            "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
-                                            connId,
-                                            IO.getRemoteAddress(channel),
-                                            threadPoolSize,
-                                            maxThreadPoolSize));
-
-                                executor.execute(conn);
+                            try {
+                               executor.execute(conn);
                             }
-                            else {
-                                logger.error("server", "start", "No free thread pool slot! Connection rejected!");
-                                try { conn.close(); } catch(Exception ignore) {}
+                            catch(RejectedExecutionException ex) {
+                                logger.error("server", "connection", "New connection rejected by thread pool!", ex);
+                                try { ch.close(); } catch(Exception ignore) {}
                             }
+
+                            logger.info(
+                                    "server", "connection",
+                                    String.format(
+                                        "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
+                                        connId,
+                                        IO.getRemoteAddress(channel),
+                                        threadPoolSize,
+                                        maxThreadPoolSize));
                         }
                         catch (IOException ex) {
-                            logger.warn("server", "conn", "Connection accept/start terminated with an exception.", ex);
+                            logger.warn("server", "connection", "Connection accept/start terminated with an exception.", ex);
                             return; // finish listener
                         }
                     }
@@ -507,10 +502,6 @@ public class Server implements AutoCloseable {
             server.set(null);
             throw new IpcException(msg, ex);
         }
-    }
-
-    private boolean hasThreadPoolSlotsLeft() {
-        return mngdExecutor.getActiveThreadCount() < mngdExecutor.getMaximumThreadPoolSize();
     }
 
     private static byte[] toBytes(final String s, final String charset) {
