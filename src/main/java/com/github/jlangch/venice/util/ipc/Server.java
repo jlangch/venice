@@ -215,6 +215,9 @@ public class Server implements AutoCloseable {
                             final SocketChannel channel = ch.accept();
 
                             if (!hasThreadPoolSlotsLeft()) {
+                                // we do not enqueue new connections to the thread pool because connections
+                                // are usually long-lived. To enqueue connections if the thread pool is full
+                                // sets them to wait a very long time for a new free thread pool slot.
                                 try {
                                     logger.error(
                                             "server", "connection",
