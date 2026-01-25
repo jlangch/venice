@@ -1158,10 +1158,10 @@ MacBook Air M2, Venice 1.12.74
 
 *Java 8, 1MB socket snd/rcv buffer size, multiple connections, 1 thread per connection (limit 53 connections!)*
 
-| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn       | 4 conn       | 10 conn      | 50 conn      |
-| :--               | :--         | :--         | :--          | :--          | :--          | :--          |
-| Throughput msgs   | 49013 msg/s | 88937 msg/s | 120589 msg/s | 130190 msg/s | 137519 msg/s | 137386 msg/s |
-| Throughput bytes  | 239 MB/s    | 434 MB/s    | 589 MB/s     | 636 MB/s     | 671 MB/s     | 871 MB/s     |
+| Payload 5KB      | 1 conn      | 2 conn      | 3 conn       | 4 conn       | 10 conn      | 50 conn      |
+| :--              | :--         | :--         | :--          | :--          | :--          | :--          |
+| Throughput msgs  | 49013 msg/s | 88937 msg/s | 120589 msg/s | 130190 msg/s | 137519 msg/s | 137386 msg/s |
+| Throughput bytes | 239 MB/s    | 434 MB/s    | 589 MB/s     | 636 MB/s     | 671 MB/s     | 871 MB/s     |
 
  
 
@@ -1184,10 +1184,10 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread each, 
 
 *Java 8, multiple connections, 1 thread per connection*
 
-| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn     | 100 conn    |
-| :--               | :--         | :--         | :--         | :--         | :--         | :--         |
-| Throughput msgs   | 26012 msg/s | 47891 msg/s | 50588 msg/s | 48312 msg/s | 48265 msg/s | 39386 msg/s |
-| Throughput bytes  | 127 MB/s    | 234 MB/s    | 247 MB/s    | 234 MB/s    | 236 MB/s    | 192 MB/s    |
+| Payload 5KB      | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn     | 100 conn    |
+| :--              | :--         | :--         | :--         | :--         | :--         | :--         |
+| Throughput msgs  | 26012 msg/s | 47891 msg/s | 50588 msg/s | 48312 msg/s | 48265 msg/s | 39386 msg/s |
+| Throughput bytes | 127 MB/s    | 234 MB/s    | 247 MB/s    | 234 MB/s    | 236 MB/s    | 192 MB/s    |
 
  
 
