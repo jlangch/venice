@@ -152,13 +152,13 @@ public class Protocol {
         // AES-256 GCM detects tampered encrypted data and throws an exception
         // while decrypting it!
         //
-        // The unencrypted header is protected by GCM AAD ( added authenticated
-        // data). Tampered header data will be detected and results in an exception.
+        // The unencrypted header is protected by GCM AAD (added authenticated data)
+        // Thus tampered header data will be detected and results in an exception.
 
         // [1] Optionally encrypt payload meta data
         //     if encryption is active the header is processed as AAD
         //     (added authenticated data) with the encrypted payload meta
-        //      data, so any tampering if the header data is detected!
+        //     data, so any tampering if the header data is detected!
         final byte[] headerAAD = Header.aadData(compress, encrypt);  // GCM AAD: added authenticated data
         final byte[] payloadMetaEff = encryptor.encrypt(payloadMetaRaw, headerAAD);
 
@@ -166,7 +166,7 @@ public class Protocol {
         final byte[] payloadDataEff = encryptor.encrypt(payloadDataZip);
 
 
-        // Header
+        // Encode header
         final ByteBuffer headerBuf = ByteBuffer.wrap(headerData);
         Header.write(
                 new Header(PROTOCOL_VERSION, compress, encrypt,
@@ -187,6 +187,7 @@ public class Protocol {
                                         + payloadDataEff.length;
         if (messageTotalSize < KB_16) {
             final byte[] buf = new byte[KB_16];  // OS friendly buffer with 16KB
+            //final byte[] buf = cachedBuffer.get();
 
             // Aggregate to a single buffer
             final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
@@ -197,6 +198,8 @@ public class Protocol {
 
             // Write message to channel (1 write)
             ByteChannelIO.writeFully(ch, b);
+
+            //cachedBuffer.put(buf);
         }
         else {
             // Write message to channel (3 writes)
@@ -233,8 +236,9 @@ public class Protocol {
             final byte[] payloadDataRaw;
 
             // optimization turned off
-            if (false && (header.getPayloadMetaSize() + header.getPayloadDataSize()) < KB_16) {
+            if ((header.getPayloadMetaSize() + header.getPayloadDataSize()) < 0 * KB_16) {
                 final byte[] b = new byte[KB_16];  // OS friendly buffer with 16KB
+
                 final int effSize = header.getPayloadMetaSize() + header.getPayloadDataSize();
                 final ByteBuffer buf = ByteBuffer.wrap(b, 0, effSize);
                 ByteChannelIO.readFully(ch, buf);
@@ -245,6 +249,9 @@ public class Protocol {
 
                 payloadMetaRaw = new byte[header.getPayloadMetaSize()];
                 payloadDataRaw = new byte[header.getPayloadDataSize()];
+
+//                System.arraycopy(b, 0, payloadMetaRaw, 0, payloadMetaRaw.length);
+//                System.arraycopy(b, payloadMetaRaw.length, payloadDataRaw, 0, payloadDataRaw.length);
 
                 buf.get(payloadMetaRaw);
                 buf.get(payloadDataRaw);
@@ -355,4 +362,6 @@ public class Protocol {
 
     private final static int KB = 1024;
     private final static int KB_16 = 16 * KB;
+
+    private final ReusableBuffer cachedBuffer = new ReusableBuffer(KB_16);
 }
