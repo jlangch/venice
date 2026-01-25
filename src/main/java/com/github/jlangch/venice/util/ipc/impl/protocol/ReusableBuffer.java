@@ -21,9 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.protocol;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.bouncycastle.util.Arrays;
 
 
 public class ReusableBuffer implements IReusableBuffer {

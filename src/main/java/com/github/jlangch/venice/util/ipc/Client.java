@@ -1034,30 +1034,28 @@ public class Client implements Cloneable, AutoCloseable {
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
 
-        final ClientConnection c = conn;
-        if (c == null || !c.isOpen()) {
+        if (conn == null || !conn.isOpen()) {
             throw new IpcException("This client is not open!");
         }
 
-        validateMessageSize(msg, c);
+        validateMessageSize(msg, conn);
 
         if (isClientLocalMessage(msg)) {
             return handleClientLocalMessage(msg);
         }
 
-        return c.send(msg, 10_000);  // TODO: do the timeout right
+        return conn.send(msg, 10_000);  // TODO: do the timeout right
     }
 
     private Future<IMessage> sendAsync(final IMessage msg) {
         Objects.requireNonNull(msg);
 
 
-        final ClientConnection c = conn;
-        if (c == null || !c.isOpen()) {
+        if (conn == null || !conn.isOpen()) {
             throw new IpcException("This client is not open!");
         }
 
-        validateMessageSize(msg, c);
+        validateMessageSize(msg, conn);
 
         // final long msgQueueTimeout = ((Message)msg).getTimeout();
 
@@ -1065,7 +1063,7 @@ public class Client implements Cloneable, AutoCloseable {
             return new ConstantFuture<IMessage>(handleClientLocalMessage(msg));
         }
 
-        return c.sendAsync(msg, 10_000);   // TODO: do the timeout right
+        return conn.sendAsync(msg, 10_000);   // TODO: do the timeout right
     }
 
     private Message handleClientLocalMessage(final IMessage request) {

@@ -54,8 +54,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
    +-------------------------------------------------------------------------------------------------+
    | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
    +-------------------------------------------------------------------------------------------------+
-   | Throughput msgs  | 30023 msg/s | 23317 msg/s | 9498 msg/s  | 1552 msg/s | 122 msg/s | 30 msg/s  |
-   | Throughput bytes | 147 MB/s    | 1139 MB/s   | 4638 MB/s   | 7760 MB/s  | 6104 MB/s | 5953 MB/s |
+   | Throughput msgs  | 30578 msg/s | 23317 msg/s | 9498 msg/s  | 1552 msg/s | 122 msg/s | 30 msg/s  |
+   | Throughput bytes | 149 MB/s    | 1139 MB/s   | 4638 MB/s   | 7760 MB/s  | 6104 MB/s | 5953 MB/s |
    +-------------------------------------------------------------------------------------------------+
 
    Java 8, multiple connections, 1 thread per connection
@@ -63,8 +63,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
    +---------------------------------------------------------------------------------------------------------+
    | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
    +---------------------------------------------------------------------------------------------------------+
-   | Throughput msgs   | 30023 msg/s | 56691 msg/s | 79775 msg/s | 93818 msg/s | 111850 msg/s | 118869 msg/s |
-   | Throughput bytes  | 147 MB/s    | 277 MB/s    | 390 MB/s    | 458 MB/s    | 546 MB/s     | 513 MB/s     |
+   | Throughput msgs   | 30578 msg/s | 57340 msg/s | 80033 msg/s | 93818 msg/s | 112331 msg/s | 119498 msg/s |
+   | Throughput bytes  | 149 MB/s    | 280 MB/s    | 391 MB/s    | 458 MB/s    | 548 MB/s     | 583 MB/s     |
    +---------------------------------------------------------------------------------------------------------+
 
    Java 21, single connection, single thread
@@ -81,7 +81,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
    +---------------------------------------------------------------------------------------------------------+
    | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
    +---------------------------------------------------------------------------------------------------------+
-   | Throughput msgs   | 34782 msg/s | 60158 msg/s | 83154 msg/s | 97530 msg/s | 120214 msg/s | 119482 msg/s |
+   | Throughput msgs   | 34782 msg/s | 60245 msg/s | 83154 msg/s | 97530 msg/s | 120214 msg/s | 119482 msg/s |
    | Throughput bytes  | 170 MB/s    | 294 MB/s    | 406 MB/s    | 476 MB/s    | 587 MB/s     | 583 MB/s     |
    +---------------------------------------------------------------------------------------------------------+
 
