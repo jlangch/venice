@@ -73,7 +73,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
    | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
    +-------------------------------------------------------------------------------------------------+
    | Throughput msgs  | 34782 msg/s | 24099 msg/s | 9548 msg/s  | 1545 msg/s | 114 msg/s | 29 msg/s  |
-   | Throughput bytes | 170 MB/s    | 1177 MB/s   | 4662 MB/s   | 7724 MB/s  | 5691 MB/s | 5797 MB/s|
+   | Throughput bytes | 170 MB/s    | 1177 MB/s   | 4662 MB/s   | 7724 MB/s  | 5691 MB/s | 5797 MB/s |
    +-------------------------------------------------------------------------------------------------+
 
    Java 21, multiple connections, 1 thread per connection
@@ -119,7 +119,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
 
 
    Benchmark: VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core,
-              12GB, AlmaLinux 9
+              12GB, AlmaLinux 9, Venice 1.12.74
    --------------------------------------------------------------------------------------------------
 
    AF_INET tcp/ip sockets
