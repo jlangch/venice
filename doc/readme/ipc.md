@@ -1102,8 +1102,8 @@ MacBook Air M2, Venice 1.12.74
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--        | :--       | :--       |
-| Throughput msgs  | 28627 msg/s | 19255 msg/s | 8811 msg/s  | 1506 msg/s | 122 msg/s | 29 msg/s  |
-| Throughput bytes | 140 MB/s    | 940 MB/s    | 4302 MB/s   | 7500 MB/s  | 6104 MB/s | 5754 MB/s |
+| Throughput msgs  | 30578 msg/s | 23317 msg/s | 9498 msg/s  | 1552 msg/s | 122 msg/s | 30 msg/s  |
+| Throughput bytes | 149 MB/s    | 1139 MB/s   | 4638 MB/s   | 7760 MB/s  | 6104 MB/s | 5953 MB/s |
 
  
 
@@ -1111,8 +1111,26 @@ MacBook Air M2, Venice 1.12.74
 
 | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
 | :--               | :--         | :--         | :--         | :--         | :--          | :--          |
-| Throughput msgs   | 28627 msg/s | 48132 msg/s | 72668 msg/s | 87134 msg/s | 102400 msg/s | 104971 msg/s |
-| Throughput bytes  | 140 MB/s    | 235 MB/s    | 355 MB/s    | 425 MB/s    | 500 MB/s     | 513 MB/s     |
+| Throughput msgs   | 30578 msg/s | 57340 msg/s | 80033 msg/s | 93818 msg/s | 112331 msg/s | 119498 msg/s |
+| Throughput bytes  | 149 MB/s    | 280 MB/s    | 391 MB/s    | 458 MB/s    | 548 MB/s     | 583 MB/s     |
+
+ 
+
+*Java 21, single connection, single thread*
+
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--         | :--        | :--       | :--       |
+| Throughput msgs  | 34782 msg/s | 24099 msg/s | 9548 msg/s  | 1545 msg/s | 114 msg/s | 29 msg/s  |
+| Throughput bytes | 170 MB/s    | 1177 MB/s   | 4662 MB/s   | 7724 MB/s  | 5691 MB/s | 5797 MB/s |
+
+ 
+
+*Java 21, multiple connections, 1 thread per connection*
+
+| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
+| :--               | :--         | :--         | :--         | :--         | :--          | :--          |
+| Throughput msgs   | 34782 msg/s | 60245 msg/s | 83154 msg/s | 97530 msg/s | 120214 msg/s | 119482 msg/s |
+| Throughput bytes  | 170 MB/s    | 294 MB/s    | 406 MB/s    | 476 MB/s    | 587 MB/s     | 583 MB/s     |
 
  
 
@@ -1122,8 +1140,8 @@ MacBook Air M2, Venice 1.12.74
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB      | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--       | :--       | :--       |
-| Throughput msgs  | 40236 msg/s | 18789 msg/s | 3958 msg/s  | 7 msg/s   | - msg/s   | - msg/s   |
-| Throughput bytes | 196 MB/s    | 917 MB/s    | 1933 MB/s   | 34 MB/s   | - MB/s    | - MB/s    |
+| Throughput msgs  | 49122 msg/s | 20003 msg/s | 3591 msg/s  | 7 msg/s   | - msg/s   | - msg/s   |
+| Throughput bytes | 240 MB/s    | 977 MB/s    | 1754 MB/s   | 34 MB/s   | - MB/s    | - MB/s    |
 
  
 
@@ -1133,8 +1151,17 @@ MacBook Air M2, Venice 1.12.74
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB      | 5 MB       | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--         | :--        | :--       | :--       |
-| Throughput msgs  | 40296 msg/s | 32889 msg/s | 12621 msg/s | 414 msg/s  | 7.3 msg/s | 0.5 msg/s |
-| Throughput bytes | 197 MB/s    | 1606 MB/s   | 6163 MB/s   | 2072 MB/s  | 365 MB/s  | 96 MB/s   |
+| Throughput msgs  | 49013 msg/s | 38756 msg/s | 13616 msg/s | 414 msg/s | 7.3 msg/s | 0.5 msg/s |
+| Throughput bytes | 239 MB/s    | 1892 MB/s   | 6649 MB/s   | 2072 MB/s | 365 MB/s  | 96 MB/s   |
+
+ 
+
+*Java 8, 1MB socket snd/rcv buffer size, multiple connections, 1 thread per connection (limit 53 connections!)*
+
+| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn       | 4 conn       | 10 conn      | 50 conn      |
+| :--               | :--         | :--         | :--          | :--          | :--          | :--          |
+| Throughput msgs   | 49013 msg/s | 88937 msg/s | 120589 msg/s | 130190 msg/s | 137519 msg/s | 137386 msg/s |
+| Throughput bytes  | 239 MB/s    | 434 MB/s    | 589 MB/s     | 636 MB/s     | 671 MB/s     | 871 MB/s     |
 
  
 
@@ -1148,12 +1175,22 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread each, 
 
 *Java 8, single connection, single thread*
 
-| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB       | 50 MB     | 200 MB    |
-| :--              | :--         | :--         | :--        | :--        | :--       | :--       |
-| Throughput msgs  | 11776 msg/s | 8515 msg/s  | 2068 msg/s | 202 msg/s  | 19 msg/s  | 3.7 msg/s |
-| Throughput bytes | 57.5 MB/s   | 416 MB/s    | 1010 MB/s  | 1009 MB/s  | 929 MB/s  | 737 MB/s  |
+| Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
+| :--              | :--         | :--         | :--        | :--       | :--       | :--       |
+| Throughput msgs  | 26012 msg/s | 16065 msg/s | 3419 msg/s | 345 msg/s | 34 msg/s  | 8.5 msg/s |
+| Throughput bytes | 127 MB/s    | 784 MB/s    | 1669 MB/s  | 1727 MB/s | 1681 MB/s | 1708 MB/s |
 
  
+
+*Java 8, multiple connections, 1 thread per connection*
+
+| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn     | 100 conn    |
+| :--               | :--         | :--         | :--         | :--         | :--         | :--         |
+| Throughput msgs   | 26012 msg/s | 47891 msg/s | 50588 msg/s | 48312 msg/s | 48265 msg/s | 39386 msg/s |
+| Throughput bytes  | 127 MB/s    | 234 MB/s    | 247 MB/s    | 234 MB/s    | 236 MB/s    | 192 MB/s    |
+
+ 
+
 
 
 **Test scenario:** 
