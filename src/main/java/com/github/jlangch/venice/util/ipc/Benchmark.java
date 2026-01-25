@@ -123,7 +123,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
    --------------------------------------------------------------------------------------------------
 
    AF_INET tcp/ip sockets
-   default socket snd/rcv buffer size, single connection, single thread
+   Java 8, default socket snd/rcv buffer size, single connection, single thread
 
    +------------------------------------------------------------------------------------------------+
    | Payload bytes    | 5 KB         | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
@@ -131,6 +131,8 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
    | Throughput msgs  | 26012 msg/s  | 16065 msg/s | 3419 msg/s | 345 msg/s | 34 msg/s  | 8.5 msg/s |
    | Throughput bytes | 127 MB/s     | 784 MB/s    | 1669 MB/s  | 1727 MB/s | 1681 MB/s | 1708 MB/s |
    +------------------------------------------------------------------------------------------------+
+
+   Java 8, multiple connections, 1 thread per connection
 
    +-------------------------------------------------------------------------------------------------------+
    | Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn     | 100 conn    |
