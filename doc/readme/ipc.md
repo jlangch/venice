@@ -1127,10 +1127,10 @@ MacBook Air M2, Venice 1.12.74
 
 *Java 21, multiple connections, 1 thread per connection*
 
-| Payload bytes 5KB | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
-| :--               | :--         | :--         | :--         | :--         | :--          | :--          |
-| Throughput msgs   | 34782 msg/s | 60245 msg/s | 83154 msg/s | 97530 msg/s | 120214 msg/s | 119482 msg/s |
-| Throughput bytes  | 170 MB/s    | 294 MB/s    | 406 MB/s    | 476 MB/s    | 587 MB/s     | 583 MB/s     |
+| Payload 5KB      | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn      | 100 conn     |
+| :--              | :--         | :--         | :--         | :--         | :--          | :--          |
+| Throughput msgs  | 34782 msg/s | 60245 msg/s | 83154 msg/s | 97530 msg/s | 120214 msg/s | 119482 msg/s |
+| Throughput bytes | 170 MB/s    | 294 MB/s    | 406 MB/s    | 476 MB/s    | 587 MB/s     | 583 MB/s     |
 
  
 
