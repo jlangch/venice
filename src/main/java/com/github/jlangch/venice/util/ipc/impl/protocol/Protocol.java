@@ -95,16 +95,10 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  *
  * Benchmarks with ByteArrayStreamChannel (MacBook Air M2, 24GB, MacOS 26):
  *
- * <p>Without protocol optimizations for small messages
- * <pre>
- * IPC Protocol: Sent 500'000 1KB messages:     0.41 us / msg
- * IPC Protocol: Received 500'000 1KB messages: 0.51 us / msg
- * </pre>
- *
  * <p>With protocol optimizations for small messages
  * <pre>
- * IPC Protocol: Sent 500000 1KB messages: 0.72 us / msg
- * IPC Protocol: Received 500000 1KB messages: 0.37 us / msg
+ * IPC Protocol: Sent 500000 messages: 0.32 us / msg
+ * IPC Protocol: Received 500000 messages: 0.45 us / msg
  * </pre>
  *
  */
@@ -185,8 +179,13 @@ public class Protocol {
         final long messageTotalSize = headerData.length
                                         + payloadMetaEff.length
                                         + payloadDataEff.length;
-        if (messageTotalSize < SMALL_BUF) {
-            //final byte[] buf = new byte[SMALL_BUF];  // OS friendly buffer
+
+        if (OPT_SMALL_BUF_SND && (messageTotalSize < SMALL_BUF_16KB)) {
+            final IReusableBuffer cachedBuffer = messageTotalSize < SMALL_BUF_8KB
+                                                    ? cachedBuffer_8KB
+                                                    : cachedBuffer_16KB;
+
+            //final byte[] buf = new byte[SMALL_BUF_16KB];  // OS friendly buffer 16KB
             final byte[] buf = cachedBuffer.get();
 
             // Aggregate to a single buffer
@@ -209,6 +208,7 @@ public class Protocol {
         }
     }
 
+    @SuppressWarnings("unused")
     public Message receiveMessage(
             final ByteChannel ch,
             final Compressor compressor,
@@ -236,25 +236,19 @@ public class Protocol {
             final byte[] payloadDataRaw;
 
             // optimization turned off
-            if ((header.getPayloadMetaSize() + header.getPayloadDataSize()) < 0 * SMALL_BUF) {
-                final byte[] b = new byte[SMALL_BUF];  // OS friendly buffer
+            if (OPT_SMALL_BUF_RCV && (header.getPayloadMetaSize() + header.getPayloadDataSize()) < SMALL_BUF_16KB) {
+                final byte[] b = new byte[SMALL_BUF_16KB];  // OS friendly buffer
 
                 final int effSize = header.getPayloadMetaSize() + header.getPayloadDataSize();
                 final ByteBuffer buf = ByteBuffer.wrap(b, 0, effSize);
                 ByteChannelIO.readFully(ch, buf);
                 buf.flip();
 
-                // Note: for an efficient implementation Encryptor::decrypt should support
-                //       Encryptor.decrypt(data, offset, length)
-
                 payloadMetaRaw = new byte[header.getPayloadMetaSize()];
                 payloadDataRaw = new byte[header.getPayloadDataSize()];
 
-//                System.arraycopy(b, 0, payloadMetaRaw, 0, payloadMetaRaw.length);
-//                System.arraycopy(b, payloadMetaRaw.length, payloadDataRaw, 0, payloadDataRaw.length);
-
-                buf.get(payloadMetaRaw);
-                buf.get(payloadDataRaw);
+                System.arraycopy(b, 0, payloadMetaRaw, 0, payloadMetaRaw.length);
+                System.arraycopy(b, payloadMetaRaw.length, payloadDataRaw, 0, payloadDataRaw.length);
             }
             else {
                 // [2] Read payload meta data from channel
@@ -362,8 +356,13 @@ public class Protocol {
 
     private final static int KB = 1024;
 
-    private final static int SMALL_BUF = 8 * KB;
+    private final static int SMALL_BUF_8KB  =  8 * KB;
+    private final static int SMALL_BUF_16KB = 16 * KB;
+
+    private final static boolean OPT_SMALL_BUF_SND = true;
+    private final static boolean OPT_SMALL_BUF_RCV = false;
 
 
-    private final ReusableBuffer cachedBuffer = new ReusableBuffer(SMALL_BUF);
+    private final IReusableBuffer cachedBuffer_8KB = new ReusableBuffer(SMALL_BUF_8KB);
+    private final IReusableBuffer cachedBuffer_16KB = new ReusableBuffer(SMALL_BUF_16KB);
 }

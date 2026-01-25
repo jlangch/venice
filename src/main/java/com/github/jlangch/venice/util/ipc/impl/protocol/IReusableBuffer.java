@@ -21,33 +21,11 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.protocol;
 
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.bouncycastle.util.Arrays;
+public interface IReusableBuffer {
 
+    byte[] get();
 
-public class ReusableBuffer implements IReusableBuffer {
+    void put(byte[] b);
 
-    public ReusableBuffer(final int size) {
-        this.size = size;
-    }
-
-
-    @Override
-    public byte[] get() {
-        final byte[] buf = buffer.getAndUpdate(b -> null);
-        return buf == null ? new byte[size] : buf;
-    }
-
-    @Override
-    public void put(byte[] b) {
-        if (b != null && b.length == size) {
-            Arrays.fill(b, (byte)0x00);
-            buffer.set(b);
-        }
-    }
-
-
-    private final AtomicReference<byte[]> buffer = new AtomicReference<>();
-    private final int size;
 }
