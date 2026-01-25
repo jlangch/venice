@@ -186,8 +186,8 @@ public class Protocol {
                                         + payloadMetaEff.length
                                         + payloadDataEff.length;
         if (messageTotalSize < KB_16) {
-            final byte[] buf = new byte[KB_16];  // OS friendly buffer with 16KB
-            //final byte[] buf = cachedBuffer.get();
+            //final byte[] buf = new byte[KB_16];  // OS friendly buffer with 16KB
+            final byte[] buf = cachedBuffer.get();
 
             // Aggregate to a single buffer
             final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
@@ -199,7 +199,7 @@ public class Protocol {
             // Write message to channel (1 write)
             ByteChannelIO.writeFully(ch, b);
 
-            //cachedBuffer.put(buf);
+            cachedBuffer.put(buf);
         }
         else {
             // Write message to channel (3 writes)
