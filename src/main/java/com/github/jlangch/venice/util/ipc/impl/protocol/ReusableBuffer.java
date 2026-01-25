@@ -39,7 +39,7 @@ public class ReusableBuffer {
 
     public void put(byte[] b) {
         if (b != null && b.length == size) {
-            Arrays.fill(b, (byte)0);
+            Arrays.fill(b, (byte)0x00);
             buffer.set(b);
         }
     }

@@ -185,8 +185,8 @@ public class Protocol {
         final long messageTotalSize = headerData.length
                                         + payloadMetaEff.length
                                         + payloadDataEff.length;
-        if (messageTotalSize < KB_16) {
-            //final byte[] buf = new byte[KB_16];  // OS friendly buffer with 16KB
+        if (messageTotalSize < SMALL_BUF) {
+            //final byte[] buf = new byte[SMALL_BUF];  // OS friendly buffer
             final byte[] buf = cachedBuffer.get();
 
             // Aggregate to a single buffer
@@ -236,8 +236,8 @@ public class Protocol {
             final byte[] payloadDataRaw;
 
             // optimization turned off
-            if ((header.getPayloadMetaSize() + header.getPayloadDataSize()) < 0 * KB_16) {
-                final byte[] b = new byte[KB_16];  // OS friendly buffer with 16KB
+            if ((header.getPayloadMetaSize() + header.getPayloadDataSize()) < 0 * SMALL_BUF) {
+                final byte[] b = new byte[SMALL_BUF];  // OS friendly buffer
 
                 final int effSize = header.getPayloadMetaSize() + header.getPayloadDataSize();
                 final ByteBuffer buf = ByteBuffer.wrap(b, 0, effSize);
@@ -361,7 +361,9 @@ public class Protocol {
     private final static int PROTOCOL_VERSION = 1;
 
     private final static int KB = 1024;
-    private final static int KB_16 = 16 * KB;
 
-    private final ReusableBuffer cachedBuffer = new ReusableBuffer(KB_16);
+    private final static int SMALL_BUF = 8 * KB;
+
+
+    private final ReusableBuffer cachedBuffer = new ReusableBuffer(SMALL_BUF);
 }
