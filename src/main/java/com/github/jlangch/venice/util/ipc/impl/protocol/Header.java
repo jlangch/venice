@@ -73,6 +73,13 @@ public class Header {
                 buf.getInt());        // payloadDataSize
     }
 
+    public static byte[] aadData(final Header header) {
+        final byte[] addData = new byte[2];
+        addData[0] = toByte(header.isCompressed());
+        addData[1] = toByte(header.isEncrypted());
+        return addData;
+    }
+
     public static byte[] aadData(
             final boolean compressed,
             final boolean encrypted

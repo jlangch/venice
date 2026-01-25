@@ -221,7 +221,8 @@ public class Server implements AutoCloseable {
                             if (threadPoolSize >= maxThreadPoolSize) {
                                 logger.error(
                                         "server", "connection",
-                                        "Max parallel connection limit reached! Connection rejected! "
+                                        "Max connection limit (" + config.getMaxConnections() + ") "
+                                        + "exceeded! Connection rejected! "
                                         + "You can increase the server's max connection config value.");
                                 try { ch.close(); } catch(Exception ignore) {}
                             }

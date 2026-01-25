@@ -103,7 +103,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  *
  * <p>With protocol optimizations for small messages
  * <pre>
- * IPC Protocol: Sent 500000 1KB messages: 0.88 us / msg
+ * IPC Protocol: Sent 500000 1KB messages: 0.72 us / msg
  * IPC Protocol: Received 500000 1KB messages: 0.37 us / msg
  * </pre>
  *
@@ -185,12 +185,12 @@ public class Protocol {
         final long messageTotalSize = headerData.length
                                         + payloadMetaEff.length
                                         + payloadDataEff.length;
-        if (messageTotalSize < 16 * KB) {
-            final byte[] buf = new byte[16 * KB];  // OS friendly buffer with 16KB
+        if (messageTotalSize < KB_16) {
+            final byte[] buf = new byte[KB_16];  // OS friendly buffer with 16KB
 
             // Aggregate to a single buffer
             final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
-            b.put(headerBuf.array());
+            b.put(headerBuf);
             b.put(payloadMetaEff);
             b.put(payloadDataEff);
             b.flip();
@@ -232,12 +232,16 @@ public class Protocol {
             final byte[] payloadMetaRaw;
             final byte[] payloadDataRaw;
 
-            if ((header.getPayloadMetaSize() + header.getPayloadDataSize()) < 0 * KB) {
-                final byte[] b = new byte[16 * KB];  // OS friendly buffer with 16KB
+            // optimization turned off
+            if (false && (header.getPayloadMetaSize() + header.getPayloadDataSize()) < KB_16) {
+                final byte[] b = new byte[KB_16];  // OS friendly buffer with 16KB
                 final int effSize = header.getPayloadMetaSize() + header.getPayloadDataSize();
                 final ByteBuffer buf = ByteBuffer.wrap(b, 0, effSize);
                 ByteChannelIO.readFully(ch, buf);
                 buf.flip();
+
+                // Note: for an efficient implementation Encryptor::decrypt should support
+                //       Encryptor.decrypt(data, offset, length)
 
                 payloadMetaRaw = new byte[header.getPayloadMetaSize()];
                 payloadDataRaw = new byte[header.getPayloadDataSize()];
@@ -258,12 +262,13 @@ public class Protocol {
             }
 
             // [4] Process payload meta data (maybe encrypted)
-            final byte[] headerAAD = Header.aadData(header.isCompressed(), header.isEncrypted());
             final PayloadMetaData payloadMeta = PayloadMetaData.decode(
-                                                    encryptor.decrypt(
-                                                        payloadMetaRaw,
-                                                        headerAAD,
-                                                        header.isEncrypted()));
+                                                    header.isEncrypted()
+                                                        ? encryptor.decrypt(
+                                                                payloadMetaRaw,
+                                                                Header.aadData(header),
+                                                                true)
+                                                        : payloadMetaRaw);
 
             // [5] Process payload data (maybe compressed and encrypted)
             final byte[] payloadData = compressor.decompress(
@@ -272,7 +277,7 @@ public class Protocol {
                                                 header.isEncrypted()),
                                             header.isCompressed());
 
-            // [5] Build message
+            // [6] Build message
             return payloadMeta.toMessage(payloadData);
         }
         catch(IOException ex) {
@@ -349,4 +354,5 @@ public class Protocol {
     private final static int PROTOCOL_VERSION = 1;
 
     private final static int KB = 1024;
+    private final static int KB_16 = 16 * KB;
 }
