@@ -35,7 +35,6 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
@@ -821,29 +820,6 @@ public class Client implements Cloneable, AutoCloseable {
         map.put("size",      tmp.get("size"));
 
         return map;
-    }
-
-    /**
-     * Return a queue's status.
-     *
-     * @param queueName a queue name
-     * @return a map with the status fields
-     */
-    public VncMap getQueueStatusAsVncMap(final String queueName) {
-        if (!opened.get()) {
-            throw new IllegalStateException("The client is not open!");
-        }
-
-        final VncMap data = getQueueStatusRaw(queueName);
-
-        return VncOrderedMap.of(
-                new VncKeyword("name")      , data.get(new VncKeyword("name")),
-                new VncKeyword("exists")    , data.get(new VncKeyword("exists")),
-                new VncKeyword("type")      , data.get(new VncKeyword("type")),
-                new VncKeyword("temporary") , data.get(new VncKeyword("temporary")),
-                new VncKeyword("durable")   , data.get(new VncKeyword("durable")),
-                new VncKeyword("capacity")  , data.get(new VncKeyword("capacity")),
-                new VncKeyword("size")      , data.get(new VncKeyword("size")));
     }
 
     /**

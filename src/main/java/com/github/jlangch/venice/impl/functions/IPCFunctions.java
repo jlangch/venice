@@ -3465,7 +3465,16 @@ public class IPCFunctions {
 
                 final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                 final String name = Coerce.toVncString(args.second()).getValue();
-                return client.getQueueStatusAsVncMap(name);
+                final Map<String,Object> status = client.getQueueStatus(name);
+
+                return VncOrderedMap.of(
+                        new VncKeyword("name")      , new VncString((String)status.get("name")),
+                        new VncKeyword("exists")    , VncBoolean.of((Boolean)status.get("exists")),
+                        new VncKeyword("type")      , new VncKeyword((String)status.get("type")),
+                        new VncKeyword("temporary") , VncBoolean.of((Boolean)status.get("temporary")),
+                        new VncKeyword("durable")   , VncBoolean.of((Boolean)status.get("durable")),
+                        new VncKeyword("capacity")  , new VncLong((Long)status.get("capacity")),
+                        new VncKeyword("size")      , new VncLong((Long)status.get("size")));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

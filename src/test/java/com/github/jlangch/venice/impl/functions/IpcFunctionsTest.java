@@ -620,6 +620,7 @@ public class IpcFunctionsTest {
         assertEquals(true,      s.get("exists"));
         assertEquals("BOUNDED", s.get("type"));
         assertEquals(false,     s.get("temporary"));
+        assertEquals(false,     s.get("durable"));
         assertEquals(100L,      s.get("capacity"));
         assertEquals(0L,        s.get("size"));
     }
