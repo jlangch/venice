@@ -22,7 +22,7 @@
 package com.github.jlangch.venice.util.ipc.impl.protocol;
 
 
-public interface IReusableBuffer {
+public interface IBufferPool {
 
     byte[] checkout();
 

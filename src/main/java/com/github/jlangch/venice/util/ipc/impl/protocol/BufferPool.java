@@ -25,11 +25,23 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 
+/**
+ * Lock-free byte buffer pool.
+ */
+public class BufferPool implements IBufferPool {
 
-public class ReusableBuffer implements IReusableBuffer {
+    public BufferPool(final int size) {
+        this(size, true, false);
+    }
 
-    public ReusableBuffer(final int size) {
+    public BufferPool(
+            final int size,
+            final boolean clearAtCheckin,
+            final boolean preset
+    ) {
         this.size = size;
+        this.clearAtCheckin = clearAtCheckin;
+        if (preset) buffer.set(new byte[size]);
     }
 
 
@@ -44,7 +56,7 @@ public class ReusableBuffer implements IReusableBuffer {
     @Override
     public void checkin(byte[] b) {
         if (b != null && b.length == size) {
-            Arrays.fill(b, (byte)0x00);
+            if (clearAtCheckin) Arrays.fill(b, (byte)0x00);
             buffer.set(b);
         }
     }
@@ -52,4 +64,5 @@ public class ReusableBuffer implements IReusableBuffer {
 
     private final AtomicReference<byte[]> buffer = new AtomicReference<>();
     private final int size;
+    private final boolean clearAtCheckin;
 }

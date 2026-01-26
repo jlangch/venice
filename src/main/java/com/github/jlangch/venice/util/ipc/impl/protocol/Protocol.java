@@ -97,7 +97,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  *
  * <p>With protocol optimizations for small messages
  * <pre>
- * IPC Protocol: Sent 500000 messages: 0.32 us / msg
+ * IPC Protocol: Sent     500000 messages: 0.32 us / msg
  * IPC Protocol: Received 500000 messages: 0.45 us / msg
  * </pre>
  *
@@ -181,7 +181,7 @@ public class Protocol {
                                         + payloadDataEff.length;
 
         if (OPT_SMALL_BUF_SND && (messageTotalSize < SMALL_BUF_16KB)) {
-            final IReusableBuffer cachedBuffer = messageTotalSize < SMALL_BUF_8KB
+            final IBufferPool cachedBuffer = messageTotalSize < SMALL_BUF_8KB
                                                     ? cachedBuffer_8KB
                                                     : cachedBuffer_16KB;
 
@@ -363,6 +363,6 @@ public class Protocol {
     private final static boolean OPT_SMALL_BUF_RCV = false;
 
 
-    private final IReusableBuffer cachedBuffer_8KB = new ReusableBuffer(SMALL_BUF_8KB);
-    private final IReusableBuffer cachedBuffer_16KB = new ReusableBuffer(SMALL_BUF_16KB);
+    private final IBufferPool cachedBuffer_8KB  = new BufferPool(SMALL_BUF_8KB);
+    private final IBufferPool cachedBuffer_16KB = new BufferPool(SMALL_BUF_16KB);
 }

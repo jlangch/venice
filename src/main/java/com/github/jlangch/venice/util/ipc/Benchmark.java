@@ -179,7 +179,8 @@ public class Benchmark {
     }
 
     public void runServer() {
-        try(Server server = Server.of(ServerConfig.builder()
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
                                         .connURI(connURI)
                                         .maxMessageSize(Messages.MESSAGE_LIMIT_MAX)
                                         .encrypt(encrypt)
@@ -209,7 +210,8 @@ public class Benchmark {
     }
 
     private Map<String,Object> benchmarkWithLocalServer() {
-        try(Server server = Server.of(ServerConfig.builder()
+        try(Server server = Server.of(ServerConfig
+                                        .builder()
                                         .connURI(connURI)
                                         .maxMessageSize(Messages.MESSAGE_LIMIT_MAX)
                                         .encrypt(encrypt)
