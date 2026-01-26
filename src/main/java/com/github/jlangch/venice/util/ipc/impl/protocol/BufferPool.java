@@ -45,7 +45,9 @@ public class BufferPool implements IBufferPool {
 
         this.bufferSize = bufferSize;
         this.clearAtCheckin = clearAtCheckin;
-        if (preset) buffer.set(new byte[bufferSize]);
+        if (preset) {
+            buffer.set(new byte[bufferSize]);
+        }
     }
 
 

@@ -31,13 +31,14 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 public class BufferArrayPool implements IBufferPool {
 
     public BufferArrayPool(final int poolSize, final int bufferSize) {
-        this(poolSize, bufferSize, true);
+        this(poolSize, bufferSize, true, false);
     }
 
     public BufferArrayPool(
             final int poolSize,
             final int bufferSize,
-            final boolean clearAtCheckin
+            final boolean clearAtCheckin,
+            final boolean preset
     ) {
         if (poolSize < 1) {
             throw new IllegalArgumentException("A pool size must not be lower than 1");
@@ -49,6 +50,12 @@ public class BufferArrayPool implements IBufferPool {
         this.pool = new AtomicReferenceArray<>(poolSize);
         this.bufferSize = bufferSize;
         this.clearAtCheckin = clearAtCheckin;
+
+        if (preset) {
+            for (int ii=0; ii<pool.length(); ii++) {
+               pool.set(ii, new byte[bufferSize]);
+            }
+        }
     }
 
 
@@ -68,9 +75,9 @@ public class BufferArrayPool implements IBufferPool {
         if (b.length != bufferSize) {
             return; // reject foreign buffers
         }
-        for (int i = 0; i < pool.length(); i++) {
-            if (pool.get(i) == null) {
-                if (pool.compareAndSet(i, null, b)) {
+        for (int ii=0; ii<pool.length(); ii++) {
+            if (pool.get(ii) == null) {
+                if (pool.compareAndSet(ii, null, b)) {
                     if (clearAtCheckin) Arrays.fill(b, (byte)0x00);
                     return;
                 }
