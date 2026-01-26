@@ -22,51 +22,65 @@
 package com.github.jlangch.venice.util.ipc.impl.protocol;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 
 /**
  * Lock-free byte buffer pool.
  */
-public class BufferPool implements IBufferPool {
+public class BufferArrayPool implements IBufferPool {
 
-    public BufferPool(final int bufferSize) {
-        this(bufferSize, true, false);
+    public BufferArrayPool(final int poolSize, final int bufferSize) {
+        this(poolSize, bufferSize, true);
     }
 
-    public BufferPool(
+    public BufferArrayPool(
+            final int poolSize,
             final int bufferSize,
-            final boolean clearAtCheckin,
-            final boolean preset
+            final boolean clearAtCheckin
     ) {
+        if (poolSize < 1) {
+            throw new IllegalArgumentException("A pool size must not be lower than 1");
+        }
         if (bufferSize < 1) {
             throw new IllegalArgumentException("A buffer size must not be lower than 1");
         }
 
+        this.pool = new AtomicReferenceArray<>(poolSize);
         this.bufferSize = bufferSize;
         this.clearAtCheckin = clearAtCheckin;
-        if (preset) buffer.set(new byte[bufferSize]);
     }
 
 
     @Override
     public byte[] checkout() {
-        final byte[] buf = buffer.get();
-        return buf != null && buffer.compareAndSet(buf, null)
-                 ? buf
-                 : new byte[bufferSize]; // fallback
+        for (int i = 0; i < pool.length(); i++) {
+            byte[] buf = pool.get(i);
+            if (buf != null && pool.compareAndSet(i, buf, null)) {
+                return buf;
+            }
+        }
+        return new byte[bufferSize]; // fallback
     }
 
     @Override
     public void checkin(byte[] b) {
-        if (b != null && b.length == bufferSize) {
-            if (clearAtCheckin) Arrays.fill(b, (byte)0x00);
-            buffer.set(b);
+        if (b.length != bufferSize) {
+            return; // reject foreign buffers
         }
+        for (int i = 0; i < pool.length(); i++) {
+            if (pool.get(i) == null) {
+                if (pool.compareAndSet(i, null, b)) {
+                    if (clearAtCheckin) Arrays.fill(b, (byte)0x00);
+                    return;
+                }
+            }
+        }
+        // pool full → drop
     }
 
 
-    private final AtomicReference<byte[]> buffer = new AtomicReference<>();
+    private final AtomicReferenceArray<byte[]> pool;
     private final int bufferSize;
     private final boolean clearAtCheckin;
 }
