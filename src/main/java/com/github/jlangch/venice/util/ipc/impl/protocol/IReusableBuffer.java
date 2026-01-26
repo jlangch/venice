@@ -24,8 +24,8 @@ package com.github.jlangch.venice.util.ipc.impl.protocol;
 
 public interface IReusableBuffer {
 
-    byte[] get();
+    byte[] checkout();
 
-    void put(byte[] b);
+    void checkin(byte[] b);
 
 }

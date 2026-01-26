@@ -186,7 +186,7 @@ public class Protocol {
                                                     : cachedBuffer_16KB;
 
             //final byte[] buf = new byte[SMALL_BUF_16KB];  // OS friendly buffer 16KB
-            final byte[] buf = cachedBuffer.get();
+            final byte[] buf = cachedBuffer.checkout();
 
             // Aggregate to a single buffer
             final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
@@ -198,7 +198,7 @@ public class Protocol {
             // Write message to channel (1 write)
             ByteChannelIO.writeFully(ch, b);
 
-            cachedBuffer.put(buf);
+            cachedBuffer.checkin(buf);
         }
         else {
             // Write message to channel (3 writes)

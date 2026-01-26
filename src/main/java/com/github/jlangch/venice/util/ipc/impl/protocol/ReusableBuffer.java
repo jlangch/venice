@@ -34,13 +34,15 @@ public class ReusableBuffer implements IReusableBuffer {
 
 
     @Override
-    public byte[] get() {
-        final byte[] buf = buffer.getAndUpdate(b -> null);
-        return buf == null ? new byte[size] : buf;
+    public byte[] checkout() {
+        final byte[] buf = buffer.get();
+        return buf != null && buffer.compareAndSet(buf, null)
+                 ? buf
+                 : new byte[size];
     }
 
     @Override
-    public void put(byte[] b) {
+    public void checkin(byte[] b) {
         if (b != null && b.length == size) {
             Arrays.fill(b, (byte)0x00);
             buffer.set(b);
