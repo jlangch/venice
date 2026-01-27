@@ -579,9 +579,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleCreateQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestResponse(
-                    request,
-                    String.format("Request %s: Expected a JSON payload", request.getType()));
+            return createNonJsonRequestResponse(request);
         }
 
         if (!permitClientQueueMgmt) {
@@ -605,9 +603,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleCreateTemporaryQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestResponse(
-                    request,
-                    String.format("Request %s: Expected a JSON payload", request.getType()));
+            return createNonJsonRequestResponse(request);
         }
 
         if (tmpQueues.size() >= maxTempQueuesPerConnection) {
@@ -658,11 +654,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleRemoveQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestResponse(
-                    request,
-                    String.format(
-                        "Request %s: Expected a JSON payload",
-                        request.getType()));
+            return createNonJsonRequestResponse(request);
         }
 
         if (!permitClientQueueMgmt) {
@@ -689,11 +681,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleStatusQueueRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestResponse(
-                    request,
-                    String.format(
-                        "Request %s: Expected a JSON payload",
-                        request.getType()));
+            return createNonJsonRequestResponse(request);
         }
 
         if (!permitClientQueueMgmt) {
@@ -736,9 +724,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleClientConfigRequest(final Message request) {
         if (!"application/json".equals(request.getMimetype())) {
-            return createBadRequestResponse(
-                    request,
-                    String.format("Request %s: Expected a JSON payload", request.getType()));
+            return createNonJsonRequestResponse(request);
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -890,6 +876,12 @@ public class ServerConnection implements IPublisher, Runnable {
                     request.getRequestId(),
                     request.getTopics(),
                     message);
+    }
+
+    private Message createNonJsonRequestResponse(final Message request) {
+        return createBadRequestResponse(
+                request,
+                String.format("Request %s: Expected a JSON payload", request.getType()));
     }
 
     private static Message createJsonResponse(
