@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl.conn;
 
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,6 +105,8 @@ public class ServerConnection implements IPublisher, Runnable {
         this.publishQueueCapacity = context.publishQueueCapacity;
         this.statistics = context.statistics;
         this.serverThreadPoolStatistics = context.serverThreadPoolStatistics;
+
+        setupHandlers();
     }
 
 
@@ -173,6 +176,23 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
+    private void setupHandlers() {
+        handlers.put(MessageType.REQUEST,                    this::handleSend);
+        handlers.put(MessageType.SUBSCRIBE,                  this::handleSubscribeToTopic);
+        handlers.put(MessageType.UNSUBSCRIBE,                this::handleUnsubscribeFromTopic);
+        handlers.put(MessageType.PUBLISH,                    this::handlePublishToTopic);
+        handlers.put(MessageType.OFFER,                      this::handleOfferToQueue);
+        handlers.put(MessageType.POLL,                       this::handlePollFromQueue);
+        handlers.put(MessageType.CREATE_QUEUE,               this::handleCreateQueueRequest);
+        handlers.put(MessageType.CREATE_TEMP_QUEUE,          this::handleCreateTemporaryQueueRequest);
+        handlers.put(MessageType.REMOVE_QUEUE,               this::handleRemoveQueueRequest);
+        handlers.put(MessageType.STATUS_QUEUE,               this::handleStatusQueueRequest);
+        handlers.put(MessageType.CLIENT_CONFIG,              this::handleClientConfigRequest);
+        handlers.put(MessageType.DIFFIE_HELLMAN_KEY_REQUEST, this::handleDiffieHellmanKeyExchange);
+        handlers.put(MessageType.AUTHENTICATION,             this::handleAuthentication);
+        handlers.put(MessageType.HEARTBEAT,                  this::handleHeartbeat);
+        handlers.put(MessageType.TEST,                       this::handleTest);
+    }
 
     private boolean isStop() {
         // update stop status
@@ -293,7 +313,8 @@ public class ServerConnection implements IPublisher, Runnable {
                     auditResponseError(
                             request,
                             String.format(
-                              "Cannot send error response %s for oneway requests! Request: %s",
+                              "Cannot send error response status %s back for oneway requests! "
+                              + "Request: %s",
                               response.getResponseStatus(),
                               request.getType()));
                     break;
@@ -339,58 +360,12 @@ public class ServerConnection implements IPublisher, Runnable {
         }
 
         try {
-            switch(request.getType()) {
-                case REQUEST:
-                    return handleSend(request);
-
-                case SUBSCRIBE:
-                    return handleSubscribeToTopic(request);
-
-                case UNSUBSCRIBE:
-                    return handleUnsubscribeFromTopic(request);
-
-                case PUBLISH:
-                    return handlePublishToTopic(request);
-
-                case OFFER:
-                    return handleOfferToQueue(request);
-
-                case POLL:
-                    return handlePollFromQueue(request);
-
-                case CREATE_QUEUE:
-                    return handleCreateQueueRequest(request);
-
-                case CREATE_TEMP_QUEUE:
-                    return handleCreateTemporaryQueueRequest(request);
-
-                case REMOVE_QUEUE:
-                    return handleRemoveQueueRequest(request);
-
-                case STATUS_QUEUE:
-                    return handleStatusQueueRequest(request);
-
-                case CLIENT_CONFIG:
-                    return handleClientConfigRequest(request);
-
-                case DIFFIE_HELLMAN_KEY_REQUEST:
-                    return handleDiffieHellmanKeyExchange(request);
-
-                case AUTHENTICATION:
-                    return handleAuthentication(request);
-
-                case HEARTBEAT:
-                    return handleHeartbeat(request);
-
-                case TEST:
-                    return handleTest(request);
-
-                default:
-                    // Invalid request type
-                    return createBadRequestResponse(
-                                    request,
-                                    "Invalid request type: " + request.getType());
-            }
+            final Function<Message,Message> handler = handlers.get(request.getType());
+            return handler != null
+                    ? handler.apply(request)
+                    : createBadRequestResponse(
+                            request,
+                            "Invalid request type: " + request.getType());
         }
         catch(Exception ex) {
             final String errMsg = "Failed to handle '" + request.getType() + "' request!";
@@ -1160,4 +1135,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final IpcQueue<Error> errorBuffer;
     private final IpcQueue<Message> publishQueue;
     private final Map<String, Integer> tmpQueues = new ConcurrentHashMap<>();
+
+    private final Map<MessageType, Function<Message,Message>> handlers = new HashMap<>();
 }
