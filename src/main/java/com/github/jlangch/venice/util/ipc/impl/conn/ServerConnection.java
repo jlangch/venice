@@ -46,6 +46,7 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.Server;
+import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
@@ -71,47 +72,36 @@ public class ServerConnection implements IPublisher, Runnable {
 
     public ServerConnection(
             final Server server,
+            final ServerConfig config,
+            final ServerContext context,
             final SocketChannel ch,
-            final long connectionId,
-            final Authenticator authenticator,
-            final ServerLogger logger,
-            final Function<IMessage,IMessage> handler,
-            final long maxMessageSize,
-            final long maxQueues,
-            final boolean permitClientQueueMgmt,
-            final long heartbeatInterval,
-            final WalQueueManager wal,
-            final Subscriptions subscriptions,
-            final int publishQueueCapacity,
-            final Map<String, IpcQueue<Message>> p2pQueues,
-            final boolean enforceEncryption,
-            final Compressor compressor,
-            final ServerStatistics statistics,
-            final Supplier<VncMap> serverThreadPoolStatistics
+            final long connectionId
     ) {
         this.server = server;
         this.ch = ch;
         this.connectionId = connectionId;
-        this.authenticator = authenticator;
-        this.logger = logger;
-        this.handler = handler;
-        this.maxMessageSize = maxMessageSize;
-        this.maxQueues = maxQueues;
-        this.permitClientQueueMgmt = permitClientQueueMgmt;
-        this.heartbeatInterval = heartbeatInterval;
-        this.wal = wal;
-        this.subscriptions = subscriptions;
-        this.publishQueueCapacity = publishQueueCapacity;
-        this.enforceEncryption = enforceEncryption;
-        this.compressor = compressor;
-        this.statistics = statistics;
-        this.serverThreadPoolStatistics = serverThreadPoolStatistics;
+        this.context = context;
 
-        this.publishQueue = new BoundedQueue<Message>("publish", publishQueueCapacity, false);
+        this.maxMessageSize = config.getMaxMessageSize();
+        this.maxQueues = config.getMaxQueues();
+        this.permitClientQueueMgmt = config.isPermitClientQueueMgmt();
+        this.heartbeatInterval = config.getHeartbeatIntervalSeconds();
+        this.enforceEncryption = config.isEncrypting();
+
+        this.publishQueue = new BoundedQueue<Message>("publish", context.publishQueueCapacity, false);
         this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false);
-        this.p2pQueues = p2pQueues;
-
         this.dhKeys = DiffieHellmanKeys.create();
+
+        this.authenticator = context.authenticator;
+        this.logger = context.logger;
+        this.handler = context.handler;
+        this.compressor = context.compressor;
+        this.wal = context.wal;
+        this.subscriptions = context.subscriptions;
+        this.publishQueueCapacity = context.publishQueueCapacity;
+        this.statistics = context.statistics;
+        this.serverThreadPoolStatistics = context.serverThreadPoolStatistics;
+        this.p2pQueues = context.p2pQueues;
     }
 
 
@@ -355,25 +345,19 @@ public class ServerConnection implements IPublisher, Runnable {
                     return handleSend(request);
 
                 case SUBSCRIBE:
-                    // the client wants to subscribe to a topic
-                    return handleSubscribe(request);
+                    return handleSubscribeToTopic(request);
 
                 case UNSUBSCRIBE:
-                    // the client wants to unsubscribe from topic
-                    return handleUnsubscribe(request);
+                    return handleUnsubscribeFromTopic(request);
 
                 case PUBLISH:
-                    // the client sent a message to be published to all subscribers
-                    // of the message's topic
-                    return handlePublish(request);
+                    return handlePublishToTopic(request);
 
                 case OFFER:
-                    // the client offers a new message to a queue
-                    return handleOffer(request);
+                    return handleOfferToQueue(request);
 
                 case POLL:
-                    // the client polls a new message from a queue
-                    return handlePoll(request);
+                    return handlePollFromQueue(request);
 
                 case CREATE_QUEUE:
                     return handleCreateQueueRequest(request);
@@ -410,16 +394,16 @@ public class ServerConnection implements IPublisher, Runnable {
             }
         }
         catch(Exception ex) {
+            final String errMsg = "Failed to handle '" + request.getType() + "' request!";
             // send an error response
-            auditResponseError(request, "Failed to handle request!", ex);
+            auditResponseError(request, errMsg, ex);
 
             // TODO: how much information from the exception shall we pass back
             //       to the client
             return createTextResponse(
                         request,
                         ResponseStatus.HANDLER_ERROR,
-                        "Failed to handle request of type " + request.getType() + "!\n"
-                        + ExceptionUtil.printStackTraceToString(ex));
+                        errMsg+ "\n" + ExceptionUtil.printStackTraceToString(ex));
         }
     }
 
@@ -469,7 +453,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private Message handleSubscribe(final Message request) {
+    private Message handleSubscribeToTopic(final Message request) {
         // register subscription
         subscriptions.addSubscriptions(request.getTopicsSet(), this);
 
@@ -479,7 +463,7 @@ public class ServerConnection implements IPublisher, Runnable {
         return createOkTextResponse(request, "Subscribed to the topics.");
     }
 
-    private Message handleUnsubscribe(final Message request) {
+    private Message handleUnsubscribeFromTopic(final Message request) {
         // unregister subscription
         subscriptions.removeSubscriptions(request.getTopicsSet(), this);
 
@@ -489,7 +473,7 @@ public class ServerConnection implements IPublisher, Runnable {
         return createOkTextResponse(request, "Unsubscribed from the topics.");
     }
 
-    private Message handlePublish(final Message request) {
+    private Message handlePublishToTopic(final Message request) {
         // asynchronously publish to all subscriptions
         subscriptions.publish(request);
 
@@ -497,7 +481,7 @@ public class ServerConnection implements IPublisher, Runnable {
         return createOkTextResponse(request, "Message has been enqued to publish.");
     }
 
-    private Message handleOffer(final Message request) {
+    private Message handleOfferToQueue(final Message request) {
         try {
             final String queueName = request.getQueueName();
             final IpcQueue<Message> queue = p2pQueues.get(queueName);
@@ -545,7 +529,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private Message handlePoll(final Message request) {
+    private Message handlePollFromQueue(final Message request) {
         try {
             final long timeout = request.getTimeout();
             final String queueName = request.getQueueName();
@@ -1238,6 +1222,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final Server server;
     private final SocketChannel ch;
     private final long connectionId;
+    private final ServerContext context;
     private final ServerLogger logger;
 
     private final Function<IMessage,IMessage> handler;

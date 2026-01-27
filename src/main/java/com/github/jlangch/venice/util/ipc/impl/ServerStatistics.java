@@ -37,6 +37,7 @@ public class ServerStatistics implements IServerStatistics {
     }
 
 
+    @Override
     public void clear() {
         connectionCount.set(0L);
         messageCount.set(0L);

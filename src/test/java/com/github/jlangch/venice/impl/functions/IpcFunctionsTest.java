@@ -794,7 +794,7 @@ public class IpcFunctionsTest {
                 "      text)))                                                    ";
 
         assertEquals(
-                "Failed to handle request of type REQUEST!\n"
+                "Failed to handle 'REQUEST' request!\n"
                 + "throw (test-script: line 6, col 8)\n"
                 + "junit/handler (test-script: line 4, col 9)\n"
                 + "ipc/server (unknown: line -1, col -1)",

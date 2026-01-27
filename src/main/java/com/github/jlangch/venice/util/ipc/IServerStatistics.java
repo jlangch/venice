@@ -34,4 +34,6 @@ public interface IServerStatistics {
 
     long getDiscardedResponseCount();
 
+    void clear();
+
 }
