@@ -92,13 +92,6 @@ public class Server implements AutoCloseable {
     }
 
     /**
-     * @return return true if Write-Ahead-Log is enabled.
-     */
-    public boolean isWriteAheadLog() {
-        return wal.isEnabled();
-    }
-
-    /**
      * @return the endpoint ID of this server
      */
     public String getEndpointId() {
@@ -178,61 +171,13 @@ public class Server implements AutoCloseable {
                             // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
 
-                            final int maxThreadPoolSize = mngdExecutor.getMaximumThreadPoolSize();
-                            final int threadPoolSize = mngdExecutor.getThreadPoolSize();
-
-                            if (threadPoolSize >= maxThreadPoolSize) {
-                                logTooManyConnections();
-                                try { channel.close(); } catch(Exception ignore) {}
-                                continue;  // wait for next connection
-                            }
-
-                            if (config.getSndBufSize() > 0) channel.socket().setSendBufferSize(config.getSndBufSize());
-                            if (config.getRcvBufSize() > 0) channel.socket().setReceiveBufferSize(config.getRcvBufSize());
-                            channel.configureBlocking(true);
-
-                            // TCP_NODELAY is absolutely mandatory on Linux to get high throughput
-                            // with small messages
-                            channel.setOption(StandardSocketOptions.TCP_NODELAY, true);
-
-                            final long connId = connectionId.incrementAndGet();
-
-                            final ServerConnection conn = new ServerConnection(
-                                                                   this,
-                                                                   config,
-                                                                   new ServerContext(
-                                                                           authenticator,
-                                                                           logger,
-                                                                           handler,
-                                                                           compressor,
-                                                                           wal,
-                                                                           subscriptions,
-                                                                           publishQueueCapacity,
-                                                                           p2pQueues,
-                                                                           statistics,
-                                                                           () -> mngdExecutor.info()),
-                                                                   channel,
-                                                                   connId);
-
-                            try {
-                               executor.execute(conn);
-                            }
-                            catch(RejectedExecutionException ex) {
-                                logger.error("server", "connection", "New connection rejected by thread pool!", ex);
-                                try { channel.close(); } catch(Exception ignore) {}
-                            }
-
-                            logger.info(
-                                    "server", "connection",
-                                    String.format(
-                                        "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
-                                        connId,
-                                        IO.getRemoteAddress(channel),
-                                        threadPoolSize,
-                                        maxThreadPoolSize));
+                            startNewConnection(channel, handler);
                         }
                         catch (IOException ex) {
-                            logger.warn("server", "connection", "Connection accept/start terminated with an exception.", ex);
+                            logger.warn(
+                                "server", "connection",
+                                "Connection accept/start terminated with an exception.",
+                                ex);
                             return; // finish listener
                         }
                     }
@@ -401,6 +346,64 @@ public class Server implements AutoCloseable {
     }
 
 
+    private void startNewConnection(
+        final SocketChannel channel,
+        final Function<IMessage,IMessage> handler
+    ) throws IOException {
+        final int maxThreadPoolSize = mngdExecutor.getMaximumThreadPoolSize();
+        final int threadPoolSize = mngdExecutor.getThreadPoolSize();
+
+        if (threadPoolSize >= maxThreadPoolSize) {
+            logTooManyConnectionsError();
+            try { channel.close(); } catch(Exception ignore) {}
+            return;  // wait for next connection
+        }
+
+        if (config.getSndBufSize() > 0) channel.socket().setSendBufferSize(config.getSndBufSize());
+        if (config.getRcvBufSize() > 0) channel.socket().setReceiveBufferSize(config.getRcvBufSize());
+        channel.configureBlocking(true);
+
+        // TCP_NODELAY is absolutely mandatory on Linux to get high throughput
+        // with small messages
+        channel.setOption(StandardSocketOptions.TCP_NODELAY, true);
+
+        final long connId = connectionId.incrementAndGet();
+
+        final ServerConnection conn = new ServerConnection(
+                                               this,
+                                               config,
+                                               new ServerContext(
+                                                       authenticator,
+                                                       logger,
+                                                       handler,
+                                                       compressor,
+                                                       wal,
+                                                       subscriptions,
+                                                       publishQueueCapacity,
+                                                       p2pQueues,
+                                                       statistics,
+                                                       () -> mngdExecutor.info()),
+                                               channel,
+                                               connId);
+
+        try {
+            mngdExecutor.getExecutor().execute(conn);
+        }
+        catch(RejectedExecutionException ex) {
+            logger.error("server", "connection", "New connection rejected by thread pool!", ex);
+            try { channel.close(); } catch(Exception ignore) {}
+        }
+
+        logger.info(
+                "server", "connection",
+                String.format(
+                    "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
+                    connId,
+                    IO.getRemoteAddress(channel),
+                    threadPoolSize,
+                    maxThreadPoolSize));
+    }
+
     private void safeClose(final ServerSocketChannel ch) {
         if (ch != null) {
             try {
@@ -449,26 +452,25 @@ public class Server implements AutoCloseable {
         }
     }
 
-    private void logTooManyConnections() {
+    private void logTooManyConnectionsError() {
         logger.error(
                 "server", "connection",
                 "Max connection limit (" + config.getMaxConnections() + ") "
-                + "exceeded! Connection rejected! "
-                + "You can increase the server's max connection config value.");
-
+                  + "exceeded! Connection rejected! "
+                  + "You can increase the server's max connection config value.");
     }
 
     private void logServerStart() {
         logger.info("server", "start", "Server started on " + config.getConnURI());
         logger.info("server", "start", "Endpoint ID: " + endpointId);
         logger.info("server", "start", "Encryption: " + config.isEncrypting());
-        logger.info("server", "start", "Max Parallel Connections: " + (mngdExecutor.getMaximumThreadPoolSize() - 1));
+        logger.info("server", "start", "Max Connections: " + (mngdExecutor.getMaximumThreadPoolSize() - 1));
         logger.info("server", "start", "Max Queues: " + config.getMaxQueues());
         logger.info("server", "start", "Max Msg Size: " + config.getMaxMessageSize());
         logger.info("server", "start", "Compress Cutoff Size: " + config.getCompressCutoffSize());
         logger.info("server", "start", "Log-File: " + logger.getLogFile());
         logger.info("server", "start", "Heartbeat: " + config.getHeartbeatIntervalSeconds() + "s");
-        logger.info("server", "start", "Write-Ahead-Log: " + isWriteAheadLog());
+        logger.info("server", "start", "Write-Ahead-Log: " + wal.isEnabled());
         logger.info("server", "start", "Write-Ahead-Log-Dir: " + wal.getWalDir());
     }
 

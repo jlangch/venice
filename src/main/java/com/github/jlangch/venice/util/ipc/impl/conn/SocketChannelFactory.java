@@ -24,11 +24,17 @@ package com.github.jlangch.venice.util.ipc.impl.conn;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.github.jlangch.venice.util.ipc.IpcException;
 
@@ -136,9 +142,11 @@ public class SocketChannelFactory {
         final String scheme = conn.getScheme();
 
         if ("af-inet".equals(scheme)) {
-            final String host = conn.getHost();
-            final int port = conn.getPort();
-            return createServerSocketChannel(host, port);
+            final InetAddress inet = getInetAddress();
+
+            final ServerSocketChannel ch = ServerSocketChannel.open();
+            ch.bind(new InetSocketAddress(inet, conn.getPort()));
+            return ch;
         }
         else if ("af-unix".equals(scheme)) {
             if (!isJUnixSocketLibAvailable()) {
@@ -189,21 +197,32 @@ public class SocketChannelFactory {
         }
     }
 
-    public static ServerSocketChannel createServerSocketChannel(
-            final int port
-    ) throws IOException {
-        return createServerSocketChannel("127.0.0.1", port);
+
+    private static boolean isIPv6Supported() {
+        try {
+            return Collections
+                    .list(NetworkInterface.getNetworkInterfaces())
+                    .stream()
+                    .map(NetworkInterface::getInterfaceAddresses)
+                    .flatMap(Collection::stream)
+                    .map(InterfaceAddress::getAddress)
+                    .anyMatch(i -> !i.isLoopbackAddress() && i instanceof Inet6Address);
+        }
+        catch (Exception e) {
+             throw new IllegalStateException(e);
+         }
     }
 
-    public static ServerSocketChannel createServerSocketChannel(
-            final String host,
-            final int port
-    ) throws IOException {
-        final ServerSocketChannel ch = ServerSocketChannel.open();
-        ch.bind(new InetSocketAddress(host, port));
-        return ch;
+    private static InetAddress getInetAddress() {
+        try {
+              return isIPv6Supported()
+                        ? InetAddress.getByName("::")
+                        : InetAddress.getByName("0.0.0.0");
+        }
+        catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
-
 
 
     private static boolean isJUnixSocketLibAvailable() {
