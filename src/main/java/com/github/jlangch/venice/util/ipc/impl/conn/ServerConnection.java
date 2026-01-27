@@ -323,6 +323,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 case CLIENT_CONFIG:
                 case DIFFIE_HELLMAN_KEY_REQUEST:
                 case AUTHENTICATION:
+                    // no authentication
                     break;
                 default:
                     if (!authenticated) {
@@ -338,10 +339,6 @@ public class ServerConnection implements IPublisher, Runnable {
         try {
             switch(request.getType()) {
                 case REQUEST:
-                    // client sent a normal message request, send the response back.
-                    // call the server handler to process the request into a
-                    // response and send the response only for non one-way
-                    // requests back to the caller
                     return handleSend(request);
 
                 case SUBSCRIBE:
