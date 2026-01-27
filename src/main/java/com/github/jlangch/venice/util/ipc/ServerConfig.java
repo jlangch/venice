@@ -37,6 +37,7 @@ public class ServerConfig {
             final int compressCutoffSize,
             final long maxMessageSize,
             final int maxQueues,
+            final int maxTempQueuesPerConnection,
             final int sndBufSize,
             final int rcvBufSize,
             final int maxConnections,
@@ -53,6 +54,7 @@ public class ServerConfig {
         this.compressCutoffSize = compressCutoffSize;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
+        this.maxTempQueuesPerConnection = maxTempQueuesPerConnection;
         this.sndBufSize = sndBufSize;
         this.rcvBufSize = rcvBufSize;
         this.maxConnections = maxConnections;
@@ -97,6 +99,10 @@ public class ServerConfig {
 
     public int getMaxQueues() {
         return maxQueues;
+    }
+
+    public int getMaxTempQueuesPerConnection() {
+        return maxTempQueuesPerConnection;
     }
 
     public Authenticator getAuthenticator() {
@@ -269,17 +275,35 @@ public class ServerConfig {
          * <p>Defaults to 20
          *
          * @param maxQueues the max number of queues.
-         * @return this server
+         * @return this builder
          */
         public Builder maxQueues(final int maxQueues) {
             if (maxQueues < Server.QUEUES_MIN || maxQueues > Server.QUEUES_MAX) {
                 throw new IllegalArgumentException(
-                        "The maximum message size is limited to "
-                        + Server.QUEUES_MIN + " .. " + Server.QUEUES_MAX
-                        + " bytes!");
+                        "The max number of queues is limited to "
+                        + Server.QUEUES_MIN + " .. " + Server.QUEUES_MAX + "!");
             }
 
             this.maxQueues = maxQueues;
+            return this;
+        }
+
+        /**
+         * Set the max number of temporary queues per connection.
+         *
+         * <p>Defaults to 20
+         *
+         * @param maxQueues the max number of queues.
+         * @return this builder
+         */
+        public Builder maxTempQueuesPerConnection(final int maxQueues) {
+            if (maxQueues < Server.QUEUES_MIN || maxQueues > Server.QUEUES_MAX) {
+                throw new IllegalArgumentException(
+                        "The max number of temporary queues  per connection is limited to "
+                        + Server.QUEUES_MIN + " .. " + Server.QUEUES_MAX + "!");
+            }
+
+            this.maxTempQueuesPerConnection = maxQueues;
             return this;
         }
 
@@ -422,6 +446,7 @@ public class ServerConfig {
                     compressCutoffSize,
                     maxMessageSize,
                     maxQueues,
+                    maxTempQueuesPerConnection,
                     sndBufSize,
                     rcvBufSize,
                     maxConnections,
@@ -440,6 +465,7 @@ public class ServerConfig {
         private int compressCutoffSize = -1;
         private long maxMessageSize = Messages.MESSAGE_LIMIT_DEFAULT;
         private int maxQueues = Server.QUEUES_MAX;
+        private int maxTempQueuesPerConnection = Server.QUEUES_MAX;
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
         private int maxConnections = Server.MAX_CONNECTIONS_DEFAULT;
@@ -458,6 +484,7 @@ public class ServerConfig {
     private final int compressCutoffSize;
     private final long maxMessageSize;
     private final int maxQueues;
+    private final int maxTempQueuesPerConnection;
     private final int sndBufSize;
     private final int rcvBufSize;
     private final int maxConnections;

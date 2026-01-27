@@ -80,18 +80,17 @@ public class TcpTempQueueTest {
 
             final VncMap data1 = (VncMap)response1.getVeniceData();
 
-            assertEquals(3L, Coerce
+            assertEquals(2L, Coerce
                                 .toVncLong(data1.get(new VncKeyword("queue-count")))
                                 .toJavaLong());
 
             assertEquals(1L, Coerce
-                                .toVncLong(data1.get(new VncKeyword("temp-queue-count")))
+                                .toVncLong(data1.get(new VncKeyword("temp-queue-total-count")))
                                 .toJavaLong());
 
             assertEquals(1L, Coerce
-                                .toVncLong(data1.get(new VncKeyword("temp-queue-this-client-count")))
+                                .toVncLong(data1.get(new VncKeyword("temp-queue-connection-count")))
                                 .toJavaLong());
-
 
             // client 2
 
@@ -99,16 +98,16 @@ public class TcpTempQueueTest {
 
             final VncMap data2 = (VncMap)response2.getVeniceData();
 
-            assertEquals(3L, Coerce
+            assertEquals(2L, Coerce
                                 .toVncLong(data2.get(new VncKeyword("queue-count")))
                                 .toJavaLong());
 
             assertEquals(1L, Coerce
-                                .toVncLong(data2.get(new VncKeyword("temp-queue-count")))
+                                .toVncLong(data2.get(new VncKeyword("temp-queue-total-count")))
                                 .toJavaLong());
 
             assertEquals(0L, Coerce
-                                .toVncLong(data2.get(new VncKeyword("temp-queue-this-client-count")))
+                                .toVncLong(data2.get(new VncKeyword("temp-queue-connection-count")))
                                 .toJavaLong());
 
             client1.close();
@@ -126,11 +125,11 @@ public class TcpTempQueueTest {
                                 .toJavaLong());
 
             assertEquals(0L, Coerce
-                                .toVncLong(data3.get(new VncKeyword("temp-queue-count")))
+                                .toVncLong(data3.get(new VncKeyword("temp-queue-total-count")))
                                 .toJavaLong());
 
             assertEquals(0L, Coerce
-                                .toVncLong(data3.get(new VncKeyword("temp-queue-this-client-count")))
+                                .toVncLong(data3.get(new VncKeyword("temp-queue-connection-count")))
                                 .toJavaLong());
 
             IO.sleep(50);

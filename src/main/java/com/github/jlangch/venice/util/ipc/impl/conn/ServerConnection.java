@@ -49,8 +49,8 @@ import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
-import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
+import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
@@ -74,6 +74,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final Server server,
             final ServerConfig config,
             final ServerContext context,
+            final ServerQueueManager queueManager,
             final SocketChannel ch,
             final long connectionId
     ) {
@@ -81,9 +82,11 @@ public class ServerConnection implements IPublisher, Runnable {
         this.ch = ch;
         this.connectionId = connectionId;
         this.context = context;
+        this.queueManager = queueManager;
 
         this.maxMessageSize = config.getMaxMessageSize();
         this.maxQueues = config.getMaxQueues();
+        this.maxTempQueuesPerConnection = config.getMaxTempQueuesPerConnection();
         this.permitClientQueueMgmt = config.isPermitClientQueueMgmt();
         this.heartbeatInterval = config.getHeartbeatIntervalSeconds();
         this.enforceEncryption = config.isEncrypting();
@@ -92,16 +95,15 @@ public class ServerConnection implements IPublisher, Runnable {
         this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false);
         this.dhKeys = DiffieHellmanKeys.create();
 
+
         this.authenticator = context.authenticator;
         this.logger = context.logger;
         this.handler = context.handler;
         this.compressor = context.compressor;
-        this.wal = context.wal;
         this.subscriptions = context.subscriptions;
         this.publishQueueCapacity = context.publishQueueCapacity;
         this.statistics = context.statistics;
         this.serverThreadPoolStatistics = context.serverThreadPoolStatistics;
-        this.p2pQueues = context.p2pQueues;
     }
 
 
@@ -481,7 +483,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message handleOfferToQueue(final Message request) {
         try {
             final String queueName = request.getQueueName();
-            final IpcQueue<Message> queue = p2pQueues.get(queueName);
+            final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue != null) {
                 // convert message type from OFFER to REQUEST
                 final Message msg = request.withType(MessageType.REQUEST, request.isOneway());
@@ -491,9 +493,9 @@ public class ServerConnection implements IPublisher, Runnable {
                                     ? queue.offer(msg)
                                     : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
                 if (ok) {
-                    final boolean durable = msg.isDurable()       // message is durable
-                                            && queue.isDurable()  // queue is durable
-                                            && wal.isEnabled();   // server supports write-ahead-log
+                    final boolean durable = msg.isDurable()                  // message is durable
+                                            && queue.isDurable()             // queue is durable
+                                            && queueManager.isWalEnabled();  // server supports write-ahead-log
 
                     return createTextResponse(
                             request,
@@ -530,7 +532,7 @@ public class ServerConnection implements IPublisher, Runnable {
         try {
             final long timeout = request.getTimeout();
             final String queueName = request.getQueueName();
-            final IpcQueue<Message> queue = p2pQueues.get(queueName);
+            final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue != null) {
                 while(true) {
                     final Message msg = timeout < 0
@@ -588,80 +590,17 @@ public class ServerConnection implements IPublisher, Runnable {
                     "Clients are not permitted to create queues!");
         }
 
-        final long maxQ =  maxQueues;
-        if (countStandardQueues() >= maxQ) {
-            return createBadRequestResponse(
-                    request,
-                    String.format(
-                        "Request %s: Too many queues! Reached the limit of %d queues.",
-                        request.getType(),
-                        maxQ));
-        }
-
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
         final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
         final boolean durable = Coerce.toVncBoolean(payload.get(new VncString("durable"))).getValue();
 
-        if (durable && !wal.isEnabled()) {
-            return createBadRequestResponse(
-                    request,
-                    "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
-        }
+        queueManager.createQueue(queueName, capacity, bounded, durable);
 
-        try {
-            QueueValidator.validate(queueName);
-        }
-        catch(Exception ex) {
-            return createBadRequestResponse(
-                    request,
-                    String.format(
-                            "Request %s: Invalid queue name: %s",
-                            request.getType(), ex.getMessage()));
-        }
-
-        if (StringUtil.isBlank(queueName) || capacity < 1) {
-            return createBadRequestResponse(
-                    request,
-                    String.format(
-                       "Request %s: A queue name must not be blank and the "
-                       + "capacity must not be lower than 1",
-                       request.getType()));
-        }
-        else {
-            try {
-                // do not overwrite the queue if it already exists
-                p2pQueues.computeIfAbsent(
-                        queueName,
-                        k -> { final IpcQueue<Message> q = QueueFactory.createQueue(
-                                                                wal,
-                                                                queueName,
-                                                                capacity,
-                                                                bounded,
-                                                                durable);
-                                logInfo(String.format(
-                                      "Created queue %s. Capacity=%d, bounded=%b, durable=%b",
-                                      queueName,
-                                      capacity,
-                                      bounded,
-                                      durable));
-
-                               return q;
-                        });
-            }
-            catch(Exception ex) {
-                return createBadRequestResponse(
-                        request,
-                        String.format(
-                            "Request %s: Failed to ceate queue: %s. Reason: %s",
-                            request.getType(), queueName, ex.getMessage()));
-            }
-
-            return createOkTextResponse(
-                    request,
-                    String.format("Request %s: Queue %s created.", request.getType(), queueName));
-        }
+        return createOkTextResponse(
+                request,
+                String.format("Request %s: Queue %s created.", request.getType(), queueName));
     }
 
     private Message handleCreateTemporaryQueueRequest(final Message request) {
@@ -671,59 +610,50 @@ public class ServerConnection implements IPublisher, Runnable {
                     String.format("Request %s: Expected a JSON payload", request.getType()));
         }
 
-        final long maxQ = maxQueues;
-        if (tmpQueues.size() >= maxQ) {
+        if (tmpQueues.size() >= maxTempQueuesPerConnection) {
             return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Too many temporary queues! "
                         + "Reached the limit of %d temporary queues for this client.",
                         request.getType(),
-                        maxQ));
+                        maxTempQueuesPerConnection));
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
 
-        if (capacity < 1) {
+        final String queueName = "queue/" + UUID.randomUUID().toString();
+
+        try {
+            QueueValidator.validateQueueName(queueName);
+            QueueValidator.validateQueueCapacity(capacity);
+        }
+        catch(Exception ex) {
             return createBadRequestResponse(
                     request,
                     String.format(
-                       "Request %s: A queue capacity must not be lower than 1",
-                       request.getType()));
+                        "Request %s: Invalid queue data: %s",
+                        request.getType(), ex.getMessage()));
         }
-        else {
-            final String queueName = "queue/" + UUID.randomUUID().toString();
 
-            try {
-                QueueValidator.validate(queueName);
-            }
-            catch(Exception ex) {
-                return createBadRequestResponse(
-                        request,
-                        String.format(
-                            "Request %s: Invalid queue name: %s",
-                            request.getType(), ex.getMessage()));
-            }
+        // do not overwrite the queue if it already exists
+        final Map<String, IpcQueue<Message>> queues = queueManager.getQueues();
+        queues.computeIfAbsent(
+           queueName,
+           k -> {
+               final IpcQueue<Message> q = new BoundedQueue<Message>(queueName, capacity, true);
+               tmpQueues.put(queueName, 0);
 
+               logInfo(String.format(
+                           "Created temporary queue %s. Capacity=%d",
+                           queueName,
+                           capacity));
 
-            // do not overwrite the queue if it already exists
-           p2pQueues.computeIfAbsent(
-               queueName,
-               k -> {
-                   final IpcQueue<Message> q = new BoundedQueue<Message>(queueName, capacity, true);
-                   tmpQueues.put(queueName, 0);
+               return q;
+           });
 
-                   logInfo(String.format(
-                               "Created temporary queue %s. Capacity=%d",
-                               queueName,
-                               capacity));
-
-                   return q;
-               });
-
-            return createOkTextResponse(request, queueName);
-        }
+        return createOkTextResponse(request, queueName);
     }
 
     private Message handleRemoveQueueRequest(final Message request) {
@@ -744,24 +674,9 @@ public class ServerConnection implements IPublisher, Runnable {
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
 
-        try {
-            QueueValidator.validate(queueName);
-        }
-        catch(Exception ex) {
-            return createBadRequestResponse(
-                    request,
-                    String.format(
-                        "Request %s: Invalid queue name: %s",
-                        request.getType(), ex.getMessage()));
-        }
-
-        final IpcQueue<Message> queue = p2pQueues.get(queueName);
-        if (queue != null) {
-            queue.onRemove();
-        }
-
-        p2pQueues.remove(queueName);
-        tmpQueues.remove(queueName);
+        // Note: Temporary queues cannot be removed. They are implicitly
+        //       removed if the connection they belong to is closed!
+        queueManager.removeQueue(queueName);
 
         logInfo(String.format("Removed queue %s.", queueName));
 
@@ -791,7 +706,7 @@ public class ServerConnection implements IPublisher, Runnable {
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
 
         try {
-            QueueValidator.validate(queueName);
+            QueueValidator.validateQueueName(queueName);
         }
         catch(Exception ex) {
             return createBadRequestResponse(
@@ -801,7 +716,7 @@ public class ServerConnection implements IPublisher, Runnable {
                         request.getType(), ex.getMessage()));
         }
 
-        final IpcQueue<Message> q = p2pQueues.get(queueName);
+        final IpcQueue<Message> q = queueManager.getQueue(queueName);
 
         final String response = new JsonBuilder()
                                         .add("name",      queueName)
@@ -1026,6 +941,8 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message getTcpServerStatus(final Message request) {
+        final WalQueueManager wal = queueManager.getWalQueueManager();
+
         int sndBufSize = -1;
         int rcvBufSize = -1;
 
@@ -1064,9 +981,9 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("publish-discarded-count", statistics.getDiscardedPublishCount())
                            .add("subscription-client-count", subscriptions.getClientSubscriptionCount())
                            .add("subscription-topic-count", subscriptions.getTopicSubscriptionCount())
-                           .add("queue-count", p2pQueues.size())
-                           .add("temp-queue-count", p2pQueues.values().stream().filter(q -> q.isTemporary()).count())
-                           .add("temp-queue-this-client-count", tmpQueues.size())
+                           .add("queue-count", queueManager.countStandardQueues())
+                           .add("temp-queue-total-count", queueManager.countTemporaryQueues())
+                           .add("temp-queue-connection-count", (long)tmpQueues.size())
                            .add("socket-snd-buf-size", sndBufSize)
                            .add("socket-rcv-buf-size", rcvBufSize)
                            .toJson(false));
@@ -1153,21 +1070,15 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private void removeAllChannelTemporaryQueues() {
         try {
+            final Map<String, IpcQueue<Message>> queues = queueManager.getQueues();
+
             final Set<String> names = tmpQueues.keySet();
-            names.forEach(n -> p2pQueues.remove(n));
+            names.forEach(n -> queues.remove(n));
             tmpQueues.clear();
 
             logInfo("Removed all temporary queues of the connnection");
         }
         catch(Exception ignore) { }
-    }
-
-    private long countStandardQueues() {
-        return p2pQueues
-                .values()
-                .stream()
-                .filter(q -> !q.isTemporary())
-                .count();
     }
 
     private void closeChannel() {
@@ -1223,7 +1134,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final ServerLogger logger;
 
     private final Function<IMessage,IMessage> handler;
-    private final WalQueueManager wal;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;
@@ -1239,8 +1149,11 @@ public class ServerConnection implements IPublisher, Runnable {
     // configuration
     private final long maxMessageSize;
     private final long maxQueues;
+    private final long maxTempQueuesPerConnection;
     private final boolean permitClientQueueMgmt;
     private final long heartbeatInterval;
+
+    final ServerQueueManager queueManager;
 
     // compression
     private final Compressor compressor;
@@ -1254,6 +1167,5 @@ public class ServerConnection implements IPublisher, Runnable {
     // queues
     private final IpcQueue<Error> errorBuffer;
     private final IpcQueue<Message> publishQueue;
-    private final Map<String, IpcQueue<Message>> p2pQueues;
     private final Map<String, Integer> tmpQueues = new ConcurrentHashMap<>();
 }

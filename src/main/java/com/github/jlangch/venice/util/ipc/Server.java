@@ -26,10 +26,8 @@ import java.net.BindException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,8 +37,7 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.util.ipc.impl.Message;
-import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
-import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
+import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.conn.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.conn.ServerContext;
@@ -68,9 +65,14 @@ public class Server implements AutoCloseable {
         this.config = config;
         this.endpointId = UUID.randomUUID().toString();
 
-        authenticator = config.getAuthenticator();
-        compressor = new Compressor(config.getCompressCutoffSize());
-        logger.enable(config.getLogDir());
+        this.authenticator = config.getAuthenticator();
+        this.compressor = new Compressor(config.getCompressCutoffSize());
+        this.logger.enable(config.getLogDir());
+
+        this.serverQueueManager = new ServerQueueManager(
+                                        config,
+                                        new WalQueueManager(),
+                                        this.logger);
     }
 
 
@@ -127,6 +129,7 @@ public class Server implements AutoCloseable {
         // configuration
         mngdExecutor.setMaximumThreadPoolSize(config.getMaxConnections() + 1);
         if (config.getWalDir() != null) {
+            final WalQueueManager wal = serverQueueManager.getWalQueueManager();
             wal.activate(config.getWalDir(), config.isWalCompress(), config.isWalCompactAtStart());
         }
         if (authenticator.isActive() && !config.isEncrypting()) {
@@ -145,23 +148,8 @@ public class Server implements AutoCloseable {
 
                 logServerStart();
 
-                if (wal.isEnabled()) {
-                    final int queueCount = wal.countLogFiles();
-                    if (queueCount > 0) {
-                        logger.info("server", "start", "Loading " + queueCount + " queue(s) from WAL...");
-                    }
-
-                    // Preload the queues from the Write-Ahead-Log
-                    //
-                    // Note: 1) must be run after starting the ServerSocketChannel
-                    //          as a locking mechanism to ensure this server is the
-                    //          server in charge!
-                    //       2) must be completed before the server accepts messages
-                    //          on a SocketChannel!!
-                    //       3) will replace any queue with the same name created on this
-                    //          server before starting the server
-                    p2pQueues.putAll(wal.preloadQueues());
-                }
+                // Preload the WAL based queues at server startup
+                serverQueueManager.preloadWalQueues();
 
                 // run in an executor thread to handle incoming connections to not block the caller
                 executor.execute(() -> {
@@ -266,9 +254,11 @@ public class Server implements AutoCloseable {
      * Up to 80 characters are allowed.
      *
      * @param queueName a queue name
-     * @param capacity the queue capacity
+     * @param capacity the queue capacity (must be greater than 1)
      * @param bounded if true create a bounded queue else create a circular queue
      * @param durable if true create a durable queue else a nondurable queue
+     * @throws IpcException if the queue name does not follow the convention
+     *                      for queue names or if the
      */
     public void createQueue(
             final String queueName,
@@ -276,36 +266,7 @@ public class Server implements AutoCloseable {
             final boolean bounded,
             final boolean durable
     ) {
-        QueueValidator.validate(queueName);
-        if (capacity < 1) {
-            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
-        }
-
-        if (durable && !wal.isEnabled()) {
-            throw new IpcException(
-                    "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
-        }
-
-        // do not overwrite the queue if it already exists
-        p2pQueues.computeIfAbsent(
-            queueName,
-            k -> { final IpcQueue<Message> q = QueueFactory.createQueue(
-                                                    wal,
-                                                    queueName,
-                                                    capacity,
-                                                    bounded,
-                                                    durable);
-                   logger.info(
-                      "server", "queue",
-                      String.format(
-                          "Created queue %s. Capacity=%d, bounded=%b, durable=%b",
-                          queueName,
-                          capacity,
-                          bounded,
-                          durable));
-
-                   return q;
-            });
+        serverQueueManager.createQueue(queueName, capacity, bounded, durable);
     }
 
     /**
@@ -315,22 +276,20 @@ public class Server implements AutoCloseable {
      * @return the queue or <code>null</code> if the queue does not exist
      */
     public IpcQueue<Message> getQueue(final String queueName) {
-        QueueValidator.validate(queueName);
-
-        return p2pQueues.get(queueName);
+        return serverQueueManager.getQueue(queueName);
     }
 
     /**
      * Remove a queue.
      *
+     * <p>Temporary queues cannot be removed. They are implicitly removed if
+     * the connection they belong to is closed!
+     *
      * @param queueName a queue name
+     * @return <code>true</code> if the queue has been removed else <code>false</code>
      */
-    public void removeQueue(final String queueName) {
-        QueueValidator.validate(queueName);
-
-        p2pQueues.remove(queueName);
-
-        logger.info("server", "queue", String.format("Removed queue %s.", queueName));
+    public boolean removeQueue(final String queueName) {
+        return serverQueueManager.removeQueue(queueName);
     }
 
     /**
@@ -340,9 +299,7 @@ public class Server implements AutoCloseable {
      * @return <code>true</code> if the queue exists else <code>false</code>
      */
     public boolean existsQueue(final String queueName) {
-        QueueValidator.validate(queueName);
-
-        return p2pQueues.containsKey(queueName);
+        return serverQueueManager.existsQueue(queueName);
     }
 
 
@@ -377,12 +334,11 @@ public class Server implements AutoCloseable {
                                                        logger,
                                                        handler,
                                                        compressor,
-                                                       wal,
                                                        subscriptions,
                                                        publishQueueCapacity,
-                                                       p2pQueues,
                                                        statistics,
                                                        () -> mngdExecutor.info()),
+                                               serverQueueManager,
                                                channel,
                                                connId);
 
@@ -409,9 +365,7 @@ public class Server implements AutoCloseable {
             try {
                 try {
                     // close the durable queues
-                    if (wal.isEnabled()) {
-                        wal.close(p2pQueues.values());
-                    }
+                    serverQueueManager.close();
                 }
                 catch(Exception ex) {
                     logger.warn("server", "close", "Error while closing queue WALs.", ex);
@@ -461,6 +415,8 @@ public class Server implements AutoCloseable {
     }
 
     private void logServerStart() {
+        final WalQueueManager wal = serverQueueManager.getWalQueueManager();
+
         logger.info("server", "start", "Server started on " + config.getConnURI());
         logger.info("server", "start", "Endpoint ID: " + endpointId);
         logger.info("server", "start", "Encryption: " + config.isEncrypting());
@@ -494,10 +450,9 @@ public class Server implements AutoCloseable {
     private final AtomicLong connectionId = new AtomicLong(0);
 
     private final int publishQueueCapacity = 50;
-    private final WalQueueManager wal = new WalQueueManager();
+    private final ServerQueueManager serverQueueManager;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
-    private final Map<String, IpcQueue<Message>> p2pQueues = new ConcurrentHashMap<>();
     private final ServerLogger logger = new ServerLogger();
 
     private final ManagedCachedThreadPoolExecutor mngdExecutor =

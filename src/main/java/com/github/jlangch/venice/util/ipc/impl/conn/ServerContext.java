@@ -21,19 +21,15 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IMessage;
-import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
-import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
-import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
 
 public class ServerContext {
@@ -43,10 +39,8 @@ public class ServerContext {
             final ServerLogger logger,
             final Function<IMessage,IMessage> handler,
             final Compressor compressor,
-            final WalQueueManager wal,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
-            final Map<String, IpcQueue<Message>> p2pQueues,
             final ServerStatistics statistics,
             final Supplier<VncMap> serverThreadPoolStatistics
     ) {
@@ -54,12 +48,10 @@ public class ServerContext {
         this.logger = logger;
         this.handler = handler;
         this.compressor = compressor;
-        this.wal = wal;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
         this.statistics = statistics;
         this.serverThreadPoolStatistics = serverThreadPoolStatistics;
-        this.p2pQueues = p2pQueues;
     }
 
 
@@ -67,10 +59,8 @@ public class ServerContext {
     public final ServerLogger logger;
     public final Function<IMessage,IMessage> handler;
     public final Compressor compressor;
-    public final WalQueueManager wal;
     public final Subscriptions subscriptions;
     public final int publishQueueCapacity;
-    public final Map<String, IpcQueue<Message>> p2pQueues;
     public final ServerStatistics statistics;
     public final Supplier<VncMap> serverThreadPoolStatistics;
 }

@@ -26,7 +26,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class QueueValidator {
 
-    public static void validate(final String queueName) {
+    public static void validateQueueName(final String queueName) {
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be empty or blank!");
         }
@@ -45,6 +45,12 @@ public class QueueValidator {
             throw new IllegalArgumentException(
                     "The queue name \"" + queueName + "\" must only contain the characters: "
                     + "'a-z', 'A-Z', '0-9', '_', '-', or '/'!");
+        }
+    }
+
+    public static void validateQueueCapacity(final int capacity) {
+        if (capacity < 1) {
+            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
         }
     }
 
