@@ -425,9 +425,8 @@ public class ServerConnection implements IPublisher, Runnable {
                 return createTextResponse(request, OK, "");
             }
             else {
-                return ((Message)response)
-                            .withType(RESPONSE, true)
-                            .withResponseStatus(request.getId(), OK);
+                return ((Message)response).withTypeAndResponseStatus(
+                            RESPONSE, true, request.getId(), OK);
             }
         }
     }
@@ -536,8 +535,7 @@ public class ServerConnection implements IPublisher, Runnable {
                        continue;
                     }
                     else {
-                        return msg.withType(RESPONSE, true)
-                                  .withResponseStatus(request.getId(), OK);
+                        return msg.withTypeAndResponseStatus(RESPONSE, true, request.getId(), OK);
                     }
                 }
             }

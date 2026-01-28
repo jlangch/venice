@@ -196,16 +196,21 @@ public class Message implements IMessage {
   }
 
     /**
-     * Change the response status of a message
+     * Change the type and response status of a message
      *
+     * @param type a type
+     * @param oneway oneway mode
      * @param id a a message id
      * @param responseStatus a response status
      * @return a new message with the topic
      */
-    public Message withResponseStatus(
-           final UUID id,
-           final ResponseStatus responseStatus
+    public Message withTypeAndResponseStatus(
+            final MessageType type,
+            final boolean oneway,
+            final UUID id,
+            final ResponseStatus responseStatus
     ) {
+        Objects.requireNonNull(type);
         Objects.requireNonNull(id);
         Objects.requireNonNull(responseStatus);
         return new Message(
