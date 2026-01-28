@@ -21,6 +21,33 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
+import static com.github.jlangch.venice.util.ipc.MessageType.AUTHENTICATION;
+import static com.github.jlangch.venice.util.ipc.MessageType.CLIENT_CONFIG;
+import static com.github.jlangch.venice.util.ipc.MessageType.CREATE_QUEUE;
+import static com.github.jlangch.venice.util.ipc.MessageType.CREATE_TEMP_QUEUE;
+import static com.github.jlangch.venice.util.ipc.MessageType.DIFFIE_HELLMAN_KEY_REQUEST;
+import static com.github.jlangch.venice.util.ipc.MessageType.HEARTBEAT;
+import static com.github.jlangch.venice.util.ipc.MessageType.OFFER;
+import static com.github.jlangch.venice.util.ipc.MessageType.POLL;
+import static com.github.jlangch.venice.util.ipc.MessageType.PUBLISH;
+import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_QUEUE;
+import static com.github.jlangch.venice.util.ipc.MessageType.REQUEST;
+import static com.github.jlangch.venice.util.ipc.MessageType.RESPONSE;
+import static com.github.jlangch.venice.util.ipc.MessageType.STATUS_QUEUE;
+import static com.github.jlangch.venice.util.ipc.MessageType.SUBSCRIBE;
+import static com.github.jlangch.venice.util.ipc.MessageType.TEST;
+import static com.github.jlangch.venice.util.ipc.MessageType.UNSUBSCRIBE;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.BAD_REQUEST;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.DIFFIE_HELLMAN_ACK;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.DIFFIE_HELLMAN_NAK;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.HANDLER_ERROR;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.NO_PERMISSION;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.OK;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_ACCESS_INTERRUPTED;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_EMPTY;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_FULL;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_NOT_FOUND;
+
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -177,21 +204,21 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private void setupHandlers() {
-        handlers.put(MessageType.REQUEST,                    this::handleSend);
-        handlers.put(MessageType.SUBSCRIBE,                  this::handleSubscribeToTopic);
-        handlers.put(MessageType.UNSUBSCRIBE,                this::handleUnsubscribeFromTopic);
-        handlers.put(MessageType.PUBLISH,                    this::handlePublishToTopic);
-        handlers.put(MessageType.OFFER,                      this::handleOfferToQueue);
-        handlers.put(MessageType.POLL,                       this::handlePollFromQueue);
-        handlers.put(MessageType.CREATE_QUEUE,               this::handleCreateQueueRequest);
-        handlers.put(MessageType.CREATE_TEMP_QUEUE,          this::handleCreateTemporaryQueueRequest);
-        handlers.put(MessageType.REMOVE_QUEUE,               this::handleRemoveQueueRequest);
-        handlers.put(MessageType.STATUS_QUEUE,               this::handleStatusQueueRequest);
-        handlers.put(MessageType.CLIENT_CONFIG,              this::handleClientConfigRequest);
-        handlers.put(MessageType.DIFFIE_HELLMAN_KEY_REQUEST, this::handleDiffieHellmanKeyExchange);
-        handlers.put(MessageType.AUTHENTICATION,             this::handleAuthentication);
-        handlers.put(MessageType.HEARTBEAT,                  this::handleHeartbeat);
-        handlers.put(MessageType.TEST,                       this::handleTest);
+        handlers.put(REQUEST,                    this::handleSend);
+        handlers.put(SUBSCRIBE,                  this::handleSubscribeToTopic);
+        handlers.put(UNSUBSCRIBE,                this::handleUnsubscribeFromTopic);
+        handlers.put(PUBLISH,                    this::handlePublishToTopic);
+        handlers.put(OFFER,                      this::handleOfferToQueue);
+        handlers.put(POLL,                       this::handlePollFromQueue);
+        handlers.put(CREATE_QUEUE,               this::handleCreateQueueRequest);
+        handlers.put(CREATE_TEMP_QUEUE,          this::handleCreateTemporaryQueueRequest);
+        handlers.put(REMOVE_QUEUE,               this::handleRemoveQueueRequest);
+        handlers.put(STATUS_QUEUE,               this::handleStatusQueueRequest);
+        handlers.put(CLIENT_CONFIG,              this::handleClientConfigRequest);
+        handlers.put(DIFFIE_HELLMAN_KEY_REQUEST, this::handleDiffieHellmanKeyExchange);
+        handlers.put(AUTHENTICATION,             this::handleAuthentication);
+        handlers.put(HEARTBEAT,                  this::handleHeartbeat);
+        handlers.put(TEST,                       this::handleTest);
     }
 
     private boolean isStop() {
@@ -237,7 +264,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 if (msg != null) {
                     statistics.incrementPublishCount();
-                    final Message pubMsg = msg.withType(MessageType.REQUEST, true);
+                    final Message pubMsg = msg.withType(REQUEST, true);
 
                    sendResponse(pubMsg);
                }
@@ -268,9 +295,9 @@ public class ServerConnection implements IPublisher, Runnable {
             return;
         }
 
-        if (request.getType() != MessageType.DIFFIE_HELLMAN_KEY_REQUEST
-            && request.getType() != MessageType.CLIENT_CONFIG
-        ) {
+        final MessageType type = request.getType();
+
+        if (type != DIFFIE_HELLMAN_KEY_REQUEST && type != CLIENT_CONFIG) {
             statistics.incrementMessageCount();
         }
 
@@ -303,72 +330,46 @@ public class ServerConnection implements IPublisher, Runnable {
             return;
         }
 
+        final ResponseStatus respStatus = response.getResponseStatus();
+
         // [4] Send response
-        if (request.isOneway()) {
-            // oneway request -> do not send any response message back
-            switch(response.getResponseStatus()) {
-                case SERVER_ERROR:
-                case HANDLER_ERROR:
-                case BAD_REQUEST:
-                    auditResponseError(
-                            request,
-                            String.format(
-                              "Cannot send error response status %s back for oneway requests! "
-                              + "Request: %s",
-                              response.getResponseStatus(),
-                              request.getType()));
-                    break;
-
-                default:
-                    break;
+        if (!request.isOneway()) {
+            if (respStatus == DIFFIE_HELLMAN_ACK || respStatus == DIFFIE_HELLMAN_NAK) {
+                // Diffie Hellman responses without compressing and encrypting!
+                sendDiffieHellmanResponse(response);
             }
-        }
-        else {
-            // request -> response
-            switch(response.getResponseStatus()) {
-                case DIFFIE_HELLMAN_ACK:
-                case DIFFIE_HELLMAN_NAK:
-                    // Diffie Hellman responses without compressing and encrypting!
-                    sendDiffieHellmanResponse(response);
-                    break;
-
-                default:
-                    sendResponse(response);
-                    break;
+            else {
+                sendResponse(response);
             }
         }
     }
 
     private Message handleRequestMessage(final Message request) {
+        final MessageType type = request.getType();
+
         // Authentication
-        if (authenticator.isActive()) {
-            switch(request.getType()) {
-                case CLIENT_CONFIG:
-                case DIFFIE_HELLMAN_KEY_REQUEST:
-                case AUTHENTICATION:
-                    // no authentication
-                    break;
-                default:
-                    if (!authenticated) {
-                        return createTextResponse(
-                                request,
-                                ResponseStatus.NO_PERMISSION,
-                                "Authentication is required!");
-                    }
-                    break;
+        if (authenticator.isActive() && !authenticated) {
+            if (!(type == CLIENT_CONFIG
+                  || type == DIFFIE_HELLMAN_KEY_REQUEST
+                  || type == AUTHENTICATION)
+            ) {
+                return createTextResponse(
+                        request,
+                        NO_PERMISSION,
+                        "Authentication is required!");
             }
         }
 
         try {
-            final Function<Message,Message> handler = handlers.get(request.getType());
+            final Function<Message,Message> handler = handlers.get(type);
             return handler != null
                     ? handler.apply(request)
                     : createBadRequestResponse(
                             request,
-                            "Invalid request type: " + request.getType());
+                            "Invalid request type: " + type);
         }
         catch(Exception ex) {
-            final String errMsg = "Failed to handle '" + request.getType() + "' request!";
+            final String errMsg = "Failed to handle '" + type + "' request!";
             // send an error response
             auditResponseError(request, errMsg, ex);
 
@@ -376,7 +377,7 @@ public class ServerConnection implements IPublisher, Runnable {
             //       to the client
             return createTextResponse(
                         request,
-                        ResponseStatus.HANDLER_ERROR,
+                        HANDLER_ERROR,
                         errMsg+ "\n" + ExceptionUtil.printStackTraceToString(ex));
         }
     }
@@ -414,15 +415,12 @@ public class ServerConnection implements IPublisher, Runnable {
 
             if (response == null) {
                 // create an empty text response
-                return createTextResponse(
-                            request,
-                            ResponseStatus.OK,
-                            "");
+                return createTextResponse(request, OK, "");
             }
             else {
                 return ((Message)response)
-                            .withType(MessageType.RESPONSE, true)
-                            .withResponseStatus(request.getId(), ResponseStatus.OK);
+                            .withType(RESPONSE, true)
+                            .withResponseStatus(request.getId(), OK);
             }
         }
     }
@@ -461,7 +459,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue != null) {
                 // convert message type from OFFER to REQUEST
-                final Message msg = request.withType(MessageType.REQUEST, request.isOneway());
+                final Message msg = request.withType(REQUEST, request.isOneway());
                 final long timeout = msg.getTimeout();
 
                 final boolean ok = timeout < 0
@@ -474,7 +472,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
                     return createTextResponse(
                             request,
-                            ResponseStatus.OK,
+                            OK,
                             String.format(
                                 "Offered the message to the queue %s (durable: %b).",
                                 queue.name(),
@@ -483,14 +481,14 @@ public class ServerConnection implements IPublisher, Runnable {
                 else {
                     return createTextResponse(
                             request,
-                            ResponseStatus.QUEUE_FULL,
+                            QUEUE_FULL,
                             "Offer rejected! The queue is full.");
                 }
             }
             else {
                 return createTextResponse(
                         request,
-                        ResponseStatus.QUEUE_NOT_FOUND,
+                        QUEUE_NOT_FOUND,
                         "Offer rejected! The queue does not exist.");
             }
         }
@@ -498,7 +496,7 @@ public class ServerConnection implements IPublisher, Runnable {
             // interrupted while waiting for queue
             return createTextResponse(
                     request,
-                    ResponseStatus.QUEUE_ACCESS_INTERRUPTED,
+                    QUEUE_ACCESS_INTERRUPTED,
                     "Offer rejected! Queue access interrupted.");
         }
     }
@@ -516,7 +514,7 @@ public class ServerConnection implements IPublisher, Runnable {
                     if (msg == null) {
                         return createTextResponse(
                                 request,
-                                ResponseStatus.QUEUE_EMPTY,
+                                QUEUE_EMPTY,
                                 "Poll rejected! The queue is empty.");
                     }
                     else if (msg.hasExpired()) {
@@ -531,15 +529,15 @@ public class ServerConnection implements IPublisher, Runnable {
                        continue;
                     }
                     else {
-                        return msg.withType(MessageType.RESPONSE, true)
-                                  .withResponseStatus(request.getId(), ResponseStatus.OK);
+                        return msg.withType(RESPONSE, true)
+                                  .withResponseStatus(request.getId(), OK);
                     }
                 }
             }
             else {
                 return createTextResponse(
                         request,
-                        ResponseStatus.QUEUE_NOT_FOUND,
+                        QUEUE_NOT_FOUND,
                         "Poll rejected! The queue does not exist.");
             }
         }
@@ -547,7 +545,7 @@ public class ServerConnection implements IPublisher, Runnable {
             // interrupted while waiting for queue
             return createTextResponse(
                     request,
-                    ResponseStatus.QUEUE_ACCESS_INTERRUPTED,
+                    QUEUE_ACCESS_INTERRUPTED,
                     "Poll rejected! Queue access interrupted.");
         }
     }
@@ -691,10 +689,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                         .add("size",      q == null ? 0L : (long)q.size())
                                         .toJson(false);
 
-        return createJsonResponse(
-                    request,
-                    ResponseStatus.OK,
-                    response);
+        return createJsonResponse(request, OK, response);
     }
 
     private Message handleClientConfigRequest(final Message request) {
@@ -709,7 +704,7 @@ public class ServerConnection implements IPublisher, Runnable {
         logInfo("Handling client config request! AcknowledgeMode: " + msgAcknowledgeMode);
         return createJsonResponse(
                     request,
-                    ResponseStatus.OK,
+                    OK,
                     new JsonBuilder()
                             .add("max-msg-size", maxMessageSize)
                             .add("compress-cutoff-size", compressor.cutoffSize())
@@ -725,7 +720,7 @@ public class ServerConnection implements IPublisher, Runnable {
             logWarn("Diffie-Hellman key already exchanged!");
             return createPlainTextResponse(
                        request.getId(),
-                       ResponseStatus.DIFFIE_HELLMAN_NAK,
+                       DIFFIE_HELLMAN_NAK,
                        null,
                        Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
                        "Error: Diffie-Hellman key already exchanged!");
@@ -751,7 +746,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 // send the server's public key back
                 return createPlainTextResponse(
                            request.getId(),
-                           ResponseStatus.DIFFIE_HELLMAN_ACK,
+                           DIFFIE_HELLMAN_ACK,
                            null,
                            Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
                            dhKeys.getPublicKeyBase64());
@@ -761,7 +756,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 return createPlainTextResponse(
                            request.getId(),
-                           ResponseStatus.DIFFIE_HELLMAN_NAK,
+                           DIFFIE_HELLMAN_NAK,
                            null,
                            Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
                            "Failed to exchange Diffie-Hellman key! Reason: " + ex.getMessage());
@@ -782,18 +777,18 @@ public class ServerConnection implements IPublisher, Runnable {
             if (authenticated) {
                 principal = payload.get(0);
                 logInfo("Authenticated user '" + payload.get(0) + "'");
-                return createTextResponse(request, ResponseStatus.OK, "");
+                return createTextResponse(request, OK, "");
             }
         }
 
         logError("Authentication failure '" + payload.get(0) + "'");
-        return createTextResponse(request, ResponseStatus.NO_PERMISSION, "");
+        return createTextResponse(request, NO_PERMISSION, "");
     }
 
     private Message handleHeartbeat(final Message request) {
         lastHeartbeat = System.currentTimeMillis();
         logInfo("Heartbeat");
-        return createTextResponse(request, ResponseStatus.OK, "");
+        return createTextResponse(request, OK, "");
     }
 
     private Message handleTest(final Message request) {
@@ -802,8 +797,8 @@ public class ServerConnection implements IPublisher, Runnable {
                 : new Message(
                         request.getId(),
                         request.getRequestId(),
-                        MessageType.RESPONSE,
-                        ResponseStatus.OK,
+                        RESPONSE,
+                        OK,
                         true,   // oneway
                         false,  // transient
                         false,  // not a subscription msg
@@ -823,21 +818,21 @@ public class ServerConnection implements IPublisher, Runnable {
             final Message request,
             final String errorMsg
     ) {
-        return createTextResponse(request, ResponseStatus.BAD_REQUEST, errorMsg);
+        return createTextResponse(request, BAD_REQUEST, errorMsg);
     }
 
     private Message createNoPermissionResponse(
             final Message request,
             final String errorMsg
     ) {
-        return createTextResponse(request, ResponseStatus.NO_PERMISSION, errorMsg);
+        return createTextResponse(request, NO_PERMISSION, errorMsg);
     }
 
     private Message createOkTextResponse(
             final Message request,
             final String message
     ) {
-       return createTextResponse(request, ResponseStatus.OK, message);
+       return createTextResponse(request, OK, message);
     }
 
     private Message createTextResponse(
@@ -867,7 +862,7 @@ public class ServerConnection implements IPublisher, Runnable {
         return new Message(
                 request.getId(),
                 request.getRequestId(),
-                MessageType.RESPONSE,
+                RESPONSE,
                 status,
                 true,   // oneway
                 false,  // transient
@@ -889,7 +884,7 @@ public class ServerConnection implements IPublisher, Runnable {
         return new Message(
                 id,
                 requestID,
-                MessageType.RESPONSE,
+                RESPONSE,
                 status,
                 true,   // oneway
                 false,  // transient
@@ -918,7 +913,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
         return createJsonResponse(
                    request,
-                   ResponseStatus.OK,
+                   OK,
                    new JsonBuilder()
                            .add("running", server.isRunning())
                             // config
@@ -959,10 +954,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message getTcpServerThreadPoolStatistics(final Message request) {
         final VncMap statistics = serverThreadPoolStatistics.get();
 
-        return createJsonResponse(
-                request,
-                ResponseStatus.OK,
-                Json.writeJson(statistics, true));
+        return createJsonResponse(request, OK, Json.writeJson(statistics, true));
     }
 
     private Message getTcpServerNextError(final Message request) {
@@ -971,7 +963,7 @@ public class ServerConnection implements IPublisher, Runnable {
             if (err == null) {
                 return createJsonResponse(
                         request,
-                        ResponseStatus.QUEUE_EMPTY,
+                        QUEUE_EMPTY,
                         new JsonBuilder()
                                 .add("status", "no_errors_available")
                                 .toJson(false));
@@ -983,7 +975,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 return createJsonResponse(
                         request,
-                        ResponseStatus.OK,
+                        OK,
                         new JsonBuilder()
                                 .add("status", "error")
                                 .add("description", description)
@@ -995,7 +987,7 @@ public class ServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             return createJsonResponse(
                     request,
-                    ResponseStatus.HANDLER_ERROR,
+                    HANDLER_ERROR,
                     new JsonBuilder()
                             .add("status", "temporarily_unavailable")
                             .toJson(false));
