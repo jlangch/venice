@@ -273,8 +273,8 @@ public class ServerConnection implements IPublisher, Runnable {
                     statistics.incrementPublishCount();
                     final Message pubMsg = msg.withType(REQUEST, true);
 
-                   sendResponse(pubMsg);
-               }
+                    sendResponse(pubMsg);
+                }
             }
             catch(InterruptedException ex) {
                break;
@@ -532,7 +532,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                 "polling from queue '%s'!",
                                 msg.getRequestId(),
                                 queueName));
-                       continue;
+                        continue;
                     }
                     else {
                         return msg.withTypeAndResponseStatus(RESPONSE, true, request.getId(), OK);

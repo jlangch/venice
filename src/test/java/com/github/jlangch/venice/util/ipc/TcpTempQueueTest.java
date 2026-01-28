@@ -39,7 +39,11 @@ public class TcpTempQueueTest {
 
     @Test
     public void test_temp_queue_1() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .permitClientQueueMgmt(true)
+                                            .build());
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 

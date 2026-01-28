@@ -470,7 +470,7 @@ public class ServerConfig {
         private int rcvBufSize = -1;
         private int maxConnections = Server.MAX_CONNECTIONS_DEFAULT;
         private Authenticator authenticator = new Authenticator(false);
-        private boolean permitClientQueueMgmt = true;
+        private boolean permitClientQueueMgmt = false;
         private int heartbeatIntervalSeconds;
         private File walDir;
         private boolean walCompress;

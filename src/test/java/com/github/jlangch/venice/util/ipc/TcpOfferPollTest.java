@@ -82,7 +82,11 @@ public class TcpOfferPollTest {
 
     @Test
     public void test_queue_status() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .permitClientQueueMgmt(true)
+                                            .build());
         final Client client = Client.of(33333);
 
         server.createQueue("queue-1", 10, true, false);

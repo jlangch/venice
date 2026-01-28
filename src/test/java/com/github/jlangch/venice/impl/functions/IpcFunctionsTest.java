@@ -605,12 +605,12 @@ public class IpcFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                             \n" +
-                "  (try-with [server (ipc/server 33333)          \n" +
-                "             client (ipc/client 33333)]         \n" +
-                "     (ipc/create-queue server :orders 100)      \n" +
-                "     ;; ...                                     \n" +
-                "     (ipc/queue-status client :orders)))        ";
+                "(do                                                                   \n" +
+                "  (try-with [server (ipc/server 33333 :permit-client-queue-mgmt true) \n" +
+                "             client (ipc/client 33333)]                               \n" +
+                "    (ipc/create-queue server :orders 100)                             \n" +
+                "    ;; ...                                                            \n" +
+                "    (ipc/queue-status client :orders)))                               ";
 
         @SuppressWarnings("unchecked")
         final Map<String,Object> s = (Map<String,Object>)venice.eval(script);
@@ -635,11 +635,11 @@ public class IpcFunctionsTest {
                 "  (ipc/create-queue client :orders 100))   ";
 
         try {
-          venice.eval(script);
-          assertTrue(true);
+            venice.eval(script);
+            fail("Expected exception");
         }
         catch(VncException ex) {
-            fail("Unexpected exception");
+             assertTrue(true);
         }
     }
 
@@ -653,8 +653,8 @@ public class IpcFunctionsTest {
                 "  (ipc/create-queue client :orders 100))   ";
 
         try {
-          venice.eval(script);
-          assertTrue(true);
+            venice.eval(script);
+            assertTrue(true);
         }
         catch(VncException ex) {
             fail("Unexpected exception");
@@ -671,8 +671,8 @@ public class IpcFunctionsTest {
                 "  (ipc/create-queue client :orders 100))   ";
 
         try {
-          venice.eval(script);
-          fail("Expected exception");
+            venice.eval(script);
+            fail("Expected exception");
         }
         catch(VncException ex) {
             assertTrue(true);
@@ -690,11 +690,11 @@ public class IpcFunctionsTest {
                 "  (ipc/remove-queue client :orders))   ";
 
         try {
-          venice.eval(script);
-          assertTrue(true);
+            venice.eval(script);
+            fail("Expected exception");
         }
         catch(VncException ex) {
-            fail("Unexpected exception");
+            assertTrue(true);
         }
     }
 
@@ -709,8 +709,8 @@ public class IpcFunctionsTest {
                 "  (ipc/remove-queue client :orders))   ";
 
         try {
-          venice.eval(script);
-          assertTrue(true);
+            venice.eval(script);
+            assertTrue(true);
         }
         catch(VncException ex) {
             fail("Unexpected exception");
@@ -728,8 +728,8 @@ public class IpcFunctionsTest {
                 "  (ipc/remove-queue client :orders))   ";
 
         try {
-          venice.eval(script);
-          fail("Expected exception");
+            venice.eval(script);
+            fail("Expected exception");
         }
         catch(VncException ex) {
             assertTrue(true);

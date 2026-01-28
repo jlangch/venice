@@ -122,7 +122,7 @@ public class IPCFunctions {
                                                         " Defaults to -1 (no compression)|\n" +
                         "| :permit-client-queue-mgmt b  | Permit clients to manage (add/remove) queues. Does not affect " +
                                                         " temporary queues.¶" +
-                                                        " Defaults to `true`.|\n" +
+                                                        " Defaults to `false`.|\n" +
                         "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
                                                         " with this server.¶" +
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
@@ -235,7 +235,7 @@ public class IPCFunctions {
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
-                final VncVal permitQueueMgmtVal = options.get(new VncKeyword("permit-client-queue-mgmt"), VncBoolean.True);
+                final VncVal permitQueueMgmtVal = options.get(new VncKeyword("permit-client-queue-mgmt"), VncBoolean.False);
                 final VncVal serverLogDirVal = options.get(new VncKeyword("server-log-dir"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
@@ -2950,7 +2950,12 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/message-size message)")
                     .doc(
-                        "Calculates the effective message size")
+                        "Calculates the effective message size (not compressed, not encrypted).\n\n" +
+                        "Returns a map with the keys:¶" +
+                        " • `header` - header size in bytes¶" +
+                        " • `payload-meta` - payload meta data size in bytes¶" +
+                        " • `payload-data` - payload data size in bytes¶" +
+                        " • `total` - total size in bytes")
                     .examples(
                         "(->> (ipc/plain-text-message \"1\" \"test\" \"hello\") \n" +
                         "     (ipc/message-size))                               ")
@@ -3388,10 +3393,10 @@ public class IPCFunctions {
                         "| node n | A server or client |\n" +
                         "| name n | A queue name (string or keyword)|")
                     .examples(
-                        "(try-with [server (ipc/server 33333)]   \n" +
-                        "  (ipc/create-queue server :orders 100) \n" +
-                        "  ;; ...                                \n" +
-                        "  (ipc/exists-queue? server :orders))   ")
+                        "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt true)] \n" +
+                        "  (ipc/create-queue server :orders 100)                              \n" +
+                        "  ;; ...                                                             \n" +
+                        "  (ipc/exists-queue? server :orders))                                ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
@@ -3445,7 +3450,7 @@ public class IPCFunctions {
                         "| :capycity  | The capacity (long) |\n" +
                         "| :size      | The current size (long) |")
                     .examples(
-                        "(try-with [server (ipc/server 33333)          \n" +
+                        "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt true) \n" +
                         "           client (ipc/client 33333)]         \n" +
                         "   (ipc/create-queue server :orders 100)      \n" +
                         "   ;; ...                                     \n" +

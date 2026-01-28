@@ -722,9 +722,14 @@ Create through 'server'
 
 Create through 'client':
 
+> [!NOTE]
+> By default the server does not allow clients to manage queues!
+>
+> This can be permitted by a configuration option on the server!
+
 ```clojure
 (do
-  (try-with [server (ipc/server 33333)
+  (try-with [server (ipc/server 33333 :permit-client-queue-mgmt true)
              client (ipc/client 33333)]
     (ipc/create-queue client "queue/1" 100 :bounded)
     (ipc/create-queue client "queue/2" 100 :circular)
@@ -736,19 +741,6 @@ Create through 'client':
                (ipc/plain-text-message "2" "test" "hello"))))
 ```
 
-> [!NOTE]
-> By default the server allows clients to manage queues!
->
-> This can be denied on production systems by a configuration on the server!
-
-```clojure
-(do
-  (try-with [server (ipc/server 33333 :permit-client-queue-mgmt false)
-             client (ipc/client 33333)]
-    
-    ;; causes an exception now
-    (ipc/create-queue client "queue/1" 100 :bounded)))
-```
 
 #### Create Bounded Durable Queues
 
@@ -760,7 +752,6 @@ Create through 'client':
 > Servers with Write-Ahead-Lopg enabled support all types of queues: bounded/durable, 
 > bounded, circular, and temporary
 
-Create through 'server'
 
 ```clojure
 (let [wal-dir (io/file (io/temp-dir "wal-"))]
@@ -770,22 +761,6 @@ Create through 'server'
                                 :write-ahead-log-compact true)  ;; compact WAL at startup
              client (ipc/client 33333)]
     (ipc/create-queue server "queue/1" 100 :bounded true)
-    (ipc/offer client "queue/1" 300 
-               (ipc/plain-text-message "1" "test" "hello"))
-    (finally (io/delete-file-tree wal-dir))))
-```
-
-
-Create through 'client':
-
-```clojure
-(let [wal-dir (io/file (io/temp-dir "wal-"))]
-  (try-with [server (ipc/server 33333
-                                :write-ahead-log-dir wal-dir    ;; enable WAL
-                                :write-ahead-log-compress true  ;; compress WAL entries
-                                :write-ahead-log-compact true)  ;; compact WAL at startup
-             client (ipc/client 33333)]
-    (ipc/create-queue client "queue/1" 100 :bounded true)
     (ipc/offer client "queue/1" 300 
                (ipc/plain-text-message "1" "test" "hello"))
     (finally (io/delete-file-tree wal-dir))))
