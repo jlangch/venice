@@ -43,6 +43,7 @@ public class ServerConfig {
             final int maxConnections,
             final Authenticator authenticator,
             final boolean permitClientQueueMgmt,
+            final boolean permitServerMgmt,
             final int heartbeatIntervalSeconds,
             final File walDir,
             final boolean walCompress,
@@ -60,6 +61,7 @@ public class ServerConfig {
         this.maxConnections = maxConnections;
         this.authenticator = authenticator;
         this.permitClientQueueMgmt = permitClientQueueMgmt;
+        this.permitServerMgmt = permitServerMgmt;
         this.heartbeatIntervalSeconds = heartbeatIntervalSeconds;
         this.walDir = walDir;
         this.walCompress = walCompress;
@@ -111,6 +113,10 @@ public class ServerConfig {
 
     public boolean isPermitClientQueueMgmt() {
         return permitClientQueueMgmt;
+    }
+
+    public boolean isPermitServerMgmt() {
+        return permitServerMgmt;
     }
 
     public int getHeartbeatIntervalSeconds() {
@@ -361,7 +367,7 @@ public class ServerConfig {
         /**
          * Give the clients permission to manage (add/remove) queues.
          *
-         * <p>Defaults to <code>true</code>
+         * <p>Defaults to <code>false</code>
          *
          * <p>Note: Temporary queues are not subject to this permission! They
          *          can be created any time by clients as needed.
@@ -372,6 +378,19 @@ public class ServerConfig {
          */
         public Builder permitClientQueueMgmt(final boolean permit) {
             this.permitClientQueueMgmt = permit;
+            return this;
+        }
+
+        /**
+         * Give the clients permission to manage the server.
+         *
+         * <p>Defaults to <code>false</code>
+         *
+         * @param permit if <code>true</code> clients are permitted manage the server
+         * @return this builder
+         */
+        public Builder permitServerMgmt(final boolean permit) {
+            this.permitServerMgmt = permit;
             return this;
         }
 
@@ -452,6 +471,7 @@ public class ServerConfig {
                     maxConnections,
                     authenticator,
                     permitClientQueueMgmt,
+                    permitServerMgmt,
                     heartbeatIntervalSeconds,
                     walDir,
                     walCompress,
@@ -471,6 +491,7 @@ public class ServerConfig {
         private int maxConnections = Server.MAX_CONNECTIONS_DEFAULT;
         private Authenticator authenticator = new Authenticator(false);
         private boolean permitClientQueueMgmt = false;
+        private boolean permitServerMgmt = false;
         private int heartbeatIntervalSeconds;
         private File walDir;
         private boolean walCompress;
@@ -490,6 +511,7 @@ public class ServerConfig {
     private final int maxConnections;
     private final Authenticator authenticator;
     private final boolean permitClientQueueMgmt;
+    private final boolean permitServerMgmt;
     private final int heartbeatIntervalSeconds;
     private final File walDir;
     private final boolean walCompress;

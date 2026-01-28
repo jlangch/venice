@@ -432,7 +432,11 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_server_status() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .permitServerMgmt(true)
+                                            .build());
         final Client client = Client.of(33333);
 
         server.start(Server.echoHandler());
@@ -454,8 +458,12 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_server_thread_pool_statistics() throws Exception {
-        final Server server = Server.of(33333);
-        final Client client = Client.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .permitServerMgmt(true)
+                                            .build());
+            final Client client = Client.of(33333);
 
         server.start(Server.echoHandler());
 

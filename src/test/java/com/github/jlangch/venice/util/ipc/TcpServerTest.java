@@ -179,7 +179,11 @@ public class TcpServerTest {
 
     @Test
     public void test_server_status() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .permitServerMgmt(true)
+                                            .build());
         final Client client = Client.of(33333);
 
         try {
@@ -210,7 +214,11 @@ public class TcpServerTest {
 
     @Test
     public void test_server_threadpool_stats() throws Exception {
-        final Server server = Server.of(33333);
+        final Server server = Server.of(ServerConfig
+                                            .builder()
+                                            .conn(33333)
+                                            .permitServerMgmt(true)
+                                            .build());
         final Client client = Client.of(33333);
 
         try {

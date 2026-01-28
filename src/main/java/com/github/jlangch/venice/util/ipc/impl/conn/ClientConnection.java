@@ -105,12 +105,10 @@ public class ClientConnection implements AutoCloseable {
                 final long srv_cutoffSize     = getLong(cfg, "compress-cutoff-size", -1);
                 final long srv_maxMessageSize = getLong(cfg, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
                 final boolean srv_encryption  = getBoolean(cfg, "encrypt", false);
-                final boolean srv_permitQMgmt = getBoolean(cfg, "permit-client-queue-mgmt", false);
                 final long srv_heartbeatInterval = getLong(cfg, "heartbeat-interval", 0);
                 final boolean srv_authentication = getBoolean(cfg, "authentication", false);
 
                 maxMessageSize = srv_maxMessageSize;
-                permitClientQueueMgmt = srv_permitQMgmt;
                 heartbeatInterval = srv_heartbeatInterval;
                 compressor = new Compressor(srv_cutoffSize);
                 encrypt = config.isEncrypting() || srv_encryption;
@@ -195,10 +193,6 @@ public class ClientConnection implements AutoCloseable {
 
     public boolean isCompressing() {
         return compressor.isActive();
-    }
-
-    public boolean isPermitClientQueueMgmt() {
-        return permitClientQueueMgmt;
     }
 
     public long getCompressCutoffSize() {
@@ -599,7 +593,6 @@ public class ClientConnection implements AutoCloseable {
     private final Protocol protocol = new Protocol();
 
     private final long maxMessageSize;
-    private final boolean permitClientQueueMgmt;
     private final long heartbeatInterval;
     private final boolean authentication;
 

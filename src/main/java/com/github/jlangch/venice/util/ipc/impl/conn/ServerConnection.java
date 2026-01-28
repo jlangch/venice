@@ -116,6 +116,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.maxQueues = config.getMaxQueues();
         this.maxTempQueuesPerConnection = config.getMaxTempQueuesPerConnection();
         this.permitClientQueueMgmt = config.isPermitClientQueueMgmt();
+        this.permitServerMgmt = config.isPermitServerMgmt();
         this.heartbeatInterval = config.getHeartbeatIntervalSeconds();
         this.enforceEncryption = config.isEncrypting();
 
@@ -397,6 +398,12 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleSend(final Message request) {
         if (request.getTopic().startsWith(Messages.TOPIC_SERVER_PREFIX)) {
+            if (!permitServerMgmt) {
+                return createNoPermissionResponse(
+                        request,
+                        "Clients are not permitted to manage the server!");
+            }
+
             if (Messages.TOPIC_SERVER_STATUS.equals(request.getTopic())) {
                 return getTcpServerStatus(request);
             }
@@ -460,8 +467,9 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleOfferToQueue(final Message request) {
+        final String queueName = request.getQueueName();
+
         try {
-            final String queueName = request.getQueueName();
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue != null) {
                 // convert message type from OFFER to REQUEST
@@ -472,30 +480,23 @@ public class ServerConnection implements IPublisher, Runnable {
                                     ? queue.offer(msg)
                                     : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
                 if (ok) {
-                    final boolean durable = msg.isDurable()                  // message is durable
-                                            && queue.isDurable()             // queue is durable
-                                            && queueManager.isWalEnabled();  // server supports write-ahead-log
-
                     return createTextResponse(
                             request,
                             OK,
-                            String.format(
-                                "Offered the message to the queue %s (durable: %b).",
-                                queue.name(),
-                                durable));
+                            "Offered the message to the queue " + queueName);
                 }
                 else {
                     return createTextResponse(
                             request,
                             QUEUE_FULL,
-                            "Offer rejected! The queue is full.");
+                            "Offer to " + queueName + " rejected! The queue is full.");
                 }
             }
             else {
                 return createTextResponse(
                         request,
                         QUEUE_NOT_FOUND,
-                        "Offer rejected! The queue does not exist.");
+                        "Offer to " + queueName + " rejected! The queue does not exist.");
             }
         }
         catch(InterruptedException ex) {
@@ -503,14 +504,14 @@ public class ServerConnection implements IPublisher, Runnable {
             return createTextResponse(
                     request,
                     QUEUE_ACCESS_INTERRUPTED,
-                    "Offer rejected! Queue access interrupted.");
+                    "Offer to " + queueName + " rejected! Queue access interrupted.");
         }
     }
 
     private Message handlePollFromQueue(final Message request) {
+        final String queueName = request.getQueueName();
         try {
             final long timeout = request.getTimeout();
-            final String queueName = request.getQueueName();
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue != null) {
                 while(true) {
@@ -521,7 +522,7 @@ public class ServerConnection implements IPublisher, Runnable {
                         return createTextResponse(
                                 request,
                                 QUEUE_EMPTY,
-                                "Poll rejected! The queue is empty.");
+                                "Poll from queue " + queueName + " rejected! The queue is empty.");
                     }
                     else if (msg.hasExpired()) {
                         // discard expired message -> try next message from the queue
@@ -529,7 +530,7 @@ public class ServerConnection implements IPublisher, Runnable {
                             request,
                             String.format(
                                 "Discarded expired message (request-id: %s)" +
-                                "polling from queue '%s'!",
+                                "polling from queue %s!",
                                 msg.getRequestId(),
                                 queueName));
                         continue;
@@ -543,7 +544,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 return createTextResponse(
                         request,
                         QUEUE_NOT_FOUND,
-                        "Poll rejected! The queue does not exist.");
+                        "Poll from queue " + queueName + " rejected! The queue does not exist.");
             }
         }
         catch(InterruptedException ex) {
@@ -551,7 +552,7 @@ public class ServerConnection implements IPublisher, Runnable {
             return createTextResponse(
                     request,
                     QUEUE_ACCESS_INTERRUPTED,
-                    "Poll rejected! Queue access interrupted.");
+                    "Poll from queue " + queueName + " rejected! Queue access interrupted.");
         }
     }
 
@@ -714,7 +715,6 @@ public class ServerConnection implements IPublisher, Runnable {
                     new JsonBuilder()
                             .add("max-msg-size", maxMessageSize)
                             .add("compress-cutoff-size", compressor.cutoffSize())
-                            .add("permit-client-queue-mgmt", permitClientQueueMgmt)
                             .add("encrypt", enforceEncryption)
                             .add("heartbeat-interval", heartbeatInterval)
                             .add("authentication", authenticator.isActive())
@@ -1116,6 +1116,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final long maxQueues;
     private final long maxTempQueuesPerConnection;
     private final boolean permitClientQueueMgmt;
+    private final boolean permitServerMgmt;
     private final long heartbeatInterval;
 
     final ServerQueueManager queueManager;

@@ -43,6 +43,7 @@ public class TcpTempQueueTest {
                                             .builder()
                                             .conn(33333)
                                             .permitClientQueueMgmt(true)
+                                            .permitServerMgmt(true)
                                             .build());
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);

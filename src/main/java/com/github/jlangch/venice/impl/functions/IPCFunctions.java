@@ -123,6 +123,8 @@ public class IPCFunctions {
                         "| :permit-client-queue-mgmt b  | Permit clients to manage (add/remove) queues. Does not affect " +
                                                         " temporary queues.¶" +
                                                         " Defaults to `false`.|\n" +
+                        "| :permit-server-mgmt b        | Permit clients to manage the server.¶" +
+                                                        " Defaults to `false`.|\n" +
                         "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
                                                         " with this server.¶" +
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
@@ -236,6 +238,7 @@ public class IPCFunctions {
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                 final VncVal permitQueueMgmtVal = options.get(new VncKeyword("permit-client-queue-mgmt"), VncBoolean.False);
+                final VncVal permitServerMgmtVal = options.get(new VncKeyword("permit-server-mgmt"), VncBoolean.False);
                 final VncVal serverLogDirVal = options.get(new VncKeyword("server-log-dir"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
@@ -254,6 +257,7 @@ public class IPCFunctions {
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                 final boolean permitQueueMgmt = Coerce.toVncBoolean(permitQueueMgmtVal).getValue();
+                final boolean permitServerMgmt = Coerce.toVncBoolean(permitServerMgmtVal).getValue();
                 final long heartbeatInterval = Coerce.toVncLong(heartbeatIntervalVal).getValue();
                 final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
                 final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
@@ -317,6 +321,7 @@ public class IPCFunctions {
                 ServerConfig.Builder builder = ServerConfig.builder();
                 setConfigConnection(args.first(), builder);
                 builder.permitClientQueueMgmt(permitQueueMgmt);
+                builder.permitServerMgmt(permitServerMgmt);
                 if (maxMsgSize > 0) {
                     builder.maxMessageSize(maxMsgSize);
                 }
