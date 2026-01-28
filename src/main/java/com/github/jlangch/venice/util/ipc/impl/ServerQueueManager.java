@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
@@ -57,11 +58,16 @@ public class ServerQueueManager {
         return wal;
     }
 
-    public Map<String, IpcQueue<Message>> getQueues() {
-        return queues;
+    /**
+     * Apply a function on behalf of the server queues
+     *
+     * @param fn a function
+     */
+    public void withQueues(final Consumer<Map<String, IpcQueue<Message>>> fn) {
+        fn.accept(queues);
     }
 
-    /**
+   /**
      * @return the number of standard queues (non temporary queues)
      */
     public long countStandardQueues() {

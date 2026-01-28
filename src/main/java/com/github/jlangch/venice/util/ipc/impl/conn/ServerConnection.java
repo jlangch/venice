@@ -614,20 +614,21 @@ public class ServerConnection implements IPublisher, Runnable {
         }
 
         // do not overwrite the queue if it already exists
-        final Map<String, IpcQueue<Message>> queues = queueManager.getQueues();
-        queues.computeIfAbsent(
-           queueName,
-           k -> {
-               final IpcQueue<Message> q = new BoundedQueue<Message>(queueName, capacity, true);
-               tmpQueues.put(queueName, 0);
+        queueManager.withQueues(queues -> {
+            queues.computeIfAbsent(
+               queueName,
+               k -> {
+                   final IpcQueue<Message> q = new BoundedQueue<Message>(queueName, capacity, true);
+                   tmpQueues.put(queueName, 0);
 
-               logInfo(String.format(
-                           "Created temporary queue %s. Capacity=%d",
-                           queueName,
-                           capacity));
+                   logInfo(String.format(
+                               "Created temporary queue %s. Capacity=%d",
+                               queueName,
+                               capacity));
 
-               return q;
-           });
+                   return q;
+               });
+        });
 
         return createOkTextResponse(request, queueName);
     }
@@ -1036,11 +1037,11 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private void removeAllChannelTemporaryQueues() {
         try {
-            final Map<String, IpcQueue<Message>> queues = queueManager.getQueues();
-
-            final Set<String> names = tmpQueues.keySet();
-            names.forEach(n -> queues.remove(n));
-            tmpQueues.clear();
+            queueManager.withQueues(queues -> {
+                final Set<String> names = tmpQueues.keySet();
+                names.forEach(n -> queues.remove(n));
+                tmpQueues.clear();
+            });
 
             logInfo("Removed all temporary queues of the connnection");
         }

@@ -188,7 +188,7 @@ public class Protocol {
             //final byte[] buf = new byte[SMALL_BUF_16KB];  // OS friendly buffer 16KB
             final byte[] buf = cachedBuffer.checkout();
 
-            // Aggregate to a single buffer
+            // Aggregate to a single buffer (gathering write)
             final ByteBuffer b = ByteBuffer.wrap(buf, 0, (int)messageTotalSize);
             b.put(headerBuf);
             b.put(payloadMetaEff);
