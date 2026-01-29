@@ -60,7 +60,7 @@ public class TcpReplyQueueTest {
 
             assertNotNull(m1);
             assertEquals(ResponseStatus.OK,  m1.getResponseStatus());
-            assertEquals("queue-test",       m1.getTopic());
+            assertEquals("queue-test",       m1.getSubject());
 
 
             // client2: poll message from "queue/1"
@@ -69,7 +69,7 @@ public class TcpReplyQueueTest {
 
             assertNotNull(m2);
             assertEquals(ResponseStatus.OK,  m2.getResponseStatus());
-            assertEquals("queue-test",       m2.getTopic());
+            assertEquals("queue-test",       m2.getSubject());
             assertEquals("text/plain",       m2.getMimetype());
             assertEquals("UTF-8",            m2.getCharset());
             assertEquals("Hello!",           m2.getText());
@@ -84,7 +84,7 @@ public class TcpReplyQueueTest {
 
             assertNotNull(m3);
             assertEquals(ResponseStatus.OK,  m3.getResponseStatus());
-            assertEquals("queue-test",       m3.getTopic());
+            assertEquals("queue-test",       m3.getSubject());
 
 
             // client1: poll message from reply queue
@@ -93,7 +93,7 @@ public class TcpReplyQueueTest {
 
             assertNotNull(m4);
             assertEquals(ResponseStatus.OK,  m4.getResponseStatus());
-            assertEquals("queue-test",       m4.getTopic());
+            assertEquals("queue-test",       m4.getSubject());
             assertEquals("text/plain",       m4.getMimetype());
             assertEquals("UTF-8",            m4.getCharset());
             assertEquals("Good-By!",         m4.getText());

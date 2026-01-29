@@ -137,14 +137,19 @@ public interface IMessage {
     String getQueueName();
 
     /**
+     * @return the message topic name
+     */
+    String getTopicName();
+
+    /**
      * @return the message replyTo queue name
      */
     String getReplyToQueueName();
 
     /**
-     * @return the message topic
+     * @return the message's subject
      */
-    String getTopic();
+    String getSubject();
 
     /**
      * @return the message mimetype

@@ -25,7 +25,6 @@ import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,11 +34,9 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
-import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.conn.ClientConnection;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.ConstantFuture;
@@ -306,27 +303,7 @@ public class Client implements Cloneable, AutoCloseable {
     }
 
     /**
-     * Subscribe for a topic.
-     *
-     * <p>Multiple subscriptions with different handlers are supported.
-     *
-     * @param topic  a topic
-     * @param handler the subscription message handler
-     * @return the response for the subscribe
-     */
-    public IMessage subscribe(final String topic, final Consumer<IMessage> handler) {
-        Objects.requireNonNull(topic);
-        Objects.requireNonNull(handler);
-
-        if (!opened.get()) {
-            throw new IllegalStateException("The client is not open!");
-        }
-
-        return subscribe(CollectionUtil.toSet(topic), handler);
-    }
-
-    /**
-     * Subscribe for a set of topics.
+     * Subscribe for a topics.
      *
      * <p>Multiple subscriptions with different handlers are supported.
      *
@@ -334,11 +311,11 @@ public class Client implements Cloneable, AutoCloseable {
      * @param handler the subscription message handler
      * @return the response for the subscribe
      */
-    public IMessage subscribe(final Set<String> topics, final Consumer<IMessage> handler) {
-        Objects.requireNonNull(topics);
+    public IMessage subscribe(final String topicName, final Consumer<IMessage> handler) {
+        Objects.requireNonNull(topicName);
         Objects.requireNonNull(handler);
 
-        if (topics.isEmpty()) {
+        if (topicName.isEmpty()) {
             throw new IpcException("A subscription topic set must not be empty!");
         }
 
@@ -350,38 +327,22 @@ public class Client implements Cloneable, AutoCloseable {
             throw new IpcException("This client is not open!");
         }
 
-        conn.addSubscriptionHandler(topics, handler);
+        conn.addSubscriptionHandler(topicName, handler);
 
-        final Message m = createSubscribeRequestMessage(topics, getEndpointId());
+        final Message m = createSubscribeRequestMessage(topicName, getEndpointId());
         return send(m);
     }
 
     /**
      * Unsubscribe from a topic.
      *
-     * @param topic  a topic
+     * @param topicName  a topic name
      * @return the response for the subscribe
      */
-    public IMessage unsubscribe(final String topic) {
-        Objects.requireNonNull(topic);
+    public IMessage unsubscribe(final String topicName) {
+        Objects.requireNonNull(topicName);
 
-        if (!opened.get()) {
-            throw new IllegalStateException("The client is not open!");
-        }
-
-        return unsubscribe(CollectionUtil.toSet(topic));
-    }
-
-    /**
-     * Unsubscribe from a set of topics.
-     *
-     * @param topics  a set of topics
-     * @return the response for the subscribe
-     */
-    public IMessage unsubscribe(final Set<String> topics) {
-        Objects.requireNonNull(topics);
-
-        if (topics.isEmpty()) {
+        if (topicName.isEmpty()) {
             throw new IpcException("A subscription topic set must not be empty!");
         }
 
@@ -393,9 +354,9 @@ public class Client implements Cloneable, AutoCloseable {
             throw new IpcException("This client is not open!");
         }
 
-        conn.removeSubscriptionHandler(topics);
+        conn.removeSubscriptionHandler(topicName);
 
-        final Message m = createUnsubscribeRequestMessage(topics, getEndpointId());
+        final Message m = createUnsubscribeRequestMessage(topicName, getEndpointId());
         return send(m);
     }
 
@@ -406,17 +367,19 @@ public class Client implements Cloneable, AutoCloseable {
      * <p>The server sends a response message to confirm the receiving
      * of the message.
      *
+     * @param topicName the topic to publish to
      * @param msg the message to publish
      * @return the response confirmation for the publish message
      */
-    public IMessage publish(final IMessage msg) {
+    public IMessage publish(final String topicName, final IMessage msg) {
+        Objects.requireNonNull(topicName);
         Objects.requireNonNull(msg);
 
         if (!opened.get()) {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
+        final Message m = createTopicPublishRequestMessage((Message)msg, topicName);
         return send(m);
     }
 
@@ -428,17 +391,19 @@ public class Client implements Cloneable, AutoCloseable {
      * <p>The server sends a response message to confirm the receiving
      * of the message.
      *
+     * @param topicName the topic to publish to
      * @param msg the message to publish
      * @return the response confirmation for the publish message
      */
-    public Future<IMessage> publishAsync(final IMessage msg) {
+    public Future<IMessage> publishAsync(final String topicName, final IMessage msg) {
+        Objects.requireNonNull(topicName);
         Objects.requireNonNull(msg);
 
         if (!opened.get()) {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final Message m = ((Message)msg).withType(MessageType.PUBLISH, false);
+        final Message m = createTopicPublishRequestMessage((Message)msg, topicName);
         return sendAsync(m);
     }
 
@@ -639,7 +604,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("queue/create"),
+                                "",
                                 "application/json",
                                 "UTF-8",
                                 toBytes(payload, "UTF-8"));
@@ -680,7 +645,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("queue/create-temporary"),
+                                "",
                                 "application/json",
                                 "UTF-8",
                                 toBytes(payload, "UTF-8"));
@@ -723,7 +688,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("queue/remove"),
+                                "",
                                 "application/json",
                                 "UTF-8",
                                 toBytes(payload, "UTF-8"));
@@ -762,7 +727,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("queue/status"),
+                                "",
                                 "application/json",
                                 "UTF-8",
                                 toBytes(payload, "UTF-8"));
@@ -903,7 +868,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of("queue/status"),
+                                "",
                                 "application/json",
                                 "UTF-8",
                                 toBytes(payload, "UTF-8"));
@@ -927,7 +892,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of(Messages.TOPIC_SERVER_STATUS),
+                                Messages.SUBJECT_SERVER_STATUS,
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
@@ -951,7 +916,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of(Messages.TOPIC_SERVER_THREAD_POOL_STATS),
+                                Messages.SUBJECT_SERVER_THREAD_POOL_STATS,
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
@@ -975,7 +940,7 @@ public class Client implements Cloneable, AutoCloseable {
                                 false,
                                 false,
                                 1_000L,
-                                Topics.of(Messages.TOPIC_SERVER_ERROR),
+                                Messages.SUBJECT_SERVER_ERROR,
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
@@ -1030,7 +995,7 @@ public class Client implements Cloneable, AutoCloseable {
     }
 
     private Message handleClientLocalMessage(final IMessage request) {
-        if (Messages.TOPIC_CLIENT_THREAD_POOL_STATS.equals(request.getTopic())) {
+        if (Messages.SUBJECT_CLIENT_THREAD_POOL_STATS.equals(request.getSubject())) {
             // answer locally
             return getClientThreadPoolStatistics();
         }
@@ -1039,7 +1004,7 @@ public class Client implements Cloneable, AutoCloseable {
     }
 
     private boolean isClientLocalMessage(final IMessage request) {
-        return Messages.TOPIC_CLIENT_THREAD_POOL_STATS.equals(request.getTopic());
+        return Messages.SUBJECT_CLIENT_THREAD_POOL_STATS.equals(request.getSubject());
     }
 
     private Message getClientThreadPoolStatistics() {
@@ -1053,7 +1018,7 @@ public class Client implements Cloneable, AutoCloseable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of(Messages.TOPIC_CLIENT_THREAD_POOL_STATS),
+                Messages.SUBJECT_CLIENT_THREAD_POOL_STATS,
                 "application/json",
                 "UTF-8",
                 toBytes(Json.writeJson(statistics, false), "UTF-8"));
@@ -1077,7 +1042,7 @@ public class Client implements Cloneable, AutoCloseable {
 
 
     private static Message createSubscribeRequestMessage(
-            final Set<String> topics,
+            final String topicName,
             final String endpointId
     ) {
         return new Message(
@@ -1088,19 +1053,19 @@ public class Client implements Cloneable, AutoCloseable {
                 false,
                 false,
                 false,
-                null,
+                topicName,
                 null,
                 System.currentTimeMillis(),
                 Messages.EXPIRES_NEVER,
                 Messages.DEFAULT_TIMEOUT,
-                Topics.of(topics),
+                "",
                 "text/plain",
                 "UTF-8",
                 toBytes(endpointId, "UTF-8"));
     }
 
     private static Message createUnsubscribeRequestMessage(
-            final Set<String> topics,
+            final String topicName,
             final String endpointId
     ) {
         return new Message(
@@ -1111,12 +1076,12 @@ public class Client implements Cloneable, AutoCloseable {
                 false,
                 false,
                 false,
-                null,
+                topicName,
                 null,
                 System.currentTimeMillis(),
                 Messages.EXPIRES_NEVER,
                 Messages.DEFAULT_TIMEOUT,
-                Topics.of(topics),
+                "",
                 "text/plain",
                 "UTF-8",
                 toBytes(endpointId, "UTF-8"));
@@ -1141,7 +1106,30 @@ public class Client implements Cloneable, AutoCloseable {
                 System.currentTimeMillis(),
                 Messages.EXPIRES_NEVER,
                 queueOfferTimeout < 0 ? Messages.NO_TIMEOUT : queueOfferTimeout,
-                msg.getTopics(),
+                msg.getSubject(),
+                msg.getMimetype(),
+                msg.getCharset(),
+                msg.getData());
+    }
+
+    private static Message createTopicPublishRequestMessage(
+            final Message msg,
+            final String topicName
+    ) {
+        return new Message(
+                null,
+                msg.getRequestId(),
+                MessageType.PUBLISH,
+                ResponseStatus.NULL,
+                false,
+                msg.isDurable(),
+                false,
+                topicName,
+                null,
+                System.currentTimeMillis(),
+                Messages.EXPIRES_NEVER,
+                Messages.NO_TIMEOUT,
+                msg.getSubject(),
                 msg.getMimetype(),
                 msg.getCharset(),
                 msg.getData());
@@ -1164,7 +1152,7 @@ public class Client implements Cloneable, AutoCloseable {
                 System.currentTimeMillis(),
                 Messages.EXPIRES_NEVER,
                 queuePollTimeout < 0 ? Messages.NO_TIMEOUT : queuePollTimeout,
-                Topics.of("queue/poll"),
+                "",
                 "application/octet-stream",
                 null,
                 new byte[0]);

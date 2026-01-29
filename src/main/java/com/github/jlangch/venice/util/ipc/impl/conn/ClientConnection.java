@@ -25,7 +25,6 @@ import java.net.StandardSocketOptions;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Objects;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -54,7 +53,6 @@ import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
-import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
@@ -216,16 +214,18 @@ public class ClientConnection implements AutoCloseable {
     }
 
     public void addSubscriptionHandler(
-            final Set<String> topics,
+            final String topicName,
             final Consumer<IMessage> handler
     ) {
-        listener.addSubscriptionHandler(topics, handler);
+        Objects.requireNonNull(topicName);
+
+        listener.addSubscriptionHandler(topicName, handler);
     }
 
-    public void removeSubscriptionHandler(
-            final Set<String> topics
-    ) {
-       listener.removeSubscriptionHandler(topics);
+    public void removeSubscriptionHandler(final String topicName) {
+        Objects.requireNonNull(topicName);
+
+       listener.removeSubscriptionHandler(topicName);
     }
 
     public IMessage send(final IMessage msg, final long timeoutMillis) {
@@ -460,7 +460,7 @@ public class ClientConnection implements AutoCloseable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
+                "",
                 "text/plain",
                 "UTF-8",
                 toBytes(clientPublicKey, "UTF-8"));
@@ -484,7 +484,7 @@ public class ClientConnection implements AutoCloseable {
                 System.currentTimeMillis(),
                 Messages.EXPIRES_NEVER,
                 Messages.NO_TIMEOUT,
-                Topics.of("client-config"),
+                "",
                 "application/json",
                 "UTF-8",
                 toBytes(payload, "UTF-8"));
@@ -502,7 +502,7 @@ public class ClientConnection implements AutoCloseable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of(Messages.TOPIC_AUTHENTICATION),
+                "",
                 "text/plain",
                 "UTF-8",
                 toBytes(userName + "\n" + password, "UTF-8"));
@@ -517,7 +517,7 @@ public class ClientConnection implements AutoCloseable {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                Topics.of(Messages.TOPIC_HEARTBEAT),
+                "",
                 "text/plain",
                 "UTF-8",
                 toBytes("", "UTF-8"));

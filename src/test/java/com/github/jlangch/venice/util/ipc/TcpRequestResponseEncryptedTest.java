@@ -64,7 +64,7 @@ public class TcpRequestResponseEncryptedTest {
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
-            assertEquals(request.getTopic(),     response.getTopic());
+            assertEquals(request.getSubject(),   response.getSubject());
             assertEquals(request.getMimetype(),  response.getMimetype());
             assertEquals(request.getCharset(),   response.getCharset());
             assertEquals(request.getText(),      response.getText());
@@ -100,7 +100,7 @@ public class TcpRequestResponseEncryptedTest {
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
-            assertEquals("hello",                response.getTopic());
+            assertEquals("hello",                response.getSubject());
             assertEquals("application/octet",    response.getMimetype());
             assertEquals(null,                   response.getCharset());
             assertArrayEquals(data,              response.getData());
@@ -135,7 +135,7 @@ public class TcpRequestResponseEncryptedTest {
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
-            assertEquals(request.getTopic(),     response.getTopic());
+            assertEquals(request.getSubject(),   response.getSubject());
             assertEquals(request.getMimetype(),  response.getMimetype());
             assertEquals(request.getCharset(),   response.getCharset());
             assertEquals(request.getText(),      response.getText());
@@ -172,7 +172,7 @@ public class TcpRequestResponseEncryptedTest {
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
-            assertEquals("hello",                response.getTopic());
+            assertEquals("hello",                response.getSubject());
             assertEquals("application/octet",    response.getMimetype());
             assertEquals(null,                   response.getCharset());
             assertArrayEquals(data,              response.getData());
@@ -215,7 +215,7 @@ public class TcpRequestResponseEncryptedTest {
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(),    response.getTimestamp());
-            assertEquals("hello",                   response.getTopic());
+            assertEquals("hello",                   response.getSubject());
             assertEquals("application/octet",       response.getMimetype());
             assertEquals(null,                      response.getCharset());
             assertArrayEquals(new byte[] {0,1,2,3}, response.getData());
@@ -255,7 +255,7 @@ public class TcpRequestResponseEncryptedTest {
                 assertNotNull(response);
                 assertEquals(ResponseStatus.OK,      response.getResponseStatus());
                 assertEquals(request.getTimestamp(), response.getTimestamp());
-                assertEquals(topic,                  response.getTopic());
+                assertEquals(topic,                  response.getSubject());
                 assertEquals(mimetype,               response.getMimetype());
                 assertEquals(charset,                response.getCharset());
                 assertEquals(msg,                    response.getText());
@@ -386,19 +386,19 @@ public class TcpRequestResponseEncryptedTest {
                         client.open();
 
                         for(int msgIdx=1; msgIdx<=messagesPerClient; msgIdx++) {
-                            final String topic = "hello";
+                            final String subject = "hello";
                             final String mimetype = "text/plain";
                             final String charset = "UTF-8";
                             final String msg = "Hello " + clientNr + " / " + msgIdx;
 
-                            final IMessage request = MessageFactory.text(null, topic, mimetype, charset, msg);
+                            final IMessage request = MessageFactory.text(null, subject, mimetype, charset, msg);
 
                             try {
                                 final IMessage response = client.sendMessage(request);
 
                                 assertNotNull(response);
                                 assertEquals(ResponseStatus.OK,  response.getResponseStatus());
-                                assertEquals(topic,              response.getTopic());
+                                assertEquals(subject,            response.getSubject());
                                 assertEquals(mimetype,           response.getMimetype());
                                 assertEquals(charset,            response.getCharset());
                                 assertEquals(msg,                response.getText());
@@ -472,7 +472,7 @@ public class TcpRequestResponseEncryptedTest {
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,  response.getResponseStatus());
-            assertEquals("venice.response",  response.getTopic());
+            assertEquals("venice.response",  response.getSubject());
             assertEquals("text/plain",       response.getMimetype());
             assertEquals("UTF-8",            response.getCharset());
             assertEquals("3",                response.getText());

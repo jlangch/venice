@@ -588,7 +588,7 @@ public class IpcFunctionsTest {
                 "    (let [cmd    (. m :getText)                               \n" +
                 "          result (str (eval (read-string cmd)))]              \n" +
                 "      (ipc/plain-text-message (. m :getRequestId)             \n" +
-                "                              (. m :getTopic)                 \n" +
+                "                              (. m :getSubject)               \n" +
                 "                              result)))                       \n" +
                 "                                                              \n" +
                 "  (try-with [server (ipc/server 33333 handler)                \n" +
@@ -800,11 +800,11 @@ public class IpcFunctionsTest {
                 "    (let [m (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")  \n" +
                 "          r        (ipc/send client m)                           \n" +
                 "          status   (ipc/message-field r :response-status)        \n" +
-                "          topic    (ipc/message-field r :topic)                  \n" +
+                "          subject  (ipc/message-field r :subject)                \n" +
                 "          mimetype (ipc/message-field r :payload-mimetype)       \n" +
                 "          text     (ipc/message-field r :payload-text)]          \n" +
                 "      (assert (= :HANDLER_ERROR status))                         \n" +
-                "      (assert (= \"exec\" topic))                                \n" +
+                "      (assert (= \"exec\" subject))                              \n" +
                 "      (assert (= \"text/plain\" mimetype))                       \n" +
                 "      text)))                                                    ";
 

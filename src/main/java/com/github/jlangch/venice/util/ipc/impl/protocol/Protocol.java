@@ -72,9 +72,9 @@ import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
  * |     • timeout                  8  |
  * |     • response status          2  |
  * |     • request id           2 + n  |
- * |     • queue name           2 + n  |
+ * |     • queue/topic name     2 + n  |
  * |     • replyTo queue name   2 + n  |
- * |     • topics               2 + n  |
+ * |     • subject              2 + n  |
  * |     • mimetype             2 + n  |
  * |     • charset              2 + n  |
  * |     • id                      16  |

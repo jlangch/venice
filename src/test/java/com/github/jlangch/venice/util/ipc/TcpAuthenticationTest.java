@@ -61,7 +61,7 @@ public class TcpAuthenticationTest {
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
             assertEquals(request.getTimestamp(), response.getTimestamp());
-            assertEquals(request.getTopic(),     response.getTopic());
+            assertEquals(request.getSubject(),   response.getSubject());
             assertEquals(request.getMimetype(),  response.getMimetype());
             assertEquals(request.getCharset(),   response.getCharset());
             assertEquals(request.getText(),      response.getText());

@@ -27,7 +27,7 @@ import java.util.Objects;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
-import com.github.jlangch.venice.util.ipc.impl.Topics;
+import com.github.jlangch.venice.util.ipc.impl.TopicValidator;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
@@ -41,7 +41,7 @@ public abstract class MessageFactory {
      * Create a text message
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
-     * @param topic a topic
+     * @param subject a subject
      * @param mimetype the mimetype of the message's payload data
      * @param charset the charset of the message's payload data
      * @param data the textual payload data
@@ -49,17 +49,15 @@ public abstract class MessageFactory {
      */
     public static IMessage text(
             final String requestId,
-            final String topic,
+            final String subject,
             final String mimetype,
             final String charset,
             final String data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(data);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -69,7 +67,7 @@ public abstract class MessageFactory {
                 false,  // not durable
                 false,  // no subscription reply
                 Messages.EXPIRES_NEVER,
-                Topics.of(topic),
+                subject,
                 mimetype,
                 charset,
                 data.getBytes(Charset.forName(charset)));
@@ -80,7 +78,7 @@ public abstract class MessageFactory {
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
-     * @param topic a topic
+     * @param subject a subject
      * @param mimetype the mimetype of the message's payload data
      * @param charset the charset of the message's payload data
      * @param data the textual payload data
@@ -89,17 +87,15 @@ public abstract class MessageFactory {
     public static IMessage text(
             final String requestId,
             final long expiresAt,
-            final String topic,
+            final String subject,
             final String mimetype,
             final String charset,
             final String data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(data);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -109,7 +105,7 @@ public abstract class MessageFactory {
                 false,  // not durable
                 false,  // no subscription reply
                 expiresAt,
-                Topics.of(topic),
+                subject,
                 mimetype,
                 charset,
                 data.getBytes(Charset.forName(charset)));
@@ -121,7 +117,7 @@ public abstract class MessageFactory {
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
      * @param durable a durable message
-     * @param topic a topic
+     * @param subject a subject
      * @param mimetype the mimetype of the message's payload data
      * @param charset the charset of the message's payload data
      * @param data the textual payload data
@@ -131,17 +127,15 @@ public abstract class MessageFactory {
             final String requestId,
             final long expiresAt,
             final boolean durable,
-            final String topic,
+            final String subject,
             final String mimetype,
             final String charset,
             final String data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(data);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -151,7 +145,7 @@ public abstract class MessageFactory {
                 durable,
                 false,  // no subscription reply
                 expiresAt,
-                Topics.of(topic),
+                subject,
                 mimetype,
                 charset,
                 data.getBytes(Charset.forName(charset)));
@@ -165,22 +159,20 @@ public abstract class MessageFactory {
      * Create a json message
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
-     * @param topic a topic
+     * @param subject a subject
      * @param charset the charset of the message's payload data
      * @param json the json payload data
      * @return the message
      */
     public static IMessage json(
             final String requestId,
-            final String topic,
+            final String subject,
             final String charset,
             final String json
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(json);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -190,7 +182,7 @@ public abstract class MessageFactory {
                 false,  // not durable
                 false,  // no subscription reply
                 Messages.EXPIRES_NEVER,
-                Topics.of(topic),
+                subject,
                 "application/json",
                 charset,
                 json.getBytes(Charset.forName(charset)));
@@ -201,7 +193,7 @@ public abstract class MessageFactory {
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
-     * @param topic a topic
+     * @param subject a subject
      * @param charset the charset of the message's payload data
      * @param json the json payload data
      * @return the message
@@ -209,15 +201,13 @@ public abstract class MessageFactory {
     public static IMessage json(
             final String requestId,
             final long expiresAt,
-            final String topic,
+            final String subject,
             final String charset,
             final String json
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(json);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -227,7 +217,7 @@ public abstract class MessageFactory {
                 false,  // not durable
                 false,  // no subscription reply
                 expiresAt,
-                Topics.of(topic),
+                subject,
                 "application/json",
                 charset,
                 json.getBytes(Charset.forName(charset)));
@@ -239,7 +229,7 @@ public abstract class MessageFactory {
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
      * @param durable a durable message
-     * @param topic a topic
+     * @param subject a subject
      * @param charset the charset of the message's payload data
      * @param json the json payload data
      * @return the message
@@ -248,15 +238,13 @@ public abstract class MessageFactory {
             final String requestId,
             final long expiresAt,
             final boolean durable,
-            final String topic,
+            final String subject,
             final String charset,
             final String json
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(charset);
         Objects.requireNonNull(json);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -266,7 +254,7 @@ public abstract class MessageFactory {
                 durable,
                 false,  // no subscription reply
                 expiresAt,
-                Topics.of(topic),
+                subject,
                 "application/json",
                 charset,
                 json.getBytes(Charset.forName(charset)));
@@ -281,22 +269,20 @@ public abstract class MessageFactory {
      * Create a binary message
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
-     * @param topic a topic
+     * @param subject a subject
      * @param mimetype the mimetype of the message's payload data
      * @param data the binary payload data
      * @return the message
      */
     public static IMessage binary(
             final String requestId,
-            final String topic,
+            final String subject,
             final String mimetype,
             final byte[] data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -306,7 +292,7 @@ public abstract class MessageFactory {
                 false,  // not durable
                 false,  // no subscription reply
                 Messages.EXPIRES_NEVER,
-                Topics.of(topic),
+                subject,
                 mimetype,
                 null,
                 data);
@@ -317,7 +303,7 @@ public abstract class MessageFactory {
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
-     * @param topic a topic
+     * @param subject a subject
      * @param mimetype the mimetype of the message's payload data
      * @param data the binary payload data
      * @return the message
@@ -325,15 +311,13 @@ public abstract class MessageFactory {
     public static IMessage binary(
             final String requestId,
             final long expiresAt,
-            final String topic,
+            final String subject,
             final String mimetype,
             final byte[] data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -343,7 +327,7 @@ public abstract class MessageFactory {
                 false,  // not durable
                 false,  // no subscription reply
                 expiresAt,
-                Topics.of(topic),
+                subject,
                 mimetype,
                 null,
                 data);
@@ -355,7 +339,7 @@ public abstract class MessageFactory {
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
      * @param durable a durable message
-     * @param topic a topic
+     * @param subject a subject
      * @param mimetype the mimetype of the message's payload data
      * @param data the binary payload data
      * @return the message
@@ -364,15 +348,13 @@ public abstract class MessageFactory {
             final String requestId,
             final long expiresAt,
             final boolean durable,
-            final String topic,
+            final String subject,
             final String mimetype,
             final byte[] data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(data);
-
-        Topics.validate(topic);
 
         return new Message(
                 requestId,
@@ -382,7 +364,7 @@ public abstract class MessageFactory {
                 durable,
                 false,  // no subscription reply
                 expiresAt,
-                Topics.of(topic),
+                subject,
                 mimetype,
                 null,
                 data);
@@ -412,7 +394,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        Topics.validate(topic);
+        TopicValidator.validate(topic);
 
         return json(requestId, topic, "UTF-8", Json.writeJson(data, false));
     }
@@ -438,7 +420,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        Topics.validate(topic);
+        TopicValidator.validate(topic);
 
         return json(requestId, expiresAt, topic, "UTF-8", Json.writeJson(data, false));
     }
@@ -466,7 +448,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        Topics.validate(topic);
+        TopicValidator.validate(topic);
 
         return json(requestId, expiresAt, durable, topic, "UTF-8", Json.writeJson(data, false));
     }

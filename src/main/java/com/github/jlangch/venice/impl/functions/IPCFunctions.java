@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -134,7 +133,9 @@ public class IPCFunctions {
                                                         " Defaults to `false`.|\n" +
                         "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
                         "                                 Defaults to `false`.|\n" +
-                        "| :authenticator a             | An authenticator. Defaults to `nil`.|\n" +
+                        "| :authenticator a             | An authenticator. If an authenticator is used encryption must \n" +
+                                                        " be enabled to safely transmit users credentials!¶" +
+                                                        " Defaults to `nil`.|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
@@ -1069,7 +1070,7 @@ public class IPCFunctions {
                         "  (try-with [server (ipc/server 33333 handler)                                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]                             \n" +
                         "    ;; send a plain text messages:                                                \n" +
-                        "    ;;    requestId=\"1\" and \"2\", topic=\"test\", payload=\"hello\"            \n" +
+                        "    ;;    requestId=\"1\" and \"2\", subject=\"test\", payload=\"hello\"            \n" +
                         "    (ipc/send-oneway client (ipc/plain-text-message \"1\" \"test\" \"hello\"))    \n" +
                         "    (ipc/send-oneway client (ipc/plain-text-message \"2\" \"test\" \"hello\"))))  ")
                     .seeAlso(
@@ -1138,7 +1139,7 @@ public class IPCFunctions {
                         "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
                         "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
-                        "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
+                        "    ;;   requestId=\"1\", subject=\"test\", payload=\"hello\"          \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
                         "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
                         "      (ipc/publish client2 m))                                       \n" +
@@ -1165,27 +1166,7 @@ public class IPCFunctions {
                 final VncVal topicVal = args.nth(1);
                 final VncFunction handler = Coerce.toVncFunction(args.nth(2));
 
-                final HashSet<String> topics = new HashSet<>();
-                if (Types.isVncString(topicVal)) {
-                    topics.add(Coerce.toVncString(topicVal).getValue());
-                }
-                else if (Types.isVncSequence(topicVal)) {
-                    Coerce.toVncSequence(topicVal).forEach(t -> {
-                        if (Types.isVncString(t)) {
-                            topics.add(Coerce.toVncString(t).getValue());
-                        }
-                        else {
-                            throw new VncException(
-                                    "Function 'ipc/subscribe' expects either a single string "
-                                    + "topic or a sequence of topic strings!");
-                            }
-                    });
-                }
-                else {
-                    throw new VncException(
-                            "Function 'ipc/subscribe' expects either a single string "
-                            + "topic or a sequence of topic strings!");
-                }
+                final String topicName = Coerce.toVncString(topicVal).getValue();
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -1201,7 +1182,7 @@ public class IPCFunctions {
                     catch(Exception ignore) { }
                 });
 
-                final IMessage response = client.subscribe(topics, handlerWrapper);
+                final IMessage response = client.subscribe(topicName, handlerWrapper);
 
                 return new VncJavaObject(response);
             }
@@ -1242,7 +1223,7 @@ public class IPCFunctions {
                         "    (ipc/unsubscribe client1 \"test\")                               \n" +
                         "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
-                        "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
+                        "    ;;   requestId=\"1\", subject=\"test\", payload=\"hello\"          \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
                         "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
                         "      (ipc/publish client2 m))                                       \n" +
@@ -1268,29 +1249,9 @@ public class IPCFunctions {
                 final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
                 final VncVal topicVal = args.nth(1);
 
-                final HashSet<String> topics = new HashSet<>();
-                if (Types.isVncString(topicVal)) {
-                    topics.add(Coerce.toVncString(topicVal).getValue());
-                }
-                else if (Types.isVncSequence(topicVal)) {
-                    Coerce.toVncSequence(topicVal).forEach(t -> {
-                        if (Types.isVncString(t)) {
-                            topics.add(Coerce.toVncString(t).getValue());
-                        }
-                        else {
-                            throw new VncException(
-                                    "Function 'ipc/unsubscribe' expects either a single string "
-                                    + "topic or a sequence of topic strings!");
-                            }
-                    });
-                }
-                else {
-                    throw new VncException(
-                            "Function 'ipc/unsubscribe' expects either a single string "
-                            + "topic or a sequence of topic strings!");
-                }
+                final String topicName = Coerce.toVncString(topicVal).getValue();
 
-                final IMessage response = client.unsubscribe(topics);
+                final IMessage response = client.unsubscribe(topicName);
 
                 return new VncJavaObject(response);
             }
@@ -1304,7 +1265,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/publish client message)")
+                        "(ipc/publish client topic-name message)")
                     .doc(
                         "Publishes a messages to all clients that have subscribed to the " +
                         "message's topic.\n\n" +
@@ -1326,14 +1287,14 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
-                        "    ;; client1 subscribes to messages with topic 'test'              \n" +
-                        "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
+                        "    ;; client1 subscribes to messages with topic :test               \n" +
+                        "    (ipc/subscribe client1 :test client-subscribe-handler)           \n" +
                         "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
-                        "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
-                        "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
+                        "    ;;   requestId=\"1\", subject=:testing, payload=\"hello\"        \n" +
+                        "    (let [m (ipc/plain-text-message \"1\" :testing \"hello\")]       \n" +
                         "      (println \"PUBLISHING:\" (ipc/message->json true m))           \n" +
-                        "      (->> (ipc/publish client2 m)                                   \n" +
+                        "      (->> (ipc/publish client2 :test m)                             \n" +
                         "           (ipc/message->json true)                                  \n" +
                         "           (println \"PUBLISHED:\")))                                \n" +
                         "                                                                     \n" +
@@ -1353,12 +1314,13 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 3);
 
                 final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
-                final IMessage request =  Coerce.toVncJavaObject(args.nth(1), IMessage.class);
+                final String topicName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
+                final IMessage request =  Coerce.toVncJavaObject(args.nth(2), IMessage.class);
 
-                final IMessage response = client.publish(request);
+                final IMessage response = client.publish(topicName, request);
 
                 return new VncJavaObject(response);
             }
@@ -1372,7 +1334,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/publish-async client message)")
+                        "(ipc/publish-async topic-name client message)")
                     .doc(
                         "Publishes a messages to all clients that have subscribed to the " +
                         "message's topic.\n\n" +
@@ -1394,14 +1356,14 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
-                        "    ;; client1 subscribes to messages with topic 'test'              \n" +
-                        "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
+                        "    ;; client1 subscribes to messages with topic :test'              \n" +
+                        "    (ipc/subscribe client1 :test client-subscribe-handler)           \n" +
                         "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
-                        "    ;;   requestId=\"1\", topic=\"test\", payload=\"hello\"          \n" +
-                        "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
+                        "    ;;   requestId=\"1\", subject=:testing, payload=\"hello\"        \n" +
+                        "    (let [m (ipc/plain-text-message \"1\" :testing \"hello\")]       \n" +
                         "      (println \"PUBLISHING:\" (ipc/message->json true m))           \n" +
-                        "      (-<> (ipc/publish-async client2 m)                             \n" +
+                        "      (-<> (ipc/publish-async client2 :test m)                       \n" +
                         "           (deref <> 1_000 :timeout)                                 \n" +
                         "           (ipc/message->json true <>)                               \n" +
                         "           (println \"PUBLISHED:\" <>)))                             \n" +
@@ -1422,14 +1384,15 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 3);
 
                 final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
-                final IMessage request =  Coerce.toVncJavaObject(args.nth(1), IMessage.class);
+                final String topicName = StringUtil.trimToNull(Coerce.toVncString(args.nth(1)).getValue());
+                final IMessage request =  Coerce.toVncJavaObject(args.nth(2), IMessage.class);
 
                 return new VncJavaObject(
                         new FutureWrapper(
-                           client.publishAsync(request)));
+                           client.publishAsync(topicName, request)));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1476,7 +1439,7 @@ public class IPCFunctions {
                         "    (ipc/create-queue server :orders 100)                                                   \n" +
                         "                                                                                            \n" +
                         "    ;; client1 offers order Venice data message to the queue                                \n" +
-                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    ;;   requestId=\"1\" and \"2\", subject=\"order\", payload={:item \"espresso\", :count 2} \n" +
                         "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
                         "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                            \n" +
@@ -1565,7 +1528,7 @@ public class IPCFunctions {
                         "    (ipc/create-queue server :orders 100)                                                   \n" +
                         "                                                                                            \n" +
                         "    ;; client1 offers order Venice data message to the queue                                \n" +
-                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    ;;   requestId=\"1\" and \"2\", subject=\"order\", payload={:item \"espresso\", :count 2} \n" +
                         "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
                         "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                            \n" +
@@ -1658,7 +1621,7 @@ public class IPCFunctions {
                         "    (ipc/create-queue server :orders 100)                                                   \n" +
                         "                                                                                            \n" +
                         "    ;; client1 offers order Venice data message to the queue                                \n" +
-                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    ;;   requestId=\"1\" and \"2\", subject=\"order\", payload={:item \"espresso\", :count 2} \n" +
                         "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
                         "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                            \n" +
@@ -1732,7 +1695,7 @@ public class IPCFunctions {
                         "    (ipc/create-queue server :orders 100)                                                   \n" +
                         "                                                                                            \n" +
                         "    ;; client1 offers order Venice data message to the queue                                \n" +
-                        "    ;;   requestId=\"1\" and \"2\", topic=\"order\", payload={:item \"espresso\", :count 2} \n" +
+                        "    ;;   requestId=\"1\" and \"2\", subject=\"order\", payload={:item \"espresso\", :count 2} \n" +
                         "    (let [order (ipc/venice-message \"1\" \"order\" {:item \"espresso\", :count 2})]        \n" +
                         "      (println \"ORDER:\" (ipc/message->json true order))                                   \n" +
                         "                                                                                            \n" +
@@ -1815,7 +1778,7 @@ public class IPCFunctions {
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
                                                 null,
-                                                Messages.TOPIC_SERVER_STATUS,
+                                                Messages.SUBJECT_SERVER_STATUS,
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""));
@@ -1872,7 +1835,7 @@ public class IPCFunctions {
                 final IMessage response = client.sendMessage(
                                             MessageFactory.text(
                                                 null,
-                                                Messages.TOPIC_SERVER_THREAD_POOL_STATS,
+                                                Messages.SUBJECT_SERVER_THREAD_POOL_STATS,
                                                 "appliaction/json",
                                                 "UTF-8",
                                                 ""));
@@ -2027,7 +1990,10 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/add-credentials authenticator user-name password)",
                         "(ipc/add-credentials authenticator user-name password role)")
-                    .doc("Adds user credentials to an authenticator.")
+                    .doc(
+                        "Adds user credentials to an authenticator.\n\n" +
+                        "The only role currently support is the `:admin` role. The `:admin` is " +
+                        "mandatory for clients to manage queues!")
                     .examples(
                         "(let [auth (ipc/authenticator)]                      \n" +
                         "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
@@ -2595,7 +2561,7 @@ public class IPCFunctions {
                         " ├───────────────────────────────┤   \n" +
                         " │ Request ID                    │   client (may be used for idempotency checks the receiver)\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Topic                         │   client\n" +
+                        " │ Subject                       │   client\n" +
                         " ├───────────────────────────────┤   \n" +
                         " │ Queue Name                    │   client  (offer/poll, else null)\n" +
                         " ├───────────────────────────────┤   \n" +
@@ -2617,7 +2583,7 @@ public class IPCFunctions {
                         "  * `:timestamp`           - the message's creation timestamp in milliseconds since epoch\n" +
                         "  * `:expires-at`          - the message's expiry timestamp in milliseconds since epoch (may be nil)\n" +
                         "  * `:request-id`          - the request ID (may be nil)\n" +
-                        "  * `:topic`               - the topic\n" +
+                        "  * `:subject`             - the subject\n" +
                         "  * `:queue-name`          - the queue name\n" +
                         "  * `:reply-to-queue-name` - the reply to queue name\n" +
                         "  * `:payload-mimetype`    - the payload data mimetype\n" +
@@ -2661,7 +2627,7 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :expires-at))              \n" +
                         "  (println (ipc/message-field m :response-status))         \n" +
                         "  (println (ipc/message-field m :request-id))              \n" +
-                        "  (println (ipc/message-field m :topic))                   \n" +
+                        "  (println (ipc/message-field m :subject))                 \n" +
                         "  (println (ipc/message-field m :payload-mimetype))        \n" +
                         "  (println (ipc/message-field m :payload-charset))         \n" +
                         "  (println (ipc/message-field m :payload-text))            \n" +
@@ -2679,7 +2645,7 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :expires-at))              \n" +
                         "  (println (ipc/message-field m :response-status))         \n" +
                         "  (println (ipc/message-field m :request-id))              \n" +
-                        "  (println (ipc/message-field m :topic))                   \n" +
+                        "  (println (ipc/message-field m :subject))                 \n" +
                         "  (println (ipc/message-field m :payload-mimetype))        \n" +
                         "  (println (ipc/message-field m :payload-charset))         \n" +
                         "  (println (ipc/message-field m :payload-binary)))         ",
@@ -2694,7 +2660,7 @@ public class IPCFunctions {
                         "  (println (ipc/message-field m :expires-at))         \n" +
                         "  (println (ipc/message-field m :response-status))    \n" +
                         "  (println (ipc/message-field m :request-id))         \n" +
-                        "  (println (ipc/message-field m :topic))              \n" +
+                        "  (println (ipc/message-field m :subject))            \n" +
                         "  (println (ipc/message-field m :payload-mimetype))   \n" +
                         "  (println (ipc/message-field m :payload-charset))    \n" +
                         "  (println (ipc/message-field m :payload-venice)))    ")
@@ -2726,8 +2692,8 @@ public class IPCFunctions {
                     case "oneway?":             return VncBoolean.of(message.isOneway());
                     case "durable?":            return VncBoolean.of(message.isDurable());
                     case "response-status":     return new VncKeyword(message.getResponseStatus().name());
-                    case "topic":               return new VncString(message.getTopic());
-                    case "queue-name":          return new VncString(message.getQueueName());
+                    case "subject":             return new VncString(message.getSubject());
+                    case "queue-topic-name":    return new VncString(message.getQueueName());
                     case "reply-to-queue-name": return new VncString(message.getReplyToQueueName());
                     case "request-id":          return message.getRequestId() == null
                                                         ? Nil
@@ -2850,7 +2816,7 @@ public class IPCFunctions {
                             new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
                             new VncKeyword("oneway?"),    VncBoolean.of(m.isOneway()),
                             new VncKeyword("durable?"),   VncBoolean.of(m.isDurable()),
-                            new VncKeyword("topic"),      new VncString(m.getTopic()),
+                            new VncKeyword("subject"),    new VncString(m.getSubject()),
                             new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
                             new VncKeyword("data"),       new VncByteBuffer(m.getData()));
                 }
@@ -2864,7 +2830,7 @@ public class IPCFunctions {
                             new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
                             new VncKeyword("oneway?"),    VncBoolean.of(m.isOneway()),
                             new VncKeyword("durable?"),   VncBoolean.of(m.isDurable()),
-                            new VncKeyword("topic"),      new VncString(m.getTopic()),
+                            new VncKeyword("subject"),    new VncString(m.getSubject()),
                             new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
                             new VncKeyword("data"),       m.getVeniceData());
                 }
@@ -2878,7 +2844,7 @@ public class IPCFunctions {
                             new VncKeyword("request-id"), m.getRequestId() == null ? Nil : new VncString(m.getRequestId()),
                             new VncKeyword("oneway?"),    VncBoolean.of(m.isOneway()),
                             new VncKeyword("durable?"),   VncBoolean.of(m.isDurable()),
-                            new VncKeyword("topic"),      new VncString(m.getTopic()),
+                            new VncKeyword("subject"),    new VncString(m.getSubject()),
                             new VncKeyword("mimetype"),   new VncString(m.getMimetype()),
                             new VncKeyword("charset"),    new VncKeyword(m.getCharset()),
                             new VncKeyword("text"),       new VncString(m.getText()));

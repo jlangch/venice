@@ -63,14 +63,14 @@ public class TcpOfferPollEncryptedTest {
 
             assertNotNull(m1);
             assertEquals(ResponseStatus.OK,  m1.getResponseStatus());
-            assertEquals("queue-test",       m1.getTopic());
+            assertEquals("queue-test",       m1.getSubject());
 
 
             final IMessage m2 = client2.poll("queue-1", 1000);
 
             assertNotNull(m2);
             assertEquals(ResponseStatus.OK,  m2.getResponseStatus());
-            assertEquals("queue-test",       m2.getTopic());
+            assertEquals("queue-test",       m2.getSubject());
             assertEquals("text/plain",       m2.getMimetype());
             assertEquals("UTF-8",            m2.getCharset());
             assertEquals("Hello!",           m2.getText());

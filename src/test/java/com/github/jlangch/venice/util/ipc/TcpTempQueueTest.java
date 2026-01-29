@@ -78,7 +78,7 @@ public class TcpTempQueueTest {
 
             final IMessage request = MessageFactory.text(
                                         null,
-                                        Messages.TOPIC_SERVER_STATUS,
+                                        Messages.SUBJECT_SERVER_STATUS,
                                         "appliaction/json",
                                         "UTF-8",
                                         "");
@@ -176,14 +176,14 @@ public class TcpTempQueueTest {
 
             assertNotNull(m1);
             assertEquals(ResponseStatus.OK,  m1.getResponseStatus());
-            assertEquals("queue-test",       m1.getTopic());
+            assertEquals("queue-test",       m1.getSubject());
 
 
             final IMessage m2 = client2.poll(tmpQueue, 1_000);
 
             assertNotNull(m2);
             assertEquals(ResponseStatus.OK,  m2.getResponseStatus());
-            assertEquals("queue-test",       m2.getTopic());
+            assertEquals("queue-test",       m2.getSubject());
             assertEquals("text/plain",       m2.getMimetype());
             assertEquals("UTF-8",            m2.getCharset());
             assertEquals("Hello!",           m2.getText());

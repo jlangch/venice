@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
-import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class TcpPubSubEncryptedTest {
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello " + ii;
                 final IMessage request = MessageFactory.text(null, "test", "text/plain", "UTF-8", msg);
-                clientPub.publish(request);
+                clientPub.publish("test", request);
             }
 
             IO.sleep(200);
@@ -124,7 +123,8 @@ public class TcpPubSubEncryptedTest {
         try {
             clientSub1.subscribe("alpha", m -> subMessages1.add(m));
 
-            clientSub2.subscribe(toSet("alpha", "beta"), m -> subMessages2.add(m));
+            clientSub2.subscribe("alpha", m -> subMessages2.add(m));
+            clientSub2.subscribe("beta",  m -> subMessages2.add(m));
 
             clientSub3.subscribe("gamma", m -> subMessages3.add(m));
 
@@ -132,19 +132,19 @@ public class TcpPubSubEncryptedTest {
             for(int ii=0; ii<10; ii++) {
                 final String msg = "Hello alpha " + ii;
                 final IMessage request = MessageFactory.text(null, "alpha", "text/plain", "UTF-8", msg);
-                clientPub.publish(request);
+                clientPub.publish("alpha", request);
             }
 
             // 5 'beta'
             for(int ii=0; ii<5; ii++) {
                 final String msg = "Hello beta " + ii;
                 final IMessage request = MessageFactory.text(null, "beta", "text/plain", "UTF-8", msg);
-                clientPub.publish(request);
+                clientPub.publish("beta", request);
             }
 
             IO.sleep(200);
 
-            assertEquals(18, server.getStatistics().getMessageCount());
+            assertEquals(19, server.getStatistics().getMessageCount());
             assertEquals(25, server.getStatistics().getPublishCount());
             assertEquals( 0, server.getStatistics().getDiscardedPublishCount());
             assertEquals( 0, server.getStatistics().getDiscardedResponseCount());

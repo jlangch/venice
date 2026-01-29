@@ -32,7 +32,6 @@ import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
-import com.github.jlangch.venice.util.ipc.impl.Topics;
 
 
 public class PayloadMetaData {
@@ -50,7 +49,7 @@ public class PayloadMetaData {
             msg.getRequestId(),
             msg.getQueueName(),
             msg.getReplyToQueueName(),
-            msg.getTopics(),
+            msg.getSubject(),
             msg.getMimetype(),
             msg.getCharset(),
             msg.getId());
@@ -66,16 +65,16 @@ public class PayloadMetaData {
             final long timeout,
             final ResponseStatus responseStatus,
             final String requestId,
-            final String queueName,
+            final String queueOrTopicName,
             final String replyToQueueName,
-            final Topics topics,
+            final String subject,
             final String mimetype,
             final String charset,
             final UUID id
     ) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(responseStatus);
-        Objects.requireNonNull(topics);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(mimetype);
         Objects.requireNonNull(id);
 
@@ -88,9 +87,9 @@ public class PayloadMetaData {
         this.timeout = timeout;
         this.responseStatus = responseStatus;
         this.requestId = requestId;
-        this.queueName = queueName;
+        this.queueOrTopicName = queueOrTopicName;
         this.replyToQueueName = replyToQueueName;
-        this.topics = topics;
+        this.subject = subject;
         this.mimetype = mimetype;
         this.charset = charset;
         this.id = id;
@@ -105,12 +104,12 @@ public class PayloadMetaData {
                 oneway,
                 durable,
                 subscriptionReply,
-                queueName,
+                queueOrTopicName,
                 replyToQueueName,
                 timestamp,
                 expiresAt,
                 timeout,
-                topics,
+                subject,
                 mimetype,
                 charset,
                 payloadData);
@@ -152,16 +151,16 @@ public class PayloadMetaData {
         return responseStatus;
     }
 
-    public String getQueueName() {
-        return queueName;
+    public String getQueueOrTopicName() {
+        return queueOrTopicName;
     }
 
     public String getReplyToQueueName() {
         return replyToQueueName;
     }
 
-    public Topics getTopics() {
-        return topics;
+    public String getSubject() {
+        return subject;
     }
 
     public String getMimetype() {
@@ -189,14 +188,14 @@ public class PayloadMetaData {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
         result = prime * result + (oneway ? 1231 : 1237);
-        result = prime * result + ((queueName == null) ? 0 : queueName.hashCode());
+        result = prime * result + ((queueOrTopicName == null) ? 0 : queueOrTopicName.hashCode());
         result = prime * result + ((replyToQueueName == null) ? 0 : replyToQueueName.hashCode());
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
         result = prime * result + (subscriptionReply ? 1231 : 1237);
         result = prime * result + (int) (timeout ^ (timeout >>> 32));
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
-        result = prime * result + ((topics == null) ? 0 : topics.hashCode());
+        result = prime * result + ((subject == null) ? 0 : subject.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -231,10 +230,10 @@ public class PayloadMetaData {
             return false;
         if (oneway != other.oneway)
             return false;
-        if (queueName == null) {
-            if (other.queueName != null)
+        if (queueOrTopicName == null) {
+            if (other.queueOrTopicName != null)
                 return false;
-        } else if (!queueName.equals(other.queueName))
+        } else if (!queueOrTopicName.equals(other.queueOrTopicName))
             return false;
         if (replyToQueueName == null) {
             if (other.replyToQueueName != null)
@@ -254,10 +253,10 @@ public class PayloadMetaData {
             return false;
         if (timestamp != other.timestamp)
             return false;
-        if (topics == null) {
-            if (other.topics != null)
+        if (subject == null) {
+            if (other.subject != null)
                 return false;
-        } else if (!topics.equals(other.topics))
+        } else if (!subject.equals(other.subject))
             return false;
         if (type != other.type)
             return false;
@@ -273,9 +272,9 @@ public class PayloadMetaData {
         final short  _type                   = encodeMessageType(data.type);
         final short  _responseStatus         = encodeResponseStatus(data.responseStatus);
         final byte[] _requestId              = encodeString(data.requestId);
-        final byte[] _queueName              = encodeString(data.queueName);
+        final byte[] _queueOrTopicName       = encodeString(data.queueOrTopicName);
         final byte[] _replyToQueueName       = encodeString(data.replyToQueueName);
-        final byte[] _topics                 = encodeTopics(data.topics);
+        final byte[] _subject                = encodeString(data.subject);
         final byte[] _mimetype               = encodeString(data.mimetype);
         final byte[] _charset                = encodeString(data.charset);
         final long   _idLeastSignificantBits = data.id.getLeastSignificantBits();
@@ -286,9 +285,9 @@ public class PayloadMetaData {
                           8 + 8 + 8 +
                           2 +
                           2 + _requestId.length +
-                          2 + _queueName.length +
+                          2 + _queueOrTopicName.length +
                           2 + _replyToQueueName.length +
-                          2 + _topics.length +
+                          2 + _subject.length +
                           2 + _mimetype.length +
                           2 + _charset.length +
                           8 + 8;
@@ -304,9 +303,9 @@ public class PayloadMetaData {
         buf.putLong(data.timeout);
         buf.putShort(_responseStatus);
         putString(buf, _requestId);
-        putString(buf, _queueName);
+        putString(buf, _queueOrTopicName);
         putString(buf, _replyToQueueName);
-        putString(buf, _topics);
+        putString(buf, _subject);
         putString(buf, _mimetype);
         putString(buf, _charset);
         buf.putLong(_idMostSignificantBits);
@@ -329,9 +328,9 @@ public class PayloadMetaData {
         final long   _timeout                = buf.getLong();
         final short  _responseStatus         = buf.getShort();
         final byte[] _requestId              = getString(buf);
-        final byte[] _queueName              = getString(buf);
+        final byte[] _queueOrTopicName       = getString(buf);
         final byte[] _replyToQueueName       = getString(buf);
-        final byte[] _topics                 = getString(buf);
+        final byte[] _subject                = getString(buf);
         final byte[] _mimetype               = getString(buf);
         final byte[] _charset                = getString(buf);
         final long   _idMostSignificantBits  = buf.getLong();
@@ -346,12 +345,12 @@ public class PayloadMetaData {
                 _expiresAt,
                 _timeout,
                 decodeResponseStatus(_responseStatus),
-                decodeString(_requestId),
-                decodeString(_queueName),
-                decodeString(_replyToQueueName),
-                decodeTopics(_topics),
-                decodeString(_mimetype),
-                decodeString(_charset),
+                decodeStringTrimToNull(_requestId),
+                decodeStringTrimToNull(_queueOrTopicName),
+                decodeStringTrimToNull(_replyToQueueName),
+                decodeString(_subject),
+                decodeStringTrimToNull(_mimetype),
+                decodeStringTrimToNull(_charset),
                 new UUID(_idMostSignificantBits, _idLeastSignificantBits));
     }
 
@@ -371,17 +370,16 @@ public class PayloadMetaData {
         return (short)e.getValue();
     }
 
-    private static byte[] encodeTopics(final Topics t) {
-        final String s = Topics.encode(t);
-        return s == null || s.isEmpty() ? new byte[0] : s.getBytes(UTF_8);
-    }
-
 
     private static boolean decodeBoolean(final byte b) {
         return b == (byte)1;
     }
 
     private static String decodeString(final byte[] b) {
+        return new String(b, UTF_8);
+    }
+
+    private static String decodeStringTrimToNull(final byte[] b) {
         return trimToNull(new String(b, UTF_8));
     }
 
@@ -401,11 +399,6 @@ public class PayloadMetaData {
         else {
             throw new IpcException("Illegal IPC message ResponseStatus value: " + e);
         }
-    }
-
-    private static Topics decodeTopics(final byte[] b) {
-        final String s = new String(b, UTF_8);
-        return Topics.decode(s);
     }
 
     private static void putString(final ByteBuffer b, final byte[] sBuf) {
@@ -444,9 +437,9 @@ public class PayloadMetaData {
     private final long timeout;
     private final ResponseStatus responseStatus;
     private final String requestId;
-    private final String queueName;
+    private final String queueOrTopicName;
     private final String replyToQueueName;
-    private final Topics topics;
+    private final String subject;
     private final String mimetype;
     private final String charset;
     private final UUID id;

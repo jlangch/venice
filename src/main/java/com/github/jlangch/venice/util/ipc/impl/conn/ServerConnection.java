@@ -80,7 +80,6 @@ import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
-import com.github.jlangch.venice.util.ipc.impl.Topics;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
@@ -395,30 +394,30 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message handleSend(final Message request) {
-        if (request.getTopic().startsWith(Messages.TOPIC_SERVER_PREFIX)) {
+        if (request.getSubject().startsWith(Messages.SUBJECT_SERVER_PREFIX)) {
             if (!adminAuthorization) {
                 return createNoPermissionResponse(
                         request,
                         "The clients isnot permitted to manage the server!");
             }
 
-            if (Messages.TOPIC_SERVER_STATUS.equals(request.getTopic())) {
+            if (Messages.SUBJECT_SERVER_STATUS.equals(request.getSubject())) {
                 return getTcpServerStatus(request);
             }
-            else if (Messages.TOPIC_SERVER_THREAD_POOL_STATS.equals(request.getTopic())) {
+            else if (Messages.SUBJECT_SERVER_THREAD_POOL_STATS.equals(request.getSubject())) {
                 return getTcpServerThreadPoolStatistics(request);
             }
-            else if (Messages.TOPIC_SERVER_ERROR.equals(request.getTopic())) {
+            else if (Messages.SUBJECT_SERVER_ERROR.equals(request.getSubject())) {
                 return getTcpServerNextError(request);
             }
             else {
                 return createBadRequestResponse(
                         request,
-                        "Unknown server request topic. \n"
+                        "Unknown server request subject. \n"
                           + "Valid topics are:\n"
-                          + "  • " + Messages.TOPIC_SERVER_STATUS + "\n"
-                          + "  • " + Messages.TOPIC_SERVER_THREAD_POOL_STATS + "\n"
-                          + "  • " + Messages.TOPIC_SERVER_ERROR);
+                          + "  • " + Messages.SUBJECT_SERVER_STATUS + "\n"
+                          + "  • " + Messages.SUBJECT_SERVER_THREAD_POOL_STATS + "\n"
+                          + "  • " + Messages.SUBJECT_SERVER_ERROR);
             }
         }
         else {
@@ -438,22 +437,22 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleSubscribeToTopic(final Message request) {
         // register subscription
-        subscriptions.addSubscriptions(request.getTopicsSet(), this);
+        subscriptions.addSubscription(request.getTopicName(), this);
 
-        logInfo(String.format("Subscribed to topics: %s.", Topics.encode(request.getTopics())));
+        logInfo(String.format("Subscribed to topic: %s.", request.getTopicName()));
 
         // acknowledge the subscription
-        return createOkTextResponse(request, "Subscribed to the topics.");
+        return createOkTextResponse(request, "Subscribed to the topic.");
     }
 
     private Message handleUnsubscribeFromTopic(final Message request) {
         // unregister subscription
-        subscriptions.removeSubscriptions(request.getTopicsSet(), this);
+        subscriptions.removeSubscription(request.getTopicName(), this);
 
-        logInfo(String.format("Unsubscribed from topics: %s.", Topics.encode(request.getTopics())));
+        logInfo(String.format("Unsubscribed from topic: %s.", request.getTopicName()));
 
         // acknowledge the unsubscription
-        return createOkTextResponse(request, "Unsubscribed from the topics.");
+        return createOkTextResponse(request, "Unsubscribed from the topic.");
     }
 
     private Message handlePublishToTopic(final Message request) {
@@ -726,7 +725,7 @@ public class ServerConnection implements IPublisher, Runnable {
                        request.getId(),
                        DIFFIE_HELLMAN_NAK,
                        null,
-                       Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
+                       "",
                        "Error: Diffie-Hellman key already exchanged!");
         }
         else {
@@ -752,7 +751,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            request.getId(),
                            DIFFIE_HELLMAN_ACK,
                            null,
-                           Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
+                           "",
                            dhKeys.getPublicKeyBase64());
             }
             catch(Exception ex) {
@@ -762,7 +761,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            request.getId(),
                            DIFFIE_HELLMAN_NAK,
                            null,
-                           Topics.of(Messages.TOPIC_DIFFIE_HELLMANN),
+                           "",
                            "Failed to exchange Diffie-Hellman key! Reason: " + ex.getMessage());
             }
         }
@@ -808,7 +807,7 @@ public class ServerConnection implements IPublisher, Runnable {
                         false,  // transient
                         false,  // not a subscription msg
                         Messages.EXPIRES_NEVER,
-                        request.getTopics(),
+                        request.getSubject(),
                         request.getMimetype(), // always "application/octet-tream"
                         null,
                         new byte[0]);
@@ -849,7 +848,7 @@ public class ServerConnection implements IPublisher, Runnable {
                     request.getId(),
                     responseStatus,
                     request.getRequestId(),
-                    request.getTopics(),
+                    request.getSubject(),
                     message);
     }
 
@@ -873,7 +872,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 false,  // transient
                 false,  // not a subscription msg
                 Messages.EXPIRES_NEVER,
-                request.getTopics(),
+                request.getSubject(),
                 "application/json",
                 "UTF-8",
                 toBytes(json, "UTF-8"));
@@ -883,7 +882,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final UUID id,
             final ResponseStatus status,
             final String requestID,
-            final Topics topics,
+            final String subject,
             final String text
     ) {
         return new Message(
@@ -895,7 +894,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 false,  // transient
                 false,  // not a subscription msg
                 Messages.EXPIRES_NEVER,
-                topics,
+                subject,
                 "text/plain",
                 "UTF-8",
                 text == null || text.isEmpty()

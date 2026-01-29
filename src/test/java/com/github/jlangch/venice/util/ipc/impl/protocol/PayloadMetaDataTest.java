@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.protocol;
 
-import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.util.ipc.impl.protocol.PayloadMetaData.decode;
 import static com.github.jlangch.venice.util.ipc.impl.protocol.PayloadMetaData.encode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
-import com.github.jlangch.venice.util.ipc.impl.Topics;
 
 
 public class PayloadMetaDataTest {
@@ -48,17 +46,17 @@ public class PayloadMetaDataTest {
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+                        "queue", null, "alpha", "text/plain", "UTF-8", id);
         assertEquals(data, data);
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+                        "queue", null, "alpha", "text/plain", "UTF-8", id);
         assertEquals(data, new PayloadMetaData(
                                 false, false, false, MessageType.REQUEST,
                                 0, 1, 2, ResponseStatus.OK, null,
-                                "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id));
+                                "queue", null, "alpha", "text/plain", "UTF-8", id));
     }
 
     @Test
@@ -69,102 +67,92 @@ public class PayloadMetaDataTest {
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id),
+                        "queue", null, "alpha", "text/plain", "UTF-8", id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id));
+                        "queue", null, "alpha", "text/plain", "UTF-8", id));
 
         assertEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of("alpha"), "text/plain", "UTF-8", id),
+                        null, null, "alpha", "text/plain", "UTF-8", id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of("alpha"), "text/plain", "UTF-8", id));
+                        null, null, "alpha", "text/plain", "UTF-8", id));
 
         assertEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of("alpha"), "text/plain", null, id),
+                        null, null, "alpha", "text/plain", null, id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of("alpha"), "text/plain", null, id));
+                        null, null, "alpha", "text/plain", null, id));
 
         assertEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
+                        "queue", null, "alpha", "text/plain", "UTF-8", id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
+                        "queue", null, "alpha", "text/plain", "UTF-8", id));
 
         assertEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id),
+                        null, null, "alpha", "text/plain", "UTF-8", id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
 
-                        null, null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
+                        null, null, "alpha", "text/plain", "UTF-8", id));
 
         assertEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id),
+                        null, null, "alpha", "text/plain", null, id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id));
+                        null, null, "alpha", "text/plain", null, id));
 
         assertNotEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue1", null, Topics.of("alpha"), "text/plain", "UTF-8", id),
+                        "queue1", null, "alpha", "text/plain", "UTF-8", id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue2", null, Topics.of("alpha"), "text/plain", "UTF-8", id));
+                        "queue2", null, "alpha", "text/plain", "UTF-8", id));
 
         assertNotEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id),
+                        "queue", null, "alpha", "text/plain", "UTF-8", id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id));
+                        "queue", null, "beta", "text/plain", "UTF-8", id));
 
         assertNotEquals(
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id),
+                        "queue", null, "alpha", "text/plain", "UTF-8", id),
                 new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
-                        0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain1", "UTF-8", id));
-
-        assertNotEquals(
-                new PayloadMetaData(
-                        false, false, false, MessageType.REQUEST,
-                        0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id),
-                new PayloadMetaData(
-                        false, false, false, MessageType.REQUEST,
-                        0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF", id));
+                        0, 1, 3, ResponseStatus.OK, null,
+                        "queue", null, "alpha", "text/plain", "UTF", id));
     }
 
     @Test
@@ -176,50 +164,50 @@ public class PayloadMetaDataTest {
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+                        "queue", null, "alpha", "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+                        null, null, "alpha", "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of("alpha"), "text/plain", null, id);
+                        "queue", null, "alpha", "text/plain", null, id);
         assertEquals(data, decode(encode(data)));
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of("alpha"), "text/plain", null, id);
+                        null, null, "alpha", "text/plain", null, id);
         assertEquals(data, decode(encode(data)));
 
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
+                        "queue", null, "alpha", "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
+                        null, null, "alpha", "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        "queue", null, Topics.of(toSet("alpha", "beta")), "text/plain", "UTF-8", id);
+                        "queue", null, "alpha", "text/plain", "UTF-8", id);
         assertEquals(data, decode(encode(data)));
 
         data = new PayloadMetaData(
                         false, false, false, MessageType.REQUEST,
                         0, 1, 2, ResponseStatus.OK, null,
-                        null, null, Topics.of(toSet("alpha", "beta")), "text/plain", null, id);
+                        null, null, "alpha", "text/plain", null, id);
         assertEquals(data, decode(encode(data)));
     }
 
@@ -235,7 +223,7 @@ public class PayloadMetaDataTest {
             PayloadMetaData data = new PayloadMetaData(
                                         false, false, false, MessageType.REQUEST,
                                         0, 1, 2, ResponseStatus.OK, String.valueOf(count),
-                                        "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+                                        "queue", null, "alpha", "text/plain", "UTF-8", id);
             assertEquals(data, decode(encode(data)));
         }
 
@@ -245,7 +233,7 @@ public class PayloadMetaDataTest {
            PayloadMetaData data = new PayloadMetaData(
                                            false, false, false, MessageType.REQUEST,
                                            0, 1, 2, ResponseStatus.OK, String.valueOf(count),
-                                           "queue", null, Topics.of("alpha"), "text/plain", "UTF-8", id);
+                                           "queue", null, "alpha", "text/plain", "UTF-8", id);
            assertEquals(data, decode(encode(data)));
         }
 

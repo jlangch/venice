@@ -203,11 +203,11 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text(null, Messages.TOPIC_SERVER_STATUS, "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text(null, Messages.SUBJECT_SERVER_STATUS, "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals(Messages.TOPIC_SERVER_STATUS, response2.getTopic());
+            assertEquals(Messages.SUBJECT_SERVER_STATUS, response2.getSubject());
 
             // System.out.println(response2.getText());
         }
@@ -243,11 +243,11 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text(null, Messages.TOPIC_SERVER_THREAD_POOL_STATS, "text/plain", "UTF-8", "");
+            final IMessage request2 = MessageFactory.text(null, Messages.SUBJECT_SERVER_THREAD_POOL_STATS, "text/plain", "UTF-8", "");
 
             final IMessage response2 = client.sendMessage(request2);
             assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals(Messages.TOPIC_SERVER_THREAD_POOL_STATS, response2.getTopic());
+            assertEquals(Messages.SUBJECT_SERVER_THREAD_POOL_STATS, response2.getSubject());
 
             // System.out.println(response2.getText());
         }

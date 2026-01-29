@@ -24,36 +24,30 @@ package com.github.jlangch.venice.util.ipc.impl;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class QueueValidator {
+public class TopicValidator {
 
-    public static void validateQueueName(final String queueName) {
-        if (StringUtil.isBlank(queueName)) {
-            throw new IllegalArgumentException("A queue name must not be empty or blank!");
+    public static void validate(final String topicName) {
+        if (StringUtil.isBlank(topicName)) {
+            throw new IllegalArgumentException("A topic name must not be empty or blank!");
         }
 
-        if (queueName.length() > QUEUE_NAME_MAX_LEN) {
+        if (topicName.length() > TOPIC_MAX_LEN) {
             throw new IllegalArgumentException(
-                    "A queue name is limited to " + QUEUE_NAME_MAX_LEN + " characters!");
+                    "A topic name is limited to " + TOPIC_MAX_LEN + " characters!");
         }
 
-        if (queueName.matches("wal")) {
+        if (topicName.matches("wal")) {
             throw new IllegalArgumentException(
-                    "The queue name 'wal' is a preserved name!");
+                    "The topic name 'wal' is a preserved name!");
         }
 
-        if (!queueName.matches("[a-zA-Z0-9_\\-/]+")) {
+        if (!topicName.matches("[a-zA-Z0-9_\\-/]+")) {
             throw new IllegalArgumentException(
-                    "The queue name \"" + queueName + "\" must only contain the characters: "
+                    "The topic name \"" + topicName + "\" must only contain the characters: "
                     + "'a-z', 'A-Z', '0-9', '_', '-', or '/'!");
         }
     }
 
-    public static void validateQueueCapacity(final int capacity) {
-        if (capacity < 1) {
-            throw new IllegalArgumentException("A queue capacity must not be lower than 1");
-        }
-    }
 
-
-    public static final long QUEUE_NAME_MAX_LEN = 100;
+    public static final long TOPIC_MAX_LEN = 100;
 }

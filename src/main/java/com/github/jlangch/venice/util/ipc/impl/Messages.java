@@ -36,7 +36,7 @@ public abstract class Messages {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                TOPICS_TEST,
+                SUBJECT_TEST,
                 "application/octet-stream",
                 null,
                 payload);
@@ -51,6 +51,8 @@ public abstract class Messages {
     public static final long MESSAGE_LIMIT_MAX     = 250 * MB;   // 250 MB
     public static final long MESSAGE_LIMIT_DEFAULT =  20 * MB;   //  20 MB
 
+    public static final long SUBJECT_MAX_LEN = 100;
+
     // Message timeout
     public static final long EXPIRES_NEVER   = -1L;
     public static final long NO_TIMEOUT      = -1L;
@@ -63,20 +65,18 @@ public abstract class Messages {
     public static final long CHARSET_MAX_LEN = 50;
 
     // Server requests
-    public static final String TOPIC_SERVER_PREFIX = "ipc-server/";
-    public static final String TOPIC_SERVER_STATUS = "ipc-server/status";
-    public static final String TOPIC_SERVER_THREAD_POOL_STATS = "ipc-server/thread-pool-statistics";
-    public static final String TOPIC_SERVER_ERROR = "ipc-server/error";
-    public static final String TOPIC_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
+    public static final String SUBJECT_SERVER_PREFIX = "ipc-server/";
+    public static final String SUBJECT_SERVER_STATUS = "ipc-server/status";
+    public static final String SUBJECT_SERVER_THREAD_POOL_STATS = "ipc-server/thread-pool-statistics";
+    public static final String SUBJECT_SERVER_ERROR = "ipc-server/error";
+    public static final String SUBJECT_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
 
-    public static final String TOPIC_DIFFIE_HELLMANN = "dh";
-    public static final String TOPIC_AUTHENTICATION  = "authentication";
-    public static final String TOPIC_HEARTBEAT       = "heartbeat";
-    public static final String TOPIC_TEST            = "T";
-
-    private static final Topics TOPICS_TEST = Topics.of(Messages.TOPIC_TEST);
+    public static final String SUBJECT_DIFFIE_HELLMANN = "dh";
+    public static final String SUBJECT_AUTHENTICATION  = "authentication";
+    public static final String SUBJECT_HEARTBEAT       = "heartbeat";
+    public static final String SUBJECT_TEST            = "T";
 
     // Client requests
-    public static final String TOPIC_CLIENT_THREAD_POOL_STATS = "ipc-client/thread-pool-statistics";
+    public static final String SUBJECT_CLIENT_THREAD_POOL_STATS = "ipc-client/thread-pool-statistics";
 
 }

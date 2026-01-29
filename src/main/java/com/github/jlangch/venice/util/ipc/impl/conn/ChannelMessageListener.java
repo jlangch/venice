@@ -24,7 +24,6 @@ package com.github.jlangch.venice.util.ipc.impl.conn;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -76,25 +75,25 @@ public class ChannelMessageListener implements Runnable {
 
 
     public void addSubscriptionHandler(
-            final Set<String> topics,
+            final String topicName,
             final Consumer<IMessage> handler
     ) {
-        Objects.requireNonNull(topics);
+        Objects.requireNonNull(topicName);
 
         if (handler != null) {
-            topics.forEach(t -> subscriptionHandlers.put(t, handler));
+            subscriptionHandlers.put(topicName, handler);
         }
         else {
-            removeSubscriptionHandler(topics);
+            removeSubscriptionHandler(topicName);
         }
     }
 
     public void removeSubscriptionHandler(
-            final Set<String> topics
+            final String topicName
     ) {
-        Objects.requireNonNull(topics);
+        Objects.requireNonNull(topicName);
 
-        topics.forEach(t -> subscriptionHandlers.remove(t));
+        subscriptionHandlers.remove(topicName);
     }
 
 
@@ -221,9 +220,9 @@ public class ChannelMessageListener implements Runnable {
 
 
     private Consumer<IMessage> getSubscriptionHandler(final Message msg) {
-        final String topic = msg.getTopic();
+        final String topicName = msg.getTopicName();
 
-        return subscriptionHandlers.get(topic);
+        return subscriptionHandlers.get(topicName);
     }
 
 

@@ -38,29 +38,20 @@ public class Subscriptions {
 
 
     public void addSubscription(
-            final String topic,
+            final String topicName,
             final IPublisher publisher
     ) {
         final Set<String> t = subscriptions.getOrDefault(publisher, new HashSet<>());
-        t.add(topic);
+        t.add(topicName);
         subscriptions.put(publisher, t);
     }
 
-    public void addSubscriptions(
-            final Set<String> topics,
+    public void removeSubscription(
+            final String topicName,
             final IPublisher publisher
     ) {
         final Set<String> t = subscriptions.getOrDefault(publisher, new HashSet<>());
-        t.addAll(topics);
-        subscriptions.put(publisher, t);
-    }
-
-    public void removeSubscriptions(
-            final Set<String> topics,
-            final IPublisher publisher
-    ) {
-        final Set<String> t = subscriptions.getOrDefault(publisher, new HashSet<>());
-        t.removeAll(topics);
+        t.remove(topicName);
         if (t.isEmpty()) {
             subscriptions.remove(publisher);
         }
@@ -79,7 +70,7 @@ public class Subscriptions {
         // mark the message as a subscription reply
         final Message m = msg.withSubscriptionReply(true);
 
-        final String topic = m.getTopic();
+        final String topic = m.getTopicName();
 
         final List<IPublisher> publishers = new ArrayList<>(subscriptions.keySet());
 
