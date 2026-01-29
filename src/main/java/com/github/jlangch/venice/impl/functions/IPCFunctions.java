@@ -1135,11 +1135,14 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
+                        "    ;; create topic :test                                            \n" +
+                        "    (ipc/create-topic server :test)                                  \n" +
+                        "                                                                     \n" +
                         "    ;; client1 subscribes to messages with topic 'test'              \n" +
                         "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
                         "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
-                        "    ;;   requestId=\"1\", subject=\"test\", payload=\"hello\"          \n" +
+                        "    ;;   requestId=\"1\", subject=\"test\", payload=\"hello\"        \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
                         "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
                         "      (ipc/publish client2 m))                                       \n" +
@@ -1216,6 +1219,9 @@ public class IPCFunctions {
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
                         "                                                                     \n" +
+                        "    ;; create topic :test                                            \n" +
+                        "    (ipc/create-topic server :test)                                  \n" +
+                        "                                                                     \n" +
                         "    ;; client1 subscribes to messages with topic 'test'              \n" +
                         "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
                         "                                                                     \n" +
@@ -1223,7 +1229,7 @@ public class IPCFunctions {
                         "    (ipc/unsubscribe client1 \"test\")                               \n" +
                         "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
-                        "    ;;   requestId=\"1\", subject=\"test\", payload=\"hello\"          \n" +
+                        "    ;;   requestId=\"1\", subject=\"test\", payload=\"hello\"        \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
                         "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
                         "      (ipc/publish client2 m))                                       \n" +
@@ -1286,6 +1292,9 @@ public class IPCFunctions {
                         "  (try-with [server  (ipc/server 33333)                              \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
+                        "                                                                     \n" +
+                        "    ;; create topic :test                                            \n" +
+                        "    (ipc/create-topic server :test)                                  \n" +
                         "                                                                     \n" +
                         "    ;; client1 subscribes to messages with topic :test               \n" +
                         "    (ipc/subscribe client1 :test client-subscribe-handler)           \n" +
@@ -1355,6 +1364,9 @@ public class IPCFunctions {
                         "  (try-with [server  (ipc/server 33333)                              \n" +
                         "             client1 (ipc/client \"localhost\" 33333)                \n" +
                         "             client2 (ipc/client \"localhost\" 33333)]               \n" +
+                        "                                                                     \n" +
+                        "    ;; create topic :test                                            \n" +
+                        "    (ipc/create-topic server :test)                                  \n" +
                         "                                                                     \n" +
                         "    ;; client1 subscribes to messages with topic :test'              \n" +
                         "    (ipc/subscribe client1 :test client-subscribe-handler)           \n" +
@@ -3493,6 +3505,163 @@ public class IPCFunctions {
         };
 
 
+
+
+    // ------------------------------------------------------------------------
+    // Queues
+    // ------------------------------------------------------------------------
+
+    public static VncFunction ipc_create_topic =
+        new VncFunction(
+                "ipc/create-topic",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/create-topic node name)")
+                    .doc(
+                        "Creates a named topic on the server. \n\n" +
+                        "A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'. " +
+                        "Up to 80 characters are allowed.\n\n" +
+                        "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| node s     | A server or a client|\n" +
+                        "| name s     | A topic name (string or keyword)|")
+                    .examples(
+                        "(try-with [server  (ipc/server 33333)            \n" +
+                        "           client1 (ipc/client 33333)]           \n" +
+                        "  (ipc/create-topic server :orders-closed)       \n" +
+                        "    ;;                                           \n" +
+                        "  (ipc/exists-topic? server :orders-closed))     ")
+                    .seeAlso(
+                        "ipc/remove-topic",
+                        "ipc/exists-topic?",
+                        "ipc/server",
+                        "ipc/client")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3, 4, 5);
+
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    server.createTopic(name);
+                    return Nil;
+                }
+                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                    final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    client.createTopic(name);
+                    return Nil;
+                }
+                else {
+                    throw new VncException (
+                            "ipc/create-topic: the first arg must be either a server or client.");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_remove_topic =
+        new VncFunction(
+                "ipc/remove-topic",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/remove-topic node name)")
+                    .doc(
+                        "Removes a named topic.\n\n" +
+                        "Returns always `nil` or throws an exception.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| node s | A server or a client |\n" +
+                        "| name n | A topic name (string or keyword)|")
+                    .examples(
+                        "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
+                        "  (ipc/create-topic server :orders-closed 100)       \n" +
+                        "  ;; ...                                             \n" +
+                        "  (ipc/remove-topic server :orders-closed))          ")
+                    .seeAlso(
+                        "ipc/create-topic",
+                        "ipc/exists-topic?",
+                        "ipc/server",
+                        "ipc/client")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    server.removeTopic(name);
+                    return Nil;
+                }
+                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                    final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    client.removeTopic(name);
+                    return Nil;
+                }
+                else {
+                    throw new VncException (
+                            "ipc/remove-topic: the first arg must be either a server or client.");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_exists_topicQ =
+        new VncFunction(
+                "ipc/exists-topic?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/exists-topic? node name)")
+                    .doc(
+                        "Returns `true` if the named topic exists else `false`.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| node n | A server or client |\n" +
+                        "| name n | A topic name (string or keyword)|")
+                    .examples(
+                        "(try-with [server (ipc/server 33333)]            \n" +
+                        "  (ipc/create-topic server :orders-closed 100)   \n" +
+                        "  ;; ...                                         \n" +
+                        "  (ipc/exists-topic? server :orders-closed))     ")
+                    .seeAlso(
+                        "ipc/create-topic",
+                        "ipc/remove-topic",
+                        "ipc/server",
+                        "ipc/client")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(server.existsQueue(name));
+                }
+                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                    final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(client.existsTopic(name));
+                }
+                else {
+                    throw new VncException (
+                            "ipc/exists-topic?: the first arg must be either a server or client.");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     // ------------------------------------------------------------------------
     // Utils
     // ------------------------------------------------------------------------
@@ -3649,6 +3818,10 @@ public class IPCFunctions {
                     .add(ipc_remove_queue)
                     .add(ipc_exists_queueQ)
                     .add(ipc_queue_status)
+
+                    .add(ipc_create_topic)
+                    .add(ipc_remove_topic)
+                    .add(ipc_exists_topicQ)
 
                     .add(ipc_server_status)
                     .add(ipc_server_thread_pool_statistics)

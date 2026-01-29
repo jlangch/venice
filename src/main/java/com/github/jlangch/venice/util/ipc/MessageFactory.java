@@ -394,7 +394,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        TopicValidator.validate(topic);
+        TopicValidator.validateTopicName(topic);
 
         return json(requestId, topic, "UTF-8", Json.writeJson(data, false));
     }
@@ -420,7 +420,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        TopicValidator.validate(topic);
+        TopicValidator.validateTopicName(topic);
 
         return json(requestId, expiresAt, topic, "UTF-8", Json.writeJson(data, false));
     }
@@ -448,7 +448,7 @@ public abstract class MessageFactory {
         Objects.requireNonNull(topic);
         Objects.requireNonNull(data);
 
-        TopicValidator.validate(topic);
+        TopicValidator.validateTopicName(topic);
 
         return json(requestId, expiresAt, durable, topic, "UTF-8", Json.writeJson(data, false));
     }

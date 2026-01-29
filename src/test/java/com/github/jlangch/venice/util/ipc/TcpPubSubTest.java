@@ -39,6 +39,8 @@ public class TcpPubSubTest {
         final Client clientSub = Client.of(33333);
         final Client clientPub = Client.of(33333);
 
+        server.createTopic("test");
+
         server.start();
 
         IO.sleep(300);
@@ -82,6 +84,10 @@ public class TcpPubSubTest {
         final Client clientSub1 = Client.of(33333);
         final Client clientSub2 = Client.of(33333);
         final Client clientSub3 = Client.of(33333);
+
+        server.createTopic("alpha");
+        server.createTopic("beta");
+        server.createTopic("gamma");
 
         server.start();
 
@@ -157,6 +163,8 @@ public class TcpPubSubTest {
         final Server server = Server.of(33333);
         final Client clientSub = Client.of(33333);
         final Client clientPub = Client.of(33333);
+
+        server.createTopic("test");
 
         server.start();
 

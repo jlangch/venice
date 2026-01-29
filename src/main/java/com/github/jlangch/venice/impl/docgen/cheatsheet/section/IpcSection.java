@@ -97,6 +97,12 @@ public class IpcSection implements ISectionBuilder {
         queue.addItem(diBuilder.getDocItem("ipc/exists-queue?", false));
         queue.addItem(diBuilder.getDocItem("ipc/queue-status", false));
 
+        final DocSection topic = new DocSection("Queues", "ipc.topic");
+        all.addSection(topic);
+        topic.addItem(diBuilder.getDocItem("ipc/create-topic", false));
+        topic.addItem(diBuilder.getDocItem("ipc/remove-topic", false));
+        topic.addItem(diBuilder.getDocItem("ipc/exists-topic?", false));
+
         final DocSection bench = new DocSection("Benchmark", "ipc.bench");
         all.addSection(bench);
         bench.addItem(diBuilder.getDocItem("ipc/benchmark", false));

@@ -80,6 +80,7 @@ import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
+import com.github.jlangch.venice.util.ipc.impl.ServerTopicManager;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
@@ -102,6 +103,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final ServerConfig config,
             final ServerContext context,
             final ServerQueueManager queueManager,
+            final ServerTopicManager topicManager,
             final SocketChannel ch,
             final long connectionId
     ) {
@@ -110,6 +112,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.connectionId = connectionId;
         this.context = context;
         this.queueManager = queueManager;
+        this.topicManager = topicManager;
 
         this.maxMessageSize = config.getMaxMessageSize();
         this.maxQueues = config.getMaxQueues();
@@ -1117,6 +1120,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final long heartbeatInterval;
 
     final ServerQueueManager queueManager;
+    final ServerTopicManager topicManager;
 
     // compression
     private final Compressor compressor;

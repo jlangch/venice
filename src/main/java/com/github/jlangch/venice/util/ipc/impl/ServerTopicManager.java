@@ -19,13 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.conn;
+package com.github.jlangch.venice.util.ipc.impl;
 
-import com.github.jlangch.venice.util.ipc.impl.Message;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
-public interface IPublisher {
+public class ServerTopicManager {
 
-    void publish(Message msg);
+    public ServerTopicManager() {
+    }
 
+    public void addTopic(final String topicName) {
+        TopicValidator.validateTopicName(topicName);
+        topics.putIfAbsent(topicName, "");
+    }
+
+    public void removeTopic(final String topicName) {
+        TopicValidator.validateTopicName(topicName);
+        topics.remove(topicName);
+    }
+
+    public boolean existsTopic(final String topicName) {
+        TopicValidator.validateTopicName(topicName);
+        return topics.containsKey(topicName);
+    }
+
+    private final Map<String, String> topics = new ConcurrentHashMap<>();
 }

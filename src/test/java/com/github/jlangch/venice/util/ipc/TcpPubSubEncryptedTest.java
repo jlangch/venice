@@ -47,6 +47,8 @@ public class TcpPubSubEncryptedTest {
                                                 .encrypt(true)
                                                 .build());
 
+        server.createTopic("test");
+
         server.start();
 
         IO.sleep(300);
@@ -106,6 +108,10 @@ public class TcpPubSubEncryptedTest {
                                                 .conn(33333)
                                                 .encrypt(true)
                                                 .build());
+
+        server.createTopic("alpha");
+        server.createTopic("beta");
+        server.createTopic("gamma");
 
         server.start();
 

@@ -774,6 +774,40 @@ public class Client implements Cloneable, AutoCloseable {
         return map;
     }
 
+
+    /**
+     * Create a new topic.
+     *
+     * <p>A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * Up to 80 characters are allowed.
+     *
+     * @param topicName a topic name
+     * @throws IpcException if the topic name does not follow the convention
+     *                      for topic names or if the
+     */
+    public void createTopic(final String topicName) {
+        throw new IpcException("Not yet implemented");
+    }
+
+    /**
+     * Remove a topic.
+     *
+     * @param topicName a topic name
+     */
+    public void removeTopic(final String topicName) {
+        throw new IpcException("Not yet implemented");
+    }
+
+    /**
+     * Exists topic.
+     *
+     * @param topicName a topic name
+     * @return <code>true</code> if the topic exists else <code>false</code>
+     */
+    public boolean existsTopic(final String topicName) {
+        throw new IpcException("Not yet implemented");
+    }
+
     /**
      * Return the server's status.
      *

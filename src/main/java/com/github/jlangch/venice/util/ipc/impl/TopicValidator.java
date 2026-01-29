@@ -26,7 +26,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class TopicValidator {
 
-    public static void validate(final String topicName) {
+    public static void validateTopicName(final String topicName) {
         if (StringUtil.isBlank(topicName)) {
             throw new IllegalArgumentException("A topic name must not be empty or blank!");
         }

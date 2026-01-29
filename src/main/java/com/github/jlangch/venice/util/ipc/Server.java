@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
+import com.github.jlangch.venice.util.ipc.impl.ServerTopicManager;
 import com.github.jlangch.venice.util.ipc.impl.conn.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.conn.ServerContext;
 import com.github.jlangch.venice.util.ipc.impl.conn.SocketChannelFactory;
@@ -69,10 +70,13 @@ public class Server implements AutoCloseable {
         this.compressor = new Compressor(config.getCompressCutoffSize());
         this.logger.enable(config.getLogDir());
 
-        this.serverQueueManager = new ServerQueueManager(
+        this.queueManager = new ServerQueueManager(
                                         config,
                                         new WalQueueManager(),
                                         this.logger);
+
+        this.topicManager = new ServerTopicManager();
+
     }
 
 
@@ -129,7 +133,7 @@ public class Server implements AutoCloseable {
         // configuration
         mngdExecutor.setMaximumThreadPoolSize(config.getMaxConnections() + 1);
         if (config.getWalDir() != null) {
-            final WalQueueManager wal = serverQueueManager.getWalQueueManager();
+            final WalQueueManager wal = queueManager.getWalQueueManager();
             wal.activate(config.getWalDir(), config.isWalCompress(), config.isWalCompactAtStart());
         }
         if (authenticator.isActive() && !config.isEncrypting()) {
@@ -149,7 +153,7 @@ public class Server implements AutoCloseable {
                 logServerStart();
 
                 // Preload the WAL based queues at server startup
-                serverQueueManager.preloadWalQueues();
+                queueManager.preloadWalQueues();
 
                 // run in an executor thread to handle incoming connections to not block the caller
                 executor.execute(() -> {
@@ -266,7 +270,7 @@ public class Server implements AutoCloseable {
             final boolean bounded,
             final boolean durable
     ) {
-        serverQueueManager.createQueue(queueName, capacity, bounded, durable);
+    	queueManager.createQueue(queueName, capacity, bounded, durable);
     }
 
     /**
@@ -276,7 +280,7 @@ public class Server implements AutoCloseable {
      * @return the queue or <code>null</code> if the queue does not exist
      */
     public IpcQueue<Message> getQueue(final String queueName) {
-        return serverQueueManager.getQueue(queueName);
+        return queueManager.getQueue(queueName);
     }
 
     /**
@@ -289,7 +293,7 @@ public class Server implements AutoCloseable {
      * @return <code>true</code> if the queue has been removed else <code>false</code>
      */
     public boolean removeQueue(final String queueName) {
-        return serverQueueManager.removeQueue(queueName);
+        return queueManager.removeQueue(queueName);
     }
 
     /**
@@ -299,7 +303,40 @@ public class Server implements AutoCloseable {
      * @return <code>true</code> if the queue exists else <code>false</code>
      */
     public boolean existsQueue(final String queueName) {
-        return serverQueueManager.existsQueue(queueName);
+        return queueManager.existsQueue(queueName);
+    }
+
+    /**
+     * Create a new topic.
+     *
+     * <p>A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * Up to 80 characters are allowed.
+     *
+     * @param topicName a topic name
+     * @throws IpcException if the topic name does not follow the convention
+     *                      for topic names or if the
+     */
+    public void createTopic(final String topicName) {
+        topicManager.addTopic(topicName);
+    }
+
+    /**
+     * Remove a topic.
+     *
+     * @param topicName a topic name
+     */
+    public void removeTopic(final String topicName) {
+        topicManager.removeTopic(topicName);
+    }
+
+    /**
+     * Exists topic.
+     *
+     * @param topicName a topic name
+     * @return <code>true</code> if the topic exists else <code>false</code>
+     */
+    public boolean existsTopic(final String topicName) {
+        return topicManager.existsTopic(topicName);
     }
 
 
@@ -338,7 +375,8 @@ public class Server implements AutoCloseable {
                                                        publishQueueCapacity,
                                                        statistics,
                                                        () -> mngdExecutor.info()),
-                                               serverQueueManager,
+                                               queueManager,
+                                               topicManager,
                                                channel,
                                                connId);
 
@@ -365,7 +403,7 @@ public class Server implements AutoCloseable {
             try {
                 try {
                     // close the durable queues
-                    serverQueueManager.close();
+                	queueManager.close();
                 }
                 catch(Exception ex) {
                     logger.warn("server", "close", "Error while closing queue WALs.", ex);
@@ -415,7 +453,7 @@ public class Server implements AutoCloseable {
     }
 
     private void logServerStart() {
-        final WalQueueManager wal = serverQueueManager.getWalQueueManager();
+        final WalQueueManager wal = queueManager.getWalQueueManager();
 
         logger.info("server", "start", "Server started on " + config.getConnURI());
         logger.info("server", "start", "Endpoint ID: " + endpointId);
@@ -450,7 +488,8 @@ public class Server implements AutoCloseable {
     private final AtomicLong connectionId = new AtomicLong(0);
 
     private final int publishQueueCapacity = 50;
-    private final ServerQueueManager serverQueueManager;
+    private final ServerQueueManager queueManager;
+    private final ServerTopicManager topicManager;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
     private final ServerLogger logger = new ServerLogger();
