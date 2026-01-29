@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Added IPC authorization for creating queues and topics
+- Added IPC authorization for getting server statistics and info
 
 
 ## [1.12.74] - 2026-01-28
