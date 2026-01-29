@@ -720,28 +720,6 @@ Create through 'server'
 ```
 
 
-Create through 'client':
-
-> [!NOTE]
-> By default the server does not allow clients to manage queues!
->
-> This can be permitted by a configuration option on the server!
-
-```clojure
-(do
-  (try-with [server (ipc/server 33333 :permit-client-queue-mgmt true)
-             client (ipc/client 33333)]
-    (ipc/create-queue client "queue/1" 100 :bounded)
-    (ipc/create-queue client "queue/2" 100 :circular)
-
-    (ipc/offer client "queue/1" 300 
-               (ipc/plain-text-message "1" "test" "hello"))
-
-    (ipc/offer client "queue/2" 300 
-               (ipc/plain-text-message "2" "test" "hello"))))
-```
-
-
 #### Create Bounded Durable Queues
 
 > [!NOTE]
