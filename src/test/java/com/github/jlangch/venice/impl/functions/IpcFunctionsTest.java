@@ -606,8 +606,11 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(do                                                                   \n" +
-                "  (try-with [server (ipc/server 33333 :permit-client-queue-mgmt true) \n" +
-                "             client (ipc/client 33333)]                               \n" +
+                "(try-with [server (ipc/server 33333                                   \n" +
+                "                              :encrypt true                           \n" +
+                "                              :authenticator (-> (ipc/authenticator)  \n" +
+                "                                                 (ipc/add-credentials \"u1\" \"123\" :admin))) \n" +
+                "           client (ipc/client 33333 :user-name \"u1\" :password \"123\")] \n" +
                 "    (ipc/create-queue server :orders 100)                             \n" +
                 "    ;; ...                                                            \n" +
                 "    (ipc/queue-status client :orders)))                               ";
@@ -626,7 +629,7 @@ public class IpcFunctionsTest {
     }
 
     @Test
-    public void test_queue_create_permission_1() {
+    public void test_queue_create_by_client_non_admin_1() {
         final Venice venice = new Venice();
 
         final String script =
@@ -644,13 +647,16 @@ public class IpcFunctionsTest {
     }
 
     @Test
-    public void test_queue_create_permission_2() {
+    public void test_queue_create_by_client_admin_2() {
         final Venice venice = new Venice();
 
         final String script =
-                "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt true)  \n" +
-                "           client (ipc/client 33333)]      \n" +
-                "  (ipc/create-queue client :orders 100))   ";
+                "(try-with [server (ipc/server 33333 \n" +
+                "                              :encrypt true \n" +
+                "                              :authenticator (-> (ipc/authenticator) \n" +
+                "                                                 (ipc/add-credentials \"u1\" \"123\" :admin))) \n" +
+                "           client (ipc/client 33333 :user-name \"u1\" :password \"123\")] \n" +
+                "  (ipc/create-queue client :orders 100)) ";
 
         try {
             venice.eval(script);
@@ -662,12 +668,15 @@ public class IpcFunctionsTest {
     }
 
     @Test
-    public void test_queue_create_permission_3() {
+    public void test_queue_create_by_client_non_admin_3() {
         final Venice venice = new Venice();
 
         final String script =
-                "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt false) \n" +
-                "           client (ipc/client 33333)]      \n" +
+                "(try-with [server (ipc/server 33333 \n" +
+                "                              :encrypt true \n" +
+                "                              :authenticator (-> (ipc/authenticator) \n" +
+                "                                                 (ipc/add-credentials \"u1\" \"123\"))) \n" +
+                "           client (ipc/client 33333 :user-name \"u1\" :password \"123\")] \n" +
                 "  (ipc/create-queue client :orders 100))   ";
 
         try {
@@ -680,7 +689,7 @@ public class IpcFunctionsTest {
     }
 
     @Test
-    public void test_queue_remove_permission_1() {
+    public void test_queue_remove_by_client_non_admin_1() {
         final Venice venice = new Venice();
 
         final String script =
@@ -699,12 +708,15 @@ public class IpcFunctionsTest {
     }
 
     @Test
-    public void test_queue_remove_permission_2() {
+    public void test_queue_remove_by_client_admin_2() {
         final Venice venice = new Venice();
 
         final String script =
-                "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt true)  \n" +
-                "           client (ipc/client 33333)]      \n" +
+                "(try-with [server (ipc/server 33333 \n" +
+                "                              :encrypt true \n" +
+                "                              :authenticator (-> (ipc/authenticator) \n" +
+                "                                                 (ipc/add-credentials \"u1\" \"123\" :admin))) \n" +
+                "           client (ipc/client 33333 :user-name \"u1\" :password \"123\")] \n" +
                 "  (ipc/create-queue server :orders 100)    \n" +
                 "  (ipc/remove-queue client :orders))   ";
 
@@ -718,12 +730,15 @@ public class IpcFunctionsTest {
     }
 
     @Test
-    public void test_queue_remove_permission_3() {
+    public void test_queue_remove_by_client_non_admin_3() {
         final Venice venice = new Venice();
 
         final String script =
-                "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt false) \n" +
-                "           client (ipc/client 33333)]      \n" +
+                "(try-with [server (ipc/server 33333 \n" +
+                "                              :encrypt true \n" +
+                "                              :authenticator (-> (ipc/authenticator) \n" +
+                "                                                 (ipc/add-credentials \"u1\" \"123\"))) \n" +
+                "           client (ipc/client 33333 :user-name \"u1\" :password \"123\")] \n" +
                 "  (ipc/create-queue server :orders 100)    \n" +
                 "  (ipc/remove-queue client :orders))   ";
 

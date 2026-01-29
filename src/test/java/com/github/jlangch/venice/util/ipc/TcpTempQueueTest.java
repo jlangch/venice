@@ -39,12 +39,16 @@ public class TcpTempQueueTest {
 
     @Test
     public void test_temp_queue_1() throws Exception {
+        final Authenticator auth = new Authenticator(true);
+        auth.addCredentials("u1", "123", true);
+
         final Server server = Server.of(ServerConfig
                                             .builder()
                                             .conn(33333)
-                                            .permitClientQueueMgmt(true)
-                                            .permitServerMgmt(true)
+                                            .encrypt(true)
+                                            .authenticator(auth)
                                             .build());
+
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 
@@ -55,8 +59,8 @@ public class TcpTempQueueTest {
 
         IO.sleep(100);
 
-        client1.open();
-        client2.open();
+        client1.open("u1", "123");
+        client2.open("u1", "123");
 
         try {
             final String tmpQueue = client1.createTemporaryQueue(10);

@@ -179,11 +179,16 @@ public class TcpServerTest {
 
     @Test
     public void test_server_status() throws Exception {
+        final Authenticator auth = new Authenticator(true);
+        auth.addCredentials("u1", "123", true);
+
         final Server server = Server.of(ServerConfig
                                             .builder()
                                             .conn(33333)
-                                            .permitServerMgmt(true)
+                                            .encrypt(true)
+                                            .authenticator(auth)
                                             .build());
+
         final Client client = Client.of(33333);
 
         try {
@@ -191,7 +196,7 @@ public class TcpServerTest {
 
             IO.sleep(300);
 
-            client.open();
+            client.open("u1", "123");
 
             final IMessage request1 = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
@@ -214,11 +219,16 @@ public class TcpServerTest {
 
     @Test
     public void test_server_threadpool_stats() throws Exception {
+        final Authenticator auth = new Authenticator(true);
+        auth.addCredentials("u1", "123", true);
+
         final Server server = Server.of(ServerConfig
                                             .builder()
                                             .conn(33333)
-                                            .permitServerMgmt(true)
+                                            .encrypt(true)
+                                            .authenticator(auth)
                                             .build());
+
         final Client client = Client.of(33333);
 
         try {
@@ -226,7 +236,7 @@ public class TcpServerTest {
 
             IO.sleep(300);
 
-            client.open();
+            client.open("u1", "123");
 
             final IMessage request1 = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 

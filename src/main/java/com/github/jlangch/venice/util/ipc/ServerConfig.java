@@ -42,8 +42,6 @@ public class ServerConfig {
             final int rcvBufSize,
             final int maxConnections,
             final Authenticator authenticator,
-            final boolean permitClientQueueMgmt,
-            final boolean permitServerMgmt,
             final int heartbeatIntervalSeconds,
             final File walDir,
             final boolean walCompress,
@@ -60,8 +58,6 @@ public class ServerConfig {
         this.rcvBufSize = rcvBufSize;
         this.maxConnections = maxConnections;
         this.authenticator = authenticator;
-        this.permitClientQueueMgmt = permitClientQueueMgmt;
-        this.permitServerMgmt = permitServerMgmt;
         this.heartbeatIntervalSeconds = heartbeatIntervalSeconds;
         this.walDir = walDir;
         this.walCompress = walCompress;
@@ -111,14 +107,6 @@ public class ServerConfig {
         return authenticator;
     }
 
-    public boolean isPermitClientQueueMgmt() {
-        return permitClientQueueMgmt;
-    }
-
-    public boolean isPermitServerMgmt() {
-        return permitServerMgmt;
-    }
-
     public int getHeartbeatIntervalSeconds() {
         return heartbeatIntervalSeconds;
     }
@@ -160,10 +148,7 @@ public class ServerConfig {
          */
         public Builder conn(final int port) {
             try {
-                this.connURI = new URI(String.format(
-                                            "af-inet://%s:%d",
-                                            "127.0.0.1",
-                                            port));
+                this.connURI = new URI(String.format("af-inet://127.0.0.1:%d", port));
             }
             catch(URISyntaxException ex) {
                 throw new IpcException("Invalid connection URI", ex);
@@ -365,36 +350,6 @@ public class ServerConfig {
         }
 
         /**
-         * Give the clients permission to manage (add/remove) queues.
-         *
-         * <p>Defaults to <code>false</code>
-         *
-         * <p>Note: Temporary queues are not subject to this permission! They
-         *          can be created any time by clients as needed.
-         *
-         * @param permit if <code>true</code> clients are permitted to add/remove
-         *              queues
-         * @return this builder
-         */
-        public Builder permitClientQueueMgmt(final boolean permit) {
-            this.permitClientQueueMgmt = permit;
-            return this;
-        }
-
-        /**
-         * Give the clients permission to manage the server.
-         *
-         * <p>Defaults to <code>false</code>
-         *
-         * @param permit if <code>true</code> clients are permitted manage the server
-         * @return this builder
-         */
-        public Builder permitServerMgmt(final boolean permit) {
-            this.permitServerMgmt = permit;
-            return this;
-        }
-
-        /**
          * Set a heartbeat interval in seconds. A value equal or lower to zero  will
          * turnoff the hearbeat.
          *
@@ -470,8 +425,6 @@ public class ServerConfig {
                     rcvBufSize,
                     maxConnections,
                     authenticator,
-                    permitClientQueueMgmt,
-                    permitServerMgmt,
                     heartbeatIntervalSeconds,
                     walDir,
                     walCompress,
@@ -510,8 +463,6 @@ public class ServerConfig {
     private final int rcvBufSize;
     private final int maxConnections;
     private final Authenticator authenticator;
-    private final boolean permitClientQueueMgmt;
-    private final boolean permitServerMgmt;
     private final int heartbeatIntervalSeconds;
     private final File walDir;
     private final boolean walCompress;

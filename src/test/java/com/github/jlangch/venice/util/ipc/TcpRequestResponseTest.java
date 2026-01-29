@@ -432,18 +432,23 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_server_status() throws Exception {
+        final Authenticator auth = new Authenticator(true);
+        auth.addCredentials("u1", "123", true);
+
         final Server server = Server.of(ServerConfig
                                             .builder()
                                             .conn(33333)
-                                            .permitServerMgmt(true)
+                                            .encrypt(true)
+                                            .authenticator(auth)
                                             .build());
+
         final Client client = Client.of(33333);
 
         server.start(Server.echoHandler());
 
         IO.sleep(300);
 
-        client.open();
+        client.open("u1", "123");
 
         try {
             final Map<String,Object> status = client.getServerStatus();
@@ -458,18 +463,23 @@ public class TcpRequestResponseTest {
 
     @Test
     public void test_server_thread_pool_statistics() throws Exception {
+        final Authenticator auth = new Authenticator(true);
+        auth.addCredentials("u1", "123", true);
+
         final Server server = Server.of(ServerConfig
                                             .builder()
                                             .conn(33333)
-                                            .permitServerMgmt(true)
+                                            .encrypt(true)
+                                            .authenticator(auth)
                                             .build());
-            final Client client = Client.of(33333);
+
+        final Client client = Client.of(33333);
 
         server.start(Server.echoHandler());
 
         IO.sleep(300);
 
-        client.open();
+        client.open("u1", "123");
 
         try {
             final Map<String,Object> stats = client.getServerThreadPoolStatistics();

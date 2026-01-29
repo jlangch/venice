@@ -120,11 +120,6 @@ public class IPCFunctions {
                                                         " The cutoff size can be specified as a number like `1000`" +
                                                         " or a number with a unit like `:1KB` or `:2MB`.¶" +
                                                         " Defaults to -1 (no compression)|\n" +
-                        "| :permit-client-queue-mgmt b  | Permit clients to manage (add/remove) queues. Does not affect " +
-                                                        " temporary queues.¶" +
-                                                        " Defaults to `false`.|\n" +
-                        "| :permit-server-mgmt b        | Permit clients to manage the server.¶" +
-                                                        " Defaults to `false`.|\n" +
                         "| :encrypt b                   | If `true` encrypt the payload data of all messages exchanged" +
                                                         " with this server.¶" +
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
@@ -237,8 +232,6 @@ public class IPCFunctions {
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
-                final VncVal permitQueueMgmtVal = options.get(new VncKeyword("permit-client-queue-mgmt"), VncBoolean.False);
-                final VncVal permitServerMgmtVal = options.get(new VncKeyword("permit-server-mgmt"), VncBoolean.False);
                 final VncVal serverLogDirVal = options.get(new VncKeyword("server-log-dir"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
@@ -256,8 +249,6 @@ public class IPCFunctions {
                 final long maxQueues = convertUnitValueToLong(maxMaxQueuesVal);
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
-                final boolean permitQueueMgmt = Coerce.toVncBoolean(permitQueueMgmtVal).getValue();
-                final boolean permitServerMgmt = Coerce.toVncBoolean(permitServerMgmtVal).getValue();
                 final long heartbeatInterval = Coerce.toVncLong(heartbeatIntervalVal).getValue();
                 final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
                 final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
@@ -320,8 +311,6 @@ public class IPCFunctions {
                 // -- Configure the server ------------------------------------
                 ServerConfig.Builder builder = ServerConfig.builder();
                 setConfigConnection(args.first(), builder);
-                builder.permitClientQueueMgmt(permitQueueMgmt);
-                builder.permitServerMgmt(permitServerMgmt);
                 if (maxMsgSize > 0) {
                     builder.maxMessageSize(maxMsgSize);
                 }
@@ -1914,7 +1903,7 @@ public class IPCFunctions {
                 "ipc/authenticator",
                 VncFunction
                     .meta()
-                    .arglists("(ipc/authenticator & keyvals)")
+                    .arglists("(ipc/authenticator)")
                     .doc(
                         "Creates a new authenticator the manages the credential on behalf of " +
                         "the server.\n\n" +
@@ -1922,8 +1911,9 @@ public class IPCFunctions {
                         "the clear text passwords.")
                     .examples(
                         "(ipc/authenticator)",
-                        "(ipc/authenticator \"user-1\" \"password-1\")",
-                        "(ipc/authenticator \"user-1\" \"password-1\" \"user-2\" \"password-2\")")
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)) ")
                     .seeAlso(
                         "ipc/load-authenticator",
                         "ipc/store-authenticator",
@@ -1932,18 +1922,9 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                if (args.size() %2 == 1) {
-                    throw new VncException("ipc/authenticator: requires an even number arguments.");
-                }
-                else {
-                    final Authenticator authenticator = new Authenticator(true);
-                    for(int ii=0; ii<args.size(); ii=ii+2) {
-                        authenticator.addCredentials(
-                            Coerce.toVncString(args.nth(ii)).toString(),
-                            Coerce.toVncString(args.nth(ii+1)).toString());
-                    }
-                    return new VncJavaObject(authenticator);
-                }
+                ArityExceptions.assertArity(this, args, 0);
+                final Authenticator authenticator = new Authenticator(true);
+                return new VncJavaObject(authenticator);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1957,10 +1938,10 @@ public class IPCFunctions {
                     .arglists("(ipc/load-authenticator source)")
                     .doc("Loads an authenticator from a file or an input stream.")
                     .examples(
-                        "(let [a (ipc/authenticator)]                                  \n" +
-                        "  (ipc/add-credentials a \"user-1\" \"password-1\")           \n" +
-                        "  (ipc/add-credentials a \"user-2\" \"password-2\")           \n" +
-                        "  (ipc/store-authenticator a (io/file \"./ipc.cred\"))        \n" +
+                        "(let [auth (ipc/authenticator)]                               \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")                  \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\")                  \n" +
+                        "  (ipc/store-authenticator auth (io/file \"./ipc.cred\"))     \n" +
                         "  (let [b (ipc/load-authenticator (io/file \"./ipc.cred\"))]  \n" +
                         "     ;; ...                                                   \n" +
                         "     ))                                                       ")
@@ -2004,10 +1985,10 @@ public class IPCFunctions {
                         "Stores an authenticator to a file or an output stream.\n\n" +
                         "Passwords are stored as salted PBKDF2 hashes!")
                     .examples(
-                        "(let [a (ipc/authenticator)]                             \n" +
-                        "  (ipc/add-credentials a \"user-1\" \"password-1\")      \n" +
-                        "  (ipc/add-credentials a \"user-2\" \"password-2\")      \n" +
-                        "  (ipc/store-authenticator a (io/file \"./ipc.cred\")))  ")
+                        "(let [auth (ipc/authenticator)]                             \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")                \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\")                \n" +
+                        "  (ipc/store-authenticator auth (io/file \"./ipc.cred\")))  ")
                     .seeAlso(
                         "ipc/authenticator",
                         "ipc/load-authenticator",
@@ -2043,12 +2024,14 @@ public class IPCFunctions {
                 "ipc/add-credentials",
                 VncFunction
                     .meta()
-                    .arglists("(ipc/add-credentials authenticator user-name password)")
+                    .arglists(
+                        "(ipc/add-credentials authenticator user-name password)",
+                        "(ipc/add-credentials authenticator user-name password role)")
                     .doc("Adds user credentials to an authenticator.")
                     .examples(
-                        "(let [a (ipc/authenticator)]                             \n" +
-                        "  (ipc/add-credentials a \"user-1\" \"password-1\")      \n" +
-                        "  (ipc/add-credentials a \"user-2\" \"password-2\"))     ")
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)) ")
                     .seeAlso(
                         "ipc/authenticator",
                         "ipc/load-authenticator",
@@ -2057,15 +2040,24 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 3, 4);
 
                 final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
                 final String userName = Coerce.toVncString(args.second()).toString();
                 final String password = Coerce.toVncString(args.third()).toString();
+                final String role     = args.size() > 3 ? Coerce.toVncKeyword(args.fourth()).getSimpleName() : null;
 
-                authenticator.addCredentials(userName, password);
+                if (role == null) {
+                    authenticator.addCredentials(userName, password);
+                }
+                else if (Authenticator.isAdminRole(role)) {
+                    authenticator.addCredentials(userName, password, true);
+                }
+                else {
+                    throw new IpcException("Invalid role '" + role + "' !");
+                }
 
-                return Nil;
+                return new VncJavaObject(authenticator);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -3398,10 +3390,10 @@ public class IPCFunctions {
                         "| node n | A server or client |\n" +
                         "| name n | A queue name (string or keyword)|")
                     .examples(
-                        "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt true)] \n" +
-                        "  (ipc/create-queue server :orders 100)                              \n" +
-                        "  ;; ...                                                             \n" +
-                        "  (ipc/exists-queue? server :orders))                                ")
+                        "(try-with [server (ipc/server 33333)]      \n" +
+                        "  (ipc/create-queue server :orders 100)    \n" +
+                        "  ;; ...                                   \n" +
+                        "  (ipc/exists-queue? server :orders))      ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
@@ -3455,11 +3447,11 @@ public class IPCFunctions {
                         "| :capycity  | The capacity (long) |\n" +
                         "| :size      | The current size (long) |")
                     .examples(
-                        "(try-with [server (ipc/server 33333 :permit-client-queue-mgmt true) \n" +
+                        "(try-with [server (ipc/server 33333)          \n" +
                         "           client (ipc/client 33333)]         \n" +
                         "   (ipc/create-queue server :orders 100)      \n" +
                         "   ;; ...                                     \n" +
-                        "   (ipc/queue-status client :orders))         ")
+                        "   (ipc/queue-status server :orders))         ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",

@@ -82,10 +82,14 @@ public class TcpOfferPollTest {
 
     @Test
     public void test_queue_status() throws Exception {
+        final Authenticator auth = new Authenticator(true);
+        auth.addCredentials("u1", "123", true);
+
         final Server server = Server.of(ServerConfig
                                             .builder()
                                             .conn(33333)
-                                            .permitClientQueueMgmt(true)
+                                            .encrypt(true)
+                                            .authenticator(auth)
                                             .build());
         final Client client = Client.of(33333);
 
@@ -95,7 +99,7 @@ public class TcpOfferPollTest {
 
         IO.sleep(300);
 
-        client.open();
+        client.open("u1", "123");
 
         try {
             final Map<String,Object>  s = client.getQueueStatus("queue-1");

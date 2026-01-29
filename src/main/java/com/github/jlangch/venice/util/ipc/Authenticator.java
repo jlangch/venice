@@ -63,6 +63,14 @@ public class Authenticator {
             final String userName,
             final String password
     ) {
+        addCredentials(userName, password, false);
+    }
+
+    public void addCredentials(
+            final String userName,
+            final String password,
+            final boolean adminRole
+    ) {
         Objects.requireNonNull(userName);
         Objects.requireNonNull(password);
 
@@ -74,7 +82,7 @@ public class Authenticator {
             throw new IpcException("A password is limited to " + MAX_LEN + " characters");
         }
 
-        authorizations.put(userName, pwEncoder.encode(password));
+        authorizations.put(userName, new Auth(pwEncoder.encode(password), adminRole));
     }
 
     public void removeCredentials(final String userName) {
@@ -99,8 +107,18 @@ public class Authenticator {
             return false;
         }
 
-        final String pwHash = authorizations.get(userName);
-        return pwHash != null && pwEncoder.verify(password, pwHash);
+        final Auth auth = authorizations.get(userName);
+        return auth != null && pwEncoder.verify(password, auth.pwHash);
+    }
+
+
+    public boolean isAdmin(final String userName) {
+        if (!active || userName == null) {
+           return false;
+        }
+
+        final Auth auth = authorizations.get(userName);
+        return auth != null && auth.adminRole;
     }
 
     public void load(final InputStream is) {
@@ -111,7 +129,7 @@ public class Authenticator {
 
             final Properties p = new Properties();
             p.load(isr);
-            p.forEach((k,v)-> authorizations.put((String)k, (String)v));
+            p.forEach((k,v)-> authorizations.put((String)k, decodeAuth((String)v)));
 
             // automatically active after loading credentials
             activate(true);
@@ -126,7 +144,7 @@ public class Authenticator {
 
         try (OutputStreamWriter osr = new OutputStreamWriter(os, Charset.forName("UTF-8"))) {
             final Properties p = new Properties();
-            authorizations.forEach((k,v) -> p.setProperty(k, v));
+            authorizations.forEach((k,v) -> p.setProperty(k, encodeAuth(v)));
             p.store(osr, "IPC user credentials");
             osr.flush();
         }
@@ -157,11 +175,47 @@ public class Authenticator {
         }
     }
 
+    public static boolean isAdminRole(final String role) {
+        return ADMIN_ROLE.equals(role);
+    }
+
+    private static String encodeAuth(final Auth auth) {
+        return String.format(
+                "%s::%s",
+                auth.adminRole ? ADMIN_ROLE : "-",
+                auth.pwHash);
+    }
+
+    private static Auth decodeAuth(final String auth) {
+        final int pos = auth.indexOf("::");
+        if (pos < 0) {
+            return new Auth(auth, false);
+        }
+        else {
+            final String role = auth.substring(0, pos);
+            final String pwHash = auth.substring(pos + "::".length());
+            return new Auth(pwHash, isAdminRole(role));
+        }
+    }
+
+    private static class Auth {
+        public Auth(final String pwHash, final boolean adminRole) {
+            Objects.requireNonNull(pwHash);
+            this.pwHash = pwHash;
+            this.adminRole = adminRole;
+        }
+
+        public final String pwHash;
+        public final boolean adminRole;
+    }
+
+
+    public final static String ADMIN_ROLE = "admin";
 
     private final static int MAX_LEN = 100;
 
     private volatile boolean active;
 
     private final PBKDF2PasswordEncoder pwEncoder = new PBKDF2PasswordEncoder();
-    private final ConcurrentHashMap<String, String> authorizations = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Auth> authorizations = new ConcurrentHashMap<>();
 }

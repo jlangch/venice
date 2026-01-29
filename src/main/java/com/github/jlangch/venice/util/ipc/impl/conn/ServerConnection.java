@@ -115,8 +115,6 @@ public class ServerConnection implements IPublisher, Runnable {
         this.maxMessageSize = config.getMaxMessageSize();
         this.maxQueues = config.getMaxQueues();
         this.maxTempQueuesPerConnection = config.getMaxTempQueuesPerConnection();
-        this.permitClientQueueMgmt = config.isPermitClientQueueMgmt();
-        this.permitServerMgmt = config.isPermitServerMgmt();
         this.heartbeatInterval = config.getHeartbeatIntervalSeconds();
         this.enforceEncryption = config.isEncrypting();
 
@@ -398,10 +396,10 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private Message handleSend(final Message request) {
         if (request.getTopic().startsWith(Messages.TOPIC_SERVER_PREFIX)) {
-            if (!permitServerMgmt) {
+            if (!adminAuthorization) {
                 return createNoPermissionResponse(
                         request,
-                        "Clients are not permitted to manage the server!");
+                        "The clients isnot permitted to manage the server!");
             }
 
             if (Messages.TOPIC_SERVER_STATUS.equals(request.getTopic())) {
@@ -561,7 +559,7 @@ public class ServerConnection implements IPublisher, Runnable {
             return createNonJsonRequestResponse(request);
         }
 
-        if (!permitClientQueueMgmt) {
+        if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
                     "Clients are not permitted to create queues!");
@@ -637,7 +635,7 @@ public class ServerConnection implements IPublisher, Runnable {
             return createNonJsonRequestResponse(request);
         }
 
-        if (!permitClientQueueMgmt) {
+        if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
                     "Clients are not permitted to remove queues!");
@@ -664,7 +662,7 @@ public class ServerConnection implements IPublisher, Runnable {
             return createNonJsonRequestResponse(request);
         }
 
-        if (!permitClientQueueMgmt) {
+        if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
                     "Clients are not permitted to request queue status!");
@@ -782,6 +780,7 @@ public class ServerConnection implements IPublisher, Runnable {
             authenticated = authenticator.isAuthenticated(payload.get(0), payload.get(1));
             if (authenticated) {
                 principal = payload.get(0);
+                adminAuthorization = authenticator.isAdmin(payload.get(0));
                 logInfo("Authenticated user '" + payload.get(0) + "'");
                 return createTextResponse(request, OK, "");
             }
@@ -926,7 +925,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("encryption", encryptor.get().isActive())
                            .add("max-queues", maxQueues)
                            .add("message-size-max", maxMessageSize)
-                           .add("permit-client-queue-mgmt", permitClientQueueMgmt)
+                           .add("admin", adminAuthorization)
                            .add("compression-cutoff-size", compressor.cutoffSize())
                            .add("write-ahead-log-dir", wal.isEnabled()
                                                             ? wal.getWalDir().getAbsolutePath()
@@ -1088,6 +1087,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private volatile State mode = State.Active;
     private volatile String principal = "anon";
     private volatile boolean authenticated = false;
+    private volatile boolean adminAuthorization = false;
     private volatile Thread publisherThread;
     private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
     private volatile long lastHeartbeat = 0L;
@@ -1115,8 +1115,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final long maxMessageSize;
     private final long maxQueues;
     private final long maxTempQueuesPerConnection;
-    private final boolean permitClientQueueMgmt;
-    private final boolean permitServerMgmt;
     private final long heartbeatInterval;
 
     final ServerQueueManager queueManager;

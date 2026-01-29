@@ -56,8 +56,8 @@ public class AuthenticatorTest {
 
         assertEquals(0, a.size());
 
-        a.addCredentials("u1", "123");
-        a.addCredentials("u2", "456");
+        a.addCredentials("u1", "123", true);
+        a.addCredentials("u2", "456", false);
 
         assertEquals(2, a.size());
 
@@ -83,13 +83,16 @@ public class AuthenticatorTest {
     public void test_authenticated_on() {
         final Authenticator a = new Authenticator(true);
 
-        a.addCredentials("u1", "123");
-        a.addCredentials("u2", "456");
+        a.addCredentials("u1", "123", true);
+        a.addCredentials("u2", "456", false);
 
         assertTrue(a.isActive());
 
         assertTrue(a.isAuthenticated("u1", "123"));
         assertTrue(a.isAuthenticated("u2", "456"));
+
+        assertTrue(a.isAdmin("u1"));
+        assertFalse(a.isAdmin("u2"));
 
         assertFalse(a.isAuthenticated("u1", "124"));
         assertFalse(a.isAuthenticated("x1", "123"));
@@ -103,13 +106,16 @@ public class AuthenticatorTest {
     public void test_authenticated_on_utf8() {
         final Authenticator a = new Authenticator(true);
 
-        a.addCredentials("u-α", "123-α");
-        a.addCredentials("u-β", "456-β");
+        a.addCredentials("u-α", "123-α", true);
+        a.addCredentials("u-β", "456-β", false);
 
         assertTrue(a.isActive());
 
         assertTrue(a.isAuthenticated("u-α", "123-α"));
         assertTrue(a.isAuthenticated("u-β", "456-β"));
+
+        assertTrue(a.isAdmin("u-α"));
+        assertFalse(a.isAdmin("u-β"));
 
         assertFalse(a.isAuthenticated("u-α", "123-γ"));
         assertFalse(a.isAuthenticated("x1", "123-γ"));
@@ -123,13 +129,16 @@ public class AuthenticatorTest {
     public void test_authenticated_off() {
         final Authenticator a = new Authenticator(false);
 
-        a.addCredentials("u1", "123");
-        a.addCredentials("u2", "456");
+        a.addCredentials("u1", "123", true);
+        a.addCredentials("u2", "456", false);
 
         assertTrue(a.isAuthenticated("u1", "123"));
         assertTrue(a.isAuthenticated("u2", "456"));
 
         assertFalse(a.isActive());
+
+        assertFalse(a.isAdmin("u1"));
+        assertFalse(a.isAdmin("u2"));
 
         // always ok!
         assertTrue(a.isAuthenticated("u1", "124"));
@@ -148,8 +157,11 @@ public class AuthenticatorTest {
 
         final Authenticator a = new Authenticator(false);
 
-        a.addCredentials("u1", "123");
-        a.addCredentials("u2", "456");
+        a.addCredentials("u1", "123", true);
+        a.addCredentials("u2", "456", false);
+
+        assertFalse(a.isAdmin("u1"));  // Authenticator turned off
+        assertFalse(a.isAdmin("u2"));  // Authenticator turned off
 
         a.save(new FileOutputStream(file));
 
@@ -161,7 +173,10 @@ public class AuthenticatorTest {
 
         assertTrue(b.isAuthenticated("u1", "123"));
         assertTrue(b.isAuthenticated("u2", "456"));
-    }
+
+        assertTrue(b.isAdmin("u1"));
+        assertFalse(b.isAdmin("u2"));
+   }
 
     @Test
     public void test_authenticated_load_save_2() throws Exception {
@@ -170,8 +185,11 @@ public class AuthenticatorTest {
 
         final Authenticator a = new Authenticator(false);
 
-        a.addCredentials("u1", "123");
-        a.addCredentials("u2", "456");
+        a.addCredentials("u1", "123", true);
+        a.addCredentials("u2", "456", false);
+
+        assertFalse(a.isAdmin("u1"));  // Authenticator turned off
+        assertFalse(a.isAdmin("u2"));  // Authenticator turned off
 
         a.save(file);
 
@@ -183,6 +201,9 @@ public class AuthenticatorTest {
 
         assertTrue(b.isAuthenticated("u1", "123"));
         assertTrue(b.isAuthenticated("u2", "456"));
+
+        assertTrue(b.isAdmin("u1"));
+        assertFalse(b.isAdmin("u2"));
     }
 
     @Test
@@ -192,8 +213,8 @@ public class AuthenticatorTest {
 
         final Authenticator a = new Authenticator(false);
 
-        a.addCredentials("u-α", "123-α");
-        a.addCredentials("u-β", "456-β");
+        a.addCredentials("u-α", "123-α", true);
+        a.addCredentials("u-β", "456-β", false);
 
         a.save(new FileOutputStream(file));
 
@@ -205,7 +226,10 @@ public class AuthenticatorTest {
 
         assertTrue(b.isAuthenticated("u-α", "123-α"));
         assertTrue(b.isAuthenticated("u-β", "456-β"));
-    }
+
+        assertTrue(b.isAdmin("u-α"));
+        assertFalse(b.isAdmin("u-β"));
+   }
 
     @Test
     public void test_authenticated_load_save_2_utf8() throws Exception {
@@ -214,8 +238,8 @@ public class AuthenticatorTest {
 
         final Authenticator a = new Authenticator(false);
 
-        a.addCredentials("u-α", "123-α");
-        a.addCredentials("u-β", "456-β");
+        a.addCredentials("u-α", "123-α", true);
+        a.addCredentials("u-β", "456-β", false);
 
         a.save(file);
 
@@ -227,6 +251,9 @@ public class AuthenticatorTest {
 
         assertTrue(b.isAuthenticated("u-α", "123-α"));
         assertTrue(b.isAuthenticated("u-β", "456-β"));
+
+        assertTrue(b.isAdmin("u-α"));
+        assertFalse(b.isAdmin("u-β"));
     }
 
 }
