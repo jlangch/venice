@@ -503,9 +503,9 @@ Load the authenticator from a file:
  ├───────────────────────────────┤
  │ Subject                       │   client
  ├───────────────────────────────┤
- │ Queue Name                    │   client  (offer/poll, else null)
+ │ Queue/Topic Name              │   client  (offer/poll & publish/subscribe, else null)
  ├───────────────────────────────┤
- │ ReplyTo Queue Name            │   client  (offer/poll, may be null)
+ │ ReplyTo Queue Name            │   client  (offer, may be null)
  ├───────────────────────────────┤
  │ Payload Mimetype              │   client
  ├───────────────────────────────┤
