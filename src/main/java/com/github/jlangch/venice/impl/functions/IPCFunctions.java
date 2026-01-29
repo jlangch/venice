@@ -3487,18 +3487,38 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
-                final String name = Coerce.toVncString(args.second()).getValue();
-                final Map<String,Object> status = client.getQueueStatus(name);
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    final Map<String,Object> status = server.getQueueStatus(name);
 
-                return VncOrderedMap.of(
-                        new VncKeyword("name")      , new VncString((String)status.get("name")),
-                        new VncKeyword("exists")    , VncBoolean.of((Boolean)status.get("exists")),
-                        new VncKeyword("type")      , new VncKeyword((String)status.get("type")),
-                        new VncKeyword("temporary") , VncBoolean.of((Boolean)status.get("temporary")),
-                        new VncKeyword("durable")   , VncBoolean.of((Boolean)status.get("durable")),
-                        new VncKeyword("capacity")  , new VncLong((Long)status.get("capacity")),
-                        new VncKeyword("size")      , new VncLong((Long)status.get("size")));
+                    return VncOrderedMap.of(
+                            new VncKeyword("name")      , new VncString((String)status.get("name")),
+                            new VncKeyword("exists")    , VncBoolean.of((Boolean)status.get("exists")),
+                            new VncKeyword("type")      , new VncKeyword((String)status.get("type")),
+                            new VncKeyword("temporary") , VncBoolean.of((Boolean)status.get("temporary")),
+                            new VncKeyword("durable")   , VncBoolean.of((Boolean)status.get("durable")),
+                            new VncKeyword("capacity")  , new VncLong((Long)status.get("capacity")),
+                            new VncKeyword("size")      , new VncLong((Long)status.get("size")));
+                }
+                else if (Types.isVncJavaObject(args.first(), Client.class)) {
+                    final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    final Map<String,Object> status = client.getQueueStatus(name);
+
+                    return VncOrderedMap.of(
+                            new VncKeyword("name")      , new VncString((String)status.get("name")),
+                            new VncKeyword("exists")    , VncBoolean.of((Boolean)status.get("exists")),
+                            new VncKeyword("type")      , new VncKeyword((String)status.get("type")),
+                            new VncKeyword("temporary") , VncBoolean.of((Boolean)status.get("temporary")),
+                            new VncKeyword("durable")   , VncBoolean.of((Boolean)status.get("durable")),
+                            new VncKeyword("capacity")  , new VncLong((Long)status.get("capacity")),
+                            new VncKeyword("size")      , new VncLong((Long)status.get("size")));
+                }
+                else {
+                    throw new VncException (
+                            "ipc/queue-status?: the first arg must be either a server or client.");
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -3541,7 +3561,7 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3, 4, 5);
+                ArityExceptions.assertArity(this, args, 2);
 
                 if (Types.isVncJavaObject(args.first(), Server.class)) {
                     final Server server = Coerce.toVncJavaObject(args.first(), Server.class);

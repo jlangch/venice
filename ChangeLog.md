@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - Added IPC authorization for getting server statistics and info
 
 
+
 ## [1.12.74] - 2026-01-28
 
 ### Enhancements

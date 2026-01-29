@@ -26,6 +26,8 @@ import java.net.BindException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -270,7 +272,7 @@ public class Server implements AutoCloseable {
             final boolean bounded,
             final boolean durable
     ) {
-    	queueManager.createQueue(queueName, capacity, bounded, durable);
+        queueManager.createQueue(queueName, capacity, bounded, durable);
     }
 
     /**
@@ -304,6 +306,32 @@ public class Server implements AutoCloseable {
      */
     public boolean existsQueue(final String queueName) {
         return queueManager.existsQueue(queueName);
+    }
+
+    /**
+     * Get a queue status.
+     *
+     * @param queueName a queue name
+     * @return the queue or <code>null</code> if the queue does not exist
+     */
+    public Map<String,Object> getQueueStatus(final String queueName) {
+        final IpcQueue<Message> q = queueManager.getQueue(queueName);
+
+        if (q == null) {
+            throw new IpcException("The queue " + queueName + " does not exist!");
+        }
+
+        final Map<String,Object> status = new HashMap<>();
+
+        status.put("name",      queueName);
+        status.put("exists",    q != null);
+        status.put("type",      q == null ? null : q.type().name());
+        status.put("temporary", q != null && q.isTemporary());
+        status.put("durable",   q != null && q.isDurable());
+        status.put("capacity",  q == null ? 0L : (long)q.capacity());
+        status.put("size",      q == null ? 0L : (long)q.size());
+
+        return status;
     }
 
     /**
