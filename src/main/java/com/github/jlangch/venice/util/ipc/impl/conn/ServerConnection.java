@@ -716,16 +716,16 @@ public class ServerConnection implements IPublisher, Runnable {
                         request.getType(), ex.getMessage()));
         }
 
-        final IpcQueue<Message> q = queueManager.getQueue(queueName);
+        final Map<String,Object> s = queueManager.getQueueStatus(queueName);
 
         final String response = new JsonBuilder()
                                         .add("name",      queueName)
-                                        .add("exists",    q != null)
-                                        .add("type",      q == null ? null : q.type().name())
-                                        .add("temporary", q != null && q.isTemporary())
-                                        .add("durable",   q != null && q.isDurable())
-                                        .add("capacity",  q == null ? 0L : (long)q.capacity())
-                                        .add("size",      q == null ? 0L : (long)q.size())
+                                        .add("exists",    (Boolean)s.get("exists"))
+                                        .add("type",      (String)s.get("type"))
+                                        .add("temporary", (Boolean)s.get("temporary"))
+                                        .add("durable",   (Boolean)s.get("durable"))
+                                        .add("capacity",  (Long)s.get("capacity"))
+                                        .add("size",      (Long)s.get("size"))
                                         .toJson(false);
 
         return createJsonResponse(request, OK, response);

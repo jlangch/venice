@@ -26,7 +26,6 @@ import java.net.BindException;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -312,26 +311,10 @@ public class Server implements AutoCloseable {
      * Get a queue status.
      *
      * @param queueName a queue name
-     * @return the queue or <code>null</code> if the queue does not exist
+     * @return the queue status
      */
     public Map<String,Object> getQueueStatus(final String queueName) {
-        final IpcQueue<Message> q = queueManager.getQueue(queueName);
-
-        if (q == null) {
-            throw new IpcException("The queue " + queueName + " does not exist!");
-        }
-
-        final Map<String,Object> status = new HashMap<>();
-
-        status.put("name",      queueName);
-        status.put("exists",    q != null);
-        status.put("type",      q == null ? null : q.type().name());
-        status.put("temporary", q != null && q.isTemporary());
-        status.put("durable",   q != null && q.isDurable());
-        status.put("capacity",  q == null ? 0L : (long)q.capacity());
-        status.put("size",      q == null ? 0L : (long)q.size());
-
-        return status;
+        return queueManager.getQueueStatus(queueName);
     }
 
     /**

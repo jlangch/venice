@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -222,6 +223,28 @@ public class ServerQueueManager {
 
                    return q;
             });
+    }
+
+    /**
+     * Get a queue's status.
+     *
+     * @param queueName a queue name
+     * @return the queue or <code>null</code> if the queue does not exist
+     */
+    public Map<String,Object> getQueueStatus(final String queueName) {
+        final IpcQueue<Message> q = queues.get(queueName);
+
+        final Map<String,Object> status = new HashMap<>();
+
+        status.put("name",      queueName);
+        status.put("exists",    q != null);
+        status.put("type",      q == null ? null : q.type().name());
+        status.put("temporary", q != null && q.isTemporary());
+        status.put("durable",   q != null && q.isDurable());
+        status.put("capacity",  q == null ? 0L : (long)q.capacity());
+        status.put("size",      q == null ? 0L : (long)q.size());
+
+        return status;
     }
 
     /**
