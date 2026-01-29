@@ -29,6 +29,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -130,7 +132,6 @@ public class Authenticator {
     public void load(final InputStream is) {
         Objects.requireNonNull(is);
 
-
         try {
             clearCredentials();
 
@@ -138,15 +139,7 @@ public class Authenticator {
 
             final String json = new String(data, StandardCharsets.UTF_8);
 
-            final VncList list = (VncList)Json.readJson(json, false);
-            list.forEach(e -> {
-                final VncMap entry = (VncMap)e;
-                final String user = ((VncString)entry.get(new VncString("user"))).getValue();
-                final VncMap auth = (VncMap)entry.get(new VncString("auth"));
-                final String pwHash = ((VncString)auth.get(new VncString("pw-hash"))).getValue();
-                final boolean admin = ((VncBoolean)auth.get(new VncString("admin"))).getValue();
-                authorizations.put(user, new Auth(pwHash,  admin));
-            });
+            authorizations.putAll(readFromJson(json));
 
             // automatically active after loading credentials
             activate(true);
@@ -160,21 +153,7 @@ public class Authenticator {
         Objects.requireNonNull(os);
 
         try (OutputStreamWriter osr = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
-            VncList list = VncList.empty();
-
-            for(Entry<String, Auth> e : authorizations.entrySet()) {
-                VncHashMap map = VncHashMap.of(
-                                    new VncString("user"),
-                                    new VncString(e.getKey()),
-                                    new VncString("auth"),
-                                    VncHashMap.of(
-                                        new VncString("pw-hash"),
-                                        new VncString(e.getValue().pwHash),
-                                        new VncString("admin"),
-                                        VncBoolean.of(e.getValue().adminRole)));
-                list = list.addAtEnd(map);
-            }
-            final String json = Json.writeJson(list, true);
+            final String json = writeToJson(authorizations);
             osr.write(json);
             osr.flush();
         }
@@ -209,6 +188,43 @@ public class Authenticator {
         return ADMIN_ROLE.equals(role);
     }
 
+
+
+    private static String writeToJson(final Map<String, Auth> data) {
+        VncList list = VncList.empty();
+
+        for(Entry<String, Auth> e : data.entrySet()) {
+            VncHashMap map = VncHashMap.of(
+                                new VncString("user"),
+                                new VncString(e.getKey()),
+                                new VncString("auth"),
+                                VncHashMap.of(
+                                    new VncString("pw-hash"),
+                                    new VncString(e.getValue().pwHash),
+                                    new VncString("admin"),
+                                    VncBoolean.of(e.getValue().adminRole)));
+            list = list.addAtEnd(map);
+        }
+        return Json.writeJson(list, true);
+    }
+
+    private static Map<String, Auth> readFromJson(final String json) {
+        final Map<String, Auth> data = new HashMap<>();
+
+        final VncList list = (VncList)Json.readJson(json, false);
+        list.forEach(e -> {
+            final VncMap entry = (VncMap)e;
+            final String user = ((VncString)entry.get(new VncString("user"))).getValue();
+            final VncMap auth = (VncMap)entry.get(new VncString("auth"));
+            final String pwHash = ((VncString)auth.get(new VncString("pw-hash"))).getValue();
+            final boolean admin = ((VncBoolean)auth.get(new VncString("admin"))).getValue();
+            data.put(user, new Auth(pwHash,  admin));
+        });
+
+        return data;
+    }
+
+
     private static class Auth {
         public Auth(final String pwHash, final boolean adminRole) {
             Objects.requireNonNull(pwHash);
@@ -223,7 +239,7 @@ public class Authenticator {
 
     public final static String ADMIN_ROLE = "admin";
 
-    private final static int MAX_LEN = 100;
+    private final static int MAX_LEN = 150;
 
     private volatile boolean active;
 

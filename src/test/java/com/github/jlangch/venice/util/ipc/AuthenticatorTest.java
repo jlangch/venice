@@ -187,6 +187,7 @@ public class AuthenticatorTest {
 
         a.addCredentials("u1", "123", true);
         a.addCredentials("u2", "456", false);
+        a.addCredentials("u3", "x------------------------x", false);
 
         assertFalse(a.isAdmin("u1"));  // Authenticator turned off
         assertFalse(a.isAdmin("u2"));  // Authenticator turned off
@@ -197,13 +198,15 @@ public class AuthenticatorTest {
         b.load(file);
 
         assertTrue(b.isActive());  // automatically active after loading credentials
-        assertEquals(2, b.size());
+        assertEquals(3, b.size());
 
         assertTrue(b.isAuthenticated("u1", "123"));
         assertTrue(b.isAuthenticated("u2", "456"));
+        assertTrue(b.isAuthenticated("u3", "x------------------------x"));
 
         assertTrue(b.isAdmin("u1"));
         assertFalse(b.isAdmin("u2"));
+        assertFalse(b.isAdmin("u3"));
     }
 
     @Test
