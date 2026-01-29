@@ -969,7 +969,7 @@ public class Client implements Cloneable, AutoCloseable {
         validateMessageSize(msg, conn);
 
         if (isClientLocalMessage(msg)) {
-            return handleClientLocalMessage(msg);
+            return getClientThreadPoolStatistics();
         }
 
         return conn.send(msg, 10_000);  // TODO: do the timeout right
@@ -988,19 +988,10 @@ public class Client implements Cloneable, AutoCloseable {
         // final long msgQueueTimeout = ((Message)msg).getTimeout();
 
         if (isClientLocalMessage(msg)) {
-            return new ConstantFuture<IMessage>(handleClientLocalMessage(msg));
+            return new ConstantFuture<IMessage>(getClientThreadPoolStatistics());
         }
 
         return conn.sendAsync(msg, 10_000);   // TODO: do the timeout right
-    }
-
-    private Message handleClientLocalMessage(final IMessage request) {
-        if (Messages.SUBJECT_CLIENT_THREAD_POOL_STATS.equals(request.getSubject())) {
-            // answer locally
-            return getClientThreadPoolStatistics();
-        }
-
-        return null;  // no local messsage
     }
 
     private boolean isClientLocalMessage(final IMessage request) {

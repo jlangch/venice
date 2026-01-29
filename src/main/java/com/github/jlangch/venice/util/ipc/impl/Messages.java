@@ -36,7 +36,7 @@ public abstract class Messages {
                 false,
                 false,
                 Messages.EXPIRES_NEVER,
-                SUBJECT_TEST,
+                "",
                 "application/octet-stream",
                 null,
                 payload);
@@ -71,10 +71,6 @@ public abstract class Messages {
     public static final String SUBJECT_SERVER_ERROR = "ipc-server/error";
     public static final String SUBJECT_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
 
-    public static final String SUBJECT_DIFFIE_HELLMANN = "dh";
-    public static final String SUBJECT_AUTHENTICATION  = "authentication";
-    public static final String SUBJECT_HEARTBEAT       = "heartbeat";
-    public static final String SUBJECT_TEST            = "T";
 
     // Client requests
     public static final String SUBJECT_CLIENT_THREAD_POOL_STATS = "ipc-client/thread-pool-statistics";

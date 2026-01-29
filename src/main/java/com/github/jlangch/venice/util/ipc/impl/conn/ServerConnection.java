@@ -1132,5 +1132,5 @@ public class ServerConnection implements IPublisher, Runnable {
     private final IpcQueue<Message> publishQueue;
     private final Map<String, Integer> tmpQueues = new ConcurrentHashMap<>();
 
-    private final Map<MessageType, Function<Message,Message>> handlers = new HashMap<>();
+    private final Map<MessageType, Function<Message,Message>> handlers = new HashMap<>(100, 0.5F);
 }
