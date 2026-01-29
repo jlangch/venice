@@ -127,7 +127,6 @@ public class ServerConnection implements IPublisher, Runnable {
         this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false);
         this.dhKeys = DiffieHellmanKeys.create();
 
-
         this.authenticator = context.authenticator;
         this.logger = context.logger;
         this.handler = context.handler;

@@ -711,8 +711,8 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 ## Managing Queues
 
 > [!NOTE]
-> All queue management functions require and 'admin' user when called
-> from a client node!
+> All queue management functions require an 'admin' user when called
+> from a client node! 
 
 
 #### Create Bounded and Circular Queues
@@ -743,12 +743,8 @@ Create through 'client' (requires 'admin' user)
     (ipc/add-credentials auth "max" "756")         ;; normal user
     (ipc/add-credentials auth "tom" "123" :admin)  ;; admin user
 
-    (try-with [server (ipc/server 33333 
-                                  :encrypt true 
-                                  :authenticator auth)
-               client (ipc/client 33333
-                                  :user-name "tom"
-                                  :password "123")]
+    (try-with [server (ipc/server 33333 :encrypt true :authenticator auth)
+               client (ipc/client 33333 :user-name "tom" :password "123")]
 
       (ipc/create-queue client "queue/1" 100 :bounded)
       (ipc/create-queue client "queue/2" 100 :circular)

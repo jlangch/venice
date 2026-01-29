@@ -26,14 +26,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.password.PBKDF2PasswordEncoder;
 
 
@@ -124,12 +130,23 @@ public class Authenticator {
     public void load(final InputStream is) {
         Objects.requireNonNull(is);
 
-        try (InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"))) {
+
+        try {
             clearCredentials();
 
-            final Properties p = new Properties();
-            p.load(isr);
-            p.forEach((k,v)-> authorizations.put((String)k, decodeAuth((String)v)));
+            final byte[] data = IOStreamUtil.copyIStoByteArray(is);
+
+            final String json = new String(data, StandardCharsets.UTF_8);
+
+            final VncList list = (VncList)Json.readJson(json, false);
+            list.forEach(e -> {
+                final VncMap entry = (VncMap)e;
+                final String user = ((VncString)entry.get(new VncString("user"))).getValue();
+                final VncMap auth = (VncMap)entry.get(new VncString("auth"));
+                final String pwHash = ((VncString)auth.get(new VncString("pw-hash"))).getValue();
+                final boolean admin = ((VncBoolean)auth.get(new VncString("admin"))).getValue();
+                authorizations.put(user, new Auth(pwHash,  admin));
+            });
 
             // automatically active after loading credentials
             activate(true);
@@ -142,10 +159,23 @@ public class Authenticator {
     public void save(final OutputStream os) {
         Objects.requireNonNull(os);
 
-        try (OutputStreamWriter osr = new OutputStreamWriter(os, Charset.forName("UTF-8"))) {
-            final Properties p = new Properties();
-            authorizations.forEach((k,v) -> p.setProperty(k, encodeAuth(v)));
-            p.store(osr, "IPC user credentials");
+        try (OutputStreamWriter osr = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+            VncList list = VncList.empty();
+
+            for(Entry<String, Auth> e : authorizations.entrySet()) {
+                VncHashMap map = VncHashMap.of(
+                                    new VncString("user"),
+                                    new VncString(e.getKey()),
+                                    new VncString("auth"),
+                                    VncHashMap.of(
+                                        new VncString("pw-hash"),
+                                        new VncString(e.getValue().pwHash),
+                                        new VncString("admin"),
+                                        VncBoolean.of(e.getValue().adminRole)));
+                list = list.addAtEnd(map);
+            }
+            final String json = Json.writeJson(list, true);
+            osr.write(json);
             osr.flush();
         }
         catch(IOException ex) {
@@ -177,25 +207,6 @@ public class Authenticator {
 
     public static boolean isAdminRole(final String role) {
         return ADMIN_ROLE.equals(role);
-    }
-
-    private static String encodeAuth(final Auth auth) {
-        return String.format(
-                "%s::%s",
-                auth.adminRole ? ADMIN_ROLE : "-",
-                auth.pwHash);
-    }
-
-    private static Auth decodeAuth(final String auth) {
-        final int pos = auth.indexOf("::");
-        if (pos < 0) {
-            return new Auth(auth, false);
-        }
-        else {
-            final String role = auth.substring(0, pos);
-            final String pwHash = auth.substring(pos + "::".length());
-            return new Auth(pwHash, isAdminRole(role));
-        }
     }
 
     private static class Auth {
