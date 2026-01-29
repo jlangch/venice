@@ -317,7 +317,7 @@ public class Server implements AutoCloseable {
      *                      for topic names or if the
      */
     public void createTopic(final String topicName) {
-        topicManager.addTopic(topicName);
+        topicManager.createTopic(topicName);
     }
 
     /**

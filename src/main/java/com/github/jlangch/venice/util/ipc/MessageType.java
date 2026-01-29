@@ -39,6 +39,8 @@ public enum MessageType {
     CREATE_TEMP_QUEUE(31),
     REMOVE_QUEUE(32),
     STATUS_QUEUE(33),
+    CREATE_TOPIC(36),
+    REMOVE_TOPIC(37),
 
     CLIENT_CONFIG(40),
 

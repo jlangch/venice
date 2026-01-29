@@ -36,6 +36,8 @@ public enum ResponseStatus {
     QUEUE_FULL(12),
     QUEUE_ACCESS_INTERRUPTED(13),
 
+    TOPIC_NOT_FOUND(15),
+
     DIFFIE_HELLMAN_ACK(20),
     DIFFIE_HELLMAN_NAK(21),
 

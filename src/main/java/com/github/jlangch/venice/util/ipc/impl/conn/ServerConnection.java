@@ -25,12 +25,14 @@ import static com.github.jlangch.venice.util.ipc.MessageType.AUTHENTICATION;
 import static com.github.jlangch.venice.util.ipc.MessageType.CLIENT_CONFIG;
 import static com.github.jlangch.venice.util.ipc.MessageType.CREATE_QUEUE;
 import static com.github.jlangch.venice.util.ipc.MessageType.CREATE_TEMP_QUEUE;
+import static com.github.jlangch.venice.util.ipc.MessageType.CREATE_TOPIC;
 import static com.github.jlangch.venice.util.ipc.MessageType.DIFFIE_HELLMAN_KEY_REQUEST;
 import static com.github.jlangch.venice.util.ipc.MessageType.HEARTBEAT;
 import static com.github.jlangch.venice.util.ipc.MessageType.OFFER;
 import static com.github.jlangch.venice.util.ipc.MessageType.POLL;
 import static com.github.jlangch.venice.util.ipc.MessageType.PUBLISH;
 import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_QUEUE;
+import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_TOPIC;
 import static com.github.jlangch.venice.util.ipc.MessageType.REQUEST;
 import static com.github.jlangch.venice.util.ipc.MessageType.RESPONSE;
 import static com.github.jlangch.venice.util.ipc.MessageType.STATUS_QUEUE;
@@ -47,6 +49,7 @@ import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_ACCESS_INT
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_EMPTY;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_FULL;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.QUEUE_NOT_FOUND;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.TOPIC_NOT_FOUND;
 
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -214,6 +217,8 @@ public class ServerConnection implements IPublisher, Runnable {
         handlers.put(CREATE_QUEUE,               this::handleCreateQueueRequest);
         handlers.put(CREATE_TEMP_QUEUE,          this::handleCreateTemporaryQueueRequest);
         handlers.put(REMOVE_QUEUE,               this::handleRemoveQueueRequest);
+        handlers.put(CREATE_TOPIC,               this::handleCreateTopicRequest);
+        handlers.put(REMOVE_TOPIC,               this::handleRemoveTopicRequest);
         handlers.put(STATUS_QUEUE,               this::handleStatusQueueRequest);
         handlers.put(CLIENT_CONFIG,              this::handleClientConfigRequest);
         handlers.put(DIFFIE_HELLMAN_KEY_REQUEST, this::handleDiffieHellmanKeyExchange);
@@ -439,8 +444,17 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleSubscribeToTopic(final Message request) {
+        final String topicName = request.getTopicName();
+
+        if (!topicManager.existsTopic(topicName)) {
+            return createTextResponse(
+                    request,
+                    TOPIC_NOT_FOUND,
+                    "The topic " + topicName + " does not exist! Create it first!");
+        }
+
         // register subscription
-        subscriptions.addSubscription(request.getTopicName(), this);
+        subscriptions.addSubscription(topicName, this);
 
         logInfo(String.format("Subscribed to topic: %s.", request.getTopicName()));
 
@@ -449,8 +463,17 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleUnsubscribeFromTopic(final Message request) {
+        final String topicName = request.getTopicName();
+
+        if (!topicManager.existsTopic(topicName)) {
+            return createTextResponse(
+                    request,
+                    TOPIC_NOT_FOUND,
+                    "The topic " + topicName + " does not exist! Create it first!");
+        }
+
         // unregister subscription
-        subscriptions.removeSubscription(request.getTopicName(), this);
+        subscriptions.removeSubscription(topicName, this);
 
         logInfo(String.format("Unsubscribed from topic: %s.", request.getTopicName()));
 
@@ -459,6 +482,15 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handlePublishToTopic(final Message request) {
+        final String topicName = request.getTopicName();
+
+        if (!topicManager.existsTopic(topicName)) {
+            return createTextResponse(
+                    request,
+                    TOPIC_NOT_FOUND,
+                    "The topic " + topicName + " does not exist! Create it first!");
+        }
+
         // asynchronously publish to all subscriptions
         subscriptions.publish(request);
 
@@ -697,6 +729,52 @@ public class ServerConnection implements IPublisher, Runnable {
                                         .toJson(false);
 
         return createJsonResponse(request, OK, response);
+    }
+
+    private Message handleCreateTopicRequest(final Message request) {
+        if (!"application/json".equals(request.getMimetype())) {
+            return createNonJsonRequestResponse(request);
+        }
+
+        if (!adminAuthorization) {
+            return createNoPermissionResponse(
+                    request,
+                    "Clients are not permitted to create topics!");
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String topicName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
+
+        topicManager.createTopic(topicName);
+
+        return createOkTextResponse(
+                request,
+                String.format("Request %s: Topic %s created.", request.getType(), topicName));
+    }
+
+    private Message handleRemoveTopicRequest(final Message request) {
+        if (!"application/json".equals(request.getMimetype())) {
+            return createNonJsonRequestResponse(request);
+        }
+
+        if (!adminAuthorization) {
+            return createNoPermissionResponse(
+                    request,
+                    "Clients are not permitted to remove topics!");
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String topicName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
+
+        topicManager.removeTopic(topicName);
+
+        logInfo(String.format("Removed topic %s.", topicName));
+
+        return createOkTextResponse(
+                request,
+                String.format(
+                    "Request %s: Topic %s removed.",
+                    request.getType(), topicName));
     }
 
     private Message handleClientConfigRequest(final Message request) {

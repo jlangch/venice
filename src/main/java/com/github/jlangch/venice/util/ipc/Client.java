@@ -786,7 +786,36 @@ public class Client implements Cloneable, AutoCloseable {
      *                      for topic names or if the
      */
     public void createTopic(final String topicName) {
-        throw new IpcException("Not yet implemented");
+        if (StringUtil.isBlank(topicName)) {
+            throw new IllegalArgumentException("A topic name must not be blank");
+        }
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", topicName)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.CREATE_TOPIC,
+                                ResponseStatus.NULL,
+                                false,
+                                false,
+                                false,
+                                1_000L,
+                                "",
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() != ResponseStatus.OK) {
+            throw new IpcException(
+                    "Failed to create topic '" + topicName + "'! Reason: " + response.getText());
+        }
     }
 
     /**
@@ -795,7 +824,36 @@ public class Client implements Cloneable, AutoCloseable {
      * @param topicName a topic name
      */
     public void removeTopic(final String topicName) {
-        throw new IpcException("Not yet implemented");
+        if (StringUtil.isBlank(topicName)) {
+            throw new IllegalArgumentException("A topic name must not be blank");
+        }
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", topicName)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.REMOVE_TOPIC,
+                                ResponseStatus.NULL,
+                                false,
+                                false,
+                                false,
+                                1_000L,
+                                "",
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() != ResponseStatus.OK) {
+            throw new IpcException(
+                    "Failed to remove topic '" + topicName + "'! Reason: " + response.getText());
+        }
     }
 
     /**

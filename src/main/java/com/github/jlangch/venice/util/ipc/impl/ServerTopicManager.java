@@ -30,7 +30,7 @@ public class ServerTopicManager {
     public ServerTopicManager() {
     }
 
-    public void addTopic(final String topicName) {
+    public void createTopic(final String topicName) {
         TopicValidator.validateTopicName(topicName);
         topics.putIfAbsent(topicName, "");
     }

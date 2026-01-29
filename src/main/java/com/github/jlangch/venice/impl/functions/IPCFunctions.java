@@ -3202,7 +3202,7 @@ public class IPCFunctions {
                     }
                     return Nil;
                 }
-                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                else if (Types.isVncJavaObject(args.first(), Client.class)) {
                     final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
@@ -3362,7 +3362,7 @@ public class IPCFunctions {
                     server.removeQueue(name);
                     return Nil;
                 }
-                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                else if (Types.isVncJavaObject(args.first(), Client.class)) {
                     final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     client.removeQueue(name);
@@ -3423,7 +3423,7 @@ public class IPCFunctions {
                     final String name = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(server.existsQueue(name));
                 }
-                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                else if (Types.isVncJavaObject(args.first(), Client.class)) {
                     final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(client.existsQueue(name));
@@ -3549,7 +3549,7 @@ public class IPCFunctions {
                     server.createTopic(name);
                     return Nil;
                 }
-                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                else if (Types.isVncJavaObject(args.first(), Client.class)) {
                     final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     client.createTopic(name);
@@ -3599,7 +3599,7 @@ public class IPCFunctions {
                     server.removeTopic(name);
                     return Nil;
                 }
-                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                else if (Types.isVncJavaObject(args.first(), Client.class)) {
                     final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     client.removeTopic(name);
@@ -3647,7 +3647,7 @@ public class IPCFunctions {
                     final String name = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(server.existsQueue(name));
                 }
-                else  if (Types.isVncJavaObject(args.first(), Client.class)) {
+                else if (Types.isVncJavaObject(args.first(), Client.class)) {
                     final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
                     final String name = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(client.existsTopic(name));
