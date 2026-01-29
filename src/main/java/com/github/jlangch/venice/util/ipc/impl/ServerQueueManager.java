@@ -238,7 +238,7 @@ public class ServerQueueManager {
 
         status.put("name",      queueName);
         status.put("exists",    q != null);
-        status.put("type",      q == null ? null : q.type().name());
+        status.put("type",      q == null ? "unknown" : q.type().name());
         status.put("temporary", q != null && q.isTemporary());
         status.put("durable",   q != null && q.isDurable());
         status.put("capacity",  q == null ? 0L : (long)q.capacity());
