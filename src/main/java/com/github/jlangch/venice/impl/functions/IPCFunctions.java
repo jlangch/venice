@@ -3147,23 +3147,34 @@ public class IPCFunctions {
                         "| type t     | Optional queue type `:bounded` or `:circular`. Defaults to `:bounded`.|\n" +
                         "| durable b  | If `true` create a durable queue (if the server supports it), else create a nondurable queue. Defaults to `false`.|")
                     .examples(
-                        "(do                                                       \n" +
-                        "  (try-with [server  (ipc/server 33333)                   \n" +
-                        "             client1 (ipc/client 33333)                   \n" +
-                        "             client2 (ipc/client 33333)]                  \n" +
-                        "    (let [order  (ipc/venice-message                      \n" +
-                        "                     \"1\"                                \n" +
-                        "                     :order                               \n" +
-                        "                     {:item \"espresso\", :count 2})]     \n" +
-                        "      (ipc/create-queue server :orders 100)               \n" +
-                        "      (->> (ipc/message->json true order)                 \n" +
-                        "           (println \"ORDER:\"))                          \n" +
-                        "      (->> (ipc/offer client1 :orders 300 order)          \n" +
-                        "           (ipc/message->json true)                       \n" +
-                        "           (println \"OFFERED:\"))                        \n" +
-                        "      (->> (ipc/poll client2 :orders 300)                 \n" +
-                        "           (ipc/message->json true)                       \n" +
-                        "           (println \"POLLED:\")))))                      ")
+                        "(try-with [server  (ipc/server 33333)                   \n" +
+                        "           client1 (ipc/client 33333)                   \n" +
+                        "           client2 (ipc/client 33333)]                  \n" +
+                        "  (let [order  (ipc/venice-message                      \n" +
+                        "                   \"1\"                                \n" +
+                        "                   :order                               \n" +
+                        "                   {:item \"espresso\", :count 2})]     \n" +
+                        "    (ipc/create-queue server :orders 100)               \n" +
+                        "    (->> (ipc/message->json true order)                 \n" +
+                        "         (println \"ORDER:\"))                          \n" +
+                        "    (->> (ipc/offer client1 :orders 300 order)          \n" +
+                        "         (ipc/message->json true)                       \n" +
+                        "         (println \"OFFERED:\"))                        \n" +
+                        "    (->> (ipc/poll client2 :orders 300)                 \n" +
+                        "         (ipc/message->json true)                       \n" +
+                        "         (println \"POLLED:\"))))                       ",
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\" :admin)  \n" +
+                        "  (try-with [server (ipc/server 33333                \n" +
+                        "                                :encrypt true        \n" +
+                        "                                :authenticator auth) \n" +
+                        "             client (ipc/client 33333                \n" +
+                        "                                :user-name \"tom\"   \n" +
+                        "                                :password \"123\")]  \n" +
+                        "    (ipc/create-queue client :orders 100)            \n" +
+                        "    ;; ...                                           \n" +
+                        "    ))                                               ")
+
                     .seeAlso(
                         "ipc/create-temporary-queue",
                         "ipc/remove-queue",
@@ -3342,7 +3353,18 @@ public class IPCFunctions {
                         "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
                         "  (ipc/create-queue server :orders 100)              \n" +
                         "  ;; ...                                             \n" +
-                        "  (ipc/remove-queue server :orders))                 ")
+                        "  (ipc/remove-queue server :orders))                 ",
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\" :admin)  \n" +
+                        "  (try-with [server (ipc/server 33333                \n" +
+                        "                                :encrypt true        \n" +
+                        "                                :authenticator auth) \n" +
+                        "             client (ipc/client 33333                \n" +
+                        "                                :user-name \"tom\"   \n" +
+                        "                                :password \"123\")]  \n" +
+                        "    (ipc/create-queue client :orders 100)            \n" +
+                        "    ;; ...                                           \n" +
+                        "    (ipc/remove-queue client :orders)))             ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
@@ -3393,7 +3415,18 @@ public class IPCFunctions {
                         "(try-with [server (ipc/server 33333)]      \n" +
                         "  (ipc/create-queue server :orders 100)    \n" +
                         "  ;; ...                                   \n" +
-                        "  (ipc/exists-queue? server :orders))      ")
+                        "  (ipc/exists-queue? server :orders))      ",
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\" :admin)  \n" +
+                        "  (try-with [server (ipc/server 33333                \n" +
+                        "                                :encrypt true        \n" +
+                        "                                :authenticator auth) \n" +
+                        "             client (ipc/client 33333                \n" +
+                        "                                :user-name \"tom\"   \n" +
+                        "                                :password \"123\")   \n" +
+                        "    (ipc/create-queue client :orders 100)            \n" +
+                        "    ;; ...                                           \n" +
+                        "    (ipc/exists-queue? client :orders)))             ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",
@@ -3451,7 +3484,18 @@ public class IPCFunctions {
                         "           client (ipc/client 33333)]         \n" +
                         "   (ipc/create-queue server :orders 100)      \n" +
                         "   ;; ...                                     \n" +
-                        "   (ipc/queue-status server :orders))         ")
+                        "   (ipc/queue-status server :orders))         ",
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\" :admin)  \n" +
+                        "  (try-with [server (ipc/server 33333                \n" +
+                        "                                :encrypt true        \n" +
+                        "                                :authenticator auth) \n" +
+                        "             client (ipc/client 33333                \n" +
+                        "                                :user-name \"tom\"   \n" +
+                        "                                :password \"123\")]  \n" +
+                        "    (ipc/create-queue client :orders 100)            \n" +
+                        "    ;; ...                                           \n" +
+                        "    (ipc/exists-status? client :orders)))             ")
                     .seeAlso(
                         "ipc/create-queue",
                         "ipc/create-temporary-queue",

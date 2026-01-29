@@ -52,8 +52,8 @@ pluggable handler function computes the response from the request.
 
   (try-with [server (ipc/server 33333 echo-handler)
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (->> (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
          (ipc/send client)
          (ipc/message->json true)
          (println "RESPONSE:"))))
@@ -66,7 +66,7 @@ pluggable handler function computes the response from the request.
 (do
   (defn handler [m]
     (let [topic      (ipc/message-field m :topic)
-          _          (assert (= "add" topic))
+          _          (assert (= :add topic))
           request-id (ipc/message-field m :request-id)
           request    (ipc/message-field m :payload-venice)
           result     {:z (+ (:x request) (:y request))}]
@@ -74,7 +74,7 @@ pluggable handler function computes the response from the request.
 
   (try-with [server (ipc/server 33333 handler)
              client (ipc/client "localhost" 33333)]
-    (->> (ipc/venice-message "1" "add" {:x 100 :y 200})
+    (->> (ipc/venice-message "1" :add {:x 100 :y 200})
          (ipc/send client)
          (ipc/message->json true)
          (println))))
@@ -94,8 +94,8 @@ pluggable handler function computes the response from the request.
 
   (try-with [server (ipc/server 33333 echo-handler)
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (let [msg       (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (let [msg       (ipc/plain-text-message "1" :test "hello")
           response  (ipc/send-async client msg)]  ;; returns a future
       (->> (deref response 1_000 :timeout)  ;; deref the response future with 1s timeout
            (ipc/message->json true)
@@ -116,9 +116,9 @@ pluggable handler function computes the response from the request.
 
   (try-with [server (ipc/server 33333 handler)
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text messages: requestId="1" and "2", topic="test", payload="hello"
-    (ipc/send-oneway client (ipc/plain-text-message "1" "test" "hello"))
-    (ipc/send-oneway client (ipc/plain-text-message "2" "test" "hello"))))
+    ;; send a plain text messages: requestId="1" and "2", topic=:test, payload="hello"
+    (ipc/send-oneway client (ipc/plain-text-message "1" :test "hello"))
+    (ipc/send-oneway client (ipc/plain-text-message "2" :test "hello"))))
 ```
 
 
@@ -143,8 +143,8 @@ messages to/from queues but a message is delivered to one client only.
     (ipc/create-queue server :orders 100)
 
     ;; client1 offers an order Venice data message to the queue
-    ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
-    (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+    ;;   requestId="1" and "2", topic=:order, payload={:item "espresso", :count 2}
+    (let [order (ipc/venice-message "1" :order {:item "espresso", :count 2})]
       (println "ORDER:" (ipc/message->json true order))
 
       ;; client1 offers the order
@@ -173,8 +173,8 @@ messages to/from queues but a message is delivered to one client only.
     (ipc/create-queue server :orders 100)
 
     ;; client1 offers order Venice data message to the queue
-    ;;   requestId="1" and "2", topic="order", payload={:item "espresso", :count 2}
-    (let [order (ipc/venice-message "1" "order" {:item "espresso", :count 2})]
+    ;;   requestId="1" and "2", topic=:order, payload={:item "espresso", :count 2}
+    (let [order (ipc/venice-message "1" :order {:item "espresso", :count 2})]
       (println "ORDER:" (ipc/message->json true order))
 
       ;; client1 offers the order
@@ -362,8 +362,8 @@ close the IPC client.
     (ipc/subscribe client1 [:test] client-subscribe-handler)
 
     ;; client2 publishes a plain text message: 
-    ;;   requestId="1", topic="test", payload="hello"
-    (let [m (ipc/plain-text-message "1" "test" "hello")]
+    ;;   requestId="1", topic=:test, payload="hello"
+    (let [m (ipc/plain-text-message "1" :test "hello")]
       (println "PUBLISHING:" (ipc/message->json true m))
       (->> (ipc/publish client2 m)
            (ipc/message->json true)
@@ -390,8 +390,8 @@ close the IPC client.
     (ipc/subscribe client1 [:test] client-subscribe-handler)
 
     ;; client2 publishes a plain text message: 
-    ;;   requestId="1", topic="test", payload="hello"
-    (let [m (ipc/plain-text-message "1" "test" "hello")]
+    ;;   requestId="1", topic=:test, payload="hello"
+    (let [m (ipc/plain-text-message "1" :test "hello")]
       (println "PUBLISHING:" (ipc/message->json true m))
       (-<> (ipc/publish-async client2 m)   ;; returns a future
            (deref <> 1_000 :timeout)
@@ -422,16 +422,16 @@ authorized users/applications can access the messaging infrastructure.
     (println "REQUEST:  " (ipc/message->map m))
     m)
 
-  (let [a (ipc/authenticator)]                ;; create an authenticator
-    (ipc/add-credentials a "tom" "3,kio")     ;; add test credentials
+  (let [auth (ipc/authenticator)]                ;; create an authenticator
+    (ipc/add-credentials auth "tom" "3,kio")     ;; add test credentials
     
     (try-with [server (ipc/server 33333 echo-handler
                                   :encrypt true         ;; enable encryption
-                                  :authenticator a)     ;; pass the authenticator to the server
+                                  :authenticator auth)  ;; pass the authenticator to the server
                client (ipc/client "localhost" 33333
                                   :user-name "tom"
                                   :password "3,kio")]   ;; client connection with the credentials
-      (->> (ipc/plain-text-message "1" "test" "hello")
+      (->> (ipc/plain-text-message "1" :test "hello")
            (ipc/send client)
            (ipc/message->map)
            (println "RESPONSE: ")))))
@@ -442,24 +442,24 @@ authorized users/applications can access the messaging infrastructure.
 Create an authenticator and store it to a file for later use:
 
 ```clojure
-(let [ac (ipc/authenticator)]
-  (ipc/add-credentials ac "tf" "3-kio")
-  (ipc/add-credentials ac "ap" "zu*67")
-  (ipc/store-authenticator ac (io/file "./ipc.cred")))
+(let [auth (ipc/authenticator)]
+  (ipc/add-credentials auth "tom" "3-kio")
+  (ipc/add-credentials auth "max" "zu*67")
+  (ipc/store-authenticator auth (io/file "./ipc.cred")))
 ```
 
 Load the authenticator from a file:
 
 ```clojure
 (do
-  (let [ac (ipc/load-authenticator (io/file "./ipc.cred"))]
+  (let [auth (ipc/load-authenticator (io/file "./ipc.cred"))]
     (try-with [server (ipc/server 33333
                                   :encrypt true
-                                  :authenticator ac)
+                                  :authenticator auth)
                client (ipc/client "localhost" 33333
-                                  :user-name "tf"
+                                  :user-name "tom"
                                   :password "3-kio")]
-      (->> (ipc/plain-text-message "1" "test" "hello")
+      (->> (ipc/plain-text-message "1" :test "hello")
            (ipc/send client)
            (ipc/message->map)
            (println "RESPONSE: ")))))
@@ -658,8 +658,8 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
   ;; transparently compress/decompress messages with a size > 1KB
   (try-with [server (ipc/server 33333 echo-handler :compress-cutoff-size :1KB)
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (->> (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
          (ipc/send client)
          (ipc/message->json true)
          (println "RESPONSE:"))))
@@ -689,8 +689,8 @@ exchanged using the Diffie-Hellman key exchange algorithm.
   ;; transparently encrypt messages
   (try-with [server (ipc/server 33333 echo-handler :encrypt true)
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (->> (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
          (ipc/send client)
          (ipc/message->json true)
          (println "RESPONSE:"))))
@@ -713,10 +713,10 @@ Create through 'server'
     (ipc/create-queue server "queue/2" 100 :circular)
 
     (ipc/offer client "queue/1" 300 
-               (ipc/plain-text-message "1" "test" "hello"))
+               (ipc/plain-text-message "1" :test "hello"))
 
     (ipc/offer client "queue/2" 300 
-               (ipc/plain-text-message "2" "test" "hello"))))
+               (ipc/plain-text-message "2" :test "hello"))))
 ```
 
 
@@ -738,9 +738,9 @@ Create through 'server'
                                 :write-ahead-log-compress true  ;; compress WAL entries
                                 :write-ahead-log-compact true)  ;; compact WAL at startup
              client (ipc/client 33333)]
-    (ipc/create-queue server "queue/1" 100 :bounded true)
-    (ipc/offer client "queue/1" 300 
-               (ipc/plain-text-message "1" "test" "hello"))
+    (ipc/create-queue server :queue/1 100 :bounded true)
+    (ipc/offer client :queue/1 300 
+               (ipc/plain-text-message "1" :test "hello"))
     (finally (io/delete-file-tree wal-dir))))
 ```
 
@@ -756,7 +756,7 @@ as long as the client lives!
              client (ipc/client 33333)]
     (let [queue-name (ipc/create-temporary-queue client 100)]
       (ipc/offer client queue-name 300 
-                 (ipc/plain-text-message "1" "test" "hello")))))
+                 (ipc/plain-text-message "1" :test "hello")))))
 ```
 
 
@@ -769,9 +769,9 @@ as long as the client lives!
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (ipc/create-queue server "queue/1" 100)
+    (ipc/create-queue server :queue/1 100)
     ;; ...
-    (ipc/remove-queue server "queue/1")))
+    (ipc/remove-queue server :queue/1)))
 ```
 
 
@@ -781,9 +781,9 @@ as long as the client lives!
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (ipc/create-queue server "queue/1" 100)
+    (ipc/create-queue server :queue/1 100)
     ;; ...
-    (ipc/exists-queue? server "queue/1")))
+    (ipc/exists-queue? server :queue/1)))
 ```
 
 
@@ -795,12 +795,12 @@ for bounded or circular queues
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (ipc/create-queue server "queue/1" 100)
+    (ipc/create-queue server :queue/1 100)
      
     (ipc/offer client "queue/1" 300 
-                 (ipc/plain-text-message "1" "test" "hello"))
+                 (ipc/plain-text-message "1" :test "hello"))
     ;; ...
-    (ipc/queue-status client "queue/1")))
+    (ipc/queue-status client :queue/1)))
 ```
 
 for temporary queues
@@ -811,7 +811,7 @@ for temporary queues
              client (ipc/client 33333)]
     (let [queue-name (ipc/create-temporary-queue client 100)]
       (ipc/offer client queue-name 300 
-                 (ipc/plain-text-message "1" "test" "hello"))
+                 (ipc/plain-text-message "1" :test "hello"))
       ;; ...
       (ipc/queue-status client queue-name))))
 ```
@@ -961,8 +961,8 @@ application/json
 (do
   (try-with [server (ipc/server 33333 (fn [m] m))
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (->> (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
          (ipc/send client)
          (ipc/message->json true)    ;; formatted JSON enabled
          (println "RESPONSE:"))))
@@ -975,8 +975,8 @@ application/json
 (do
   (try-with [server (ipc/server 33333 (fn [m] m))
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (->> (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
          (ipc/send client)
          (ipc/message->map)
          (println "RESPONSE:"))))
@@ -989,8 +989,8 @@ application/json
 (do
   (try-with [server (ipc/server 33333 (fn [m] m))
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (->> (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
          (ipc/send client)
          (ipc/response-ok?)
          (println "RESPONSE OK:"))))
@@ -1003,8 +1003,8 @@ application/json
 (do
   (try-with [server (ipc/server 33333 (fn [m] m))
              client (ipc/client "localhost" 33333)]
-    ;; send a plain text message: requestId="1", topic="test", payload="hello"
-    (->> (ipc/plain-text-message "1" "test" "hello")
+    ;; send a plain text message: requestId="1", topic=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
          (ipc/send client)
          (ipc/response-err?)
          (println "RESPONSE ERR:"))))
@@ -1022,17 +1022,17 @@ application/json
   (try-with [server (ipc/server 33333)
              client1 (ipc/client "localhost" 33333)
              client2 (ipc/client "localhost" 33333)]
-    (ipc/create-queue server "orders" 1_000)
+    (ipc/create-queue server :orders 1_000)
 
     ;; client1 offers an new order to the queue (expires within 5 minutes)
-    (let [order (ipc/venice-message "1" "order" 
+    (let [order (ipc/venice-message "1" :order 
                                     {:item "espresso", :count 2} 
                                     false  ;; nondurable
                                     5 :minutes)]
-      (ipc/offer client1 "orders" 300 order))
+      (ipc/offer client1 :orders 300 order))
 
     ;; client2 polls next order from the queue
-    (let [m (ipc/poll client2 "orders" 300)]
+    (let [m (ipc/poll client2 :orders 300)]
       ;; Response message expired?
       (println "RESPONSE EXPIRED:" (ipc/message-expired? m)))))
 ```
