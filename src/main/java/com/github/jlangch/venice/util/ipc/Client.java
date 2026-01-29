@@ -307,7 +307,7 @@ public class Client implements Cloneable, AutoCloseable {
      *
      * <p>Multiple subscriptions with different handlers are supported.
      *
-     * @param topics  a set of topics
+     * @param topicName  a topic name
      * @param handler the subscription message handler
      * @return the response for the subscribe
      */
