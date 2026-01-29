@@ -596,7 +596,7 @@ public class ServerConnection implements IPublisher, Runnable {
         if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
-                    "Clients are not permitted to create queues!");
+                    "Client is not permitted to create queues!");
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -672,7 +672,7 @@ public class ServerConnection implements IPublisher, Runnable {
         if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
-                    "Clients are not permitted to remove queues!");
+                    "Client is not permitted to remove queues!");
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -699,7 +699,7 @@ public class ServerConnection implements IPublisher, Runnable {
         if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
-                    "Clients are not permitted to request queue status!");
+                    "Client is not permitted to request queue status!");
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -739,7 +739,7 @@ public class ServerConnection implements IPublisher, Runnable {
         if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
-                    "Clients are not permitted to create topics!");
+                    "Client is not permitted to create topics!");
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -760,7 +760,7 @@ public class ServerConnection implements IPublisher, Runnable {
         if (!adminAuthorization) {
             return createNoPermissionResponse(
                     request,
-                    "Clients are not permitted to remove topics!");
+                    "Client is not permitted to remove topics!");
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);

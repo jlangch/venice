@@ -710,6 +710,11 @@ exchanged using the Diffie-Hellman key exchange algorithm.
 
 ## Managing Queues
 
+> [!NOTE]
+> All queue management functions require and 'admin' user when called
+> from a client node!
+
+
 #### Create Bounded and Circular Queues
 
 Create through 'server'
@@ -718,6 +723,7 @@ Create through 'server'
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
+
     (ipc/create-queue server "queue/1" 100 :bounded)
     (ipc/create-queue server "queue/2" 100 :circular)
 
@@ -726,6 +732,32 @@ Create through 'server'
 
     (ipc/offer client "queue/2" 300 
                (ipc/plain-text-message "2" :test "hello"))))
+```
+
+
+Create through 'client' (requires 'admin' user)
+
+```clojure
+(do
+  (let [auth (ipc/authenticator)]
+    (ipc/add-credentials auth "max" "756")         ;; normal user
+    (ipc/add-credentials auth "tom" "123" :admin)  ;; admin user
+
+    (try-with [server (ipc/server 33333 
+                                  :encrypt true 
+                                  :authenticator auth)
+               client (ipc/client 33333
+                                  :user-name "tom"
+                                  :password "123")]
+
+      (ipc/create-queue client "queue/1" 100 :bounded)
+      (ipc/create-queue client "queue/2" 100 :circular)
+
+      (ipc/offer client "queue/1" 300 
+                 (ipc/plain-text-message "1" :test "hello"))
+
+      (ipc/offer client "queue/2" 300 
+                 (ipc/plain-text-message "2" :test "hello")))))
 ```
 
 
