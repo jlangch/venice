@@ -51,7 +51,7 @@ public class AuthenticatorTest {
     }
 
     @Test
-    public void test_credentials() {
+    public void test_add_credentials() {
         final Authenticator a = new Authenticator(false);
 
         assertEquals(0, a.size());
@@ -77,6 +77,35 @@ public class AuthenticatorTest {
         a.clearCredentials();
 
         assertEquals(0, a.size());
+    }
+
+    @Test
+    public void test_add_remove_clear_credentials() {
+        final Authenticator a = new Authenticator(true);
+
+        assertEquals(0, a.size());
+
+        a.addCredentials("u1", "123", true);
+        a.addCredentials("u2", "456", false);
+
+        assertEquals(2, a.size());
+
+        assertTrue(a.isAuthenticated("u1", "123"));
+        assertTrue(a.isAuthenticated("u2", "456"));
+
+        a.removeCredentials("u2");
+
+        assertEquals(1, a.size());
+
+        assertTrue(a.isAuthenticated("u1", "123"));
+        assertFalse(a.isAuthenticated("u2", "456"));
+
+        a.clearCredentials();
+
+        assertEquals(0, a.size());
+
+        assertFalse(a.isAuthenticated("u1", "123"));
+        assertFalse(a.isAuthenticated("u2", "456"));
     }
 
     @Test

@@ -73,6 +73,8 @@ public class IpcSection implements ISectionBuilder {
         auth.addItem(diBuilder.getDocItem("ipc/load-authenticator", false));
         auth.addItem(diBuilder.getDocItem("ipc/store-authenticator", false));
         auth.addItem(diBuilder.getDocItem("ipc/add-credentials", false));
+        auth.addItem(diBuilder.getDocItem("ipc/remove-credentials", false));
+        auth.addItem(diBuilder.getDocItem("ipc/clear-credentials", false));
 
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);

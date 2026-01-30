@@ -59,6 +59,7 @@ public class Authenticator {
         this.active = activate;
     }
 
+
     public boolean isActive() {
         return active;
     }
@@ -82,12 +83,12 @@ public class Authenticator {
         Objects.requireNonNull(userName);
         Objects.requireNonNull(password);
 
-        if (userName.length() > MAX_LEN) {
-            throw new IpcException("A user name is limited to " + MAX_LEN + " characters");
+        if (userName.length() > MAX_LEN_USER) {
+            throw new IpcException("A user name is limited to " + MAX_LEN_USER + " characters");
         }
 
-        if (password.length() > MAX_LEN) {
-            throw new IpcException("A password is limited to " + MAX_LEN + " characters");
+        if (password.length() > MAX_LEN_PWD) {
+            throw new IpcException("A password is limited to " + MAX_LEN_PWD + " characters");
         }
 
         authorizations.put(userName, new Auth(pwEncoder.encode(password), adminRole));
@@ -118,7 +119,6 @@ public class Authenticator {
         final Auth auth = authorizations.get(userName);
         return auth != null && pwEncoder.verify(password, auth.pwHash);
     }
-
 
     public boolean isAdmin(final String userName) {
         if (!active || userName == null) {
@@ -239,7 +239,8 @@ public class Authenticator {
 
     public final static String ADMIN_ROLE = "admin";
 
-    private final static int MAX_LEN = 150;
+    private final static int MAX_LEN_USER = 100;
+    private final static int MAX_LEN_PWD = 50;
 
     private volatile boolean active;
 

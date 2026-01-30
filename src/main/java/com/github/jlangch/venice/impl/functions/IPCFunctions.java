@@ -2011,6 +2011,8 @@ public class IPCFunctions {
                         "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
                         "  (ipc/add-credentials auth \"max\" \"456\" :admin)) ")
                     .seeAlso(
+                        "ipc/remove-credentials",
+                        "ipc/clear-credentials",
                         "ipc/authenticator",
                         "ipc/load-authenticator",
                         "ipc/store-authenticator")
@@ -2040,6 +2042,80 @@ public class IPCFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+    public static VncFunction ipc_remove_credentials =
+        new VncFunction(
+                "ipc/remove-credentials",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/remove-credentials authenticator user-name)")
+                    .doc(
+                        "Remove user credentials from an authenticator.")
+                    .examples(
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
+                        "  (ipc/remove-credentials auth \"tom\"))             ")
+                    .seeAlso(
+                        "ipc/add-credentials",
+                        "ipc/clear-credentials",
+                        "ipc/authenticator",
+                        "ipc/load-authenticator",
+                        "ipc/store-authenticator")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
+                final String userName = Coerce.toVncString(args.second()).toString();
+
+                authenticator.removeCredentials(userName);
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_clear_credentials =
+        new VncFunction(
+                "ipc/clear-credentials",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/clear-credentials authenticator)")
+                    .doc(
+                        "Clears all user credentials from an authenticator.")
+                    .examples(
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
+                        "  (ipc/clear-credentials auth))                      ")
+                    .seeAlso(
+                        "ipc/add-credentials",
+                        "ipc/remove-credentials",
+                        "ipc/authenticator",
+                        "ipc/load-authenticator",
+                        "ipc/store-authenticator")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
+
+                authenticator.clearCredentials();
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
 
     // ------------------------------------------------------------------------
@@ -3819,6 +3895,8 @@ public class IPCFunctions {
                     .add(ipc_load_authenticator)
                     .add(ipc_store_authenticator)
                     .add(ipc_add_credentials)
+                    .add(ipc_remove_credentials)
+                    .add(ipc_clear_credentials)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)
