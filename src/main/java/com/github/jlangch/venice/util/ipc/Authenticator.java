@@ -68,6 +68,17 @@ public class Authenticator {
         return authorizations.size();
     }
 
+    public void clear() {
+        clearCredentials();
+        clearQueueAcl();
+        clearTopicAcl();
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Credentials
+    // ------------------------------------------------------------------------
+
     public void addCredentials(
             final String userName,
             final String password
@@ -129,6 +140,70 @@ public class Authenticator {
         return auth != null && auth.adminRole;
     }
 
+
+
+    // ------------------------------------------------------------------------
+    // Queue ACL
+    // ------------------------------------------------------------------------
+
+    public void clearQueueAcl() {
+    }
+
+    public void setQueueAcl(
+            final String queueName,
+            final AccessMode accessMode,
+            final String userName
+    ) {
+    }
+
+    public boolean canOfferToQueue(
+            final String queueName,
+            final String userName
+    ) {
+        return false;
+    }
+
+    public boolean canPollFromQueue(
+            final String queueName,
+            final String userName
+    ) {
+        return false;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Topic ACL
+    // ------------------------------------------------------------------------
+
+    public void clearTopicAcl() {
+    }
+
+    public void setTopicAcl(
+            final String topicName,
+            final AccessMode accessMode,
+            final String userName
+    ) {
+    }
+
+    public boolean canPublishToTopic(
+            final String queueName,
+            final String userName
+    ) {
+        return false;
+    }
+
+    public boolean canSubscribeToTopic(
+            final String queueName,
+            final String userName
+    ) {
+        return false;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Load/Save
+    // ------------------------------------------------------------------------
+
     public void load(final InputStream is) {
         Objects.requireNonNull(is);
 
@@ -183,6 +258,11 @@ public class Authenticator {
             throw new IpcException("Failed to save authenticator data", ex);
         }
     }
+
+
+    // ------------------------------------------------------------------------
+    // Utils
+    // ------------------------------------------------------------------------
 
     public static boolean isAdminRole(final String role) {
         return ADMIN_ROLE.equals(role);

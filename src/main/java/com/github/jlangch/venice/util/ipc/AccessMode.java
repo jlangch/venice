@@ -28,6 +28,8 @@ public enum AccessMode {
 
     WRITE,
 
-    READ_WRITE;
+    READ_WRITE,
+
+    NONE;
 
 }
