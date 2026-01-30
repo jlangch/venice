@@ -125,8 +125,6 @@ public class ServerQueueManager {
      * @return the queue or <code>null</code> if the queue does not exist
      */
     public IpcQueue<Message> getQueue(final String queueName) {
-        QueueValidator.validateQueueName(queueName);
-
         return queues.get(queueName);
     }
 
@@ -140,8 +138,6 @@ public class ServerQueueManager {
      * @return <code>true</code> if the queue has been removed else <code>false</code>
      */
     public boolean removeQueue(final String queueName) {
-        QueueValidator.validateQueueName(queueName);
-
         final IpcQueue<Message> queue = queues.get(queueName);
         if (queue != null) {
             if (queue.isTemporary()) {
@@ -166,8 +162,6 @@ public class ServerQueueManager {
      * @return <code>true</code> if the queue exists else <code>false</code>
      */
     public boolean existsQueue(final String queueName) {
-        QueueValidator.validateQueueName(queueName);
-
         final IpcQueue<Message> queue = queues.get(queueName);
         return queue != null && !queue.isTemporary();
     }

@@ -29,20 +29,25 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.util.ipc.impl.Acl;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 import com.github.jlangch.venice.util.password.PBKDF2PasswordEncoder;
+
 
 
 /**
@@ -55,17 +60,13 @@ public class Authenticator {
         this.active = activate;
     }
 
+
     public void activate(final boolean activate) {
         this.active = activate;
     }
 
-
     public boolean isActive() {
         return active;
-    }
-
-    public int size() {
-        return authorizations.size();
     }
 
     public void clear() {
@@ -79,36 +80,40 @@ public class Authenticator {
     // Credentials
     // ------------------------------------------------------------------------
 
-    public void addCredentials(
-            final String userName,
-            final String password
-    ) {
-        addCredentials(userName, password, false);
+    public int getCredentialsCount() {
+        return authorizations.size();
     }
 
     public void addCredentials(
-            final String userName,
+            final String principal,
+            final String password
+    ) {
+        addCredentials(principal, password, false);
+    }
+
+    public void addCredentials(
+            final String principal,
             final String password,
             final boolean adminRole
     ) {
-        Objects.requireNonNull(userName);
+        Objects.requireNonNull(principal);
         Objects.requireNonNull(password);
 
-        if (userName.length() > MAX_LEN_USER) {
-            throw new IpcException("A user name is limited to " + MAX_LEN_USER + " characters");
+        if (principal.length() > MAX_LEN_USER) {
+            throw new IpcException("A principal name is limited to " + MAX_LEN_USER + " characters");
         }
 
         if (password.length() > MAX_LEN_PWD) {
             throw new IpcException("A password is limited to " + MAX_LEN_PWD + " characters");
         }
 
-        authorizations.put(userName, new Auth(pwEncoder.encode(password), adminRole));
+        authorizations.put(principal, new Auth(principal, pwEncoder.encode(password), adminRole));
     }
 
-    public void removeCredentials(final String userName) {
-        Objects.requireNonNull(userName);
+    public void removeCredentials(final String principal) {
+        Objects.requireNonNull(principal);
 
-        authorizations.remove(userName);
+        authorizations.remove(principal);
     }
 
     public void clearCredentials() {
@@ -116,87 +121,95 @@ public class Authenticator {
     }
 
     public boolean isAuthenticated(
-            final String userName,
+            final String principal,
             final String password
     ) {
         if (!active) {
            return true;
         }
 
-        if (userName == null || password == null) {
+        if (principal == null || password == null) {
             return false;
         }
 
-        final Auth auth = authorizations.get(userName);
+        final Auth auth = authorizations.get(principal);
         return auth != null && pwEncoder.verify(password, auth.pwHash);
     }
 
-    public boolean isAdmin(final String userName) {
-        if (!active || userName == null) {
+    public boolean isAdmin(final String principal) {
+        if (!active || principal == null) {
            return false;
         }
 
-        final Auth auth = authorizations.get(userName);
+        final Auth auth = authorizations.get(principal);
         return auth != null && auth.adminRole;
     }
 
 
 
     // ------------------------------------------------------------------------
-    // Queue ACL
+    // ACL
     // ------------------------------------------------------------------------
-
-    public void clearQueueAcl() {
-    }
 
     public void setQueueAcl(
             final String queueName,
             final AccessMode accessMode,
-            final String userName
+            final String principal
     ) {
+        Objects.requireNonNull(queueName);
+        Objects.requireNonNull(accessMode);
+
+        final Acl acl = new Acl(queueName, principal, accessMode);
+
+        Map<String,Acl> acls = queueAcls.get(queueName);
+        if (acls == null) {
+            acls = new HashMap<>();
+        }
+        acls.put(acl.getPrincipal(), acl);
+        queueAcls.put(queueName, acls);
     }
 
-    public boolean canOfferToQueue(
-            final String queueName,
-            final String userName
+    public Map<String,Acl> getQueueAcls(
+            final String queueName
     ) {
-        return false;
+        Objects.requireNonNull(queueName);
+
+        Map<String,Acl> acls = queueAcls.get(queueName);
+        return acls == null ? new HashMap<>() : acls;
     }
 
-    public boolean canPollFromQueue(
-            final String queueName,
-            final String userName
-    ) {
-        return false;
+    public void clearQueueAcl() {
     }
 
-
-    // ------------------------------------------------------------------------
-    // Topic ACL
-    // ------------------------------------------------------------------------
-
-    public void clearTopicAcl() {
-    }
 
     public void setTopicAcl(
             final String topicName,
             final AccessMode accessMode,
-            final String userName
+            final String principal
     ) {
+        Objects.requireNonNull(topicName);
+        Objects.requireNonNull(accessMode);
+
+        final Acl acl = new Acl(topicName, principal, accessMode);
+
+        Map<String,Acl> acls = topicAcls.get(topicName);
+        if (acls == null) {
+            acls = new HashMap<>();
+        }
+        acls.put(acl.getPrincipal(), acl);
+        topicAcls.put(topicName, acls);
     }
 
-    public boolean canPublishToTopic(
-            final String queueName,
-            final String userName
+    public Map<String,Acl> getTopicAcls(
+            final String topicName
     ) {
-        return false;
+        Objects.requireNonNull(topicName);
+
+        Map<String,Acl> acls = topicAcls.get(topicName);
+        return acls == null ? new HashMap<>() : acls;
     }
 
-    public boolean canSubscribeToTopic(
-            final String queueName,
-            final String userName
-    ) {
-        return false;
+    public void clearTopicAcl() {
     }
 
 
@@ -214,7 +227,20 @@ public class Authenticator {
 
             final String json = new String(data, StandardCharsets.UTF_8);
 
-            authorizations.putAll(readFromJson(json));
+            final VncMap map = (VncMap)Json.readJson(json, false);
+
+            final VncList auths = (VncList)map.get(new VncString("authorizations"));
+            final VncList qacls = (VncList)map.get(new VncString("queue-acls"));
+            final VncList tacls = (VncList)map.get(new VncString("topic-acls"));
+
+            auths.forEach(a -> { Auth auth = toAuth((VncMap)a);
+                                 authorizations.put(auth.principal, auth); });
+
+            qacls.forEach(a -> { Acl acl = toAcl((VncMap)a);
+                                 setQueueAcl(acl.getSubject(), acl.getMode(), acl.getPrincipal()); });
+
+            tacls.forEach(a -> { Acl acl = toAcl((VncMap)a);
+                                 setTopicAcl(acl.getSubject(), acl.getMode(), acl.getPrincipal()); });
 
             // automatically active after loading credentials
             activate(true);
@@ -227,8 +253,33 @@ public class Authenticator {
     public void save(final OutputStream os) {
         Objects.requireNonNull(os);
 
+        final List<VncVal> auths = authorizations
+                                    .values()
+                                    .stream()
+                                    .map(a->toVncMap(a))
+                                    .collect(Collectors.toList());
+
+        final List<VncVal> qacls = toAclList(queueAcls)
+                                    .stream()
+                                    .map(a->toVncMap(a))
+                                    .collect(Collectors.toList());
+
+        final List<VncVal> tacls = toAclList(topicAcls)
+                                    .stream()
+                                    .map(a->toVncMap(a))
+                                    .collect(Collectors.toList());
+
+        final VncHashMap data = VncHashMap.of(
+                                    new VncString("authorizations"),
+                                    VncList.ofColl(auths),
+                                    new VncString("queue-acls"),
+                                    VncList.ofColl(qacls),
+                                    new VncString("topic-acls"),
+                                    VncList.ofColl(tacls));
+
+        final String json = Json.writeJson(data, true);
+
         try (OutputStreamWriter osr = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
-            final String json = writeToJson(authorizations);
             osr.write(json);
             osr.flush();
         }
@@ -268,53 +319,62 @@ public class Authenticator {
         return ADMIN_ROLE.equals(role);
     }
 
+    private static VncMap toVncMap(final Auth auth) {
+        return VncHashMap.of(
+                new VncString("principal"),
+                new VncString(auth.principal),
+                new VncString("pw-hash"),
+                new VncString(auth.pwHash),
+                new VncString("admin"),
+                VncBoolean.of(auth.adminRole));
+    }
 
+    private static VncMap toVncMap(final Acl acl) {
+        return VncHashMap.of(
+                new VncString("subject"),
+                new VncString(acl.getSubject()),
+                new VncString("principal"),
+                new VncString(acl.getPrincipal()),
+                new VncString("access"),
+                new VncString(acl.getMode().name()));
+    }
 
-    private static String writeToJson(final Map<String, Auth> data) {
-        VncList list = VncList.empty();
+    private static Auth toAuth(final VncMap auth) {
+        return new Auth(
+                ((VncString)auth.get(new VncString("principal"))).getValue(),
+                ((VncString)auth.get(new VncString("pw-hash"))).getValue(),
+                ((VncBoolean)auth.get(new VncString("admin"))).getValue());
+    }
 
-        for(Entry<String, Auth> e : data.entrySet()) {
-            VncHashMap map = VncHashMap.of(
-                                new VncString("user"),
-                                new VncString(e.getKey()),
-                                new VncString("auth"),
-                                VncHashMap.of(
-                                    new VncString("pw-hash"),
-                                    new VncString(e.getValue().pwHash),
-                                    new VncString("admin"),
-                                    VncBoolean.of(e.getValue().adminRole)));
-            list = list.addAtEnd(map);
+    private static Acl toAcl(final VncMap auth) {
+        return new Acl(
+                ((VncString)auth.get(new VncString("subject"))).getValue(),
+                ((VncString)auth.get(new VncString("principal"))).getValue(),
+                AccessMode.valueOf(((VncString)auth.get(new VncString("access"))).getValue()));
+    }
+
+    private static List<Acl> toAclList(final Map<String, Map<String,Acl>> data) {
+        final List<Acl> list = new ArrayList<>();
+        for(Map<String,Acl> m : data.values()) {
+            list.addAll(m.values());
         }
-        return Json.writeJson(list, true);
+        return list;
     }
-
-    private static Map<String, Auth> readFromJson(final String json) {
-        final Map<String, Auth> data = new HashMap<>();
-
-        final VncList list = (VncList)Json.readJson(json, false);
-        list.forEach(e -> {
-            final VncMap entry = (VncMap)e;
-            final String user = ((VncString)entry.get(new VncString("user"))).getValue();
-            final VncMap auth = (VncMap)entry.get(new VncString("auth"));
-            final String pwHash = ((VncString)auth.get(new VncString("pw-hash"))).getValue();
-            final boolean admin = ((VncBoolean)auth.get(new VncString("admin"))).getValue();
-            data.put(user, new Auth(pwHash,  admin));
-        });
-
-        return data;
-    }
-
 
     private static class Auth {
-        public Auth(final String pwHash, final boolean adminRole) {
+        public Auth(final String principal, final String pwHash, final boolean adminRole) {
+            Objects.requireNonNull(principal);
             Objects.requireNonNull(pwHash);
+            this.principal = principal;
             this.pwHash = pwHash;
             this.adminRole = adminRole;
         }
 
+        public final String principal;
         public final String pwHash;
         public final boolean adminRole;
     }
+
 
 
     public final static String ADMIN_ROLE = "admin";
@@ -326,4 +386,6 @@ public class Authenticator {
 
     private final PBKDF2PasswordEncoder pwEncoder = new PBKDF2PasswordEncoder();
     private final ConcurrentHashMap<String, Auth> authorizations = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Map<String, Acl>> queueAcls = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Map<String, Acl>> topicAcls = new ConcurrentHashMap<>();
 }

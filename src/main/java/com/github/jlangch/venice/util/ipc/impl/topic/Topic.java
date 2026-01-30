@@ -19,22 +19,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc;
+package com.github.jlangch.venice.util.ipc.impl.topic;
+
+import com.github.jlangch.venice.util.ipc.impl.Destination;
 
 
-public enum AccessMode {
+public class Topic extends Destination implements IpcTopic {
 
-    PRINCIPAL_READ,
-
-    PRINCIPAL_WRITE,
-
-    PRINCIPAL_READ_WRITE,
-
-
-    UNRESTRICTED_READ,
-
-    UNRESTRICTED_WRITE,
-
-    UNRESTRICTED_READ_WRITE;
+    public Topic(final String name) {
+        super(name);
+    }
 
 }

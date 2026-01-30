@@ -25,19 +25,22 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.resilience4j.circularbuffer.ConcurrentEvictingQueue;
+import com.github.jlangch.venice.util.ipc.impl.Destination;
 
 
 
 /**
  * Circular buffer.
  */
-public class CircularBuffer<T> implements IpcQueue<T> {
+public class CircularBuffer<T> extends Destination implements IpcQueue<T> {
 
     public CircularBuffer(
             final String name,
             final int capacity,
             final boolean temporary
     ) {
+        super(name);
+
         this.name = name;
         this.capacity = capacity;
         this.temporary = temporary;

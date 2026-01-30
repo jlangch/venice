@@ -24,26 +24,31 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.util.ipc.impl.topic.IpcTopic;
+import com.github.jlangch.venice.util.ipc.impl.topic.Topic;
+
 
 public class ServerTopicManager {
 
     public ServerTopicManager() {
     }
 
+    public IpcTopic getTopic(final String topicName) {
+        return topics.get(topicName);
+    }
+
     public void createTopic(final String topicName) {
         TopicValidator.validateTopicName(topicName);
-        topics.putIfAbsent(topicName, "");
+        topics.putIfAbsent(topicName, new Topic(topicName));
     }
 
     public void removeTopic(final String topicName) {
-        TopicValidator.validateTopicName(topicName);
         topics.remove(topicName);
     }
 
     public boolean existsTopic(final String topicName) {
-        TopicValidator.validateTopicName(topicName);
         return topics.containsKey(topicName);
     }
 
-    private final Map<String, String> topics = new ConcurrentHashMap<>();
+    private final Map<String, IpcTopic> topics = new ConcurrentHashMap<>();
 }

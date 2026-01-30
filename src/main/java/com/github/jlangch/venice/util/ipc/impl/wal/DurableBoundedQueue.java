@@ -33,6 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.WriteAheadLogException;
+import com.github.jlangch.venice.util.ipc.impl.Destination;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.QueueType;
@@ -43,7 +44,7 @@ import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntry;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.WalEntryType;
 
 
-public class DurableBoundedQueue implements IpcQueue<Message>, AutoCloseable {
+public class DurableBoundedQueue extends Destination implements IpcQueue<Message>, AutoCloseable {
 
     public DurableBoundedQueue(
             final String queueName,
@@ -51,6 +52,8 @@ public class DurableBoundedQueue implements IpcQueue<Message>, AutoCloseable {
             final WriteAheadLog wal,
             final WalLogger logger
     ) throws WriteAheadLogException {
+        super(queueName);
+
         Objects.requireNonNull(queueName);
         Objects.requireNonNull(wal);
         Objects.requireNonNull(logger);
@@ -449,16 +452,16 @@ public class DurableBoundedQueue implements IpcQueue<Message>, AutoCloseable {
     }
 
 
+
+    // ------------------------------------------------------------
+    // Internal helpers (must be called with lock held)
+    // ------------------------------------------------------------
+
     private void handleClosedQueue() {
         if (closed) {
             throw new IpcException("The queue " + queueName + " is closed!");
         }
     }
-
-
-    // ------------------------------------------------------------
-    // Internal helpers (must be called with lock held)
-    // ------------------------------------------------------------
 
     private void enqueueWithoutLogging(Message m) {
         Objects.requireNonNull(m);

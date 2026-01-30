@@ -23,10 +23,10 @@ package com.github.jlangch.venice.util.ipc.impl.queue;
 
 import java.util.concurrent.TimeUnit;
 
+import com.github.jlangch.venice.util.ipc.impl.IDestination;
 
-public interface IpcQueue<T> {
 
-    String name();
+public interface IpcQueue<T> extends IDestination {
 
     QueueType type();
 

@@ -19,22 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc;
+package com.github.jlangch.venice.util.ipc.impl;
 
 
-public enum AccessMode {
+public abstract class Destination implements IDestination{
 
-    PRINCIPAL_READ,
-
-    PRINCIPAL_WRITE,
-
-    PRINCIPAL_READ_WRITE,
+    public Destination(final String name) {
+        this.name = name;
+    }
 
 
-    UNRESTRICTED_READ,
+    @Override
+    public String name() {
+        return name;
+    }
 
-    UNRESTRICTED_WRITE,
+    @Override
+    public boolean canRead(final String principal) {
+        return true;
+    }
 
-    UNRESTRICTED_READ_WRITE;
+    @Override
+    public boolean canWrite(final String principal) {
+        return true;
+    }
 
+
+    private final String name;
 }

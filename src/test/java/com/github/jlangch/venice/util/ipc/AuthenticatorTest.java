@@ -54,55 +54,55 @@ public class AuthenticatorTest {
     public void test_add_credentials() {
         final Authenticator a = new Authenticator(false);
 
-        assertEquals(0, a.size());
+        assertEquals(0, a.getCredentialsCount());
 
         a.addCredentials("u1", "123", true);
         a.addCredentials("u2", "456", false);
 
-        assertEquals(2, a.size());
+        assertEquals(2, a.getCredentialsCount());
 
         a.removeCredentials("u1");
 
-        assertEquals(1, a.size());
+        assertEquals(1, a.getCredentialsCount());
 
         a.removeCredentials("u2");
 
-        assertEquals(0, a.size());
+        assertEquals(0, a.getCredentialsCount());
 
         a.addCredentials("u1", "123");
         a.addCredentials("u2", "456");
 
-        assertEquals(2, a.size());
+        assertEquals(2, a.getCredentialsCount());
 
         a.clearCredentials();
 
-        assertEquals(0, a.size());
+        assertEquals(0, a.getCredentialsCount());
     }
 
     @Test
     public void test_add_remove_clear_credentials() {
         final Authenticator a = new Authenticator(true);
 
-        assertEquals(0, a.size());
+        assertEquals(0, a.getCredentialsCount());
 
         a.addCredentials("u1", "123", true);
         a.addCredentials("u2", "456", false);
 
-        assertEquals(2, a.size());
+        assertEquals(2, a.getCredentialsCount());
 
         assertTrue(a.isAuthenticated("u1", "123"));
         assertTrue(a.isAuthenticated("u2", "456"));
 
         a.removeCredentials("u2");
 
-        assertEquals(1, a.size());
+        assertEquals(1, a.getCredentialsCount());
 
         assertTrue(a.isAuthenticated("u1", "123"));
         assertFalse(a.isAuthenticated("u2", "456"));
 
         a.clearCredentials();
 
-        assertEquals(0, a.size());
+        assertEquals(0, a.getCredentialsCount());
 
         assertFalse(a.isAuthenticated("u1", "123"));
         assertFalse(a.isAuthenticated("u2", "456"));
@@ -198,7 +198,7 @@ public class AuthenticatorTest {
         b.load(new FileInputStream(file));
 
         assertTrue(b.isActive());  // automatically active after loading credentials
-        assertEquals(2, b.size());
+        assertEquals(2, b.getCredentialsCount());
 
         assertTrue(b.isAuthenticated("u1", "123"));
         assertTrue(b.isAuthenticated("u2", "456"));
@@ -227,7 +227,7 @@ public class AuthenticatorTest {
         b.load(file);
 
         assertTrue(b.isActive());  // automatically active after loading credentials
-        assertEquals(3, b.size());
+        assertEquals(3, b.getCredentialsCount());
 
         assertTrue(b.isAuthenticated("u1", "123"));
         assertTrue(b.isAuthenticated("u2", "456"));
@@ -254,7 +254,7 @@ public class AuthenticatorTest {
         b.load(new FileInputStream(file));
 
         assertTrue(b.isActive());  // automatically active after loading credentials
-        assertEquals(2, b.size());
+        assertEquals(2, b.getCredentialsCount());
 
         assertTrue(b.isAuthenticated("u-α", "123-α"));
         assertTrue(b.isAuthenticated("u-β", "456-β"));
@@ -279,7 +279,7 @@ public class AuthenticatorTest {
         b.load(file);
 
         assertTrue(b.isActive());  // automatically active after loading credentials
-        assertEquals(2, b.size());
+        assertEquals(2, b.getCredentialsCount());
 
         assertTrue(b.isAuthenticated("u-α", "123-α"));
         assertTrue(b.isAuthenticated("u-β", "456-β"));

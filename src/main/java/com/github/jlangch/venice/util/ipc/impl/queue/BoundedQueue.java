@@ -25,18 +25,22 @@ import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.github.jlangch.venice.util.ipc.impl.Destination;
+
 
 
 /**
  * A bounded, thread-safe queue based on LinkedBlockingQueue
  */
-public class BoundedQueue<T> implements IpcQueue<T> {
+public class BoundedQueue<T> extends Destination implements IpcQueue<T> {
 
     public BoundedQueue(
             final String name,
             final int capacity,
             final boolean temporary
     ) {
+        super(name);
+
         this.name = name;
         this.capacity = capacity;
         this.temporary = temporary;
