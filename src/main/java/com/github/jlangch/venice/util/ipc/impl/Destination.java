@@ -21,8 +21,11 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class Destination implements IDestination{
+
+public abstract class Destination implements IDestination {
 
     public Destination(final String name) {
         this.name = name;
@@ -36,14 +39,47 @@ public abstract class Destination implements IDestination{
 
     @Override
     public boolean canRead(final String principal) {
-        return true;
+        if (aclOff) {
+            return true;
+        }
+        else if (principal == null) {
+            return false;
+        }
+        final Acl acl = acls.get(principal);
+        return acl != null ? acl.canRead() : false;
     }
 
     @Override
     public boolean canWrite(final String principal) {
-        return true;
+        if (aclOff) {
+            return true;
+        }
+        else if (principal == null) {
+            return false;
+        }
+        final Acl acl = acls.get(principal);
+        return acl != null ? acl.canWrite() : false;
+    }
+
+    @Override
+    public void addAcls(final Collection<Acl> acls) {
+        if (acls != null) {
+            acls.forEach(a -> this.acls.put(a.getPrincipal(), a));
+            aclOff = acls.isEmpty();
+        }
+    }
+
+    @Override
+    public void clearAcls() {
+        acls.clear();
     }
 
 
     private final String name;
+
+    // ACL mapped by principal -> ACL
+    private final ConcurrentHashMap<String, Acl> acls = new ConcurrentHashMap<>();
+
+    private volatile boolean aclOff = true;
+
 }

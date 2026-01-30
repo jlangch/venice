@@ -24,17 +24,10 @@ package com.github.jlangch.venice.util.ipc;
 
 public enum AccessMode {
 
-    PRINCIPAL_READ,
+    READ,
 
-    PRINCIPAL_WRITE,
+    WRITE,
 
-    PRINCIPAL_READ_WRITE,
-
-
-    UNRESTRICTED_READ,
-
-    UNRESTRICTED_WRITE,
-
-    UNRESTRICTED_READ_WRITE;
+    READ_WRITE,
 
 }

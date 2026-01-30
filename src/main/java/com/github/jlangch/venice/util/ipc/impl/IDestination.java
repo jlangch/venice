@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.util.Collection;
 
 public interface IDestination {
 
@@ -29,5 +30,9 @@ public interface IDestination {
     boolean canRead(String principal);
 
     boolean canWrite(String principal);
+
+    void addAcls(Collection<Acl> acls);
+
+    void clearAcls();
 
 }

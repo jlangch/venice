@@ -71,8 +71,8 @@ public class Authenticator {
 
     public void clear() {
         clearCredentials();
-        clearQueueAcl();
-        clearTopicAcl();
+        clearQueueAcls();
+        clearTopicAcls();
     }
 
 
@@ -169,16 +169,15 @@ public class Authenticator {
         queueAcls.put(queueName, acls);
     }
 
-    public Map<String,Acl> getQueueAcls(
-            final String queueName
-    ) {
+    public Map<String,Acl> getQueueAclsMappedByPrincipal(final String queueName) {
         Objects.requireNonNull(queueName);
 
         Map<String,Acl> acls = queueAcls.get(queueName);
         return acls == null ? new HashMap<>() : acls;
     }
 
-    public void clearQueueAcl() {
+    public void clearQueueAcls() {
+        queueAcls.clear();
     }
 
 
@@ -200,16 +199,15 @@ public class Authenticator {
         topicAcls.put(topicName, acls);
     }
 
-    public Map<String,Acl> getTopicAcls(
-            final String topicName
-    ) {
+    public Map<String,Acl> getTopicAclsMappedByPrincipal(final String topicName) {
         Objects.requireNonNull(topicName);
 
         Map<String,Acl> acls = topicAcls.get(topicName);
         return acls == null ? new HashMap<>() : acls;
     }
 
-    public void clearTopicAcl() {
+    public void clearTopicAcls() {
+        topicAcls.clear();
     }
 
 
@@ -384,8 +382,15 @@ public class Authenticator {
 
     private volatile boolean active;
 
+
     private final PBKDF2PasswordEncoder pwEncoder = new PBKDF2PasswordEncoder();
+
+    // Mapped by principal -> Auth
     private final ConcurrentHashMap<String, Auth> authorizations = new ConcurrentHashMap<>();
+
+    // Mapped by queueName -> principal -> ACL
     private final ConcurrentHashMap<String, Map<String, Acl>> queueAcls = new ConcurrentHashMap<>();
+
+    // Mapped by topicName -> principal -> ACL
     private final ConcurrentHashMap<String, Map<String, Acl>> topicAcls = new ConcurrentHashMap<>();
 }

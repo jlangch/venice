@@ -21,12 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
-import static com.github.jlangch.venice.util.ipc.AccessMode.PRINCIPAL_READ;
-import static com.github.jlangch.venice.util.ipc.AccessMode.PRINCIPAL_READ_WRITE;
-import static com.github.jlangch.venice.util.ipc.AccessMode.PRINCIPAL_WRITE;
-import static com.github.jlangch.venice.util.ipc.AccessMode.UNRESTRICTED_READ;
-import static com.github.jlangch.venice.util.ipc.AccessMode.UNRESTRICTED_READ_WRITE;
-import static com.github.jlangch.venice.util.ipc.AccessMode.UNRESTRICTED_WRITE;
+import static com.github.jlangch.venice.util.ipc.AccessMode.READ;
+import static com.github.jlangch.venice.util.ipc.AccessMode.READ_WRITE;
+import static com.github.jlangch.venice.util.ipc.AccessMode.WRITE;
 
 import java.util.Objects;
 
@@ -62,28 +59,12 @@ public class Acl {
     }
 
 
-    public boolean canRead(final String principal) {
-        if (mode == UNRESTRICTED_READ || mode == UNRESTRICTED_READ_WRITE) {
-            return true;
-        }
-        else if (principal != null && principal.equals(this.principal)){
-            return mode == PRINCIPAL_READ || mode == PRINCIPAL_READ_WRITE;
-        }
-        else {
-            return false;
-        }
+    public boolean canRead() {
+        return mode == READ || mode == READ_WRITE;
     }
 
-    public boolean canWrite(final String principal) {
-        if (mode == UNRESTRICTED_WRITE || mode == UNRESTRICTED_READ_WRITE) {
-            return true;
-        }
-        else if (principal != null && principal.equals(this.principal)){
-            return mode == PRINCIPAL_WRITE || mode == PRINCIPAL_READ_WRITE;
-        }
-        else {
-            return false;
-        }
+    public boolean canWrite() {
+        return mode == WRITE || mode == READ_WRITE;
     }
 
 
