@@ -39,33 +39,30 @@ public abstract class Destination implements IDestination {
 
     @Override
     public boolean canRead(final String principal) {
-        if (aclOff) {
+        if (principal == null) {
             return true;
         }
-        else if (principal == null) {
-            return false;
+        else {
+            final Acl acl = acls.get(principal);
+            return acl != null ? acl.canRead() : false;
         }
-        final Acl acl = acls.get(principal);
-        return acl != null ? acl.canRead() : false;
     }
 
     @Override
     public boolean canWrite(final String principal) {
-        if (aclOff) {
+        if (principal == null) {
             return true;
         }
-        else if (principal == null) {
-            return false;
+        else {
+            final Acl acl = acls.get(principal);
+            return acl != null ? acl.canWrite() : false;
         }
-        final Acl acl = acls.get(principal);
-        return acl != null ? acl.canWrite() : false;
     }
 
     @Override
     public void addAcls(final Collection<Acl> acls) {
         if (acls != null) {
             acls.forEach(a -> this.acls.put(a.getPrincipal(), a));
-            aclOff = acls.isEmpty();
         }
     }
 
@@ -79,7 +76,4 @@ public abstract class Destination implements IDestination {
 
     // ACL mapped by principal -> ACL
     private final ConcurrentHashMap<String, Acl> acls = new ConcurrentHashMap<>();
-
-    private volatile boolean aclOff = true;
-
 }

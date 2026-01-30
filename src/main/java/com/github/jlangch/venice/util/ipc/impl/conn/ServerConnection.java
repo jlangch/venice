@@ -88,6 +88,7 @@ import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.topic.IpcTopic;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
 import com.github.jlangch.venice.util.ipc.impl.util.Error;
@@ -160,7 +161,7 @@ public class ServerConnection implements IPublisher, Runnable {
             statistics.incrementConnectionCount();
 
             // start publisher thread
-            publisherThread = new Thread(() -> publisher(), "venice-ipc-server-publisher");
+            publisherThread = new Thread(() -> publisherWorker(), "venice-ipc-server-publisher");
             publisherThread.setDaemon(true);
             publisherThread.start();
 
@@ -186,6 +187,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     @Override
     public void publish(final Message msg) {
+        // Note: publish can be called from another ServerConnection thread!!
         try {
             // Enqueue the message to publish it as soon as possible
             // to this channels's client.
@@ -227,14 +229,17 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private boolean isStop() {
-        // update stop status
-        stop.set(stop.get()
-                 || mode == State.Terminated
-                 || !server.isRunning()
-                 || !ch.isOpen()
-                 || Thread.interrupted());
+        if (stop.get()) {
+            return true;
+        }
+        else {
+            // update stop status
+            stop.set(!server.isRunning()
+                     || !ch.isOpen()
+                     || Thread.interrupted());
 
-        return stop.get();
+           return stop.get();
+        }
     }
 
 
@@ -265,7 +270,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private void publisher() {
+    private void publisherWorker() {
         logInfo("Asychronous publisher started");
 
         while(!isStop()) {
@@ -298,12 +303,12 @@ public class ServerConnection implements IPublisher, Runnable {
         // [1] receive message
         final Message request = protocol.receiveMessage(ch, compressor, encryptor.get());
         if (request == null) {
-            mode = State.Terminated; // client closed connection
+            stop.set(true); // client closed connection
             return;
         }
 
         if (!server.isRunning()) {
-            mode = State.Terminated;  // this server was closed
+            stop.set(true);  // this server was closed
             return;
         }
 
@@ -338,7 +343,7 @@ public class ServerConnection implements IPublisher, Runnable {
         final Message response = handleRequestMessage(request);
 
         if (!server.isRunning()) {
-            mode = State.Terminated;  // this server was closed
+            stop.set(true);  // this server was closed
             return;
         }
 
@@ -445,11 +450,19 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message handleSubscribeToTopic(final Message request) {
         final String topicName = request.getTopicName();
 
-        if (!topicManager.existsTopic(topicName)) {
+        final IpcTopic topic = topicManager.getTopic(topicName);
+        if (topic == null) {
             return createTextResponse(
                     request,
                     TOPIC_NOT_FOUND,
                     "The topic " + topicName + " does not exist! Create it first!");
+        }
+
+        if (authenticated && !adminAuthorization && !topic.canRead(principal)) {
+            return createTextResponse(
+                    request,
+                    NO_PERMISSION,
+                    "Not authenticated for topic subscription!");
         }
 
         // register subscription
@@ -464,7 +477,8 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message handleUnsubscribeFromTopic(final Message request) {
         final String topicName = request.getTopicName();
 
-        if (!topicManager.existsTopic(topicName)) {
+        final IpcTopic topic = topicManager.getTopic(topicName);
+        if (topic == null) {
             return createTextResponse(
                     request,
                     TOPIC_NOT_FOUND,
@@ -483,11 +497,19 @@ public class ServerConnection implements IPublisher, Runnable {
     private Message handlePublishToTopic(final Message request) {
         final String topicName = request.getTopicName();
 
-        if (!topicManager.existsTopic(topicName)) {
+        final IpcTopic topic = topicManager.getTopic(topicName);
+        if (topic == null) {
             return createTextResponse(
                     request,
                     TOPIC_NOT_FOUND,
                     "The topic " + topicName + " does not exist! Create it first!");
+        }
+
+        if (authenticated && !adminAuthorization && !topic.canWrite(principal)) {
+            return createTextResponse(
+                    request,
+                    NO_PERMISSION,
+                    "Not authenticated for topic publication!");
         }
 
         // asynchronously publish to all subscriptions
@@ -503,6 +525,17 @@ public class ServerConnection implements IPublisher, Runnable {
         try {
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue != null) {
+                if (authenticated
+                    && !adminAuthorization
+                    && !queue.isTemporary()
+                    && !queue.canWrite(principal)
+                ) {
+                    return createTextResponse(
+                            request,
+                            NO_PERMISSION,
+                            "Not authenticated for queue offer!");
+                }
+
                 // convert message type from OFFER to REQUEST
                 final Message msg = request.withType(REQUEST, request.isOneway());
                 final long timeout = msg.getTimeout();
@@ -545,6 +578,17 @@ public class ServerConnection implements IPublisher, Runnable {
             final long timeout = request.getTimeout();
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue != null) {
+                if (authenticated
+                    && !adminAuthorization
+                    && !queue.isTemporary()
+                    && !queue.canRead(principal)
+                ) {
+                    return createTextResponse(
+                            request,
+                            NO_PERMISSION,
+                            "Not authenticated for queue poll!");
+                }
+
                 while(true) {
                     final Message msg = timeout < 0
                                             ? queue.poll()
@@ -799,7 +843,7 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleDiffieHellmanKeyExchange(final Message request) {
-        if (clientPublicKey.get() != null) {
+        if (clientPublicKey != null) {
             logWarn("Diffie-Hellman key already exchanged!");
             return createPlainTextResponse(
                        request.getId(),
@@ -813,7 +857,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 logInfo("Diffie-Hellman key exchange initiated!");
 
                 final String publicKey = request.getText();
-                clientPublicKey.set(publicKey);
+                clientPublicKey = publicKey;
 
                 logInfo("Diffie-Hellman key exchange completed!");
 
@@ -1159,17 +1203,17 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
 
-    private static enum State { Active, Terminated };
-
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
-    private volatile State mode = State.Active;
-    private volatile String principal = "anon";
-    private volatile boolean authenticated = false;
-    private volatile boolean adminAuthorization = false;
-    private volatile Thread publisherThread;
-    private volatile AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
-    private volatile long lastHeartbeat = 0L;
+
+    private Thread publisherThread;
+    private AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
+    private long lastHeartbeat = 0L;
+
+    // authentication
+    private String principal = "anon";
+    private boolean authenticated = false;
+    private boolean adminAuthorization = false;
 
     private final Server server;
     private final SocketChannel ch;
@@ -1196,8 +1240,8 @@ public class ServerConnection implements IPublisher, Runnable {
     private final long maxTempQueuesPerConnection;
     private final long heartbeatInterval;
 
-    final ServerQueueManager queueManager;
-    final ServerTopicManager topicManager;
+    private final ServerQueueManager queueManager;
+    private final ServerTopicManager topicManager;
 
     // compression
     private final Compressor compressor;
@@ -1206,7 +1250,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final boolean enforceEncryption;
     private final DiffieHellmanKeys dhKeys;
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
-    private final AtomicReference<String> clientPublicKey = new AtomicReference<>(null);
+    private String clientPublicKey = null;
 
     // queues
     private final IpcQueue<Error> errorBuffer;
