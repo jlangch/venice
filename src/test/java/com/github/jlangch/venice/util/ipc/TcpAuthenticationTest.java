@@ -35,8 +35,8 @@ public class TcpAuthenticationTest {
     @Test
     public void test_auth_ok() throws Exception {
         final Authenticator authenticator = new Authenticator(true);
-        authenticator.addCredentials("usr-1", "test-1");
-        authenticator.addCredentials("usr-2", "test-2");
+        authenticator.addCredentials("tom", "123");
+        authenticator.addCredentials("admin", "123", true);
 
         final Server server = Server.of(ServerConfig
                                             .builder()
@@ -45,18 +45,31 @@ public class TcpAuthenticationTest {
                                             .authenticator(authenticator)
                                             .build());
 
-        final Client client = Client.of(33333);
+        final Client clientTom = Client.of(33333);
+        final Client clientAdmin = Client.of(33333);
 
         server.start(Server.echoHandler());
 
         IO.sleep(300);
 
-        client.open("usr-1", "test-1");
+        clientTom.open("tom", "123");
+        clientAdmin.open("admin", "123");
 
         try {
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage response = client.sendMessage(request);
+            IMessage response = clientTom.sendMessage(request);
+
+            assertNotNull(response);
+            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
+            assertEquals(request.getTimestamp(), response.getTimestamp());
+            assertEquals(request.getSubject(),   response.getSubject());
+            assertEquals(request.getMimetype(),  response.getMimetype());
+            assertEquals(request.getCharset(),   response.getCharset());
+            assertEquals(request.getText(),      response.getText());
+
+
+            response = clientAdmin.sendMessage(request);
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
@@ -67,7 +80,8 @@ public class TcpAuthenticationTest {
             assertEquals(request.getText(),      response.getText());
         }
         finally {
-            client.close();
+            clientTom.close();
+            clientAdmin.close();
             server.close();
         }
     }

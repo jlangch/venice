@@ -36,6 +36,7 @@ import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_TOPIC;
 import static com.github.jlangch.venice.util.ipc.MessageType.REQUEST;
 import static com.github.jlangch.venice.util.ipc.MessageType.RESPONSE;
 import static com.github.jlangch.venice.util.ipc.MessageType.STATUS_QUEUE;
+import static com.github.jlangch.venice.util.ipc.MessageType.STATUS_TOPIC;
 import static com.github.jlangch.venice.util.ipc.MessageType.SUBSCRIBE;
 import static com.github.jlangch.venice.util.ipc.MessageType.TEST;
 import static com.github.jlangch.venice.util.ipc.MessageType.UNSUBSCRIBE;
@@ -84,6 +85,7 @@ import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
 import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.ServerTopicManager;
+import com.github.jlangch.venice.util.ipc.impl.TopicValidator;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
@@ -221,6 +223,7 @@ public class ServerConnection implements IPublisher, Runnable {
         handlers.put(CREATE_TOPIC,               this::handleCreateTopicRequest);
         handlers.put(REMOVE_TOPIC,               this::handleRemoveTopicRequest);
         handlers.put(STATUS_QUEUE,               this::handleStatusQueueRequest);
+        handlers.put(STATUS_TOPIC,               this::handleStatusTopicRequest);
         handlers.put(CLIENT_CONFIG,              this::handleClientConfigRequest);
         handlers.put(DIFFIE_HELLMAN_KEY_REQUEST, this::handleDiffieHellmanKeyExchange);
         handlers.put(AUTHENTICATION,             this::handleAuthentication);
@@ -769,6 +772,41 @@ public class ServerConnection implements IPublisher, Runnable {
                                         .add("durable",   (Boolean)s.get("durable"))
                                         .add("capacity",  (Long)s.get("capacity"))
                                         .add("size",      (Long)s.get("size"))
+                                        .toJson(false);
+
+        return createJsonResponse(request, OK, response);
+    }
+
+    private Message handleStatusTopicRequest(final Message request) {
+        if (!"application/json".equals(request.getMimetype())) {
+            return createNonJsonRequestResponse(request);
+        }
+
+        if (!adminAuthorization) {
+            return createNoPermissionResponse(
+                    request,
+                    "Client is not permitted to request topic status! Authenticate as 'admin' user please!");
+        }
+
+        final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
+        final String topicName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
+
+        try {
+            TopicValidator.validateTopicName(topicName);
+        }
+        catch(Exception ex) {
+            return createBadRequestResponse(
+                    request,
+                    String.format(
+                        "Request %s: Invalid topic name: %s",
+                        request.getType(), ex.getMessage()));
+        }
+
+        final Map<String,Object> s = topicManager.getTopicStatus(topicName);
+
+        final String response = new JsonBuilder()
+                                        .add("name",    topicName)
+                                        .add("exists",  (Boolean)s.get("exists"))
                                         .toJson(false);
 
         return createJsonResponse(request, OK, response);

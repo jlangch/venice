@@ -863,7 +863,41 @@ public class Client implements Cloneable, AutoCloseable {
      * @return <code>true</code> if the topic exists else <code>false</code>
      */
     public boolean existsTopic(final String topicName) {
-        throw new IpcException("Not yet implemented");
+        if (StringUtil.isBlank(topicName)) {
+            throw new IllegalArgumentException("A topic name must not be blank");
+        }
+
+        if (!opened.get()) {
+            throw new IllegalStateException("The client is not open!");
+        }
+
+        final String payload = new JsonBuilder()
+                                    .add("name", topicName)
+                                    .toJson(false);
+
+        final Message m = new Message(
+                                null,
+                                MessageType.STATUS_TOPIC,
+                                ResponseStatus.NULL,
+                                false,
+                                false,
+                                false,
+                                1_000L,
+                                "",
+                                "application/json",
+                                "UTF-8",
+                                toBytes(payload, "UTF-8"));
+
+        final IMessage response = send(m);
+        if (response.getResponseStatus() == ResponseStatus.OK) {
+           final VncMap data = (VncMap)response.getVeniceData();
+           final VncVal exists = data.get(new VncKeyword("exists"));
+           return VncBoolean.isTrue(exists);
+        }
+        else {
+            throw new IpcException(
+                    "Failed to check if topic " + topicName + " exists! Reason: " + response.getText());
+        }
     }
 
     /**

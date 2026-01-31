@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -78,6 +79,23 @@ public class ServerTopicManager {
 
     public boolean existsTopic(final String topicName) {
         return topics.containsKey(topicName);
+    }
+
+    /**
+     * Get a topic's status.
+     *
+     * @param topicName a topic name
+     * @return the topic or <code>null</code> if the topic does not exist
+     */
+    public Map<String,Object> getTopicStatus(final String topicName) {
+        final IpcTopic q = topics.get(topicName);
+
+        final Map<String,Object> status = new HashMap<>();
+
+        status.put("name",      topicName);
+        status.put("exists",    q != null);
+
+        return status;
     }
 
 
