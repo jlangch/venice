@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
-import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -60,9 +60,10 @@ public abstract class Destination implements IDestination {
     }
 
     @Override
-    public void addAcls(final Collection<Acl> acls) {
+    public void updateAcls(final Map<String,Acl>  acls) {
+        acls.clear();
         if (acls != null) {
-            acls.forEach(a -> this.acls.put(a.getPrincipal(), a));
+            acls.putAll(acls);
         }
     }
 

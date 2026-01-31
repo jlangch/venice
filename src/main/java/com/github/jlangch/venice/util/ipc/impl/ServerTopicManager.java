@@ -24,14 +24,25 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.util.ipc.Authenticator;
+import com.github.jlangch.venice.util.ipc.IpcException;
+import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.topic.IpcTopic;
 import com.github.jlangch.venice.util.ipc.impl.topic.Topic;
+import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 
 
 public class ServerTopicManager {
 
-    public ServerTopicManager() {
+    public ServerTopicManager(
+            final ServerConfig config,
+            final ServerLogger logger
+    ) {
+        this.authenticator = config.getAuthenticator();
+        this.logger = logger;
+        this.maxTopics = config.getMaxTopics();
     }
+
 
     public IpcTopic getTopic(final String topicName) {
         return topics.get(topicName);
@@ -39,7 +50,26 @@ public class ServerTopicManager {
 
     public void createTopic(final String topicName) {
         TopicValidator.validateTopicName(topicName);
-        topics.putIfAbsent(topicName, new Topic(topicName));
+
+        if (topics.size() >= maxTopics) {
+            throw new IpcException(String.format(
+                    "Cannot create topic! Reached the limit of %d topics.",
+                    maxTopics));
+        }
+
+        topics.computeIfAbsent(
+                topicName,
+                n -> {
+                    final Topic t = new Topic(topicName);
+
+                    t.updateAcls(authenticator.getTopicAclsMappedByPrincipal(topicName));
+
+                    logger.info(
+                        "server", "topic",
+                        String.format("Created topic %s.",topicName));
+
+                    return t;
+                });
     }
 
     public void removeTopic(final String topicName) {
@@ -50,5 +80,9 @@ public class ServerTopicManager {
         return topics.containsKey(topicName);
     }
 
+
+    private final Authenticator authenticator;
+    private final ServerLogger logger;
+    private final int maxTopics;
     private final Map<String, IpcTopic> topics = new ConcurrentHashMap<>();
 }

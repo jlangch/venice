@@ -72,11 +72,13 @@ public class Server implements AutoCloseable {
         this.logger.enable(config.getLogDir());
 
         this.queueManager = new ServerQueueManager(
-                                        config,
-                                        new WalQueueManager(),
-                                        this.logger);
+                                    config,
+                                    new WalQueueManager(),
+                                    this.logger);
 
-        this.topicManager = new ServerTopicManager();
+        this.topicManager = new ServerTopicManager(
+                                    config,
+                                    this.logger);
 
     }
 
@@ -414,7 +416,7 @@ public class Server implements AutoCloseable {
             try {
                 try {
                     // close the durable queues
-                	queueManager.close();
+                    queueManager.close();
                 }
                 catch(Exception ex) {
                     logger.warn("server", "close", "Error while closing queue WALs.", ex);
@@ -481,7 +483,12 @@ public class Server implements AutoCloseable {
 
 
     public static final int QUEUES_MIN =  1;
-    public static final int QUEUES_MAX = 20;
+    public static final int QUEUES_MAX_DEFAULT = 20;
+    public static final int QUEUES_MAX = 50;
+
+    public static final int TOPICS_MIN =  1;
+    public static final int TOPICS_MAX_DEFAULT = 20;
+    public static final int TOPICS_MAX = 50;
 
     public static final int MAX_CONNECTIONS_DEFAULT = 20;
 

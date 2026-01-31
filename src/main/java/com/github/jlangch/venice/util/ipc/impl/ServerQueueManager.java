@@ -22,10 +22,12 @@
 package com.github.jlangch.venice.util.ipc.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
@@ -40,9 +42,10 @@ public class ServerQueueManager {
             final WalQueueManager wal,
             final ServerLogger logger
     ) {
+        this.authenticator = config.getAuthenticator();
         this.wal = wal;
         this.logger = logger;
-        this.maxQueues = config.getMaxConnections();
+        this.maxQueues = config.getMaxQueues();
     }
 
     /**
@@ -110,7 +113,11 @@ public class ServerQueueManager {
                 //          on a SocketChannel!!
                 //       3) will replace any queue with the same name created on this
                 //          server before starting the server
-                queues.putAll(wal.preloadQueues());
+                final List<IpcQueue<Message>> walQueues = wal.preloadQueues();
+                walQueues.forEach(q -> {
+                    q.updateAcls(authenticator.getQueueAclsMappedByPrincipal(q.name()));
+                    queues.put(q.name(), q);
+                });
             }
         }
         catch(Exception ex) {
@@ -206,6 +213,9 @@ public class ServerQueueManager {
                                                     capacity,
                                                     bounded,
                                                     durable);
+
+                   q.updateAcls(authenticator.getQueueAclsMappedByPrincipal(queueName));
+
                    logger.info(
                       "server", "queue",
                       String.format(
@@ -259,6 +269,7 @@ public class ServerQueueManager {
     }
 
 
+    private final Authenticator authenticator;
     private final WalQueueManager wal;
     private final ServerLogger logger;
     private final int maxQueues;

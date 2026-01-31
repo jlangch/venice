@@ -38,6 +38,7 @@ public class ServerConfig {
             final long maxMessageSize,
             final int maxQueues,
             final int maxTempQueuesPerConnection,
+            final int maxTopics,
             final int sndBufSize,
             final int rcvBufSize,
             final int maxConnections,
@@ -53,6 +54,7 @@ public class ServerConfig {
         this.compressCutoffSize = compressCutoffSize;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
+        this.maxTopics = maxTopics;
         this.maxTempQueuesPerConnection = maxTempQueuesPerConnection;
         this.sndBufSize = sndBufSize;
         this.rcvBufSize = rcvBufSize;
@@ -101,6 +103,10 @@ public class ServerConfig {
 
     public int getMaxTempQueuesPerConnection() {
         return maxTempQueuesPerConnection;
+    }
+
+    public int getMaxTopics() {
+        return maxTopics;
     }
 
     public Authenticator getAuthenticator() {
@@ -299,6 +305,25 @@ public class ServerConfig {
         }
 
         /**
+         * Set the max number of topics.
+         *
+         * <p>Defaults to 20
+         *
+         * @param maxTopics the max number of topics.
+         * @return this builder
+         */
+        public Builder maxTopics(final int maxTopics) {
+            if (maxTopics < Server.TOPICS_MIN || maxTopics > Server.TOPICS_MAX) {
+                throw new IllegalArgumentException(
+                        "The max number of topics is limited to "
+                        + Server.TOPICS_MIN + " .. " + Server.TOPICS_MAX + "!");
+            }
+
+            this.maxTopics = maxTopics;
+            return this;
+        }
+
+        /**
          * Set the socket's send buffer size. -1 keeps the default.
          *
          * @param bufSize a send buffer size
@@ -421,6 +446,7 @@ public class ServerConfig {
                     maxMessageSize,
                     maxQueues,
                     maxTempQueuesPerConnection,
+                    maxTopics,
                     sndBufSize,
                     rcvBufSize,
                     maxConnections,
@@ -437,14 +463,13 @@ public class ServerConfig {
         private boolean encrypt = false;
         private int compressCutoffSize = -1;
         private long maxMessageSize = Messages.MESSAGE_LIMIT_DEFAULT;
-        private int maxQueues = Server.QUEUES_MAX;
+        private int maxQueues = Server.QUEUES_MAX_DEFAULT;
         private int maxTempQueuesPerConnection = Server.QUEUES_MAX;
+        private int maxTopics = Server.TOPICS_MAX_DEFAULT;
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
         private int maxConnections = Server.MAX_CONNECTIONS_DEFAULT;
         private Authenticator authenticator = new Authenticator(false);
-        private boolean permitClientQueueMgmt = false;
-        private boolean permitServerMgmt = false;
         private int heartbeatIntervalSeconds;
         private File walDir;
         private boolean walCompress;
@@ -459,6 +484,7 @@ public class ServerConfig {
     private final long maxMessageSize;
     private final int maxQueues;
     private final int maxTempQueuesPerConnection;
+    private final int maxTopics;
     private final int sndBufSize;
     private final int rcvBufSize;
     private final int maxConnections;

@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
-import java.util.Collection;
+import java.util.Map;
 
 public interface IDestination {
 
@@ -31,7 +31,7 @@ public interface IDestination {
 
     boolean canWrite(String principal);
 
-    void addAcls(Collection<Acl> acls);
+    void updateAcls(Map<String,Acl>  acls);
 
     void clearAcls();
 

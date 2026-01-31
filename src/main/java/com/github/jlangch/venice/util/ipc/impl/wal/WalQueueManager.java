@@ -26,9 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -88,13 +86,13 @@ public class WalQueueManager {
         return logger;
     }
 
-    public Map<String, IpcQueue<Message>> preloadQueues()
+    public List<IpcQueue<Message>> preloadQueues()
     throws WriteAheadLogException, InterruptedException {
         if (!isEnabled()) {
             throw new WriteAheadLogException("Write-Ahead-Log is not active");
         }
 
-        final Map<String, IpcQueue<Message>> queues = new HashMap<>();
+        final List<IpcQueue<Message>> queues = new ArrayList<>();
 
         for(File logFile : listLogFiles()) {
             if (compactAtStart) {
@@ -105,7 +103,7 @@ public class WalQueueManager {
             logger.info(logFile, "WalQueueManager@preloadQueues: create queue from WAL");
 
             final IpcQueue<Message> queue = DurableBoundedQueue.createFromWal(logFile, logger);
-            queues.put(queue.name(), queue);
+            queues.add(queue);
         };
 
         return queues;
